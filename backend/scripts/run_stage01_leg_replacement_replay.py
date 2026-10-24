@@ -155,8 +155,84 @@ def _install_claude_ensemble(variant: dict[str, Any]) -> None:
     codex_runner.run_codex_json_messages = routed
 
 
+# Codex-only study (23.10.2026): every Codex model × effort as the single leg —
+# ``x1_<model>_<effort>`` — and the production topology with Codex legs/judge.
+CODEX_MODELS = {"sol61": "codex/gpt-6.1-sol", "sol6": "codex/gpt-6-sol", "astra": "codex/gpt-6-astra"}
+CODEX_EFFORTS = ("low", "medium", "high", "xhigh")
+for _short, _model in CODEX_MODELS.items():
+    for _effort in CODEX_EFFORTS:
+        VARIANTS[f"x1_{_short}_{_effort}"] = {"model": _model, "effort": _effort, "env": {}}
+
+
+def _codex_ensemble(leg_a: str, leg_b: str, judge: str) -> dict[str, Any]:
+    def spec(value: str) -> tuple[str, str]:
+        short, effort = value.rsplit("_", 1)
+        return CODEX_MODELS[short], effort
+
+    return {
+        "model": "ensemble/gpt-codex", "effort": "low", "env": dict(CLAUDE_ENSEMBLE_ENV),
+        "transport": "codex_ensemble",
+        "legs": {ASTRA: spec(leg_a), SOL: spec(leg_b)}, "judge": spec(judge),
+    }
+
+
+def codex_ensemble_variant(name: str) -> dict[str, Any] | None:
+    """``x2_<legA>__<legB>__<judge>``, each part ``<model>_<effort>``."""
+    if not name.startswith("x2_"):
+        return None
+    parts = name[3:].split("__")
+    if len(parts) != 3:
+        return None
+    return _codex_ensemble(*parts)
+
+
+def _install_codex_ensemble(variant: dict[str, Any]) -> None:
+    from backend.app.services.llm import codex_runner
+
+    original = codex_runner.run_codex_json_messages
+    legs = variant["legs"]
+    judge_model, judge_effort = variant["judge"]
+
+    async def routed(messages, *, model=None, stage="", reasoning_effort=None, **kwargs):
+        if stage == "block_analysis_dual_review":
+            target, effort = judge_model, judge_effort
+        elif str(model) in legs:
+            target, effort = legs[str(model)]
+        else:
+            raise RuntimeError(f"codex-only ensemble: unexpected call {model!r} ({stage})")
+        return await original(messages, model=target, stage=stage, reasoning_effort=effort, **kwargs)
+
+    codex_runner.run_codex_json_messages = routed
+
+
+def install_no_claude_guard() -> None:
+    """REPLAY_NO_CLAUDE=1: any Claude call aborts the replay (Claude quota is off-limits)."""
+    if os.environ.get("REPLAY_NO_CLAUDE") != "1":
+        return
+    from backend.app.services.llm import claude_json_runner, claude_runner
+
+    async def forbidden(*_args, **_kwargs):
+        raise SystemExit("REPLAY_NO_CLAUDE=1: Claude call attempted")
+
+    # ``_run_cli`` dispatches both providers: block it only for non-Codex models.
+    original_cli = claude_runner._run_cli
+
+    async def codex_only_cli(*args, model=None, **kwargs):
+        from backend.app.core.config import is_codex_model
+
+        if not is_codex_model(str(model or "")):
+            raise SystemExit(f"REPLAY_NO_CLAUDE=1: Claude call attempted ({model!r})")
+        return await original_cli(*args, model=model, **kwargs)
+
+    claude_json_runner.run_claude_json_messages = forbidden
+    claude_runner._run_cli = codex_only_cli
+
+
 def _install_variant_hooks(variant: dict[str, Any]) -> None:
     """Apply the transport / prompt swaps of a candidate inside this process only."""
+    install_no_claude_guard()
+    if variant.get("transport") == "codex_ensemble":
+        _install_codex_ensemble(variant)
     if variant.get("transport") == "claude_ensemble":
         _install_claude_ensemble(variant)
     if variant.get("transport") == "claude":
@@ -572,6 +648,7 @@ def _reexec_with_live_env(args: argparse.Namespace, extra_env: dict[str, str]) -
             "PYTHONPATH": str(ROOT),
             "PATH": os.environ.get("PATH", env.get("PATH", "")),
             "LEG_REPLAY_DATA_ROOT": str(DATA_ROOT),
+            "REPLAY_NO_CLAUDE": os.environ.get("REPLAY_NO_CLAUDE", ""),
         }
     )
     env.update(extra_env)
@@ -708,7 +785,7 @@ async def _run_variant(args: argparse.Namespace, variant: dict[str, Any]) -> Non
 
 
 def cmd_run(args: argparse.Namespace) -> None:
-    variant = VARIANTS[args.variant]
+    variant = VARIANTS.get(args.variant) or codex_ensemble_variant(args.variant)
     if os.environ.get(ENV_READY) != "1":
         _reexec_with_live_env(args, variant.get("env") or {})
     asyncio.run(_run_variant(args, variant))
@@ -795,8 +872,6 @@ async def _judge_block(
     cache_dir: Path,
     semaphore: asyncio.Semaphore,
 ) -> dict[str, Any]:
-    from backend.app.services.llm.claude_json_runner import run_claude_json_messages
-
     ref_lines = [
         f"R{i + 1}: {(r['problem'] + ' ' + r['description']).strip()[:1500]}"
         for i, r in enumerate(refs)
@@ -811,10 +886,15 @@ async def _judge_block(
     cached = _load_json(cache_path)
     if cached is not None:
         return cached
+    if model.startswith("codex/"):
+        from backend.app.services.llm.codex_runner import run_codex_json_messages as run_judge
+    else:
+        install_no_claude_guard()
+        from backend.app.services.llm.claude_json_runner import run_claude_json_messages as run_judge
     async with semaphore:
-        result = await run_claude_json_messages(
+        result = await run_judge(
             [{"role": "system", "content": JUDGE_SYSTEM}, {"role": "user", "content": user}],
-            timeout=300,
+            timeout=600 if model.startswith("codex/") else 300,
             stage="leg_replay_judge",
             model=model,
             reasoning_effort=effort,
@@ -1238,7 +1318,7 @@ def cmd_costs(args: argparse.Namespace) -> None:
     report: dict[str, Any] = {}
     for run_dir in args.runs:
         label = f"{run_dir.parent.name}/{run_dir.name}"
-        variant = VARIANTS.get(run_dir.parent.name) or {}
+        variant = VARIANTS.get(run_dir.parent.name) or codex_ensemble_variant(run_dir.parent.name) or {}
         judge_model = judge_models.get(run_dir.parent.name) or (
             variant.get("judge", [None])[0] if variant.get("transport") == "claude_ensemble" else None
         )
@@ -1432,7 +1512,8 @@ def main() -> None:
     p.add_argument("--selection", type=Path, required=True)
     p.add_argument("--workspace", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
-    p.add_argument("--variant", choices=sorted(VARIANTS), default="baseline")
+    p.add_argument("--variant", default="baseline",
+                   help="one of VARIANTS or x2_<legA>__<legB>__<judge> (<model>_<effort>)")
     p.add_argument("--rep", type=int, default=1)
     p.add_argument("--parallelism", type=int, default=2)
     p.add_argument("--sets", nargs="*", default=None)

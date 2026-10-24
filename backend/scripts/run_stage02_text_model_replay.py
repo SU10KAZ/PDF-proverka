@@ -36,6 +36,10 @@ VARIANTS: dict[str, dict[str, Any]] = {
     "sonnet_medium": {"transport": "claude", "model": "claude-sonnet-5-5", "effort": "medium"},
     "opus_medium": {"transport": "claude", "model": "claude-opus-5-5", "effort": "medium"},
 }
+# Codex-only study (23.10.2026): ``x_<model>_<effort>`` with an explicit effort.
+for _short, _model in replay.CODEX_MODELS.items():
+    for _effort in replay.CODEX_EFFORTS:
+        VARIANTS[f"x_{_short}_{_effort}"] = {"transport": "codex", "model": _model, "effort": _effort}
 
 
 def cmd_select(args: argparse.Namespace) -> None:
@@ -99,6 +103,7 @@ async def _call(variant: dict[str, Any], messages: list[dict], project_id: str):
 
         return await run_codex_json_messages(
             messages, timeout=1800, stage="text_analysis", project_id=project_id, model=variant["model"],
+            reasoning_effort=variant["effort"],
         )
     from backend.app.services.llm.claude_json_runner import run_claude_json_messages
 
@@ -169,6 +174,7 @@ async def _run_one(args, variant, key, info, semaphore) -> None:
 
 
 async def _run(args: argparse.Namespace) -> None:
+    replay.install_no_claude_guard()
     selection = replay._load_json(args.selection)
     variant = VARIANTS[args.variant]
     semaphore = asyncio.Semaphore(args.parallelism)
@@ -188,6 +194,7 @@ def cmd_run(args: argparse.Namespace) -> None:
             "PYTHONPATH": str(replay.ROOT),
             "PATH": os.environ.get("PATH", env.get("PATH", "")),
             "LEG_REPLAY_DATA_ROOT": str(replay.DATA_ROOT),
+            "REPLAY_NO_CLAUDE": os.environ.get("REPLAY_NO_CLAUDE", ""),
         })
         for guard in ("AUDIT_OPENROUTER_ENABLED", "PAID_API_ENABLED"):
             if str(env.get(guard, "")).strip().lower() in {"1", "true", "yes", "on"}:

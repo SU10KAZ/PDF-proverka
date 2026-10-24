@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import contextvars
 import json
 import os
 import shutil
@@ -34,7 +35,7 @@ STAGES = {
     "critic": ("optimization_critic", "run_optimization_critic", "optimization_review.json"),
 }
 # Sol: production substitutes gpt-5.6-sol with gpt-6-sol (codex_model_substitution.json).
-MODELS = {"astra": "codex/gpt-6-astra", "sol": "codex/gpt-6-sol",
+MODELS = {"astra": "codex/gpt-6-astra", "sol": "codex/gpt-6-sol", "sol61": "codex/gpt-6.1-sol",
           "sonnet": "claude-sonnet-5-5", "opus": "claude-opus-5-5"}
 # Large artefacts the three stages never write; linked instead of copied.
 LINKED = {"blocks_stage02_100", "blocks", "_stage01_findings_only_runs", "_stage02_findings_only_runs"}
@@ -90,7 +91,7 @@ def _variant_run_dir(args, info: dict[str, Any]) -> Path:
     src = replay._version_dir(
         info["object"], info["discipline"], info["document"], info["version"], args.workspace / "objects"
     ) / "03_analysis" / "runs" / Path(info["run_dir"]).name
-    dst = args.workspace / "variants" / args.stage / args.variant / replay._stable_rank(info["run_dir"])[:12]
+    dst = args.workspace / "variants" / args.stage / args.variant_dir / replay._stable_rank(info["run_dir"])[:12]
     if not dst.exists():
         dst.mkdir(parents=True)
         for item in src.iterdir():
@@ -110,7 +111,7 @@ async def _run_one(args, key: str, info: dict[str, Any], semaphore) -> None:
     from backend.app.services.llm import claude_runner
 
     stage_key, func_name, artifact = STAGES[args.stage]
-    out_path = args.out / args.stage / args.variant / "rep1" / f"{replay._stable_rank(key)[:16]}.json"
+    out_path = args.out / args.stage / args.variant_dir / "rep1" / f"{replay._stable_rank(key)[:16]}.json"
     if out_path.is_file():
         return
     run_dir = _variant_run_dir(args, info)
@@ -121,16 +122,20 @@ async def _run_one(args, key: str, info: dict[str, Any], semaphore) -> None:
     (run_dir / artifact).unlink(missing_ok=True) if args.stage != "critic" else None
     kwargs = {"output_dir": run_dir, "version_dir": version_dir, "version_id": info["version"]}
     if args.stage == "opt":
-        kwargs.update(model_override=MODELS[args.variant], reasoning_effort_override="medium")
+        kwargs.update(model_override=MODELS[args.variant], reasoning_effort_override=args.effort)
     async with semaphore:
         started = time.time()
+        tokens: list[int] = []
+        CODEX_TOKENS.set(tokens)
+        PROD_LATEST.set(replay.DATA_ROOT / info["run_dir"])
         exit_code, _text, result = await getattr(claude_runner, func_name)(project_info, project_id, **kwargs)
     data = replay._load_json(run_dir / artifact) or {}
     record: dict[str, Any] = {
-        "producer": key, "stage": args.stage, "variant": args.variant, "exit_code": exit_code,
+        "producer": key, "stage": args.stage, "variant": args.variant_dir, "exit_code": exit_code,
         "elapsed_s": round(time.time() - started, 1),
         "input_tokens": getattr(result, "input_tokens", 0), "output_tokens": getattr(result, "output_tokens", 0),
         "cost_usd": getattr(result, "cost_usd", None),
+        "codex_calls": len(tokens), "codex_tokens": sum(tokens),
     }
     if args.stage == "critic":
         record["reviews"] = [{"item_id": r.get("item_id"), "verdict": r.get("verdict")} for r in data.get("reviews") or []]
@@ -141,13 +146,67 @@ async def _run_one(args, key: str, info: dict[str, Any], semaphore) -> None:
         record["blocks"] = {"DOC": {"analysis_status": "analyzed" if ok else "failed",
                                     "findings": [{"finding": _item_text(i)} for i in items or []]}}
     replay._write_json(out_path, record)
-    print(f"[{args.stage}/{args.variant}] {key} ok={ok} exit={exit_code} t={record['elapsed_s']}s "
+    print(f"[{args.stage}/{args.variant_dir}] {key} ok={ok} exit={exit_code} t={record['elapsed_s']}s tok={record['codex_tokens']} "
           f"in={record['input_tokens']} out={record['output_tokens']}", flush=True)
+
+
+#: Codex tokens of the current document: the agentic path does not report usage
+#: (only "tokens used N" in the CLI output), so the wrappers below count it.
+CODEX_TOKENS: contextvars.ContextVar[list[int]] = contextvars.ContextVar("codex_tokens")
+
+
+#: Production ``latest`` dir of the current document, for the image fallback below.
+PROD_LATEST: contextvars.ContextVar[Path] = contextvars.ContextVar("prod_latest")
+
+
+def _install_image_fallback() -> None:
+    """The visual context falls back to archived runs only for a dir named ``latest``;
+    the replay copy is not, so documents without crops in ``latest`` got no images."""
+    from backend.app.pipeline.stages.optimization import visual_context
+
+    original = visual_context._load_image_indexes
+
+    def with_fallback(output_dir, *, required_ids=None):
+        mapping = original(output_dir, required_ids=required_ids)
+        prod = PROD_LATEST.get(None)
+        if not mapping and prod is not None:
+            mapping = original(prod, required_ids=required_ids)
+        return mapping
+
+    visual_context._load_image_indexes = with_fallback
+
+
+def _force_codex_effort(effort: str) -> None:
+    """Merge/critic do not pass a Codex effort (the CLI default applies): force it."""
+    from backend.app.services.llm import codex_runner
+
+    original_exec = codex_runner.run_codex_exec
+    original_json = codex_runner.run_codex_json_messages
+
+    async def forced_exec(*a, **kw):
+        kw["reasoning_effort"] = effort
+        exit_code, combined, result = await original_exec(*a, **kw)
+        CODEX_TOKENS.get([]).append(codex_runner._extract_token_count(combined))
+        return exit_code, combined, result
+
+    async def forced_json(*a, **kw):
+        kw["reasoning_effort"] = effort
+        result = await original_json(*a, **kw)
+        CODEX_TOKENS.get([]).append(int(result.input_tokens or 0) + int(result.output_tokens or 0))
+        return result
+
+    codex_runner.run_codex_exec = forced_exec
+    codex_runner.run_codex_json_messages = forced_json
 
 
 async def _run(args: argparse.Namespace) -> None:
     from backend.app.core import config
 
+    replay.install_no_claude_guard()
+    _force_codex_effort(args.effort)
+    _install_image_fallback()
+    # Earlier runs (medium) live under the bare variant name.
+    args.variant_dir = args.variant if args.effort == "medium" else f"{args.variant}_{args.effort}"
     stage_key = STAGES[args.stage][0]
     config.STAGE_MODEL_CONFIG[stage_key] = MODELS[args.variant]
     selection = replay._load_json(args.selection)
@@ -164,6 +223,7 @@ def cmd_run(args: argparse.Namespace) -> None:
             "AUDIT_CLAUDE_EFFORT": "medium",
             "PYTHONPATH": str(replay.ROOT), "PATH": os.environ.get("PATH", env.get("PATH", "")),
             "LEG_REPLAY_DATA_ROOT": str(replay.DATA_ROOT),
+            "REPLAY_NO_CLAUDE": os.environ.get("REPLAY_NO_CLAUDE", ""),
         })
         for guard in ("AUDIT_OPENROUTER_ENABLED", "PAID_API_ENABLED"):
             if str(env.get(guard, "")).strip().lower() in {"1", "true", "yes", "on"}:
@@ -203,6 +263,7 @@ def main() -> None:
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--stage", choices=sorted(STAGES), required=True)
     p.add_argument("--variant", choices=sorted(MODELS), required=True)
+    p.add_argument("--effort", default="medium", help="Codex reasoning effort, forced on every Codex call")
     p.add_argument("--parallelism", type=int, default=3)
     p.set_defaults(func=cmd_run)
     p = sub.add_parser("critic-report")
