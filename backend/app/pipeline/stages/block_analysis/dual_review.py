@@ -672,6 +672,7 @@ async def review_dual_findings(
     gap_search_enabled: bool,
     judge_call: Any = None,
     comparison_models: list[str] | None = None,
+    reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     """Run semantic comparison and optional image-backed gap search.
 
@@ -741,6 +742,7 @@ async def review_dual_findings(
             project_id=project_id,
             model=reviewer_model,
             image_paths=images,
+            reasoning_effort=reasoning_effort,
         )
 
     if result.is_error or not isinstance(result.json_data, dict):

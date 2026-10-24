@@ -300,6 +300,11 @@ def run_claude_verification(
     if verdicts is not None:
         return verdicts
 
+    from backend.app.core.config import codex_only_mode_active
+
+    if codex_only_mode_active():
+        return run_codex_verification(md_text, candidates, timeout_sec=timeout_sec)
+
     cli = get_claude_cli()
     if not cli:
         return {}
@@ -325,6 +330,68 @@ def run_claude_verification(
         result_text = cli_data.get("result") or ""
     except (json.JSONDecodeError, KeyError, TypeError):
         result_text = proc.stdout
+    m = re.search(r"\{.*\}", result_text or "", re.DOTALL)
+    if not m:
+        return {}
+    try:
+        return parse_verification_response(json.loads(m.group(0)))
+    except json.JSONDecodeError:
+        return {}
+
+
+def run_codex_verification(
+    md_text: str, candidates: list[dict], *, timeout_sec: int = 180
+) -> dict:
+    """Тот же верификатор на `codex exec` — режим «только Codex» (docs/codex_only_mode.md).
+
+    Модель — строка «Верификатор (фикс)» таблицы моделей (в пресете gpt-6.1-sol),
+    усилие medium явно: конвейер зовёт Codex с `--ignore-user-config`, и без флага
+    действовало бы умолчание модели (у gpt-6.1-sol — low). Fail-soft как у Claude.
+    """
+    import json
+    import os
+    import subprocess
+    import tempfile
+
+    from backend.app.core.config import (
+        codex_workdir, get_stage_model, is_codex_model, resolve_codex_model,
+    )
+    from backend.app.services.llm.codex_model_substitution import substitute_codex_model
+    from backend.app.services.llm.codex_runner import find_codex_cli
+
+    cli = find_codex_cli()
+    if not cli:
+        return {}
+    stage_model = get_stage_model("findings_corrector") or ""
+    if not is_codex_model(stage_model):
+        stage_model = "codex/gpt-6.1-sol"
+    model = substitute_codex_model(resolve_codex_model(stage_model), label="absence_guard")
+    prompt = build_verification_prompt(md_text, candidates)
+    fd, out_name = tempfile.mkstemp(prefix="codex_absence_guard_", suffix=".txt")
+    os.close(fd)
+    env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDE")}
+    try:
+        try:
+            subprocess.run(
+                [cli, "exec", "--ephemeral", "--ignore-user-config", "--ignore-rules",
+                 "--skip-git-repo-check", "--sandbox", "read-only", "--model", model,
+                 "-c", 'model_reasoning_effort="medium"', "-C", codex_workdir(),
+                 "-o", out_name, "-"],
+                input=prompt, capture_output=True, text=True,
+                timeout=timeout_sec, env=env, check=False,
+            )
+        except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+            return {}
+        try:
+            with open(out_name, encoding="utf-8", errors="replace") as fh:
+                result_text = fh.read()
+        except OSError:
+            return {}
+    finally:
+        try:
+            os.unlink(out_name)
+        except OSError:
+            pass
     m = re.search(r"\{.*\}", result_text or "", re.DOTALL)
     if not m:
         return {}

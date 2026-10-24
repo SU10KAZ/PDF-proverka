@@ -1,8 +1,27 @@
 # Режим «только Codex» (переработка пресета «Full Codex»): модели по этапам
 
-Статус: **замер всех этапов выполнен (24.10.2026), код пресета не сделан**. Решение Андрея Ивановича 23.10.2026: «Full Codex»
-должен означать «ни одного вызова Claude» — резерв на случай исчерпания лимита Claude,
-зеркало пресета «Только Claude» (`docs/claude_only_mode.md`). Модель OPT — по замеру.
+Статус: **реализован (24.10.2026), включается пресетом «Только Codex»** в окне моделей
+портала; на проде не включён. Решение Андрея Ивановича 23.10.2026: режим без единого вызова
+Claude — резерв на случай исчерпания лимита Claude, зеркало пресета «Только Claude»
+(`docs/claude_only_mode.md`); 24.10 — делать по раскладке замера. Кнопка «Full Codex»
+(`codex_exec`) не тронута: её эталон совпадает с боевой таблицей прода.
+
+Только центр: удалённым исполнителям пресет не выдаётся (как и «Только Claude»).
+
+## Как устроено в коде
+
+| Что | Где |
+|---|---|
+| Пресет `codex_only` (сервер / портал) | `audit_routing/presets.py`, `frontend/static/js/app.js` `modelPresets`, кнопка в `frontend/index.html` |
+| Этап 01: селектор `ensemble/codex-only` | `config.STAGE01_CODEX_ONLY_*`; ноги и судья — ветка `use_codex_only` в `gemma_findings_only`; усилие судьи — `dual_review.review_dual_findings(reasoning_effort=…)` |
+| OPT: селектор `ensemble/codex-codex-opt` | `config.OPTIMIZATION_CODEX_ONLY_*`; `optimization/ensemble.py`: первая ветка (слот и файлы `claude`) идёт на gpt-6.1-sol high, находки помечаются `found_by: ["codex"]` |
+| Страж отсутствия на Codex | `absence_guard.run_codex_verification` (`codex exec`, модель строки `findings_corrector`, medium); включается `config.codex_only_mode_active()` — селектор блоков `ensemble/codex-only` |
+| Усилие gpt-6.1-sol по умолчанию medium | `codex_runner.CODEX_MODEL_DEFAULT_EFFORT` (умолчание самой модели — low) |
+| Колонка «Фактически работает» | `audit_routing/compiler.py` (действия `detector_codex_only_*`, `judge_codex_only`, `optimization_primary_codex`, Codex-страж), `describe.py` (модель строки таблицы для Codex, усилие — умолчание модели, а не `config.toml`) |
+| Тесты | `tests/test_codex_only_mode.py` |
+
+Переменные: `STAGE01_CODEX_ONLY_LEG_MODELS` / `_LEG_EFFORT` / `_JUDGE_MODEL` / `_JUDGE_EFFORT`,
+`AUDIT_OPTIMIZATION_CODEX_ONLY_PRIMARY_MODEL` / `_PRIMARY_EFFORT`.
 
 ## Что сейчас стоит за кнопкой «Full Codex»
 

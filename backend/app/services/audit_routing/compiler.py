@@ -181,6 +181,53 @@ def _compile_block_batch(inputs: CompilerInputs, selector: presets.ModelSelector
             ],
             note="только Claude: исполняется на центре",
         )
+    if selector.ensemble == presets.ENSEMBLE_BLOCK_CODEX_ONLY:
+        # Режим «только Codex» (docs/codex_only_mode.md): две Codex-ноги medium и
+        # судья gpt-6.1-sol medium с gap-search, без Claude-ноги. Модели —
+        # config.STAGE01_CODEX_ONLY_*; исполняется только на центре.
+        return _stage(
+            "block_batch",
+            [
+                RoutingAction(
+                    action_id="detector_codex_only_astra",
+                    role=registry.ROLE_DETECTOR,
+                    provider=registry.PROVIDER_CODEX,
+                    capability=registry.CAP_BLOCK_DETECTOR_ASTRA,
+                    reasoning_effort=registry.EFFORT_MEDIUM,
+                    parallel_group="detectors",
+                    multiplicity=RoutingMultiplicity.per_graphic_block(),
+                ),
+                RoutingAction(
+                    action_id="detector_codex_only_sol",
+                    role=registry.ROLE_DETECTOR,
+                    provider=registry.PROVIDER_CODEX,
+                    capability=registry.CAP_BLOCK_DETECTOR_SOL,
+                    reasoning_effort=registry.EFFORT_MEDIUM,
+                    parallel_group="detectors",
+                    multiplicity=RoutingMultiplicity.per_graphic_block(),
+                ),
+                RoutingAction(
+                    action_id="combine_detectors",
+                    role=registry.ROLE_DETECTOR_COMBINE,
+                    kind=registry.KIND_DETERMINISTIC,
+                    depends_on=("detectors",),
+                    multiplicity=RoutingMultiplicity.per_graphic_block(),
+                    note="combine_detector_results: объединение без дедупликации",
+                ),
+                RoutingAction(
+                    action_id="judge_codex_only",
+                    role=registry.ROLE_JUDGE_GAP_SEARCH,
+                    provider=registry.PROVIDER_CODEX,
+                    capability=registry.CAP_BLOCK_JUDGE,
+                    reasoning_effort=registry.EFFORT_MEDIUM,
+                    depends_on=("combine_detectors",),
+                    condition=RoutingCondition.of(registry.COND_DETECTORS_COMPLETE),
+                    multiplicity=RoutingMultiplicity.per_graphic_block(),
+                    note="сопоставление ног и gap-search одним обращением",
+                ),
+            ],
+            note="только Codex: исполняется на центре",
+        )
     if not selector.is_ensemble:
         # Одиночный детектор: разрешённая, но не пресетная раскладка.
         if selector.provider is None or selector.capability is None:
@@ -467,14 +514,21 @@ def _compile_findings_critic(inputs: CompilerInputs) -> RoutingStage:
 
 
 def _compile_findings_corrector(inputs: CompilerInputs) -> RoutingStage:
-    """Верификатор (фикс) = страж отсутствия. ВСЕГДА Claude, в любом пресете.
+    """Верификатор (фикс) = страж отсутствия. Claude в любом пресете, кроме «только Codex».
 
     Модель берётся из глобальной ручки `get_claude_model()`, а не из строки
     таблицы. В пресете «Full Codex» таблица обещает Codex — рантайм идёт на
-    Claude. План повторяет рантайм.
+    Claude. План повторяет рантайм. В режиме «только Codex» (селектор блоков
+    `ensemble/codex-only`) страж идёт через `codex exec` моделью строки
+    `findings_corrector` (`absence_guard.run_codex_verification`).
     """
-    capability = registry.CLASS_TO_CAPABILITY.get(
-        inputs.claude_default_model_class, registry.CAP_CHEAP_REVIEW
+    codex_only = (
+        str(inputs.stage_models.get("block_batch") or "") == presets.ENSEMBLE_BLOCK_CODEX_ONLY
+    )
+    capability = (
+        registry.CAP_STRONG_AUDIT if codex_only else registry.CLASS_TO_CAPABILITY.get(
+            inputs.claude_default_model_class, registry.CAP_CHEAP_REVIEW
+        )
     )
     if not _flag(inputs.feature_flags, "PIPELINE_VERIFIER_ENABLED", True):
         # Тот же килсвитч: обе фазы живут внутри одной стадии `findings_review`
@@ -497,12 +551,15 @@ def _compile_findings_corrector(inputs: CompilerInputs) -> RoutingStage:
             RoutingAction(
                 action_id="absence_guard",
                 role=registry.ROLE_ABSENCE_GUARD,
-                provider=registry.PROVIDER_CLAUDE,
+                provider=registry.PROVIDER_CODEX if codex_only else registry.PROVIDER_CLAUDE,
                 capability=capability,
+                reasoning_effort=registry.EFFORT_MEDIUM if codex_only else None,
                 depends_on=("apply_verdicts",),
                 condition=RoutingCondition.of(registry.COND_HAS_ABSENCE_CANDIDATES),
                 multiplicity=RoutingMultiplicity.per_chunk(chunk_source="md_chars"),
                 note=(
+                    "режим «только Codex»: codex exec моделью строки таблицы"
+                    if codex_only else
                     "модель берётся из глобальной ручки центра, а НЕ из строки "
                     "таблицы: в «Full Codex» это тоже Claude"
                 ),
@@ -628,18 +685,33 @@ def _compile_optimization(
             note="ансамбль не выбран — вторая нога и детерминированный мерж отсутствуют",
         )
     images = _flag(inputs.feature_flags, "AUDIT_CODEX_OPTIMIZATION_IMAGES", True)
+    codex_only = selector.ensemble == presets.ENSEMBLE_OPTIMIZATION_CODEX_ONLY
+    primary = (
+        RoutingAction(
+            action_id="optimization_primary_codex",
+            role=registry.ROLE_OPTIMIZATION_PRIMARY,
+            provider=registry.PROVIDER_CODEX,
+            capability=registry.CAP_STRONG_AUDIT,
+            reasoning_effort=registry.EFFORT_HIGH,
+            parallel_group="optimization_legs",
+            multiplicity=RoutingMultiplicity.per_document(),
+            note="режим «только Codex»: вместо Claude-ветки, с PNG графических блоков",
+        )
+        if codex_only else
+        RoutingAction(
+            action_id="optimization_primary",
+            role=registry.ROLE_OPTIMIZATION_PRIMARY,
+            provider=registry.PROVIDER_CLAUDE,
+            capability=registry.CAP_STRONG_AUDIT,
+            parallel_group="optimization_legs",
+            multiplicity=RoutingMultiplicity.per_document(),
+            note="без изображений: ветка Claude визуальный контекст не собирает",
+        )
+    )
     return _stage(
         "optimization",
         [
-            RoutingAction(
-                action_id="optimization_primary",
-                role=registry.ROLE_OPTIMIZATION_PRIMARY,
-                provider=registry.PROVIDER_CLAUDE,
-                capability=registry.CAP_STRONG_AUDIT,
-                parallel_group="optimization_legs",
-                multiplicity=RoutingMultiplicity.per_document(),
-                note="без изображений: ветка Claude визуальный контекст не собирает",
-            ),
+            primary,
             RoutingAction(
                 action_id="optimization_visual",
                 role=registry.ROLE_OPTIMIZATION_VISUAL,

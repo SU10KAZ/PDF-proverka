@@ -40,6 +40,10 @@ _ACTION_LABELS: dict[str, str] = {
     "judge_gap_search": "Судья: сверка ног и поиск пропусков",
     "detector_claude_only": "Детектор",
     "judge_claude_only": "Судья: поиск пропусков",
+    "detector_codex_only_astra": "Детектор 1",
+    "detector_codex_only_sol": "Детектор 2",
+    "judge_codex_only": "Судья: сверка ног и поиск пропусков",
+    "optimization_primary_codex": "Основная ветка",
     "text_audit": "Анализ текста",
     "merge_base": "Базовый свод",
     "structural_checks": "Структурные проверки",
@@ -92,6 +96,8 @@ def model_label(model_id: str) -> str:
         "claude-sonnet-5": "Claude Sonnet 5",
         "codex/gpt-6-astra": "Codex Astra",
         "codex/gpt-5.6-sol": "Codex Sol",
+        "codex/gpt-6-sol": "Codex gpt-6-sol",
+        "codex/gpt-6.1-sol": "Codex gpt-6.1-sol",
         "openai/gpt-5.4": "GPT-5.4",
     }
     if value in known:
@@ -112,8 +118,16 @@ def codex_cli_default_effort() -> str:
     return str(value or "").strip().lower()
 
 
-def _action_model(action: RoutingAction, cfg: Any) -> str:
+def _action_model(action: RoutingAction, cfg: Any, row_model: str = "") -> str:
     aid = action.action_id
+    if aid == "detector_codex_only_astra":
+        return str(cfg.STAGE01_CODEX_ONLY_LEG_MODELS[0])
+    if aid == "detector_codex_only_sol":
+        return str(cfg.STAGE01_CODEX_ONLY_LEG_MODELS[-1])
+    if aid == "judge_codex_only":
+        return str(cfg.STAGE01_CODEX_ONLY_JUDGE_MODEL)
+    if aid == "optimization_primary_codex":
+        return str(cfg.OPTIMIZATION_CODEX_ONLY_PRIMARY_MODEL)
     if aid in ("detector_codex_standard",):
         return str(cfg.CODEX_STAGE_MODEL_ID)
     if aid == "detector_codex_strong":
@@ -134,13 +148,46 @@ def _action_model(action: RoutingAction, cfg: Any) -> str:
         return str(cfg.OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL)
     if aid == "optimization_visual":
         return str(cfg.OPTIMIZATION_ENSEMBLE_CODEX_MODEL)
-    if action.role == registry.ROLE_ABSENCE_GUARD:
+    if action.role == registry.ROLE_ABSENCE_GUARD and action.provider == registry.PROVIDER_CLAUDE:
         # Страж берёт глобальную модель Claude, а не строку таблицы.
         return str(cfg.get_claude_model())
+    if action.provider == registry.PROVIDER_CODEX and str(row_model).startswith("codex/"):
+        # Центр исполняет строку таблицы как есть; `model_for` знает одну
+        # Codex-модель на все способности и показал бы Astra вместо gpt-6-sol.
+        return str(row_model)
     return center_models.model_for(action.provider, action.capability)
 
 
-def _action_effort(action: RoutingAction, cfg: Any, codex_default: str) -> tuple[str, str]:
+def codex_model_default_effort(model: str, fallback: str = "") -> str:
+    """Усилие Codex-вызова без явного флага: конвейер идёт с `--ignore-user-config`,
+    поэтому действует умолчание МОДЕЛИ (после подмены), а не `config.toml`.
+
+    Источник — `CODEX_MODEL_DEFAULT_EFFORT` конвейера, затем
+    `default_reasoning_level` из `~/.codex/models_cache.json`; иначе `fallback`.
+    """
+    import json
+
+    from backend.app.services.llm.codex_model_substitution import get_substitutions
+    from backend.app.services.llm.codex_runner import CODEX_MODEL_DEFAULT_EFFORT
+
+    name = str(model or "").removeprefix("codex/")
+    name = get_substitutions().get(name, name)
+    if name in CODEX_MODEL_DEFAULT_EFFORT:
+        return CODEX_MODEL_DEFAULT_EFFORT[name]
+    home = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex")
+    try:
+        models = json.loads((home / "models_cache.json").read_text(encoding="utf-8")).get("models") or []
+    except (OSError, ValueError):
+        return fallback
+    for item in models:
+        if isinstance(item, dict) and item.get("slug") == name:
+            return str(item.get("default_reasoning_level") or fallback)
+    return fallback
+
+
+def _action_effort(
+    action: RoutingAction, cfg: Any, codex_default: str, model: str = "",
+) -> tuple[str, str]:
     if action.reasoning_effort:
         return action.reasoning_effort, EFFORT_SOURCE_PIPELINE
     if action.action_id == "optimization_visual":
@@ -154,7 +201,7 @@ def _action_effort(action: RoutingAction, cfg: Any, codex_default: str) -> tuple
             return str(cfg.CLAUDE_STAGE_EFFORT), EFFORT_SOURCE_PIPELINE
         return "", EFFORT_SOURCE_CLI
     if action.provider == registry.PROVIDER_CODEX:
-        return codex_default, EFFORT_SOURCE_CLI
+        return codex_model_default_effort(model, codex_default), EFFORT_SOURCE_CLI
     return "", ""
 
 
@@ -174,6 +221,7 @@ def _condition(action: RoutingAction, flags: Mapping[str, Any]) -> tuple[str, bo
 
 def describe_action(
     action: RoutingAction, cfg: Any, codex_default: str, flags: Mapping[str, Any],
+    row_model: str = "",
 ) -> dict[str, Any]:
     label = _ACTION_LABELS.get(action.action_id) or _ROLE_LABELS.get(action.role) or action.role
     condition, active = _condition(action, flags)
@@ -188,8 +236,8 @@ def describe_action(
     }
     if not action.is_model:
         return row
-    model = _action_model(action, cfg)
-    effort, source = _action_effort(action, cfg, codex_default)
+    model = _action_model(action, cfg, row_model)
+    effort, source = _action_effort(action, cfg, codex_default, model)
     row.update({
         "provider": action.provider,
         "model": model,
@@ -250,7 +298,8 @@ def describe_routing(
     flags = compiler.collect_feature_flags(env if env is not None else os.environ)
     stages: dict[str, Any] = {}
     for stage in plan.stages:
-        actions = [describe_action(a, cfg, codex_default, flags) for a in stage.actions]
+        row_model = str(stage_models.get(stage.stage_id) or "")
+        actions = [describe_action(a, cfg, codex_default, flags, row_model) for a in stage.actions]
         models = [a for a in actions if a["kind"] == registry.KIND_MODEL and a["active"]]
         groups: dict[str, int] = {}
         for a in models:

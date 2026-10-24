@@ -34,6 +34,9 @@ PRESET_FULL_CODEX = "codex_exec"
 #: Все этапы на подписке Claude (docs/claude_only_mode.md). Только центр:
 #: воркерам этот пресет не выдаётся.
 PRESET_CLAUDE_ONLY = "claude_only"
+#: Все этапы на Codex, ни одного вызова Claude (docs/codex_only_mode.md,
+#: замер 23–24.10.2026). Только центр, как и «только Claude».
+PRESET_CODEX_ONLY = "codex_only"
 #: Раскладка, не совпавшая ни с одним эталоном. Не ошибка: оператор вправе
 #: задать модели вручную. Но и молчать об этом нельзя — план обязан честно
 #: назвать себя «своей раскладкой», иначе отчёт будет утверждать, что прогон
@@ -44,6 +47,7 @@ KNOWN_PRESETS: tuple[str, ...] = (
     PRESET_CLAUDE_GPT_CODEX,
     PRESET_FULL_CODEX,
     PRESET_CLAUDE_ONLY,
+    PRESET_CODEX_ONLY,
     PRESET_CUSTOM,
 )
 
@@ -68,8 +72,13 @@ ENSEMBLE_BLOCK = "ensemble/gpt-codex"
 ENSEMBLE_OPTIMIZATION = "ensemble/claude-codex-opt"
 #: Этап 01 «только Claude»: нога Opus + судья Sonnet с gap-search.
 ENSEMBLE_BLOCK_CLAUDE_ONLY = "ensemble/claude-opus-sonnet"
+#: «Только Codex»: этап 01 — Astra + gpt-6-sol, судья gpt-6.1-sol; OPT — ветки
+#: gpt-6.1-sol high + gpt-6-sol xhigh.
+ENSEMBLE_BLOCK_CODEX_ONLY = "ensemble/codex-only"
+ENSEMBLE_OPTIMIZATION_CODEX_ONLY = "ensemble/codex-codex-opt"
 ENSEMBLE_SELECTORS: tuple[str, ...] = (
     ENSEMBLE_BLOCK, ENSEMBLE_OPTIMIZATION, ENSEMBLE_BLOCK_CLAUDE_ONLY,
+    ENSEMBLE_BLOCK_CODEX_ONLY, ENSEMBLE_OPTIMIZATION_CODEX_ONLY,
 )
 
 #: Где ансамбль вообще допустим. Ансамбль оптимизации на этапе текста означал
@@ -78,6 +87,8 @@ ENSEMBLE_ALLOWED_ON: dict[str, str] = {
     ENSEMBLE_BLOCK: "block_batch",
     ENSEMBLE_OPTIMIZATION: "optimization",
     ENSEMBLE_BLOCK_CLAUDE_ONLY: "block_batch",
+    ENSEMBLE_BLOCK_CODEX_ONLY: "block_batch",
+    ENSEMBLE_OPTIMIZATION_CODEX_ONLY: "optimization",
 }
 
 
@@ -234,6 +245,20 @@ def reference_config(preset_id: str, *, codex_model_id: str) -> dict[str, str]:
             **{k: "claude-sonnet-5-5" for k in STAGE_MODEL_KEYS},
             "block_batch": ENSEMBLE_BLOCK_CLAUDE_ONLY,
         }
+    if preset_id == PRESET_CODEX_ONLY:
+        return {
+            "text_analysis": "codex/gpt-6.1-sol",
+            "block_batch": ENSEMBLE_BLOCK_CODEX_ONLY,
+            "findings_merge": "codex/gpt-6-sol",
+            "findings_critic": "codex/gpt-6-sol",
+            "findings_corrector": "codex/gpt-6.1-sol",
+            "norm_verify": "codex/gpt-6-astra",
+            "norm_fix": "codex/gpt-6-astra",
+            "norm_requote": "codex/gpt-6-astra",
+            "optimization": ENSEMBLE_OPTIMIZATION_CODEX_ONLY,
+            "optimization_critic": "codex/gpt-6-sol",
+            "optimization_corrector": "codex/gpt-6-sol",
+        }
     if preset_id == PRESET_FULL_CODEX:
         codex = str(codex_model_id)
         return {
@@ -246,7 +271,7 @@ def reference_config(preset_id: str, *, codex_model_id: str) -> dict[str, str]:
 
 def detect_preset(config: Mapping[str, Any], *, codex_model_id: str) -> str:
     """Какому пресету соответствует сохранённая таблица. Иначе — `custom`."""
-    for preset_id in (PRESET_CLAUDE_GPT_CODEX, PRESET_FULL_CODEX, PRESET_CLAUDE_ONLY):
+    for preset_id in (PRESET_CLAUDE_GPT_CODEX, PRESET_FULL_CODEX, PRESET_CLAUDE_ONLY, PRESET_CODEX_ONLY):
         expected = reference_config(preset_id, codex_model_id=codex_model_id)
         if all(str(config.get(k, "")) == v for k, v in expected.items()):
             return preset_id

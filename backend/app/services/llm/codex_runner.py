@@ -289,7 +289,16 @@ def _json_sandbox_mode() -> str:
     return raw if raw in _ALLOWED_SANDBOXES else _DEFAULT_JSON_SANDBOX
 
 
-def _reasoning_effort_args(reasoning_effort: str | None) -> list[str]:
+#: Усилие по умолчанию для моделей, у которых умолчание самой модели слабее
+#: замеренного. Конвейер зовёт Codex с `--ignore-user-config`, поэтому без флага
+#: действует умолчание модели: у gpt-6.1-sol это low, а замер режима «только
+#: Codex» (docs/codex_only_mode.md) сделан на medium.
+CODEX_MODEL_DEFAULT_EFFORT: dict[str, str] = {"gpt-6.1-sol": "medium"}
+
+
+def _reasoning_effort_args(reasoning_effort: str | None, model: str | None = None) -> list[str]:
+    if not str(reasoning_effort or "").strip() and model:
+        reasoning_effort = CODEX_MODEL_DEFAULT_EFFORT.get(str(model).removeprefix("codex/"))
     effort = str(reasoning_effort or "").strip().lower()
     if effort not in _ALLOWED_REASONING_EFFORTS:
         return []
@@ -673,7 +682,7 @@ async def run_codex_exec(
         _sandbox_mode(),
         "--model",
         substitute_codex_model(resolved_model, label=f"{stage or '-'}/{project_id or '-'}"),
-        *_reasoning_effort_args(reasoning_effort),
+        *_reasoning_effort_args(reasoning_effort, resolved_model),
         *_tool_config_args(allowed_tools),
         *image_args,
         "-C",
@@ -800,7 +809,7 @@ async def run_codex_json_messages(
         _json_sandbox_mode(),
         "--model",
         substitute_codex_model(resolved_model, label=f"{stage or '-'}/{project_id or '-'}"),
-        *_reasoning_effort_args(reasoning_effort),
+        *_reasoning_effort_args(reasoning_effort, resolved_model),
         # Инструменты стадии (в т.ч. сервер норм) прокидываются тем же
         # переводчиком, что и на пути run_codex_exec: без этого JSON-стадии
         # оставались вообще без MCP, и норм-стадия на codex сверяла статус норм

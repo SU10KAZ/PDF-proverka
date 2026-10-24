@@ -56,7 +56,10 @@ def test_block_legs_efforts_and_skipped_gpt():
     assert acts["detector_codex_standard"]["effort"] == "low"
     assert acts["detector_codex_strong"]["active"] is True
     judge = acts["judge_gap_search"]
-    assert (judge["effort"], judge["effort_source"]) == ("high", describe.EFFORT_SOURCE_CLI)
+    # Конвейер зовёт Codex с --ignore-user-config: без флага действует умолчание
+    # модели, а не config.toml (фикстура ставит там high).
+    expected = describe.codex_model_default_effort(judge["model"], "high")
+    assert (judge["effort"], judge["effort_source"]) == (expected, describe.EFFORT_SOURCE_CLI)
     assert st["parallel_legs"] == 2
     assert [s["model"] for s in st["skipped"]] == ["openai/gpt-5.4"]
 

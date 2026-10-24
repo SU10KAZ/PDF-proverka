@@ -77,6 +77,11 @@ from backend.app.core.config import (
     STAGE01_CLAUDE_ONLY_LEG_EFFORT,
     STAGE01_CLAUDE_ONLY_LEG_MODEL,
     STAGE01_CLAUDE_ONLY_MODEL_ID,
+    STAGE01_CODEX_ONLY_JUDGE_EFFORT,
+    STAGE01_CODEX_ONLY_JUDGE_MODEL,
+    STAGE01_CODEX_ONLY_LEG_EFFORT,
+    STAGE01_CODEX_ONLY_LEG_MODELS,
+    STAGE01_CODEX_ONLY_MODEL_ID,
     STAGE01_DUAL_GAP_SEARCH_ENABLED,
     STAGE01_DUAL_REVIEW_ENABLED,
     STAGE01_DUAL_REVIEW_MODEL,
@@ -2746,6 +2751,10 @@ async def run_findings_only_for_project(
     # (docs/claude_only_mode.md). Под мостом воркера не применяется: воркеры
     # этот режим пока не получают.
     use_claude_only = (not use_provider_bridge) and model == STAGE01_CLAUDE_ONLY_MODEL_ID
+    # Режим «только Codex» (docs/codex_only_mode.md): две Codex-ноги и судья
+    # gpt-6.1-sol с gap-search, без Claude-ноги. Топология и объединение — как
+    # у прод-ансамбля; отличаются только модели и усилие. Только центр.
+    use_codex_only = (not use_provider_bridge) and model == STAGE01_CODEX_ONLY_MODEL_ID
     use_codex_cli = (not use_provider_bridge) and is_codex_model(model)
 
     # ── Ансамбль ПО ПЛАНУ МАРШРУТИЗАЦИИ (этап 11I) ──────────────────────────
@@ -2767,6 +2776,7 @@ async def run_findings_only_for_project(
     use_dual = (
         ((not use_provider_bridge) and model == STAGE02_DUAL_MODEL_ID)
         or use_plan_ensemble
+        or use_codex_only
     )
     # A worker executes the selector frozen into its routing plan; its local
     # environment must not be able to change (or invalidate) that decision.
@@ -2796,12 +2806,19 @@ async def run_findings_only_for_project(
         explicit_secondary="AUDIT_SECOND_LEG" in mode_env,
         env=mode_env,
     )
+    if use_codex_only:
+        two_model_mode = True
+    dual_reviewer_model = (
+        STAGE01_CODEX_ONLY_JUDGE_MODEL if use_codex_only else STAGE01_DUAL_REVIEW_MODEL
+    )
     if two_model_mode and use_plan_ensemble:
         _plan_legs = tuple(leg for leg in _plan_legs if leg.provider != "openrouter")
     if use_plan_ensemble:
         detector_models = [_active_plan.leg_model_label(leg) for leg in _plan_legs]
     elif production_pair_enabled:
         detector_models = [STAGE01_THIRD_LEG_MODEL, secondary_leg.model]
+    elif use_codex_only:
+        detector_models = list(STAGE01_CODEX_ONLY_LEG_MODELS)
     elif use_dual:
         detector_models = ([] if two_model_mode else [DEFAULT_MODEL]) + [CODEX_STAGE_MODEL_ID]
         if STAGE01_THIRD_LEG_ENABLED and STAGE01_THIRD_LEG_MODEL != CODEX_STAGE_MODEL_ID:
@@ -2836,6 +2853,7 @@ async def run_findings_only_for_project(
             and use_dual
             and not use_plan_ensemble
             and not production_pair_enabled
+            and not use_codex_only
             and claude_leg_applies(section)
         )
         else None
@@ -2908,7 +2926,9 @@ async def run_findings_only_for_project(
                 "prompt_profile": SYSTEM_PROMPT_PROFILE_PRODUCTION,
                 "retrieval_profile": PRODUCTION_RETRIEVAL_PROFILE,
                 "reasoning_effort": (
-                    STAGE01_CLAUDE_ONLY_LEG_EFFORT if use_claude_only else reasoning_effort
+                    STAGE01_CLAUDE_ONLY_LEG_EFFORT if use_claude_only
+                    else STAGE01_CODEX_ONLY_LEG_EFFORT if use_codex_only
+                    else reasoning_effort
                 ),
             })
     if use_claude_only:
@@ -3517,6 +3537,22 @@ async def run_findings_only_for_project(
                                     include_absence_caveat=include_caveat,
                                 ), str(secondary_leg.model))
                             )
+                    elif use_codex_only:
+                        _dispatch_calls = [
+                            _retry_leg((lambda leg_model: lambda: call_codex_for_block(
+                                block, item["enrichment"], page_text, blocks_dir,
+                                model=leg_model,
+                                system_prompt=system_prompt, timeout=timeout_s,
+                                reasoning_effort=STAGE01_CODEX_ONLY_LEG_EFFORT,
+                                project_id=project_id, output_dir=output_dir,
+                                routed_context=routed_context,
+                                document_context=document_context,
+                                document_type=document_type,
+                                page_neighbors=page_neighbors,
+                                include_absence_caveat=include_caveat,
+                            ))(leg_model), str(leg_model))
+                            for leg_model in STAGE01_CODEX_ONLY_LEG_MODELS
+                        ]
                     else:
                         _dispatch_calls = [] if two_model_mode else [
                             _retry_leg(lambda: call_gpt_for_block(
@@ -3552,6 +3588,7 @@ async def run_findings_only_for_project(
                     # production pair is disabled.
                     _use_third_leg = (
                         not production_pair_enabled
+                        and not use_codex_only
                         and
                         STAGE01_THIRD_LEG_ENABLED
                         and STAGE01_THIRD_LEG_MODEL
@@ -3625,6 +3662,8 @@ async def run_findings_only_for_project(
                             (STAGE01_THIRD_LEG_MODEL, _dispatch_results[0]),
                             (secondary_leg.model, _dispatch_results[1]),
                         ]
+                    elif use_codex_only:
+                        _detector_pairs = list(zip(STAGE01_CODEX_ONLY_LEG_MODELS, _dispatch_results))
                     else:
                         active_models = ([] if two_model_mode else [DEFAULT_MODEL]) + [CODEX_STAGE_MODEL_ID]
                         if _use_third_leg:
@@ -3687,7 +3726,7 @@ async def run_findings_only_for_project(
                         combined["dual_review"] = {
                             "schema_version": 1,
                             "status": "disabled",
-                            "reviewer_model": STAGE01_DUAL_REVIEW_MODEL,
+                            "reviewer_model": dual_reviewer_model,
                             "counts": {
                                 "matches": 0, "extensions": 0,
                                 "new": len((combined.get("parsed") or {}).get("findings") or []),
@@ -3725,17 +3764,18 @@ async def run_findings_only_for_project(
                             page=int(block.get("page") or 0),
                             block_context=review_context,
                             image_path=blocks_dir / block["file"],
-                            reviewer_model=STAGE01_DUAL_REVIEW_MODEL,
+                            reviewer_model=dual_reviewer_model,
                             run_id=run_id,
                             project_id=project_id,
                             timeout=timeout_s,
                             gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
                             **({"comparison_models": _block_comparison} if two_model_mode else {}),
+                            **({"reasoning_effort": STAGE01_CODEX_ONLY_JUDGE_EFFORT} if use_codex_only else {}),
                         )
                     except Exception as exc:  # fail-soft: raw detections survive
                         review = fallback_dual_review(
                             (combined.get("parsed") or {}).get("findings") or [],
-                            reviewer_model=STAGE01_DUAL_REVIEW_MODEL,
+                            reviewer_model=dual_reviewer_model,
                             run_id=run_id,
                             gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
                             **({"comparison_models": _block_comparison} if two_model_mode else {}),
@@ -4128,7 +4168,7 @@ async def run_findings_only_for_project(
             "schema_version": 1,
             "enabled": bool(STAGE01_DUAL_REVIEW_ENABLED or use_claude_only),
             "reviewer_model": (
-                STAGE01_CLAUDE_ONLY_JUDGE_MODEL if use_claude_only else STAGE01_DUAL_REVIEW_MODEL
+                STAGE01_CLAUDE_ONLY_JUDGE_MODEL if use_claude_only else dual_reviewer_model
             ),
             "gap_search_enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED or use_claude_only),
             "blocks_reviewed": sum(1 for report in reports if report.get("status") == "ok"),

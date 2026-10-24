@@ -28,6 +28,7 @@ from backend.app.core.config import (
     CLAUDE_BLOCK_BATCH_CLEAN_CWD,
     CODEX_STAGE_MODEL_ID,
     STAGE01_CLAUDE_ONLY_MODEL_ID,
+    STAGE01_CODEX_ONLY_MODEL_ID,
     STAGE01_CODEX_PARALLELISM,
     STAGE02_DUAL_MODEL_ID,
     get_stage_model,
@@ -630,6 +631,7 @@ async def run_block_analysis_findings_only(
         CODEX_STAGE_MODEL_ID,
         STAGE02_DUAL_MODEL_ID,
         STAGE01_CLAUDE_ONLY_MODEL_ID,
+        STAGE01_CODEX_ONLY_MODEL_ID,
     }
     # Мост воркера (этап 11F). Когда он активен, модель выбирает ЛОКАЛЬНАЯ
     # политика воркера по способности, а не `stage_models.json`: строка отсюда
@@ -680,7 +682,8 @@ async def run_block_analysis_findings_only(
             _plan_ensemble = False
     detector_default_parallelism = (
         STAGE01_CODEX_PARALLELISM
-        if (model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID, STAGE01_CLAUDE_ONLY_MODEL_ID}
+        if (model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID, STAGE01_CLAUDE_ONLY_MODEL_ID,
+                      STAGE01_CODEX_ONLY_MODEL_ID}
             or _plan_ensemble)
         else DEFAULT_PARALLELISM
     )

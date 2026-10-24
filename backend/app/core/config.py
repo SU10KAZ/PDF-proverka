@@ -525,6 +525,38 @@ STAGE01_CLAUDE_ONLY_JUDGE_MODEL = (
 STAGE01_CLAUDE_ONLY_JUDGE_EFFORT = (
     os.environ.get("STAGE01_CLAUDE_ONLY_JUDGE_EFFORT", "medium").strip().lower() or "medium"
 )
+# Режим «только Codex» (docs/codex_only_mode.md, замер 23–24.10.2026, решение
+# 24.10.2026): ни одного вызова Claude.
+# Этап 01: ноги Astra + gpt-6-sol medium и судья gpt-6.1-sol medium с gap-search,
+# без Claude-ноги (100 принятых / 31 отклонённое против 107 / 46 у прода).
+STAGE01_CODEX_ONLY_MODEL_ID = "ensemble/codex-only"
+STAGE01_CODEX_ONLY_LEG_MODELS = tuple(
+    part.strip()
+    for part in os.environ.get(
+        "STAGE01_CODEX_ONLY_LEG_MODELS", "codex/gpt-6-astra,codex/gpt-6-sol"
+    ).split(",")
+    if part.strip()
+)
+STAGE01_CODEX_ONLY_LEG_EFFORT = (
+    os.environ.get("STAGE01_CODEX_ONLY_LEG_EFFORT", "medium").strip().lower() or "medium"
+)
+STAGE01_CODEX_ONLY_JUDGE_MODEL = (
+    os.environ.get("STAGE01_CODEX_ONLY_JUDGE_MODEL", "codex/gpt-6.1-sol").strip()
+    or "codex/gpt-6.1-sol"
+)
+STAGE01_CODEX_ONLY_JUDGE_EFFORT = (
+    os.environ.get("STAGE01_CODEX_ONLY_JUDGE_EFFORT", "medium").strip().lower() or "medium"
+)
+# OPT: ветки gpt-6.1-sol high (вместо Claude) + gpt-6-sol xhigh с чертежами
+# (20 / 73 против 21 / 79 у Opus + Sol xhigh).
+OPTIMIZATION_CODEX_ONLY_MODEL_ID = "ensemble/codex-codex-opt"
+OPTIMIZATION_CODEX_ONLY_PRIMARY_MODEL = (
+    os.environ.get("AUDIT_OPTIMIZATION_CODEX_ONLY_PRIMARY_MODEL", "codex/gpt-6.1-sol").strip()
+    or "codex/gpt-6.1-sol"
+)
+OPTIMIZATION_CODEX_ONLY_PRIMARY_EFFORT = (
+    os.environ.get("AUDIT_OPTIMIZATION_CODEX_ONLY_PRIMARY_EFFORT", "high").strip().lower() or "high"
+)
 OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL = (
     os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL", "claude-opus-5-5").strip()
     or "claude-opus-5-5"
@@ -692,6 +724,11 @@ AVAILABLE_MODELS = [
     {"id": STAGE02_DUAL_MODEL_ID,         "label": "GPT + Codex",            "provider": "ensemble"},
     {"id": OPTIMIZATION_DUAL_MODEL_ID,     "label": "Claude + Codex (OPT)",   "provider": "optimization_ensemble"},
     {"id": STAGE01_CLAUDE_ONLY_MODEL_ID,   "label": "Opus + судья Sonnet",   "provider": "ensemble"},
+    # Режим «только Codex» (docs/codex_only_mode.md).
+    {"id": "codex/gpt-6-sol",             "label": "Codex gpt-6-sol",        "provider": "codex_cli"},
+    {"id": "codex/gpt-6.1-sol",           "label": "Codex gpt-6.1-sol",      "provider": "codex_cli"},
+    {"id": STAGE01_CODEX_ONLY_MODEL_ID,    "label": "Astra + Sol, судья 6.1-sol", "provider": "ensemble"},
+    {"id": OPTIMIZATION_CODEX_ONLY_MODEL_ID, "label": "6.1-sol + Sol (OPT)", "provider": "optimization_ensemble"},
 ]
 
 STAGE_MODEL_RESTRICTIONS = {
@@ -700,6 +737,7 @@ STAGE_MODEL_RESTRICTIONS = {
         CODEX_STAGE_MODEL_ID,
         STAGE02_DUAL_MODEL_ID,
         STAGE01_CLAUDE_ONLY_MODEL_ID,
+        STAGE01_CODEX_ONLY_MODEL_ID,
     ],
     "optimization": [
         "claude-opus-5-5",
@@ -707,6 +745,7 @@ STAGE_MODEL_RESTRICTIONS = {
         "openai/gpt-5.4",
         CODEX_STAGE_MODEL_ID,
         OPTIMIZATION_DUAL_MODEL_ID,
+        OPTIMIZATION_CODEX_ONLY_MODEL_ID,
     ],
 }
 
@@ -811,8 +850,18 @@ def is_codex_model(model: str | None) -> bool:
 
 
 def is_optimization_ensemble_model(model: str | None) -> bool:
-    """True для параллельного Claude + Codex режима этапа OPT."""
-    return (model or "").strip() == OPTIMIZATION_DUAL_MODEL_ID
+    """True для параллельного режима этапа OPT (Claude + Codex или только Codex)."""
+    return (model or "").strip() in (OPTIMIZATION_DUAL_MODEL_ID, OPTIMIZATION_CODEX_ONLY_MODEL_ID)
+
+
+def codex_only_mode_active() -> bool:
+    """Таблица моделей в режиме «только Codex»: этап 01 на `ensemble/codex-only`.
+
+    Строки «Верификатор (фикс)» конвейер не читает, поэтому страж отсутствия
+    узнаёт режим по селектору блоков — единственному, который есть только у
+    этого пресета.
+    """
+    return (get_stage_model("block_batch") or "").strip() == STAGE01_CODEX_ONLY_MODEL_ID
 
 
 def resolve_codex_model(model: str | None) -> str:

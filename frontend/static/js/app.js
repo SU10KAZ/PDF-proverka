@@ -2162,6 +2162,7 @@ const app = createApp({
             }
             if (m.includes('ensemble/gpt-codex')) return 'GPT+Codex';
             if (m.includes('ensemble/claude-opus-sonnet')) return 'Opus+Sonnet';
+            if (m.includes('ensemble/codex-only')) return 'Codex×2';
             if (m.includes('codex')) return 'Codex';
             if (m.includes('gemini')) return 'Gemini';
             if (m.includes('gpt')) return 'GPT';
@@ -3269,6 +3270,10 @@ const app = createApp({
         const OPT_CODEX_ENSEMBLE_MODEL = "ensemble/claude-codex-opt";
         // Этап 01 «только Claude»: нога Opus + судья Sonnet с gap-search (docs/claude_only_mode.md).
         const BLOCK_CLAUDE_ONLY_MODEL = "ensemble/claude-opus-sonnet";
+        // Режим «только Codex» (docs/codex_only_mode.md): этап 01 — Astra + gpt-6-sol,
+        // судья gpt-6.1-sol; OPT — ветки gpt-6.1-sol high + gpt-6-sol xhigh.
+        const BLOCK_CODEX_ONLY_MODEL = "ensemble/codex-only";
+        const OPT_CODEX_ONLY_MODEL = "ensemble/codex-codex-opt";
         const BASE_STAGE_MODEL_CONFIG = {
             text_analysis:          "claude-opus-5-5",
             block_batch:            "openai/gpt-5.4",
@@ -3329,6 +3334,24 @@ const app = createApp({
                 },
                 batchModes: { block_batch: "findings_only_block_context" },
             },
+            codex_only: {
+                label: "Только Codex",
+                hint: "Ни одного вызова Claude. Блоки — Astra + gpt-6-sol, судья gpt-6.1-sol; текст и страж отсутствия — gpt-6.1-sol; свод и критик — gpt-6-sol; нормы — Astra; оптимизация — gpt-6.1-sol high + gpt-6-sol xhigh. Подобрано замером 23–24.10. Только на центре. Точный состав — в колонке «Фактически работает».",
+                config: {
+                    text_analysis:          "codex/gpt-6.1-sol",
+                    block_batch:            BLOCK_CODEX_ONLY_MODEL,
+                    findings_merge:         "codex/gpt-6-sol",
+                    findings_critic:        "codex/gpt-6-sol",
+                    findings_corrector:     "codex/gpt-6.1-sol",
+                    norm_verify:            "codex/gpt-6-astra",
+                    norm_fix:               "codex/gpt-6-astra",
+                    norm_requote:           "codex/gpt-6-astra",
+                    optimization:           OPT_CODEX_ONLY_MODEL,
+                    optimization_critic:    "codex/gpt-6-sol",
+                    optimization_corrector: "codex/gpt-6-sol",
+                },
+                batchModes: { block_batch: "findings_only_block_context" },
+            },
         };
         const activePreset = ref(null);
         // Сохранённый конфиг может не совпасть ни с одним пресетом: раскладку задали
@@ -3364,6 +3387,8 @@ const app = createApp({
             const id = String(modelId || '').toLowerCase();
             if (id === 'codex/gpt-6-astra') return 'Astra';
             if (id === 'codex/gpt-5.6-sol') return 'Sol';
+            if (id === 'codex/gpt-6-sol') return 'gpt-6-sol';
+            if (id === 'codex/gpt-6.1-sol') return 'gpt-6.1-sol';
             return String(modelId || '').replace(/^codex\//i, '');
         }
 
@@ -3389,6 +3414,7 @@ const app = createApp({
             'openai/gpt-5.4',
             'ensemble/gpt-codex',
             BLOCK_CLAUDE_ONLY_MODEL,
+            BLOCK_CODEX_ONLY_MODEL,
         ];
 
         function isFindingsOnlyMode() {
@@ -4596,6 +4622,23 @@ const app = createApp({
                         { text: 'Совпадения · расширения · новые · спорные' },
                         { text: `${judge}: gap-search пропущенных проблем` },
                         { text: `Замечания + бейджи ${[...new Set(branches.filter((b) => !b.disabled).map((b) => b.label))].join(' / ')}`, tone: 'result' },
+                    ],
+                };
+            }
+            if (model.includes('ensemble/codex-only')) {
+                return {
+                    ...base,
+                    note: 'Режим «Только Codex», усилие medium. Модели не видят ответы друг друга.',
+                    steps: [
+                        { text: 'Изображение + контекст блока' },
+                        { type: 'split', branches: [
+                            { label: 'Codex', text: 'Codex Astra: независимые замечания' },
+                            { label: 'Codex', text: 'Codex gpt-6-sol: независимые замечания' },
+                        ] },
+                        { text: 'Судья Codex gpt-6.1-sol сравнивает результаты', tone: 'judge' },
+                        { text: 'Совпадения · расширения · новые · спорные' },
+                        { text: 'gpt-6.1-sol: gap-search пропущенных проблем' },
+                        { text: 'Замечания + бейдж Codex', tone: 'result' },
                     ],
                 };
             }

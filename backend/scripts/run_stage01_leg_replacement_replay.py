@@ -162,6 +162,8 @@ CODEX_EFFORTS = ("low", "medium", "high", "xhigh")
 for _short, _model in CODEX_MODELS.items():
     for _effort in CODEX_EFFORTS:
         VARIANTS[f"x1_{_short}_{_effort}"] = {"model": _model, "effort": _effort, "env": {}}
+# The production Codex-only selector itself (smoke of the real stage path).
+VARIANTS["codex_only_mode"] = {"model": "ensemble/codex-only", "effort": "low", "env": {}}
 
 
 def _codex_ensemble(leg_a: str, leg_b: str, judge: str) -> dict[str, Any]:

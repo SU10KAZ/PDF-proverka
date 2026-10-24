@@ -14,9 +14,13 @@ from pathlib import Path
 from typing import Any, Awaitable, Callable
 
 from backend.app.core.config import (
+    OPTIMIZATION_CODEX_ONLY_MODEL_ID,
+    OPTIMIZATION_CODEX_ONLY_PRIMARY_EFFORT,
+    OPTIMIZATION_CODEX_ONLY_PRIMARY_MODEL,
     OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
     OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT,
     OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
+    get_stage_model,
 )
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited
 from backend.app.services.common.codex_stream_filter import wrap_codex_on_output
@@ -217,7 +221,9 @@ def _richness(item: dict[str, Any]) -> float:
     return spec_count * 4 + trace * 5 + min(text_len, 800) / 100
 
 
-def _merge_duplicate(claude_item: dict[str, Any], codex_item: dict[str, Any]) -> dict[str, Any]:
+def _merge_duplicate(
+    claude_item: dict[str, Any], codex_item: dict[str, Any], *, primary_provider: str = "claude",
+) -> dict[str, Any]:
     # Prefer the better grounded formulation; close scores keep Claude wording.
     c_score = _richness(claude_item)
     x_score = _richness(codex_item)
@@ -237,18 +243,21 @@ def _merge_duplicate(claude_item: dict[str, Any], codex_item: dict[str, Any]) ->
         for detection in (item.get("provenance") or {}).get("detections") or []:
             if isinstance(detection, dict) and detection not in detections:
                 detections.append(dict(detection))
+    found_by = list(dict.fromkeys([primary_provider, "codex"]))
+    summary = "_".join(found_by)
     merged["provenance"] = {
-        "found_by": ["claude", "codex"],
-        "detector_summary": "claude_codex",
+        "found_by": found_by,
+        "detector_summary": summary,
         "detections": detections,
     }
-    merged["detector_summary"] = "claude_codex"
+    merged["detector_summary"] = summary
     return merged
 
 
 def _meta_for_items(
     base_meta: dict[str, Any], items: list[dict[str, Any]], *, run_id: str,
     status: str, source_counts: dict[str, int], duplicate_count: int,
+    mode: str = "claude_codex",
 ) -> dict[str, Any]:
     meta = dict(base_meta or {})
     by_type = {key: 0 for key in OPT_TYPES}
@@ -274,7 +283,7 @@ def _meta_for_items(
         "estimated_savings_pct": round(sum(savings) / len(savings), 1) if savings else 0,
         "top3_summary": "; ".join(str(item.get("proposed") or "")[:160] for item in top_items),
         "ensemble": {
-            "mode": "claude_codex",
+            "mode": mode,
             "status": status,
             "run_id": run_id,
             "source_counts": source_counts,
@@ -293,10 +302,16 @@ def merge_optimization_documents(
     run_id: str,
     claude_model: str = OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
     codex_model: str = OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
+    primary_provider: str = "claude",
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Merge independent provider outputs, collapsing only strong duplicates."""
+    """Merge independent provider outputs, collapsing only strong duplicates.
+
+    The first slot is historically named ``claude`` (files, report keys). In the
+    Codex-only mode it holds a Codex branch: ``primary_provider="codex"`` labels
+    its items as Codex so the portal does not show a Claude badge on them.
+    """
     claude_items = [
-        _provider_item(item, provider="claude", model=claude_model, run_id=run_id)
+        _provider_item(item, provider=primary_provider, model=claude_model, run_id=run_id)
         for item in (claude_doc or {}).get("items", [])
     ]
     codex_items = [
@@ -323,7 +338,9 @@ def merge_optimization_documents(
         if not duplicates:
             continue
         _, codex_index, evidence = max(duplicates, key=lambda row: row[0])
-        merged_items[claude_index] = _merge_duplicate(claude_item, codex_items[codex_index])
+        merged_items[claude_index] = _merge_duplicate(
+            claude_item, codex_items[codex_index], primary_provider=primary_provider,
+        )
         unmatched_codex.remove(codex_index)
         matches.append({
             "claude_id": claude_item.get("id"),
@@ -346,6 +363,7 @@ def merge_optimization_documents(
         "meta": _meta_for_items(
             base_meta, merged_items, run_id=run_id, status=status,
             source_counts=source_counts, duplicate_count=len(matches),
+            mode=f"{primary_provider}_codex",
         ),
         "items": merged_items,
     }
@@ -419,7 +437,7 @@ async def _provider_log(
 
 
 def _make_provider_on_output(
-    log: Callable[..., Awaitable[None]], provider: str,
+    log: Callable[..., Awaitable[None]], provider: str, *, codex_stream: bool | None = None,
 ) -> Callable[[str], Awaitable[None]]:
     """on_output для ноги ансамбля.
 
@@ -432,7 +450,7 @@ def _make_provider_on_output(
     async def _prefixed(message: str) -> None:
         await _provider_log(log, provider, message)
 
-    if provider != "codex":
+    if not (provider == "codex" if codex_stream is None else codex_stream):
         return _prefixed
     return wrap_codex_on_output(_prefixed)
 
@@ -441,14 +459,16 @@ async def _run_provider(
     *, provider: str, model: str, project_info: dict[str, Any], project_id: str,
     provider_dir: Path, source_output_dir: Path, version_dir: Path,
     version_id: str | None, log: Callable[..., Awaitable[None]],
-    reasoning_effort: str | None = None,
+    reasoning_effort: str | None = None, log_label: str | None = None,
 ) -> ProviderRun:
     result = ProviderRun(provider=provider, model=model, output_dir=provider_dir)
     try:
         exit_code, output, cli_result = await claude_runner.run_optimization(
             project_info,
             project_id,
-            on_output=_make_provider_on_output(log, provider),
+            on_output=_make_provider_on_output(
+                log, log_label or provider, codex_stream=str(model).startswith("codex/"),
+            ),
             output_dir=provider_dir,
             version_dir=version_dir,
             version_id=version_id,
@@ -498,13 +518,25 @@ async def run_optimization_ensemble(
     if previous.is_file():
         shutil.copy2(previous, run_root / "previous_optimization.json")
 
-    await log("OPT ensemble: Claude и Codex запущены параллельно на одном снимке входных данных")
+    # Режим «только Codex» (docs/codex_only_mode.md): первая ветка — Codex
+    # gpt-6.1-sol high вместо Claude; слот и файлы сохраняют имя «claude».
+    codex_only = get_stage_model("optimization") == OPTIMIZATION_CODEX_ONLY_MODEL_ID
+    primary_model = (
+        OPTIMIZATION_CODEX_ONLY_PRIMARY_MODEL if codex_only else OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL
+    )
+    primary_effort = OPTIMIZATION_CODEX_ONLY_PRIMARY_EFFORT if codex_only else None
+    primary_provider = "codex" if codex_only else "claude"
+    await log(
+        f"OPT ensemble: {primary_model} и {OPTIMIZATION_ENSEMBLE_CODEX_MODEL} запущены "
+        "параллельно на одном снимке входных данных"
+    )
     providers = await asyncio.gather(
         _run_provider(
-            provider="claude", model=OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
+            provider="claude", model=primary_model,
             project_info=project_info, project_id=project_id, provider_dir=claude_dir,
             source_output_dir=output_dir, version_dir=version_dir,
-            version_id=version_id, log=log,
+            version_id=version_id, log=log, reasoning_effort=primary_effort,
+            log_label=primary_model.removeprefix("codex/") if codex_only else None,
         ),
         _run_provider(
             provider="codex", model=OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
@@ -545,13 +577,15 @@ async def run_optimization_ensemble(
 
     merged, report = merge_optimization_documents(
         docs.get("claude"), docs.get("codex"), run_id=run_id,
+        claude_model=primary_model, primary_provider=primary_provider,
     )
     report["providers"] = provider_status
     _atomic_write_json(output_dir / "optimization.json", merged)
     _atomic_write_json(output_dir / "optimization_merge_report.json", report)
     status = str(report["status"])
+    primary_label = primary_model.removeprefix("codex/") if codex_only else "Claude"
     await log(
-        f"OPT ensemble: {report['inputs']['claude']} Claude + {report['inputs']['codex']} Codex "
+        f"OPT ensemble: {report['inputs']['claude']} {primary_label} + {report['inputs']['codex']} Codex "
         f"-> {report['output_items']} итоговых; дублей объединено {report['duplicates_merged']}"
     )
     return EnsembleRunResult(

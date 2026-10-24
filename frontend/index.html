@@ -2075,6 +2075,10 @@
                             :class="{ active: activePreset === 'claude_only' }"
                             @click="applyPreset('claude_only')"
                             title="Все этапы на подписке Claude, усилие medium: блоки — Opus + судья Sonnet с поиском пропусков, остальные этапы — Sonnet. Только на центре. Точный состав — в колонке «Фактически работает».">Только Claude</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'codex_only' }"
+                            @click="applyPreset('codex_only')"
+                            title="Ни одного вызова Claude: блоки — Astra + gpt-6-sol с судьёй gpt-6.1-sol, текст и страж отсутствия — gpt-6.1-sol, свод и критик — gpt-6-sol, нормы — Astra, оптимизация — gpt-6.1-sol high + gpt-6-sol xhigh. Только на центре. Точный состав — в колонке «Фактически работает».">Только Codex</button>
                 </div>
                 <p v-if="activePresetHint" class="model-preset-hint" :title="activePresetHint"
                    :class="{ 'model-preset-hint--custom': isCustomStageConfig }">{{ activePresetHint }}</p>
