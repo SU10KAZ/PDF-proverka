@@ -93,8 +93,10 @@ def test_stage01_mode_is_free_and_allowed():
 def test_preset_detected_and_prod_table_unchanged():
     table = _codex_only_table()
     assert presets.detect_preset(table, codex_model_id=config.CODEX_STAGE_MODEL_ID) == presets.PRESET_CODEX_ONLY
-    full = presets.reference_config(presets.PRESET_FULL_CODEX, codex_model_id=config.CODEX_STAGE_MODEL_ID)
-    assert presets.detect_preset(full, codex_model_id=config.CODEX_STAGE_MODEL_ID) == presets.PRESET_FULL_CODEX
+    from tests import _legacy_presets
+
+    full = _legacy_presets.reference_config(_legacy_presets.FULL_CODEX)
+    assert presets.detect_preset(full, codex_model_id=config.CODEX_STAGE_MODEL_ID) == presets.PRESET_CUSTOM
     assert all(not str(v).startswith("claude-") for v in table.values())
 
 

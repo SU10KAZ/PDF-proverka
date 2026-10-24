@@ -410,10 +410,9 @@ def provider_capability_to_center(item: common_pb.ProviderCapabilitySnapshot) ->
 #: Какие провайдеры обязаны РАБОТАТЬ для каждого профиля маршрутизации.
 #: Не «настроены» и не «авторизованы» — именно работать: профиль, чей провайдер
 #: отказывает, приведёт задание к падению на первом же вызове.
-ROUTING_PRESET_PROVIDERS: dict[str, tuple[str, ...]] = {
-    "claude_gpt_codex": ("claude",),
-    "codex_exec": ("codex",),
-}
+#: Пусто с 24.10.2026: пресеты воркера «Claude+GPT +Codex» и «Full Codex»
+#: удалены, «Только Claude» и «Только Codex» исполняются только на центре.
+ROUTING_PRESET_PROVIDERS: dict[str, tuple[str, ...]] = {}
 
 #: Состояния квоты, означающие ДОКАЗАННУЮ непригодность провайдера, а не
 #: временную неизвестность. `policy_blocked` попадает сюда потому, что воркер

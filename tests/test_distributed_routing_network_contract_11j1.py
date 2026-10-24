@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+from tests import _legacy_presets
 import asyncio
 import hashlib
 import json
@@ -48,7 +49,7 @@ def _attempt(plan: dict) -> dict:
 
 def test_frozen_lookup_found_not_found_and_invalid(monkeypatch, caplog):
     caplog.set_level(logging.INFO)
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     handle = SimpleNamespace(remote_job_id="job-11j1")
 
     monkeypatch.setattr(
@@ -115,7 +116,7 @@ def test_frozen_lookup_found_not_found_and_invalid(monkeypatch, caplog):
 
 
 def test_result_package_has_per_action_provenance_and_roundtrip_hash(tmp_path):
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     raw_plan = plan.to_dict()
     job_dir = tmp_path / "job"
     (job_dir / "result").mkdir(parents=True)
@@ -191,7 +192,7 @@ def test_result_package_has_per_action_provenance_and_roundtrip_hash(tmp_path):
 
 
 def test_result_routing_hash_mismatch_is_rejected():
-    plan = build_plan(presets.PRESET_CLAUDE_GPT_CODEX)
+    plan = build_plan(_legacy_presets.CLAUDE_GPT_CODEX)
     manifest = {
         "routing_plan_id": plan.routing_plan_id,
         "routing_plan_hash": "sha256:" + "0" * 64,

@@ -18,6 +18,7 @@
 """
 from __future__ import annotations
 
+from tests import _legacy_presets
 import asyncio
 import json
 import os
@@ -130,7 +131,7 @@ def _dispatch(preset_id: str, *, center_env, admin, tmp_path, monkeypatch, insta
     # читалось в момент старта каждого этапа.
     monkeypatch.setattr(
         _cfg, "STAGE_MODEL_CONFIG",
-        presets.reference_config(preset_id, codex_model_id=_cfg.CODEX_STAGE_MODEL_ID),
+        _legacy_presets.reference_config(preset_id, codex_model_id=_cfg.CODEX_STAGE_MODEL_ID),
         raising=False,
     )
 
@@ -172,8 +173,8 @@ def _dispatch(preset_id: str, *, center_env, admin, tmp_path, monkeypatch, insta
 @pytest.mark.parametrize(
     "preset_id,expected_text_provider",
     [
-        (presets.PRESET_CLAUDE_GPT_CODEX, registry.PROVIDER_CLAUDE),
-        (presets.PRESET_FULL_CODEX, registry.PROVIDER_CODEX),
+        (_legacy_presets.CLAUDE_GPT_CODEX, registry.PROVIDER_CLAUDE),
+        (_legacy_presets.FULL_CODEX, registry.PROVIDER_CODEX),
     ],
 )
 def test_center_dispatch_carries_the_exact_preset(
@@ -193,7 +194,8 @@ def test_center_dispatch_carries_the_exact_preset(
     raw_plan = captured.get("routing_plan")
     assert raw_plan is not None, "задание создано БЕЗ плана маршрутизации"
     plan = RoutingPlan.from_dict(raw_plan)
-    assert plan.preset_id == preset_id
+    # Пресеты удалены 24.10.2026: таблица доезжает как своя раскладка.
+    assert plan.preset_id == presets.PRESET_CUSTOM
 
     # Граница пресетов проходит по текстовым этапам — проверяем именно её.
     text = next(
@@ -243,7 +245,7 @@ def test_center_dispatch_carries_the_exact_preset(
     # Артефакт доказательной базы пишется из ФАКТИЧЕСКИ доехавшей нагрузки.
     name = (
         "11I_FAKE_NETWORK_CLAUDE_GPT_CODEX.json"
-        if preset_id == presets.PRESET_CLAUDE_GPT_CODEX
+        if preset_id == _legacy_presets.CLAUDE_GPT_CODEX
         else "11I_FAKE_NETWORK_FULL_CODEX.json"
     )
     # Отслеживаемые доказательства в docs/ обновляются только по явной

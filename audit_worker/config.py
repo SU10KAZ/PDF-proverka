@@ -34,6 +34,10 @@ from audit_worker import PROTOCOL_VERSION, __version__
 MAX_INFERENCES_CEILING = 1024
 
 DEFAULT_ROOT = "/var/lib/audit-worker"
+#: Пресеты маршрутизации, которые воркер вправе объявить центру. Пусто с
+#: 24.10.2026: «Claude+GPT +Codex» и «Full Codex» удалены, оставшиеся пресеты
+#: («Только Claude», «Только Codex») исполняются только на центре.
+WORKER_ROUTING_PRESETS: frozenset[str] = frozenset()
 
 
 def _env_int(name: str, default: int) -> int:
@@ -548,7 +552,9 @@ def load_config(
                 for item in os.environ.get(
                     "AUDIT_WORKER_ROUTING_COMPATIBILITY", ""
                 ).split(",")
-                if item in {"claude_gpt_codex", "codex_exec"}
+                # Пресеты воркера («Claude+GPT +Codex», «Full Codex») удалены
+                # 24.10.2026; оставшиеся исполняются только на центре.
+                if item in WORKER_ROUTING_PRESETS
             ],
         },
         request_timeout_sec=_env_float("AUDIT_WORKER_TIMEOUT_SEC", 60.0),

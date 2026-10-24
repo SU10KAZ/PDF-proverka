@@ -10,6 +10,7 @@
 """
 from __future__ import annotations
 
+from tests import _legacy_presets
 import json
 
 import pytest
@@ -82,8 +83,8 @@ def test_p_global_preset_change_does_not_touch_created_job():
     создать задание B — и убедиться, что A по-прежнему несёт свой маршрут.
     """
     # Оператор выбрал «Full Codex» и запустил задание A.
-    global_config = presets.reference_config(
-        presets.PRESET_FULL_CODEX, codex_model_id=CODEX_ID
+    global_config = _legacy_presets.reference_config(
+        _legacy_presets.FULL_CODEX, codex_model_id=CODEX_ID
     )
     plan_a = compiler.AuditRoutingPlanCompiler().compile(
         compiler.CompilerInputs(
@@ -95,8 +96,8 @@ def test_p_global_preset_change_does_not_touch_created_job():
     hash_a = plan_a.plan_hash()
 
     # Оператор переключил глобальный пресет. Задание A ещё не начинало этапов.
-    global_config = presets.reference_config(
-        presets.PRESET_CLAUDE_GPT_CODEX, codex_model_id=CODEX_ID
+    global_config = _legacy_presets.reference_config(
+        _legacy_presets.CLAUDE_GPT_CODEX, codex_model_id=CODEX_ID
     )
     plan_b = compiler.AuditRoutingPlanCompiler().compile(
         compiler.CompilerInputs(
@@ -112,8 +113,9 @@ def test_p_global_preset_change_does_not_touch_created_job():
     restored_a = RoutingPlan.from_dict(job_a.routing_plan)
     restored_b = RoutingPlan.from_dict(job_b.routing_plan)
     assert restored_a.plan_hash() == hash_a
-    assert restored_a.preset_id == presets.PRESET_FULL_CODEX
-    assert restored_b.preset_id == presets.PRESET_CLAUDE_GPT_CODEX
+    # Пресеты удалены 24.10.2026: обе таблицы — своя раскладка, различие
+    # заданий держит хэш плана и маршрут этапа ниже.
+    assert restored_a.preset_id == restored_b.preset_id == presets.PRESET_CUSTOM
 
     # И маршрут ключевого этапа у них РАЗНЫЙ, а не «одинаковый, но подписан иначе».
     def text_provider(plan: RoutingPlan) -> str:
@@ -129,14 +131,14 @@ def test_ay_changing_stage_models_after_dispatch_does_not_alter_execution():
 
     План уже уехал в задание; исполнитель читает ЕГО, а не текущий файл.
     """
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     frozen = json.dumps(plan.to_dict(), sort_keys=True)
 
     # «Правим» глобальную конфигурацию как угодно.
     compiler.AuditRoutingPlanCompiler().compile(
         compiler.CompilerInputs(
-            stage_models=presets.reference_config(
-                presets.PRESET_CLAUDE_GPT_CODEX, codex_model_id=CODEX_ID
+            stage_models=_legacy_presets.reference_config(
+                _legacy_presets.CLAUDE_GPT_CODEX, codex_model_id=CODEX_ID
             ),
             feature_flags={},
             discipline_id="EOM",
@@ -165,7 +167,7 @@ def test_r_new_job_with_inference_without_plan_fails_closed(tmp_path):
 
 def test_worker_accepts_job_with_plan(tmp_path):
     """Задание с планом проходит рубеж формы воркера целиком."""
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     safe = audit_runner.validate_params(_params(plan), config=_Config(tmp_path))
     assert safe.routing_plan is not None
     assert safe.as_dict()["routing_plan"]["routing_plan_hash"] == plan.plan_hash()
@@ -374,7 +376,7 @@ def test_requirement_from_plan_carries_multi_provider_list(tmp_path):
     """Требование несёт полный многопровайдерный состав, а не одну пару."""
     from backend.app.services.distributed_workers import provider_requirement as pr
 
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     requirement, rationale = pr.build_routing_plan_requirement(
         version_dir=tmp_path, worker=_capable_worker(), routing_plan=plan,
     )
@@ -449,7 +451,7 @@ def test_routes_extracted_for_binding_cover_worker_scope_only():
     """Локальной политике заказываются маршруты worker-участка, и только они."""
     from audit_worker.executor import _routes_from_plan
 
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
 
     class _Params:
         routing_plan = plan.to_dict()
@@ -468,7 +470,7 @@ def test_routes_extracted_for_binding_cover_worker_scope_only():
 
 def test_ax_routing_hash_survives_the_whole_roundtrip():
     """AX. Хэш плана одинаков у центра, в нагрузке, в спеке и в привязке."""
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     center = plan.plan_hash()
 
     # Нагрузка задания (центр → HTTP → воркер).
@@ -521,7 +523,7 @@ def test_every_worker_bridge_stage_has_a_plan_action():
     """
     from backend.app.services.audit_routing import active_plan
 
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         plan = build_plan(preset_id)
         active_plan.set_plan(plan)
         try:

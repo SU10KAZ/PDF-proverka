@@ -11,7 +11,7 @@ def test_no_variant_uses_openrouter() -> None:
     for name, variant in replay.VARIANTS.items():
         model = variant["model"]
         assert not model.startswith("openai/"), name
-        assert model.startswith("codex/") or model == "ensemble/gpt-codex", name
+        assert model.startswith("codex/") or model in ("ensemble/gpt-codex", "ensemble/codex-only"), name
 
 
 def test_round_robin_cycles_groups_in_stable_order() -> None:

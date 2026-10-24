@@ -3265,7 +3265,6 @@ const app = createApp({
             clearTimeout(stageRoutingTimer);
             stageRoutingTimer = setTimeout(refreshStageRouting, 200);
         }, { deep: true });
-        const CODEX_PRESET_MODEL = "__codex_exec__";
         const BLOCK_CODEX_ENSEMBLE_MODEL = "ensemble/gpt-codex";
         const OPT_CODEX_ENSEMBLE_MODEL = "ensemble/claude-codex-opt";
         // Этап 01 «только Claude»: нога Opus + судья Sonnet с gap-search (docs/claude_only_mode.md).
@@ -3288,34 +3287,6 @@ const app = createApp({
             optimization_corrector: "claude-sonnet-5-5",
         };
         const modelPresets = {
-            claude_gpt_codex: {
-                label: "Claude+GPT +Codex",
-                hint: "Текст, свод, нормы и критик оптимизации — Claude; блоки и оптимизация — ансамбли нескольких моделей. Точный состав — в колонке «Фактически работает».",
-                config: {
-                    ...BASE_STAGE_MODEL_CONFIG,
-                    block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL,
-                    optimization:           OPT_CODEX_ENSEMBLE_MODEL,
-                },
-                batchModes: { block_batch: "findings_only_block_context" },
-            },
-            codex_exec: {
-                label: "Full Codex",
-                hint: "Текст, свод, нормы и критик оптимизации — Codex; блоки и оптимизация — ансамбли; страж отсутствия и основная ветка оптимизации остаются на Claude. Точный состав — в колонке «Фактически работает».",
-                config: {
-                    text_analysis:          CODEX_PRESET_MODEL,
-                    block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL,
-                    findings_merge:         CODEX_PRESET_MODEL,
-                    findings_critic:        CODEX_PRESET_MODEL,
-                    findings_corrector:     CODEX_PRESET_MODEL,
-                    norm_verify:            CODEX_PRESET_MODEL,
-                    norm_fix:               CODEX_PRESET_MODEL,
-                    norm_requote:           CODEX_PRESET_MODEL,
-                    optimization:           OPT_CODEX_ENSEMBLE_MODEL,
-                    optimization_critic:    CODEX_PRESET_MODEL,
-                    optimization_corrector: CODEX_PRESET_MODEL,
-                },
-                batchModes: { block_batch: "findings_only_block_context" },
-            },
             claude_only: {
                 label: "Только Claude",
                 hint: "Все этапы на подписке Claude, усилие medium: блоки — Opus + судья Sonnet с поиском пропусков, остальные этапы — Sonnet. Только на центре: воркерам этот пресет не выдаётся. Точный состав — в колонке «Фактически работает».",
@@ -3436,7 +3407,7 @@ const app = createApp({
         }
 
         function resolvePresetModelId(modelId) {
-            return modelId === CODEX_PRESET_MODEL ? codexModelId() : modelId;
+            return modelId;
         }
 
         function resolvePresetConfig(preset) {

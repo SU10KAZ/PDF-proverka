@@ -43,6 +43,7 @@
 """
 from __future__ import annotations
 
+from tests import _legacy_presets
 import ast
 import asyncio
 import inspect
@@ -386,8 +387,8 @@ def test_d_backend_passes_the_requirement_into_create_audit_job(
     from backend.app.services.audit_routing import presets as _presets
     monkeypatch.setattr(
         _core_config, "STAGE_MODEL_CONFIG",
-        _presets.reference_config(
-            _presets.PRESET_CLAUDE_GPT_CODEX, codex_model_id="codex/gpt-6-astra",
+        _legacy_presets.reference_config(
+            _legacy_presets.CLAUDE_GPT_CODEX, codex_model_id="codex/gpt-6-astra",
         ),
     )
     from backend.app.models.audit import BatchQueueItem
@@ -545,7 +546,7 @@ def test_g_worker_parses_full_central_params_with_capability(tmp_path):
     from backend.app.services.audit_routing import presets as _presets
     from tests.test_audit_routing_plan import build_plan as _build_plan
 
-    plan = _build_plan(_presets.PRESET_FULL_CODEX)
+    plan = _build_plan(_legacy_presets.FULL_CODEX)
     payload = _audit_params(provider_requirement=dict(_WIRE_REQUIREMENT))
     payload["routing_plan"] = plan.to_dict()
     params = audit_runner.validate_params(payload, config=_worker_config(tmp_path))

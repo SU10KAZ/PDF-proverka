@@ -2,8 +2,8 @@
 
 Почему это появилось на бэкенде, а не осталось во фронтенде.
 
-Инвентаризация зафиксировала неприятный факт: пресеты `Claude+GPT+Codex` и
-`Full Codex` существуют ТОЛЬКО как объект `modelPresets` в
+Инвентаризация (11I) зафиксировала неприятный факт: пресеты тогда существовали
+ТОЛЬКО как объект `modelPresets` в
 `frontend/static/js/app.js`. Сервер знает лишь плоскую таблицу
 `stage_models.json` и не знает, что она означает. Из этого следуют две вещи:
 
@@ -28,9 +28,11 @@ from backend.app.services.audit_routing import registry
 from backend.app.services.audit_routing.plan import RoutingPlanError
 
 #: Идентификаторы пресетов. Совпадают с ключами `modelPresets` во фронтенде —
-#: это часть контракта, и её проверяет отдельный тест.
-PRESET_CLAUDE_GPT_CODEX = "claude_gpt_codex"
-PRESET_FULL_CODEX = "codex_exec"
+#: это часть контракта, и её проверяет отдельный тест. Пресеты
+#: «Claude+GPT +Codex» (`claude_gpt_codex`) и «Full Codex» (`codex_exec`)
+#: удалены 24.10.2026 по решению Андрея Ивановича: их таблицы теперь — «своя
+#: раскладка» (`custom`). Селекторы `ensemble/gpt-codex` и
+#: `ensemble/claude-codex-opt` остаются допустимыми значениями ячеек.
 #: Все этапы на подписке Claude (docs/claude_only_mode.md). Только центр:
 #: воркерам этот пресет не выдаётся.
 PRESET_CLAUDE_ONLY = "claude_only"
@@ -44,8 +46,6 @@ PRESET_CODEX_ONLY = "codex_only"
 PRESET_CUSTOM = "custom"
 
 KNOWN_PRESETS: tuple[str, ...] = (
-    PRESET_CLAUDE_GPT_CODEX,
-    PRESET_FULL_CODEX,
     PRESET_CLAUDE_ONLY,
     PRESET_CODEX_ONLY,
     PRESET_CUSTOM,
@@ -218,28 +218,12 @@ def validate_stage_models(config: Mapping[str, Any]) -> dict[str, ModelSelector]
     return parsed
 
 
-def reference_config(preset_id: str, *, codex_model_id: str) -> dict[str, str]:
+def reference_config(preset_id: str, *, codex_model_id: str = "") -> dict[str, str]:
     """Эталонная раскладка пресета. Зеркало `modelPresets` фронтенда.
 
-    `codex_model_id` — то, во что фронтенд раскрывает плейсхолдер
-    `__codex_exec__` (`resolvePresetModelId` → `codexModelId()`). Значение
-    приходит извне, потому что оно зависит от `AUDIT_CODEX_STAGE_MODEL` центра.
+    `codex_model_id` остался от удалённого «Full Codex» (плейсхолдер
+    `__codex_exec__`); у оставшихся пресетов модели заданы явно.
     """
-    base = {
-        "text_analysis": "claude-opus-5-5",
-        "block_batch": ENSEMBLE_BLOCK,
-        "findings_merge": "claude-opus-5-5",
-        "findings_critic": "claude-sonnet-5-5",
-        "findings_corrector": "claude-sonnet-5-5",
-        "norm_verify": "claude-opus-5-5",
-        "norm_fix": "claude-opus-5-5",
-        "norm_requote": "claude-opus-5-5",
-        "optimization": ENSEMBLE_OPTIMIZATION,
-        "optimization_critic": "claude-sonnet-5-5",
-        "optimization_corrector": "claude-sonnet-5-5",
-    }
-    if preset_id == PRESET_CLAUDE_GPT_CODEX:
-        return base
     if preset_id == PRESET_CLAUDE_ONLY:
         return {
             **{k: "claude-sonnet-5-5" for k in STAGE_MODEL_KEYS},
@@ -259,19 +243,12 @@ def reference_config(preset_id: str, *, codex_model_id: str) -> dict[str, str]:
             "optimization_critic": "codex/gpt-6-sol",
             "optimization_corrector": "codex/gpt-6-sol",
         }
-    if preset_id == PRESET_FULL_CODEX:
-        codex = str(codex_model_id)
-        return {
-            **{k: codex for k in STAGE_MODEL_KEYS},
-            "block_batch": ENSEMBLE_BLOCK,
-            "optimization": ENSEMBLE_OPTIMIZATION,
-        }
     raise RoutingPlanError(f"эталона для пресета {preset_id!r} нет")
 
 
 def detect_preset(config: Mapping[str, Any], *, codex_model_id: str) -> str:
     """Какому пресету соответствует сохранённая таблица. Иначе — `custom`."""
-    for preset_id in (PRESET_CLAUDE_GPT_CODEX, PRESET_FULL_CODEX, PRESET_CLAUDE_ONLY, PRESET_CODEX_ONLY):
+    for preset_id in (PRESET_CLAUDE_ONLY, PRESET_CODEX_ONLY):
         expected = reference_config(preset_id, codex_model_id=codex_model_id)
         if all(str(config.get(k, "")) == v for k, v in expected.items()):
             return preset_id

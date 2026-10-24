@@ -384,12 +384,9 @@ sha256sum "$root/current/audit_worker/provider_policy.approved.json" | awk '{{pr
             "AUDIT_WORKER_PROVIDER_POLICY_SHA256": manifest_values.get(
                 "POLICY_SHA256", ""
             ),
-            "AUDIT_WORKER_ROUTING_COMPATIBILITY": (
-                "claude_gpt_codex,codex_exec"
-                if {"claude", "codex", "openrouter"}
-                <= {provider.value for provider in self.request.providers}
-                else ""
-            ),
+            # Совместимых с воркером пресетов нет с 24.10.2026: «Claude+GPT
+            # +Codex» и «Full Codex» удалены, оставшиеся — только для центра.
+            "AUDIT_WORKER_ROUTING_COMPATIBILITY": "",
             "AUDIT_WORKER_ALLOW_REAL_LLM": "true",
             "AUDIT_WORKER_PIPELINE_PROVIDER_ENABLED": "true",
             "AUDIT_WORKER_PIPELINE_PROVIDER_AUTO_GRANT_ENABLED": "true",

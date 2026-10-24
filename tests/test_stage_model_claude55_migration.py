@@ -1,6 +1,7 @@
 """Переход Claude 5 → 5.5 (09.10.2026): сохранённая таблица и эталоны центра."""
 
 from backend.app.core import config
+from tests import _legacy_presets
 from backend.app.services.audit_routing import center_models, presets
 
 
@@ -29,8 +30,8 @@ def test_claude55_table_needs_no_migration():
 
 
 def test_claude_preset_and_center_policy_use_55():
-    ref = presets.reference_config(
-        presets.PRESET_CLAUDE_GPT_CODEX, codex_model_id=config.CODEX_STAGE_MODEL_ID
+    ref = _legacy_presets.reference_config(
+        _legacy_presets.CLAUDE_GPT_CODEX, codex_model_id=config.CODEX_STAGE_MODEL_ID
     )
     claude_ids = {v for v in ref.values() if v.startswith("claude-")}
 

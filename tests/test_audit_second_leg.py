@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from tests import _legacy_presets
 import json
 from pathlib import Path
 
@@ -36,8 +37,8 @@ def _plan(alias: str | None, *, openrouter: str | None = "1"):
         flags["AUDIT_SECOND_LEG"] = alias
     return compiler.AuditRoutingPlanCompiler().compile(
         compiler.CompilerInputs(
-            stage_models=presets.reference_config(
-                presets.PRESET_FULL_CODEX,
+            stage_models=_legacy_presets.reference_config(
+                _legacy_presets.FULL_CODEX,
                 codex_model_id="codex/gpt-6-astra",
             ),
             feature_flags=flags,

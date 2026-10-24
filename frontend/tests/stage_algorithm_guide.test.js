@@ -68,20 +68,13 @@ describe('pipeline stage algorithm guide', () => {
     expect(css).toContain('.stage-algorithm-badge--claude');
   });
 
-  it('offers the combined production preset before Full Codex', () => {
-    const combined = html.indexOf('>Claude+GPT +Codex</button>');
-    const fullCodex = html.indexOf('>Full Codex</button>');
-    expect(combined).toBeGreaterThan(-1);
-    expect(fullCodex).toBeGreaterThan(combined);
-    expect(html).not.toContain('>Claude+GPT</button>');
-    expect(html).not.toContain('>+Codex</button>');
+  it('offers only the Claude-only and Codex-only presets', () => {
+    expect(html).toContain('>Только Claude</button>');
+    expect(html).toContain('>Только Codex</button>');
+    expect(html).not.toContain('>Full Codex</button>');
+    expect(html).not.toContain('>Claude+GPT +Codex</button>');
     expect(html).not.toContain("applyPreset('dual_detection')");
     expect(html).not.toContain("applyPreset('optimization_ensemble')");
-
-    const combinedPreset = appJs.match(/claude_gpt_codex:\s*\{[\s\S]*?\n\s*codex_exec:/)?.[0] || '';
-    expect(combinedPreset).toContain('label: "Claude+GPT +Codex"');
-    expect(combinedPreset).toContain('block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL');
-    expect(combinedPreset).toContain('optimization:           OPT_CODEX_ENSEMBLE_MODEL');
   });
 
   it('shows one Codex checkbox column and hides internal model columns', () => {

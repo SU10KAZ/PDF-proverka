@@ -291,11 +291,9 @@ class BootstrapManager:
                     settings=self.settings,
                 )
             requested_provider_names = {item.value for item in request.providers}
-            providers["compatible_presets"] = (
-                ["claude_gpt_codex", "codex_exec"]
-                if {"claude", "codex", "openrouter"} <= requested_provider_names
-                else []
-            )
+            # Пресеты, которые умели исполнять воркеры («Claude+GPT +Codex» и
+            # «Full Codex»), удалены 24.10.2026; оставшиеся — только для центра.
+            providers["compatible_presets"] = []
 
             self._mark(session_id, "registration", result={"providers": providers})
             instance_id = str(request.bootstrap_instance_id)

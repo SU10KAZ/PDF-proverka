@@ -1,4 +1,5 @@
 """Synthetic end-to-end Stage 01: unchanged ON, explicit Astra/Sol OFF."""
+from tests import _legacy_presets
 import json
 import socket
 import subprocess
@@ -204,7 +205,7 @@ def test_frozen_plan_off_removes_only_stage01_openrouter():
     plans = []
     for enabled in ("1", "0"):
         plans.append(compiler.AuditRoutingPlanCompiler().compile(compiler.CompilerInputs(
-            stage_models=presets.reference_config(presets.PRESET_FULL_CODEX, codex_model_id=ASTRA_MODEL),
+            stage_models=_legacy_presets.reference_config(_legacy_presets.FULL_CODEX, codex_model_id=ASTRA_MODEL),
             feature_flags={"AUDIT_OPENROUTER_ENABLED": enabled, "STAGE01_THIRD_LEG_ENABLED": "true"},
             claude_default_model_class=registry.MODEL_CLASS_CHEAP, codex_model_id=ASTRA_MODEL,
         )))

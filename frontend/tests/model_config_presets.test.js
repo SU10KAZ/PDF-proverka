@@ -10,34 +10,25 @@ const appJs = fs.readFileSync(path.join(frontendRoot, 'static/js/app.js'), 'utf8
 const css = fs.readFileSync(path.join(frontendRoot, 'static/css/styles.css'), 'utf8');
 
 describe('compact model configuration presets', () => {
-  it('renders the combined production preset before Full Codex', () => {
-    const combined = html.indexOf('>Claude+GPT +Codex</button>');
-    const fullCodex = html.indexOf('>Full Codex</button>');
-    expect(combined).toBeGreaterThan(-1);
-    expect(fullCodex).toBeGreaterThan(combined);
-    expect(html).not.toContain('>Claude+GPT</button>');
-    expect(html).not.toContain('>+Codex</button>');
+  it('renders only the Claude-only and Codex-only presets', () => {
+    // «Claude+GPT +Codex» и «Full Codex» удалены 24.10.2026 (docs/codex_only_mode.md).
+    const claude = html.indexOf('>Только Claude</button>');
+    const codex = html.indexOf('>Только Codex</button>');
+    expect(claude).toBeGreaterThan(-1);
+    expect(codex).toBeGreaterThan(claude);
+    expect(html).not.toContain('>Full Codex</button>');
+    expect(html).not.toContain('>Claude+GPT +Codex</button>');
+    expect(appJs).not.toContain('claude_gpt_codex: {');
+    expect(appJs).not.toContain('codex_exec: {');
   });
 
-  it('maps Claude+GPT +Codex to both supported ensembles', () => {
-    const preset = appJs.match(/claude_gpt_codex:\s*\{[\s\S]*?\n\s*codex_exec:/)?.[0] || '';
-    expect(preset).toContain('label: "Claude+GPT +Codex"');
-    expect(preset).toContain('block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL');
-    expect(preset).toContain('optimization:           OPT_CODEX_ENSEMBLE_MODEL');
-  });
-
-  it('runs blocks and optimization through their ensembles in Full Codex', () => {
-    const preset = appJs.match(/codex_exec:\s*\{[\s\S]*?\n\s*\};/)?.[0] || '';
-    expect(preset).toContain('label: "Full Codex"');
-    // Блоки — ансамбль GPT+Codex (судья + gap-search), оптимизация — Claude+Codex:
-    // обе модели находят РАЗНОЕ, поодиночке теряется часть предложений.
-    expect(preset).toContain('block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL');
-    expect(preset).toContain('optimization:           OPT_CODEX_ENSEMBLE_MODEL');
-    // Остальные этапы остаются чистым Codex.
-    expect(preset).toContain('text_analysis:          CODEX_PRESET_MODEL');
-    expect(preset).toContain('findings_merge:         CODEX_PRESET_MODEL');
-    expect(preset).not.toContain('block_batch:            CODEX_PRESET_MODEL');
-    expect(preset).not.toContain('optimization:           CODEX_PRESET_MODEL');
+  it('maps Codex-only to its ensembles and Codex models', () => {
+    const preset = appJs.match(/codex_only:\s*\{[\s\S]*?\n\s*\};/)?.[0] || '';
+    expect(preset).toContain('label: "Только Codex"');
+    expect(preset).toContain('block_batch:            BLOCK_CODEX_ONLY_MODEL');
+    expect(preset).toContain('optimization:           OPT_CODEX_ONLY_MODEL');
+    expect(preset).toContain('text_analysis:          "codex/gpt-6.1-sol"');
+    expect(preset).not.toContain('claude-');
   });
 
   it('labels a config that matches no preset instead of showing nothing', () => {

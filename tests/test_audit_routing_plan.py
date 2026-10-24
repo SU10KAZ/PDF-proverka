@@ -14,6 +14,7 @@
 """
 from __future__ import annotations
 
+from tests import _legacy_presets
 import pytest
 
 from backend.app.services.audit_routing import (
@@ -50,14 +51,14 @@ PROD_FLAGS = {
 
 
 def build_plan(
-    preset_id: str = presets.PRESET_CLAUDE_GPT_CODEX,
+    preset_id: str = _legacy_presets.CLAUDE_GPT_CODEX,
     *,
     flags: dict | None = None,
     discipline: str = "EOM",
     claude_class: str = registry.MODEL_CLASS_CHEAP,
     stage_models: dict | None = None,
 ) -> RoutingPlan:
-    config = stage_models or presets.reference_config(preset_id, codex_model_id=CODEX_ID)
+    config = stage_models or _legacy_presets.reference_config(preset_id, codex_model_id=CODEX_ID)
     return compiler.AuditRoutingPlanCompiler().compile(
         compiler.CompilerInputs(
             stage_models=config,
@@ -89,16 +90,16 @@ def has_action(plan: RoutingPlan, stage_id: str, action_id: str) -> bool:
 
 # ─── A/B: компиляция пресетов ────────────────────────────────────────────────
 def test_a_compile_claude_gpt_codex():
-    """A. Пресет «Claude+GPT+Codex» компилируется и опознаётся."""
-    plan = build_plan(presets.PRESET_CLAUDE_GPT_CODEX)
-    assert plan.preset_id == presets.PRESET_CLAUDE_GPT_CODEX
+    """A. Таблица удалённого пресета «Claude+GPT+Codex» компилируется как своя раскладка."""
+    plan = build_plan(_legacy_presets.CLAUDE_GPT_CODEX)
+    assert plan.preset_id == presets.PRESET_CUSTOM
     assert plan.stage("block_batch") is not None
 
 
 def test_b_compile_full_codex():
-    """B. Пресет «Full Codex» компилируется и опознаётся."""
-    plan = build_plan(presets.PRESET_FULL_CODEX)
-    assert plan.preset_id == presets.PRESET_FULL_CODEX
+    """B. Таблица удалённого «Full Codex» (боевая до 24.10) — своя раскладка."""
+    plan = build_plan(_legacy_presets.FULL_CODEX)
+    assert plan.preset_id == presets.PRESET_CUSTOM
 
 
 # ─── C/D: сериализация и хэш ─────────────────────────────────────────────────
@@ -115,7 +116,7 @@ def test_d_hash_is_stable_and_content_bound():
     """D. Хэш устойчив к переупаковке и меняется вместе с содержанием."""
     plan = build_plan()
     assert plan.plan_hash() == RoutingPlan.from_dict(plan.to_dict()).plan_hash()
-    other = build_plan(presets.PRESET_FULL_CODEX)
+    other = build_plan(_legacy_presets.FULL_CODEX)
     assert plan.plan_hash() != other.plan_hash()
     # Подделка объявленного хэша отвергается целиком.
     payload = plan.to_dict()
@@ -252,7 +253,7 @@ def test_k_model_action_requires_provider_and_capability():
 # ─── L/M: рубежи безопасности ────────────────────────────────────────────────
 def test_l_plan_carries_no_credentials():
     """L. В плане нет ничего похожего на ключ, токен или путь центра."""
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         text = build_plan(preset_id).canonical_json().decode("utf-8")
         low = text.lower()
         for marker in ("api_key", "token", "secret", "password", "authorization", "sk-"):
@@ -262,7 +263,7 @@ def test_l_plan_carries_no_credentials():
 
 def test_m_no_exact_model_selection_from_center():
     """M. Центр не называет точную модель — проверяется машиной, а не глазами."""
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         plan = build_plan(preset_id)
         text = plan.canonical_json().decode("utf-8")
         for marker in ("claude-opus", "claude-sonnet", "gpt-5", "codex/", "openai/"):
@@ -304,7 +305,7 @@ def test_o_deterministic_optimization_fix_snapshot():
 
 
 # ─── Z…AC: ансамбль блоков ───────────────────────────────────────────────────
-@pytest.mark.parametrize("preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX])
+@pytest.mark.parametrize("preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX])
 def test_z_block_three_detectors_are_one_parallel_group(preset_id):
     """Z. Три детектора этапа 01 — ОДНА параллельная группа, в обоих пресетах."""
     plan = build_plan(preset_id)
@@ -324,7 +325,7 @@ def test_z_block_three_detectors_are_one_parallel_group(preset_id):
     assert providers["detector_openrouter"][0] != registry.PROVIDER_CODEX
 
 
-@pytest.mark.parametrize("preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX])
+@pytest.mark.parametrize("preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX])
 def test_aa_block_judge_depends_on_detectors(preset_id):
     """AA. Судья идёт ПОСЛЕ детекторов и делает сопоставление и gap-search разом."""
     plan = build_plan(preset_id)
@@ -371,7 +372,7 @@ def test_as_provider_specific_budget_breakdown():
 
 
 # ─── AD…AH: оптимизация ──────────────────────────────────────────────────────
-@pytest.mark.parametrize("preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX])
+@pytest.mark.parametrize("preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX])
 def test_ad_ae_optimization_dual_leg_and_deterministic_merge(preset_id):
     """AD/AE. Две ноги параллельно, объединение — детерминированное."""
     plan = build_plan(preset_id)
@@ -387,7 +388,7 @@ def test_ad_ae_optimization_dual_leg_and_deterministic_merge(preset_id):
 
 def test_aq_reasoning_effort_xhigh_preserved():
     """AQ. Усилие xhigh визуальной ноги доживает до плана и переживает сериализацию."""
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         plan = build_plan(preset_id)
         assert action(plan, "optimization", "optimization_visual").reasoning_effort == registry.EFFORT_XHIGH
         restored = RoutingPlan.from_dict(plan.to_dict())
@@ -398,8 +399,8 @@ def test_aq_reasoning_effort_xhigh_preserved():
 
 def test_af_ag_optimization_critic_provider_per_preset():
     """AF/AG. Критик оптимизации: Claude в пресете A, Codex в «Full Codex»."""
-    a = action(build_plan(presets.PRESET_CLAUDE_GPT_CODEX), "optimization_critic", "critic")
-    b = action(build_plan(presets.PRESET_FULL_CODEX), "optimization_critic", "critic")
+    a = action(build_plan(_legacy_presets.CLAUDE_GPT_CODEX), "optimization_critic", "critic")
+    b = action(build_plan(_legacy_presets.FULL_CODEX), "optimization_critic", "critic")
     assert (a.provider, a.capability) == (registry.PROVIDER_CLAUDE, registry.CAP_CHEAP_REVIEW)
     assert (b.provider, b.capability) == (registry.PROVIDER_CODEX, registry.CAP_STRONG_AUDIT)
 
@@ -407,7 +408,7 @@ def test_af_ag_optimization_critic_provider_per_preset():
 def test_ah_ai_zero_model_calls_for_deterministic_stages():
     """AH/AI. F OPT Fix и Верификатор не дают НИ ОДНОГО обращения к модели."""
     shape = budget.DocumentShape(graphic_blocks=3)
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         est = budget.estimate(build_plan(preset_id), shape)
         assert est["per_stage"].get("optimization_corrector", 0) == 0
         assert est["per_stage"].get("findings_critic", 0) == 0
@@ -416,18 +417,18 @@ def test_ah_ai_zero_model_calls_for_deterministic_stages():
 # ─── AJ…AN: где проходит граница пресетов ────────────────────────────────────
 def test_aj_full_codex_absence_guard_still_claude():
     """AJ. Страж отсутствия остаётся Claude даже в «Full Codex»."""
-    guard = action(build_plan(presets.PRESET_FULL_CODEX), "findings_corrector", "absence_guard")
+    guard = action(build_plan(_legacy_presets.FULL_CODEX), "findings_corrector", "absence_guard")
     assert guard.provider == registry.PROVIDER_CLAUDE
     assert guard.role == registry.ROLE_ABSENCE_GUARD
     # Класс модели берётся из ГЛОБАЛЬНОЙ ручки центра, а не из строки таблицы.
-    strong = build_plan(presets.PRESET_FULL_CODEX, claude_class=registry.MODEL_CLASS_STRONG)
+    strong = build_plan(_legacy_presets.FULL_CODEX, claude_class=registry.MODEL_CLASS_STRONG)
     assert action(strong, "findings_corrector", "absence_guard").capability == registry.CAP_STRONG_AUDIT
 
 
 def test_ak_al_text_provider_per_preset():
     """AK/AL. 02 Текст: Codex в «Full Codex», Claude в пресете A."""
-    a = action(build_plan(presets.PRESET_CLAUDE_GPT_CODEX), "text_analysis", "text_audit")
-    b = action(build_plan(presets.PRESET_FULL_CODEX), "text_analysis", "text_audit")
+    a = action(build_plan(_legacy_presets.CLAUDE_GPT_CODEX), "text_analysis", "text_audit")
+    b = action(build_plan(_legacy_presets.FULL_CODEX), "text_analysis", "text_audit")
     assert a.provider == registry.PROVIDER_CLAUDE
     assert b.provider == registry.PROVIDER_CODEX
     # Нарезка по листам существует только на Codex-пути.
@@ -437,20 +438,20 @@ def test_ak_al_text_provider_per_preset():
 
 def test_am_an_targeted_merge_passes_only_on_codex_path():
     """AM/AN. Targeted-проходы свода есть у «Full Codex» и отсутствуют у пресета A."""
-    b = build_plan(presets.PRESET_FULL_CODEX, discipline="EOM")
+    b = build_plan(_legacy_presets.FULL_CODEX, discipline="EOM")
     assert has_action(b, "findings_merge", "targeted_discipline")
     assert has_action(b, "findings_merge", "targeted_docnorm")
-    a = build_plan(presets.PRESET_CLAUDE_GPT_CODEX, discipline="EOM")
+    a = build_plan(_legacy_presets.CLAUDE_GPT_CODEX, discipline="EOM")
     assert not has_action(a, "findings_merge", "targeted_discipline")
     assert not has_action(a, "findings_merge", "targeted_docnorm")
     # Дисциплинарный проход существует только для четырёх дисциплин.
-    other = build_plan(presets.PRESET_FULL_CODEX, discipline="OV")
+    other = build_plan(_legacy_presets.FULL_CODEX, discipline="OV")
     assert not has_action(other, "findings_merge", "targeted_discipline")
     assert has_action(other, "findings_merge", "targeted_docnorm")
     # Третий проход — за отдельным флагом, по умолчанию выключенным.
     assert not has_action(b, "findings_merge", "targeted_mark_system")
     with_observer = build_plan(
-        presets.PRESET_FULL_CODEX,
+        _legacy_presets.FULL_CODEX,
         flags={**PROD_FLAGS, "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED": "true"},
     )
     assert has_action(with_observer, "findings_merge", "targeted_mark_system")
@@ -459,7 +460,7 @@ def test_am_an_targeted_merge_passes_only_on_codex_path():
 # ─── AO/AP: нормативный хвост ────────────────────────────────────────────────
 def test_ao_ap_norm_actions_are_center_scope():
     """AO/AP. Все нормативные действия — центральные, и модельные, и Python."""
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         plan = build_plan(preset_id)
         for stage_id in ("norm_verify", "norm_fix", "norm_requote"):
             stage = plan.stage(stage_id)
@@ -475,7 +476,7 @@ def test_ao_ap_norm_actions_are_center_scope():
 
 def test_ao_norm_requirements_not_in_worker_scope():
     """Нормативные способности не попадают в требования к воркеру."""
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     worker_actions = {
         f"{s.stage_id}.{a.action_id}" for s, a in plan.model_actions()
         if s.execution_scope == registry.SCOPE_WORKER
@@ -530,7 +531,7 @@ def test_t_worker_without_openrouter_rejected():
 def test_u_worker_without_claude_rejected_even_for_full_codex():
     """U. «Full Codex» без Claude тоже не идёт: страж и нога оптимизации — Claude."""
     caps = {k: v for k, v in ALL_CAPS.items() if k != registry.PROVIDER_CLAUDE}
-    verdict = requirements.check_worker(build_plan(presets.PRESET_FULL_CODEX), _worker(caps))
+    verdict = requirements.check_worker(build_plan(_legacy_presets.FULL_CODEX), _worker(caps))
     assert not verdict.compatible
     assert any(m.provider == registry.PROVIDER_CLAUDE for m in verdict.missing)
 
@@ -544,7 +545,7 @@ def test_v_worker_without_codex_rejected():
 
 def test_w_worker_with_all_capabilities_accepted():
     """W. Воркер со всеми способностями подходит обоим пресетам."""
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         verdict = requirements.check_worker(build_plan(preset_id), _worker(ALL_CAPS))
         assert verdict.compatible, verdict.reasons
 
@@ -574,7 +575,7 @@ def test_worker_with_fake_providers_rejected():
 # ─── Валидация шаблона stage_models ──────────────────────────────────────────
 def test_stage_models_validation_rejects_manual_damage():
     """Ручная правка `stage_models.json` не проходит молча (§30 задания)."""
-    good = presets.reference_config(presets.PRESET_FULL_CODEX, codex_model_id=CODEX_ID)
+    good = _legacy_presets.reference_config(_legacy_presets.FULL_CODEX, codex_model_id=CODEX_ID)
 
     # Неизвестный селектор.
     with pytest.raises(RoutingPlanError, match="неизвестный селектор"):
@@ -603,7 +604,7 @@ def test_stage_models_validation_rejects_manual_damage():
 
 def test_custom_layout_is_named_custom():
     """Раскладка, не совпавшая с эталоном, честно называет себя «своей»."""
-    config = presets.reference_config(presets.PRESET_CLAUDE_GPT_CODEX, codex_model_id=CODEX_ID)
+    config = _legacy_presets.reference_config(_legacy_presets.CLAUDE_GPT_CODEX, codex_model_id=CODEX_ID)
     plan = build_plan(stage_models={**config, "norm_fix": "claude-sonnet-5"})
     assert plan.preset_id == presets.PRESET_CUSTOM
 
@@ -622,10 +623,9 @@ def test_preset_reference_matches_frontend_definition():
     text = source.read_text(encoding="utf-8")
 
     aliases = {
-        "CODEX_PRESET_MODEL": CODEX_ID,
-        "BLOCK_CODEX_ENSEMBLE_MODEL": presets.ENSEMBLE_BLOCK,
-        "OPT_CODEX_ENSEMBLE_MODEL": presets.ENSEMBLE_OPTIMIZATION,
         "BLOCK_CLAUDE_ONLY_MODEL": presets.ENSEMBLE_BLOCK_CLAUDE_ONLY,
+        "BLOCK_CODEX_ONLY_MODEL": presets.ENSEMBLE_BLOCK_CODEX_ONLY,
+        "OPT_CODEX_ONLY_MODEL": presets.ENSEMBLE_OPTIMIZATION_CODEX_ONLY,
     }
 
     def parse_block(head: str, source_text: str) -> dict[str, str]:
@@ -649,9 +649,7 @@ def test_preset_reference_matches_frontend_definition():
     base = parse_block("const BASE_STAGE_MODEL_CONFIG = {", text)
     presets_block = text[text.index("const modelPresets = {"):]
 
-    for preset_id in (
-        presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX, presets.PRESET_CLAUDE_ONLY,
-    ):
+    for preset_id in (presets.PRESET_CLAUDE_ONLY, presets.PRESET_CODEX_ONLY):
         chunk = parse_block(f"{preset_id}: {{", presets_block)
         # `...BASE_STAGE_MODEL_CONFIG` во фронтенде — расширение базовой раскладки.
         spread_head = f"{preset_id}: {{"
@@ -671,7 +669,7 @@ def test_preset_reference_matches_frontend_definition():
 # ─── Условия и мультипликативность типизированы ──────────────────────────────
 def test_conditions_and_multiplicity_are_typed_not_expressions():
     """Условие — идентификатор из реестра, а не строка кода (§14 задания)."""
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         plan = build_plan(preset_id)
         for _stage, item in plan.iter_actions():
             assert item.condition.type in registry.KNOWN_CONDITIONS
@@ -726,7 +724,7 @@ def test_center_only_stage_cannot_be_assigned_to_worker():
 
 def test_roundtrip_preserves_every_routing_dimension():
     """Сериализация не теряет ни одного измерения маршрута."""
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         plan = build_plan(preset_id)
         restored = RoutingPlan.from_dict(plan.to_dict())
         assert restored.plan_hash() == plan.plan_hash()
@@ -771,7 +769,7 @@ def test_condition_resolvable_at_creation_split():
 
 def test_claude_only_preset_compiles_to_claude_block_detector_and_judge():
     """«Только Claude»: этап 01 — нога Opus и судья Sonnet, ни Codex, ни OpenRouter."""
-    config = presets.reference_config(presets.PRESET_CLAUDE_ONLY, codex_model_id=CODEX_ID)
+    config = _legacy_presets.reference_config(presets.PRESET_CLAUDE_ONLY, codex_model_id=CODEX_ID)
     plan = build_plan(stage_models=config)
     assert plan.preset_id == presets.PRESET_CLAUDE_ONLY
     providers = {

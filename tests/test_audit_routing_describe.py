@@ -1,5 +1,6 @@
 """Описание фактического маршрута для окна «Конфигурация моделей»."""
 
+from tests import _legacy_presets
 import pytest
 
 from backend.app.core import config
@@ -14,7 +15,7 @@ PROD_ENV = {
 
 
 def _routing(preset_id, env=PROD_ENV):
-    stages = presets.reference_config(preset_id, codex_model_id=config.CODEX_STAGE_MODEL_ID)
+    stages = _legacy_presets.reference_config(preset_id, codex_model_id=config.CODEX_STAGE_MODEL_ID)
     result = describe.describe_routing(stages, env=env)
     assert result["error"] == ""
     return result["stages"]
@@ -31,7 +32,7 @@ def _codex_effort(monkeypatch):
 
 
 def test_full_codex_shows_claude_where_it_really_runs():
-    st = _routing(presets.PRESET_FULL_CODEX)
+    st = _routing(_legacy_presets.FULL_CODEX)
 
     guard = _actions(st["findings_corrector"])["absence_guard"]
     assert guard["model"].startswith("claude-sonnet")
@@ -44,13 +45,13 @@ def test_full_codex_shows_claude_where_it_really_runs():
 
 
 def test_deterministic_stages_are_marked_without_model():
-    st = _routing(presets.PRESET_FULL_CODEX)
+    st = _routing(_legacy_presets.FULL_CODEX)
     assert st["findings_critic"]["deterministic_only"] is True
     assert st["optimization_corrector"]["deterministic_only"] is True
 
 
 def test_block_legs_efforts_and_skipped_gpt():
-    st = _routing(presets.PRESET_FULL_CODEX)["block_batch"]
+    st = _routing(_legacy_presets.FULL_CODEX)["block_batch"]
     acts = _actions(st)
 
     assert acts["detector_codex_standard"]["effort"] == "low"
@@ -65,7 +66,7 @@ def test_block_legs_efforts_and_skipped_gpt():
 
 
 def test_disabled_flag_marks_leg_inactive():
-    st = _routing(presets.PRESET_FULL_CODEX, env={**PROD_ENV, "STAGE01_THIRD_LEG_ENABLED": "false"})
+    st = _routing(_legacy_presets.FULL_CODEX, env={**PROD_ENV, "STAGE01_THIRD_LEG_ENABLED": "false"})
     strong = _actions(st["block_batch"]).get("detector_codex_strong")
     if strong is not None:
         assert strong["active"] is False
@@ -73,7 +74,7 @@ def test_disabled_flag_marks_leg_inactive():
 
 
 def test_claude_preset_text_stage_runs_opus():
-    text = _actions(_routing(presets.PRESET_CLAUDE_GPT_CODEX)["text_analysis"])["text_audit"]
+    text = _actions(_routing(_legacy_presets.CLAUDE_GPT_CODEX)["text_analysis"])["text_audit"]
     assert text["model_label"] == "Claude Opus 5.5"
     assert text["effort"] == "high"
 
@@ -88,7 +89,7 @@ def test_optional_claude_leg_is_listed_with_its_disciplines(monkeypatch):
     from backend.app.pipeline.stages.block_analysis import gemma_findings_only as gfo
 
     monkeypatch.setattr(gfo, "STAGE01_CLAUDE_LEG_ENABLED", True)
-    st = _routing(presets.PRESET_FULL_CODEX)["block_batch"]
+    st = _routing(_legacy_presets.FULL_CODEX)["block_batch"]
     ids = [a["action_id"] for a in st["actions"]]
     assert ids.index("detector_claude") == ids.index("detector_codex_strong") + 1
     leg = _actions(st)["detector_claude"]
@@ -97,4 +98,4 @@ def test_optional_claude_leg_is_listed_with_its_disciplines(monkeypatch):
     assert st["parallel_legs"] == 3
 
     monkeypatch.setattr(gfo, "STAGE01_CLAUDE_LEG_ENABLED", False)
-    assert "detector_claude" not in _actions(_routing(presets.PRESET_FULL_CODEX)["block_batch"])
+    assert "detector_claude" not in _actions(_routing(_legacy_presets.FULL_CODEX)["block_batch"])

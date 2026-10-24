@@ -162,12 +162,8 @@ class FakeCleanRemote:
             "job_types": ["test_pipeline_v1", "audit_pipeline_v1"],
             "compressions": ["gzip"],
             "providers": [provider.value for provider in self.request.providers],
-            "routing_compatibility": (
-                ["claude_gpt_codex", "codex_exec"]
-                if {provider.value for provider in self.request.providers}
-                == {"claude", "codex", "openrouter"}
-                else []
-            ),
+            # Совместимых с воркером пресетов нет с 24.10.2026.
+            "routing_compatibility": [],
             "routing_plan_v1": True,
             "bootstrap_version": "1.0.0",
             "provider_policy_version": 1,
@@ -487,10 +483,9 @@ def test_aj_al_approved_policy_covers_exact_presets(settings, bundle, tmp_path):
         request=request_for(bundle, providers=["claude", "codex", "openrouter"]),
     )
     result = manager.run(session["session_id"])
-    assert result["result"]["providers"]["compatible_presets"] == [
-        "claude_gpt_codex",
-        "codex_exec",
-    ]
+    # «Claude+GPT +Codex» и «Full Codex» удалены 24.10.2026; оставшиеся
+    # пресеты исполняются только на центре — воркеру объявлять нечего.
+    assert result["result"]["providers"]["compatible_presets"] == []
     policy = json.loads(
         (Path(__file__).parents[1] / "audit_worker/provider_policy.approved.json").read_text()
     )
@@ -937,10 +932,8 @@ def test_provider_metadata_is_advertised_without_secret(monkeypatch, tmp_path):
     )
     capabilities = load_config(require_dispatcher=False).capabilities()
     assert capabilities["provider_policy_sha256"] == "a" * 64
-    assert capabilities["routing_compatibility"] == [
-        "claude_gpt_codex",
-        "codex_exec",
-    ]
+    # Удалённые пресеты воркер больше не объявляет (24.10.2026).
+    assert capabilities["routing_compatibility"] == []
 
 
 def test_action_required_uses_integrated_resume_command():

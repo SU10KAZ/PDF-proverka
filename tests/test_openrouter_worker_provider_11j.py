@@ -32,6 +32,7 @@ Codex такого класса ошибок не было вовсе: их уч
 """
 from __future__ import annotations
 
+from tests import _legacy_presets
 import json
 import os
 import socket
@@ -253,7 +254,7 @@ def test_b_capability_advertised_only_when_key_configured(worker_root, or_home, 
 
 def test_c_missing_openrouter_makes_worker_incompatible():
     """C. Воркер без шлюза НЕ совместим с точным пресетом — до создания задания."""
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     caps_full = {
         "real_llm_enabled": True,
         "pipeline_provider_bridge_enabled": True,
@@ -282,7 +283,7 @@ def test_c2_missing_claude_also_makes_full_codex_incompatible():
     Имя пресета — продуктовое. Страж отсутствия и основная нога оптимизации
     идут на Claude в ОБОИХ пресетах, и «Full Codex» этого не отменяет.
     """
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     caps = {
         "real_llm_enabled": True,
         "pipeline_provider_bridge_enabled": True,
@@ -614,7 +615,7 @@ def _detector_actions(plan):
 
 
 @pytest.mark.parametrize(
-    "preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX]
+    "preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX]
 )
 def test_t_u_block_stage_is_exactly_four_model_actions(preset_id):
     """T+U. На блок — РОВНО четыре обращения, в обоих пресетах."""
@@ -634,7 +635,7 @@ def test_t_u_block_stage_is_exactly_four_model_actions(preset_id):
 
 
 @pytest.mark.parametrize(
-    "preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX]
+    "preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX]
 )
 def test_v_w_three_detectors_are_one_parallel_group_judge_after(preset_id):
     """V+W. Три детектора — одна параллельная группа; судья ПОСЛЕ барьера."""
@@ -666,7 +667,7 @@ def test_v_w_three_detectors_are_one_parallel_group_judge_after(preset_id):
 
 
 @pytest.mark.parametrize(
-    "preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX]
+    "preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX]
 )
 def test_x_judge_is_not_a_center_action(preset_id):
     """X. Судья исполняется на воркере, а не остаётся центру."""
@@ -682,7 +683,7 @@ def test_y_full_codex_targeted_merge_is_planned_and_executable():
     (KI-11I-2): удалённый прогон давал свод без усилителей, и расхождение было
     видно только сравнением плана с журналом.
     """
-    plan = build_plan(presets.PRESET_FULL_CODEX, discipline="EOM")
+    plan = build_plan(_legacy_presets.FULL_CODEX, discipline="EOM")
     roles = {a.role for a in plan.stage("findings_merge").actions if a.is_model}
     assert registry.ROLE_MERGE in roles
     assert registry.ROLE_TARGETED_DISCIPLINE in roles
@@ -712,14 +713,14 @@ def test_z_claude_preset_has_no_targeted_passes():
     не выполняет. Проверяется на плане, а не на намерении: исполнитель ходит
     по действиям, и пустой список действий означает ноль вызовов.
     """
-    plan = build_plan(presets.PRESET_CLAUDE_GPT_CODEX)
+    plan = build_plan(_legacy_presets.CLAUDE_GPT_CODEX)
     roles = {a.role for a in plan.stage("findings_merge").actions if a.is_model}
     assert roles == {registry.ROLE_MERGE}
 
 
 def test_aa_full_codex_absence_guard_is_worker_claude():
     """AA. Страж отсутствия «Full Codex» — Claude, и он на ВОРКЕРЕ."""
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     stage = plan.stage("findings_corrector")
     assert stage is not None and stage.execution_scope == registry.SCOPE_WORKER
     guard = next(
@@ -731,7 +732,7 @@ def test_aa_full_codex_absence_guard_is_worker_claude():
 
 
 @pytest.mark.parametrize(
-    "preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX]
+    "preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX]
 )
 def test_ab_ac_optimization_is_dual_provider_on_the_worker(preset_id):
     """AB+AC. Две ноги оптимизации ‖ на воркере, объединение — детерминированное."""
@@ -772,8 +773,8 @@ def test_ab2_visual_leg_effort_actually_reaches_the_cli():
 def test_ad_ae_optimization_critic_follows_the_preset():
     """AD+AE. Критик оптимизации: Codex на «Full Codex», Claude на пресете A."""
     for preset_id, provider in (
-        (presets.PRESET_FULL_CODEX, registry.PROVIDER_CODEX),
-        (presets.PRESET_CLAUDE_GPT_CODEX, registry.PROVIDER_CLAUDE),
+        (_legacy_presets.FULL_CODEX, registry.PROVIDER_CODEX),
+        (_legacy_presets.CLAUDE_GPT_CODEX, registry.PROVIDER_CLAUDE),
     ):
         plan = build_plan(preset_id)
         critic = next(
@@ -784,7 +785,7 @@ def test_ad_ae_optimization_critic_follows_the_preset():
 
 
 @pytest.mark.parametrize(
-    "preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX]
+    "preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX]
 )
 def test_af_ag_deterministic_stages_make_zero_model_calls(preset_id):
     """AF+AG. Верификатор и F OPT Fix не зовут модель — по ТИПУ, не по факту."""
@@ -798,7 +799,7 @@ def test_af_ag_deterministic_stages_make_zero_model_calls(preset_id):
 
 
 @pytest.mark.parametrize(
-    "preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX]
+    "preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX]
 )
 def test_ah_norm_stage_stays_central(preset_id):
     """AH. Нормативный этап — единственный центральный, и он им остаётся."""
@@ -825,8 +826,8 @@ def test_ah2_norm_database_never_enters_the_worker_package():
 @pytest.mark.parametrize(
     "preset_id,expected",
     [
-        (presets.PRESET_CLAUDE_GPT_CODEX, "claude-opus-5-5"),
-        (presets.PRESET_FULL_CODEX, "codex/gpt-5.4"),
+        (_legacy_presets.CLAUDE_GPT_CODEX, "claude-opus-5-5"),
+        (_legacy_presets.FULL_CODEX, "codex/gpt-5.4"),
     ],
 )
 def test_ai_central_norm_tail_reads_the_frozen_plan(preset_id, expected, monkeypatch):
@@ -852,7 +853,7 @@ def test_aj_global_preset_switch_cannot_change_a_running_job(monkeypatch):
     from backend.app.core import config as cfg
 
     monkeypatch.setattr(center_models, "codex_model_id", lambda: "codex/gpt-5.4")
-    running = build_plan(presets.PRESET_FULL_CODEX)
+    running = build_plan(_legacy_presets.FULL_CODEX)
     with active_plan.bind_plan(running):
         monkeypatch.setitem(cfg.STAGE_MODEL_CONFIG, "norm_verify", "claude-opus-5-5")
         monkeypatch.setitem(cfg.STAGE_MODEL_CONFIG, "text_analysis", "claude-opus-5-5")
@@ -860,7 +861,7 @@ def test_aj_global_preset_switch_cannot_change_a_running_job(monkeypatch):
         assert cfg.get_stage_model("text_analysis") == "codex/gpt-5.4"
 
     # Следующее задание получает НОВЫЙ план и другой хэш.
-    other = build_plan(presets.PRESET_CLAUDE_GPT_CODEX)
+    other = build_plan(_legacy_presets.CLAUDE_GPT_CODEX)
     assert running.plan_hash() != other.plan_hash()
     with active_plan.bind_plan(other):
         assert cfg.get_stage_model("norm_verify") == "claude-opus-5-5"
@@ -877,8 +878,8 @@ def test_aj2_bound_plan_is_isolated_between_concurrent_tasks():
 
     from backend.app.core import config as cfg
 
-    plan_a = build_plan(presets.PRESET_FULL_CODEX)
-    plan_b = build_plan(presets.PRESET_CLAUDE_GPT_CODEX)
+    plan_a = build_plan(_legacy_presets.FULL_CODEX)
+    plan_b = build_plan(_legacy_presets.CLAUDE_GPT_CODEX)
     seen: dict[str, str] = {}
 
     async def run(name: str, plan) -> None:
@@ -896,7 +897,7 @@ def test_aj2_bound_plan_is_isolated_between_concurrent_tasks():
 
 
 @pytest.mark.parametrize(
-    "preset_id", [presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX]
+    "preset_id", [_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX]
 )
 def test_ak_al_plan_hash_survives_serialization(preset_id):
     """AK+AL. Хэш плана не меняется от круга через JSON — ни в пути, ни в ответе."""
@@ -1030,7 +1031,7 @@ def test_rev6_feature_flags_cannot_inject_provider_env(monkeypatch):
         openrouter_secret.CREDENTIAL_PATH_ENV: "/etc/shadow",
         "PATH": "/attacker/bin",
     }
-    plan = build_plan(presets.PRESET_FULL_CODEX, flags=hostile)
+    plan = build_plan(_legacy_presets.FULL_CODEX, flags=hostile)
     for name in (BASE_URL_ENV, STUBBED_ENDPOINTS_ENV,
                  openrouter_secret.CREDENTIAL_PATH_ENV):
         monkeypatch.delenv(name, raising=False)
@@ -1177,7 +1178,7 @@ def test_rev10_dead_primary_role_entries_are_absent():
     assert not dead, f"карта называет детерминированные роли: {dead}"
     # И каждая оставшаяся запись достижима хотя бы в одном пресете.
     reachable: set[str] = set()
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (_legacy_presets.CLAUDE_GPT_CODEX, _legacy_presets.FULL_CODEX):
         plan = build_plan(preset_id)
         for stage, action in plan.model_actions():
             reachable.add(f"{stage.stage_id}:{action.role}")

@@ -20,6 +20,7 @@
 """
 from __future__ import annotations
 
+from tests import _legacy_presets
 import asyncio
 import json
 from pathlib import Path
@@ -108,7 +109,7 @@ def stage(tmp_path, monkeypatch):
     codex_exe = _fake_cli(tmp_path / "bin" / "codex", journal, _BLOCK_ANSWER,
                           provider="codex")
 
-    plan = build_plan(presets.PRESET_FULL_CODEX)
+    plan = build_plan(_legacy_presets.FULL_CODEX)
     active_plan.set_plan(plan)
 
     # Локальная политика воркера: каждая способность плана получает СВОЮ модель.

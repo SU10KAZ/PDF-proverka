@@ -188,6 +188,19 @@ def _snapshot(quota_state="ready", policy="allowed", install="installed"):
     }
 
 
+@pytest.fixture
+def legacy_preset_providers(monkeypatch):
+    """Профили «Claude+GPT +Codex» / «Full Codex» удалены 24.10.2026, и таблица
+    `ROUTING_PRESET_PROVIDERS` пуста; логику фильтра проверяем на прежних данных."""
+    from contracts.agent_stream.v1 import adapters
+
+    monkeypatch.setattr(adapters, "ROUTING_PRESET_PROVIDERS", {
+        "claude_gpt_codex": ("claude",),
+        "codex_exec": ("codex",),
+    })
+
+
+@pytest.mark.usefixtures("legacy_preset_providers")
 def test_blocked_claude_removes_claude_routing_presets():
     from contracts.agent_stream.v1.adapters import usable_routing_compatibility
 
@@ -196,6 +209,7 @@ def test_blocked_claude_removes_claude_routing_presets():
     assert usable_routing_compatibility(declared, blocked) == ["codex_exec"]
 
 
+@pytest.mark.usefixtures("legacy_preset_providers")
 @pytest.mark.parametrize("state", ["ready", "unknown", "low", "stale"])
 def test_unknown_quota_does_not_remove_presets(state):
     """Незнание — не повод отказываться от работы."""
@@ -206,6 +220,7 @@ def test_unknown_quota_does_not_remove_presets(state):
     assert usable_routing_compatibility(declared, ok) == declared
 
 
+@pytest.mark.usefixtures("legacy_preset_providers")
 def test_codex_presets_unaffected_by_claude_block():
     from contracts.agent_stream.v1.adapters import usable_routing_compatibility
 
