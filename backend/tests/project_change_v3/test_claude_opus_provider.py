@@ -30,7 +30,7 @@ from pathlib import Path
 
 import pytest
 
-from backend.app.services.project_change_v3 import transport
+from backend.app.services.project_change_v3 import contracts, transport
 from backend.app.services.project_change_v3.provider import (
     ClaudeOpusProvider,
     CodexProvider,
@@ -117,6 +117,26 @@ def complete(provider, prompt, rows, **kwargs):
 
 
 # ── What the model sees ─────────────────────────────────────────────────────
+
+def test_duplicate_bitmap_keeps_every_page_and_block_binding(tmp_path):
+    old, new, other = (tmp_path / name for name in ("old.png", "new.png", "other.png"))
+    old.write_bytes(png(100, 100))
+    new.write_bytes(old.read_bytes())
+    other.write_bytes(png(120, 120))
+    bindings = [
+        {"side": "OLD", "physical_page": 1, "block_id": "a"},
+        {"side": "NEW", "physical_page": 9, "block_id": "b"},
+        {"side": "NEW", "physical_page": 9, "block_id": "c"},
+        {"side": "OLD", "physical_page": 2, "block_id": "d"},
+    ]
+    rows = [{"path": str(path), "label": label}
+            for path, label in zip((old, new, other, old), bindings, strict=True)]
+    payload, paths, labels = build_codex_payload("map", {"pair": "P"}, rows)
+    assert paths == [str(old), str(other)]
+    assert labels == [{**label, "image": index}
+                      for label, index in zip(bindings, (1, 1, 2, 1), strict=True)]
+    assert json.loads(payload.split("\nIMAGES:\n")[1].split("\nSOURCE DATA:\n")[0]) == labels
+
 
 def test_the_same_payload_and_images_reach_the_model(tmp_path, fake_cli):
     rows, prompt = image_rows(tmp_path), prompt_of(50_000)
@@ -509,7 +529,7 @@ def test_mapper_miner_and_dedupe_all_run_on_opus(env):
     assert [r["text_sha256"] for r in seen] == [c["model_visible_payload_sha256"] for c in calls]
     assert [r["image_sha256"] for r in seen] == [c["image_sha256"] for c in calls]
     assert all(r["argv"][r["argv"].index("--model") + 1] == "claude-opus-5" for r in seen)
-    assert (prov["engine_version"], prov["engine_variant"]) == ("3.24.0", "ProjectChange V3 / Opus")
+    assert (prov["engine_version"], prov["engine_variant"]) == (contracts.ENGINE_VERSION, "ProjectChange V3 / Opus")
     assert (prov["provider"], prov["model"], prov["thinking"]) == (
         "claude_code_cli_subscription", "claude-opus-5", {"type": "adaptive", "effort": "xhigh"})
     assert prov["usage_total"]["calls_with_usage"] == len(calls) and result["legacy_invoked"] is False

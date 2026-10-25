@@ -54,17 +54,18 @@ def build_codex_payload(
     """
     labels: list[dict[str, Any]] = []
     image_paths: list[str] = []
-    seen: set[str] = set()
+    image_numbers: dict[str, int] = {}
     for row in images:
         path = str(row.get("path") or "")
         if not path:
             raise ProviderError("image_path_missing", "V3 image row has no path")
         digest = hashlib.sha256(Path(path).read_bytes()).hexdigest()
-        if digest in seen:
-            continue
-        seen.add(digest)
-        image_paths.append(path)
-        labels.append({**dict(row.get("label") or {}), "image": len(image_paths)})
+        if digest not in image_numbers:
+            image_paths.append(path)
+            image_numbers[digest] = len(image_paths)
+        # One bitmap can belong to several pages/blocks (including both sides).
+        # Deduplicate the bytes, never the source bindings.
+        labels.append({**dict(row.get("label") or {}), "image": image_numbers[digest]})
     from .source_compaction import compact
 
     source, receipt = compact(data)
