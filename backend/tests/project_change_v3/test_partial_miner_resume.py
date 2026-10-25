@@ -59,6 +59,7 @@ def partial(env, monkeypatch):
 
 
 def _remaining(monkeypatch, *, fail_at=None, fail_dedupe=False):
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MINER_PLANNER", "legacy")
     # Only the unfinished wide region may reach planning. Saved regions remain
     # usable even if the new envelope policy would reject their original input.
     def fits(_pair, region, _work, _contract):

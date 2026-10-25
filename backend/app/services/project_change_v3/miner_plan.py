@@ -18,7 +18,7 @@ BALANCED_ENV = "PROJECT_COMPARISON_V3_MINER_PLANNER"
 
 
 def planner_mode():
-    value = os.environ.get(BALANCED_ENV, "legacy").strip().lower()
+    value = os.environ.get(BALANCED_ENV, "balanced").strip().lower()
     if value not in {"legacy", "shadow", "balanced"}:
         raise ValueError(f"{BALANCED_ENV} must be legacy, shadow or balanced")
     return value

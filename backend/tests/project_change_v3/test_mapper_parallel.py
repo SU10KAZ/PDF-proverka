@@ -15,6 +15,8 @@ from backend.tests.project_change_v3.test_mapper_portions import _region
 
 
 def prepare(built, monkeypatch, count):
+    # These concurrency tests force a fixed plan through the legacy fit probe.
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MAPPER_PLANNER", "legacy")
     pages = deepcopy(gf.PAGES["NEW"])
     for page in range(3, count + 1):
         pages[page] = [(f"n{page}_text", "text", [0.1, 0.1, 0.8, 0.3], f"Synthetic page {page}")]

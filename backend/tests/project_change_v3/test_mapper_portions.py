@@ -189,6 +189,7 @@ def _portion_handlers(seen: list):
 
 @pytest.mark.parametrize("profile", ["opus5", "astra"])
 def test_engine_runs_the_mapper_in_portions_and_merges_them(env, monkeypatch, profile):  # noqa: F811
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MAPPER_PLANNER", "legacy")
     seen: list = []
     fake = FakeProvider(handlers=_portion_handlers(seen))
     set_test_provider(fake)
@@ -314,6 +315,7 @@ def test_codex_old_that_cannot_fit_stops_before_any_provider_call(env, monkeypat
 
 
 def test_one_oversized_page_pair_blocks_even_previously_planned_tiles(env, monkeypatch):  # noqa: F811
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MAPPER_PLANNER", "legacy")
     fake = FakeProvider(handlers=_portion_handlers([]))
     set_test_provider(fake)
     monkeypatch.setattr(engine, "mapper_portions_mod_single_envelope_error", lambda *_: "too big")
@@ -327,6 +329,7 @@ def test_one_oversized_page_pair_blocks_even_previously_planned_tiles(env, monke
 
 
 def test_all_final_portion_notes_are_checked_before_first_call(env, monkeypatch):  # noqa: F811
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MAPPER_PLANNER", "legacy")
     from backend.app.services.project_change_v3.transport import TransportIntegrityError
 
     fake = FakeProvider(handlers=gf.fake_handlers())
@@ -366,6 +369,7 @@ def test_an_oversized_region_is_split_by_new_pages_with_old_pages_in_every_part(
 
 
 def test_engine_splits_a_region_before_any_miner_call(env, monkeypatch):  # noqa: F811
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MINER_PLANNER", "legacy")
     fake = FakeProvider(handlers=_portion_handlers([]))
     handlers = fake.handlers
     original_mapping = handlers["MAPPING"]

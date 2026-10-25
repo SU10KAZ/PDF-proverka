@@ -113,6 +113,7 @@ def test_oversized_single_page_pair_stops_before_any_miner_call(env, monkeypatch
 
 
 def test_exact_final_regions_are_checked_before_any_miner_call(env, monkeypatch):  # noqa: F811
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MINER_PLANNER", "legacy")
     provider = FakeProvider(handlers=prepare_wide_region(monkeypatch))
     set_test_provider(provider)
     monkeypatch.setattr(engine, "_miner_fits", lambda _p, r, _w, _c:
@@ -149,6 +150,7 @@ def test_compacted_miner_answer_is_saved_rejected_and_never_retried_or_published
 
 
 def test_excessive_plan_stops_before_mining_and_mapping_can_be_reused(env, monkeypatch):  # noqa: F811
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MINER_PLANNER", "legacy")
     from backend.app.services.project_change_v3 import resume
     from backend.tests.project_change_v3.test_resume_and_dedupe_repair import _run as resumable_run
 

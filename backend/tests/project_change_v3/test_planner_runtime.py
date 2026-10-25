@@ -58,6 +58,7 @@ def test_payload_version_drift_refuses_saved_answers(env, planned, monkeypatch):
 
 
 def test_rejected_portion_leaves_the_remaining_plan_open(env, monkeypatch):
+    monkeypatch.setenv(mapper_planning.MODE_ENV, "legacy")
     monkeypatch.setenv("PROJECT_COMPARISON_V3_MAPPER_CONCURRENCY", "1")
     monkeypatch.setattr(engine, "mapper_portions_mod_single_envelope_error", lambda *_: "force two portions")
     monkeypatch.setattr(engine, "mapper_portions_mod_fits",

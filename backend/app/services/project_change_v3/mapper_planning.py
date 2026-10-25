@@ -16,7 +16,7 @@ PAYLOAD_VERSION = contracts.SOURCE_PAYLOAD_VERSION
 
 
 def planner_mode():
-    mode = os.environ.get(MODE_ENV, "legacy").strip().lower()
+    mode = os.environ.get(MODE_ENV, "balanced").strip().lower()
     if mode not in {"legacy", "shadow", "balanced"}:
         raise ValueError(f"{MODE_ENV} must be legacy, shadow or balanced")
     return mode
