@@ -77,6 +77,12 @@ class MapperPlanner:
         label = mp._label([self.units[index][0] for index in indices], list(new))
         return self.measure(self.keys(pages), (limit, limit, label, old, new))["fits"]
 
+    def legacy_fits(self, pages):
+        """The unchanged production probe is the baseline, even near a boundary."""
+        old = tuple(p["physical_page"] for p in pages if p["side"] == "OLD")
+        new = tuple(p["physical_page"] for p in pages if p["side"] == "NEW")
+        return self.measure(self.keys(pages), (99, 99, "х" * 200, old, new))["fits"]
+
     def plan(self, *, mode="balanced", fits=None, allow_single=True):
         started = time.monotonic()
         if mode not in {"legacy", "shadow", "balanced"}:
@@ -103,7 +109,8 @@ class MapperPlanner:
         selection = pp.select_plan(self.structure, self.units, fits=fits or self.fits,
                                    measure=self.measure_portion, weights=weights,
                                    source_budget=max(1, single["input_budget_tokens"] - overhead),
-                                   ratios=() if mode == "legacy" else pp.RATIOS)
+                                   ratios=() if mode == "legacy" else pp.RATIOS,
+                                   baseline_fits=fits or self.legacy_fits)
         selection.report.update(base, recommended=selection.report["selected"], single_request=single)
         if mode == "shadow" and selection.report["selected"] != "legacy":
             # Legacy must itself be feasible in shadow mode. No silent change
@@ -111,7 +118,7 @@ class MapperPlanner:
             legacy = next(r for r in selection.report["candidates"] if r["name"] == "legacy")
             if legacy["status"] != "feasible":
                 raise mp.PortioningImpossible(legacy.get("error", "legacy plan is infeasible"))
-            selection.portions = mp.plan_portions(self.structure, self.units, fits or self.fits)
+            selection.portions = mp.plan_portions(self.structure, self.units, fits or self.legacy_fits)
             selection.report["selected"] = "legacy"
         selection.report["portions"] = [p.summary() for p in selection.portions]
         selection.report["planning_seconds"] = round(time.monotonic() - started, 6)

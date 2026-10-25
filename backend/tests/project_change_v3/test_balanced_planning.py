@@ -111,3 +111,22 @@ def test_real_balancing_counts_exact_packets_without_rewriting_md(monkeypatch):
     shadow = planner.plan(mode="shadow")
     assert shadow.report["selected"] == "legacy"
     assert len(shadow.portions) == legacy["calls"]
+
+
+@pytest.mark.parametrize("budget", [18000, 25000, 37000])
+def test_report_baseline_is_the_existing_production_probe(monkeypatch, budget):
+    from backend.app.services.project_change_v3 import engine, transport
+
+    pages = source(4, 9)
+    for p in pages:
+        p["blocks"] = [{"modality": "TEXT", "structured_md": f"{p['side']} {p['physical_page']} " + "Ж" * 2000}]
+    monkeypatch.setattr(transport, "CODEX_MAPPER_INPUT_TOKENS", budget)
+    profile = contracts.MODEL_PROFILES["astra"]
+    planner = MapperPlanner("P", pages, profile)
+    with contracts.use_profile(profile):
+        expected = mp.plan_portions(pages, planner.units, lambda rows: engine.mapper_portions_mod_fits("P", rows))
+    legacy = planner.plan(mode="legacy", allow_single=False)
+    assert [p.summary() for p in legacy.portions] == [p.summary() for p in expected]
+    balanced = planner.plan(mode="balanced", allow_single=False)
+    baseline, = [r for r in balanced.report["candidates"] if r["name"] == "legacy"]
+    assert baseline["calls"] == len(expected)

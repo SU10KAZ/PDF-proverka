@@ -26,7 +26,7 @@ class Selection:
     report: dict
 
 
-def select_plan(structure, units, *, fits, measure, weights, source_budget, ratios=RATIOS):
+def select_plan(structure, units, *, fits, measure, weights, source_budget, ratios=RATIOS, baseline_fits=None):
     """Weights only suggest OLD boundaries; exact bundles admit and rank plans.
 
     ``measure(portion)`` returns the complete request measurement. The caller
@@ -93,7 +93,7 @@ def select_plan(structure, units, *, fits, measure, weights, source_budget, rati
             row.update(status="rejected", error=str(exc))
         candidates.append(row)
 
-    evaluate("legacy", lambda: mp.plan_portions(structure, units, probe))
+    evaluate("legacy", lambda: mp.plan_portions(structure, units, baseline_fits or probe))
 
     for ratio in ratios:
         if not 0 < ratio < 1:
