@@ -141,5 +141,8 @@ def test_fixture_aliases_only_for_fixture_object(client):
 def test_page_without_comparison(client):
     assert client.get("/human-mapping/", params={"object": "obj_generic_test"}).status_code == 400
     assert client.get("/human-mapping/", params={"comparison": "generic_pair_not_A_or_B"}).status_code == 400
-    chooser = client.get("/human-mapping/")
-    assert chooser.status_code == 200 and '"pair": null' in chooser.text and '"fixture_nav": true' in chooser.text
+    # The standalone editor is retired; old bookmarks redirect to stage 2.
+    # This router-only test app does not serve the root SPA itself.
+    chooser = client.get("/human-mapping/", follow_redirects=False)
+    assert chooser.status_code == 307
+    assert chooser.headers["location"] == "/#/stage-comparison?object=4f3e5916"

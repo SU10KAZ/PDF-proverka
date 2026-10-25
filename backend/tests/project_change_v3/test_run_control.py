@@ -89,9 +89,10 @@ def test_running_state_names_every_stage(env, monkeypatch):
     running = [s for s in seen if s["status"] == "RUNNING"]
     stages = [s.get("current_stage") for s in running]
     regions = len(_stored(env, "project_change_v3_semantic_map")["regions"])
-    assert stages == ["SOURCE_PREPARATION", "MAPPING", *["MINING"] * (regions + 1),
+    # Miner first announces complete request planning, then per-region work.
+    assert stages == ["SOURCE_PREPARATION", "MAPPING", *["MINING"] * (regions + 2),
                       "UNMATCHED_REVIEW", "DEDUPE", "SOURCE_VERIFICATION", "PERSISTING", "HUMAN_MAPPING"]
-    mining = [s for s in running if s.get("current_stage") == "MINING"]
+    mining = [s for s in running if s.get("current_stage") == "MINING" and s.get("unit") == "region"]
     assert [(s["processed"], s["total"]) for s in mining] == [(i, regions) for i in range(regions + 1)]
     assert all(s["unit"] == "region" for s in mining)
     # One run, one identity: progress never forks run_id / started_at and never claims success.
