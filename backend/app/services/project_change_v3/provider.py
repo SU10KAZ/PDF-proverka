@@ -44,6 +44,7 @@ def build_codex_payload(
     images: list[dict[str, Any]],
     *,
     compaction_receipt: dict[str, Any] | None = None,
+    image_digest=None,
 ) -> tuple[str, list[str], list[dict[str, Any]]]:
     """Exact model-visible payload, shared by admission and provider execution.
 
@@ -59,7 +60,7 @@ def build_codex_payload(
         path = str(row.get("path") or "")
         if not path:
             raise ProviderError("image_path_missing", "V3 image row has no path")
-        digest = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+        digest = image_digest(path) if image_digest else hashlib.sha256(Path(path).read_bytes()).hexdigest()
         if digest not in image_numbers:
             image_paths.append(path)
             image_numbers[digest] = len(image_paths)
@@ -225,7 +226,7 @@ class ClaudeOpusProvider:
         compaction = {}
         payload, image_paths, _labels = build_codex_payload(prompt, data, images, compaction_receipt=compaction)
         try:
-            plan = transport.plan_claude(payload, image_paths)
+            plan = transport.plan_claude(payload, image_paths, schema)
         except transport.TransportIntegrityError as exc:
             raise ProviderError("transport_integrity", str(exc)) from exc
         self.last_transport = {

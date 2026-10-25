@@ -608,7 +608,7 @@ def mapper_portions_mod_envelope(pair_id: str, data: dict[str, Any]) -> None:
     if active_profile().selection == "codex":
         plan_codex_mapper(payload, image_paths, MAP_SCHEMA)
     else:
-        plan_claude(payload, image_paths)
+        plan_claude(payload, image_paths, MAP_SCHEMA)
 
 
 def mapper_portions_mod_single_envelope_error(pair_id: str, structure: list[dict[str, Any]]) -> str:
@@ -629,7 +629,7 @@ def _miner_fits(pair_id: str, region: dict[str, Any], work_dir: Path, contract: 
         if active_profile().selection == "codex":
             plan_codex_miner(payload, image_paths, contract["schema"])
         else:
-            plan_claude(payload, image_paths)
+            plan_claude(payload, image_paths, contract["schema"])
     except TransportIntegrityError:
         return False
     return True

@@ -42,7 +42,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, Callable, Sequence
 
 from .contracts import PROVIDER_SELECTION
 
@@ -94,7 +94,7 @@ CLAUDE_CONTEXT_WINDOW_TOKENS = 1_000_000
 # overestimated the real input by 9–20 %; the smallest estimate among the 14
 # rejected calls was 1.20M.  The reserve covers the system prompt, the
 # StructuredOutput tool schema and the looser fit of Miner inputs.
-CLAUDE_CONTEXT_BUDGET_VERSION = "projectchange_v3_claude_context_budget/1"
+CLAUDE_CONTEXT_BUDGET_VERSION = "projectchange_v3_claude_context_budget/2"
 CLAUDE_INPUT_BUDGET_TOKENS = 950_000
 
 
@@ -185,6 +185,89 @@ def image_size_px(data: bytes) -> tuple[int, int] | None:
     return None
 
 
+def image_info(path: str) -> dict[str, Any]:
+    data = Path(path).read_bytes()
+    size = image_size_px(data)
+    if size is None or min(size) <= 0:
+        raise TransportIntegrityError(f"image pixel size unreadable — невозможно определить размеры: {path}")
+    return {"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), "px": list(size)}
+
+
+class PlanningImageCache:
+    """Run-local metadata only; execution always rereads the actual files."""
+    def __init__(self):
+        self.rows = {}
+
+    def __call__(self, path: str) -> dict[str, Any]:
+        stat = Path(path).stat()
+        stamp = (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+        previous = self.rows.get(path)
+        if previous is None or previous[0] != stamp:
+            self.rows[path] = (stamp, image_info(path))
+        return self.rows[path][1]
+
+
+def measure_request(payload: str, image_paths: Sequence[str], schema: dict[str, Any] | None = None, *,
+                    selection: str, stage: str = "Mapper",
+                    read_image: Callable = image_info) -> dict[str, Any]:
+    """One local estimator for planning, admission and reporting. Never calls a provider.
+
+    Paths must already be deduplicated by the shared payload builder. Token
+    counts are estimates, not usage. Request bytes include a conservative
+    JSON/wire framing reserve; the schema is included for BOTH providers.
+    """
+    if selection not in {"codex", "claude"} or stage not in {"Mapper", "Miner"}:
+        raise ValueError("unknown provider/stage for source measurement")
+    if not isinstance(payload, str) or not payload:
+        raise TransportIntegrityError("empty model payload")
+    rows = [read_image(str(path)) for path in image_paths]
+    payload_bytes = len(payload.encode("utf-8"))
+    schema_bytes = len(json.dumps(schema, ensure_ascii=False).encode("utf-8")) if schema is not None else 0
+    text_tokens = (payload_bytes + schema_bytes + 1) // 2
+    base64_bytes = sum(_base64_len(row["bytes"]) for row in rows)
+    # Quotes, escapes, content block headers and request settings. ASCII JSON
+    # encoding is an upper bound even when the actual wire keeps UTF-8.
+    request_bytes = len(json.dumps(payload).encode("utf-8")) + base64_bytes + 4096 + 512 * len(rows)
+    if schema is not None:
+        request_bytes += len(json.dumps(schema).encode("utf-8"))
+    errors = []
+    if selection == "codex":
+        image_tokens = sum((((w + 31) // 32 * ((h + 31) // 32)) * 6 + 4) // 5 + 256
+                           for w, h in (row["px"] for row in rows))
+        budget = CODEX_MAPPER_INPUT_TOKENS if stage == "Mapper" else CODEX_MINER_INPUT_TOKENS
+        version = CODEX_MAPPER_BUDGET_VERSION if stage == "Mapper" else CODEX_MINER_BUDGET_VERSION
+        image_estimator = "original_32px_patches_times_1.2_plus_256"
+        if text_tokens + image_tokens > budget:
+            errors.append(f"вход {stage} превышает бюджет контекста Codex: оценка {text_tokens + image_tokens} "
+                          f"токенов (текст и схема {text_tokens}, изображения {image_tokens}), бюджет {budget}")
+    else:
+        image_tokens = sum((row["px"][0] * row["px"][1] + 749) // 750 + 256 for row in rows)
+        budget, version = CLAUDE_INPUT_BUDGET_TOKENS, CLAUDE_CONTEXT_BUDGET_VERSION
+        image_estimator = "w_times_h_div_750_plus_256"
+        for index, row in enumerate(rows, 1):
+            if max(row["px"]) > CLAUDE_IMAGE_MAX_PX:
+                errors.append(f"image {index} is {row['px'][0]}x{row['px'][1]} px: above {CLAUDE_IMAGE_MAX_PX} px "
+                              "the provider CLI downscales the evidence")
+        if len(rows) > CLAUDE_MEDIA_COUNT_MAX:
+            errors.append(f"{len(rows)} images in one call: above {CLAUDE_MEDIA_COUNT_MAX} "
+                          "the provider CLI silently removes the oldest images")
+        if base64_bytes > CLAUDE_MEDIA_BASE64_BYTES_MAX:
+            errors.append(f"{base64_bytes} base64 bytes of images in one call: above "
+                          f"{CLAUDE_MEDIA_BASE64_BYTES_MAX} the provider CLI silently removes the oldest images")
+        if request_bytes > CLAUDE_REQUEST_BYTES_MAX:
+            errors.append(f"request of {request_bytes} bytes exceeds one provider request ({CLAUDE_REQUEST_BYTES_MAX})")
+        if text_tokens + image_tokens > budget:
+            errors.append(f"input estimate {text_tokens + image_tokens} tokens (text {text_tokens}, "
+                          f"images {image_tokens}) exceeds the Claude input budget {budget} "
+                          f"of the {CLAUDE_CONTEXT_WINDOW_TOKENS}-token context window")
+    return {"version": version, "text_estimator": "utf8_bytes_div_2_including_schema",
+            "image_estimator": image_estimator, "estimated_text_tokens": text_tokens,
+            "estimated_image_tokens": image_tokens, "estimated_input_tokens": text_tokens + image_tokens,
+            "input_budget_tokens": budget, "payload_bytes": payload_bytes, "schema_bytes": schema_bytes,
+            "image_count": len(rows), "media_base64_bytes": base64_bytes,
+            "estimated_request_bytes": request_bytes, "image_rows": rows, "fits": not errors, "errors": errors}
+
+
 def plan_codex_mapper(payload: str, image_paths: Sequence[str], schema: dict[str, Any]) -> dict[str, Any]:
     return _plan_codex_context(payload, image_paths, schema, stage="Mapper",
                                budget=CODEX_MAPPER_INPUT_TOKENS, version=CODEX_MAPPER_BUDGET_VERSION)
@@ -205,33 +288,11 @@ def _plan_codex_context(payload: str, image_paths: Sequence[str], schema: dict[s
     resizing would underestimate CLI auto/original inputs. Never resize or
     trim evidence here. See docs/project_change_v3_mapper_portions.md.
     """
-    if not isinstance(payload, str) or not payload:
-        raise TransportIntegrityError("empty model payload")
-    text_bytes = len(payload.encode("utf-8")) + len(json.dumps(schema, ensure_ascii=False).encode("utf-8"))
-    text_tokens = (text_bytes + 1) // 2
-    image_tokens = 0
-    for index, path in enumerate(image_paths, start=1):
-        size = image_size_px(Path(path).read_bytes())
-        if size is None or min(size) <= 0:
-            raise TransportIntegrityError(f"изображение {index}: невозможно определить размеры для бюджета Codex")
-        patches = ((size[0] + 31) // 32) * ((size[1] + 31) // 32)
-        image_tokens += (patches * 6 + 4) // 5 + 256
-    estimated = text_tokens + image_tokens
-    receipt = {
-        "version": version,
-        "text_estimator": "utf8_bytes_div_2_including_schema",
-        "image_estimator": "original_32px_patches_times_1.2_plus_256",
-        "estimated_text_tokens": text_tokens,
-        "estimated_image_tokens": image_tokens,
-        "estimated_input_tokens": estimated,
-        "input_budget_tokens": budget,
-    }
-    if estimated > budget:
-        raise TransportIntegrityError(
-            f"вход {stage} превышает бюджет контекста Codex: оценка {estimated} токенов "
-            f"(текст и схема {text_tokens}, изображения {image_tokens}), бюджет {budget}"
-        )
-    return receipt
+    measured = measure_request(payload, image_paths, schema, selection="codex", stage=stage)
+    if not measured["fits"]:
+        raise TransportIntegrityError("; ".join(measured["errors"]))
+    return {k: measured[k] for k in ("version", "text_estimator", "image_estimator", "estimated_text_tokens",
+                                    "estimated_image_tokens", "estimated_input_tokens", "input_budget_tokens")}
 
 
 @dataclass(frozen=True)
@@ -240,6 +301,8 @@ class ClaudeTransportPlan:
     payload_chars: int
     payload_bytes: int
     images: tuple[dict[str, Any], ...]
+    schema_bytes: int = 0
+    estimated_request_bytes: int = 0
 
     transport = CLAUDE_TRANSPORT
     oversize = False  # no per-turn text limit: one user message, native context
@@ -250,7 +313,7 @@ class ClaudeTransportPlan:
 
     @property
     def estimated_text_tokens(self) -> int:
-        return (self.payload_bytes + 1) // 2
+        return (self.payload_bytes + self.schema_bytes + 1) // 2
 
     @property
     def estimated_image_tokens(self) -> int:
@@ -278,6 +341,8 @@ class ClaudeTransportPlan:
             "image_bytes": [row["bytes"] for row in self.images],
             "image_px": [row["px"] for row in self.images],
             "media_base64_bytes": self.media_base64_bytes,
+            "schema_bytes": self.schema_bytes,
+            "estimated_request_bytes": self.estimated_request_bytes,
             "media_envelope": {
                 "count_max": CLAUDE_MEDIA_COUNT_MAX,
                 "base64_bytes_max": CLAUDE_MEDIA_BASE64_BYTES_MAX,
@@ -287,7 +352,7 @@ class ClaudeTransportPlan:
             },
             "context_budget": {
                 "version": CLAUDE_CONTEXT_BUDGET_VERSION,
-                "text_estimator": "utf8_bytes_div_2",
+                "text_estimator": "utf8_bytes_div_2_including_schema",
                 "image_estimator": "w_times_h_div_750_plus_256",
                 "estimated_text_tokens": self.estimated_text_tokens,
                 "estimated_image_tokens": self.estimated_image_tokens,
@@ -311,44 +376,12 @@ class ClaudeTransportPlan:
         }
 
 
-def plan_claude(payload: str, image_paths: Sequence[str] = ()) -> ClaudeTransportPlan:
-    """Fail closed unless the Claude CLI would deliver every image and the whole text."""
-    if not isinstance(payload, str) or not payload:
-        raise TransportIntegrityError("empty model payload")
-    rows: list[dict[str, Any]] = []
-    for index, path in enumerate(image_paths, start=1):
-        data = Path(path).read_bytes()
-        size = image_size_px(data)
-        if size is None:
-            raise TransportIntegrityError(
-                f"image {index}: pixel size unreadable — the provider CLI could replace it with a text stub"
-            )
-        if max(size) > CLAUDE_IMAGE_MAX_PX:
-            raise TransportIntegrityError(
-                f"image {index} is {size[0]}x{size[1]} px: above {CLAUDE_IMAGE_MAX_PX} px the provider CLI "
-                "downscales the evidence"
-            )
-        rows.append({"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), "px": list(size)})
-    result = ClaudeTransportPlan(sha256_text(payload), len(payload), len(payload.encode("utf-8")), tuple(rows))
-    if len(rows) > CLAUDE_MEDIA_COUNT_MAX:
-        raise TransportIntegrityError(
-            f"{len(rows)} images in one call: above {CLAUDE_MEDIA_COUNT_MAX} the provider CLI silently removes "
-            "the oldest images"
-        )
-    if result.media_base64_bytes > CLAUDE_MEDIA_BASE64_BYTES_MAX:
-        raise TransportIntegrityError(
-            f"{result.media_base64_bytes} base64 bytes of images in one call: above "
-            f"{CLAUDE_MEDIA_BASE64_BYTES_MAX} the provider CLI silently removes the oldest images"
-        )
-    if result.payload_bytes + result.media_base64_bytes > CLAUDE_REQUEST_BYTES_MAX:
-        raise TransportIntegrityError(
-            f"request of {result.payload_bytes + result.media_base64_bytes} bytes exceeds one provider request "
-            f"({CLAUDE_REQUEST_BYTES_MAX})"
-        )
-    if result.estimated_input_tokens > CLAUDE_INPUT_BUDGET_TOKENS:
-        raise TransportIntegrityError(
-            f"input estimate {result.estimated_input_tokens} tokens (text {result.estimated_text_tokens}, "
-            f"images {result.estimated_image_tokens}) exceeds the Claude input budget {CLAUDE_INPUT_BUDGET_TOKENS} "
-            f"of the {CLAUDE_CONTEXT_WINDOW_TOKENS}-token context window"
-        )
-    return result
+def plan_claude(payload: str, image_paths: Sequence[str] = (),
+                schema: dict[str, Any] | None = None) -> ClaudeTransportPlan:
+    """Fail closed using the same measurement as the offline planner."""
+    measured = measure_request(payload, image_paths, schema, selection="claude")
+    if not measured["fits"]:
+        raise TransportIntegrityError("; ".join(measured["errors"]))
+    return ClaudeTransportPlan(sha256_text(payload), len(payload), measured["payload_bytes"],
+                               tuple(measured["image_rows"]), measured["schema_bytes"],
+                               measured["estimated_request_bytes"])
