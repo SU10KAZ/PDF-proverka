@@ -16758,19 +16758,33 @@ const app = createApp({
         async function scCancelProductionRun() {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (scProductionCancelling.value) return;
+            const context = scActivePairRequestContext();
+            if (!context) return;
             scProductionCancelling.value = true;
+            scProductionError.value = '';
             try {
                 const result = await scProductionRequest(
-                    '/cancel', {fetch: {method: 'POST'}},
+                    '/cancel', {context, fetch: {method: 'POST'}},
                 );
-                if (result && result.cancelled === false) {
-                    scProductionError.value = 'Идущего анализа этой пары не найдено.';
+                if (!scActivePairRequestContextCurrent(context)) return;
+                // The run may finish before this request reaches the server,
+                // including after an earlier click already stopped it.
+                if (result && result.cancelled === false && result.reason_code !== 'no_active_run') {
+                    scProductionError.value = result.reason_code === 'run_not_owned_by_this_process'
+                        ? 'Не удалось передать команду остановки процессу анализа. Обновите состояние и повторите попытку.'
+                        : 'Сервер не подтвердил остановку анализа. Обновите состояние и повторите попытку.';
                 }
             } catch (error) {
-                scProductionError.value = 'Не удалось остановить анализ.';
+                if (scActivePairRequestContextCurrent(context)) {
+                    scProductionError.value = 'Не удалось остановить анализ.';
+                }
             } finally {
+                // Keep every stop control disabled until the refreshed state
+                // removes it; otherwise a second click can report a false error.
+                if (scActivePairRequestContextCurrent(context)) {
+                    await scLoadProductionReview({silent: true}).catch(() => null);
+                }
                 scProductionCancelling.value = false;
-                await scLoadProductionReview({silent: true}).catch(() => null);
             }
         }
 

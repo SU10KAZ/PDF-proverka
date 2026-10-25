@@ -5819,7 +5819,8 @@
                         <option value="INCOMPLETE">Состав неполный</option>
                     </select>
                 </label>
-                <button v-if="scProductionRunActive" class="btn btn-sm" @click="scCancelProductionRun()">Остановить анализ</button>
+                <button v-if="scProductionRunActive" class="btn btn-sm" :disabled="scProductionCancelling"
+                        @click="scCancelProductionRun()">{{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
             </details>
             <section v-if="scActivePair && (!pcUiEnabled || pcDebug) && (scTab === 'links' || scTab === 'diffs')" class="sc-production-pipeline"
                      :class="{'is-tight': scTab === 'links'}"
