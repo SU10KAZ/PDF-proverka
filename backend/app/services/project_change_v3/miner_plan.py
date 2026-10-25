@@ -14,6 +14,59 @@ from . import mapper_portions
 VERSION = "projectchange_v3_miner_plan/2"
 MAX_NEW_CALLS_ENV = "PROJECT_COMPARISON_V3_MAX_NEW_MINER_CALLS"
 DEFAULT_MAX_NEW_CALLS = 64
+BALANCED_ENV = "PROJECT_COMPARISON_V3_MINER_PLANNER"
+
+
+def planner_mode():
+    value = os.environ.get(BALANCED_ENV, "legacy").strip().lower()
+    if value not in {"legacy", "shadow", "balanced"}:
+        raise ValueError(f"{BALANCED_ENV} must be legacy, shadow or balanced")
+    return value
+
+
+def balance_region(region, legacy_parts, measure, *, mode):
+    """Repack only this original comparison rectangle; never merge subjects.
+
+    Accepted regions and legacy text windows are handled by the caller and
+    cannot enter this search. Cost is measured using the full Miner bundle.
+    """
+    from . import portion_planning as pp
+
+    original = measure(region)
+    baseline = sum(measure(part)["estimated_input_tokens"] for part in legacy_parts)
+    report = {"region_id": region["region_id"], "mode": mode, "baseline_calls": len(legacy_parts),
+              "baseline_input_tokens": baseline, "selected": "legacy"}
+    if mode == "legacy" or len(legacy_parts) <= 1 or any(nt.KEY in p for p in legacy_parts):
+        return legacy_parts, report
+    structure = [{"side": side, "physical_page": page} for side, key in (("OLD", "old_pages"), ("NEW", "new_pages"))
+                 for page in region[key]]
+    limit = len(region["old_pages"]) * len(region["new_pages"])
+
+    def subset(portion):
+        return mapper_portions._sub_region(region, portion.new_pages, portion.index, portion.total,
+                                           old_pages=portion.old_pages)
+
+    def fits(pages):
+        old = [p["physical_page"] for p in pages if p["side"] == "OLD"]
+        new = [p["physical_page"] for p in pages if p["side"] == "NEW"]
+        return measure(mapper_portions._sub_region(region, new, limit, limit, old_pages=old))["fits"]
+
+    empty = {**region, "old_pages": [], "new_pages": []}
+    overhead = measure(empty)["estimated_input_tokens"]
+    weights = {}
+    for p in structure:
+        one = {**empty, p["side"].lower() + "_pages": [p["physical_page"]]}
+        weights[(p["side"], p["physical_page"])] = max(1, measure(one)["estimated_input_tokens"] - overhead)
+    selected = pp.select_plan(structure, mapper_portions.new_units(structure, None), fits=fits,
+                              measure=lambda portion: measure(subset(portion)), weights=weights,
+                              source_budget=max(1, original["input_budget_tokens"] - overhead))
+    report["search"] = selected.report
+    proposed = [subset(p) for p in selected.portions]
+    total = sum(measure(p)["estimated_input_tokens"] for p in proposed)
+    if mode == "balanced" and len(proposed) <= len(legacy_parts) and total < baseline:
+        report["selected"] = selected.report["selected"]
+        return proposed, report
+    return legacy_parts, report
 
 
 def max_new_calls(override: int | None = None) -> int:

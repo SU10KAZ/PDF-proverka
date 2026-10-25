@@ -27,7 +27,8 @@ def test_payload_identifies_images_by_content(tmp_path):
     images = [{"path": str(p), "label": {"block_id": p.stem}} for p in (a, b, c, a)]
     payload, paths, labels = provider.build_codex_payload("PROMPT", {"x": 1}, images)
     assert paths == [str(a), str(c)]
-    assert labels == [{"block_id": "a", "image": 1}, {"block_id": "c", "image": 2}]
+    assert labels == [{"block_id": "a", "image": 1}, {"block_id": "b", "image": 1},
+                      {"block_id": "c", "image": 2}, {"block_id": "a", "image": 1}]
     assert payload == 'PROMPT\nIMAGES:\n' + json.dumps(labels, ensure_ascii=False) + '\nSOURCE DATA:\n{"x": 1}'
 
 

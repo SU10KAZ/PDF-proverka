@@ -61,7 +61,7 @@ def test_mapping_call_site_takes_only_the_pair_and_the_source_structure():
     imported |= {alias.name for node in ast.walk(ast.parse(portions_module)) if isinstance(node, ast.Import)
                  for alias in node.names}
     # The shared validator reads only its explicit source/response arguments.
-    assert imported <= {"__future__", "copy", "dataclasses", "typing", "validate"}, imported
+    assert imported <= {"__future__", "copy", "dataclasses", "typing", "validate", "native_text_portions"}, imported
 
 
 @pytest.mark.skipif(not (FROZEN_RUN / "project_change_v3" / "DOCUMENT_STRUCTURE.json").is_file(),

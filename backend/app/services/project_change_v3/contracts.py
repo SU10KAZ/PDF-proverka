@@ -77,11 +77,14 @@ ENGINE_NAME = "projectchange_v3"
 # 3.26.0: a completed run with failed review batches is resumable on the same model
 #         (only the failed unmatched batches are called again; Dedupe and matching
 #         verification answers are reused); TRANSIENT review failures retry after a pause.
-ENGINE_VERSION = "3.26.0"
+# 3.27.0: offline costed Mapper/Miner planning; opt-in balanced full coverage,
+#         all duplicate-image bindings, request identities and versioned recovery.
+ENGINE_VERSION = "3.27.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /3: MD is the complete text source; TEXT is authoritative, no raw PDF transcript.
 # New prompts/source identity intentionally prevent mixing old-policy checkpoints.
 SOURCE_PACKAGING_VERSION = "projectchange_v3_source_pack/3"
+SOURCE_PAYLOAD_VERSION = "projectchange_v3_source_payload/2"  # every binding of a deduplicated image
 # One model configuration for the whole run: no stage may use another model.
 # Read once at process startup: a running analysis cannot change model halfway.
 PROVIDER_SELECTION = os.environ.get("PROJECT_COMPARISON_V3_PROVIDER", "claude").strip().lower()

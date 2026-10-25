@@ -15,11 +15,13 @@ from .contracts import (
     REASONING,
     SCHEMA_VERSION,
     SOURCE_PACKAGING_VERSION,
+    SOURCE_PAYLOAD_VERSION,
     UNMATCHED_PROMPT_SHA256,
     VERIFY_PROMPT_SHA256,
 )
 from .contracts import active_profile
 from .transport import provider_transport_version
+from .source_compaction import VERSION as SOURCE_COMPACTION_VERSION
 
 
 def build_provenance(*, source_prep_version: str | None = None, **extra: Any) -> dict[str, Any]:
@@ -38,6 +40,8 @@ def build_provenance(*, source_prep_version: str | None = None, **extra: Any) ->
         "unmatched_prompt_sha256": UNMATCHED_PROMPT_SHA256,
         "verification_prompt_sha256": VERIFY_PROMPT_SHA256,
         "source_packaging_version": source_prep_version or SOURCE_PACKAGING_VERSION,
+        "source_payload_version": SOURCE_PAYLOAD_VERSION,
+        "source_compaction_version": SOURCE_COMPACTION_VERSION,
         "source_prep_version": source_prep_version or SOURCE_PACKAGING_VERSION,
         # The profile of THIS run (3.9.0): the startup default unless the run chose one.
         "engine_variant": profile.engine_variant,

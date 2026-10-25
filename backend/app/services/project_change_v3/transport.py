@@ -269,17 +269,15 @@ def measure_request(payload: str, image_paths: Sequence[str], schema: dict[str, 
 
 
 def plan_codex_mapper(payload: str, image_paths: Sequence[str], schema: dict[str, Any]) -> dict[str, Any]:
-    return _plan_codex_context(payload, image_paths, schema, stage="Mapper",
-                               budget=CODEX_MAPPER_INPUT_TOKENS, version=CODEX_MAPPER_BUDGET_VERSION)
+    return _plan_codex_context(payload, image_paths, schema, stage="Mapper")
 
 
 def plan_codex_miner(payload: str, image_paths: Sequence[str], schema: dict[str, Any]) -> dict[str, Any]:
-    return _plan_codex_context(payload, image_paths, schema, stage="Miner",
-                               budget=CODEX_MINER_INPUT_TOKENS, version=CODEX_MINER_BUDGET_VERSION)
+    return _plan_codex_context(payload, image_paths, schema, stage="Miner")
 
 
 def _plan_codex_context(payload: str, image_paths: Sequence[str], schema: dict[str, Any], *,
-                        stage: str, budget: int, version: str) -> dict[str, Any]:
+                        stage: str) -> dict[str, Any]:
     """Estimate the whole input locally, including schema and images.
 
     UTF-8 bytes / 2 is a deliberately cautious heuristic for our OCR/JSON,

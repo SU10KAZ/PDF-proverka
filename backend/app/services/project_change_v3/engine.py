@@ -635,6 +635,18 @@ def _miner_fits(pair_id: str, region: dict[str, Any], work_dir: Path, contract: 
     return True
 
 
+def _miner_measure(pair_id, region, work_dir, contract, *, read_image=None):
+    from . import transport
+    from .contracts import active_profile
+
+    reader = read_image or transport.image_info
+    data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
+    payload, paths, _ = build_codex_payload(contract["prompt"], data, images,
+                                           image_digest=lambda path: reader(path)["sha256"])
+    return transport.measure_request(payload, paths, contract["schema"], selection=active_profile().selection,
+                                      stage="Miner", read_image=reader)
+
+
 def mapper_portions_mod_fits(pair_id: str, pages: list[dict[str, Any]]) -> bool:
     """Would a portion with these pages pass the exact transport plan (with its portion note)?"""
     probe = mapper_portions_mod.MapperPortion(
@@ -756,6 +768,7 @@ def _run_admitted(
         raise fail("miner_concurrency_invalid", str(exc), exc) from exc
     try:
         max_new_miner_calls = miner_plan.max_new_calls(max_new_miner_calls)
+        miner_planning_mode = miner_plan.planner_mode()
     except ValueError as exc:
         raise fail("miner_plan_limit_invalid", str(exc), exc) from exc
     provenance["miner_concurrency"] = miner_workers
@@ -851,14 +864,21 @@ def _run_admitted(
         if not donor.partial_mining:
             checkpoint_ref.update(donor.miner_results.get("miner_checkpoint") or {}, resumed_from_run_id=donor.run_id)
         provenance["resumed_from"] = donor.summary()
-        for key in ("mapper_portioning", "miner_region_splits", "miner_region_merges"):
+        for key in ("mapper_portioning", "mapper_plan", "miner_region_splits", "miner_region_merges"):
             if donor.provenance.get(key):
                 provenance[key] = donor.provenance[key]
 
-    provider = get_provider()
-    if cancel_token is not None and hasattr(provider, "cancel_token"):
-        provider.cancel_token = cancel_token  # the gateway kills the CLI session on cancel
     structure = prepared["structure"]
+    from . import mapper_planning
+    from .contracts import active_profile
+
+    try:
+        planning_mode = mapper_planning.planner_mode()
+    except ValueError as exc:
+        raise fail("mapper_planner_invalid", str(exc), exc) from exc
+    planner = mapper_planning.MapperPlanner(pair_id, structure, active_profile(),
+                                            _assembly_sources(new_paths), cancelled=cancelled)
+    planned_packets = []
 
     # Plan both providers before any call. Codex injected-history chunks still
     # share one context: large inputs need separate Mapper calls too.
@@ -869,11 +889,11 @@ def _run_admitted(
         single_error = mapper_portions_mod_single_envelope_error(pair_id, structure)
         if single_error:
             try:
-                mapper_portions = mapper_portions_mod.plan_portions(
-                    structure,
-                    mapper_portions_mod.new_units(structure, _assembly_sources(new_paths)),
-                    lambda pages: mapper_portions_mod_fits(pair_id, pages),
-                )
+                choice = planner.plan(mode=planning_mode, allow_single=False,
+                                      fits=(lambda pages: mapper_portions_mod_fits(pair_id, pages))
+                                      if planning_mode == "legacy" else None)
+                mapper_portions = choice.portions
+                provenance["mapper_plan"] = choice.report
                 # The planner uses a probe portion note. Check ALL exact final
                 # notes/labels before spending on even the first portion.
                 for portion in mapper_portions:
@@ -881,7 +901,10 @@ def _run_admitted(
                         pair_id, mapper_portions_mod.portion_data(pair_id, structure, portion))
                 if not mapper_portions:
                     raise mapper_portions_mod.PortioningImpossible(single_error)
+                planned_packets = planner.verify(mapper_portions)
             except (mapper_portions_mod.PortioningImpossible, TransportIntegrityError) as exc:
+                if cancelled():
+                    raise fail("v3_cancelled", CANCELLED_RU, exc) from exc
                 raise fail(
                     "assembly_mapper_envelope_exceeded",
                     f"Пара превышает возможности транспорта V3 даже порциями: {exc}",
@@ -895,6 +918,23 @@ def _run_admitted(
                 "single_call_refused": single_error,
                 "portions": [portion.summary() for portion in mapper_portions],
             }
+        else:
+            try:
+                provenance["mapper_plan"] = planner.plan(mode=planning_mode).report
+                planned_packets = planner.verify([])
+            except (mapper_portions_mod.PortioningImpossible, TransportIntegrityError) as exc:
+                raise fail("v3_cancelled" if cancelled() else "assembly_mapper_envelope_exceeded",
+                           CANCELLED_RU if cancelled() else str(exc), exc) from exc
+        provenance["mapper_plan"]["final_packets"] = planned_packets
+        provenance["mapper_plan"]["accepted_portions"] = []
+        provenance["mapper_plan"]["complete"] = False
+        try:
+            _save_artifact(session_id, pair_id, "project_change_v3_mapper_plan", provenance["mapper_plan"])
+        except Exception as exc:
+            raise fail("result_persistence_failed", "V3: план Mapper не сохранён", exc) from exc
+    provider = get_provider()
+    if cancel_token is not None and hasattr(provider, "cancel_token"):
+        provider.cancel_token = cancel_token
     # 2. Semantic mapping.
     if donor is not None:
         progress("Сопоставление восстановлено из сохранённого запуска", "MAPPING",
@@ -909,6 +949,8 @@ def _run_admitted(
     elif not mapper_portions:
         progress("V3: семантическое сопоставление OLD↔NEW (Mapper)", "MAPPING")
         try:
+            if planner.packet({"pair": pair_id, "pages": structure}, fresh=True)["request_key"] != planned_packets[0]["request_key"]:
+                raise fail("mapper_sources_changed", "V3: источники изменились после планирования Mapper")
             semantic_map = complete(
                 stage="MAPPING", call_id=f"{pair_id}_SEMANTIC_MAPPING", pair_id=pair_id,
                 prompt=MAPPER_PROMPT, data={"pair": pair_id, "pages": structure},
@@ -916,6 +958,9 @@ def _run_admitted(
             )
             calls += 0 if using_test_provider else 1
             validate_map(pair_id, semantic_map, structure)
+            provenance["mapper_plan"].update(accepted_portions=[1], complete=True)
+        except _V3Failure:
+            raise
         except ProviderError as exc:
             raise provider_failure("Mapper", exc) from exc
         except Exception as exc:  # noqa: BLE001
@@ -927,6 +972,8 @@ def _run_admitted(
         def map_portion(_ordinal: int, portion: mapper_portions_mod.MapperPortion):
             nonlocal calls
             data = mapper_portions_mod.portion_data(pair_id, structure, portion)
+            if planner.packet(data, fresh=True)["request_key"] != planned_packets[portion.index - 1]["request_key"]:
+                raise fail("mapper_sources_changed", "V3: источники изменились после планирования Mapper")
             call_id = f"{pair_id}_SEMANTIC_MAPPING_P{portion.index:02d}"
             outcome = yield dict(
                 stage="MAPPING", call_id=call_id, pair_id=pair_id, prompt=MAPPER_PROMPT,
@@ -948,6 +995,9 @@ def _run_admitted(
                 "published": False, "run_id": run_id, "session_id": session_id, "pair_id": pair_id,
                 "call_id": call_id, "portion": portion.summary(), "recorded_at": _now(),
                 "prompt_sha256": MAPPER_PROMPT_SHA256, "source_data_sha256": _canonical_sha256(data),
+                "request_key": planned_packets[portion.index - 1]["request_key"],
+                "planner_version": mapper_planning.pp.VERSION,
+                "payload_version": mapper_planning.PAYLOAD_VERSION,
                 "response": outcome.response if outcome.error is None else outcome.last_response,
                 "transport_receipt": receipt, "accepted": error is None,
                 "error": str(error) if error is not None else None,
@@ -970,6 +1020,11 @@ def _run_admitted(
                            f"V3 Mapper validation failed (порция {portion.index} из {portion.total}): {error}",
                            error) from error
             portion_maps_by_index[portion.index] = outcome.response
+            provenance["mapper_plan"]["accepted_portions"] = sorted(portion_maps_by_index)
+            try:
+                _save_artifact(session_id, pair_id, "project_change_v3_mapper_plan", provenance["mapper_plan"])
+            except Exception as exc:
+                raise fail("result_persistence_failed", "V3: прогресс плана Mapper не сохранён", exc) from exc
 
         def mapping_progress() -> None:
             done = len(portion_maps_by_index)
@@ -997,6 +1052,7 @@ def _run_admitted(
                 # Каждая порция уже прошла схему у провайдера; слияние обязано её сохранить.
                 _validate_json_schema(semantic_map, MAP_SCHEMA)
             validate_map(pair_id, semantic_map, structure)
+            provenance["mapper_plan"]["complete"] = True
         except Exception as exc:  # noqa: BLE001
             raise fail("mapper_validation_failed", f"V3 Mapper: порции не сливаются в одну карту: {exc}", exc) from exc
         try:
@@ -1006,6 +1062,12 @@ def _run_admitted(
             })
         except Exception as exc:  # noqa: BLE001
             raise fail("result_persistence_failed", "V3: ответы порций Mapper не сохранены", exc) from exc
+
+    if donor is None:
+        try:
+            _save_artifact(session_id, pair_id, "project_change_v3_mapper_plan", provenance["mapper_plan"])
+        except Exception as exc:
+            raise fail("result_persistence_failed", "V3: завершённый план Mapper не сохранён", exc) from exc
     reuse_complete_mining = donor is not None and not donor.partial_mining
     pages_by_key = {
         (page["side"], page["physical_page"]): load_page_record(work_dir, page["side"], page["physical_page"])
@@ -1022,6 +1084,19 @@ def _run_admitted(
     reused_ids = {row["region_id"] for row in reused_rows}
     if not reuse_complete_mining:
         progress("V3: проверка размера запросов поиска изменений", "MINING")
+        from functools import lru_cache
+        from .transport import PlanningImageCache
+
+        miner_images = PlanningImageCache()
+
+        @lru_cache(maxsize=1024)
+        def measured_miner(serialized_region):
+            return _miner_measure(pair_id, json.loads(serialized_region), work_dir, contract, read_image=miner_images)
+
+        def measure_region(region):
+            return measured_miner(json.dumps(region, ensure_ascii=False, sort_keys=True))
+
+        miner_candidate_reports = []
         if donor is not None:
             try:
                 replanned, merges = miner_plan.coalesce(
@@ -1046,6 +1121,11 @@ def _run_admitted(
                 parts = mapper_portions_mod.split_region_for_envelope(
                     region, lambda candidate: _miner_fits(pair_id, candidate, work_dir, contract),
                     native_texts={key: page.get("native_page_text") or "" for key, page in pages_by_key.items()})
+                parts, region_plan = miner_plan.balance_region(region, parts, measure_region, mode=miner_planning_mode)
+                miner_candidate_reports.append(region_plan)
+                for part in parts:
+                    if not _miner_fits(pair_id, part, work_dir, contract):
+                        raise mapper_portions_mod.PortioningImpossible(f"область {part['region_id']}: окончательный запрос не помещается")
                 if len(parts) > 1:
                     splits.append({"region_id": region["region_id"],
                                    "parts": [{"region_id": part["region_id"], "old_pages": part["old_pages"],
@@ -1067,7 +1147,14 @@ def _run_admitted(
         provenance["miner_plan"] = {"version": miner_plan.VERSION,
                                     "reused_regions": len(reused_ids),
                                     "new_calls": sum(r["region_id"] not in reused_ids for r in split_regions),
-                                    "max_new_calls": max_new_miner_calls}
+                                    "max_new_calls": max_new_miner_calls,
+                                    "mode": miner_planning_mode, "regions": miner_candidate_reports,
+                                    "estimated_new_input_tokens": sum(measure_region(r)["estimated_input_tokens"]
+                                                                      for r in split_regions if r["region_id"] not in reused_ids)}
+        try:
+            _save_artifact(session_id, pair_id, "project_change_v3_miner_plan", provenance["miner_plan"])
+        except Exception as exc:
+            raise fail("result_persistence_failed", "V3: план Miner не сохранён", exc) from exc
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_semantic_map", semantic_map)
     except Exception as exc:  # noqa: BLE001

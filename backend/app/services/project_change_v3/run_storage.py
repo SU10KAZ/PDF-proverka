@@ -21,7 +21,7 @@ PROVENANCE_FIELDS = (
     'model_handoff',
     'mapper_prompt_version', 'mapper_prompt_sha256', 'miner_prompt_version', 'miner_prompt_sha256',
     'dedupe_version', 'unmatched_prompt_sha256', 'verification_prompt_sha256',
-    'source_packaging_version', 'transport_version',
+    'source_packaging_version', 'source_payload_version', 'source_compaction_version', 'transport_version',
 )
 
 
@@ -180,6 +180,9 @@ def finalize(session_id, pair_id, run_id, state):
     ]
     if (directory / 'project_change_v3_mapper_portions.json').is_file():
         artifact_names.append('project_change_v3_mapper_portions')
+    for name in ('project_change_v3_mapper_plan', 'project_change_v3_miner_plan'):
+        if (directory / (name + '.json')).is_file():
+            artifact_names.append(name)
     if (directory / 'project_change_v3_dedupe.json').is_file():
         artifact_names.append('project_change_v3_dedupe')
     coverage_path = directory / 'project_change_v3_coverage.json'

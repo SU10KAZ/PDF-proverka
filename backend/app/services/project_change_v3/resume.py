@@ -41,7 +41,8 @@ from typing import Any
 RESUME_VERSION = "projectchange_v3_resume/3"
 #: Что должно совпасть у донора и досборки, иначе ответы донора — ответы на другой вопрос.
 MODEL_KEYS = ("provider", "model", "reasoning", "model_profile",
-              "mapper_prompt_sha256", "miner_prompt_sha256", "unmatched_prompt_sha256", "miner_output_format")
+              "mapper_prompt_sha256", "miner_prompt_sha256", "unmatched_prompt_sha256", "miner_output_format",
+              "source_payload_version", "source_compaction_version")
 #: ``structure_sha256`` сюда не входит: структура хранит пути кадров внутри папки прогона,
 #: поэтому она сверяется по содержимому с поправкой на папку (``check_compatible``).
 SOURCE_KEYS = ("old_pdf_sha256", "new_pdf_sha256", "source_packaging_version")
