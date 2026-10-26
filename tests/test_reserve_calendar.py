@@ -186,6 +186,17 @@ def test_working_date_override_and_current_plan_no_double_coefficient(tmp_path, 
     assert src.engineers(config, date(2026, 11, 2))[0]['rate_source'] == 'missing_plan'
 
 
+def test_reserve_calendar_excludes_removed_engineers(monkeypatch):
+    from backend.app.services.common import schedule_service, user_service
+    monkeypatch.setattr(user_service, 'list_users', lambda: [
+        {'id': 'uzun', 'name': 'Узун А. И.'},
+        {'id': 'olar', 'name': 'Оларь М. И.'},
+        {'id': 'active', 'name': 'Работающий инженер', 'reserve_daily_rate': 1},
+    ])
+    monkeypatch.setattr(schedule_service, 'load_work_plans', lambda: ({'plans': []}, None))
+    assert [person['id'] for person in src.engineers({}, date(2026, 10, 26))] == ['active']
+
+
 def test_repeating_plan_ratio_fills_exact_period_and_deducts_today_completed(env):
     _, people = env
     # 42 / 22 cannot be represented by a finite decimal; the last slot must

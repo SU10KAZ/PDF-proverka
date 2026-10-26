@@ -18,6 +18,9 @@ from backend.app.services.common.employee_identity import reviewer_matches_user
 from backend.app.services.storage.projects_v2_adapter import document_lookup_snapshot
 
 
+RESERVE_EXCLUDED_ENGINEER_IDS = frozenset({'uzun', 'olar'})
+
+
 def today() -> date:
     return datetime.now(ZoneInfo('Europe/Moscow')).date()
 
@@ -64,6 +67,8 @@ def engineers(config: dict, day: date) -> list[dict]:
         raise ValueError(warning)
     out = []
     for user in user_service.list_users():
+        if str(user.get('id') or '').casefold() in RESERVE_EXCLUDED_ENGINEER_IDS:
+            continue
         if user.get('active') is False or user.get('is_active') is False or user.get('status') in ('blocked', 'inactive', 'deleted'):
             continue
         settings = config.get('engineers', {}).get(user['id'], {})

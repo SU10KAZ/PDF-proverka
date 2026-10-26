@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../static/css/styles.css', import.meta.url), 'utf8');
 const reserveStyles = readFileSync(new URL('../static/css/reserve-calendar.css', import.meta.url), 'utf8');
+const reserveScript = readFileSync(new URL('../static/js/reserve-calendar.js', import.meta.url), 'utf8');
 
 describe('компоновка графика работ', () => {
     it('держит управление периодом в одной верхней строке с вкладками', () => {
@@ -25,5 +26,10 @@ describe('компоновка графика работ', () => {
         expect(styles).toContain('.sched-stats-table th:nth-child(5) { width: 14%; }');
         expect(html.match(/class="sched-remarks-values"/g)).toHaveLength(2);
         expect(styles).toContain('font-variant-numeric: tabular-nums');
+    });
+
+    it('не показывает служебный остаток и дневную норму в строках инженеров', () => {
+        expect(reserveScript).not.toContain('Остаток:');
+        expect(reserveScript).not.toContain('/ раб. день');
     });
 });
