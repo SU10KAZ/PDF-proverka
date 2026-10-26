@@ -109,6 +109,22 @@ def test_section_rights_change_applies_next_request(accounts_env, app):
     assert c.get("/api/auth/me").json()["account"]["sections"]["audit_results"]["view"] is False
 
 
+def test_registration_with_only_login_and_password(accounts_env, app):
+    c = TestClient(app, headers=H)
+    r = c.post("/api/auth/register", json={"login": "New.Reader", "password": "new-reader-password-1"})
+    assert r.status_code == 200
+    assert "set-cookie" not in r.headers
+    acc = next(a for a in store.list_accounts() if a["login"].casefold() == "new.reader")
+    assert (acc["role"], acc["status"], acc["staff_id"]) == ("viewer", "pending", None)
+    assert acc["display_name"] == "New.Reader"
+    assert acc["contact"] == "" and acc["note"] == ""
+    assert not any(section["view"] or section["download"] for section in acc["sections"].values())
+    denied = c.post("/api/auth/login", json={"username": "New.Reader", "password": "new-reader-password-1"})
+    assert denied.status_code == 403
+    assert denied.json()["detail"]["code"] == "account_pending"
+    assert c.get("/api/auth/me").json()["authenticated"] is False
+
+
 def test_registration(accounts_env, app, monkeypatch):
     c = TestClient(app, headers=H)
     r = c.post("/api/auth/register", json={"login": "contractor", "display_name": "Подрядчиков П.П.",

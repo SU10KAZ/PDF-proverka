@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заявка на доступ — Audit Manager</title>
+    <title>Регистрация — Audit Manager</title>
     <style>
         :root {
             --bg: #0d1219;
@@ -96,10 +96,6 @@
         .links a { color: var(--teal); text-decoration: none; }
     </style>
     <style>
-        textarea { width: 100%; min-height: 70px; padding: 11px 13px; background: var(--card2-bg);
-            border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-size: 14px;
-            font-family: inherit; outline: none; resize: vertical; }
-        textarea:focus { border-color: var(--teal); }
         .hint { font-size: 12px; color: var(--text2); margin-top: 4px; }
         .ok { margin-top: 16px; padding: 12px; border-radius: 9px; font-size: 14px;
             background: rgba(0,194,184,0.12); border: 1px solid rgba(0,194,184,0.35); }
@@ -108,25 +104,16 @@
 <body>
     <form class="card" id="reg-form" autocomplete="on">
         <div class="brand">Audit<b>Manager</b></div>
-        <div class="subtitle">Заявка на доступ к результатам. После отправки её рассмотрит администратор;
-            разделы для просмотра он назначит отдельно.</div>
+        <div class="subtitle">Создайте аккаунт. Администратор одобрит доступ и назначит разделы.</div>
         <div id="fields">
             <label for="login">Логин</label>
-            <input id="login" type="text" autocomplete="username" required minlength="3" maxlength="32"
+            <input id="login" name="login" type="text" autocomplete="username" required minlength="3" maxlength="32"
                    pattern="[A-Za-z0-9][A-Za-z0-9._\-]{2,31}">
             <div class="hint">Латинские буквы, цифры, «.», «_», «-»; 3–32 символа.</div>
-            <label for="display_name">Фамилия, имя, отчество</label>
-            <input id="display_name" type="text" autocomplete="name" required maxlength="200">
-            <label for="contact">Контакт для связи (почта или телефон)</label>
-            <input id="contact" type="text" maxlength="200">
-            <label for="note">Кто вы и зачем нужен доступ</label>
-            <textarea id="note" maxlength="1000"></textarea>
             <label for="password">Пароль</label>
-            <input id="password" type="password" autocomplete="new-password" required minlength="10">
+            <input id="password" name="password" type="password" autocomplete="new-password" required minlength="10">
             <div class="hint">Не короче 10 символов и не совпадает с логином.</div>
-            <label for="password2">Пароль ещё раз</label>
-            <input id="password2" type="password" autocomplete="new-password" required minlength="10">
-            <button type="submit" id="submit-btn">Отправить заявку</button>
+            <button type="submit" id="submit-btn">Зарегистрироваться</button>
         </div>
         <div class="error" id="error-box"></div>
         <div class="ok" id="ok-box" style="display:none"></div>
@@ -150,14 +137,12 @@
             e.preventDefault();
             clearError();
             const v = id => document.getElementById(id).value;
-            if (v('password') !== v('password2')) { showError('Пароли не совпадают'); return; }
             btn.disabled = true; btn.textContent = 'Отправка…';
             try {
                 const resp = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'AuditManager' },
-                    body: JSON.stringify({ login: v('login').trim(), display_name: v('display_name').trim(),
-                        contact: v('contact').trim(), note: v('note').trim(), password: v('password') }),
+                    body: JSON.stringify({ login: v('login').trim(), password: v('password') }),
                 });
                 let data = {};
                 try { data = await resp.json(); } catch (_) {}
@@ -168,11 +153,11 @@
                     ok.style.display = '';
                     return;
                 }
-                showError(message(data, 'Заявку отправить не удалось'));
+                showError(message(data, 'Зарегистрироваться не удалось'));
             } catch (_) {
                 showError('Не удалось связаться с сервером. Повторите попытку.');
             } finally {
-                btn.disabled = false; btn.textContent = 'Отправить заявку';
+                btn.disabled = false; btn.textContent = 'Зарегистрироваться';
             }
         });
     })();

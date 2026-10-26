@@ -36,7 +36,8 @@ class RegisterRequest(BaseModel):
     # Любое лишнее поле (role, status, sections, staff_id, …) — отказ.
     model_config = ConfigDict(extra="forbid")
     login: str
-    display_name: str
+    # Совместимость со старой формой; новой достаточно логина и пароля.
+    display_name: str = ""
     password: str
     contact: str = ""
     note: str = ""
@@ -183,7 +184,8 @@ async def register(request: Request):
 
     try:
         await asyncio.to_thread(
-            store.create_pending, login=payload.login, display_name=payload.display_name,
+            store.create_pending, login=payload.login,
+            display_name=payload.display_name.strip() or payload.login.strip(),
             password=payload.password, contact=payload.contact, note=payload.note,
             ip=_client_ip(request),
         )
