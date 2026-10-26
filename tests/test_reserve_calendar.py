@@ -197,6 +197,19 @@ def test_reserve_calendar_excludes_removed_engineers(monkeypatch):
     assert [person['id'] for person in src.engineers({}, date(2026, 10, 26))] == ['active']
 
 
+def test_removed_engineer_is_not_restored_as_inactive_by_old_assignment(env):
+    created = add('a', 'Старая проверка')['tasks'][0]
+    with db.transaction() as conn:
+        row = next(item for item in db.tasks(conn) if item['id'] == created['id'])
+        row['engineer_id'] = 'uzun'
+        db.save_task(conn, row)
+    snapshot = svc.snapshot()
+    assert all(person['id'] != 'uzun' for person in snapshot['engineers'])
+    assert all(task['engineer_id'] != 'uzun' for task in snapshot['tasks'])
+    with db.transaction() as conn:
+        assert next(item for item in db.tasks(conn) if item['id'] == created['id'])['engineer_id'] == 'uzun'
+
+
 def test_repeating_plan_ratio_fills_exact_period_and_deducts_today_completed(env):
     _, people = env
     # 42 / 22 cannot be represented by a finite decimal; the last slot must

@@ -138,7 +138,9 @@ def _snapshot(conn, catalog, engineers, config, actor):
     rows = store.tasks(conn)
     active_engineer_ids = {e['id'] for e in engineers}
     # Keep assignments visible if an employee is subsequently deactivated.
-    for eid in sorted({r['engineer_id'] for r in rows if r['state'] in ACTIVE} - active_engineer_ids):
+    inactive_ids = ({r['engineer_id'] for r in rows if r['state'] in ACTIVE} - active_engineer_ids
+                    - sources.RESERVE_EXCLUDED_ENGINEER_IDS)
+    for eid in sorted(inactive_ids):
         from backend.app.services.common import user_service
         user = user_service.get_user_by_id(eid) or {}
         engineers.append({'id': eid, 'name': user.get('name') or eid, 'direction': 'Неактивные сотрудники',
