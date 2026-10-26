@@ -24,6 +24,8 @@ describe('компоновка графика работ', () => {
         const panel = html.slice(html.indexOf('<div id="sched-completed-panel"'), html.indexOf('<!-- Модалка: расход подписки'));
         expect(panel).not.toContain('График производства работ');
         expect(panel).not.toContain('Контроль фактически выполненных проверок по инженерам');
+        expect(reserveScript).not.toContain('<header class="rc-heading">');
+        expect(reserveScript).not.toContain('<div class="rc-cards">');
     });
 
     it('использует компактные KPI и отдельную обёртку для длинных счётчиков', () => {
