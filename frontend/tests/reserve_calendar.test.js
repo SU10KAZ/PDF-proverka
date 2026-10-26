@@ -92,6 +92,11 @@ describe('reserve calendar user actions', () => {
         const initial = catalogData(), saved = {...initial, revision:1};
         const h = harness([initial, saved]); await h.state.load();
         expect([...h.state.objectOptions.value]).toEqual(['213. King & Sons', '272. Балчуг Эстейт']);
+        h.state.search.value = 'king';
+        expect([...h.state.suggestedObjects.value]).toEqual(['213. King & Sons']);
+        h.state.selectObject('272. Балчуг Эстейт');
+        expect(h.state.search.value).toBe('272. Балчуг Эстейт');
+        expect(h.state.objectMenuOpen.value).toBe(false);
         h.state.chosenProject.value = ['0', '2'];
         h.state.targetEngineer.value = 'a';
         await h.state.saveCatalog();
