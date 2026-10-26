@@ -28,6 +28,8 @@ describe('компоновка графика работ', () => {
         expect(reserveScript).not.toContain('<div class="rc-cards">');
         expect(reserveScript).not.toContain('<div class="rc-period">');
         expect(reserveScript).not.toContain('<p class="rc-help">');
+        expect(reserveScript).not.toContain('<div class="rc-summary">');
+        expect(reserveScript).not.toContain('<p class="rc-footnote">');
     });
 
     it('использует компактные KPI и отдельную обёртку для длинных счётчиков', () => {

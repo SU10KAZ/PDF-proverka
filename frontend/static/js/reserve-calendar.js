@@ -343,7 +343,6 @@
           <div v-if="error" class="rc-error" role="alert">{{ error }} <button v-if="pending" :disabled="busy" @click="send()">Повторить сохранение</button><button v-else :disabled="loading || busy" @click="load()">Обновить данные</button></div>
           <div v-if="loading && !data.engineers.length" class="rc-empty">Загрузка инженеров и очередей…</div>
           <div class="rc-toolbar"><strong>Очередь по инженерам</strong><div class="rc-actions"><button v-if="canEdit" :disabled="locked" @click="openCatalog()">Добавить с портала</button><button v-if="canEdit" class="rc-primary-outline" :disabled="locked" @click="openPreparation()">Проекты для подготовки</button></div></div>
-          <div class="rc-legend"><span><i class="rc-legend-chip">АБВГ..</i>Готов к проверке</span><span><i class="rc-legend-chip rc-unrecognized">АБВГ..</i>Не проанализирован</span><span><i class="rc-legend-chip rc-manual">АБВГ..</i>Ещё не загружен</span></div>
           <div v-if="selected.length" class="rc-selection"><span>Выбрано: {{ selected.length }}</span><button :disabled="locked" @click="shift(-1)">Раньше</button><button :disabled="locked" @click="shift(1)">Позже</button><button @click="selected=[]">Снять выделение</button></div>
           <div class="rc-scroll" @scroll="tooltip=null"><table class="rc-grid" aria-label="Очередь проектов по инженерам и датам">
             <colgroup><col class="rc-name-col"><col v-for="d in columns" :key="d.iso || 'none'" :class="{'rc-off-col':d.off, 'rc-unscheduled-col':!d.iso}"></colgroup>
@@ -361,8 +360,7 @@
               </tr>
             </tbody>
           </table></div>
-          <div class="rc-summary"><span>Всего: {{ data.totals.remaining || 0 }} · готовы {{ data.totals.ready || 0 }} · подготовка {{ data.totals.preparation || 0 }} · начаты {{ data.totals.running || 0 }}</span><span>Одна точка — одна проверка тома и версии</span></div>
-          <p class="rc-footnote">Даты рассчитываются по очереди и плану инженера. Подготовка и следующие за ней даты условные. Начатые проверки закреплены в начале очереди.<template v-if="!data.calendar.configured"> Рабочие дни: понедельник — пятница; исключения календаря не заданы.</template></p>
+          <div class="rc-legend"><span><i class="rc-legend-chip">АБВГ..</i>Готов к проверке</span><span><i class="rc-legend-chip rc-unrecognized">АБВГ..</i>Не проанализирован</span><span><i class="rc-legend-chip rc-manual">АБВГ..</i>Ещё не загружен</span></div>
           <div class="rc-status" role="status" aria-live="polite"><span>{{ busy ? 'Сохранение…' : status }}</span><button v-if="canEdit && data.undo_operation_id" :disabled="locked" @click="operate('undo',{undo_id:data.undo_operation_id})">Отменить последнее действие</button></div>
           <aside v-if="tooltip" class="rc-tooltip" role="tooltip" :style="tooltipStyle">{{ tipText(tooltip) }}</aside>
 
