@@ -177,7 +177,8 @@
                     accept(value);
                     status.value = body.kind === 'undo' ? 'Действие отменено.' : body.kind === 'start' ? 'Проверка начата. Очередь пересчитана.' : 'Изменения сохранены. Очереди и прогноз пересчитаны.';
                     if (body.kind === 'add_preparation') { drafts.value = {}; closePreparation(true); }
-                    if (body.kind === 'assign' || body.kind === 'link') closeCatalog();
+                    if (body.kind === 'assign') { chosenProject.value = []; lastChosenProject.value = ''; }
+                    if (body.kind === 'link') closeCatalog();
                     if (body.kind === 'link') { projectDialog.value?.close(); card.value = null; }
                     return true;
                 } catch (e) {

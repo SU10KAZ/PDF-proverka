@@ -122,11 +122,17 @@ describe('reserve calendar user actions', () => {
         const initial = catalogData();
         const saved = {...initial, revision:1, available_projects:initial.available_projects.filter(item => item.project_id !== 'AR/P1')};
         const h = harness([initial, saved]); await h.state.load();
+        const close = vi.fn();
+        h.state.catalogOpen.value = true;
+        h.state.catalogDialog.value = {open:true, close};
         h.state.targetEngineer.value = 'b';
         h.state.chosenProject.value = ['0', '2'];
         await h.state.quickAddProject('1');
         const sent = JSON.parse(h.fetch.mock.calls[1][1].body);
         expect(sent).toMatchObject({kind:'assign', items:[{project_id:'AR/P1',engineer_id:'b'}]});
         expect(h.state.data.value.available_projects.map(item => item.project_id)).toEqual(['AR/P2','KJ/P3']);
+        expect(h.state.catalogOpen.value).toBe(true);
+        expect(h.state.chosenProjectIndexes.value).toEqual([]);
+        expect(close).not.toHaveBeenCalled();
     });
 });
