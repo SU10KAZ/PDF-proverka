@@ -39,6 +39,7 @@ ADMIN = "ADMIN"
 VIEW = "VIEW"
 DOWNLOAD = "DOWNLOAD"
 IMPORT_DECISIONS = "IMPORT_DECISIONS"
+UPLOAD_PROJECTS = "UPLOAD_PROJECTS"
 
 
 @dataclass(frozen=True)
@@ -68,6 +69,7 @@ PCP = "/api/project-change-preview/objects/{object_id}"
 
 _ALLOW_SPEC: dict[str, list[str]] = {
     IMPORT_DECISIONS: ["POST /api/knowledge-base/upload-excel"],
+    UPLOAD_PROJECTS: ["POST /api/projects/upload-folder", "POST /api/projects/upload-folder/precheck"],
     PUBLIC: [
         "GET /login", "GET /register",
         "POST /api/auth/login", "POST /api/auth/register", "POST /api/auth/logout",
@@ -279,6 +281,10 @@ def _check_role(ctx, policy: Policy) -> None:
             return
         raise _deny("forbidden_decision_import",
                     "Для загрузки решений нужен доступ к результатам аудита.")
+    if policy.kind == UPLOAD_PROJECTS:
+        if ctx.can_upload_projects:
+            return
+        raise _deny("forbidden_project_upload", "Администратор не разрешил загрузку проектов.")
     raise _deny("admin_only", "Действие доступно только администратору.")
 
 

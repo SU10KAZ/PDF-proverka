@@ -480,7 +480,7 @@
                 </h2>
                 <div class="dashboard-actions">
                     <button v-if="canOperate" class="btn btn-outline" @click="showCreateGroup = true" title="Создать группу">+ Группа</button>
-                    <button v-if="canOperate && (selectedCount === 0)" class="btn btn-success" @click="openAddModal" :disabled="addProjectLoading">+ Добавить</button>
+                    <button v-if="canUploadProjects && (!canOperate || selectedCount === 0)" class="btn btn-success" @click="openAddModal" :disabled="addProjectLoading">+ Добавить</button>
                     <button v-else-if="canOperate" class="btn btn-success" @click="openEditProjectsModal"
                             :title="'Изменить раздел или скрыть выбранные проекты (' + selectedCount + ')'">
                         Изменить ({{ selectedCount }})

@@ -55,6 +55,11 @@ CREATE TABLE IF NOT EXISTS account_sections (
   CHECK (can_download = 0 OR section NOT IN ('knowledge_base','schedule')),
   PRIMARY KEY (account_id, section)
 );
+-- Additive v1 extension: older releases safely ignore this permission table.
+CREATE TABLE IF NOT EXISTS account_capabilities (
+  account_id INTEGER PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
+  upload_projects INTEGER NOT NULL DEFAULT 0 CHECK (upload_projects IN (0,1))
+);
 CREATE TABLE IF NOT EXISTS auth_events (
   id INTEGER PRIMARY KEY,
   at TEXT NOT NULL,

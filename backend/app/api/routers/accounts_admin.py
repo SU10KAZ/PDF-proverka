@@ -50,6 +50,11 @@ class RoleBody(BaseModel):
     role: str
 
 
+class UploadProjectsBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    upload_projects: bool
+
+
 class StaffBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
     staff_id: Optional[str] = None
@@ -166,6 +171,13 @@ async def set_role(account_id: int, body: RoleBody, ctx: AccountContext = Depend
     acc = await _call(store.set_role, ctx.account_id, account_id, body.role)
     await _revoke_ws(account_id)
     return {"account": acc}
+
+
+@router.put("/accounts/{account_id}/upload-projects")
+async def set_upload_projects(account_id: int, body: UploadProjectsBody, ctx: AccountContext = Depends(_admin)):
+    from backend.app.services.accounts import store
+
+    return {"account": await _call(store.set_upload_projects, ctx.account_id, account_id, body.upload_projects)}
 
 
 @router.put("/accounts/{account_id}/staff")

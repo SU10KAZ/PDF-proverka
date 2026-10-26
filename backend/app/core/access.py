@@ -94,6 +94,7 @@ class AccountContext:
     sections: Mapping[str, tuple[bool, bool]] = field(default_factory=dict)
     #: env_users: сотрудник users.json с role=admin (прежний «администратор»).
     legacy_staff_admin: bool = False
+    upload_projects: bool = False
 
     @property
     def is_admin(self) -> bool:
@@ -127,6 +128,13 @@ class AccountContext:
         return (self.role == ROLE_VIEWER and self.status == "active"
                 and self.can_view("audit_results"))
 
+    @property
+    def can_upload_projects(self) -> bool:
+        if not self.enforces_roles or self.is_admin:
+            return True
+        return (self.role == ROLE_VIEWER and self.status == "active"
+                and self.upload_projects and self.can_view("audit_results"))
+
     def as_public(self) -> dict:
         """Проекция для UI и /api/auth/me. Ни хешей, ни секретов."""
         return {
@@ -137,6 +145,7 @@ class AccountContext:
                 ROLE_ADMIN if self.is_admin else "staff"),
             "is_admin": self.is_admin,
             "can_import_decisions": self.can_import_decisions,
+            "can_upload_projects": self.can_upload_projects,
             "staff_id": self.staff_id,
             "must_change_password": self.must_change_password,
             "sections": {

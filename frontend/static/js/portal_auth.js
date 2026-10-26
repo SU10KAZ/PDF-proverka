@@ -28,6 +28,9 @@
         importDecisions: function () {
             return caps.can_operate !== false || caps.can_import_decisions === true;
         },
+        uploadProjects: function () {
+            return caps.can_operate !== false || caps.can_upload_projects === true;
+        },
         // Служебные панели: расход, пользователи, учётная запись модели.
         admin: function () { return caps.is_admin !== false; },
         view: function (section) {
@@ -83,7 +86,7 @@
                 goTo(code && code !== 'not_authenticated' ? '/login?reason=' + encodeURIComponent(code) : '/login');
             } else if (code === 'password_change_required') {
                 goTo('/change-password');
-            } else if (code === 'forbidden_section' || code === 'forbidden_download' || code === 'admin_only' || code === 'forbidden_decision_import') {
+            } else if (code === 'forbidden_section' || code === 'forbidden_download' || code === 'admin_only' || code === 'forbidden_decision_import' || code === 'forbidden_project_upload') {
                 window.dispatchEvent(new CustomEvent('portal-forbidden', { detail: detail }));
             }
         }).catch(function () {

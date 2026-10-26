@@ -87,11 +87,13 @@ function portalWsCloseAction(code) {
 
 // Изменяющие запросы viewer блокируются; связанный сотрудник может вернуть
 // решения из Excel через один явно разрешённый маршрут.
-function portalViewerBlocksRequest(method, url, allowDecisionImport = false) {
+function portalViewerBlocksRequest(method, url, allowDecisionImport = false, allowProjectUpload = false) {
     const m = String(method || 'GET').toUpperCase();
     if (m === 'GET' || m === 'HEAD' || m === 'OPTIONS') return false;
     const {path} = _portalSplitUrl(url);
     if (allowDecisionImport && m === 'POST' && path === '/api/knowledge-base/upload-excel') return false;
+    if (allowProjectUpload && m === 'POST'
+        && (path === '/api/projects/upload-folder' || path === '/api/projects/upload-folder/precheck')) return false;
     return path.startsWith('/api/') && !path.startsWith('/api/auth/');
 }
 
@@ -114,6 +116,12 @@ function portalCanImportDecisions() {
         ? window.portalCan.importDecisions() : window.portalCan.operate();
 }
 
+function portalCanUploadProjects() {
+    if (typeof window === 'undefined' || !window.portalCan) return true;
+    return typeof window.portalCan.uploadProjects === 'function'
+        ? window.portalCan.uploadProjects() : window.portalCan.operate();
+}
+
 const app = createApp({
     setup() {
         // ─── State ───
@@ -129,6 +137,7 @@ const app = createApp({
         // в пределах загрузки страницы, поэтому computed без реактивных зависимостей.
         const canOperate = computed(() => portalCanOperate());
         const canImportDecisions = computed(() => portalCanImportDecisions());
+        const canUploadProjects = computed(() => portalCanUploadProjects());
         const canAdminPanels = computed(() => portalCanAdmin());
         function canView(section) { return portalCanView(section); }
         function canDownload(section) { return portalCanDownload(section); }
@@ -4888,7 +4897,7 @@ const app = createApp({
                     // viewer: изменяющий запрос не уходит в сеть (вторая линия
                     // защиты за скрытыми кнопками; сервер ответил бы 403).
                     const method = (init && init.method) || (typeof input !== 'string' && input && input.method) || 'GET';
-                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0, portalCanImportDecisions())) {
+                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0, portalCanImportDecisions(), portalCanUploadProjects())) {
                         const detail = {code: 'forbidden_viewer', message: 'действие доступно только администратору'};
                         showPortalForbidden(detail);
                         return Promise.resolve(new Response(JSON.stringify({detail}), {
@@ -7427,7 +7436,7 @@ const app = createApp({
         }
 
         function openAddModal() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
+            if (!portalCanUploadProjects()) return;
             goToUploadFolder();
             uploadDragOver.value = false;
             showAddProject.value = true;
@@ -20708,7 +20717,7 @@ const app = createApp({
             // Theme
             theme, toggleTheme,
             // Права вошедшего (portal_auth.js)
-            canOperate, canImportDecisions, canAdminPanels, canView, canDownload, withObject,
+            canOperate, canImportDecisions, canUploadProjects, canAdminPanels, canView, canDownload, withObject,
             portalForbiddenMessage, scViewerNotPrepared, scSessionStale,
             // Пользователи (сотрудники) — подпись решений + админ-гейт графика
             usersList, usersCurrentId,

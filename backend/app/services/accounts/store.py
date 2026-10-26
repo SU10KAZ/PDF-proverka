@@ -74,9 +74,16 @@ def _sections(conn: sqlite3.Connection, account_id: int) -> dict[str, tuple[bool
     return {r["section"]: (bool(r["can_view"]), bool(r["can_download"])) for r in rows}
 
 
+def _upload_projects(conn: sqlite3.Connection, account_id: int) -> bool:
+    row = conn.execute("SELECT upload_projects FROM account_capabilities WHERE account_id=?",
+                       (account_id,)).fetchone()
+    return bool(row and row["upload_projects"])
+
+
 def _public(conn: sqlite3.Connection, row: sqlite3.Row) -> dict:
     out = {k: row[k] for k in _PUBLIC_FIELDS}
     out["must_change_password"] = bool(out["must_change_password"])
+    out["upload_projects"] = _upload_projects(conn, row["id"])
     secs = _sections(conn, row["id"])
     out["sections"] = {
         s: {"view": secs.get(s, (False, False))[0], "download": secs.get(s, (False, False))[1]}
@@ -96,6 +103,7 @@ def _context_from_row(conn: sqlite3.Connection, row: sqlite3.Row) -> AccountCont
         session_version=row["session_version"],
         must_change_password=bool(row["must_change_password"]),
         sections=_sections(conn, row["id"]),
+        upload_projects=_upload_projects(conn, row["id"]),
     )
 
 
@@ -401,9 +409,27 @@ def set_sections(actor: Optional[int], target: int, raw: Mapping[str, Any]) -> d
     with db.write_txn() as conn:
         _row(conn, target)
         _write_sections(conn, target, sections)
+        if not sections.get("audit_results", (False, False))[0]:
+            conn.execute("DELETE FROM account_capabilities WHERE account_id=?", (int(target),))
         _touch(conn, target)
         _event(conn, "sections_changed", actor=actor, target=target,
                sections={s: list(v) for s, v in sections.items()})
+        return _public(conn, _row(conn, target))
+
+
+def set_upload_projects(actor: Optional[int], target: int, allowed: bool) -> dict:
+    with db.write_txn() as conn:
+        row = _row(conn, target)
+        if allowed and (row["status"] != "active" or not _sections(conn, target).get("audit_results", (False, False))[0]):
+            raise AccountError("upload_requires_audit_results",
+                               "Сначала включите просмотр результатов аудита для действующего пользователя.")
+        conn.execute(
+            "INSERT INTO account_capabilities(account_id, upload_projects) VALUES (?,?)"
+            " ON CONFLICT(account_id) DO UPDATE SET upload_projects=excluded.upload_projects",
+            (int(target), int(allowed)),
+        )
+        _touch(conn, target)
+        _event(conn, "upload_projects_changed", actor=actor, target=target, allowed=bool(allowed))
         return _public(conn, _row(conn, target))
 
 

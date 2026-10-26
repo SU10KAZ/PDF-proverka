@@ -178,6 +178,16 @@ describe('перехват fetch: X-Object-Id и запрет записи у vi
         expect(blocked.status).toBe(403);
     });
 
+    it('право загрузки открывает только загрузку файлов и её проверку', async () => {
+        const h = harness({...viewerCan(), uploadProjects: () => true});
+        await h.fetch('/api/projects/upload-folder/precheck', {method: 'POST'});
+        await h.fetch('/api/projects/upload-folder', {method: 'POST'});
+        expect(h.calls).toHaveLength(2);
+        expect((await h.fetch('/api/audit/batch', {method: 'POST'})).status).toBe(403);
+        expect((await h.fetch('/api/projects/register-external', {method: 'POST'})).status).toBe(403);
+        expect((await h.fetch('/api/projects/upload-folder', {method: 'DELETE'})).status).toBe(403);
+    });
+
     it('admin пишет как раньше', async () => {
         const h = harness(adminCan());
         await h.fetch('/api/stage-comparison/sessions', {method: 'POST', body: '{}'});

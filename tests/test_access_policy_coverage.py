@@ -21,7 +21,7 @@ from fastapi import HTTPException
 
 from backend.app.core import access
 from backend.app.core.access_policy import (
-    ADMIN, COMMON, DOWNLOAD, IMPORT_DECISIONS, MACHINE, PUBLIC, SELF, VIEW,
+    ADMIN, COMMON, DOWNLOAD, IMPORT_DECISIONS, UPLOAD_PROJECTS, MACHINE, PUBLIC, SELF, VIEW,
     enforce_route_policy, has_explicit_rule, policy_for,
 )
 
@@ -88,7 +88,7 @@ def _viewer_allowlist(routes) -> list[str]:
     lines = []
     for m, p, _ in routes:
         pol = policy_for(m, p)
-        if pol.kind in (VIEW, DOWNLOAD, IMPORT_DECISIONS, COMMON, SELF, PUBLIC):
+        if pol.kind in (VIEW, DOWNLOAD, IMPORT_DECISIONS, UPLOAD_PROJECTS, COMMON, SELF, PUBLIC):
             lines.append(f"{pol}\t{m}\t{p}")
     return sorted(set(lines))
 
@@ -108,6 +108,8 @@ def test_no_mutating_route_open_to_viewer(routes):
         if m != "GET":
             if pol.kind == IMPORT_DECISIONS:
                 assert (m, p) == ("POST", "/api/knowledge-base/upload-excel")
+            elif pol.kind == UPLOAD_PROJECTS:
+                assert m == "POST" and p in ("/api/projects/upload-folder", "/api/projects/upload-folder/precheck")
             else:
                 assert pol.kind in (ADMIN, PUBLIC, SELF, MACHINE), (m, p, pol)
         if p in KNOWN_MUTATING_GETS:
@@ -125,9 +127,11 @@ def _ctx(kind):
         "viewer_view": {s: (True, False) for s in access.SECTIONS},
         "viewer_full": {s: (True, s not in access.SECTIONS_WITHOUT_DOWNLOADS) for s in access.SECTIONS},
         "viewer_staff": {s: (True, False) for s in access.SECTIONS},
+        "viewer_upload": {s: (True, False) for s in access.SECTIONS},
     }[kind]
     return access.AccountContext(mode="accounts", login="v", role="viewer", account_id=2,
                                  staff_id="employee" if kind == "viewer_staff" else None,
+                                 upload_projects=kind == "viewer_upload",
                                  sections=sections)
 
 
@@ -148,7 +152,7 @@ def _allowed(conn) -> bool:
         return False
 
 
-@pytest.mark.parametrize("kind", ["viewer_none", "viewer_view", "viewer_full", "viewer_staff", "admin"])
+@pytest.mark.parametrize("kind", ["viewer_none", "viewer_view", "viewer_full", "viewer_staff", "viewer_upload", "admin"])
 def test_access_matrix(routes, kind, monkeypatch):
     monkeypatch.setenv("PORTAL_AUTH_ENABLED", "true")
     monkeypatch.setenv("PORTAL_AUTH_MODE", "accounts")
@@ -161,9 +165,11 @@ def test_access_matrix(routes, kind, monkeypatch):
         elif pol.kind == ADMIN:
             expected = False
         elif pol.kind == VIEW:
-            expected = kind in ("viewer_view", "viewer_full", "viewer_staff")
+            expected = kind != "viewer_none"
         elif pol.kind == IMPORT_DECISIONS:
-            expected = kind in ("viewer_view", "viewer_full", "viewer_staff")
+            expected = kind != "viewer_none"
+        elif pol.kind == UPLOAD_PROJECTS:
+            expected = kind == "viewer_upload"
         else:  # DOWNLOAD
             expected = kind == "viewer_full"
         assert got is expected, (kind, m, p, str(pol))

@@ -27,6 +27,8 @@ PUBLIC	POST	/api/auth/register
 SELF	GET	/change-password
 SELF	POST	/api/auth/password
 SELF	POST	/api/auth/sessions/revoke
+UPLOAD_PROJECTS	POST	/api/projects/upload-folder
+UPLOAD_PROJECTS	POST	/api/projects/upload-folder/precheck
 VIEW:audit_results	GET	/api/audit/disciplines
 VIEW:audit_results	GET	/api/document/{project_id:path}/page/{page_num}
 VIEW:audit_results	GET	/api/document/{project_id:path}/pages
