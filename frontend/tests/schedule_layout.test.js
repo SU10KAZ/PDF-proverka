@@ -64,7 +64,8 @@ describe('компоновка графика работ', () => {
         expect(reserveStyles).toContain('button.rc-point.rc-manual');
         expect(reserveStyles).toContain('.rc-legend-chip.rc-unrecognized');
         expect(reserveStyles).toContain('.rc-legend-chip.rc-manual');
-        expect(reserveScript).toContain('<i class="rc-legend-chip">АБВГ..</i>Готов к проверке');
+        expect(reserveScript).toContain('<i class="rc-legend-chip"></i>Готов к проверке');
+        expect(reserveScript).not.toContain('>АБВГ..</i>');
         expect(reserveStyles).toContain('width:44px;min-height:18px;padding:2px 3px;background:var(--teal-light');
         expect(reserveScript).toContain("chars.slice(0, 4).join('') + '..'");
     });

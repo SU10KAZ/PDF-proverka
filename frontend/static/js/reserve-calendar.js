@@ -360,7 +360,7 @@
               </tr>
             </tbody>
           </table></div>
-          <div class="rc-legend"><span><i class="rc-legend-chip">АБВГ..</i>Готов к проверке</span><span><i class="rc-legend-chip rc-unrecognized">АБВГ..</i>Не проанализирован</span><span><i class="rc-legend-chip rc-manual">АБВГ..</i>Ещё не загружен</span></div>
+          <div class="rc-legend"><span><i class="rc-legend-chip"></i>Готов к проверке</span><span><i class="rc-legend-chip rc-unrecognized"></i>Не проанализирован</span><span><i class="rc-legend-chip rc-manual"></i>Ещё не загружен</span></div>
           <div class="rc-status" role="status" aria-live="polite"><span>{{ busy ? 'Сохранение…' : status }}</span><button v-if="canEdit && data.undo_operation_id" :disabled="locked" @click="operate('undo',{undo_id:data.undo_operation_id})">Отменить последнее действие</button></div>
           <aside v-if="tooltip" class="rc-tooltip" role="tooltip" :style="tooltipStyle">{{ tipText(tooltip) }}</aside>
 
