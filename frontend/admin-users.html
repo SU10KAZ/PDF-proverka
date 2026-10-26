@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пользователи — Audit Manager</title>
     <style>
-        :root { --bg:#0d1219; --card:#151d28; --card2:#1a2333; --border:rgba(255,255,255,0.10);
-                --text:#e2e8f0; --text2:#8896a6; --teal:#00c2b8; --danger:#e5484d; --warn:#d9a441; }
+        :root { --bg:#f3f6fa; --card:#ffffff; --card2:#f7f9fc; --border:#d8e0ea;
+                --text:#17233b; --text2:#64748b; --teal:#008f83; --danger:#d92d48; --warn:#a96800; }
         * { box-sizing: border-box; }
         body { margin:0; background:var(--bg); color:var(--text);
                font-family:'Onest',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; font-size:14px; }
-        header { display:flex; align-items:center; gap:16px; padding:14px 24px; border-bottom:1px solid var(--border); }
+        header { display:flex; align-items:center; gap:16px; padding:14px 24px; border-bottom:1px solid var(--border); background:var(--card); }
         header a { color:var(--teal); text-decoration:none; }
         h1 { font-size:18px; margin:0; font-weight:600; }
         main { padding:20px 24px; max-width:1550px; }
@@ -25,18 +25,18 @@
         .btn { background:var(--card2); color:var(--text); border:1px solid var(--border); border-radius:7px;
                padding:5px 10px; cursor:pointer; font:inherit; font-size:12px; margin:2px; }
         .btn:hover { border-color:var(--teal); }
-        .btn.primary { background:var(--teal); color:#04201d; border-color:var(--teal); }
-        .btn.danger { border-color:rgba(229,72,77,0.5); color:#ff8a8e; }
+        .btn.primary { background:var(--teal); color:#fff; border-color:var(--teal); }
+        .btn.danger { border-color:#efb3bd; color:var(--danger); background:#fff7f8; }
         select { background:var(--card2); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:4px; font:inherit; font-size:12px; }
         .status { padding:2px 8px; border-radius:10px; font-size:12px; }
-        .s-active { background:rgba(0,194,184,0.15); color:var(--teal); }
-        .s-pending { background:rgba(217,164,65,0.15); color:var(--warn); }
-        .s-blocked, .s-rejected { background:rgba(229,72,77,0.15); color:#ff8a8e; }
+        .s-active { background:#e3f5f2; color:#007b71; }
+        .s-pending { background:#fff1d6; color:var(--warn); }
+        .s-blocked, .s-rejected { background:#fde8ec; color:var(--danger); }
         .matrix td { padding:3px 6px; border:none; }
         .matrix label { font-size:12px; color:var(--text2); }
         .banner { padding:10px 14px; border-radius:9px; margin-bottom:14px; display:none; }
-        .banner.err { display:block; background:rgba(229,72,77,0.12); border:1px solid rgba(229,72,77,0.35); color:#ff8a8e; }
-        .banner.ok { display:block; background:rgba(0,194,184,0.12); border:1px solid rgba(0,194,184,0.35); }
+        .banner.err { display:block; background:#fff0f2; border:1px solid #efb3bd; color:var(--danger); }
+        .banner.ok { display:block; background:#e8f7f5; border:1px solid #9cd8d1; color:#006f66; }
         .secret { font-family:'JetBrains Mono',monospace; font-size:15px; padding:4px 8px; background:var(--card2); border-radius:6px; }
         .accounts-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(330px,410px); gap:18px; align-items:start; }
         .accounts-table-wrap { overflow-x:auto; }
@@ -44,7 +44,7 @@
         .accounts-list td { vertical-align:middle; }
         .accounts-list tbody tr { cursor:pointer; }
         .accounts-list tbody tr:hover { background:var(--card2); }
-        .accounts-list tbody tr.selected { background:rgba(0,194,184,0.10); box-shadow:inset 3px 0 var(--teal); }
+        .accounts-list tbody tr.selected { background:#e8f7f5; box-shadow:inset 3px 0 var(--teal); }
         .account-select { border:0; padding:0; background:none; color:var(--text); font:inherit; font-weight:600; cursor:pointer; text-align:left; }
         .account-select:focus-visible { outline:2px solid var(--teal); outline-offset:4px; border-radius:2px; }
         .upload-permission { display:flex; align-items:center; gap:5px; font-size:12px; white-space:nowrap; cursor:pointer; }
