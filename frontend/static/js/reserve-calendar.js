@@ -13,6 +13,25 @@
     const label = iso => iso ? new Date(iso + 'T12:00:00Z').toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', timeZone: 'UTC' }) : 'Без даты';
     const stateLabel = state => ({preparation: 'Ожидает подготовки', ready: 'Готов к проверке', in_progress: 'Проверка начата'}[state] || state);
     const normalizedVersion = value => /^v\d+$/i.test(value || '') ? 'v'+Number(String(value).slice(1)) : value;
+    // randomUUID is unavailable on plain HTTP origins. The staging server is
+    // intentionally reachable over HTTP, so create a standards-shaped v4 UUID
+    // without depending on a secure browser context.
+    const operationId = () => {
+        try {
+            if (root.crypto && typeof root.crypto.randomUUID === 'function') return root.crypto.randomUUID();
+        } catch (_) { /* use the fallback below */ }
+        const bytes = new Uint8Array(16);
+        try {
+            if (!root.crypto || typeof root.crypto.getRandomValues !== 'function') throw new Error('getRandomValues unavailable');
+            root.crypto.getRandomValues(bytes);
+        } catch (_) {
+            for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+        }
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+    };
     const orderedSelection = (data, selected) => data.engineers.flatMap(e => data.tasks.filter(t => t.engineer_id === e.id && selected.includes(t.id)).sort((a, b) => a.position - b.position));
     const duplicateFields = (data, drafts) => {
         const seen = new Map(), errors = {};
@@ -177,7 +196,7 @@
             }
             function operate(kind, value = {}) {
                 if (locked.value || !canEdit.value) return;
-                pending.value = {operation_id: crypto.randomUUID(), revision: data.value.revision, kind, ...value};
+                pending.value = {operation_id: operationId(), revision: data.value.revision, kind, ...value};
                 return send(pending.value);
             }
             function clickTask(task, event) {
@@ -377,7 +396,7 @@
             async function start() {
                 if (busy.value || !task.value) return;
                 busy.value = true; error.value = '';
-                retryBody ||= {operation_id: crypto.randomUUID(), revision:data.value.revision, kind:'start', task_id:task.value.id};
+                retryBody ||= {operation_id: operationId(), revision:data.value.revision, kind:'start', task_id:task.value.id};
                 try {
                     const value = await readResponse(await fetch(API+'/operations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(retryBody)}));
                     data.value = value; retryBody = null;
@@ -392,5 +411,5 @@
         template:`<div v-if="task" class="reserve-review-start"><span v-if="task.state==='in_progress'">Проверка начата</span><button v-else class="btn btn-sm btn-primary" :disabled="busy || !task.documents_ready || task.state!=='ready'" @click="start">{{ busy ? 'Сохранение…' : 'Взять в работу' }}</button><small v-if="!task.documents_ready">Документы в подготовке</small><span v-if="error" role="alert">{{ error }}</span></div>`
     };
     root.ReserveCalendar = {register(app) { app.component('reserve-calendar', Calendar); app.component('reserve-review-start', ReviewStart); },
-        helpers: {key, lines, dayAdd, duplicateFields, orderedSelection}};
+        helpers: {key, lines, dayAdd, duplicateFields, orderedSelection, operationId}};
 })(window);

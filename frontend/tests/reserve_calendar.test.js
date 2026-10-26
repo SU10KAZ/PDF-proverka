@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import { randomUUID } from 'node:crypto';
 
 const source = readFileSync(new URL('../static/js/reserve-calendar.js', import.meta.url), 'utf8');
-function harness(responses = []) {
+function harness(responses = [], browserCrypto = {randomUUID}) {
     const components = {}, emit = vi.fn();
     const fetch = vi.fn(async () => {
         const value = responses.shift();
@@ -13,7 +13,7 @@ function harness(responses = []) {
     });
     const context = {Vue: {ref: value => ({value}), computed: get => ({get value() {return get();}}),
         watch: () => {}, onMounted: () => {}, onBeforeUnmount: () => {}, nextTick: async () => {}},
-        fetch, crypto:{randomUUID}, window:{innerWidth:1200,innerHeight:800}, Date, Map, Set, Object, JSON, Number,
+        fetch, crypto:browserCrypto, window:{innerWidth:1200,innerHeight:800}, Date, Map, Set, Object, JSON, Number,
         setInterval, clearInterval};
     vm.runInNewContext(source, context);
     context.window.ReserveCalendar.register({component:(name, value) => {components[name] = value;}});
@@ -32,6 +32,15 @@ const catalogData = () => ({...data(), available_projects:[
 ]});
 
 describe('reserve calendar user actions', () => {
+    it('submits operations on an HTTP origin where crypto.randomUUID is unavailable', async () => {
+        const browserCrypto = {getRandomValues(bytes) { for (let i = 0; i < bytes.length; i++) bytes[i] = i; return bytes; }};
+        const h = harness([data(), {...data(), revision:1}], browserCrypto);
+        await h.state.load();
+        await h.state.operate('move', {task_ids:['1'], engineer_id:'b'});
+        const sent = JSON.parse(h.fetch.mock.calls[1][1].body);
+        expect(sent.operation_id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+        expect(h.state.data.value.revision).toBe(1);
+    });
     it('splits pasted lines without clipping names and detects NFC/spacing/case duplicates across fields', () => {
         const h = harness();
         expect(h.lines(' \n  A full title  \r\n\nSecond\u2028Third')).toEqual(['A full title','Second','Third']);
