@@ -5512,7 +5512,7 @@ tr.row-rejected td.sc-cell-goto {
   background: var(--teal-light); border: 1px solid var(--teal-border); color: var(--teal);
   border-radius: 7px; padding: 3px 7px; font-size: 12px; font-weight: 600;
 }
-.sched-plashka__txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.sched-plashka__txt { overflow: visible; text-overflow: clip; white-space: nowrap; min-width: 0; }
 .sched-badge {
   flex-shrink: 0; background: var(--red); color: #fff; border-radius: 8px;
   font-size: 10px; font-weight: 700; line-height: 1; padding: 2px 5px;
@@ -5536,7 +5536,7 @@ tr.row-rejected td.sc-cell-goto {
 
 /* month mode — компактнее (table-layout:fixed делит ширину поровну, влезает весь месяц) */
 .sched-gridwrap--month .sched-cell { padding: 3px; height: 40px; }
-.sched-gridwrap--month .sched-plashka { padding: 2px 4px; font-size: 11px; gap: 2px; border-radius: 5px; }
+.sched-gridwrap--month .sched-plashka { padding: 2px 1px; font-size: 9px; gap: 0; border-radius: 5px; justify-content:center; letter-spacing:-.1px; }
 .sched-gridwrap--month .sched-badge { padding: 1px 3px; font-size: 9px; }
 .sched-gridwrap--month .sched-day-dow { font-size: 9px; }
 .sched-gridwrap--month .sched-day-dom { font-size: 11px; }
