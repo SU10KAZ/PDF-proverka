@@ -40,9 +40,10 @@ describe('единая кнопка запуска сравнения', () => {
     expect(html).toContain('v-for="mode in scComparisonLaunchModes"');
     expect(app).toContain("{code: 'FAST', label: 'Быстро'}");
     expect(app).toContain("{code: 'STANDARD', label: 'Стандартно'}");
-    expect(app).toContain("{code: 'DEEP', label: 'Глубоко', disabled: true, note: 'В разработке'}");
+    expect(app).toContain("{code: 'SUBJECTS', label: 'По инженерным предметам', note: 'Экспериментальный'}");
+    expect(html).not.toContain('<legend>Метод сравнения</legend>');
     expect(html).toContain('<span v-if="mode.note">{{ mode.note }}</span>');
-    expect(app).toContain('&& !launchMode.disabled');
+    expect(app).toContain("const aiMode = code === 'SUBJECTS' ? 'STANDARD' : code");
     expect(html).not.toContain('Production-расхождения П ↔ РД');
     expect(html).not.toContain('Сравнение редакций: слева → справа');
     expect(html).not.toContain('Атомарные изменения: одна строка');
@@ -57,7 +58,9 @@ describe('единая кнопка запуска сравнения', () => {
       app.indexOf('async function scResumeComparisonLaunch(options)'),
       app.indexOf('async function scConfirmComparisonSheetMap()'),
     );
-    expect(start).toContain('scProductionAiMode.value = mode');
+    expect(start).toContain('scProductionAiMode.value = selectedAiMode');
+    expect(start).toContain("const selectedComparisonMode = subjects ? 'subjects' : 'standard'");
+    expect(start).toContain('comparisonMode: selectedComparisonMode');
     expect(start).toContain('await scResumeComparisonLaunch');
     expect(resume).toContain('await scRunProductionComparison');
   });

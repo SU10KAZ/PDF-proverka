@@ -7964,20 +7964,6 @@
                     Если по паре анализ уже был, он будет выполнен заново: этапы 2–6 пересчитаются,
                     сохранение принятых по ней решений инженера не гарантируется.
                 </p>
-                <fieldset v-if="scComparisonModeOptions.length" class="sc-v3-model-choice">
-                    <legend>Метод сравнения</legend>
-                    <label v-for="option in scComparisonModeOptions" :key="option.code"
-                           :class="{'is-selected': scComparisonMode === option.code}">
-                        <input type="radio" name="sc-comparison-mode" :value="option.code" v-model="scComparisonMode"
-                               :disabled="scComparisonLaunchBusy">
-                        <span>{{ option.label }}</span>
-                    </label>
-                </fieldset>
-                <p v-if="scComparisonMode === 'subjects'" class="pause-modal__desc">
-                    Ищет связи по назначению и источникам предмета, включая другие тома.
-                    Доступен для любого размера проекта. Полнота поиска пока экспериментальная;
-                    результат сохраняется отдельным прогоном для сравнения со стандартным режимом.
-                </p>
                 <fieldset v-if="scV3ModelOptions.length > 1" class="sc-v3-model-choice">
                     <legend>Модель анализа</legend>
                     <label v-for="option in scV3ModelOptions" :key="option.code"

@@ -292,7 +292,7 @@ describe('стороны, режимы и глубина анализа по-р�
         expect(html).toContain('Выберите глубину анализа для этого запуска.');
         expect(html).toContain('scComparisonLaunchModes');
         expect(app).toContain("{code: 'FAST', label: 'Быстро'}");
-        expect(app).toContain("{code: 'DEEP', label: 'Глубоко', disabled: true, note: 'В разработке'}");
+        expect(app).toContain("{code: 'SUBJECTS', label: 'По инженерным предметам', note: 'Экспериментальный'}");
         expect(html).toContain('<span v-if="mode.note">{{ mode.note }}</span>');
         expect(app).not.toContain("{code: 'OFF'");
     });

@@ -12884,7 +12884,6 @@ const app = createApp({
         const scResumeDialog = ref(null);
         const scV3Parallelism = ref(5);
         const scComparisonMode = ref('standard');
-        const scComparisonModeOptions = ref([]);
         const SC_V3_MODEL_STORAGE_KEY = 'stage-comparison:v3-model';
         const scProductionAiModeChangedByUser = ref(false);
         const scProductionAiModeOptions = ref([
@@ -12895,7 +12894,7 @@ const app = createApp({
         const scComparisonLaunchModes = [
             {code: 'FAST', label: 'Быстро'},
             {code: 'STANDARD', label: 'Стандартно'},
-            {code: 'DEEP', label: 'Глубоко', disabled: true, note: 'В разработке'},
+            {code: 'SUBJECTS', label: 'По инженерным предметам', note: 'Экспериментальный'},
         ];
         const scComparisonLaunchDialogOpen = ref(false);
         const scComparisonLaunchBusy = ref(false);
@@ -16534,10 +16533,6 @@ const app = createApp({
                 scProductionAiMode.value = String(payload.default);
             }
             const models = payload.models && Array.isArray(payload.models.items) ? payload.models.items : [];
-            scComparisonModeOptions.value = payload.comparison_modes?.items || [];
-            if (!scComparisonModeOptions.value.some(item => item.code === scComparisonMode.value)) {
-                scComparisonMode.value = 'standard';
-            }
             scV3ModelOptions.value = models;
             if (!models.some(item => item.code === scV3Model.value)) {
                 let remembered = '';
@@ -17946,8 +17941,9 @@ const app = createApp({
             scBatchBusy.value = true;
             scBatchError.value = '';
             try {
-                const body = {pairs, ai_mode: mode, parallelism: scV3Parallelism.value,
-                              comparison_mode: scComparisonMode.value};
+                const subjects = mode === 'SUBJECTS';
+                const body = {pairs, ai_mode: subjects ? 'STANDARD' : mode, parallelism: scV3Parallelism.value,
+                              comparison_mode: subjects ? 'subjects' : 'standard'};
                 if (scV3ModelOptions.value.length > 1 && scV3Model.value) body.model_profile = scV3Model.value;
                 const response = await fetch(scBatchUrl(), {
                     method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body),
@@ -17983,10 +17979,11 @@ const app = createApp({
 
         function scComparisonLaunchModeAllowed(code) {
             const launchMode = scComparisonLaunchModes.find(mode => mode.code === code);
+            const aiMode = code === 'SUBJECTS' ? 'STANDARD' : code;
             return Boolean(
                 launchMode
                 && !launchMode.disabled
-                && scProductionAiModeOptions.value.some(mode => mode.code === code)
+                && scProductionAiModeOptions.value.some(mode => mode.code === aiMode)
             );
         }
 
@@ -18040,12 +18037,14 @@ const app = createApp({
             }
             scProductionInputMode.value = pending.inputMode;
             scProductionAiMode.value = pending.aiMode;
+            scComparisonMode.value = pending.comparisonMode;
             scProductionAiModeChangedByUser.value = true;
             await scLoadProductionReview({silent: true, preserveDrafts: true});
             // Загрузка старого результата восстанавливает его input_mode;
             // выбранные параметры нового запуска после неё снова авторитетны.
             scProductionInputMode.value = pending.inputMode;
             scProductionAiMode.value = pending.aiMode;
+            scComparisonMode.value = pending.comparisonMode;
             scComparisonLaunchPending.value = null;
             // Keep the sheet map visible while the shared pipeline starts.
             // The engineer can switch to changes without interrupting the run.
@@ -18096,12 +18095,17 @@ const app = createApp({
                 }
 
                 const inputMode = target ? 'DOCUMENT' : scProductionInputMode.value;
+                const subjects = mode === 'SUBJECTS';
+                const selectedAiMode = subjects ? 'STANDARD' : mode;
+                const selectedComparisonMode = subjects ? 'subjects' : 'standard';
                 scProductionInputMode.value = inputMode;
-                scProductionAiMode.value = mode;
+                scProductionAiMode.value = selectedAiMode;
+                scComparisonMode.value = selectedComparisonMode;
                 scProductionAiModeChangedByUser.value = true;
                 scComparisonLaunchPending.value = {
                     pairId: scActivePair.value.id,
-                    aiMode: mode,
+                    aiMode: selectedAiMode,
+                    comparisonMode: selectedComparisonMode,
                     inputMode,
                 };
                 // The full-document pipeline resolves block correspondence itself.
@@ -21082,7 +21086,7 @@ const app = createApp({
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scBindScrollLayout, projectAssembliesEnabled,
             scV3ModelOptions, scV3Model, scV3Parallelism, scSelectV3Model, scResumeDialog, scConfirmResumeProductionRun,
-            scComparisonMode, scComparisonModeOptions,
+            scComparisonMode,
             scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
             scOpenStageFolderDialog, scUploadStageFolder,
