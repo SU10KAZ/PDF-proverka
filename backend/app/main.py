@@ -73,6 +73,7 @@ from backend.app.api.routers import (
     accounts_admin,
     projects_v2_shadow,
     schedule,
+    reserve_calendar,
     action_log,
 )
 from backend.app.ws.manager import ws_manager
@@ -312,6 +313,7 @@ app.include_router(knowledge_base.router)
 app.include_router(objects.router)
 app.include_router(users.router)
 app.include_router(schedule.router)
+app.include_router(reserve_calendar.router)
 app.include_router(critic_v2_ui.router)
 app.include_router(critic_v2_assisted_round1.router)
 app.include_router(external_register.router)

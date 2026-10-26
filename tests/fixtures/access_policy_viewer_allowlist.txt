@@ -64,6 +64,7 @@ VIEW:knowledge_base	GET	/api/knowledge-base/patterns
 VIEW:knowledge_base	GET	/api/knowledge-base/stats
 VIEW:schedule	GET	/api/schedule
 VIEW:schedule	GET	/api/schedule/plan
+VIEW:schedule	GET	/api/schedule/reserve
 VIEW:stage_comparison	GET	/api/human-mapping/objects/{object_id}/assets/{asset_path:path}
 VIEW:stage_comparison	GET	/api/human-mapping/objects/{object_id}/comparisons/{pair}/assets/{asset_path:path}
 VIEW:stage_comparison	GET	/api/human-mapping/objects/{object_id}/comparisons/{pair}/block-links

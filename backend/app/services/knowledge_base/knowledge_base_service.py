@@ -340,6 +340,17 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     # должны фиксировать день завершения проекта.
     if stamp_schedule:
         _stamp_schedule_completion_if_complete(project_id, reviewer)
+        # An actual expert decision (also Excel import) starts/reconciles the
+        # versioned human queue. Merely opening the project never calls this.
+        # Keep the existing save available if the derived calendar is unavailable;
+        # its next read reconciles from the authoritative review files again.
+        try:
+            from backend.app.services.common import reserve_service, reserve_store
+            if decisions and reserve_store.db_path().exists():
+                reserve_service.reconcile_review()
+        except Exception:
+            import logging
+            logging.getLogger(__name__).warning('Reserve queue reconciliation failed', exc_info=True)
 
     # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
     # expert_review.json (no-op в legacy, fail-soft). decisions_log остаётся

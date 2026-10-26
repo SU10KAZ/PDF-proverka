@@ -183,7 +183,7 @@ _ALLOW_SPEC: dict[str, list[str]] = {
         "GET /api/knowledge-base/patterns", "GET /api/knowledge-base/missing-norms",
     ],
     f"{VIEW}:{_SCH}": [
-        "GET /api/schedule", "GET /api/schedule/plan",
+        "GET /api/schedule", "GET /api/schedule/plan", "GET /api/schedule/reserve",
     ],
 }
 
