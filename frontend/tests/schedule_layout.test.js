@@ -12,6 +12,8 @@ describe('компоновка графика работ', () => {
         expect(topbar).toContain('sched-reserve-tabs');
         expect(topbar).toContain('sched-actions--top');
         expect(topbar).toContain('Изменить план');
+        expect(topbar).not.toContain('>Сегодня</button>');
+        expect(topbar).not.toContain('Фильтры');
         expect(reserveStyles).toContain('.sched-topbar{display:flex;align-items:center;justify-content:space-between');
     });
 

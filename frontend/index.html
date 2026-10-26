@@ -3204,21 +3204,6 @@
                             <span class="sched-period">{{ schedPeriodLabel }}</span>
                             <button class="btn btn-sm btn-outline sched-arrow" @click="schedNext" title="Следующий период">&#8250;</button>
                         </div>
-                        <button class="btn btn-sm btn-outline" @click="schedToday">Сегодня</button>
-                        <div class="sched-filterwrap">
-                            <button class="btn btn-sm" :class="schedHiddenEngineers.length ? 'btn-accent' : 'btn-outline'"
-                                    @click.stop="schedFiltersOpen = !schedFiltersOpen">
-                                Фильтры
-                                <span v-if="schedHiddenEngineers.length" class="sched-filterbadge">{{ schedEngineers.length - schedHiddenEngineers.length }}/{{ schedEngineers.length }}</span>
-                            </button>
-                            <div v-if="schedFiltersOpen" class="sched-filterpanel" @click.stop>
-                                <div class="sched-filterpanel__title">Показать инженеров</div>
-                                <label v-for="e in schedEngineers" :key="'f-'+e.id" class="sched-filteritem">
-                                    <input type="checkbox" :checked="!schedIsEngineerHidden(e.id)" @change="schedToggleEngineer(e.id)">
-                                    <span>{{ e.name }}</span>
-                                </label>
-                            </div>
-                        </div>
                         <template v-if="schedIsAdmin">
                             <button v-if="!schedPlanEdit" class="btn btn-sm btn-outline" @click="schedTogglePlanEdit">✎ Изменить план</button>
                             <template v-else>
