@@ -1,6 +1,8 @@
-.sched-reserve-tabs{display:flex;gap:24px;border-bottom:1px solid #dce3ed;margin-bottom:18px}
+.sched-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #dce3ed;margin-bottom:18px}
+.sched-reserve-tabs{display:flex;align-self:stretch;gap:24px;flex-shrink:0}
 .sched-reserve-tabs button{border:0;border-bottom:3px solid transparent;background:none;color:#64758b;font:600 14px inherit;padding:12px 0;cursor:pointer}
 .sched-reserve-tabs button[aria-selected=true]{color:#008e83;border-bottom-color:#008e83}
+@media(max-width:1180px){.sched-topbar{align-items:flex-start;flex-direction:column;gap:6px}.sched-reserve-tabs{width:100%}.sched-actions--top{padding-bottom:10px}}
 .reserve-calendar{color-scheme:only light;--rc-ink:#14243c;--rc-muted:#64758b;--rc-line:#dce3ed;--rc-tint:#e1f5f2;color:var(--rc-ink);background:#f1f4f8;border:1px solid var(--rc-line);border-radius:12px;padding:20px;font:14px/1.45 Arial,sans-serif;isolation:isolate}
 .reserve-calendar *{box-sizing:border-box}
 .reserve-calendar button{font:inherit;color:var(--rc-ink);border:1px solid var(--rc-line);border-radius:6px;background:#fff;padding:7px 11px;cursor:pointer;white-space:normal}

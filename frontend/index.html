@@ -3193,21 +3193,12 @@
         <div v-if="currentView === 'schedule'" class="container sched-page"
              @click="schedClosePopover(); schedFiltersOpen = false">
             <div class="kb-page">
-                <div class="sched-reserve-tabs" role="tablist" aria-label="Представление работ">
-                    <button id="sched-completed-tab" type="button" role="tab" :aria-selected="schedTab === 'completed'" aria-controls="sched-completed-panel" @click.stop="schedSelectTab('completed')">Выполнено</button>
-                    <button id="sched-reserve-tab" type="button" role="tab" :aria-selected="schedTab === 'reserve'" aria-controls="sched-reserve-panel" @click.stop="schedSelectTab('reserve')">Календарь запаса</button>
-                </div>
-                <div id="sched-reserve-panel" v-show="schedTab === 'reserve'" role="tabpanel" aria-labelledby="sched-reserve-tab">
-                    <reserve-calendar :active="schedTab === 'reserve'" @open-project="reserveOpenProject"></reserve-calendar>
-                </div>
-                <div id="sched-completed-panel" v-show="schedTab === 'completed'" role="tabpanel" aria-labelledby="sched-completed-tab">
-                <!-- Toolbar -->
-                <div class="kb-header sched-toolbar">
-                    <div class="sched-titlewrap">
-                        <h2 class="kb-title sched-title">График производства работ</h2>
-                        <p class="sched-subtitle">Контроль фактически выполненных проверок по инженерам</p>
+                <div class="sched-topbar">
+                    <div class="sched-reserve-tabs" role="tablist" aria-label="Представление работ">
+                        <button id="sched-completed-tab" type="button" role="tab" :aria-selected="schedTab === 'completed'" aria-controls="sched-completed-panel" @click.stop="schedSelectTab('completed')">Выполнено</button>
+                        <button id="sched-reserve-tab" type="button" role="tab" :aria-selected="schedTab === 'reserve'" aria-controls="sched-reserve-panel" @click.stop="schedSelectTab('reserve')">Календарь запаса</button>
                     </div>
-                    <div class="kb-header-actions sched-actions">
+                    <div v-show="schedTab === 'completed'" class="kb-header-actions sched-actions sched-actions--top">
                         <div class="sched-navgroup">
                             <button class="btn btn-sm btn-outline sched-arrow" @click="schedPrev" title="Предыдущий период">&#8249;</button>
                             <span class="sched-period">{{ schedPeriodLabel }}</span>
@@ -3237,6 +3228,17 @@
                             <button class="btn btn-sm btn-outline" @click="subSpendOpen = true; subSpendLoad()"
                                     title="Расход подписки Claude по инженерам">💳 Расход подписки</button>
                         </template>
+                    </div>
+                </div>
+                <div id="sched-reserve-panel" v-show="schedTab === 'reserve'" role="tabpanel" aria-labelledby="sched-reserve-tab">
+                    <reserve-calendar :active="schedTab === 'reserve'" @open-project="reserveOpenProject"></reserve-calendar>
+                </div>
+                <div id="sched-completed-panel" v-show="schedTab === 'completed'" role="tabpanel" aria-labelledby="sched-completed-tab">
+                <!-- Toolbar -->
+                <div class="kb-header sched-toolbar">
+                    <div class="sched-titlewrap">
+                        <h2 class="kb-title sched-title">График производства работ</h2>
+                        <p class="sched-subtitle">Контроль фактически выполненных проверок по инженерам</p>
                     </div>
                 </div>
 
@@ -3479,7 +3481,7 @@
                                     </td>
                                     <td class="sched-stats-table__remarks">
                                         <template v-if="s.agreed != null || s.disagreed != null">
-                                            <span class="sched-remark-ok" title="согласованные (замечания + оптимизации)">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные (замечания + оптимизации)">{{ s.disagreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-pct" title="процент принятых замечаний">{{ s.remarkPct != null ? s.remarkPct + '%' : '—' }}</span>
+                                            <span class="sched-remarks-values"><span class="sched-remark-ok" title="согласованные (замечания + оптимизации)">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные (замечания + оптимизации)">{{ s.disagreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-pct" title="процент принятых замечаний">{{ s.remarkPct != null ? s.remarkPct + '%' : '—' }}</span></span>
                                         </template>
                                         <span v-else class="sched-remark-na" title="Нет данных по решениям (замечания и оптимизации) за период">—</span>
                                     </td>
@@ -3497,7 +3499,7 @@
                                     <td>{{ schedTotals.plan }}</td>
                                     <td class="sched-stats-table__remarks">
                                         <template v-if="schedTotals.agreed != null || schedTotals.disagreed != null">
-                                            <span class="sched-remark-ok">{{ schedTotals.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no">{{ schedTotals.disagreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-pct" title="процент принятых замечаний">{{ schedTotals.remarkPct != null ? schedTotals.remarkPct + '%' : '—' }}</span>
+                                            <span class="sched-remarks-values"><span class="sched-remark-ok">{{ schedTotals.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no">{{ schedTotals.disagreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-pct" title="процент принятых замечаний">{{ schedTotals.remarkPct != null ? schedTotals.remarkPct + '%' : '—' }}</span></span>
                                         </template>
                                         <span v-else class="sched-remark-na">—</span>
                                     </td>

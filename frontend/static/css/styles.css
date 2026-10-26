@@ -5436,11 +5436,12 @@ tr.row-rejected td.sc-cell-goto {
    ГРАФИК ПРОИЗВОДСТВА РАБОТ (production work schedule)
    Лёгкая сетка: строки — инженеры, колонки — дни. Mock-данные.
    ══════════════════════════════════════════════════════════════ */
-.sched-toolbar { flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+.sched-toolbar { flex-wrap: wrap; gap: 10px; align-items: flex-start; padding-top: 0; }
 .sched-titlewrap { display: flex; flex-direction: column; gap: 2px; }
 .sched-title { font-size: 22px; line-height: 1.2; }
 .sched-subtitle { margin: 0; font-size: 13px; color: var(--text-muted); }
 .sched-actions { flex-wrap: wrap; gap: 8px; align-items: center; }
+.sched-actions--top { margin-left: auto; padding: 6px 0; justify-content: flex-end; }
 .sched-navgroup { display: inline-flex; align-items: center; gap: 2px; }
 .sched-arrow { font-size: 16px; line-height: 1; padding: 4px 8px; }
 .sched-period { font-weight: 600; font-size: 13px; color: var(--text); min-width: 120px; text-align: center; }
@@ -5557,14 +5558,14 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats-table__nm { font-weight: 600; }
 .sched-stats-table th.sched-stats-table__nm, .sched-stats-table td.sched-stats-table__nm { text-align: left; }
 /* Инженер — широкий слева; Факт/Осталось/План/Замечания узкие, Выполнение шире; данные по центру */
-.sched-stats-table th:nth-child(1) { width: 49%; }
+.sched-stats-table th:nth-child(1) { width: 45%; }
 .sched-stats-table th:nth-child(2),
 .sched-stats-table th:nth-child(3),
 .sched-stats-table th:nth-child(4) { width: 6%; }
 /* Колонка-счётчик шире: заголовок «Счётчик/Замечаний/Оптимизаций» больше не
    занимает всю ячейку, появляются симметричные поля — центрирование видно. */
-.sched-stats-table th:nth-child(5) { width: 9%; }
-.sched-stats-table th:nth-child(6) { width: 24%; }
+.sched-stats-table th:nth-child(5) { width: 14%; }
+.sched-stats-table th:nth-child(6) { width: 23%; }
 .sched-stats-table th:nth-child(n+2),
 .sched-stats-table td:nth-child(n+2) { text-align: center; }
 /* цвет текста столбцов: Факт — зелёный, Осталось — красный, План — синий */
@@ -5596,22 +5597,22 @@ tr.row-rejected td.sc-cell-goto {
 .sched-statcard__barfill.sched-low  { background: var(--red); }
 
 /* ── KPI-карточки графика ── */
-.sched-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 4px 0 18px; }
-.sched-kpi { display: flex; align-items: center; gap: 14px; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
-.sched-kpi__icon { flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; }
-.sched-kpi__icon svg { width: 22px; height: 22px; }
+.sched-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 2px 0 14px; }
+.sched-kpi { display: flex; align-items: center; gap: 11px; min-height: 64px; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 8px 12px; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
+.sched-kpi__icon { flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; }
+.sched-kpi__icon svg { width: 19px; height: 19px; }
 .sched-kpi__icon--eng  { background: #ede9fe; color: #6d28d9; }
 .sched-kpi__icon--rep  { background: #dbeafe; color: #1d4ed8; }
 .sched-kpi__icon--over { background: var(--red-light); color: var(--red); }
 .sched-kpi__body { min-width: 0; }
 .sched-kpi__label { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sched-kpi__value { font-size: 26px; font-weight: 800; line-height: 1.1; color: var(--text); }
+.sched-kpi__value { font-size: 23px; font-weight: 800; line-height: 1; color: var(--text); }
 .sched-kpi__value.sched-ok { color: var(--green); }
 .sched-kpi__value.sched-warn { color: var(--amber); }
 .sched-kpi__value.sched-low { color: var(--red); }
 .sched-kpi__sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
-.sched-kpi__ring { flex-shrink: 0; width: 48px; height: 48px; }
-.sched-kpi__ring svg { width: 48px; height: 48px; }
+.sched-kpi__ring { flex-shrink: 0; width: 40px; height: 40px; }
+.sched-kpi__ring svg { width: 40px; height: 40px; }
 .sched-ring__bg { fill: none; stroke: var(--border2); stroke-width: 5; }
 .sched-ring__fg { fill: none; stroke: var(--teal); stroke-width: 5; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray .35s; }
 .sched-kpi__ring.sched-ok  .sched-ring__fg { stroke: var(--green); }
@@ -5663,10 +5664,12 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats-table th.sched-stats-table__remarks,
 .sched-stats-table td.sched-stats-table__remarks { text-align: center; }
 .sched-remarks-th { justify-content: center; }
+.sched-remarks-values { display: inline-flex; align-items: baseline; justify-content: center; gap: 2px; max-width: 100%; font-variant-numeric: tabular-nums; }
 .sched-remark-ok  { color: var(--green); font-weight: 700; }
 .sched-remark-no  { color: var(--red); font-weight: 700; }
 .sched-remark-pct { color: var(--teal); font-weight: 700; }
-.sched-remark-sep { color: var(--text3); margin: 0 3px; }
+.sched-remark-sep { color: var(--text3); margin: 0; }
+.sched-stats-table__total .sched-remarks-values { font-size: 16px; }
 .sched-remark-na  { color: var(--text-muted); }
 
 /* ── адаптив KPI ── */
