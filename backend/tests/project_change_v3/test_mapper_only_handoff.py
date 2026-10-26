@@ -169,6 +169,7 @@ def test_public_state_and_api_expose_and_forward_the_explicit_recovery(env, plan
     state = get_production_state(env['session_id'], gf.PAIR_ID)
     assert state['resume_available']
     assert state['resume_options'] == {
+        'comparison_mode': 'standard',
         'model_profile': 'opus55', 'can_switch_model': True, 'mode': 'before_mining',
         'saved_regions': 0, 'planned_new_calls': 3, 'max_new_miner_calls': 1,
     }

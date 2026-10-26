@@ -104,6 +104,7 @@ def build_quality_ledger(
     hint_identities: list[dict[str, Any]],
     coverage: dict[str, Any],
     page_records: dict[tuple[str, int], dict[str, Any]] | None = None,
+    review_all_parameters: bool = False,
 ) -> dict[str, Any]:
     if len(unresolved_hints) != len(hint_identities):
         raise ValueError("hint identities do not cover every hint")
@@ -140,15 +141,15 @@ def build_quality_ledger(
                 side for side, field in (("OLD", "old_source_status"), ("NEW", "new_source_status"))
                 if parameter[field] in {"RASTER_REVIEW_REQUIRED", "SOURCE_BLOCK_UNAVAILABLE", "SOURCE_VALUE_NOT_FOUND"}
             ]
-            if review_sides:
+            if review_sides or review_all_parameters:
                 verification_work_items.append({
                     "work_item_id": f"VERIFY-{change_id}-P{parameter['parameter_ordinal']:03d}",
                     "projectchange_id": change_id,
                     "parameter_ordinal": parameter["parameter_ordinal"],
                     "parameter_name": parameter["name"],
-                    "review_sides": review_sides,
+                    "review_sides": review_sides or ["OLD", "NEW"],
                     "status": "PENDING",
-                    "reason": "SOURCE_VALUE_NEEDS_INDEPENDENT_READ",
+                    "reason": "SUBJECT_COUNTEREVIDENCE_REVIEW" if review_all_parameters else "SOURCE_VALUE_NEEDS_INDEPENDENT_READ",
                     "evidence": [list(_evidence_key(item)) for item in evidence],
                 })
         change_evidence[change_id] = {_evidence_key(item) for item in evidence}

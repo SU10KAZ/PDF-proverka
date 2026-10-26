@@ -14,7 +14,7 @@ import re
 import time
 import unicodedata
 
-from . import contracts, mapper_portions as mp, subject_contracts as sc, transport
+from . import contracts, mapper_portions as mp, parallel_calls, subject_contracts as sc, transport
 from .provider import build_codex_payload
 from .run_storage import read
 from .source_prep import load_page_record, mapping_images
@@ -128,15 +128,32 @@ def route_card(row):
                                      "source_role", "evidence", "uncertainties")}
 
 
+def validate_detailed(pair_id, answer, pages):
+    validate_map(pair_id, answer, pages)
+    known = {(p['side'], p['physical_page'], b['block_id']): b['modality']
+             for p in pages for b in p['blocks']}
+    for region in answer['regions']:
+        for field in ('important_text_blocks', 'important_table_blocks', 'important_graphic_blocks'):
+            for ref in region[field]:
+                key = (ref['side'], ref['physical_page'], ref['block_id'])
+                if (known.get(key) != ref['block_type'] or ref['physical_page'] not in
+                        region[ref['side'].lower() + '_pages']):
+                    raise ValueError('detailed mapping cites an unavailable region block')
+
+
 class SubjectSearch:
     def __init__(self, *, pair_id, run_id, structure, work_dir, source_manifest,
-                 profile, invoke, save, progress, cancelled=lambda: False, donor_checkpoint=None):
+                 profile, provider, on_outcome, workers, save, progress, cancelled=lambda: False, donor_checkpoint=None):
         self.pair_id, self.run_id = pair_id, run_id
         self.work_dir, self.profile = Path(work_dir), profile
-        self.invoke, self.save, self.progress, self.cancelled = invoke, save, progress, cancelled
+        self.provider, self.on_outcome, self.workers = provider, on_outcome, workers
+        self.save, self.progress, self.cancelled = save, progress, cancelled
         self.index = SourceIndex(structure)
         self.images = transport.PlanningImageCache()
         self.records = {key: load_page_record(self.work_dir, *key) for key in self.index.pages}
+        self.index.pages = {key: {**page, 'source_document': {
+            'pdf_sha256': self.records[key]['source_pdf_sha256'], 'origin': self.records[key].get('origin')}}
+            for key, page in self.index.pages.items()}
         self.source_refs = {}
         self.expected_images = {}
         for key, p in self.records.items():
@@ -197,7 +214,7 @@ class SubjectSearch:
                 raise ValueError('graphic source changed after planning')
         return measured
 
-    def ask(self, phase, prompt, data, schema, images, validator):
+    def ask_item(self, phase, prompt, data, schema, images, validator):
         if self.cancelled():
             raise RuntimeError("subject search cancelled")
         # Re-hash immediately before use. A stale planning cache cannot authorize a call.
@@ -219,26 +236,55 @@ class SubjectSearch:
         self.progress(f"По инженерным предметам: {phase}, принято запросов {len(self.entries)}", "MAPPING")
         call_id = f"{self.pair_id}_SUBJECT_{key[:20]}"
         self.persist()  # durable identity even if the very first request is cancelled
-        answer, error = None, None
+        answer, error, receipt = None, None, None
         try:
-            answer = self.invoke(stage="MAPPING", call_id=call_id, pair_id=self.pair_id,
-                                 prompt=prompt, data=data, schema=schema, images=images)
+            request = dict(stage="MAPPING", call_id=call_id, pair_id=self.pair_id,
+                           prompt=prompt, data=data, schema=schema, images=images)
+            outcome = yield request
+            self.on_outcome(request, outcome)
+            receipt = outcome.receipt
+            answer = outcome.response if outcome.error is None else outcome.last_response
+            if outcome.error:
+                raise outcome.error
             validate_schema(answer, schema)
             validator(answer)
+        except GeneratorExit:
+            # The pool did not admit this request (another item failed or cancel).
+            # It must not become a successful null answer in the checkpoint.
+            error = 'request_not_started'
+            raise
         except Exception as exc:
             error = str(exc)
             raise
         finally:
-            row = {"key": key, "call_id": call_id, "phase": phase, "accepted": error is None,
-                   "answer": canonical(answer, self.work_dir), "error": error,
-                   "estimated_input_tokens": measured.get("estimated_input_tokens")}
-            row["answer_sha256"] = digest(row["answer"])
-            if error is None:
-                self.entries.append(row)
-                self.cache[key] = row
-            self.attempts.append(row)
-            self.persist()
+            if error != 'request_not_started':
+                row = {"key": key, "call_id": call_id, "phase": phase, "accepted": error is None,
+                       "answer": canonical(answer, self.work_dir), "error": error, 'transport_receipt': receipt,
+                       "estimated_input_tokens": measured.get("estimated_input_tokens")}
+                row["answer_sha256"] = digest(row["answer"])
+                if error is None:
+                    self.entries.append(row)
+                    self.cache[key] = row
+                self.attempts.append(row)
+                self.persist()
         return answer
+
+    def ask_many(self, jobs):
+        """Only provider.complete runs in threads; writes/validation stay ordered locally."""
+        answers = {}
+        def start(index, job):
+            answers[index] = yield from self.ask_item(*job)
+        control = parallel_calls.CallControl()
+        parallel_calls.run_items(enumerate(jobs), start_item=start, provider=self.provider,
+                                 workers=min(self.workers, max(1, len(jobs))), control=control,
+                                 cancelled=self.cancelled, on_completed=lambda: None,
+                                 thread_name='pc-subject-search')
+        if self.cancelled() or len(answers) != len(jobs):
+            raise RuntimeError('subject search cancelled')
+        return [answers[i] for i in range(len(jobs))]
+
+    def ask(self, *job):
+        return self.ask_many([job])[0]
 
     def chunks(self, pages, prompt, schema, extra=None, *, max_pages=16):
         """Plan every exact full-source packet; never clip a page to fit."""
@@ -260,9 +306,10 @@ class SubjectSearch:
             pages = [p for key, p in sorted(self.index.pages.items()) if key[0] == side]
             jobs.extend(self.chunks(pages, sc.CATALOG_PROMPT, sc.CATALOG_SCHEMA))
         # All source packets preflighted before the first inference.
-        for pages in jobs:
-            answer = self.ask("каталог", sc.CATALOG_PROMPT, {"pair": self.pair_id, "pages": pages},
-                              sc.CATALOG_SCHEMA, mapping_images(pages), lambda a: validate_catalog(a, pages))
+        requests = [("каталог", sc.CATALOG_PROMPT, {"pair": self.pair_id, "pages": pages},
+                     sc.CATALOG_SCHEMA, mapping_images(pages), lambda a, pages=pages: validate_catalog(a, pages))
+                    for pages in jobs]
+        for pages, answer in zip(jobs, self.ask_many(requests), strict=True):
             batch_id = digest([(p["side"], p["physical_page"]) for p in pages])[:12]
             for row in answer["observations"]:
                 self.ledger["catalog"].append({**row, "id": f"{batch_id}:{row['local_id']}",
@@ -292,10 +339,9 @@ class SubjectSearch:
                 plan(a, b[:mid])
                 plan(a, b[mid:])
         plan(old, new)
-        for a, b in jobs:
-            answer = self.ask("поиск связей", sc.ROUTE_PROMPT,
-                              {"pair": self.pair_id, "old": a, "new": b}, sc.ROUTE_SCHEMA, [],
-                              lambda answer: validate_route(answer, a, b))
+        requests = [("поиск связей", sc.ROUTE_PROMPT, {"pair": self.pair_id, "old": a, "new": b},
+                     sc.ROUTE_SCHEMA, [], lambda answer, a=a, b=b: validate_route(answer, a, b)) for a, b in jobs]
+        for answer in self.ask_many(requests):
             self.ledger["links"].extend(answer["links"])
         # A common page is NOT a reason to merge subjects. Only explicit links
         # involving the same observation form a connected candidate group.
@@ -327,10 +373,9 @@ class SubjectSearch:
             extra = {"subject_id": group_id, "search_history": history}
             chunks = self.chunks(pages, sc.SEARCH_PROMPT, sc.SEARCH_SCHEMA, extra)
             queries, unresolved = [], []
-            for chunk in chunks:
-                answer = self.ask("добор источников", sc.SEARCH_PROMPT,
-                                  {"pair": self.pair_id, "pages": chunk, **extra},
-                                  sc.SEARCH_SCHEMA, mapping_images(chunk), lambda a: None)
+            requests = [("добор источников", sc.SEARCH_PROMPT, {"pair": self.pair_id, "pages": chunk, **extra},
+                         sc.SEARCH_SCHEMA, mapping_images(chunk), lambda a: None) for chunk in chunks]
+            for answer in self.ask_many(requests):
                 queries.extend(answer["queries"])
                 unresolved.extend(answer["unresolved"])
             if len(queries) > MAX_SEARCH_QUERIES:
@@ -370,10 +415,10 @@ class SubjectSearch:
         packets = [mp.portion_data(self.pair_id, pages, p) for p in portions] if portions else [
             {"pair": self.pair_id, "pages": pages}]
         results = []
-        for data in packets:
-            answer = self.ask("подробное сопоставление", contracts.MAPPER_PROMPT, data,
-                              contracts.MAP_SCHEMA, mapping_images(data["pages"]),
-                              lambda a: validate_map(self.pair_id, a, data["pages"]))
+        requests = [("подробное сопоставление", contracts.MAPPER_PROMPT, data,
+                     contracts.MAP_SCHEMA, mapping_images(data["pages"]),
+                     lambda a, data=data: validate_detailed(self.pair_id, a, data["pages"])) for data in packets]
+        for data, answer in zip(packets, self.ask_many(requests), strict=True):
             self.ledger["detailed_packets"].append({"subject": group_id,
                 "old": [p["physical_page"] for p in data["pages"] if p["side"] == "OLD"],
                 "new": [p["physical_page"] for p in data["pages"] if p["side"] == "NEW"]})
@@ -401,14 +446,19 @@ class SubjectSearch:
                    "coverage_notes": ["Экспериментальный поиск по инженерным предметам. unmatched означает, "
                                       "что связь пока не найдена; непроверенные пары не доказывают отсутствие связи."]}
         validate_map(self.pair_id, mapping, list(self.index.pages.values()))
-        # Sparse per-OLD rows avoid materializing millions of Python tuples.
-        coverage = {p: set() for side, p in self.index.pages if side == "OLD"}
+        # Bit rows keep the explicit residual affordable for large projects.
+        new_pages = sorted(p for side, p in self.index.pages if side == 'NEW')
+        new_indices = {page: i for i, page in enumerate(new_pages)}
+        coverage = {p: 0 for side, p in self.index.pages if side == "OLD"}
         for packet in self.ledger["detailed_packets"]:
+            mask = sum(1 << new_indices[p] for p in set(packet['new']))
             for old in packet["old"]:
-                coverage[old].update(packet["new"])
-        total = len(coverage) * sum(s == "NEW" for s, _ in self.index.pages)
-        covered = sum(map(len, coverage.values()))
-        self.ledger["covered_pairs_by_old"] = {str(p): sorted(rows) for p, rows in coverage.items()}
+                coverage[old] |= mask
+        total = len(coverage) * len(new_pages)
+        covered = sum(mask.bit_count() for mask in coverage.values())
+        self.ledger['coverage_encoding'] = 'new-page-index-bitset-hex'
+        self.ledger['new_page_index'] = new_pages
+        self.ledger["coverage_masks_by_old"] = {str(p): hex(mask) for p, mask in coverage.items()}
         self.ledger["summary"] = {"catalog_pages": len(self.index.pages), "observations": len(self.ledger["catalog"]),
             "candidate_groups": len(groups), "detailed_packets": len(self.ledger["detailed_packets"]),
             "accepted_requests": len(self.entries), "new_requests": len(self.attempts),
@@ -426,7 +476,7 @@ def load_checkpoint(session_id, pair_id, run_id):
     directory = run_storage.run_dir(session_id, pair_id, run_id)
     state = read(directory / "state.json") or {}
     manifest = read(directory / "run_manifest.json") or {}
-    if (state.get("status") != "FAILED" or state.get("pipeline_current") != "MAPPING"
+    if (state.get("status") != "FAILED" or not recoverable_search_state(state)
             or (state.get("provenance") or {}).get("comparison_mode") != "subjects"
             or (manifest.get("session_id"), manifest.get("pair_id"), manifest.get("run_id")) !=
                (session_id, pair_id, run_id)):
@@ -437,6 +487,13 @@ def load_checkpoint(session_id, pair_id, run_id):
     if not checkpoint or digest(checkpoint) != expected or checkpoint.get("run_id") != run_id:
         raise ValueError("subject checkpoint is missing or changed")
     return checkpoint, state
+
+
+def recoverable_search_state(state):
+    prov = state.get('provenance') or {}
+    return (prov.get('comparison_mode') == 'subjects' and
+            (state.get('pipeline_current') == 'MAPPING' or
+             (state.get('pipeline_current') == 'MINING' and not prov.get('miner_checkpoint'))))
 
 
 def verification_context(changes, ledger, structure):

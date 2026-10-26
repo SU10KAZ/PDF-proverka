@@ -128,7 +128,7 @@ def test_handoff_api_requires_donor_and_target_and_forwards_policy(monkeypatch):
     assert client.post(url, json={**body, 'resume_from_run_id': 'a' * 32}).status_code == 400
     assert client.post(url, json={**body, 'model_profile': 'astra'}).status_code == 400
     monkeypatch.setenv('PROJECT_COMPARISON_V3_MODEL_CHOICES', 'astra,opus55')
-    monkeypatch.setattr(resume, 'load_donor', lambda *args: None)
+    monkeypatch.setattr(resume, 'resume_options', lambda *args: {})
     captured = {}
     def run(*args, **kwargs):
         captured.update(kwargs); return {'status': 'REVIEW'}

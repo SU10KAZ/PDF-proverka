@@ -175,3 +175,134 @@ def test_api_mode_is_independent_of_depth_and_model():
     with pytest.raises(ValidationError):
         ProductionRunRequest(input_mode='DOCUMENT', comparison_mode='large')
     assert ProductionBatchRequest(pairs=[{'left_pdf': 'x', 'right_pdf': 'y'}]).comparison_mode == 'standard'
+
+
+def test_http_resume_inherits_experimental_mode(env, monkeypatch):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from backend.app.api.routers import stage_comparison
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
+    app = FastAPI()
+    app.include_router(stage_comparison.router)
+    client = TestClient(app)
+    url = f"/api/stage-comparison/sessions/{env['session_id']}/pairs/{gf.PAIR_ID}/production/run"
+    set_test_provider(SubjectFake(handlers=handlers(fail_phase='catalog_new')))
+    response = client.post(url, json={'input_mode': 'DOCUMENT', 'comparison_mode': 'subjects'})
+    assert response.status_code == 200
+    stopped = response.json()
+    fake = SubjectFake(handlers=handlers())
+    set_test_provider(fake)
+    response = client.post(url, json={'input_mode': 'DOCUMENT', 'resume_from_run_id': stopped['run_id']})
+    assert response.status_code == 200, response.text
+    assert response.json()['reason_code'] == 'v3_completed', response.text
+    assert response.json()['provenance']['comparison_mode'] == 'subjects'
+    assert not any(c['prompt'] == sc.CATALOG_PROMPT and c['data']['pages'][0]['side'] == 'OLD' for c in fake.calls)
+
+
+def test_parallel_catalog_finishes_deterministically_and_drains_failure(env, monkeypatch):
+    import threading
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
+    monkeypatch.setenv('PROJECT_COMPARISON_V3_MAPPER_CONCURRENCY', '2')
+    base = handlers()
+    mapping = base['MAPPING']
+    gate = threading.Barrier(2)
+    def concurrent(**request):
+        if request['prompt'] == sc.CATALOG_PROMPT:
+            gate.wait(timeout=10)
+            if request['data']['pages'][0]['side'] == 'OLD':
+                raise ProviderError('TEST_STOP', 'synthetic error')
+        return mapping(**request)
+    base['MAPPING'] = concurrent
+    fake = SubjectFake(handlers=base)
+    set_test_provider(fake)
+    stopped = run(env)
+    assert stopped['reason_code'] == 'TEST_STOP', stopped
+    checkpoint = artifact(env, stopped, ss.CHECKPOINT)
+    assert len(checkpoint['entries']) == 1
+    assert checkpoint['entries'][0]['answer']['observations'][0]['evidence'][0]['side'] == 'NEW'
+    assert len(checkpoint['attempts']) == 2
+    assert all(call['prompt'] == sc.CATALOG_PROMPT for call in fake.calls)
+    set_test_provider(SubjectFake(handlers=handlers()))
+    completed = run(env, resume_from_run_id=stopped['run_id'])
+    assert completed['reason_code'] == 'v3_completed', completed
+    ledger = artifact(env, completed, ss.ARTIFACT)
+    assert [r['side'] for r in ledger['catalog']] == ['OLD', 'NEW']
+
+
+def test_verifier_receives_other_source_pages_and_can_report_conflict(env, monkeypatch):
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '1')
+    base = handlers()
+    def verify(**request):
+        [item] = request['data']['items']
+        # Page 2 was not cited in the initial ProjectChange but belongs to its source group.
+        assert any(r['physical_page'] == 2 and r['side'] == 'NEW' for r in item['sources'])
+        assert request['images']
+        return {'pair': gf.PAIR_ID, 'results': [{'work_item_id': item['work_item_id'],
+            'verdict': 'CONFLICT', 'old_value': '1000', 'new_value': '', 'unit': 'м3/ч',
+            'explanation': 'Synthetic contradictory source',
+            'evidence_refs': [{'side': 'NEW', 'physical_page': 2, 'block_id': 'n2_text'}]}]}
+    base['SOURCE_VERIFICATION'] = verify
+    set_test_provider(SubjectFake(handlers=base))
+    state = run(env)
+    assert state['reason_code'] == 'v3_completed', state
+    quality = artifact(env, state, 'project_change_v3_quality')
+    assert quality['summary']['source_verification_conflicts'] == 1
+    assert artifact(env, state, ss.ARTIFACT)['verification_queries']
+
+
+def test_search_budgets_record_gap_instead_of_claiming_complete(env, monkeypatch):
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
+    base = handlers()
+    mapping = base['MAPPING']
+    def request_more(**request):
+        if request['prompt'] == sc.SEARCH_PROMPT:
+            return {'queries': [{'terms': ['missing-system'], 'side': 'BOTH', 'purpose': 'Locate source'}] * 13,
+                    'unresolved': ['Missing counterpart']}
+        return mapping(**request)
+    base['MAPPING'] = request_more
+    set_test_provider(SubjectFake(handlers=base))
+    state = run(env)
+    assert state['reason_code'] == 'v3_completed', state
+    ledger = artifact(env, state, ss.ARTIFACT)
+    reasons = {r['reason'] for r in ledger['gaps']}
+    assert {'query_budget', 'search_no_hits', 'unresolved'} <= reasons
+    assert ledger['summary']['open_search_gaps'] > 0
+    assert state['status'] == 'REVIEW'
+
+
+def test_oversized_verification_is_pending_without_spending_a_call(env, monkeypatch):
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '1')
+    build = engine.build_verification_batches
+    def oversized(**kwargs):
+        batches = build(**kwargs)
+        for batch in batches:
+            batch['data']['full_source_test_padding'] = 'X' * 2_500_000
+        return batches
+    monkeypatch.setattr(engine, 'build_verification_batches', oversized)
+    fake = SubjectFake(handlers=handlers())
+    set_test_provider(fake)
+    state = run(env)
+    assert state['reason_code'] == 'v3_completed', state
+    assert not any(call['stage'] == 'SOURCE_VERIFICATION' for call in fake.calls)
+    result = artifact(env, state, 'project_change_v3_verification_results')
+    assert result['batches'][0]['error_code'] == 'verification_envelope_exceeded'
+    assert state['quality_source_verification_pending'] == 1
+
+
+def test_miner_planning_stop_preserves_subject_search(env, monkeypatch):
+    from backend.app.services.project_change_v3 import resume
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
+    fake = SubjectFake(handlers=handlers())
+    set_test_provider(fake)
+    with monkeypatch.context() as patch:
+        patch.setattr(engine, '_miner_measure', lambda *args, **kwargs: (_ for _ in ()).throw(
+            engine.mapper_portions_mod.PortioningImpossible('planning stopped')))
+        stopped = run(env)
+    assert stopped['status'] == 'FAILED'
+    assert all(call['stage'] == 'MAPPING' for call in fake.calls)
+    assert resume.resume_available(env['session_id'], gf.PAIR_ID, stopped['run_id'])
+    fresh = SubjectFake(handlers=handlers())
+    set_test_provider(fresh)
+    completed = run(env, resume_from_run_id=stopped['run_id'])
+    assert completed['reason_code'] == 'v3_completed', completed
+    assert all(call['stage'] != 'MAPPING' for call in fresh.calls)

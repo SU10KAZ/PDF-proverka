@@ -26,7 +26,7 @@ ORCHESTRATOR = APP / "services" / "stage_comparison" / "production_orchestrator.
 # model_profile (3.9.0): which model runs — not human mapping content, not a path.
 ENGINE_KEYWORDS = {"input_mode", "left_pages", "right_pages", "left_block_ids", "right_block_ids",
                    "ai_mode", "run_id", "cancel_token", "model_profile", "resume_from_run_id", "resume_model_policy",
-                   "max_new_miner_calls", "parallelism"}  # execution limits, never human matching content
+                   "max_new_miner_calls", "parallelism", "comparison_mode"}  # scalar algorithm selection, never human matching content
 MODEL_VISIBLE_MARKERS = ("HUMAN_PRELINKS", "HUMAN_SHEET_MAP", "prelink_outcomes", "MAPPER_CONTEXT")
 FORBIDDEN_FOR_PRELINK_MODULES = ("provider", "transport", "claude", "openrouter", "codex", "subprocess",
                                  "project_change_v3.engine")

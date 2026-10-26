@@ -50,7 +50,8 @@ def test_pairs_run_one_after_another_with_chosen_mode_and_model(env):
     assert [i["status"] for i in done["items"]] == ["COMPLETED"]
     assert done["items"][0]["pair_id"] and done["items"][0]["run_id"] == "r" * 32
     assert calls == [(done["items"][0]["pair_id"],
-                      {"input_mode": "DOCUMENT", "ai_mode": "STANDARD", "model_profile": "opus55", "parallelism": 5})]
+                      {"input_mode": "DOCUMENT", "ai_mode": "STANDARD", "model_profile": "opus55", "parallelism": 5,
+                       "comparison_mode": "standard"})]
 
 
 def test_a_failing_pair_does_not_stop_the_queue_and_second_queue_is_refused(env):

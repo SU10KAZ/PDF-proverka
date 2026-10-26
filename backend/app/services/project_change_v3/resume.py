@@ -501,8 +501,8 @@ def resume_available(session_id: str, pair_id: str, run_id: str, *, _seen: froze
                 and any(completed_gaps(directory).values()))
     if state.get("status") != "FAILED":
         return False
-    if (state.get('provenance') or {}).get('comparison_mode') == 'subjects' and state.get('pipeline_current') == 'MAPPING':
-        from .subject_search import load_checkpoint
+    from .subject_search import load_checkpoint, recoverable_search_state
+    if recoverable_search_state(state):
         try:
             checkpoint, _ = load_checkpoint(session_id, pair_id, run_id)
             return bool(checkpoint.get('entries'))
@@ -526,8 +526,8 @@ def resume_options(session_id: str, pair_id: str, run_id: str) -> dict[str, Any]
     from .miner_plan import max_new_calls
     from . import run_storage
     state = _read(run_storage.run_dir(session_id, pair_id, run_id) / 'state.json') or {}
-    if (state.get('provenance') or {}).get('comparison_mode') == 'subjects' and state.get('pipeline_current') == 'MAPPING':
-        from .subject_search import load_checkpoint
+    from .subject_search import load_checkpoint, recoverable_search_state
+    if recoverable_search_state(state):
         checkpoint, state = load_checkpoint(session_id, pair_id, run_id)
         return {'comparison_mode': 'subjects', 'mode': 'subject_search', 'can_switch_model': False,
                 'model_profile': state['provenance']['model_profile'], 'saved_regions': len(checkpoint['entries']),

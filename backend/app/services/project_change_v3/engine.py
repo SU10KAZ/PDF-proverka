@@ -861,7 +861,7 @@ def _run_admitted(
     subject_ledger = None
     if resume_from_run_id and subjects_mode:
         prior = run_storage.read(run_storage.run_dir(session_id, pair_id, resume_from_run_id) / 'state.json') or {}
-        if prior.get('pipeline_current') == 'MAPPING':
+        if subject_search.recoverable_search_state(prior):
             try:
                 if resume_model_policy != 'same_model':
                     raise ValueError('subject search recovery requires the same model')
@@ -908,16 +908,20 @@ def _run_admitted(
         if not donor.partial_mining:
             checkpoint_ref.update(donor.miner_results.get("miner_checkpoint") or {}, resumed_from_run_id=donor.run_id)
         provenance["resumed_from"] = donor.summary()
-        for key in ("mapper_portioning", "mapper_plan", "miner_region_splits", "miner_region_merges"):
+        for key in ("mapper_portioning", "mapper_plan", "miner_region_splits", "miner_region_merges", "subject_recovery"):
             if donor.provenance.get(key):
                 provenance[key] = donor.provenance[key]
         if subjects_mode:
             subject_ledger = run_storage.read(run_storage.run_dir(session_id, pair_id, donor.run_id) /
                                              (subject_search.ARTIFACT + '.json'))
-            if not subject_ledger:
-                raise fail('resume_refused', 'У донора отсутствует журнал поиска по предметам')
+            if not subject_ledger or subject_search.digest(subject_ledger) != donor.provenance.get('subject_ledger_sha256'):
+                raise fail('resume_refused', 'Журнал поиска по предметам отсутствует или изменён')
+            subject_ledger = donor.rebase(subject_ledger)
+            subject_ledger['resumed_from_run_id'] = donor.run_id
+            subject_ledger['run_id'] = run_id
             _save_artifact(session_id, pair_id, subject_search.ARTIFACT, subject_ledger)
             provenance['subject_search'] = subject_ledger['summary']
+            provenance['subject_ledger_sha256'] = subject_search.digest(subject_ledger)
 
     structure = prepared["structure"]
     from . import mapper_planning
@@ -1000,24 +1004,31 @@ def _run_admitted(
     elif subjects_mode:
         progress('По инженерным предметам: подготовка каталога', 'MAPPING')
 
-        def subject_invoke(**request):
+        def subject_outcome(request, outcome):
             nonlocal calls
-            try:
-                return complete(**request)
-            finally:
-                if not using_test_provider:
-                    calls += 1
-                provenance.update(receipts())
+            if outcome.receipt:
+                transport_calls.append({'stage': request['stage'], 'call_id': request['call_id'], **outcome.receipt})
+            if not using_test_provider and (outcome.error is None or outcome.receipt):
+                calls += 1
+            provenance.update(receipts())
 
         def subject_save(name, value):
             _save_artifact(session_id, pair_id, name, value)
             if name == subject_search.CHECKPOINT:
                 provenance['subject_checkpoint_sha256'] = subject_search.digest(value)
+                provenance['subject_accepted_requests'] = len(value['entries'])
+            elif name == subject_search.ARTIFACT:
+                provenance['subject_ledger_sha256'] = subject_search.digest(value)
+                written = state('RUNNING', f"По инженерным предметам: сохранено {provenance.get('subject_accepted_requests', 0)} ответов",
+                                'v3_running', calls=calls, provenance=provenance, current_stage='MAPPING')
+                if written['status'] == 'FAILED':
+                    raise fail('result_persistence_failed', 'Не сохранено состояние поиска по предметам')
 
         try:
             search = subject_search.SubjectSearch(
                 pair_id=pair_id, run_id=run_id, structure=structure, work_dir=work_dir,
-                source_manifest=prepared['manifest'], profile=active_profile(), invoke=subject_invoke,
+                source_manifest=prepared['manifest'], profile=active_profile(), provider=provider,
+                on_outcome=subject_outcome, workers=mapper_workers,
                 save=subject_save, progress=progress, cancelled=cancelled, donor_checkpoint=subject_checkpoint)
             semantic_map, subject_ledger = search.run()
             provenance['subject_search'] = subject_ledger['summary']
@@ -1663,6 +1674,16 @@ def _run_admitted(
         delays = (0.0, *REVIEW_TRANSIENT_RETRY_DELAYS_S)
         for attempt, delay in enumerate(delays):
             attempt_call_id = call_id if not attempt else f"{call_id}_RETRY_{attempt}"
+            if subjects_mode and stage == 'SOURCE_VERIFICATION':
+                from .provider import build_codex_payload
+                from .transport import measure_request
+                payload, image_paths, _ = build_codex_payload(request['prompt'], request['data'], request['images'])
+                measurement = measure_request(payload, image_paths, request['schema'], selection=active_profile().selection)
+                if not measurement['fits']:
+                    outcome = parallel_calls.CallOutcome(error=ProviderError(
+                        'verification_envelope_exceeded', 'Полные источники проверки не помещаются: ' +
+                        '; '.join(measurement['errors'])))
+                    break  # local refusal, zero provider calls, retained as a pending review
             outcome = yield {"stage": stage, "call_id": attempt_call_id, "pair_id": pair_id, **request,
                              **({parallel_calls.DELAY_KEY: delay} if delay else {})}
             if outcome.receipt:
@@ -1962,6 +1983,7 @@ def _run_admitted(
             ),
             coverage=coverage,
             page_records=pages_by_key,
+            review_all_parameters=subjects_mode,
         )
     except Exception as exc:  # noqa: BLE001
         raise fail("quality_build_failed", "V3: реестр качества результата не построен", exc) from exc
@@ -1975,6 +1997,7 @@ def _run_admitted(
             if subjects_mode:
                 _save_artifact(session_id, pair_id, subject_search.ARTIFACT, subject_ledger)
                 provenance['subject_search'] = subject_ledger['summary']
+                provenance['subject_ledger_sha256'] = subject_search.digest(subject_ledger)
             planned_verification = build_verification_batches(
                 work_items=quality["verification_work_items"],
                 projectchanges=final_changes,
