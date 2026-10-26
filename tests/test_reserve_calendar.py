@@ -210,6 +210,19 @@ def test_removed_engineer_is_not_restored_as_inactive_by_old_assignment(env):
         assert next(item for item in db.tasks(conn) if item['id'] == created['id'])['engineer_id'] == 'uzun'
 
 
+def test_catalog_cache_reuses_build_and_returns_independent_values(monkeypatch):
+    calls = []
+    monkeypatch.setattr(src, '_catalog_cache', None)
+    monkeypatch.setattr(src, '_catalog_refreshing', False)
+    monkeypatch.setattr(src, '_catalog_cache_key', lambda: ('fixture',))
+    monkeypatch.setattr(src, '_build_catalog', lambda: calls.append(True) or [{'project_id': 'P1'}])
+    first = src.catalog()
+    first[0]['project_id'] = 'changed-by-caller'
+    second = src.catalog()
+    assert len(calls) == 1
+    assert second == [{'project_id': 'P1'}]
+
+
 def test_repeating_plan_ratio_fills_exact_period_and_deducts_today_completed(env):
     _, people = env
     # 42 / 22 cannot be represented by a finite decimal; the last slot must

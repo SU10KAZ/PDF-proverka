@@ -6,6 +6,9 @@ from __future__ import annotations
 
 import json
 import os
+import threading
+import time
+from copy import deepcopy
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -19,6 +22,10 @@ from backend.app.services.storage.projects_v2_adapter import document_lookup_sna
 
 
 RESERVE_EXCLUDED_ENGINEER_IDS = frozenset({'uzun', 'olar'})
+_CATALOG_CACHE_SECONDS = 120
+_catalog_cache_lock = threading.Lock()
+_catalog_cache: tuple[tuple, float, list[dict]] | None = None
+_catalog_refreshing = False
 
 
 def today() -> date:
@@ -97,7 +104,7 @@ def engineers(config: dict, day: date) -> list[dict]:
     return sorted(out, key=lambda e: (e['direction'], e['name']))
 
 
-def catalog() -> list[dict]:
+def _build_catalog() -> list[dict]:
     """Use platform resolvers, including v2-native versions and hidden projects.
 
     Expert review is one task per object / volume (platform project) / version.
@@ -170,6 +177,49 @@ def catalog() -> list[dict]:
                                            'started_at': timestamps[0] if timestamps else review.get('reviewed_at') if decisions else None,
                                            'progress': len(decisions), 'total': total})
     return result
+
+
+def _catalog_cache_key() -> tuple:
+    objects_file = Path(object_service.OBJECTS_FILE)
+    try:
+        objects_stamp = objects_file.stat().st_mtime_ns
+    except OSError:
+        objects_stamp = None
+    return (
+        str(objects_file), objects_stamp,
+        os.environ.get('AUDIT_STORAGE_BACKEND', ''),
+        os.environ.get('AUDIT_PROJECTS_V2_DIR', ''),
+        os.environ.get('AUDIT_PROJECTS_DIR', ''),
+    )
+
+
+def catalog() -> list[dict]:
+    """Return a short-lived copy of the expensive, read-only project catalog."""
+    global _catalog_cache, _catalog_refreshing
+    key = _catalog_cache_key()
+    now = time.monotonic()
+    with _catalog_cache_lock:
+        cached = _catalog_cache
+        if cached and cached[0] == key:
+            if now - cached[1] >= _CATALOG_CACHE_SECONDS and not _catalog_refreshing:
+                _catalog_refreshing = True
+                threading.Thread(target=_refresh_catalog, args=(key,), daemon=True).start()
+            return deepcopy(cached[2])
+        value = _build_catalog()
+        _catalog_cache = (key, time.monotonic(), value)
+        return deepcopy(value)
+
+
+def _refresh_catalog(key: tuple) -> None:
+    global _catalog_cache, _catalog_refreshing
+    try:
+        value = _build_catalog()
+        with _catalog_cache_lock:
+            if _catalog_cache_key() == key:
+                _catalog_cache = (key, time.monotonic(), value)
+    finally:
+        with _catalog_cache_lock:
+            _catalog_refreshing = False
 
 
 def reviewer_id(name: str) -> str | None:
