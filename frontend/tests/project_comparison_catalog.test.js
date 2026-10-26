@@ -35,6 +35,12 @@ function load(fetchImpl) {
 }
 
 describe('All project comparisons — catalog component', () => {
+    it('uses fixed catalog columns so completed results do not resize rows', () => {
+        expect(source).toContain('<col class="pc-catalog__col-project">');
+        expect(source).toContain('<col class="pc-catalog__col-docs">');
+        expect(source).toContain('<col class="pc-catalog__col-model">');
+    });
+
     it('registers a pair overview with saved-result and launch actions', () => {
         const {definition} = load(async () => ({}));
         expect(definition.name).toBe('project-comparison-catalog');

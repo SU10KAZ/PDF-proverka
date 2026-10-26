@@ -119,6 +119,9 @@
                     <p v-else-if="catalog && !pairsLoading && !entries.length" class="pc-catalog__empty">В этом объекте пока нет пар для сравнения.</p>
                     <div v-if="entries.length" class="pc-catalog__scroll">
                     <table class="pc-catalog__table">
+                        <colgroup><col class="pc-catalog__col-select"><col class="pc-catalog__col-project"><col class="pc-catalog__col-docs">
+                            <col class="pc-catalog__col-model"><col class="pc-catalog__col-engine"><col class="pc-catalog__col-date">
+                            <col class="pc-catalog__col-count"><col class="pc-catalog__col-review"><col class="pc-catalog__col-status"><col class="pc-catalog__col-actions"></colgroup>
                         <thead><tr><th><input v-if="canOperate" type="checkbox" aria-label="Выбрать все пары для анализа"
                             :checked="allChecked" :disabled="selectionDisabled || !entries.some(e => e.selection_pair)"
                             @change="selectAll($event.target.checked)"></th><th>Проект / раздел</th><th>OLD → NEW</th><th>Метод и модель</th><th>V3</th><th>Дата</th>
@@ -130,10 +133,10 @@
                                 :aria-label="'Выбрать для анализа: ' + entry.title"
                                 :checked="rowChecked(entry.selection_pair)" :disabled="selectionDisabled"
                                 @change="selectPair(entry, $event.target.checked)"></td>
-                            <td><b>{{ entry.title }}</b><small>{{ entry.object_name }}</small></td>
-                            <td class="pc-catalog__docs">{{ entry.documents.old.document_code || entry.documents.old.filename || '—' }}
+                            <td class="pc-catalog__project" :title="entry.title + (entry.object_name ? '\n' + entry.object_name : '')"><b>{{ entry.title }}</b><small>{{ entry.object_name }}</small></td>
+                            <td class="pc-catalog__docs" :title="(entry.documents.old.document_code || entry.documents.old.filename || '—') + ' → ' + (entry.documents.new.document_code || entry.documents.new.filename || '—')">{{ entry.documents.old.document_code || entry.documents.old.filename || '—' }}
                                 → {{ entry.documents.new.document_code || entry.documents.new.filename || '—' }}</td>
-                            <td class="pc-catalog__model">{{ model(entry) }}<small>{{ effort(entry) }}</small></td>
+                            <td class="pc-catalog__model" :title="model(entry) + (effort(entry) ? '\n' + effort(entry) : '')">{{ model(entry) }}<small>{{ effort(entry) }}</small></td>
                             <td>{{ entry.engine.engine_version || '—' }}</td>
                             <td :title="entry.frozen_at_source">{{ date(entry.frozen_at) }}</td>
                             <td class="num pc-catalog__count">{{ entry.counts.projectchanges ?? '—' }}</td>
