@@ -203,7 +203,7 @@ describe('WebSocket: коды закрытия', () => {
         const ctx = helpersContext({
             location, window: {location}, console: {log() {}, error() {}},
             setTimeout: (fn, ms) => { timers.push(ms); return timers.length; },
-            WebSocket: class { static OPEN = 1; constructor(url) { this.url = url; sockets.push(this); } close() {} },
+            WebSocket: class { static CONNECTING = 0; static OPEN = 1; constructor(url) { this.url = url; this.readyState = 0; sockets.push(this); } close() {} },
         });
         vm.runInContext(`
             let wsMode = null, wsGlobal = null, wsProject = null, wsCurrentProjectId = null, wsProjectReconnects = 0;
@@ -215,7 +215,7 @@ describe('WebSocket: коды закрытия', () => {
             ${extractFunction(app, fnName)}
             globalThis.run = () => ${fnName}(${arg ? JSON.stringify(arg) : ''});`, ctx);
         ctx.run();
-        return {socket: sockets[0], timers, location, sockets};
+        return {socket: sockets[0], timers, location, sockets, run: ctx.run};
     }
 
     it.each([['connectGlobalWS'], ['connectProjectWS', 'АР-1']])('%s: 4401 — на вход, без переподключения', (fn, arg) => {
@@ -242,6 +242,13 @@ describe('WebSocket: коды закрытия', () => {
         const h = harness('connectGlobalWS');
         h.socket.onclose({code: 1006});
         expect(h.timers).toEqual([3000]);
+    });
+
+    it.each([0, 1])('повторный вызов сохраняет глобальный WS в состоянии %s', readyState => {
+        const h = harness('connectGlobalWS');
+        h.socket.readyState = readyState;
+        h.run();
+        expect(h.sockets).toHaveLength(1);
     });
 
     it('viewer сокет не открывает', () => {

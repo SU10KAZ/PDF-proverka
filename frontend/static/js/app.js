@@ -2569,6 +2569,7 @@ const app = createApp({
             const distributedTab = window.DistributedFeature.routeToTab(hash);
             if (distributedTab) {
                 currentView.value = 'distributed';
+                connectGlobalWS();
                 distributed.setTab(distributedTab);
                 distributed.load();
             } else if (hash === '/knowledge-base') {
@@ -11357,7 +11358,7 @@ const app = createApp({
             // Переключаемся в global-режим: закрываем project, открываем global
             wsMode = 'global';
             closeProjectWS();
-            if (wsGlobal && wsGlobal.readyState === WebSocket.OPEN) return;  // уже подключен
+            if (wsGlobal && (wsGlobal.readyState === WebSocket.CONNECTING || wsGlobal.readyState === WebSocket.OPEN)) return;
             closeGlobalWS();
             const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
             wsGlobal = new WebSocket(`${proto}//${location.host}/ws/global`);
@@ -12675,9 +12676,8 @@ const app = createApp({
             window.addEventListener('click', closeHeaderPopovers);
             window.addEventListener('portal-forbidden', _onPortalForbidden);
             handleRoute();
-            // viewer: без WS, live-status, очередей, /api/users и служебных панелей
-            // (connectGlobalWS/startPolling/loadUsers сами проверяют права).
-            connectGlobalWS();
+            // handleRoute выбирает глобальный или проектный WS по текущему экрану.
+            // viewer: без WS, live-status, очередей, /api/users и служебных панелей.
             startPolling();
             const auditResults = canView('audit_results');
             // Параллельная загрузка — сначала объект (нужен currentObjectId), потом группы
