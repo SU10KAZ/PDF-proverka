@@ -106,7 +106,6 @@
 .rc-card-body select[multiple]{padding:4px;min-height:190px}
 .rc-card-body select[multiple] option{padding:5px 7px;border-radius:3px}
 .rc-selection-hint{margin:-8px 0 15px!important}
-.rc-readiness-help{margin:0 0 12px;padding:9px 11px;border-radius:6px;background:#f1f5f9;color:#52657c;font-size:12px;line-height:1.45}
 .rc-card-body p{font-size:13px;color:var(--rc-muted)}
 .reserve-review-start{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:12px;color:#008e83;flex-wrap:wrap}
 .reserve-review-start [role=alert]{color:#a92f41;max-width:420px}
