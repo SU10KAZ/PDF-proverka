@@ -148,6 +148,193 @@ def test_catalog_requires_all_blocks_and_valid_evidence():
         ss.validate_catalog(forged, pages)
 
 
+def parameter(evidence):
+    return {'name': 'Расход', 'value': '1000', 'unit': 'м3/ч', 'operating_mode': 'Основной',
+            'basis': 'Проект', 'scope': 'Установка', 'evidence': deepcopy(evidence)}
+
+
+@pytest.mark.parametrize('owner', ['observation', 'parameter'])
+def test_catalog_schema_rejects_empty_evidence(owner):
+    import jsonschema
+    answer = catalog([{'side': 'OLD', 'physical_page': 1, 'blocks': [{'block_id': 'a', 'modality': 'TEXT'}]}])
+    row = answer['observations'][0]
+    row['parameters'] = [parameter(row['evidence'])]
+    (row if owner == 'observation' else row['parameters'][0])['evidence'] = []
+    with pytest.raises(jsonschema.ValidationError, match='non-empty'):
+        ss.validate_schema(answer, sc.CATALOG_SCHEMA)
+
+
+@pytest.mark.parametrize('failure', ['missing', 'outside', 'provider_schema'])
+def test_catalog_corrects_evidence_once_and_preserves_rejected_answer(env, monkeypatch, failure):
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
+    base = handlers()
+    mapping = base['MAPPING']
+    catalog_calls = []
+
+    def with_invalid_evidence(**request):
+        if not request['prompt'].startswith(sc.CATALOG_PROMPT):
+            return mapping(**request)
+        catalog_calls.append(deepcopy(request))
+        answer = catalog(request['data']['pages'])
+        row = answer['observations'][0]
+        row['parameters'] = [parameter(row['evidence'][:1])]
+        if request['data']['pages'][0]['side'] == 'OLD':
+            if sc.CATALOG_REPAIR_PROMPT in request['prompt']:
+                checkpoint = run_storage.read(run_storage.active_dir(env['session_id'], gf.PAIR_ID) /
+                                              (ss.CHECKPOINT + '.json'))
+                assert checkpoint['attempts'][-1]['accepted'] is False
+                assert checkpoint['attempts'][-1]['answer'] != answer
+            elif failure == 'outside':
+                row['evidence'].pop(0)
+            else:
+                row['parameters'][0]['evidence'] = []
+                if failure == 'provider_schema':
+                    fake.last_response = answer
+                    raise ProviderError('schema_invalid', 'synthetic schema rejection')
+        return answer
+
+    base['MAPPING'] = with_invalid_evidence
+    fake = SubjectFake(handlers=base)
+    set_test_provider(fake)
+    state = run(env)
+    assert state['reason_code'] == 'v3_completed', state
+    first, repair, new = catalog_calls
+    assert first['data']['pages'][0]['side'] == repair['data']['pages'][0]['side'] == 'OLD'
+    assert new['data']['pages'][0]['side'] == 'NEW'
+    assert repair['data']['pages'] == first['data']['pages']
+    assert repair['images'] == first['images']
+    assert repair['data']['catalog_validation']
+    assert repair['call_id'] == first['call_id'] + '_RETRY2'
+    checkpoint = artifact(env, state, ss.CHECKPOINT)
+    initial, corrected = checkpoint['attempts'][:2]
+    assert initial['accepted'] is False and corrected['accepted'] is True
+    assert initial['answer_sha256'] == ss.digest(initial['answer'])
+    assert initial['request_key'] != corrected['request_key']
+    assert corrected['key'] == initial['key']
+    summary = artifact(env, state, ss.ARTIFACT)['summary']
+    assert summary['catalog_retries'] == 1 and summary['reused_requests'] == 0
+    assert summary['new_requests'] == summary['accepted_requests'] + 1
+
+
+def test_catalog_stops_after_two_invalid_answers_without_inventing_evidence(env):
+    base = handlers()
+    mapping = base['MAPPING']
+
+    def always_invalid(**request):
+        if not request['prompt'].startswith(sc.CATALOG_PROMPT):
+            return mapping(**request)
+        answer = catalog(request['data']['pages'])
+        answer['observations'][0]['parameters'] = [parameter([])]
+        return answer
+
+    base['MAPPING'] = always_invalid
+    fake = SubjectFake(handlers=base)
+    set_test_provider(fake)
+    state = run(env)
+    assert state['reason_code'] == 'subject_search_failed'
+    assert 'после 2 попыток' in state['message']
+    assert len(fake.calls) == 2
+    checkpoint = artifact(env, state, ss.CHECKPOINT)
+    assert not checkpoint['entries']
+    assert len(checkpoint['attempts']) == 2
+    assert all(not row['accepted'] and not row['answer']['observations'][0]['parameters'][0]['evidence']
+               for row in checkpoint['attempts'])
+    assert artifact(env, state, 'project_change_v3_result') is None
+
+
+def test_catalog_never_automatically_retries_an_external_provider(env):
+    class ExternalProvider:
+        calls = 0
+
+        def complete(self, **request):
+            self.calls += 1
+            answer = catalog(request['data']['pages'])
+            answer['observations'][0]['parameters'] = [parameter([])]
+            return answer
+
+    provider = ExternalProvider()
+    set_test_provider(provider)
+    state = run(env)
+    assert state['reason_code'] == 'subject_search_failed'
+    assert provider.calls == 1
+
+
+@pytest.mark.parametrize('stop', ['cancel', 'envelope'])
+def test_catalog_correction_rechecks_cancel_and_full_request_size(env, monkeypatch, stop):
+    from types import SimpleNamespace
+    token = SimpleNamespace(cancelled=False)
+    base = handlers()
+    mapping = base['MAPPING']
+    packet = ss.SubjectSearch.packet
+
+    def measured(self, prompt, *args, **kwargs):
+        result = packet(self, prompt, *args, **kwargs)
+        return {**result, 'fits': False} if sc.CATALOG_REPAIR_PROMPT in prompt else result
+
+    if stop == 'envelope':
+        monkeypatch.setattr(ss.SubjectSearch, 'packet', measured)
+
+    def invalid(**request):
+        if request['prompt'] != sc.CATALOG_PROMPT:
+            return mapping(**request)
+        if stop == 'cancel':
+            token.cancelled = True
+        answer = catalog(request['data']['pages'])
+        answer['observations'][0]['parameters'] = [parameter([])]
+        return answer
+
+    base['MAPPING'] = invalid
+    fake = SubjectFake(handlers=base)
+    set_test_provider(fake)
+    state = run(env, cancel_token=token)
+    assert state['reason_code'] == ('v3_cancelled' if stop == 'cancel' else 'subject_search_failed')
+    assert len(fake.calls) == 1
+    checkpoint = artifact(env, state, ss.CHECKPOINT)
+    assert len(checkpoint['attempts']) == 1 and not checkpoint['entries']
+
+
+@pytest.mark.parametrize('mutation', ['none', 'text', 'model', 'contract'])
+def test_legacy_catalog_recovery_revalidates_and_keeps_accepted_answers(env, monkeypatch, mutation):
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
+    # Pin the exact old contract so an unrelated change cannot widen migration.
+    assert ss.digest({'version': 'projectchange_subjects/1',
+                      'catalog': [sc.LEGACY_CATALOG_PROMPT, sc.LEGACY_CATALOG_SCHEMA],
+                      'route': [sc.ROUTE_PROMPT, sc.ROUTE_SCHEMA],
+                      'search': [sc.SEARCH_PROMPT, sc.SEARCH_SCHEMA]}) == sc.LEGACY_CONTRACT_SHA256
+    with monkeypatch.context() as old:
+        old.setattr(sc, 'CATALOG_PROMPT', sc.LEGACY_CATALOG_PROMPT)
+        old.setattr(sc, 'CATALOG_SCHEMA', sc.LEGACY_CATALOG_SCHEMA)
+        old.setattr(sc, 'CONTRACT_SHA256', '0' * 64 if mutation == 'contract' else sc.LEGACY_CONTRACT_SHA256)
+        old.setattr(sc, 'VERSION', 'projectchange_subjects/1')
+        set_test_provider(SubjectFake(handlers=handlers(fail_phase='catalog_new')))
+        stopped = run(env)
+    assert stopped['reason_code'] == 'TEST_STOP'
+    old_checkpoint = artifact(env, stopped, ss.CHECKPOINT)
+    kwargs = {'resume_from_run_id': stopped['run_id']}
+    if mutation == 'text':
+        path = Path(env['left']['pdf_path']).with_suffix('.md')
+        path.write_text(path.read_text() + '\nChanged authoritative MD\n')
+    elif mutation == 'model':
+        monkeypatch.setenv('PROJECT_COMPARISON_V3_MODEL_CHOICES', 'astra,opus55')
+        kwargs['model_profile'] = 'opus55'
+    fake = SubjectFake(handlers=handlers())
+    set_test_provider(fake)
+    completed = run(env, **kwargs)
+    if mutation != 'none':
+        assert completed['status'] == 'FAILED', completed
+        assert not fake.calls
+        return
+    assert completed['reason_code'] == 'v3_completed', completed
+    assert not any(c['prompt'] == sc.CATALOG_PROMPT and c['data']['pages'][0]['side'] == 'OLD'
+                   for c in fake.calls)
+    checkpoint = artifact(env, completed, ss.CHECKPOINT)
+    assert checkpoint['identity'] != old_checkpoint['identity']
+    assert checkpoint['migrated_from_identity'] == old_checkpoint['identity']
+    assert checkpoint['entries'][0]['reused_from_key'] == old_checkpoint['entries'][0]['key']
+    assert checkpoint['entries'][0]['answer'] == old_checkpoint['entries'][0]['answer']
+    assert artifact(env, completed, ss.ARTIFACT)['summary']['reused_requests'] == 1
+
+
 def test_search_normalizes_aliases_only_and_keeps_all_unseen_hits():
     original = 'B17-3 осн/рез, базовый L=240'
     pages = [{'side': 'NEW', 'physical_page': p, 'blocks': [{'structured_md': original}]} for p in range(1, 5)]

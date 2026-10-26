@@ -1,9 +1,13 @@
 """Experimental subject discovery contracts; source text is never rewritten."""
 import hashlib
 import json
+from copy import deepcopy
 from .contracts import obj, S, STRINGS, BLOCK_REF
 
-VERSION = "projectchange_subjects/1"
+VERSION = "projectchange_subjects/2"
+CATALOG_MAX_ATTEMPTS = 2
+# Only this predecessor may be recovered across the stricter catalog contract.
+LEGACY_CONTRACT_SHA256 = "90e46828bd4f069ba362831929298920a603e82ed6db8b28fe9b166b8e2a7037"
 
 
 def array(items):
@@ -11,7 +15,7 @@ def array(items):
 
 
 NULL_NUMBER = {"type": ["number", "null"], "minimum": 0}
-CATALOG_SCHEMA = obj(
+LEGACY_CATALOG_SCHEMA = obj(
     observations=array(obj(
         local_id=S, name=S, aliases=STRINGS, function=S, locations=STRINGS,
         source_role={"type": "string", "enum": ["description", "table", "diagram", "specification", "selection", "other"]},
@@ -22,6 +26,10 @@ CATALOG_SCHEMA = obj(
     )),
     other_blocks=array(obj(evidence=BLOCK_REF, reason=S)),
 )
+CATALOG_SCHEMA = deepcopy(LEGACY_CATALOG_SCHEMA)
+_observation = CATALOG_SCHEMA["properties"]["observations"]["items"]["properties"]
+_observation["evidence"]["minItems"] = 1
+_observation["parameters"]["items"]["properties"]["evidence"]["minItems"] = 1
 ROUTE_SCHEMA = obj(
     links=array(obj(old_ids=STRINGS, new_ids=STRINGS, rationale=S)),
     unresolved_ids=STRINGS,
@@ -42,7 +50,7 @@ AUTHORITY = """
 давления. Сохраняй противоречащие источники, не выбирай молча удобное значение.
 Верни только JSON по схеме, текст по-русски.
 """
-CATALOG_PROMPT = """Составь каталог инженерных предметов ОДНОЙ стадии по полным
+LEGACY_CATALOG_PROMPT = """Составь каталог инженерных предметов ОДНОЙ стадии по полным
 страницам: системы, конструкции, помещения, решения и их функциональные группы.
 Одна observation описывает предмет в источнике, не один параметр. Страница может
 содержать несколько предметов; один предмет может иметь несколько источников.
@@ -54,6 +62,23 @@ CATALOG_PROMPT = """Составь каталог инженерных пред�
 Не исключай редкие предметы и графику без текстовой марки. local_id уникален в ответе.
 Каталог используется только для поиска; он не является доказанным результатом сравнения.
 """ + AUTHORITY
+CATALOG_PROMPT = LEGACY_CATALOG_PROMPT + """
+У каждого предмета observations[].evidence непустой. У КАЖДОГО параметра
+parameters[].evidence тоже должна быть хотя бы одна ссылка на блок, который
+подтверждает именно этот параметр. Все ссылки параметра должны входить также
+в evidence его предмета с теми же side, physical_page, block_id и block_type.
+Ссылка на источник только у предмета не заменяет ссылку у параметра.
+Если параметр нельзя подтвердить представленными источниками, не выдумывай
+значение или ссылку: не включай его в parameters, а вопрос запиши в uncertainties.
+Перед выдачей проверь непустые evidence, вложенность ссылок и учёт всех блоков.
+"""
+CATALOG_REPAIR_PROMPT = """
+Предыдущий ответ отклонён проверкой каталога. catalog_validation содержит
+диагностику формата и ссылок, а не факты проекта. Заново составь полный ответ
+по ВСЕМ исходным страницам этого пакета, исправив нарушение. Сохрани все
+подтверждённые предметы и параметры. Не копируй ссылки предмета в параметры
+без проверки их содержания. Не возвращай только исправленный фрагмент.
+"""
 ROUTE_PROMPT = """Предложи связи инженерных предметов OLD и NEW по каталогу.
 Ищи по функции, обслуживаемой зоне, назначению, оборудованию и топологии,
 учитывай переименования, разделение и объединение. Одинаковая марка может
@@ -78,5 +103,6 @@ queries — группы поисковых фраз (марка, функция
 
 CONTRACT_SHA256 = hashlib.sha256(json.dumps({
     "version": VERSION, "catalog": [CATALOG_PROMPT, CATALOG_SCHEMA],
+    "catalog_repair": [CATALOG_REPAIR_PROMPT, CATALOG_MAX_ATTEMPTS],
     "route": [ROUTE_PROMPT, ROUTE_SCHEMA], "search": [SEARCH_PROMPT, SEARCH_SCHEMA],
 }, ensure_ascii=False, sort_keys=True).encode()).hexdigest()

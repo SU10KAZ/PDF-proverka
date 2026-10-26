@@ -15,7 +15,7 @@ import time
 import unicodedata
 
 from . import contracts, mapper_portions as mp, parallel_calls, subject_contracts as sc, transport
-from .provider import build_codex_payload
+from .provider import ClaudeOpusProvider, CodexProvider, FakeProvider, build_codex_payload
 from .run_storage import read
 from .source_prep import load_page_record, mapping_images
 from .validate import validate_map
@@ -25,6 +25,18 @@ MAX_SEARCH_QUERIES = 12
 MAX_SEARCH_HITS = 12
 CHECKPOINT = "project_change_v3_subject_checkpoint"
 ARTIFACT = "project_change_v3_subject_search"
+
+
+class CatalogValidationError(ValueError):
+    """A catalog answer may be corrected once; transport/storage failures may not."""
+
+
+def validation_detail(exc):
+    # jsonschema's full repr repeats the schema and response. Feedback needs
+    # only the violated field and the diagnostic, never another source copy.
+    path = ".".join(map(str, getattr(exc, "absolute_path", ())))
+    message = getattr(exc, "message", None) or str(exc)
+    return f"{path}: {message}" if path else message
 
 
 def validate_schema(answer, schema):
@@ -95,11 +107,13 @@ def validate_catalog(answer, pages):
         owned = {(x["side"], x["physical_page"], x["block_id"]) for x in row["evidence"]}
         for parameter in row["parameters"]:
             if not parameter["evidence"]:
-                raise ValueError("catalog parameter has no evidence")
+                raise ValueError(f"catalog parameter has no evidence: {row['local_id']}, {parameter['name']}")
             for item in parameter["evidence"]:
                 ref(item)
                 if (item["side"], item["physical_page"], item["block_id"]) not in owned:
-                    raise ValueError("parameter evidence is outside its subject")
+                    raise ValueError("parameter evidence is outside its subject: "
+                                     f"{row['local_id']}, {parameter['name']}, "
+                                     f"{item['side']}:{item['physical_page']}/{item['block_id']}")
     for item in answer["other_blocks"]:
         if not item["reason"].strip():
             raise ValueError("catalog exclusion requires a reason")
@@ -180,11 +194,17 @@ class SubjectSearch:
                     "payload_version": contracts.SOURCE_PAYLOAD_VERSION,
                     "limits": [MAX_SEARCH_ROUNDS, MAX_SEARCH_QUERIES, MAX_SEARCH_HITS]}
         self.identity = digest(identity)
+        self.legacy_identity = None
         self.cache = {}
         if donor_checkpoint:
             if donor_checkpoint.get("identity") != self.identity:
-                raise ValueError("subject checkpoint sources, model or contract changed")
+                legacy = digest({**identity, "contract": sc.LEGACY_CONTRACT_SHA256})
+                if donor_checkpoint.get("identity") != legacy:
+                    raise ValueError("subject checkpoint sources, model or contract changed")
+                self.legacy_identity = legacy
             for row in donor_checkpoint["entries"]:
+                if row.get("accepted") is not True:
+                    raise ValueError("subject checkpoint contains a rejected answer")
                 if row.get("answer_sha256") != digest(row["answer"]):
                     raise ValueError("subject checkpoint answer changed")
                 if row["key"] in self.cache:
@@ -201,6 +221,8 @@ class SubjectSearch:
     def persist(self):
         checkpoint = {"schema": sc.VERSION, "run_id": self.run_id, "pair_id": self.pair_id,
                       "identity": self.identity, "entries": self.entries, "attempts": self.attempts}
+        if self.legacy_identity:
+            checkpoint["migrated_from_identity"] = self.legacy_identity
         self.save(CHECKPOINT, checkpoint)
         self.save(ARTIFACT, self.ledger)
 
@@ -214,7 +236,13 @@ class SubjectSearch:
                 raise ValueError('graphic source changed after planning')
         return measured
 
+    def request_key(self, phase, prompt, data, schema, image_hashes, *, identity=None):
+        return digest({"identity": identity or self.identity, "phase": phase, "prompt": prompt, "schema": schema,
+                       "data": canonical(data, self.work_dir), "images": image_hashes})
+
     def ask_item(self, phase, prompt, data, schema, images, validator):
+        import jsonschema
+
         if self.cancelled():
             raise RuntimeError("subject search cancelled")
         # Re-hash immediately before use. A stale planning cache cannot authorize a call.
@@ -223,51 +251,95 @@ class SubjectSearch:
         if not measured["fits"]:
             raise ValueError(f"{phase}: full source packet exceeds provider envelope")
         image_hashes = [row["sha256"] for row in measured["image_rows"]]
-        key = digest({"identity": self.identity, "phase": phase, "prompt": prompt, "schema": schema,
-                      "data": canonical(data, self.work_dir), "images": image_hashes})
-        if key in self.cache:
-            answer = canonical(self.cache[key]["answer"], "$SOURCES", str(self.work_dir))
+        key = self.request_key(phase, prompt, data, schema, image_hashes)
+        catalog_call = prompt == sc.CATALOG_PROMPT
+        cache_key = key
+        if cache_key not in self.cache and self.legacy_identity:
+            cache_key = self.request_key(
+                phase, sc.LEGACY_CATALOG_PROMPT if catalog_call else prompt, data,
+                sc.LEGACY_CATALOG_SCHEMA if catalog_call else schema, image_hashes, identity=self.legacy_identity)
+        if cache_key in self.cache:
+            answer = canonical(self.cache[cache_key]["answer"], "$SOURCES", str(self.work_dir))
             validate_schema(answer, schema)
             validator(answer)
+            row = self.cache[cache_key]
+            if cache_key != key:
+                row = {**row, "key": key, "reused_from_key": cache_key,
+                       "reused_from_identity": self.legacy_identity}
+                self.cache[key] = row
             if not any(row['key'] == key for row in self.entries):
-                self.entries.append(self.cache[key])
+                self.entries.append(row)
             self.persist()
             return answer
         self.progress(f"По инженерным предметам: {phase}, принято запросов {len(self.entries)}", "MAPPING")
-        call_id = f"{self.pair_id}_SUBJECT_{key[:20]}"
+        base_call_id = f"{self.pair_id}_SUBJECT_{key[:20]}"
         self.persist()  # durable identity even if the very first request is cancelled
-        answer, error, receipt = None, None, None
-        try:
-            request = dict(stage="MAPPING", call_id=call_id, pair_id=self.pair_id,
-                           prompt=prompt, data=data, schema=schema, images=images)
-            outcome = yield request
-            self.on_outcome(request, outcome)
-            receipt = outcome.receipt
-            answer = outcome.response if outcome.error is None else outcome.last_response
-            if outcome.error:
-                raise outcome.error
-            validate_schema(answer, schema)
-            validator(answer)
-        except GeneratorExit:
-            # The pool did not admit this request (another item failed or cancel).
-            # It must not become a successful null answer in the checkpoint.
-            error = 'request_not_started'
-            raise
-        except Exception as exc:
-            error = str(exc)
-            raise
-        finally:
-            if error != 'request_not_started':
-                row = {"key": key, "call_id": call_id, "phase": phase, "accepted": error is None,
-                       "answer": canonical(answer, self.work_dir), "error": error, 'transport_receipt': receipt,
-                       "estimated_input_tokens": measured.get("estimated_input_tokens")}
-                row["answer_sha256"] = digest(row["answer"])
-                if error is None:
-                    self.entries.append(row)
-                    self.cache[key] = row
-                self.attempts.append(row)
-                self.persist()
-        return answer
+        # Corrections are limited to the existing subscription transports and
+        # offline fakes. An injected external provider gets no automatic retry.
+        max_attempts = (sc.CATALOG_MAX_ATTEMPTS if catalog_call and isinstance(
+            self.provider, (CodexProvider, ClaudeOpusProvider, FakeProvider)) else 1)
+        request_prompt, request_data = prompt, data
+        for attempt in range(1, max_attempts + 1):
+            if self.cancelled():
+                raise RuntimeError("subject search cancelled")
+            if attempt > 1:
+                self.images = transport.PlanningImageCache()
+                measured = self.packet(request_prompt, request_data, schema, images)
+                if not measured["fits"]:
+                    raise CatalogValidationError("Каталог: полный запрос исправления не помещается в контекст")
+            call_id = base_call_id if attempt == 1 else f"{base_call_id}_RETRY{attempt}"
+            answer, error, receipt = None, None, None
+            try:
+                request = dict(stage="MAPPING", call_id=call_id, pair_id=self.pair_id,
+                               prompt=request_prompt, data=request_data, schema=schema, images=images)
+                outcome = yield request
+                self.on_outcome(request, outcome)
+                receipt = outcome.receipt
+                answer = outcome.response if outcome.error is None else outcome.last_response
+                if outcome.error:
+                    if (catalog_call and getattr(outcome.error, "code", None) == "schema_invalid"
+                            and isinstance(answer, dict)):
+                        try:
+                            validate_schema(answer, schema)
+                        except jsonschema.ValidationError as exc:
+                            raise CatalogValidationError(validation_detail(exc)) from exc
+                    raise outcome.error
+                try:
+                    validate_schema(answer, schema)
+                    validator(answer)
+                except (ValueError, jsonschema.ValidationError) as exc:
+                    if catalog_call:
+                        raise CatalogValidationError(validation_detail(exc)) from exc
+                    raise
+            except GeneratorExit:
+                # The pool did not admit this request (another item failed or cancel).
+                error = 'request_not_started'
+                raise
+            except CatalogValidationError as exc:
+                error = str(exc)
+                if attempt == max_attempts:
+                    raise CatalogValidationError(
+                        f"Каталог: ответ не прошёл проверку источников после {attempt} попыток: {error}") from exc
+            except Exception as exc:
+                error = str(exc)
+                raise
+            finally:
+                if error != 'request_not_started':
+                    row = {"key": key, "call_id": call_id, "phase": phase, "attempt": attempt,
+                           "accepted": error is None, "answer": canonical(answer, self.work_dir), "error": error,
+                           'transport_receipt': receipt, "estimated_input_tokens": measured.get("estimated_input_tokens"),
+                           "request_key": self.request_key(phase, request_prompt, request_data, schema, image_hashes)}
+                    row["answer_sha256"] = digest(row["answer"])
+                    if error is None:
+                        self.entries.append(row)
+                        self.cache[key] = row
+                    self.attempts.append(row)
+                    self.persist()
+            if error is None:
+                return answer
+            self.progress(f"Каталог: исправление ссылок, попытка {attempt + 1} из {max_attempts}", "MAPPING")
+            request_prompt = prompt + sc.CATALOG_REPAIR_PROMPT
+            request_data = {**data, "catalog_validation": error}
 
     def ask_many(self, jobs):
         """Only provider.complete runs in threads; writes/validation stay ordered locally."""
@@ -462,7 +534,9 @@ class SubjectSearch:
         self.ledger["summary"] = {"catalog_pages": len(self.index.pages), "observations": len(self.ledger["catalog"]),
             "candidate_groups": len(groups), "detailed_packets": len(self.ledger["detailed_packets"]),
             "accepted_requests": len(self.entries), "new_requests": len(self.attempts),
-            "reused_requests": len(self.entries) - len(self.attempts), "open_search_gaps": len(self.ledger["gaps"]),
+            "reused_requests": len(self.entries) - sum(r['accepted'] for r in self.attempts),
+            "catalog_retries": sum(r.get('attempt', 1) > 1 for r in self.attempts),
+            "open_search_gaps": len(self.ledger["gaps"]),
             "page_pairs_total": total, "page_pairs_reviewed": covered, "page_pairs_unreviewed": total - covered,
             "full_pair_coverage": covered == total, "elapsed_seconds": round(time.monotonic() - self.started, 3),
             "semantic_completeness_proven": False, "unmatched_is_provisional": True}
