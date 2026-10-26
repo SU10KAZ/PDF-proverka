@@ -7902,8 +7902,8 @@
                 <button type="button" class="modal-close" aria-label="Закрыть" @click="scResumeDialog = null">×</button>
                 <h3 id="sc-resume-title">Досчитать из сохранённого</h3>
                 <p v-if="scResumeDialog.mode === 'subject_search'" class="pause-modal__desc">
-                    Сохранено ответов поиска: {{ scResumeDialog.saved_regions }}. Анализ продолжится той же моделью
-                    и в том же режиме. Принятые ответы будут сверены с текущими источниками и использованы повторно.
+                    Сохранено ответов поиска: {{ scResumeDialog.saved_regions }}. Новые запросы выполнит выбранная
+                    модель в том же режиме. Принятые ответы будут сверены с текущими источниками и использованы повторно.
                 </p>
                 <p v-else-if="scResumeDialog.mode === 'before_mining'" class="pause-modal__desc">
                     Сопоставление готово и будет сохранено. Выбранная модель выполнит поиск изменений и последующие этапы.
