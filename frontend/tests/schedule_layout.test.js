@@ -50,7 +50,9 @@ describe('компоновка графика работ', () => {
         expect(html).toContain('schedCompactLabel(it.full || it.short)');
         expect(styles).toContain('.sched-daystack { display: flex; flex-direction: column;');
         expect(styles).toContain('.sched-plashka__txt { overflow: visible; text-overflow: clip;');
-        expect(styles).toContain('.sched-gridwrap--month .sched-plashka { padding: 2px 1px; font-size: 9px;');
+        expect(styles).toContain('width: 165px; min-width: 165px; max-width: 165px;');
+        expect(styles).toContain('.sched-gridwrap--month .sched-day--weekend,.sched-gridwrap--month .sched-cell--weekend{width:20px;');
+        expect(styles).toContain('.sched-gridwrap--month .sched-plashka { padding: 2px 2px; font-size: 11px;');
         expect(reserveStyles).toContain('.rc-dots{min-height:68px;padding:7px 2px 17px;display:flex;flex-direction:column;');
         expect(reserveStyles).toContain('button.rc-point.rc-unrecognized');
         expect(reserveStyles).toContain('button.rc-point.rc-manual');
