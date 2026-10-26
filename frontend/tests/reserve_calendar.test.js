@@ -97,11 +97,27 @@ describe('reserve calendar user actions', () => {
         h.state.selectObject('272. Балчуг Эстейт');
         expect(h.state.search.value).toBe('272. Балчуг Эстейт');
         expect(h.state.objectMenuOpen.value).toBe(false);
+        h.state.search.value = '';
+        expect(h.state.available.value.map(item => item.ready)).toEqual([true, true, false]);
+        h.state.chooseProject('1', {});
+        h.state.chooseProject('2', {shiftKey:true});
+        expect([...h.state.chosenProjectIndexes.value]).toEqual(['1', '0', '2']);
         h.state.chosenProject.value = ['0', '2'];
         h.state.targetEngineer.value = 'a';
         await h.state.saveCatalog();
         const sent = JSON.parse(h.fetch.mock.calls[1][1].body);
         expect(sent.kind).toBe('assign');
         expect(sent.items.map(item => [item.project_id, item.engineer_id])).toEqual([['AR/P2','a'],['KJ/P3','a']]);
+    });
+    it('adds the double-clicked project immediately and removes it from the returned catalog', async () => {
+        const initial = catalogData();
+        const saved = {...initial, revision:1, available_projects:initial.available_projects.filter(item => item.project_id !== 'AR/P1')};
+        const h = harness([initial, saved]); await h.state.load();
+        h.state.targetEngineer.value = 'b';
+        h.state.chosenProject.value = ['0', '2'];
+        await h.state.quickAddProject('1');
+        const sent = JSON.parse(h.fetch.mock.calls[1][1].body);
+        expect(sent).toMatchObject({kind:'assign', items:[{project_id:'AR/P1',engineer_id:'b'}]});
+        expect(h.state.data.value.available_projects.map(item => item.project_id)).toEqual(['AR/P2','KJ/P3']);
     });
 });

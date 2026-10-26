@@ -134,22 +134,27 @@ def catalog() -> list[dict]:
                                 info = meta.get('project_info') or document_meta.get('project_info') or {}
                                 title = info.get('name') or document_meta.get('display_name') or project_id
                                 section = info.get('section') or doc['discipline']
-                                inputs = adapter.source_input_files(directory, vid)
-                                has_source = (any(str(name).lower().endswith(('.pdf', '.md')) for name in inputs)
-                                              or (ctx['version_dir'] / '02_work/document.md').is_file())
+                                analysis_files = adapter.latest_analysis_files(directory, vid)
+                                analyzed = ('03_findings.json' in analysis_files['present']
+                                            or '03a_norms_verified.json' in analysis_files['present']
+                                            or 'optimization.json' in analysis_files['present'])
                             else:
                                 status = project_service.get_project_status(project_id, version_id=vid)
                                 if status is None:
                                     raise OSError('Не удалось прочитать статус проекта: ' + project_id)
                                 title, section = status.name, status.section
-                                has_source = status.has_pdf or status.has_md_file
+                                output_dir = ctx['output_dir']
+                                analyzed = any((output_dir / name).is_file() for name in (
+                                    '03_findings.json', '03a_norms_verified.json', 'optimization.json'))
                             review = kb.load_expert_review(project_id) or {}
                             source_maps = kb._load_source_item_maps(project_id)
                             total = sum(map(len, source_maps))
                             decisions = [d for d in review.get('decisions', []) if isinstance(d, dict) and d.get('decision')]
                             complete = kb._project_completion_day(project_id, review=review, source_maps=source_maps)
                             complete = complete or completions.get((obj['id'], project_id, vid.lower()))
-                            ready = total > 0 and has_source
+                            # A catalog entry always has its source on the platform.
+                            # Even an empty findings file proves that processing ran.
+                            ready = analyzed
                             timestamps = sorted(str(d.get('timestamp')) for d in decisions if d.get('timestamp'))
                             result.append({'object_id': obj['id'], 'object_name': obj['name'],
                                            'project_id': project_id, 'version_id': vid,

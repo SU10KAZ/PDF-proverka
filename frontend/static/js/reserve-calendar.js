@@ -51,6 +51,7 @@
             const drafts = ref({}), prepDialog = ref(null), projectDialog = ref(null), catalogDialog = ref(null);
             const prepOpen = ref(false), card = ref(null), catalogOpen = ref(false), linkTask = ref(null);
             const targetEngineer = ref(''), chosenProject = ref(''), search = ref(''), objectMenuOpen = ref(false), anchor = ref('');
+            const lastChosenProject = ref('');
             const tooltip = ref(null), tooltipStyle = ref({});
             let suppressClickUntil = 0, generation = 0, timer;
             const canEdit = computed(() => !!data.value.can_edit);
@@ -95,7 +96,12 @@
                 return map;
             });
             const cell = (eid, iso) => cells.value.get(eid+'|'+(iso || 'none')) || [];
-            const available = computed(() => data.value.available_projects.filter(p => key([p.object_name,p.title,p.code,p.version_id].join(' ')).includes(key(search.value))));
+            const available = computed(() => data.value.available_projects
+                .filter(p => key([p.object_name,p.title,p.code,p.version_id].join(' ')).includes(key(search.value)))
+                .sort((a, b) => Number(!!b.ready) - Number(!!a.ready)
+                    || String(a.object_name || '').localeCompare(String(b.object_name || ''), 'ru', {numeric:true})
+                    || String(a.code || a.title || '').localeCompare(String(b.code || b.title || ''), 'ru', {numeric:true})
+                    || String(a.version_id || '').localeCompare(String(b.version_id || ''), 'ru', {numeric:true})));
             const objectOptions = computed(() => {
                 const objects = new Map();
                 for (const project of data.value.available_projects) {
@@ -247,7 +253,7 @@
             async function openCatalog(task = null) {
                 linkTask.value = task;
                 targetEngineer.value = task?.engineer_id || activeEngineers.value[0]?.id || '';
-                catalogOpen.value = true; chosenProject.value = task ? '' : []; search.value = ''; objectMenuOpen.value = false; tooltip.value = null;
+                catalogOpen.value = true; chosenProject.value = task ? '' : []; lastChosenProject.value = ''; search.value = ''; objectMenuOpen.value = false; tooltip.value = null;
                 await nextTick(); catalogDialog.value.showModal();
             }
             function closeCatalog() { catalogDialog.value?.close(); catalogOpen.value = false; objectMenuOpen.value = false; }
@@ -255,6 +261,27 @@
                 search.value = name;
                 objectMenuOpen.value = false;
                 chosenProject.value = linkTask.value ? '' : [];
+                lastChosenProject.value = '';
+            }
+            function chooseProject(value, event = {}) {
+                if (linkTask.value) {
+                    chosenProject.value = value;
+                    lastChosenProject.value = value;
+                    return;
+                }
+                const visible = available.value.map(project => String(data.value.available_projects.indexOf(project)));
+                const current = new Set(chosenProjectIndexes.value);
+                if (event.shiftKey && lastChosenProject.value && visible.includes(lastChosenProject.value)) {
+                    const from = visible.indexOf(lastChosenProject.value), to = visible.indexOf(value);
+                    for (const item of visible.slice(Math.min(from, to), Math.max(from, to) + 1)) current.add(item);
+                    chosenProject.value = [...current];
+                } else if (event.ctrlKey || event.metaKey) {
+                    current.has(value) ? current.delete(value) : current.add(value);
+                    chosenProject.value = [...current];
+                } else {
+                    chosenProject.value = [value];
+                }
+                lastChosenProject.value = value;
             }
             function saveCatalog() {
                 const items = chosenProjectIndexes.value.map(value => data.value.available_projects[Number(value)]).filter(Boolean);
@@ -262,6 +289,12 @@
                 return linkTask.value
                     ? operate('link', {task_id: linkTask.value.id, project:items[0]})
                     : operate('assign', {items:items.map(item => ({...item, engineer_id:targetEngineer.value}))});
+            }
+            function quickAddProject(value) {
+                if (locked.value || !targetEngineer.value) return;
+                chosenProject.value = linkTask.value ? value : [value];
+                lastChosenProject.value = value;
+                return saveCatalog();
             }
             function escape(event) {
                 if (event.key !== 'Escape') return;
@@ -279,7 +312,7 @@
                 canEdit, locked, activeEngineers, selectedTasks, draftErrors, draftItems, draftEngineerCount, grouped, days, columns, available,
                 objectOptions, suggestedObjects, chosenProjectIndexes,
                 key, lines, dayAdd, label, stateLabel, cell, color, tipText, load, send, operate, clickTask, openCard, showTip,
-                dragStart, dragEnd, overTask, overCell, drop, shift, openPreparation, closePreparation, openCatalog, closeCatalog, selectObject, saveCatalog};
+                dragStart, dragEnd, overTask, overCell, drop, shift, openPreparation, closePreparation, openCatalog, closeCatalog, selectObject, chooseProject, saveCatalog, quickAddProject};
         },
         template: `
         <section class="reserve-calendar" aria-label="Календарь запаса" :aria-busy="loading || busy">
@@ -322,7 +355,7 @@
 
           <dialog ref="projectDialog" class="rc-dialog rc-card-dialog" aria-labelledby="rc-card-title" @cancel="card=null"><template v-if="card"><header><div><p>Карточка подготовки</p><h3 id="rc-card-title">{{ card.title }}</h3></div><button aria-label="Закрыть карточку" @click="projectDialog.close();card=null">×</button></header><div class="rc-card-body"><p>{{ data.engineers.find(e=>e.id===card.engineer_id)?.name }}</p><p>{{ stateLabel(card.state) }} · позиция {{ card.position }}</p><p>Условная дата: {{ label(card.forecast_date) }}</p><p>Документы ещё не связаны. После выбора проекта сохранятся ID задания, инженер и место в очереди.</p><button v-if="canEdit" :disabled="locked" @click="openCatalog(card)">Связать с проектом / версией</button></div><footer><button v-if="canEdit && data.undo_operation_id" :disabled="locked" @click="operate('undo',{undo_id:data.undo_operation_id})">Отменить последнее действие</button><button @click="projectDialog.close();card=null">В календарь</button></footer><div v-if="error" class="rc-error" role="alert">{{ error }}</div></template></dialog>
 
-          <dialog ref="catalogDialog" class="rc-dialog rc-card-dialog" aria-labelledby="rc-catalog-title" @cancel="catalogOpen=false"><header><h3 id="rc-catalog-title">{{ linkTask ? 'Связать с документами' : 'Добавить проект с портала' }}</h3><button aria-label="Закрыть выбор проекта" :disabled="busy" @click="closeCatalog()">×</button></header><div v-if="catalogOpen" class="rc-card-body" @click="objectMenuOpen=false"><label>Найти объект, шифр или название<div class="rc-object-picker" @click.stop><input v-model="search" type="search" autocomplete="off" placeholder="Начните вводить или выберите объект" role="combobox" aria-controls="rc-object-options" :aria-expanded="objectMenuOpen" @focus="objectMenuOpen=true" @input="objectMenuOpen=true" @keydown.esc.stop="objectMenuOpen=false"><button type="button" class="rc-object-picker__toggle" aria-label="Показать объекты" :aria-expanded="objectMenuOpen" @click="objectMenuOpen=!objectMenuOpen">▾</button><div v-if="objectMenuOpen" id="rc-object-options" class="rc-object-options" role="listbox"><button v-for="name in suggestedObjects" :key="name" type="button" role="option" :aria-selected="key(search)===key(name)" @click="selectObject(name)">{{ name }}</button><span v-if="!suggestedObjects.length">Объекты не найдены</span></div></div></label><label>Проект и версия<select v-model="chosenProject" :multiple="!linkTask" size="7"><option v-if="linkTask" disabled value="">Выберите проект и версию</option><option v-for="p in available" :key="JSON.stringify([p.object_id,p.project_id,p.version_id])" :value="String(data.available_projects.indexOf(p))">{{ p.object_name }} · {{ p.title }} · {{ p.version_id }} · {{ p.ready ? 'Готов к проверке' : 'Нужна подготовка' }}</option></select></label><p v-if="!linkTask" class="rc-selection-hint">Выбрано: <b>{{ chosenProjectIndexes.length }}</b>. Shift — выбрать диапазон, Ctrl / Cmd — выбрать отдельные проекты.</p><label v-if="!linkTask">Инженер<select v-model="targetEngineer"><option v-for="e in activeEngineers" :key="e.id" :value="e.id">{{ e.name }}</option></select></label><p>Выберите точную версию. Совпадение названий не связывает задания автоматически.</p><div v-if="error" class="rc-error" role="alert">{{ error }}</div></div><footer><button :disabled="busy" @click="closeCatalog()">Закрыть</button><button class="rc-primary" :disabled="locked || !chosenProjectIndexes.length || !targetEngineer" @click="saveCatalog()">{{ linkTask ? 'Связать' : 'Добавить в очередь' }}<template v-if="!linkTask && chosenProjectIndexes.length"> ({{ chosenProjectIndexes.length }})</template></button></footer></dialog>
+          <dialog ref="catalogDialog" class="rc-dialog rc-card-dialog" aria-labelledby="rc-catalog-title" @cancel="catalogOpen=false"><header><h3 id="rc-catalog-title">{{ linkTask ? 'Связать с документами' : 'Добавить проект с портала' }}</h3><button aria-label="Закрыть выбор проекта" :disabled="busy" @click="closeCatalog()">×</button></header><div v-if="catalogOpen" class="rc-card-body" @click="objectMenuOpen=false"><label>Найти объект, шифр или название<div class="rc-object-picker" @click.stop><input v-model="search" type="search" autocomplete="off" placeholder="Начните вводить или выберите объект" role="combobox" aria-controls="rc-object-options" :aria-expanded="objectMenuOpen" @focus="objectMenuOpen=true" @input="objectMenuOpen=true" @keydown.esc.stop="objectMenuOpen=false"><button type="button" class="rc-object-picker__toggle" aria-label="Показать объекты" :aria-expanded="objectMenuOpen" @click="objectMenuOpen=!objectMenuOpen">▾</button><div v-if="objectMenuOpen" id="rc-object-options" class="rc-object-options" role="listbox"><button v-for="name in suggestedObjects" :key="name" type="button" role="option" :aria-selected="key(search)===key(name)" @click="selectObject(name)">{{ name }}</button><span v-if="!suggestedObjects.length">Объекты не найдены</span></div></div></label><label>Проект и версия<div class="rc-project-list" role="listbox" :aria-multiselectable="!linkTask"><button v-for="p in available" :key="JSON.stringify([p.object_id,p.project_id,p.version_id])" type="button" role="option" :aria-selected="chosenProjectIndexes.includes(String(data.available_projects.indexOf(p)))" @click="chooseProject(String(data.available_projects.indexOf(p)),$event)" @dblclick="quickAddProject(String(data.available_projects.indexOf(p)))"><span class="rc-project-list__name">{{ p.object_name }} · {{ p.title }} · {{ p.version_id }}</span><span :class="p.ready ? 'rc-project-list__ready' : 'rc-project-list__pending'">{{ p.ready ? 'Проанализировано' : 'Не проанализировано' }}</span></button><span v-if="!available.length" class="rc-project-list__empty">Проекты не найдены</span></div></label><p v-if="!linkTask" class="rc-selection-hint">Выбрано: <b>{{ chosenProjectIndexes.length }}</b>. Shift — выбрать диапазон, Ctrl / Cmd — выбрать отдельные проекты. Двойной клик — сразу добавить проект.</p><label v-if="!linkTask">Инженер<select v-model="targetEngineer"><option v-for="e in activeEngineers" :key="e.id" :value="e.id">{{ e.name }}</option></select></label><p>Выберите точную версию. Совпадение названий не связывает задания автоматически.</p><div v-if="error" class="rc-error" role="alert">{{ error }}</div></div><footer><button :disabled="busy" @click="closeCatalog()">Закрыть</button><button class="rc-primary" :disabled="locked || !chosenProjectIndexes.length || !targetEngineer" @click="saveCatalog()">{{ linkTask ? 'Связать' : 'Добавить в очередь' }}<template v-if="!linkTask && chosenProjectIndexes.length"> ({{ chosenProjectIndexes.length }})</template></button></footer></dialog>
         </section>`
     };
 

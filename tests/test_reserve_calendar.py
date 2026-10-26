@@ -77,6 +77,7 @@ def test_unicode_duplicates_batch_and_context_do_not_merge_real_projects(env):
     catalog[0]['title'] = 'Один том'
     result = call('assign', items=[{'engineer_id': 'a', **catalog[0]}])
     assert len(result['tasks']) == 3
+    assert all(item['project_id'] != catalog[0]['project_id'] for item in result['available_projects'])
 
 
 def test_group_move_block_display_order_transfer_and_undo(env):
@@ -225,7 +226,8 @@ def test_real_v2_source_adapter_keeps_objects_and_versions_distinct(tmp_path, mo
             (directory/'version.json').write_text(json.dumps({'version_id':vid, 'project_info':{'name':obj['id']+' full title','section':'AR'}}))
             analysis = directory/'03_analysis/latest'
             analysis.mkdir(parents=True)
-            (analysis/'03_findings.json').write_text(json.dumps({'findings':[{'id':'F-1','severity':'low','text':'fixture'}]}))
+            findings = [{'id':'F-1','severity':'low','text':'fixture'}] if vid == 'v001' else []
+            (analysis/'03_findings.json').write_text(json.dumps({'findings': findings}))
             if vid == 'v001':
                 review = directory/'04_review'
                 review.mkdir()
