@@ -131,7 +131,7 @@ describe('чистые помощники доступа', () => {
 
 describe('перехват fetch: X-Object-Id и запрет записи у viewer', () => {
     const wrapper = extractFunction(`function patch() {${between(app, '        if (!window.__objHeaderPatched) {',
-        '        // ─── Панели шапки')}}`, 'patch');
+        '        // Выбор объекта в шапке.')}}`, 'patch');
 
     function harness(portalCan) {
         const calls = [];
@@ -456,8 +456,8 @@ describe('разметка: служебное скрыто, скачивани�
     it('навигация и шапка опираются на права', () => {
         expect(html).toContain(`<div v-if="canOperate" class="nav-item" :class="{active: currentView === 'queue'}"`);
         expect(html).toContain(`v-if="canView('stage_comparison')"`);
-        expect(html).toContain('<button v-if="canAdminPanels" class="paid-cost-btn"');
-        expect(html).toContain('<button v-if="canAdminPanels" class="account-btn"');
+        expect(html).not.toContain('class="paid-cost-btn"');
+        expect(html).not.toContain('class="account-btn"');
         expect(html).toContain('Доступ к разделам ещё не назначен. Обратитесь к администратору.');
         expect(html).toContain(`<button v-if="canDownload('audit_results')" class="btn-expert-toggle"`);
         expect(html).toContain('<script>window.__portalCaps = {{portal_caps}};</script>');

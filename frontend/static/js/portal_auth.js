@@ -125,11 +125,12 @@
         window.__portalAuthEnabled = enabled;
         if (!enabled) return;
         var logout = document.getElementById('portal-logout-item');
-        if (logout) logout.style.display = '';
+        if (logout) {
+            logout.style.display = '';
+            if (!caps.is_admin || caps.mode !== 'accounts') logout.style.marginTop = 'auto';
+        }
         var accounts = caps.mode === 'accounts';
         var users = document.getElementById('portal-users-item');
-        var password = document.getElementById('portal-password-item');
         if (accounts && caps.is_admin && users) users.style.display = '';
-        else if (accounts && password) password.style.display = '';
     });
 })();

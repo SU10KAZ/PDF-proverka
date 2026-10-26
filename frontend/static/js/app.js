@@ -1812,26 +1812,6 @@ const app = createApp({
         const showUsageDetails = ref(false);
         let usagePollTimer = null;
 
-        // ─── Paid API cost ───
-        const paidCost = ref({
-            display_usd: 0,
-            total_lifetime_usd: 0,
-            month_key: '',
-            monthly_spent_usd: 0,
-            monthly_adjustment_usd: 0,
-            monthly_limit_usd: 250,
-            monthly_remaining_usd: 250,
-            monthly_percent: 0,
-            monthly_over_limit_usd: 0,
-            monthly_calibrated_to_usd: null,
-            monthly_calibrated_at: null,
-        });
-        const showPaidCost = ref(false);
-        // Paid API guard: kill-switch статус + последние paid/blocked события.
-        const paidApiStatus = ref(null);
-        const paidEvents = ref([]);
-        const paidBlockedEvents = ref([]);
-
         // ─── Submit lock (защита от double-submit) ────────────────────
         // В инциденте 2026-05-16 на M31A было 3 retry за 35 секунд (14:29:41,
         // 14:30:07, 14:30:16) — каждый стоил $0.32. Похоже на double-click
@@ -1861,204 +1841,6 @@ const app = createApp({
         function _isSubmitLocked(key) {
             return _submitLocks.has(key);
         }
-
-        async function fetchPaidCost() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
-            try {
-                const data = await api('/usage/paid-cost');
-                paidCost.value = data;
-            } catch (e) {
-                console.error('Failed to fetch paid cost:', e);
-            }
-        }
-
-        async function fetchPaidApiStatus() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
-            try {
-                paidApiStatus.value = await api('/usage/paid-api/status');
-            } catch (e) {
-                // не критично — продолжаем работу
-                console.warn('Failed to fetch paid-api/status:', e);
-            }
-        }
-
-        async function fetchPaidEvents() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
-            try {
-                const data = await api('/usage/paid-cost/events?limit=20');
-                paidEvents.value = data.events || [];
-            } catch (e) {
-                console.warn('Failed to fetch paid events:', e);
-            }
-        }
-
-        async function fetchPaidBlockedEvents() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
-            try {
-                const data = await api('/usage/paid-cost/blocked-events?limit=20');
-                paidBlockedEvents.value = data.events || [];
-            } catch (e) {
-                console.warn('Failed to fetch blocked events:', e);
-            }
-        }
-
-        // ─── Paid cost — daily dashboard ───
-        // Список дней с расходами + детализация выбранного дня.
-        // По умолчанию: окно 7 дней, выбран самый свежий день с расходом.
-        const paidDailyDays = ref([]);            // массив дней из endpoint'а
-        const paidDailyTotals = ref({ period_total_usd: 0, period_calls: 0 });
-        const paidDailyPeriod = ref(7);           // 7 / 30 / 90
-        const paidDailySelectedDate = ref(null);  // строка "YYYY-MM-DD"
-        const paidDailyExpanded = ref(false);     // collapsible
-
-        async function fetchPaidCostDaily() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
-            try {
-                const data = await api(`/usage/paid-cost/daily?days=${paidDailyPeriod.value}`);
-                paidDailyDays.value = data.days || [];
-                paidDailyTotals.value = data.totals || { period_total_usd: 0, period_calls: 0 };
-                // Авто-выбор: сохранить текущий, если он есть в новых данных;
-                // иначе — первый день с n_calls > 0, иначе первый день, иначе null.
-                const dates = paidDailyDays.value.map(d => d.date);
-                if (paidDailySelectedDate.value && dates.includes(paidDailySelectedDate.value)) {
-                    return;
-                }
-                const firstWithCost = paidDailyDays.value.find(d => (d.n_calls || 0) > 0);
-                paidDailySelectedDate.value = firstWithCost
-                    ? firstWithCost.date
-                    : (paidDailyDays.value[0] ? paidDailyDays.value[0].date : null);
-            } catch (e) {
-                console.warn('Failed to fetch paid-cost/daily:', e);
-                paidDailyDays.value = [];
-                paidDailyTotals.value = { period_total_usd: 0, period_calls: 0 };
-                paidDailySelectedDate.value = null;
-            }
-        }
-
-        function setPaidDailyPeriod(days) {
-            paidDailyPeriod.value = days;
-            // Сбросить выбранную дату чтобы fetcher переподобрал свежую.
-            paidDailySelectedDate.value = null;
-            fetchPaidCostDaily();
-        }
-
-        function selectPaidDailyDate(date) {
-            paidDailySelectedDate.value = date;
-        }
-
-        // Computed-helper для текущего выбранного дня (или null).
-        const paidDailySelectedDay = computed(() => {
-            if (!paidDailySelectedDate.value) return null;
-            return paidDailyDays.value.find(d => d.date === paidDailySelectedDate.value) || null;
-        });
-
-        function formatCostFull(usd) {
-            const v = Number(usd || 0);
-            if (v === 0) return '$0.00';
-            if (v < 0.01) return '$' + v.toFixed(4);
-            return '$' + v.toFixed(2);
-        }
-
-        function entriesSortedDesc(obj) {
-            // {key: usd} → [[key, usd], ...] отсортировано по сумме убыванию.
-            if (!obj || typeof obj !== 'object') return [];
-            return Object.entries(obj).sort((a, b) => Number(b[1]) - Number(a[1]));
-        }
-
-        async function resetPaidCost() {
-            if (!confirm('Обнулить счётчик расходов? Общая сумма за всё время сохранится. Журналы paid_cost_events.jsonl и paid_api_blocked_events.jsonl НЕ очищаются.')) return;
-            try {
-                const resp = await fetch('/api/usage/paid-cost/reset', { method: 'POST' });
-                if (resp.ok) paidCost.value = await resp.json();
-            } catch (e) {
-                console.error('Failed to reset paid cost:', e);
-            }
-        }
-
-        function formatCostShort(usd) {
-            if (!usd || usd === 0) return '$0';
-            if (usd < 0.01) return '<$0.01';
-            return '$' + usd.toFixed(2);
-        }
-
-        function formatSignedCost(usd) {
-            const value = Number(usd || 0);
-            return `${value >= 0 ? '+' : '−'}$${Math.abs(value).toFixed(2)}`;
-        }
-
-        function formatPaidMonth(monthKey) {
-            const match = /^(\d{4})-(\d{2})$/.exec(String(monthKey || ''));
-            if (!match) return 'текущий месяц';
-            const names = [
-                'январь', 'февраль', 'март', 'апрель', 'май', 'июнь',
-                'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь',
-            ];
-            const monthIndex = Number(match[2]) - 1;
-            if (monthIndex < 0 || monthIndex >= names.length) return 'текущий месяц';
-            return `${names[monthIndex]} ${match[1]}`;
-        }
-
-        // ─── Account info ───
-        const accountInfo = ref({ email: '—', org: '—', plan: '—', loggedIn: false });
-        const showAccountInfo = ref(false);
-
-        const accountSwitching = ref(false);
-        const accountAuthUrl = ref(null);
-        let accountPollTimer = null;
-
-        async function fetchAccountInfo() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
-            try {
-                const data = await api('/audit/account');
-                accountInfo.value = data;
-            } catch (e) {
-                console.error('Failed to fetch account info:', e);
-            }
-        }
-
-        async function switchAccount() {
-            accountSwitching.value = true;
-            accountAuthUrl.value = null;
-            try {
-                const resp = await fetch('/api/audit/account/switch', { method: 'POST' });
-                const data = await resp.json();
-                if (data.auth_url) {
-                    accountAuthUrl.value = data.auth_url;
-                }
-                // Поллинг статуса каждые 2 секунды
-                accountPollTimer = setInterval(async () => {
-                    try {
-                        const st = await api('/audit/account/switch/status');
-                        if (st.auth_url && !accountAuthUrl.value) {
-                            accountAuthUrl.value = st.auth_url;
-                        }
-                        if (st.status === 'done') {
-                            clearInterval(accountPollTimer);
-                            accountPollTimer = null;
-                            accountSwitching.value = false;
-                            accountAuthUrl.value = null;
-                            await fetchAccountInfo();
-                        }
-                    } catch (e) {
-                        console.error('Poll switch status error:', e);
-                    }
-                }, 2000);
-            } catch (e) {
-                console.error('Switch account error:', e);
-                accountSwitching.value = false;
-            }
-        }
-
-        const sonnetPercent = computed(() => {
-            // Legacy: процент Sonnet из JSONL-сканера (Claude Code sessions)
-            // При миграции на OpenRouter этот показатель уходит в 0 — это нормально
-            const m = globalUsage.value.weekly_by_model || {};
-            return (m.sonnet && m.sonnet.percent) || 0;
-        });
-
-        // Старые usageCounters оставляем для совместимости с webapp-трекингом
-        const usageCounters = ref({});
-        const BLOCK_CONTEXT_STAGE_UI_LABEL = 'Векторные графы блоков';
 
         // ─── Per-project usage (токены по проектам/этапам) ───
         const projectUsage = ref({});  // {project_id: {total_tokens, total_cost_usd, total_calls, stages_summary}}
@@ -5134,28 +4916,15 @@ const app = createApp({
             };
         }
 
-        // ─── Панели шапки (объект / расходы API / аккаунт LLM) ───
-        // Одновременно открыта максимум одна: открытие любой закрывает остальные,
-        // а клик вне (по любому другому элементу) закрывает все — см. onMounted.
+        // Выбор объекта в шапке.
         function toggleHeaderPopover(which) {
-            const target = which === 'object'  ? showObjectPicker
-                         : which === 'paid'    ? showPaidCost
-                         : which === 'account' ? showAccountInfo
-                         : null;
-            if (!target) return;
-            const willOpen = !target.value;
-            showObjectPicker.value = false;
-            showPaidCost.value = false;
-            showAccountInfo.value = false;
-            if (willOpen) target.value = true;
-            // Счётчики объектов нужны только когда список раскрыт.
-            if (willOpen && which === 'object') loadObjectStats();
+            if (which !== 'object') return;
+            showObjectPicker.value = !showObjectPicker.value;
+            if (showObjectPicker.value) loadObjectStats();
         }
 
         function closeHeaderPopovers() {
             showObjectPicker.value = false;
-            showPaidCost.value = false;
-            showAccountInfo.value = false;
         }
 
         async function loadObjects() {
@@ -12891,7 +12660,7 @@ const app = createApp({
             window.addEventListener('keydown', _stageAlgorithmKeydown);
             // Клик вне дропдауна «Тип» закрывает его (сам тогл/меню используют @click.stop).
             window.addEventListener('click', () => { if (kbTypeMenuOpen.value) kbTypeMenuOpen.value = false; });
-            // Клик вне панелей шапки (объект/расходы/аккаунт) закрывает их.
+            // Клик вне списка объектов закрывает его.
             // Триггеры и сами панели используют @click.stop, поэтому не самозакрываются.
             window.addEventListener('click', closeHeaderPopovers);
             window.addEventListener('portal-forbidden', _onPortalForbidden);
@@ -12907,25 +12676,9 @@ const app = createApp({
                 loadObjects().then(() => (auditResults ? loadProjectGroups() : null)),
                 loadUsers(),
             ]);
-            // Расход и подписка — служебные панели (только admin).
-            if ((typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) {
-                Promise.all([
-                    pollGlobalUsage(),
-                    fetchAccountInfo(),
-                    fetchPaidCost(),
-                    fetchPaidApiStatus(),
-                    fetchPaidEvents(),
-                    fetchPaidBlockedEvents(),
-                    fetchPaidCostDaily(),
-                ]);
-                usagePollTimer = setInterval(() => {
-                    pollGlobalUsage();
-                    fetchPaidCost();
-                    fetchPaidApiStatus();
-                    fetchPaidEvents();
-                    fetchPaidBlockedEvents();
-                    fetchPaidCostDaily();
-                }, 60000);
+            if (portalCanAdmin()) {
+                pollGlobalUsage();
+                usagePollTimer = setInterval(pollGlobalUsage, 60000);
             }
         });
 
@@ -21188,21 +20941,8 @@ const app = createApp({
             dragProjectId, dragGroupId, dragOverGroupId,
             onProjectDragStart, onGroupDragOver, onGroupDragLeave, onProjectDropOnGroup,
             onGroupHeaderDragStart, onGroupHeaderDragEnd,
-            // Model switcher
-            // Paid cost
-            paidCost, showPaidCost, fetchPaidCost, resetPaidCost,
-            formatCostShort, formatSignedCost, formatPaidMonth,
-            paidApiStatus, paidEvents, paidBlockedEvents,
-            fetchPaidApiStatus, fetchPaidEvents, fetchPaidBlockedEvents,
-            // Paid-cost daily dashboard
-            paidDailyDays, paidDailyTotals, paidDailyPeriod,
-            paidDailySelectedDate, paidDailySelectedDay, paidDailyExpanded,
-            fetchPaidCostDaily, setPaidDailyPeriod, selectPaidDailyDate,
-            formatCostFull, entriesSortedDesc,
             // Usage (global dashboard)
             globalUsage, showUsageDetails, sonnetPercent,
-            accountInfo, showAccountInfo, fetchAccountInfo,
-            accountSwitching, accountAuthUrl, switchAccount,
             formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter, clearUsageCounter,
             editUsagePercent, resetUsageOffsets,
             usageCounters,
