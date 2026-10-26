@@ -179,7 +179,7 @@
                     const value = await readResponse(response);
                     pending.value = null;
                     accept(value);
-                    status.value = body.kind === 'undo' ? 'Действие отменено.' : body.kind === 'start' ? 'Проверка начата. Очередь пересчитана.' : 'Изменения сохранены. Очереди и прогноз пересчитаны.';
+                    status.value = body.kind === 'undo' ? 'Действие отменено.' : body.kind === 'delete' ? 'Выбранные проекты удалены из очереди.' : body.kind === 'start' ? 'Проверка начата. Очередь пересчитана.' : 'Изменения сохранены. Очереди и прогноз пересчитаны.';
                     if (body.kind === 'add_preparation') { drafts.value = {}; closePreparation(true); }
                     if (body.kind === 'assign') { chosenProject.value = []; lastChosenProject.value = ''; }
                     if (body.kind === 'link') closeCatalog();
@@ -343,7 +343,7 @@
           <div v-if="error" class="rc-error" role="alert">{{ error }} <button v-if="pending" :disabled="busy" @click="send()">Повторить сохранение</button><button v-else :disabled="loading || busy" @click="load()">Обновить данные</button></div>
           <div v-if="loading && !data.engineers.length" class="rc-empty">Загрузка инженеров и очередей…</div>
           <div class="rc-toolbar"><strong>Очередь по инженерам</strong><div class="rc-actions"><button v-if="canEdit" :disabled="locked" @click="openCatalog()">Добавить с портала</button><button v-if="canEdit" class="rc-primary-outline" :disabled="locked" @click="openPreparation()">Проекты для подготовки</button></div></div>
-          <div v-if="selected.length" class="rc-selection"><span>Выбрано: {{ selected.length }}</span><button :disabled="locked" @click="shift(-1)">Раньше</button><button :disabled="locked" @click="shift(1)">Позже</button><button @click="selected=[]">Снять выделение</button></div>
+          <div v-if="selected.length" class="rc-selection"><span>Выбрано: {{ selected.length }}</span><button :disabled="locked" @click="shift(-1)">Раньше</button><button :disabled="locked" @click="shift(1)">Позже</button><button class="rc-danger" :disabled="locked" @click="operate('delete',{task_ids:[...selected]})">Удалить ({{ selected.length }})</button><button @click="selected=[]">Снять выделение</button></div>
           <div class="rc-scroll" @scroll="tooltip=null"><table class="rc-grid" aria-label="Очередь проектов по инженерам и датам">
             <colgroup><col class="rc-name-col"><col v-for="d in columns" :key="d.iso || 'none'" :class="{'rc-off-col':d.off, 'rc-unscheduled-col':!d.iso}"></colgroup>
             <thead><tr><th class="rc-name">Инженер / остаток</th><th v-for="d in columns" :key="d.iso || 'none'" :title="d.label" :class="{'rc-off':d.off,'rc-today':d.iso===data.today}"><template v-if="!d.off"><b>{{ d.iso ? d.dom : 'Без даты' }}</b><small>{{ d.dow }}</small></template></th></tr></thead>

@@ -169,7 +169,7 @@ def _snapshot(conn, catalog, engineers, config, actor):
                         through=(max((r['forecast_date'] for r in assigned), default=None)
                                  if all(r['forecast_date'] for r in assigned) else None))
     last = conn.execute('SELECT * FROM reserve_operations WHERE actor=? ORDER BY rowid DESC LIMIT 1', (actor,)).fetchone()
-    undo_id = last['id'] if last and last['kind'] in ('move', 'add_preparation', 'assign') and not last['undone_by'] else None
+    undo_id = last['id'] if last and last['kind'] in ('move', 'delete', 'add_preparation', 'assign') and not last['undone_by'] else None
     assigned_ids = {sources.identity(r) for r in rows if r['project_id']}
     return {'revision': store.revision(conn), 'today': sources.today().isoformat(), 'engineers': engineers,
             'tasks': projected, 'undo_operation_id': undo_id,
@@ -305,6 +305,20 @@ def mutate(payload, actor):
                 for eid in affected - {target}:
                     _set_order(conn, [r['id'] for r in rows if r['engineer_id'] == eid and r['id'] not in selected], eid)
                 _set_order(conn, target_ids, target)
+            elif kind == 'delete':
+                ids = payload.get('task_ids') or []
+                if not ids or len(ids) != len(set(ids)) or any(tid not in by_id for tid in ids):
+                    raise ReserveError('Выберите существующие задания для удаления.')
+                selected = set(ids)
+                deleted = [by_id[tid] for tid in ids]
+                if any(row['state'] == 'in_progress' for row in deleted):
+                    raise ReserveError('Начатую проверку нельзя удалить.', 'already_started', 409)
+                affected = {row['engineer_id'] for row in deleted}
+                before = _queue_snapshot(conn, affected)
+                for tid in ids:
+                    conn.execute('DELETE FROM reserve_tasks WHERE id=?', (tid,))
+                _normalize(conn, engineers)
+                result['deleted_ids'] = ids
             elif kind in ('start', 'link'):
                 row = by_id.get(payload.get('task_id'))
                 if not row:
@@ -330,7 +344,7 @@ def mutate(payload, actor):
                 _normalize(conn, engineers)
             elif kind == 'undo':
                 original = conn.execute('SELECT * FROM reserve_operations WHERE id=? AND actor=?', (payload.get('undo_id'), actor)).fetchone()
-                if not original or original['undone_by'] or original['kind'] not in ('move', 'add_preparation', 'assign'):
+                if not original or original['undone_by'] or original['kind'] not in ('move', 'delete', 'add_preparation', 'assign'):
                     raise ReserveError('Это действие уже нельзя отменить.', 'undo_conflict', 409)
                 old_before, old_after = json.loads(original['before_json']), json.loads(original['after_json'])
                 affected = {r['engineer_id'] for r in old_before+old_after}
@@ -345,7 +359,7 @@ def mutate(payload, actor):
                         conn.execute('DELETE FROM reserve_tasks WHERE id=?', (tid,))
                 else:
                     if before != old_after:
-                        raise ReserveError('Очередь изменилась после переноса. Отмена не затронет новые действия.', 'undo_conflict', 409)
+                        raise ReserveError('Очередь изменилась после действия. Отмена не затронет новые изменения.', 'undo_conflict', 409)
                     for row in old_before:
                         row['updated_at'] = now()
                         store.save_task(conn, row)

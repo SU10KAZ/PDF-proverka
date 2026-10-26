@@ -32,7 +32,7 @@ class QueueItem(BaseModel):
 class Operation(BaseModel):
     operation_id: UUID
     revision: int = Field(ge=0)
-    kind: Literal['move', 'add_preparation', 'assign', 'link', 'start', 'undo']
+    kind: Literal['move', 'delete', 'add_preparation', 'assign', 'link', 'start', 'undo']
     items: list[QueueItem] = Field(default_factory=list, max_length=1000)
     task_ids: list[str] = Field(default_factory=list, max_length=1000)
     task_id: str | None = None

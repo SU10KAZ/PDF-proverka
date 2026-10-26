@@ -67,6 +67,16 @@ describe('reserve calendar user actions', () => {
         const h = harness();
         expect(h.orderedSelection(data(),['3','2','1']).map(t=>t.id)).toEqual(['1','2','3']);
     });
+    it('submits all selected projects to the delete operation', async () => {
+        const h = harness([data(), {...data(), revision:1, tasks:[data().tasks[1]]}]);
+        await h.state.load();
+        h.state.selected.value = ['1', '3'];
+        await h.state.operate('delete', {task_ids:[...h.state.selected.value]});
+        const sent = JSON.parse(h.fetch.mock.calls[1][1].body);
+        expect(sent).toMatchObject({kind:'delete', task_ids:['1','3']});
+        expect(h.state.selected.value).toEqual([]);
+        expect(h.state.status.value).toBe('Выбранные проекты удалены из очереди.');
+    });
     it('uses an insertion marker and suppresses project navigation after drop', async () => {
         const h = harness([data(), {...data(),revision:1}]); await h.state.load();
         const s=h.state; s.selected.value=['3','1'];

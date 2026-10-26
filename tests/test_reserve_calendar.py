@@ -92,6 +92,29 @@ def test_group_move_block_display_order_transfer_and_undo(env):
     assert [r['id'] for r in moved['tasks']] == [ids[0], ids[3], ids[1], ids[2]]
 
 
+def test_delete_selected_projects_reorders_queue_and_can_be_undone(env):
+    initial = add('a', 'one', 'two', 'three')
+    ids = [row['id'] for row in initial['tasks']]
+    deleted = call('delete', task_ids=[ids[0], ids[2]])
+    assert [row['id'] for row in deleted['tasks']] == [ids[1]]
+    assert deleted['tasks'][0]['position'] == 1
+    assert deleted['operation']['deleted_ids'] == [ids[0], ids[2]]
+    assert deleted['undo_operation_id'] == deleted['operation']['id']
+
+    restored = call('undo', undo_id=deleted['operation']['id'])
+    assert [row['id'] for row in restored['tasks']] == ids
+    assert [row['position'] for row in restored['tasks']] == [1, 2, 3]
+
+
+def test_delete_rejects_started_project(env):
+    catalog, _ = env
+    assigned = call('assign', items=[{'engineer_id': 'a', **catalog[0]}])
+    task_id = assigned['tasks'][0]['id']
+    call('start', task_id=task_id)
+    with pytest.raises(svc.ReserveError, match='Начатую проверку нельзя удалить'):
+        call('delete', task_ids=[task_id])
+
+
 def test_undo_does_not_erase_newer_actions_or_started_tasks(env):
     initial = add('a', 'one', 'two', 'three')
     ids = [r['id'] for r in initial['tasks']]
