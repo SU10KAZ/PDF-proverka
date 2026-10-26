@@ -64,11 +64,15 @@ def provenance_lines(prov: dict[str, Any]) -> list[str]:
     lines = []
     if handoff:
         mapping_only = handoff.get("reused_stages") == ["MAPPING"]
-        lines.append(
-            f"Досборка: {'Mapper' if mapping_only else 'Mapper/Miner/unmatched'} — {handoff['source_model']['model']}; "
-            f"{'Miner/unmatched/Dedupe/проверка параметров' if mapping_only else 'Dedupe/проверка параметров'} "
-            f"— {handoff['remaining_model']['model']}"
-        )
+        if handoff.get('reused_stages') == ['SUBJECT_SEARCH_PARTIAL']:
+            lines.append(f"Досборка: сохранённые ответы поиска по предметам — {handoff['source_model']['model']}; "
+                         f"новые запросы и последующие этапы — {handoff['remaining_model']['model']}")
+        else:
+            lines.append(
+                f"Досборка: {'Mapper' if mapping_only else 'Mapper/Miner/unmatched'} — {handoff['source_model']['model']}; "
+                f"{'Miner/unmatched/Dedupe/проверка параметров' if mapping_only else 'Dedupe/проверка параметров'} "
+                f"— {handoff['remaining_model']['model']}"
+            )
     return lines + [
         f"engine: {prov.get('engine')}",
         f"engine_version: {prov.get('engine_version')}",

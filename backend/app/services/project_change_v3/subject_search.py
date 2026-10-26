@@ -31,6 +31,10 @@ class CatalogValidationError(ValueError):
     """A catalog answer may be corrected once; transport/storage failures may not."""
 
 
+class SubjectRecoveryError(ValueError):
+    """Saved subject requests cannot be reused under the requested contract."""
+
+
 def validation_detail(exc):
     # jsonschema's full repr repeats the schema and response. Feedback needs
     # only the violated field and the diagnostic, never another source copy.
@@ -157,7 +161,8 @@ def validate_detailed(pair_id, answer, pages):
 
 class SubjectSearch:
     def __init__(self, *, pair_id, run_id, structure, work_dir, source_manifest,
-                 profile, provider, on_outcome, workers, save, progress, cancelled=lambda: False, donor_checkpoint=None):
+                 profile, provider, on_outcome, workers, save, progress, cancelled=lambda: False,
+                 donor_checkpoint=None, donor_profile=None, resume_model_policy='same_model'):
         self.pair_id, self.run_id = pair_id, run_id
         self.work_dir, self.profile = Path(work_dir), profile
         self.provider, self.on_outcome, self.workers = provider, on_outcome, workers
@@ -195,20 +200,29 @@ class SubjectSearch:
                     "limits": [MAX_SEARCH_ROUNDS, MAX_SEARCH_QUERIES, MAX_SEARCH_HITS]}
         self.identity = digest(identity)
         self.legacy_identity = None
+        self.recovery_identity = None
         self.cache = {}
         if donor_checkpoint:
             if donor_checkpoint.get("identity") != self.identity:
                 legacy = digest({**identity, "contract": sc.LEGACY_CONTRACT_SHA256})
-                if donor_checkpoint.get("identity") != legacy:
-                    raise ValueError("subject checkpoint sources, model or contract changed")
-                self.legacy_identity = legacy
+                donor_identity = ({**identity, 'profile': asdict(donor_profile)}
+                                  if donor_profile and resume_model_policy == 'remaining_stages' else None)
+                if donor_checkpoint.get('identity') == legacy:
+                    self.legacy_identity = legacy
+                elif donor_identity and donor_checkpoint.get('identity') == digest(donor_identity):
+                    self.recovery_identity = digest(donor_identity)
+                elif donor_identity and donor_checkpoint.get('identity') == digest(
+                        {**donor_identity, 'contract': sc.LEGACY_CONTRACT_SHA256}):
+                    self.legacy_identity = donor_checkpoint['identity']
+                else:
+                    raise SubjectRecoveryError("subject checkpoint sources, model or contract changed")
             for row in donor_checkpoint["entries"]:
                 if row.get("accepted") is not True:
-                    raise ValueError("subject checkpoint contains a rejected answer")
+                    raise SubjectRecoveryError("subject checkpoint contains a rejected answer")
                 if row.get("answer_sha256") != digest(row["answer"]):
-                    raise ValueError("subject checkpoint answer changed")
+                    raise SubjectRecoveryError("subject checkpoint answer changed")
                 if row["key"] in self.cache:
-                    raise ValueError("duplicate checkpoint request key")
+                    raise SubjectRecoveryError("duplicate checkpoint request key")
                 self.cache[row["key"]] = row
         self.entries = []
         self.attempts = []
@@ -253,6 +267,8 @@ class SubjectSearch:
                       "identity": self.identity, "entries": self.entries, "attempts": self.attempts}
         if self.legacy_identity:
             checkpoint["migrated_from_identity"] = self.legacy_identity
+        if self.recovery_identity:
+            checkpoint['recovered_from_identity'] = self.recovery_identity
         self.save(CHECKPOINT, checkpoint)
         self.save(ARTIFACT, self.ledger)
 
@@ -284,6 +300,8 @@ class SubjectSearch:
         key = self.request_key(phase, prompt, data, schema, image_hashes)
         catalog_call = prompt == sc.CATALOG_PROMPT
         cache_key = key
+        if cache_key not in self.cache and self.recovery_identity:
+            cache_key = self.request_key(phase, prompt, data, schema, image_hashes, identity=self.recovery_identity)
         if cache_key not in self.cache and self.legacy_identity:
             cache_key = self.request_key(
                 phase, sc.LEGACY_CATALOG_PROMPT if catalog_call else prompt, data,
@@ -295,7 +313,7 @@ class SubjectSearch:
             row = self.cache[cache_key]
             if cache_key != key:
                 row = {**row, "key": key, "reused_from_key": cache_key,
-                       "reused_from_identity": self.legacy_identity}
+                       "reused_from_identity": self.recovery_identity or self.legacy_identity}
                 self.cache[key] = row
             if not any(row['key'] == key for row in self.entries):
                 self.entries.append(row)
@@ -379,13 +397,43 @@ class SubjectSearch:
                                'total': len(jobs), 'accepted': set(), 'pages': set()}
         self.persist()  # publish the exact denominator before the first call, including cached work
         answers = {}
-        def start(index, job):
-            answers[index] = yield from self.ask_item(*job)
+        pending = []
+        # Validate/replay every cached answer in this batch BEFORE admitting new
+        # calls. A failure or cancellation must not discard later cached packets.
+        try:
+            for index, job in enumerate(jobs):
+                item = self.ask_item(*job)
+                try:
+                    request = next(item)
+                except StopIteration as completed:
+                    answers[index] = completed.value
+                else:
+                    pending.append((index, item, request))
+        except BaseException:
+            for _, item, _ in pending:
+                item.close()
+            raise
+
+        def start(index, value):
+            item, request = value
+            try:
+                while True:
+                    outcome = yield request
+                    request = item.send(outcome)
+            except StopIteration as completed:
+                answers[index] = completed.value
+            finally:
+                item.close()
         control = parallel_calls.CallControl()
-        parallel_calls.run_items(enumerate(jobs), start_item=start, provider=self.provider,
-                                 workers=min(self.workers, max(1, len(jobs))), control=control,
-                                 cancelled=self.cancelled, on_completed=lambda: None,
-                                 thread_name='pc-subject-search')
+        try:
+            parallel_calls.run_items(((i, (item, request)) for i, item, request in pending),
+                                     start_item=start, provider=self.provider,
+                                     workers=min(self.workers, max(1, len(pending))), control=control,
+                                     cancelled=self.cancelled, on_completed=lambda: None,
+                                     thread_name='pc-subject-search')
+        finally:
+            for _, item, _ in pending:
+                item.close()
         if self.cancelled() or len(answers) != len(jobs):
             raise RuntimeError('subject search cancelled')
         return [answers[i] for i in range(len(jobs))]

@@ -108,3 +108,18 @@ def test_catalog_shows_opus_55_as_a_version():
     assert model_display("claude-opus-5-5") == "Claude Opus 5.5"
     assert model_display("claude-opus-5") == "Claude Opus 5"
     assert model_display("gpt-6-astra") == "GPT-6 Astra"
+    assert model_display("gpt-6.1-sol") == "GPT-6.1 Sol"
+
+
+def test_sol61_profile_uses_codex_without_changing_the_default(choices, monkeypatch):
+    monkeypatch.setenv('PROJECT_COMPARISON_V3_MODEL_CHOICES', 'astra,sol61,opus55')
+    with contracts.use_profile(contracts.resolve_profile('sol61')):
+        prov = provenance.build_provenance()
+        chosen = provider.get_provider()
+        assert transport.provider_transport_version() == transport.CODEX_TRANSPORT_VERSION
+    assert prov['model'] == 'gpt-6.1-sol'
+    assert prov['model_profile'] == 'sol61'
+    assert prov['reasoning'] == 'xhigh'
+    assert isinstance(chosen, provider.CodexProvider)
+    assert chosen.model == 'gpt-6.1-sol'
+    assert contracts.resolve_profile(None).key == 'astra'

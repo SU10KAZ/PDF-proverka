@@ -82,7 +82,8 @@ ENGINE_NAME = "projectchange_v3"
 # 3.28.0: explicit experimental subject catalog/search mode with durable recovery.
 # 3.28.1: stricter catalog evidence, one bounded correction and checked v1 recovery.
 # 3.28.2: persist exact subject substage progress, including reused answers.
-ENGINE_VERSION = "3.28.2"
+# 3.29.0: explicit subject-search model handoff; add the Sol 6.1 profile.
+ENGINE_VERSION = "3.29.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /3: MD is the complete text source; TEXT is authoritative, no raw PDF transcript.
 # New prompts/source identity intentionally prevent mixing old-policy checkpoints.
@@ -121,6 +122,8 @@ class ModelProfile:
 MODEL_PROFILES: dict[str, ModelProfile] = {
     "astra": ModelProfile("astra", "Astra 6 (gpt-6-astra)", "codex", "codex_cli_subscription",
                           "gpt-6-astra", "ProjectChange V3 / Astra"),
+    "sol61": ModelProfile("sol61", "Sol 6.1 (gpt-6.1-sol)", "codex", "codex_cli_subscription",
+                          "gpt-6.1-sol", "ProjectChange V3 / Sol 6.1"),
     "opus55": ModelProfile("opus55", "Opus 5.5 (claude-opus-5-5)", "claude", "claude_code_cli_subscription",
                            "claude-opus-5-5", "ProjectChange V3 / Opus 5.5"),
     # The pre-3.9 Claude default; kept so PROVIDER=claude behaves exactly as before.

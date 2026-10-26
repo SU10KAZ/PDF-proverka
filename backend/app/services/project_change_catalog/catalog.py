@@ -104,7 +104,7 @@ def model_display(model: str | None) -> str:
             return raw
         if part.lower() == "gpt":
             words.append("GPT")
-        elif part.isdigit() and words and words[-1] == "GPT":
+        elif re.fullmatch(r'\d+(\.\d+)*', part) and words and words[-1] == "GPT":
             words[-1] = f"GPT-{part}"
         elif part.isdigit() and words and re.fullmatch(r"\d+(\.\d+)*", words[-1]):
             words[-1] = f"{words[-1]}.{part}"  # номер версии: 5-5 → 5.5

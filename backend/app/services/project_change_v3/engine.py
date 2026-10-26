@@ -855,20 +855,39 @@ def _run_admitted(
 
     # 3.11.0: resume a FAILED run from its saved map, Miner and unmatched answers.
     donor: resume_mod.Donor | None = None
+    from .contracts import MODEL_PROFILES, active_profile
     from . import comparison_mode, subject_search, run_storage
     subjects_mode = comparison_mode.current() == comparison_mode.SUBJECTS
     subject_checkpoint = None
+    subject_donor_profile = None
     subject_ledger = None
     if resume_from_run_id and subjects_mode:
         prior = run_storage.read(run_storage.run_dir(session_id, pair_id, resume_from_run_id) / 'state.json') or {}
         if subject_search.recoverable_search_state(prior):
             try:
-                if resume_model_policy != 'same_model':
-                    raise ValueError('subject search recovery requires the same model')
                 subject_checkpoint, prior = subject_search.load_checkpoint(session_id, pair_id, resume_from_run_id)
+                prior_provenance = prior.get('provenance') or {}
+                subject_donor_profile = MODEL_PROFILES.get(prior_provenance.get('model_profile'))
+                if (subject_donor_profile is None or
+                        (subject_donor_profile.provider, subject_donor_profile.model, REASONING) !=
+                        (prior_provenance.get('provider'), prior_provenance.get('model'), prior_provenance.get('reasoning'))):
+                    raise ValueError('subject donor model identity changed')
                 provenance['subject_recovery'] = {'run_id': resume_from_run_id,
-                    'prior_usage_total': (prior.get('provenance') or {}).get('usage_total'),
+                    'prior_usage_total': prior_provenance.get('usage_total'),
+                    'source_model': resume_mod.model_identity(prior_provenance),
                     'accepted_requests': len(subject_checkpoint['entries'])}
+                if resume_model_policy == 'remaining_stages' and subject_donor_profile != active_profile():
+                    provenance['model_handoff'] = {
+                        'policy': resume_model_policy, 'donor_run_id': resume_from_run_id,
+                        'reused_stages': ['SUBJECT_SEARCH_PARTIAL'],
+                        'remaining_stages': ['MAPPING', 'MINING', 'UNMATCHED_REVIEW', 'DEDUPE', 'SOURCE_VERIFICATION'],
+                        'source_model': resume_mod.model_identity(prior_provenance),
+                        'remaining_model': resume_mod.model_identity(provenance)}
+                    provenance['engine_variant'] = (
+                        f"ProjectChange V3 / {subject_donor_profile.model} → {active_profile().model} (досборка)")
+                elif prior_provenance.get('model_handoff'):
+                    provenance['model_handoff'] = prior_provenance['model_handoff']
+                    provenance['engine_variant'] = prior_provenance['engine_variant']
             except Exception as exc:
                 raise fail('resume_refused', f'Не удалось восстановить поиск по предметам: {exc}', exc) from exc
     if resume_from_run_id and subject_checkpoint is None:
@@ -1033,11 +1052,14 @@ def _run_admitted(
                 pair_id=pair_id, run_id=run_id, structure=structure, work_dir=work_dir,
                 source_manifest=prepared['manifest'], profile=active_profile(), provider=provider,
                 on_outcome=subject_outcome, workers=mapper_workers,
-                save=subject_save, progress=progress, cancelled=cancelled, donor_checkpoint=subject_checkpoint)
+                save=subject_save, progress=progress, cancelled=cancelled, donor_checkpoint=subject_checkpoint,
+                donor_profile=subject_donor_profile, resume_model_policy=resume_model_policy)
             semantic_map, subject_ledger = search.run()
             provenance['subject_search'] = subject_ledger['summary']
             provenance['mapper_plan'] = {'mode': 'subjects', 'coverage_contract': 'candidate_search',
                                          'complete': True, **subject_ledger['summary']}
+        except subject_search.SubjectRecoveryError as exc:
+            raise fail('resume_refused', f'Не удалось восстановить поиск по предметам: {exc}', exc) from exc
         except ProviderError as exc:
             raise provider_failure('поиск по предметам', exc) from exc
         except _V3Failure:

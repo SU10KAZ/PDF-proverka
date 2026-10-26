@@ -73,6 +73,11 @@ def mismatched_calls(calls: list[dict[str, Any]], provenance: dict[str, Any],
     originals = {receipt_key(call): call for call in donor.provenance.get("transport_calls") or []} if donor else {}
     handoff = provenance.get("model_handoff") or {}
     allowed = POST_MAPPING_STAGES if handoff.get("reused_stages") == ["MAPPING"] else TAIL_STAGES
+    if (provenance.get('comparison_mode') == 'subjects' and
+            handoff.get('reused_stages') == ['SUBJECT_SEARCH_PARTIAL']):
+        # Cached subject answers retain their original receipts in the checkpoint;
+        # this run's transport_calls contain only its own model's new requests.
+        allowed = POST_MAPPING_STAGES | {'MAPPING'}
     for call in calls:
         imported = call.get("resumed_from_run_id")
         original = originals.get(receipt_key(call)) if imported else None
@@ -529,7 +534,7 @@ def resume_options(session_id: str, pair_id: str, run_id: str) -> dict[str, Any]
     from .subject_search import load_checkpoint, recoverable_search_state
     if recoverable_search_state(state):
         checkpoint, state = load_checkpoint(session_id, pair_id, run_id)
-        return {'comparison_mode': 'subjects', 'mode': 'subject_search', 'can_switch_model': False,
+        return {'comparison_mode': 'subjects', 'mode': 'subject_search', 'can_switch_model': True,
                 'model_profile': state['provenance']['model_profile'], 'saved_regions': len(checkpoint['entries']),
                 'planned_new_calls': None, 'max_new_miner_calls': max_new_calls()}
 

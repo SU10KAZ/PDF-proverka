@@ -154,6 +154,114 @@ def test_stopped_catalog_resumes_without_repeating_accepted_call(env, monkeypatc
     assert artifact(env, stopped, ss.CHECKPOINT)['entries'][0]['accepted']
 
 
+def test_subject_handoff_reuses_astra_catalog_and_only_calls_sol_for_missing_work(env, monkeypatch):
+    from backend.app.services.project_change_v3 import contracts, resume
+    monkeypatch.setenv('PROJECT_COMPARISON_V3_MODEL_CHOICES', 'astra,sol61')
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
+
+    class Receipted(SubjectFake):
+        def complete(self, **request):
+            profile = contracts.active_profile()
+            self.last_transport = {'provider': profile.provider, 'model': profile.model,
+                                   'reasoning': contracts.REASONING}
+            return super().complete(**request)
+
+    set_test_provider(Receipted(handlers=handlers(fail_phase='catalog_new')))
+    stopped = run(env, model_profile='astra')
+    assert stopped['reason_code'] == 'TEST_STOP'
+    directory = run_storage.run_dir(env['session_id'], gf.PAIR_ID, stopped['run_id'])
+    import hashlib
+    before = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in directory.iterdir() if p.is_file()}
+    assert resume.resume_options(env['session_id'], gf.PAIR_ID, stopped['run_id'])['can_switch_model']
+
+    # A second stop on Sol exercises normal same-model recovery after a handoff.
+    fake = Receipted(handlers=handlers(fail_phase='catalog_new'))
+    set_test_provider(fake)
+    halfway = run(env, model_profile='sol61', resume_from_run_id=stopped['run_id'],
+                  resume_model_policy='remaining_stages')
+    assert halfway['reason_code'] == 'TEST_STOP', halfway
+    cached = artifact(env, halfway, ss.CHECKPOINT)['entries']
+    assert len(cached) == 1 and cached[0]['transport_receipt']['model'] == 'gpt-6-astra'
+    assert cached[0]['reused_from_key'] == artifact(env, stopped, ss.CHECKPOINT)['entries'][0]['key']
+    assert all(c['data']['pages'][0]['side'] == 'NEW' for c in fake.calls)
+
+    fake = Receipted(handlers=handlers())
+    set_test_provider(fake)
+    completed = run(env, model_profile='sol61', resume_from_run_id=halfway['run_id'])
+    assert completed['reason_code'] == 'v3_completed', completed
+    catalogs = [c for c in fake.calls if c['prompt'] == sc.CATALOG_PROMPT]
+    assert len(catalogs) == 1 and catalogs[0]['data']['pages'][0]['side'] == 'NEW'
+    prov = completed['provenance']
+    assert prov['model'] == 'gpt-6.1-sol'
+    assert prov['model_handoff']['source_model']['model'] == 'gpt-6-astra'
+    assert prov['subject_search']['reused_requests'] == 1
+    assert all(c['model'] == 'gpt-6.1-sol' for c in prov['transport_calls'])
+    entries = artifact(env, completed, ss.CHECKPOINT)['entries']
+    assert {e['transport_receipt']['model'] for e in entries} == {'gpt-6-astra', 'gpt-6.1-sol'}
+    assert before == {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in directory.iterdir() if p.is_file()}
+
+
+@pytest.mark.parametrize('mutation', ['text', 'reasoning', 'receipt_model'])
+def test_subject_handoff_rejects_changed_sources_or_donor_identity(env, monkeypatch, mutation):
+    monkeypatch.setenv('PROJECT_COMPARISON_V3_MODEL_CHOICES', 'astra,sol61')
+    set_test_provider(SubjectFake(handlers=handlers(fail_phase='catalog_new')))
+    stopped = run(env, model_profile='astra')
+    if mutation == 'text':
+        path = Path(env['left']['pdf_path']).with_suffix('.md')
+        path.write_text(path.read_text() + '\nChanged authoritative MD\n')
+    else:
+        path = run_storage.run_dir(env['session_id'], gf.PAIR_ID, stopped['run_id']) / 'state.json'
+        saved = run_storage.read(path)
+        saved['provenance']['reasoning' if mutation == 'reasoning' else 'model'] = 'forged'
+        run_storage.atomic(path, saved)
+    fake = SubjectFake(handlers=handlers())
+    set_test_provider(fake)
+    state = run(env, model_profile='sol61', resume_from_run_id=stopped['run_id'],
+                resume_model_policy='remaining_stages')
+    assert state['reason_code'] == 'resume_refused', state
+    assert not fake.calls
+
+
+def test_handoff_saves_later_cached_packet_before_a_new_request_can_fail(env, monkeypatch):
+    import threading
+    monkeypatch.setenv('PROJECT_COMPARISON_V3_MODEL_CHOICES', 'astra,sol61')
+    monkeypatch.setenv('PROJECT_COMPARISON_V3_MAPPER_CONCURRENCY', '2')
+    base = handlers()
+    original = base['MAPPING']
+    new_finished = threading.Event()
+
+    def stop_old(**request):
+        if request['prompt'] == sc.CATALOG_PROMPT:
+            if request['data']['pages'][0]['side'] == 'OLD':
+                assert new_finished.wait(5)
+                raise ProviderError('TEST_STOP', 'stop OLD after NEW finishes')
+            answer = original(**request)
+            new_finished.set()
+            return answer
+        return original(**request)
+
+    base['MAPPING'] = stop_old
+    set_test_provider(SubjectFake(handlers=base))
+    stopped = run(env, model_profile='astra')
+    assert stopped['reason_code'] == 'TEST_STOP'
+    assert len(artifact(env, stopped, ss.CHECKPOINT)['entries']) == 1
+
+    def fail_old(**request):
+        assert request['data']['pages'][0]['side'] == 'OLD'
+        saved = run_storage.read(run_storage.active_dir(env['session_id'], gf.PAIR_ID) /
+                                (ss.CHECKPOINT + '.json'))
+        assert len(saved['entries']) == 1  # NEW was replayed before OLD was admitted.
+        raise ProviderError('TEST_STOP', 'stop new Sol request')
+
+    fake = SubjectFake(handlers={**handlers(), 'MAPPING': fail_old})
+    set_test_provider(fake)
+    stopped_again = run(env, model_profile='sol61', resume_from_run_id=stopped['run_id'],
+                        resume_model_policy='remaining_stages')
+    assert stopped_again['reason_code'] == 'TEST_STOP', stopped_again
+    assert len(fake.calls) == 1
+    assert len(artifact(env, stopped_again, ss.CHECKPOINT)['entries']) == 1
+
+
 @pytest.mark.parametrize('mutation', ['text', 'checkpoint', 'model', 'mode'])
 def test_recovery_refuses_incompatible_inputs_before_inference(env, monkeypatch, mutation):
     set_test_provider(SubjectFake(handlers=handlers(fail_phase='catalog_new')))
