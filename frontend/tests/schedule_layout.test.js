@@ -39,4 +39,10 @@ describe('компоновка графика работ', () => {
         expect(reserveScript).not.toContain('Остаток:');
         expect(reserveScript).not.toContain('/ раб. день');
     });
+
+    it('рисует выбор объекта единым полем без вложенной рамки кнопки', () => {
+        expect(reserveStyles).toContain('.rc-object-picker{position:relative;display:flex;height:34px;margin-top:6px;border:1px');
+        expect(reserveStyles).toContain('.rc-object-picker__toggle{position:static;flex:0 0 38px;');
+        expect(reserveStyles).toContain('border:0;border-left:1px solid #cbd5e1');
+    });
 });
