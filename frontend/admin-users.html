@@ -13,7 +13,7 @@
         header { display:flex; align-items:center; gap:16px; padding:14px 24px; border-bottom:1px solid var(--border); }
         header a { color:var(--teal); text-decoration:none; }
         h1 { font-size:18px; margin:0; font-weight:600; }
-        main { padding:20px 24px; max-width:1300px; }
+        main { padding:20px 24px; max-width:1550px; }
         .tabs { display:flex; gap:8px; margin-bottom:16px; }
         .tabs button { background:var(--card2); color:var(--text); border:1px solid var(--border); border-radius:8px;
                        padding:8px 14px; cursor:pointer; font:inherit; }
@@ -38,6 +38,27 @@
         .banner.err { display:block; background:rgba(229,72,77,0.12); border:1px solid rgba(229,72,77,0.35); color:#ff8a8e; }
         .banner.ok { display:block; background:rgba(0,194,184,0.12); border:1px solid rgba(0,194,184,0.35); }
         .secret { font-family:'JetBrains Mono',monospace; font-size:15px; padding:4px 8px; background:var(--card2); border-radius:6px; }
+        .accounts-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(330px,410px); gap:18px; align-items:start; }
+        .accounts-table-wrap { overflow-x:auto; }
+        .accounts-list { min-width:600px; }
+        .accounts-list td { vertical-align:middle; }
+        .accounts-list tbody tr { cursor:pointer; }
+        .accounts-list tbody tr:hover { background:var(--card2); }
+        .accounts-list tbody tr.selected { background:rgba(0,194,184,0.10); box-shadow:inset 3px 0 var(--teal); }
+        .account-select { border:0; padding:0; background:none; color:var(--text); font:inherit; font-weight:600; cursor:pointer; text-align:left; }
+        .account-select:focus-visible { outline:2px solid var(--teal); outline-offset:4px; border-radius:2px; }
+        .upload-permission { display:flex; align-items:center; gap:5px; font-size:12px; white-space:nowrap; cursor:pointer; }
+        input[type=checkbox] { accent-color:var(--teal); }
+        .account-details { border:1px solid var(--border); border-radius:10px; padding:18px; background:var(--card); position:sticky; top:16px; }
+        .account-details h2 { font-size:18px; margin:0 0 8px; overflow-wrap:anywhere; }
+        .account-details h3 { font-size:14px; margin:20px 0 10px; }
+        .account-details p { margin:6px 0 14px; }
+        .detail-field { display:flex; flex-direction:column; gap:6px; margin:14px 0; color:var(--text2); font-size:12px; }
+        .detail-field select { width:100%; color:var(--text); padding:7px; }
+        .account-details .matrix td { padding:7px 4px; }
+        .account-details .matrix + button { margin-top:10px; }
+        @media (max-width:1100px) { .accounts-layout { grid-template-columns:1fr; } .account-details { position:static; } }
+        @media (max-width:600px) { main { padding:16px 10px; } header { padding:14px 10px; flex-wrap:wrap; } }
     </style>
 </head>
 <body>

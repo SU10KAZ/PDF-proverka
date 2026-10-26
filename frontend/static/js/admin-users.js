@@ -8,6 +8,7 @@
     var H = { 'Content-Type': 'application/json', 'X-Requested-With': 'AuditManager' };
     var meta = { sections: [], staff: [], me: null };
     var accounts = [];
+    var selectedAccountId = null;
 
     function el(tag, attrs, children) {
         var node = document.createElement(tag);
@@ -103,7 +104,7 @@
 
     function roleSelect(acc) {
         var sel = el('select', {});
-        [['viewer', 'просмотр'], ['admin', 'администратор']].forEach(function (r) {
+        [['viewer', 'сотрудник'], ['admin', 'администратор']].forEach(function (r) {
             var o = el('option', { value: r[0], text: r[1] });
             if (acc.role === r[0]) o.selected = true;
             sel.appendChild(o);
@@ -189,29 +190,85 @@
         root.appendChild(table);
     }
 
+    function uploadPermission(acc) {
+        var cb = el('input', { type: 'checkbox', 'aria-label': 'Загрузка проектов: ' + acc.login });
+        cb.checked = acc.role === 'admin' || !!acc.upload_projects;
+        var hasAudit = !!(acc.sections && acc.sections.audit_results && acc.sections.audit_results.view);
+        cb.disabled = acc.role === 'admin' || acc.status !== 'active' || !hasAudit;
+        var title = acc.role === 'admin' ? 'Администратору загрузка доступна всегда'
+            : !hasAudit ? 'Сначала включите просмотр результатов аудита в настройках пользователя'
+            : 'Разрешить загрузку проектов и новых версий с компьютера';
+        cb.onchange = function () {
+            var allowed = cb.checked;
+            cb.disabled = true;
+            api('PUT', '/accounts/' + acc.id + '/upload-projects', { upload_projects: allowed })
+                .then(function () {
+                    banner(allowed ? 'Загрузка проектов разрешена: ' + acc.login : 'Загрузка проектов запрещена: ' + acc.login, 'ok');
+                    return reload();
+                }).catch(function (e) {
+                    cb.checked = !allowed;
+                    cb.disabled = false;
+                    banner(e.message, 'err');
+                });
+        };
+        return el('label', { 'class': 'upload-permission', title: title, onclick: function (event) {
+            event.stopPropagation();
+        } }, [cb, document.createTextNode(acc.role === 'admin' ? ' всегда' : ' разрешить')]);
+    }
+
+    function accountDetails(acc) {
+        var detail = el('aside', { 'class': 'account-details', id: 'account-details', 'aria-label': 'Настройки пользователя' });
+        if (!acc) {
+            detail.appendChild(el('p', { 'class': 'muted', text: 'Нажмите на пользователя, чтобы выбрать разделы и изменить его настройки.' }));
+            return detail;
+        }
+        detail.appendChild(el('h2', { text: acc.login + (acc.id === meta.me ? ' (вы)' : '') }));
+        if (acc.display_name !== acc.login) detail.appendChild(el('p', { text: acc.display_name }));
+        detail.appendChild(el('p', { 'class': 'muted', text: 'Последний вход: ' + ((acc.last_login_at || '—').replace('T', ' ').replace('Z', ' UTC')) }));
+        if (acc.must_change_password) detail.appendChild(el('p', { 'class': 'muted', text: 'Ожидает смены временного пароля' }));
+        if (acc.status_reason) detail.appendChild(el('p', { 'class': 'muted', text: acc.status_reason }));
+        detail.appendChild(el('label', { 'class': 'detail-field' }, [el('span', { text: 'Роль' }), roleSelect(acc)]));
+        detail.appendChild(el('label', { 'class': 'detail-field' }, [el('span', { text: 'Сотрудник (авторство решений)' }), staffSelect(acc)]));
+        detail.appendChild(el('h3', { text: 'Доступные разделы' }));
+        detail.appendChild(acc.role === 'admin'
+            ? el('p', { 'class': 'muted', text: 'Администратору доступны все разделы и загрузка проектов.' })
+            : sectionsMatrix(acc));
+        detail.appendChild(el('h3', { text: 'Действия' }));
+        detail.appendChild(actions(acc));
+        return detail;
+    }
+
     function renderAccounts() {
         var root = document.getElementById('tab-accounts');
         root.textContent = '';
-        var table = el('table', {}, [el('tr', {}, ['Логин / ФИО', 'Статус', 'Роль', 'Сотрудник (авторство решений)', 'Разделы', 'Действия'].map(function (h) {
+        var table = el('table', { 'class': 'accounts-list' }, [el('thead', {}, [el('tr', {}, ['Пользователь', 'Статус', 'Роль', 'Разделы', 'Загрузка проектов'].map(function (h) {
             return el('th', { text: h });
-        }))]);
+        }))])]);
+        var body = el('tbody', {});
         accounts.filter(function (a) { return a.status !== 'pending'; }).forEach(function (a) {
+            function select() {
+                selectedAccountId = a.id;
+                renderAccounts();
+            }
             var who = el('div', {}, [
-                el('div', { text: a.login + (a.id === meta.me ? ' (вы)' : '') }),
-                el('div', { 'class': 'muted', text: a.display_name }),
-                el('div', { 'class': 'muted', text: 'последний вход: ' + ((a.last_login_at || '—').replace('T', ' ').replace('Z', '')) }),
+                el('button', { 'class': 'account-select', text: a.login + (a.id === meta.me ? ' (вы)' : ''),
+                    'aria-controls': 'account-details', 'aria-expanded': String(selectedAccountId === a.id),
+                    onclick: function (event) { event.stopPropagation(); select(); } }),
+                a.display_name !== a.login ? el('div', { 'class': 'muted', text: a.display_name }) : null,
             ]);
-            var status = el('div', {}, [statusBadge(a.status)]);
-            if (a.must_change_password) status.appendChild(el('div', { 'class': 'muted', text: 'ждёт смены пароля' }));
-            if (a.status_reason) status.appendChild(el('div', { 'class': 'muted', text: a.status_reason }));
-            table.appendChild(el('tr', {}, [
-                el('td', {}, [who]), el('td', {}, [status]), el('td', {}, [roleSelect(a)]),
-                el('td', {}, [staffSelect(a)]),
-                el('td', {}, [a.role === 'admin' ? el('span', { 'class': 'muted', text: 'администратору доступно всё' }) : sectionsMatrix(a)]),
-                el('td', {}, [actions(a)]),
+            var count = meta.sections.filter(function (sec) { return a.sections && a.sections[sec.code] && a.sections[sec.code].view; }).length;
+            body.appendChild(el('tr', { 'class': selectedAccountId === a.id ? 'selected' : '', onclick: select }, [
+                el('td', {}, [who]), el('td', {}, [statusBadge(a.status)]),
+                el('td', { text: a.role === 'admin' ? 'администратор' : 'сотрудник' }),
+                el('td', { text: a.role === 'admin' ? 'все' : count + ' из ' + meta.sections.length }),
+                el('td', {}, [uploadPermission(a)]),
             ]));
         });
-        root.appendChild(table);
+        table.appendChild(body);
+        var selected = accounts.find(function (a) { return a.id === selectedAccountId && a.status !== 'pending'; });
+        root.appendChild(el('div', { 'class': 'accounts-layout' }, [
+            el('div', { 'class': 'accounts-table-wrap' }, [table]), accountDetails(selected),
+        ]));
     }
 
     function renderEvents() {
