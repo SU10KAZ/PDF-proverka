@@ -2585,6 +2585,7 @@ const app = createApp({
                 fetchPrepareQueue();   // подгрузить prepare-data queue
                 refreshProjects();  // для списка добавления
             } else if (hash === '/schedule') {
+                schedTab.value = new URLSearchParams(qIdx >= 0 ? rawHash.slice(qIdx + 1) : '').get('tab') === 'reserve' ? 'reserve' : 'completed';
                 currentView.value = 'schedule';
                 connectGlobalWS();
                 loadUsers();   // для admin-гейта кнопки «Изменить план»
@@ -11747,6 +11748,15 @@ const app = createApp({
         const _SCHED_DEFAULT_PLAN = { week: 5, month: 20 };
 
         // ── date helpers (всё локально, без зависимостей) ──
+        const schedTab = ref('completed');
+        function schedSelectTab(tab) {
+            navigate(tab === 'reserve' ? '/schedule?tab=reserve' : '/schedule');
+        }
+        async function reserveOpenProject(task) {
+            if (!task || !task.project_id || !task.version_id) return;
+            if (task.object_id && task.object_id !== currentObjectId.value) await switchObject(task.object_id);
+            navigate('/project/' + encodeURIComponent(task.project_id) + '/findings?version_id=' + encodeURIComponent(task.version_id));
+        }
         function _schedStartOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
         function _schedKey(d) {
             const x = new Date(d);
@@ -20725,6 +20735,7 @@ const app = createApp({
             usersAuthEnabled, usersLoggedInUsername, usersLoggedInMatched,
             loadUsers, currentUserName,
             // График производства работ (API /api/schedule + dev mock fallback)
+            schedTab, schedSelectTab, reserveOpenProject,
             schedMode, schedAnchor, schedPopover, schedFiltersOpen,
             schedHiddenEngineers, schedPlanEdit, schedEngineers,
             schedEvents, schedVisibleEngineers, schedDays, schedPeriodLabel,
@@ -21256,6 +21267,7 @@ const app = createApp({
     }
 });
 
+window.ReserveCalendar.register(app);
 window.DistributedFeature.registerComponents(app);
 window.ProjectChangeUI.register(app);
 if (window.ProjectChangeConsolidation) window.ProjectChangeConsolidation.register(app);

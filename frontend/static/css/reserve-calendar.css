@@ -1,0 +1,100 @@
+.sched-reserve-tabs{display:flex;gap:24px;border-bottom:1px solid #dce3ed;margin-bottom:18px}
+.sched-reserve-tabs button{border:0;border-bottom:3px solid transparent;background:none;color:#64758b;font:600 14px inherit;padding:12px 0;cursor:pointer}
+.sched-reserve-tabs button[aria-selected=true]{color:#008e83;border-bottom-color:#008e83}
+.reserve-calendar{color-scheme:only light;--rc-ink:#14243c;--rc-muted:#64758b;--rc-line:#dce3ed;--rc-tint:#e1f5f2;color:var(--rc-ink);background:#f1f4f8;border:1px solid var(--rc-line);border-radius:12px;padding:20px;font:14px/1.45 Arial,sans-serif;isolation:isolate}
+.reserve-calendar *{box-sizing:border-box}
+.reserve-calendar button{font:inherit;color:var(--rc-ink);border:1px solid var(--rc-line);border-radius:6px;background:#fff;padding:7px 11px;cursor:pointer;white-space:normal}
+.reserve-calendar button:disabled{opacity:.5;cursor:default}
+.reserve-calendar button:focus-visible,.reserve-calendar textarea:focus-visible,.reserve-calendar select:focus-visible,.reserve-calendar input:focus-visible{outline:2px solid #008e83;outline-offset:3px}
+.reserve-calendar h2{font-size:21px;margin:0 0 5px;color:var(--rc-ink)}
+.reserve-calendar h3{font-size:20px;margin:0 0 6px;color:var(--rc-ink);overflow-wrap:anywhere}
+.rc-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}
+.rc-heading p,.rc-muted{color:var(--rc-muted);font-size:12px;margin:0}
+.rc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px}
+.rc-kpi{background:#fff;border:1px solid var(--rc-line);border-radius:9px;padding:13px;min-width:0;font-size:12px}
+.rc-kpi-head{display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:600;font-size:14px;margin-bottom:8px}
+.rc-kpi-head span{font-size:11px;font-weight:400;color:var(--rc-muted)}
+.rc-kpi>strong{font-size:26px;line-height:1.1;margin-right:6px;font-variant-numeric:tabular-nums}
+.rc-kpi footer{margin-top:10px;padding-top:8px;border-top:1px solid var(--rc-line);color:var(--rc-muted)}
+.rc-kpi small{display:block;font-size:11px;margin-top:3px}
+.rc-toolbar,.rc-period,.rc-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.rc-toolbar{margin:17px 0 12px;font-size:13px}
+.rc-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rc-actions button{font-size:12px}
+.reserve-calendar .rc-primary-outline{color:#006e63;border-color:#a5d9d1}
+.reserve-calendar .rc-primary{background:#008e83;border-color:#008e83;color:#fff;font-weight:600}
+.rc-legend{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;color:var(--rc-muted);font-size:11px;margin-bottom:12px}
+.rc-legend>span{display:inline-flex;align-items:center;gap:6px}
+.rc-swatch{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--rc-color,#8090a5);flex-shrink:0}
+.rc-swatch.pending{background:transparent;border:1.5px dashed var(--rc-color,#8090a5)}
+.rc-swatch.running{box-shadow:0 0 0 1px #fff,0 0 0 2px #14243c}
+.rc-period{font-size:12px;color:var(--rc-muted)}
+.rc-help{font-size:12px;color:var(--rc-muted);margin:10px 0}
+.rc-selection{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0;font-size:12px}
+.rc-selection>span{margin-right:auto}
+.rc-selection button{font-size:12px;padding:5px 8px;color:#006e63}
+.rc-scroll{overflow:auto;max-width:100%;max-height:65vh;border:1px solid var(--rc-line);border-radius:8px;background:#fff}
+.rc-grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:100%;min-width:1340px;color:var(--rc-ink);background:#fff;font-size:11px}
+.rc-grid col{width:46px}
+.rc-grid col.rc-name-col{width:225px}
+.rc-grid col.rc-off-col{width:8px}
+.rc-grid col.rc-unscheduled-col{width:135px}
+.rc-grid th,.rc-grid td{padding:0;border-bottom:1px solid var(--rc-line);border-right:1px solid var(--rc-line);vertical-align:middle}
+.rc-grid thead th{height:42px;background:#f7f9fc;text-align:center;position:sticky;top:0;z-index:3;font-weight:500}
+.rc-grid th small{display:block;color:var(--rc-muted);font-weight:400;font-size:11px;margin-top:3px}
+.rc-grid .rc-name{text-align:left;padding:9px!important;background:#fff;position:sticky;left:0;z-index:2;font-weight:500}
+.rc-grid thead .rc-name{background:#f7f9fc;z-index:4}
+.rc-grid .rc-today{background:#eaf8f5}
+.rc-grid .rc-off{background:#fcf1f7}
+.rc-grid .rc-band th{height:27px;padding:5px 10px;background:#f7f9fc;text-align:left;color:var(--rc-muted);font-weight:600}
+.rc-grid .rc-band small{display:inline;margin-left:10px;font-weight:400}
+.rc-person{display:flex;align-items:flex-start;gap:7px}
+.rc-avatar{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:var(--rc-tint);color:#008e83;font-size:10px;flex-shrink:0}
+.rc-cell{height:68px;position:relative}
+.rc-dots{min-height:68px;padding:10px 3px 17px;display:flex;align-items:center;align-content:center;justify-content:center;flex-wrap:wrap;gap:3px}
+.reserve-calendar button.rc-point{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:0 0 16px;width:16px;height:18px;padding:0;background:transparent;border:0;border-radius:2px}
+.rc-point:hover{outline:2px solid #14243c;outline-offset:1px}
+.rc-point[aria-pressed=true]{outline:2px solid #006e63;outline-offset:1px;background:var(--rc-tint)!important}
+.rc-point[draggable=true]{cursor:grab}
+.rc-point.rc-dragging{opacity:.35}
+.rc-point.rc-insert-before:before,.rc-point.rc-insert-after:after{content:"";position:absolute;top:-4px;bottom:-4px;width:3px;border-radius:2px;background:#006e63;z-index:3}
+.rc-point.rc-insert-before:before{left:-4px}.rc-point.rc-insert-after:after{right:-4px}
+.rc-count{position:absolute;bottom:2px;right:4px;color:var(--rc-muted);font-size:10px;pointer-events:none}
+.rc-grid .rc-drop-row .rc-name{background:var(--rc-tint);box-shadow:inset 3px 0 #008e83}
+.reserve-calendar .rc-assign{font-size:11px;margin:7px 0 0 32px;padding:4px 7px;color:#006e63;background:var(--rc-tint);border-color:#a5d9d1}
+.rc-summary{font-size:11px;color:var(--rc-muted);margin-top:9px}
+.rc-footnote{font-size:11px;color:var(--rc-muted);margin:12px 0}
+.rc-status{display:flex;align-items:center;gap:12px;justify-content:space-between;color:#006e63;font-size:12px;min-height:30px}
+.rc-status button{font-size:12px;color:#006e63}
+.rc-error{background:#fff1f2;color:#a92f41;border:1px solid #efbcc3;border-radius:6px;padding:10px;margin:10px 0;font-size:13px;overflow-wrap:anywhere}
+.rc-error button{font-size:12px;margin:4px}
+.rc-empty{padding:30px;text-align:center;color:var(--rc-muted)}
+.rc-tooltip{position:fixed;z-index:10000;max-width:min(480px,calc(100vw - 16px));max-height:50vh;overflow:auto;padding:12px 14px;background:#fff;border:1px solid #b9c7d8;border-radius:8px;box-shadow:0 5px 24px #14243c26;color:var(--rc-ink);white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;pointer-events:none}
+.reserve-calendar .rc-dialog{color-scheme:only light;width:880px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 40px);margin:auto;padding:0;border:1px solid var(--rc-line);border-radius:12px;color:var(--rc-ink);background:#fff;box-shadow:0 15px 50px #14243c2e;font:14px/1.45 Arial,sans-serif;overflow:auto}
+.rc-dialog[open]{display:flex;flex-direction:column}
+.rc-dialog::backdrop{background:#14243c61}
+.rc-dialog>header{display:flex;flex-shrink:0;justify-content:space-between;align-items:flex-start;gap:14px;padding:20px 22px 16px;border-bottom:1px solid var(--rc-line)}
+.rc-dialog>header p{margin:0;color:var(--rc-muted);font-size:12px;line-height:1.5}
+.rc-dialog>header>button{flex:0 0 32px;width:32px;height:32px;padding:0;font-size:22px}
+.rc-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:18px 22px;overflow-y:auto;min-height:0}
+.rc-field{min-width:0;padding:12px;background:#f7f9fc;border:1px solid var(--rc-line);border-radius:8px}
+.rc-field.rc-invalid{border-color:#d25a67;background:#fff7f8}
+.rc-field label{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;font-weight:600;margin-bottom:3px;color:var(--rc-ink)}
+.rc-field label span{font-size:11px;font-weight:400;color:var(--rc-muted)}
+.rc-field p{font-size:11px;color:var(--rc-muted);margin:0 0 8px}
+.rc-field textarea{display:block;width:100%;min-width:0;min-height:90px;resize:vertical;padding:8px 9px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;color:var(--rc-ink);font:12px/1.5 Arial,sans-serif;white-space:pre-wrap;overflow-wrap:anywhere}
+.rc-field textarea[aria-invalid=true]{border-color:#c54959}
+.rc-field-foot{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:11px;color:var(--rc-muted)}
+.rc-field-foot b{color:#006e63}
+.rc-field-error{margin-top:6px;color:#a92f41;font-size:11px;overflow-wrap:anywhere}
+.rc-dialog>footer{padding:15px 22px;display:flex;flex-shrink:0;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid var(--rc-line);background:#fbfcfe;font-size:12px}
+.rc-dialog>.rc-error{margin:10px 22px}
+.reserve-calendar .rc-card-dialog{width:720px}
+.rc-card-body{padding:18px 22px;overflow-wrap:anywhere;overflow-y:auto;min-height:0}
+.rc-card-body label{display:block;margin:0 0 15px;font-size:13px}
+.rc-card-body input,.rc-card-body select{display:block;width:100%;padding:8px;margin-top:6px;background:#fff;border:1px solid #cbd5e1;border-radius:5px;color:var(--rc-ink);font:13px Arial,sans-serif}
+.rc-card-body p{font-size:13px;color:var(--rc-muted)}
+.reserve-review-start{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:12px;color:#008e83;flex-wrap:wrap}
+.reserve-review-start [role=alert]{color:#a92f41;max-width:420px}
+@media(max-width:740px){.reserve-calendar{padding:12px}.rc-cards{grid-template-columns:1fr}.rc-kpi{padding:11px}.rc-fields{grid-template-columns:1fr;padding:12px}.rc-dialog>header,.rc-dialog>footer{padding:14px}.rc-field textarea{font-size:16px}.rc-toolbar{align-items:flex-start}.rc-heading h2{font-size:18px}.rc-actions{gap:6px}.rc-tooltip{left:8px!important}.rc-card-body{padding:14px}}
+@media(pointer:coarse){.reserve-calendar button{min-height:44px}.reserve-calendar button.rc-point{width:36px;height:44px;flex-basis:36px}.rc-grid{min-width:2400px}.rc-dots{min-height:100px}}

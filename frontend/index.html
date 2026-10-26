@@ -23,6 +23,7 @@
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
     <link rel="stylesheet" href="/static/css/styles.css?v={{css_version}}">
     <link rel="stylesheet" href="/static/css/distributed.css?v={{css_version}}">
+    <link rel="stylesheet" href="/static/css/reserve-calendar.css?v={{js_version}}">
     <link rel="stylesheet" href="/static/css/project-change-ui.css?v={{js_version}}">
     <link rel="stylesheet" href="/static/css/stage-block-mapping.css?v={{js_version}}">
     <link rel="stylesheet" href="/static/css/version-comparison-ai.css?v={{js_version}}&ui=ai-report-2">
@@ -291,6 +292,7 @@
 
         <div v-if="isProjectView && currentProject"
              class="project-version-bar">
+            <reserve-review-start :project-id="currentProject.project_id" :version-id="activeVersionId || currentProject.version_id" :object-id="currentObjectId" :can-operate="canOperate"></reserve-review-start>
             <div class="project-version-switch" :title="'Активная версия проекта'">
                 <label class="project-version-switch__label">Версия:</label>
                 <select class="project-version-switch__select"
@@ -3187,10 +3189,18 @@
             </div>
         </div>
 
-        <!-- ═══ График производства работ (mock-данные) ═══ -->
+        <!-- ═══ График производства работ ═══ -->
         <div v-if="currentView === 'schedule'" class="container sched-page"
              @click="schedClosePopover(); schedFiltersOpen = false">
             <div class="kb-page">
+                <div class="sched-reserve-tabs" role="tablist" aria-label="Представление работ">
+                    <button id="sched-completed-tab" type="button" role="tab" :aria-selected="schedTab === 'completed'" aria-controls="sched-completed-panel" @click.stop="schedSelectTab('completed')">Выполнено</button>
+                    <button id="sched-reserve-tab" type="button" role="tab" :aria-selected="schedTab === 'reserve'" aria-controls="sched-reserve-panel" @click.stop="schedSelectTab('reserve')">Календарь запаса</button>
+                </div>
+                <div id="sched-reserve-panel" v-show="schedTab === 'reserve'" role="tabpanel" aria-labelledby="sched-reserve-tab">
+                    <reserve-calendar :active="schedTab === 'reserve'" @open-project="reserveOpenProject"></reserve-calendar>
+                </div>
+                <div id="sched-completed-panel" v-show="schedTab === 'completed'" role="tabpanel" aria-labelledby="sched-completed-tab">
                 <!-- Toolbar -->
                 <div class="kb-header sched-toolbar">
                     <div class="sched-titlewrap">
@@ -3502,6 +3512,7 @@
                         </table>
                     </div>
                 </div>
+                </div><!-- completed panel -->
             </div>
         </div>
 
@@ -8204,6 +8215,7 @@
     <script src="/static/js/version-comparison-batch.js?v={{js_version}}&ui=folder-batch-1"></script>
     <script src="/static/js/version-comparison-projects.js?v={{js_version}}&ui=projects-page-1"></script>
     <script src="/static/js/version-comparison.js?v={{js_version}}&ui=sheet-zoom-1"></script>
+    <script src="/static/js/reserve-calendar.js?v={{js_version}}"></script>
     <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>
 </html>
