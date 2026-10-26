@@ -3,6 +3,7 @@
  * Маршрутизация, состояние, API-вызовы, live-статус.
  */
 const { createApp, ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } = Vue;
+const BLOCK_CONTEXT_STAGE_UI_LABEL = 'Векторные графы блоков';
 
 // ─── Доступ к порталу (план доступа, 6.3) ───────────────────────────────
 // Чистые помощники без состояния Vue: их проверяет
@@ -20951,10 +20952,9 @@ const app = createApp({
             onProjectDragStart, onGroupDragOver, onGroupDragLeave, onProjectDropOnGroup,
             onGroupHeaderDragStart, onGroupHeaderDragEnd,
             // Usage (global dashboard)
-            globalUsage, showUsageDetails, sonnetPercent,
+            globalUsage, showUsageDetails,
             formatTokens, formatCost, formatDurationSec, refreshGlobalUsage, resetSessionCounter, clearUsageCounter,
             editUsagePercent, resetUsageOffsets,
-            usageCounters,
             // Usage (per-project)
             projectUsage, currentProjectUsage, usagePaidCost, usageFreeCost, pipelineTotalDuration, stageTokens, stageTokensFormatted, stageModel, stageDurationForProject, formatDuration,
             // Pipeline summary
