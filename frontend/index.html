@@ -3391,7 +3391,7 @@
                                             <div class="sched-daystack">
                                                 <div v-for="(it,i) in schedCell(e.id,d.key).slice(0,2)" :key="e.id+'|'+d.key+'|'+i"
                                                      class="sched-plashka" :title="it.full">
-                                                    <span class="sched-plashka__txt">{{ it.short }}</span>
+                                                    <span class="sched-plashka__txt">{{ schedCompactLabel(it.full || it.short) }}</span>
                                                 </div>
                                                 <button v-if="schedCell(e.id,d.key).length > 2" class="sched-more"
                                                         @click.stop="schedToggleCell(e.id, d.key, true, $event)"

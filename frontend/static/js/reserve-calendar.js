@@ -13,6 +13,10 @@
     const label = iso => iso ? new Date(iso + 'T12:00:00Z').toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', timeZone: 'UTC' }) : 'Без даты';
     const stateLabel = state => ({preparation: 'Ожидает подготовки', ready: 'Готов к проверке', in_progress: 'Проверка начата'}[state] || state);
     const normalizedVersion = value => /^v\d+$/i.test(value || '') ? 'v'+Number(String(value).slice(1)) : value;
+    const compactProject = value => {
+        const chars = Array.from(String(value || '').trim());
+        return chars.length > 4 ? chars.slice(0, 4).join('') + '..' : chars.join('');
+    };
     // randomUUID is unavailable on plain HTTP origins. The staging server is
     // intentionally reachable over HTTP, so create a standards-shaped v4 UUID
     // without depending on a secure browser context.
@@ -332,7 +336,7 @@
                 canEdit, locked, activeEngineers, selectedTasks, draftErrors, draftItems, draftEngineerCount, grouped, days, columns, available,
                 objectOptions, suggestedObjects, chosenProjectIndexes,
                 key, lines, dayAdd, label, stateLabel, cell, color, tipText, load, send, operate, clickTask, openCard, showTip,
-                dragStart, dragEnd, overTask, overCell, drop, shift, openPreparation, closePreparation, openCatalog, closeCatalog, selectObject, chooseProject, saveCatalog, quickAddProject};
+                dragStart, dragEnd, overTask, overCell, drop, shift, openPreparation, closePreparation, openCatalog, closeCatalog, selectObject, chooseProject, saveCatalog, quickAddProject, compactProject};
         },
         template: `
         <section class="reserve-calendar" aria-label="Календарь запаса" :aria-busy="loading || busy">
@@ -341,7 +345,7 @@
           <div v-if="loading && !data.engineers.length" class="rc-empty">Загрузка инженеров и очередей…</div>
           <div class="rc-cards"><article v-for="g in grouped" :key="g.name" class="rc-kpi"><div class="rc-kpi-head">{{ g.name }}<span>{{ g.engineers.length }} инж.</span></div><strong>{{ g.remaining }}</strong> проверок в запасе<div class="rc-muted">{{ g.ready }} готовы · {{ g.preparation }} в подготовке · {{ g.running }} начаты</div><footer>{{ g.through ? 'Прогноз до '+label(g.through) : (g.remaining ? 'Прогноз не рассчитан' : 'Очередь пуста') }}<small v-if="g.preparation">С учётом подготовки · даты условные</small></footer></article></div>
           <div class="rc-toolbar"><strong>Очередь по инженерам</strong><div class="rc-actions"><button v-if="canEdit" :disabled="locked" @click="openCatalog()">Добавить с портала</button><button v-if="canEdit" class="rc-primary-outline" :disabled="locked" @click="openPreparation()">Проекты для подготовки</button></div></div>
-          <div class="rc-legend"><span><i class="rc-swatch"></i>Готов к проверке</span><span><i class="rc-swatch pending"></i>Ожидает подготовки</span><span><i class="rc-swatch running"></i>Проверка начата</span><span>Цвет — объект</span></div>
+          <div class="rc-legend"><span><i class="rc-swatch"></i>Готов к проверке</span><span><i class="rc-swatch rc-unrecognized"></i>Не проанализирован</span><span><i class="rc-swatch rc-manual"></i>Ещё не загружен</span><span><i class="rc-swatch running"></i>Проверка начата</span></div>
           <div class="rc-period"><span>{{ label(anchor) }} — {{ label(days[days.length-1]?.iso) }}</span><div class="rc-actions"><button @click="anchor=dayAdd(anchor,-28)" :disabled="!anchor">‹</button><button @click="anchor=data.today">Сегодня</button><button @click="anchor=dayAdd(anchor,28)" :disabled="!anchor">›</button></div></div>
           <p class="rc-help">Клик — открыть проект · Ctrl / Cmd + клик — выделить · перетаскивание — изменить очередь</p>
           <div v-if="selected.length" class="rc-selection"><span>Выбрано: {{ selected.length }}</span><button :disabled="locked" @click="shift(-1)">Раньше</button><button :disabled="locked" @click="shift(1)">Позже</button><button @click="selected=[]">Снять выделение</button></div>
@@ -353,9 +357,9 @@
                 <th class="rc-name" scope="row"><div class="rc-person"><span class="rc-avatar">{{ e.name.split(' ').map(s=>s[0]).slice(0,2).join('') }}</span><div>{{ e.name }}</div></div><button v-if="selected.length && e.active!==false" class="rc-assign" :disabled="locked" @click="operate('move',{task_ids:selected,engineer_id:e.id})">Передать сюда</button></th>
                 <td v-for="d in columns" :key="d.iso || 'none'" class="rc-cell" :class="{'rc-off':d.off,'rc-today':d.iso===data.today}" @dragover.stop="overCell(e,d.iso,$event)" @drop="drop">
                   <div v-if="!d.off || cell(e.id,d.iso).length" class="rc-dots"><button v-for="t in cell(e.id,d.iso)" :key="t.id" type="button" class="rc-point" :data-task-id="t.id" :aria-label="tipText(t)" :title="tipText(t)" :aria-pressed="selected.includes(t.id)"
-                    :class="{'rc-dragging':dragging.includes(t.id),'rc-insert-before':insertion?.anchor_id===t.id && insertion.side==='before','rc-insert-after':insertion?.anchor_id===t.id && insertion.side==='after'}"
+                    :class="{'rc-dragging':dragging.includes(t.id),'rc-insert-before':insertion?.anchor_id===t.id && insertion.side==='before','rc-insert-after':insertion?.anchor_id===t.id && insertion.side==='after','rc-unrecognized':!!t.project_id && !t.documents_ready,'rc-manual':!t.project_id,'rc-running':t.state==='in_progress'}"
                     :draggable="canEdit && !locked && t.state!=='in_progress'" @click.stop="clickTask(t,$event)" @mouseenter="showTip(t,$event)" @mouseleave="tooltip=null" @focus="showTip(t,$event)" @blur="tooltip=null"
-                    @dragstart="dragStart(t,$event)" @dragend="dragEnd" @dragover="overTask(t,$event)" @drop.stop="drop"><i class="rc-swatch" :class="{pending:t.state==='preparation',running:t.state==='in_progress'}" :style="{'--rc-color':color(t)}"></i></button></div>
+                    @dragstart="dragStart(t,$event)" @dragend="dragEnd" @dragover="overTask(t,$event)" @drop.stop="drop" :style="{'--rc-color':color(t)}">{{ compactProject(t.code || t.title) }}</button></div>
                   <span v-if="cell(e.id,d.iso).length" class="rc-count">{{ cell(e.id,d.iso).length }}</span>
                 </td>
               </tr>

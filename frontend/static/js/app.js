@@ -11942,6 +11942,10 @@ const app = createApp({
             return idx;
         });
         function schedCell(engId, key) { return schedEventIndex.value[engId + '|' + key] || []; }
+        function schedCompactLabel(value) {
+            const chars = Array.from(String(value || '').trim());
+            return chars.length > 4 ? chars.slice(0, 4).join('') + '..' : chars.join('');
+        }
 
         const schedPeriodLabel = computed(() => {
             if (schedMode.value === 'week') {
@@ -20739,7 +20743,7 @@ const app = createApp({
             schedMode, schedAnchor, schedPopover, schedFiltersOpen,
             schedHiddenEngineers, schedPlanEdit, schedEngineers,
             schedEvents, schedVisibleEngineers, schedDays, schedPeriodLabel,
-            schedCell, schedSetMode, schedPrev, schedNext, schedToday,
+            schedCell, schedCompactLabel, schedSetMode, schedPrev, schedNext, schedToday,
             schedToggleCell, schedIsPopover, schedPopoverStyle, schedClosePopover,
             schedToggleEngineer, schedIsEngineerHidden,
             schedTogglePlanEdit, schedPlanFor, schedFactFor, schedPctClass, schedPctColor,

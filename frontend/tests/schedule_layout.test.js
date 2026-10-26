@@ -45,4 +45,13 @@ describe('компоновка графика работ', () => {
         expect(reserveStyles).toContain('.rc-object-picker__toggle{position:static;flex:0 0 38px;');
         expect(reserveStyles).toContain('border:0;border-left:1px solid #cbd5e1');
     });
+
+    it('показывает проекты вертикальными короткими плашками и различает подготовку', () => {
+        expect(html).toContain('schedCompactLabel(it.full || it.short)');
+        expect(styles).toContain('.sched-daystack { display: flex; flex-direction: column;');
+        expect(reserveStyles).toContain('.rc-dots{min-height:68px;padding:7px 2px 17px;display:flex;flex-direction:column;');
+        expect(reserveStyles).toContain('button.rc-point.rc-unrecognized');
+        expect(reserveStyles).toContain('button.rc-point.rc-manual');
+        expect(reserveScript).toContain("chars.slice(0, 4).join('') + '..'");
+    });
 });

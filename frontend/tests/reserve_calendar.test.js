@@ -32,6 +32,11 @@ const catalogData = () => ({...data(), available_projects:[
 ]});
 
 describe('reserve calendar user actions', () => {
+    it('shows four project characters followed by two dots', () => {
+        const h = harness();
+        expect(h.state.compactProject('13АВ-РД-ВК1-К2')).toBe('13АВ..');
+        expect(h.state.compactProject('АР2')).toBe('АР2');
+    });
     it('submits operations on an HTTP origin where crypto.randomUUID is unavailable', async () => {
         const browserCrypto = {getRandomValues(bytes) { for (let i = 0; i < bytes.length; i++) bytes[i] = i; return bytes; }};
         const h = harness([data(), {...data(), revision:1}], browserCrypto);
