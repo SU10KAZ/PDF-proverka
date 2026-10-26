@@ -57,7 +57,7 @@
 .rc-avatar{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:var(--rc-tint);color:#008e83;font-size:10px;flex-shrink:0}
 .rc-cell{height:68px;position:relative}
 .rc-dots{min-height:68px;padding:7px 2px 17px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-.reserve-calendar button.rc-point{position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;min-height:17px;padding:1px 2px;background:#e7f6f4;border:1px solid var(--rc-color,#008e83);border-radius:4px;color:var(--rc-color,#008e83);font-size:9px;font-weight:700;line-height:1;white-space:nowrap}
+.reserve-calendar button.rc-point{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;min-height:18px;padding:2px 3px;background:var(--teal-light,#e1f5f2);border:1px solid var(--teal-border,#71c9bf);border-radius:5px;color:var(--teal,#008e83);font-size:11px;font-weight:600;line-height:1;white-space:nowrap}
 .reserve-calendar button.rc-point.rc-unrecognized{background:transparent;border:1px dashed #8b1e3f;color:#8b1e3f}
 .reserve-calendar button.rc-point.rc-manual{background:transparent;border:1px dashed #8090a5;color:#68788d}
 .reserve-calendar button.rc-point.rc-running{box-shadow:0 0 0 1px #14243c}
