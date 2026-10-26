@@ -15,6 +15,21 @@
         const e = entry.engine || {};
         return [e.comparison_mode_label, e.model_display || e.model || '—', e.reasoning].filter(Boolean).join(' · ');
     }
+    function effort(entry) {
+        const m = entry.comparison_metrics;
+        if (!m) return '—';
+        const parts = [];
+        if (Number.isFinite(m.model_calls)) parts.push(m.model_calls + ' вызовов');
+        const usage = m.usage_total;
+        if (usage && usage.calls_with_usage > 0) {
+            parts.push(Number(usage.input_tokens || 0).toLocaleString('ru-RU') + ' входных токенов');
+            parts.push(Number(usage.output_tokens || 0).toLocaleString('ru-RU') + ' выходных токенов');
+            if (usage.calls_without_usage) parts.push('расход известен не для всех вызовов');
+        }
+        if (Number.isFinite(m.elapsed_seconds)) parts.push(Math.ceil(m.elapsed_seconds / 60) + ' мин');
+        if (m.resumed) parts.push('с продолжением; учитывать предыдущие запуски');
+        return parts.join(' · ') || '—';
+    }
     function pairEntries(results, rows, objectId, objectName, sessionId) {
         const catalog = (results || []).filter(e => !objectId || e.object_id === objectId);
         const used = new Set();
@@ -41,7 +56,7 @@
     }
 
     root.ProjectComparisonCatalog = {
-        date, model, pairEntries,
+        date, model, effort, pairEntries,
         register(app) {
             app.component('project-comparison-catalog', {
                 props: {activeEntryId: {type: String, default: ''}, opening: Boolean, error: {type: String, default: ''},
@@ -91,7 +106,7 @@
                     onMounted(load);
                     // viewer (portal_auth.js): только просмотр — без запуска и выбора пар для анализа.
                     const canOperate = !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
-                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, start, startDisabled, selectPair, selectAll, canOperate,
+                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, start, startDisabled, selectPair, selectAll, canOperate,
                         sourceLabel: s => SOURCE_LABEL[s] || s,
                         open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
@@ -106,7 +121,7 @@
                     <table class="pc-catalog__table">
                         <thead><tr><th><input v-if="canOperate" type="checkbox" aria-label="Выбрать все пары для анализа"
                             :checked="allChecked" :disabled="selectionDisabled || !entries.some(e => e.selection_pair)"
-                            @change="selectAll($event.target.checked)"></th><th>Проект / раздел</th><th>OLD → NEW</th><th>Модель</th><th>V3</th><th>Дата</th>
+                            @change="selectAll($event.target.checked)"></th><th>Проект / раздел</th><th>OLD → NEW</th><th>Метод и модель</th><th>V3</th><th>Дата</th>
                             <th class="num">Изменения</th><th class="num">Требуют проверки</th><th>Статус</th><th></th></tr></thead>
                         <tbody>
                         <tr v-for="entry in entries" :key="entry.catalog_entry_id" :data-entry-id="entry.catalog_entry_id"
@@ -118,7 +133,7 @@
                             <td><b>{{ entry.title }}</b><small>{{ entry.object_name }}</small></td>
                             <td class="pc-catalog__docs">{{ entry.documents.old.document_code || entry.documents.old.filename || '—' }}
                                 → {{ entry.documents.new.document_code || entry.documents.new.filename || '—' }}</td>
-                            <td class="pc-catalog__model">{{ model(entry) }}</td>
+                            <td class="pc-catalog__model">{{ model(entry) }}<small>{{ effort(entry) }}</small></td>
                             <td>{{ entry.engine.engine_version || '—' }}</td>
                             <td :title="entry.frozen_at_source">{{ date(entry.frozen_at) }}</td>
                             <td class="num pc-catalog__count">{{ entry.counts.projectchanges ?? '—' }}</td>

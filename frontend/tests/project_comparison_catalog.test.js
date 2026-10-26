@@ -39,7 +39,7 @@ describe('All project comparisons — catalog component', () => {
         const {definition} = load(async () => ({}));
         expect(definition.name).toBe('project-comparison-catalog');
         expect(definition.emits).toEqual(['open', 'start', 'select-pair', 'select-all']);
-        for (const column of ['Проект / раздел', 'OLD → NEW', 'Модель', 'V3', 'Дата', 'Изменения',
+        for (const column of ['Проект / раздел', 'OLD → NEW', 'Метод и модель', 'V3', 'Дата', 'Изменения',
             'Требуют проверки', 'Статус', 'Смысловые блоки в шаге 2', 'Запустить сравнение'])
             expect(definition.template).toContain(column);
         expect(definition.template).toContain('entry.counts.projectchanges');

@@ -284,6 +284,7 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
         human_mapping = {"available": False, "regions": None, "data_source": None, "url": None,
                          "reason": "PAIR_HM_BELONGS_TO_OTHER_RUN" if hm else "NOT_PUBLISHED_BY_RUN"}
     thinking = provenance.get("thinking") if isinstance(provenance.get("thinking"), dict) else {}
+    from backend.app.services.project_change_v3.mode_metrics import metrics
     return {
         "schema": ENTRY_SCHEMA,
         "catalog_entry_id": _entry_id(LIVE_RUN, object_id, session_id, pair_id, run_id),
@@ -294,6 +295,7 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
         "session_id": session_id,
         "pair_id": pair_id,
         "run_id": run_id,
+        "comparison_metrics": metrics(result, state),
         "pair_group_key": _pair_group_key(object_id, old_sha, new_sha),
         "title": _title(old, new),
         "documents": {"old": old, "new": new},
