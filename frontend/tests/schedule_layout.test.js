@@ -14,6 +14,12 @@ describe('компоновка графика работ', () => {
         expect(reserveStyles).toContain('.sched-topbar{display:flex;align-items:center;justify-content:space-between');
     });
 
+    it('не дублирует название и пояснение под верхней панелью', () => {
+        const panel = html.slice(html.indexOf('<div id="sched-completed-panel"'), html.indexOf('<!-- Модалка: расход подписки'));
+        expect(panel).not.toContain('График производства работ');
+        expect(panel).not.toContain('Контроль фактически выполненных проверок по инженерам');
+    });
+
     it('использует компактные KPI и отдельную обёртку для длинных счётчиков', () => {
         expect(styles).toContain('.sched-kpi { display: flex; align-items: center; gap: 11px; min-height: 64px;');
         expect(styles).toContain('.sched-stats-table th:nth-child(5) { width: 14%; }');

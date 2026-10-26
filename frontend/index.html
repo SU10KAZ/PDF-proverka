@@ -3234,14 +3234,6 @@
                     <reserve-calendar :active="schedTab === 'reserve'" @open-project="reserveOpenProject"></reserve-calendar>
                 </div>
                 <div id="sched-completed-panel" v-show="schedTab === 'completed'" role="tabpanel" aria-labelledby="sched-completed-tab">
-                <!-- Toolbar -->
-                <div class="kb-header sched-toolbar">
-                    <div class="sched-titlewrap">
-                        <h2 class="kb-title sched-title">График производства работ</h2>
-                        <p class="sched-subtitle">Контроль фактически выполненных проверок по инженерам</p>
-                    </div>
-                </div>
-
                 <!-- Модалка: расход подписки Claude по инженерам -->
                 <div v-if="subSpendOpen" class="modal-overlay" @click.self="subSpendOpen = false">
                     <div class="modal-content sub-spend-modal" @click.stop>
