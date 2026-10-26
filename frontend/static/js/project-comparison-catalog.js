@@ -133,10 +133,10 @@
                                 :aria-label="'Выбрать для анализа: ' + entry.title"
                                 :checked="rowChecked(entry.selection_pair)" :disabled="selectionDisabled"
                                 @change="selectPair(entry, $event.target.checked)"></td>
-                            <td class="pc-catalog__project" :title="entry.title + (entry.object_name ? '\n' + entry.object_name : '')"><b>{{ entry.title }}</b><small>{{ entry.object_name }}</small></td>
+                            <td class="pc-catalog__project" :title="[entry.title, entry.object_name].filter(Boolean).join(' · ')"><b>{{ entry.title }}</b><small>{{ entry.object_name }}</small></td>
                             <td class="pc-catalog__docs" :title="(entry.documents.old.document_code || entry.documents.old.filename || '—') + ' → ' + (entry.documents.new.document_code || entry.documents.new.filename || '—')">{{ entry.documents.old.document_code || entry.documents.old.filename || '—' }}
                                 → {{ entry.documents.new.document_code || entry.documents.new.filename || '—' }}</td>
-                            <td class="pc-catalog__model" :title="model(entry) + (effort(entry) ? '\n' + effort(entry) : '')">{{ model(entry) }}<small>{{ effort(entry) }}</small></td>
+                            <td class="pc-catalog__model" :title="[model(entry), effort(entry)].filter(Boolean).join(' · ')">{{ model(entry) }}<small>{{ effort(entry) }}</small></td>
                             <td>{{ entry.engine.engine_version || '—' }}</td>
                             <td :title="entry.frozen_at_source">{{ date(entry.frozen_at) }}</td>
                             <td class="num pc-catalog__count">{{ entry.counts.projectchanges ?? '—' }}</td>

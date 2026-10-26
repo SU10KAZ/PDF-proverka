@@ -39,6 +39,7 @@ describe('All project comparisons — catalog component', () => {
         expect(source).toContain('<col class="pc-catalog__col-project">');
         expect(source).toContain('<col class="pc-catalog__col-docs">');
         expect(source).toContain('<col class="pc-catalog__col-model">');
+        expect(load(async () => ({})).definition.template).not.toContain("? '\n' +");
     });
 
     it('registers a pair overview with saved-result and launch actions', () => {
