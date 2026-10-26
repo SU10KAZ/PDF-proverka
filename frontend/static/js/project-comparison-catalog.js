@@ -120,11 +120,11 @@
                     <div v-if="entries.length" class="pc-catalog__scroll">
                     <table class="pc-catalog__table">
                         <colgroup><col class="pc-catalog__col-select"><col class="pc-catalog__col-project"><col class="pc-catalog__col-docs">
-                            <col class="pc-catalog__col-date">
+                            <col class="pc-catalog__col-model"><col class="pc-catalog__col-date">
                             <col class="pc-catalog__col-count"><col class="pc-catalog__col-review"><col class="pc-catalog__col-status"><col class="pc-catalog__col-actions"></colgroup>
                         <thead><tr><th><input v-if="canOperate" type="checkbox" aria-label="Выбрать все пары для анализа"
                             :checked="allChecked" :disabled="selectionDisabled || !entries.some(e => e.selection_pair)"
-                            @change="selectAll($event.target.checked)"></th><th>Проект / раздел</th><th>OLD → NEW</th><th>Дата</th>
+                            @change="selectAll($event.target.checked)"></th><th>Проект / раздел</th><th>OLD → NEW</th><th>Метод и модель</th><th>Дата</th>
                             <th class="num">Изменения</th><th class="num">Требуют проверки</th><th>Статус</th><th></th></tr></thead>
                         <tbody>
                         <tr v-for="entry in entries" :key="entry.catalog_entry_id" :data-entry-id="entry.catalog_entry_id"
@@ -133,10 +133,10 @@
                                 :aria-label="'Выбрать для анализа: ' + entry.title"
                                 :checked="rowChecked(entry.selection_pair)" :disabled="selectionDisabled"
                                 @change="selectPair(entry, $event.target.checked)"></td>
-                            <td class="pc-catalog__project" :title="[entry.title, entry.object_name].filter(Boolean).join(' · ')"><b>{{ entry.title }}</b><small>{{ entry.object_name }}</small></td>
+                            <td class="pc-catalog__project" :title="entry.title"><b>{{ entry.title }}</b></td>
                             <td class="pc-catalog__docs" :title="(entry.documents.old.document_code || entry.documents.old.filename || '—') + ' → ' + (entry.documents.new.document_code || entry.documents.new.filename || '—')">{{ entry.documents.old.document_code || entry.documents.old.filename || '—' }}
-                                → {{ entry.documents.new.document_code || entry.documents.new.filename || '—' }}
-                                <small v-if="!entry.pending_pair" class="pc-catalog__model">{{ model(entry) }}</small></td>
+                                → {{ entry.documents.new.document_code || entry.documents.new.filename || '—' }}</td>
+                            <td class="pc-catalog__model" :title="model(entry)">{{ entry.pending_pair ? '—' : model(entry) }}</td>
                             <td :title="entry.frozen_at_source">{{ date(entry.frozen_at) }}</td>
                             <td class="num pc-catalog__count">{{ entry.counts.projectchanges ?? '—' }}</td>
                             <td class="num">{{ entry.counts.unresolved_hints ?? '—' }}</td>
