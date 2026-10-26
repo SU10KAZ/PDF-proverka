@@ -25,7 +25,8 @@ describe('компоновка графика работ', () => {
     });
 
     it('использует компактные KPI и отдельную обёртку для длинных счётчиков', () => {
-        expect(styles).toContain('.sched-kpi { display: flex; align-items: center; gap: 11px; min-height: 64px;');
+        expect(styles).toContain('.sched-kpi { display: flex; align-items: center; gap: 9px; min-height: 46px;');
+        expect(styles).toContain('.sched-kpi__body { display: flex; align-items: baseline; gap: 8px;');
         expect(styles).toContain('.sched-stats-table th:nth-child(5) { width: 14%; }');
         expect(html.match(/class="sched-remarks-values"/g)).toHaveLength(2);
         expect(styles).toContain('font-variant-numeric: tabular-nums');
