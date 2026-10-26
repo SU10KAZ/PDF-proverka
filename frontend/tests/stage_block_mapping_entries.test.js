@@ -343,9 +343,9 @@ describe('catalog button «Смысловые блоки в шаге 2» (C13)',
         return definition;
     }
 
-    it('emits open with {target: "blocks"}; emits stays ["open"]; «Открыть» unchanged', () => {
+    it('keeps both open payloads alongside the catalog launch and selection events', () => {
         const definition = load();
-        expect(definition.emits).toEqual(['open']);
+        expect(definition.emits).toEqual(['open', 'start', 'select-pair', 'select-all']);
         const emitted = [];
         const state = definition.setup({}, {emit: (...args) => emitted.push(args)});
         const entry = {catalog_entry_id: 'e1'};

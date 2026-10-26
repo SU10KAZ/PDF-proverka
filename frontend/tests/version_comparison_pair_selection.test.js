@@ -6,7 +6,8 @@ it('loads highlights and opens the correct result when A/B change, without leaki
     const watchers = [];
     const detailed = id => ({run_id: id, scope: 'all', state: 'done',
         a: {version_id: id === 'old' ? 'v1' : 'v2'}, b: {version_id: id === 'old' ? 'v2' : 'v3'},
-        items: [{row_id: 'row', spid: id + '-sheet', kind: 'compare', status: 'done', result_status: 'different'}]});
+        items: [{row_id: 'row', spid: id + '-sheet', kind: 'compare', status: 'done', result_status: 'different',
+            a_page: id === 'old' ? 1 : 2, b_page: id === 'old' ? 2 : 3}]});
     let component;
     const sandbox = {Vue: {
         ref: value => ({value}), reactive: x => x, computed: f => ({get value() {return f();}}),
@@ -15,7 +16,9 @@ it('loads highlights and opens the correct result when A/B change, without leaki
     sandbox.globalThis = sandbox;
     vm.runInNewContext(readFileSync(new URL('../static/js/version-comparison.js', import.meta.url), 'utf8'), sandbox);
     sandbox.VersionComparison.register({component: (name, def) => {if(name === 'version-comparison-page') component = def;}});
-    const page = component.setup(), p = {project_id: 'P'}, row = {row_id: 'row'};
+    const page = component.setup(), p = {project_id: 'P'}, row = {row_id: 'row', cells: {
+        v1: {state: 'matched', page: 1}, v2: {state: 'matched', page: 2}, v3: {state: 'matched', page: 3},
+    }};
     page.pairs.P = {a: 'v2', b: 'v3'};
     page.activeRun.P = detailed('new');
     page.runs.P = ['new','old'].map(id => {const r = detailed(id); delete r.items; return r;});
@@ -28,7 +31,7 @@ it('loads highlights and opens the correct result when A/B change, without leaki
     expect(page.cellClass(p, row, {version_id: 'v3'})['is-diff']).toBe(false);
     // Щелчок по листу ставит пару «предыдущая → версия листа» и открывает её результат.
     page.matrices.P = {state: 'ready', versions: ['v1', 'v2', 'v3'].map(version_id => ({version_id}))};
-    await page.clickCell(p, row, {version_id:'v2'}, {page:1}, {});
+    await page.clickCell(p, row, {version_id:'v2'}, row.cells.v2);
     expect(page.viewer.run.run_id).toBe('old');
     expect(page.viewer.spid).toBe('old-sheet');
     page.pairs.P = {a:'v1', b:'v3'};

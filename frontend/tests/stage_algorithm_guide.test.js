@@ -49,11 +49,11 @@ describe('pipeline stage algorithm guide', () => {
 
   it('documents dual Stage 01 comparison and gap search after independent detection', () => {
     expect(appJs).toContain("model.includes('ensemble/gpt-codex')");
-    expect(appJs).toContain('GPT и Codex не видят ответы друг друга.');
+    expect(appJs).toContain('Модели не видят ответы друг друга.');
     expect(appJs).toContain('Судья: ${judge} сравнивает результаты');
     expect(appJs).toContain('Совпадения · расширения · новые · спорные');
     expect(appJs).toContain('gap-search пропущенных проблем');
-    expect(appJs).toContain('Замечания + бейджи GPT / Codex');
+    expect(appJs).toContain('Замечания + бейджи ${[...new Set(branches.filter((b) => !b.disabled).map((b) => b.label))].join(\' / \')}');
     expect(appJs).toContain("d.mode === 'gap_search'");
     expect(appJs).toContain('новое: найдено gap-search');
   });
@@ -101,6 +101,7 @@ describe('pipeline stage algorithm guide', () => {
   it('keeps the guide compact and responsive', () => {
     expect(css).toContain('.stage-algorithm-modal { max-width: 440px;');
     expect(css).toContain('@media (max-width: 460px)');
-    expect(css).toContain('.stage-algorithm-split { grid-template-columns: 1fr;');
+    expect(css).toContain('.stage-algorithm-split { display: flex;');
+    expect(css).toContain('.stage-algorithm-split { flex-direction: column;');
   });
 });

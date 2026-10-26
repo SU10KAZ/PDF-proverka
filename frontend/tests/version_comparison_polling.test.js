@@ -174,7 +174,9 @@ describe('comparison progress survives recovery and transient failures', () => {
 
 describe('щелчок по листу матрицы', () => {
     const versions = ['v1', 'v2', 'v3'].map(id => ({version_id: id, sha256: 'sha-' + id, user_label: id.toUpperCase()}));
-    const row = {row_id: 'row', display_title: 'План', cells: {}};
+    const row = {row_id: 'row', display_title: 'План', cells: {
+        v1: {state: 'matched', page: 2}, v2: {state: 'matched', page: 3}, v3: {state: 'matched', page: 5},
+    }};
     const setup = fetch => {
         const {page} = pageWith(fetch);
         page.matrices.project = {state: 'ready', versions};
@@ -182,7 +184,7 @@ describe('щелчок по листу матрицы', () => {
         return page;
     };
     const done = {run_id: 'r23', scope: 'all', state: 'done', a: {version_id: 'v2'}, b: {version_id: 'v3'},
-        items: [{row_id: 'row', spid: 's1', kind: 'compare', status: 'done'}]};
+        items: [{row_id: 'row', spid: 's1', kind: 'compare', status: 'done', a_page: 3, b_page: 5}]};
 
     it('лист третьего столбца: пара V2 → V3 и открывается сравнение этого листа', async () => {
         const page = setup(vi.fn().mockResolvedValue(reply(done)));
@@ -200,7 +202,8 @@ describe('щелчок по листу матрицы', () => {
         expect(fetch).not.toHaveBeenCalled();
         expect(page.viewer.open).toBe(false);
         expect(page.sheetView.open).toBe(true);
-        expect(page.sheetView.url).toContain('/sources/sha-v1/pages/2/thumb?w=2000');
+        expect(page.sheetView.items).toHaveLength(1);
+        expect(page.sheetView.items[0].url).toContain('/sources/sha-v1/pages/2/thumb?w=2000');
         expect(page.sheetView.note).toContain('ещё не посчитана');
     });
 
@@ -209,5 +212,18 @@ describe('щелчок по листу матрицы', () => {
         await page.clickCell(project, row, versions[2], {page: 7}, {});
         expect(page.sheetView.open).toBe(true);
         expect(page.sheetView.note).toContain('нет пары в версии V2');
+    });
+
+    it('изменённая связь листов не открывает результат прежней пары как актуальный', async () => {
+        const page = setup(vi.fn().mockResolvedValue(reply(done)));
+        const changed = {...row, cells: {...row.cells, v3: {state: 'matched', page: 9}}};
+        await page.clickCell(project, changed, versions[2], changed.cells.v3);
+        expect(page.viewer.open).toBe(false);
+        expect(page.sheetView.open).toBe(true);
+        expect(page.sheetView.note).toContain('сравнение по прежней паре устарело');
+        expect(page.sheetView.items.map(item => item.url)).toEqual([
+            expect.stringContaining('/sources/sha-v2/pages/3/'),
+            expect.stringContaining('/sources/sha-v3/pages/5/'),
+        ]);
     });
 });

@@ -78,9 +78,12 @@ describe('Порядок объектов', () => {
 });
 
 describe('Разметка выпадашки', () => {
-    it('перебирает отсортированный список, а не исходный', () => {
+    it('перебирает отсортированный список; загрузка использует выбранный в шапке объект', () => {
         expect(html).toMatch(/v-for="obj in sortedObjectsList"/);
-        expect(html).toMatch(/v-for="o in sortedObjectsList"/);   // и в форме загрузки
+        const upload = html.slice(html.indexOf('<!-- ═══ Add Project Modal:'), html.indexOf('<!-- ═══ Add Project Modal:') + 12000);
+        expect(upload).toContain('v-if="!currentObjectId"');
+        expect(upload).toContain('Сначала выберите объект на главной странице');
+        expect(upload).not.toMatch(/v-for="o in /);
     });
 
     it('показывает два счётчика после названия объекта', () => {
@@ -153,7 +156,9 @@ describe('Загрузка счётчиков', () => {
     });
 
     it('повторяется и при открытии списка — но не чаще раза в минуту', () => {
-        expect(appJs).toMatch(/if \(willOpen && which === 'object'\) loadObjectStats\(\);/);
+        const toggle = extractFunction('toggleHeaderPopover');
+        expect(toggle).toContain("if (which !== 'object') return;");
+        expect(toggle).toContain('if (showObjectPicker.value) loadObjectStats();');
         const fn = extractFunction('loadObjectStats');
         expect(fn).toMatch(/Date\.now\(\) - _objectStatsAt\) < 60000/);
     });
