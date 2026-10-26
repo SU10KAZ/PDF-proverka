@@ -28,6 +28,9 @@
 .reserve-calendar .rc-primary{background:#008e83;border-color:#008e83;color:#fff;font-weight:600}
 .rc-legend{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;color:var(--rc-muted);font-size:11px;margin-bottom:12px}
 .rc-legend>span{display:inline-flex;align-items:center;gap:6px}
+.rc-legend-chip{display:inline-flex;width:44px;min-height:18px;align-items:center;justify-content:center;padding:2px 3px;background:var(--teal-light,#e1f5f2);border:1px solid var(--teal-border,#71c9bf);border-radius:5px;color:var(--teal,#008e83);font-size:10px;font-weight:600;font-style:normal;line-height:1;white-space:nowrap}
+.rc-legend-chip.rc-unrecognized{background:transparent;border:1px dashed #8b1e3f;color:#8b1e3f}
+.rc-legend-chip.rc-manual{background:transparent;border:1px dashed #8090a5;color:#68788d}
 .rc-swatch{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--rc-color,#8090a5);flex-shrink:0}
 .rc-swatch.pending{background:transparent;border:1.5px dashed var(--rc-color,#8090a5)}
 .rc-swatch.running{box-shadow:0 0 0 1px #fff,0 0 0 2px #14243c}
