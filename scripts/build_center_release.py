@@ -279,7 +279,9 @@ def build(
                 "укажите настоящий каталог"
             )
     commit = run("git", "rev-parse", "HEAD")
-    if run("git", "status", "--porcelain"):
+    # The canonical guard below classifies untracked files: archived experiments
+    # and reports are allowed, while untracked production code is refused.
+    if run("git", "status", "--porcelain", "--untracked-files=no"):
         raise SystemExit("рабочее дерево грязное: релиз собирается только из коммита")
     # Страж происхождения — ПЕРВЫМ делом и до захвата замка. Сборщик может
     # запечатать чистый локальный HEAD ветки main до push, но лишь когда он

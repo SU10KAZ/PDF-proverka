@@ -245,7 +245,7 @@ def test_release_identity_reuse_with_different_commit_is_refused(tmp_path, monke
         encoding="utf-8")
     monkeypatch.setattr(builder, "run", lambda *a, **k: {
         ("git", "rev-parse", "HEAD"): "a" * 40,
-        ("git", "status", "--porcelain"): "",
+        ("git", "status", "--porcelain", "--untracked-files=no"): "",
         ("git", "rev-parse", "HEAD^"): "b" * 40,
         ("git", "rev-parse", "HEAD^{tree}"): "c" * 40,
     }.get(a, ""))
@@ -269,6 +269,37 @@ def test_dirty_worktree_is_refused(tmp_path, monkeypatch):
     with pytest.raises(SystemExit, match="грязн"):
         builder.build(base_release="base", kind="k", notes="", releases_dir=releases,
                       tests=())
+
+
+@pytest.mark.parametrize('path,allowed', [('experiments/report.txt', True), ('backend/unsaved.py', False)])
+def test_builder_delegates_untracked_artifacts_to_canonical_guard(tmp_path, monkeypatch, path, allowed):
+    from scripts.production_source_guard import verify_clean_source_tree, ProductionSourceNotCanonical
+    work = tmp_path / 'work'
+    work.mkdir()
+    subprocess.run(['git', 'init', '-q', str(work)], check=True)
+    (work / 'tracked.txt').write_text('committed')
+    subprocess.run(['git', 'add', 'tracked.txt'], cwd=work, check=True)
+    subprocess.run(['git', '-c', 'user.email=build@test', '-c', 'user.name=Build',
+                    'commit', '-qm', 'fixture'], cwd=work, check=True)
+    untracked = work / path
+    untracked.parent.mkdir(parents=True)
+    untracked.write_text('unsaved artifact')
+    releases = tmp_path / 'releases'
+    (releases / 'base').mkdir(parents=True)
+    (releases / 'base/release-manifest.json').write_text('{}')
+    monkeypatch.setattr(builder, 'REPO_ROOT', work)
+    monkeypatch.setattr(builder, 'run', lambda *a, **k: subprocess.check_output(a, cwd=work, text=True).strip())
+
+    class GuardAccepted(Exception):
+        pass
+
+    def guard(repo, **kwargs):
+        verify_clean_source_tree(repo)
+        raise GuardAccepted  # Stop before assembly; the actual cleanliness guard passed.
+
+    monkeypatch.setattr(builder, 'verify_production_source', guard)
+    with pytest.raises(GuardAccepted if allowed else ProductionSourceNotCanonical):
+        builder.build(base_release='base', kind='test', notes='', releases_dir=releases, tests=())
 
 
 # ═════ Переключатель боевого релиза ═════════════════════════════════════════
@@ -576,7 +607,7 @@ def test_partial_release_of_the_same_commit_is_not_declared_ready(tmp_path, monk
 
     monkeypatch.setattr(builder, "run", lambda *a, **k: {
         ("git", "rev-parse", "HEAD"): "deadbee0" + "0" * 32,
-        ("git", "status", "--porcelain"): "",
+        ("git", "status", "--porcelain", "--untracked-files=no"): "",
         ("git", "rev-parse", "HEAD^"): "b" * 40,
         ("git", "rev-parse", "HEAD^{tree}"): "c" * 40,
         ("git", "rev-parse", "b" * 40 + "^{tree}"): "d" * 40,
@@ -605,7 +636,7 @@ def test_donor_release_from_a_foreign_branch_is_refused(tmp_path, monkeypatch):
         encoding="utf-8")
     monkeypatch.setattr(builder, "run", lambda *a, **k: {
         ("git", "rev-parse", "HEAD"): "a" * 40,
-        ("git", "status", "--porcelain"): "",
+        ("git", "status", "--porcelain", "--untracked-files=no"): "",
         ("git", "rev-parse", "HEAD^"): "b" * 40,
         ("git", "rev-parse", "HEAD^{tree}"): "c" * 40,
     }[a])
