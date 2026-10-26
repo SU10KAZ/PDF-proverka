@@ -44,12 +44,20 @@ function helpersContext(extra = {}) {
     const ctx = vm.createContext({...extra});
     vm.runInContext(helpers + '\nglobalThis.H = {portalRouteSection, portalFirstAllowedRoute, '
         + 'portalUrlHasExplicitObject, portalWithObject, portalWsCloseAction, portalViewerBlocksRequest, '
-        + 'portalCanOperate, portalCanAdmin, portalCanView, portalCanDownload};', ctx);
+        + 'portalCanOperate, portalCanAdmin, portalCanView, portalCanDownload, portalCanImportDecisions};', ctx);
     return ctx;
 }
 
 describe('чистые помощники доступа', () => {
     const {H} = helpersContext();
+
+    it('сотруднику разрешён только POST импорта решений, остальные записи закрыты', () => {
+        expect(H.portalViewerBlocksRequest('POST', '/api/knowledge-base/upload-excel?version_id=v2', true)).toBe(false);
+        expect(H.portalViewerBlocksRequest('POST', '/api/knowledge-base/upload-excel', false)).toBe(true);
+        expect(H.portalViewerBlocksRequest('DELETE', '/api/knowledge-base/upload-excel', true)).toBe(true);
+        expect(H.portalViewerBlocksRequest('POST', '/api/audit/batch', true)).toBe(true);
+        expect(H.portalViewerBlocksRequest('POST', '/api/knowledge-base/expert-review/P', true)).toBe(true);
+    });
 
     it('относит маршруты к разделам, служебные страницы — к admin', () => {
         expect(H.portalRouteSection('/')).toBe('audit_results');
@@ -159,6 +167,15 @@ describe('перехват fetch: X-Object-Id и запрет записи у vi
         await h.fetch('/api/projects');
         await h.fetch('/api/auth/logout', {method: 'POST'});
         expect(h.calls.map(c => c.input)).toEqual(['/api/projects', '/api/auth/logout']);
+    });
+
+    it('сотрудник отправляет Excel, но запуск обработки по-прежнему блокируется', async () => {
+        const can = {...viewerCan(), importDecisions: () => true};
+        const h = harness(can);
+        await h.fetch('/api/knowledge-base/upload-excel?project_id=P&version_id=v2', {method: 'POST', body: 'xlsx'});
+        const blocked = await h.fetch('/api/audit/batch', {method: 'POST', body: '{}'});
+        expect(h.calls.map(c => c.input)).toEqual(['/api/knowledge-base/upload-excel?project_id=P&version_id=v2']);
+        expect(blocked.status).toBe(403);
     });
 
     it('admin пишет как раньше', async () => {
@@ -418,6 +435,24 @@ describe('сравнение версий у viewer: matrix-view', () => {
 });
 
 describe('разметка: служебное скрыто, скачивания — по праву', () => {
+    it.each([true, false])('загрузка решений сотрудником: право %s', async allowed => {
+        const post = vi.fn(async () => ({ok: true, data: {projects: {P: {saved: 1}}}}));
+        const ctx = helpersContext({
+            window: {portalCan: {...viewerCan(), importDecisions: () => allowed}},
+            _postExcelDecisions: post, kbUploadLoading: {value: false},
+            currentProjectId: {value: null}, alert: vi.fn(),
+        });
+        vm.runInContext(extractFunction(app, 'uploadAndApplyDecisions') + '\nglobalThis.upload = uploadAndApplyDecisions;', ctx);
+        const file = {name: 'decisions.xlsx'};
+        const event = {target: {files: [file], value: 'selected'}};
+        await ctx.upload(event);
+        expect(post).toHaveBeenCalledTimes(allowed ? 1 : 0);
+        if (allowed) {
+            expect(post).toHaveBeenCalledWith(file);
+            expect(event.target.value).toBe('');
+        }
+    });
+
     it('навигация и шапка опираются на права', () => {
         expect(html).toContain(`<div v-if="canOperate" class="nav-item" :class="{active: currentView === 'queue'}"`);
         expect(html).toContain(`v-if="canView('stage_comparison')"`);
@@ -426,5 +461,6 @@ describe('разметка: служебное скрыто, скачивани�
         expect(html).toContain('Доступ к разделам ещё не назначен. Обратитесь к администратору.');
         expect(html).toContain(`<button v-if="canDownload('audit_results')" class="btn-expert-toggle"`);
         expect(html).toContain('<script>window.__portalCaps = {{portal_caps}};</script>');
+        expect(html.match(/<label v-if="canImportDecisions"[^>]+title="Загрузить решения из Excel"/g)).toHaveLength(2);
     });
 });

@@ -16,6 +16,7 @@ DOWNLOAD:version_comparison	GET	/api/version-comparison/objects/{object_id}/runs
 DOWNLOAD:version_comparison	GET	/api/version-comparison/objects/{object_id}/runs/{run_id}/sheets/{spid}/changes.md
 DOWNLOAD:version_comparison	GET	/api/version-comparison/objects/{object_id}/series/{series_id}/ai-sheet-changes/summary.md
 DOWNLOAD:version_comparison	GET	/api/version-comparison/objects/{object_id}/series/{series_id}/report.xlsx
+IMPORT_DECISIONS	POST	/api/knowledge-base/upload-excel
 PUBLIC	GET	/api/auth/me
 PUBLIC	GET	/api/info
 PUBLIC	GET	/login

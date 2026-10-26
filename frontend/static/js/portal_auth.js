@@ -23,8 +23,11 @@
     var sections = caps.sections || {};
 
     window.portalCan = {
-        // Кнопки запуска, правки, загрузки, решений (в режиме аккаунтов — только admin).
+        // Запуски и правки — admin; возврат решений из Excel разрешается отдельно.
         operate: function () { return caps.can_operate !== false; },
+        importDecisions: function () {
+            return caps.can_operate !== false || caps.can_import_decisions === true;
+        },
         // Служебные панели: расход, пользователи, учётная запись модели.
         admin: function () { return caps.is_admin !== false; },
         view: function (section) {
@@ -80,7 +83,7 @@
                 goTo(code && code !== 'not_authenticated' ? '/login?reason=' + encodeURIComponent(code) : '/login');
             } else if (code === 'password_change_required') {
                 goTo('/change-password');
-            } else if (code === 'forbidden_section' || code === 'forbidden_download' || code === 'admin_only') {
+            } else if (code === 'forbidden_section' || code === 'forbidden_download' || code === 'admin_only' || code === 'forbidden_decision_import') {
                 window.dispatchEvent(new CustomEvent('portal-forbidden', { detail: detail }));
             }
         }).catch(function () {

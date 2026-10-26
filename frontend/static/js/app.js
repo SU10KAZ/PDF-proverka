@@ -85,12 +85,13 @@ function portalWsCloseAction(code) {
     return 'reconnect';
 }
 
-// viewer ничего не меняет: изменяющий запрос к /api/ (кроме /api/auth/) не
-// уходит в сеть вовсе — вторая линия защиты за скрытыми кнопками.
-function portalViewerBlocksRequest(method, url) {
+// Изменяющие запросы viewer блокируются; связанный сотрудник может вернуть
+// решения из Excel через один явно разрешённый маршрут.
+function portalViewerBlocksRequest(method, url, allowDecisionImport = false) {
     const m = String(method || 'GET').toUpperCase();
     if (m === 'GET' || m === 'HEAD' || m === 'OPTIONS') return false;
     const {path} = _portalSplitUrl(url);
+    if (allowDecisionImport && m === 'POST' && path === '/api/knowledge-base/upload-excel') return false;
     return path.startsWith('/api/') && !path.startsWith('/api/auth/');
 }
 
@@ -107,6 +108,11 @@ function portalCanView(section) {
 function portalCanDownload(section) {
     return !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.download(section));
 }
+function portalCanImportDecisions() {
+    if (typeof window === 'undefined' || !window.portalCan) return true;
+    return typeof window.portalCan.importDecisions === 'function'
+        ? window.portalCan.importDecisions() : window.portalCan.operate();
+}
 
 const app = createApp({
     setup() {
@@ -117,11 +123,12 @@ const app = createApp({
         const currentView = ref('dashboard');
 
         // ─── Права вошедшего (portal_auth.js, план доступа 6.3) ───
-        // canOperate — кнопки запуска/правки/загрузки/решений (false только у
+        // canOperate — кнопки запуска/правки/загрузки исходных файлов (false у
         // viewer в режиме аккаунтов); canAdminPanels — служебные панели (расход,
         // подписка, учётная запись модели, настройки моделей). Права неизменны
         // в пределах загрузки страницы, поэтому computed без реактивных зависимостей.
         const canOperate = computed(() => portalCanOperate());
+        const canImportDecisions = computed(() => portalCanImportDecisions());
         const canAdminPanels = computed(() => portalCanAdmin());
         function canView(section) { return portalCanView(section); }
         function canDownload(section) { return portalCanDownload(section); }
@@ -5099,7 +5106,7 @@ const app = createApp({
                     // viewer: изменяющий запрос не уходит в сеть (вторая линия
                     // защиты за скрытыми кнопками; сервер ответил бы 403).
                     const method = (init && init.method) || (typeof input !== 'string' && input && input.method) || 'GET';
-                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0)) {
+                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0, portalCanImportDecisions())) {
                         const detail = {code: 'forbidden_viewer', message: 'действие доступно только администратору'};
                         showPortalForbidden(detail);
                         return Promise.resolve(new Response(JSON.stringify({detail}), {
@@ -12770,6 +12777,7 @@ const app = createApp({
 
         async function _postExcelDecisions(file) {
             // Возвращает {ok: true, data} | {ok: false, message}
+            if (!portalCanImportDecisions()) return {ok: false, message: 'Нет права загрузки решений из Excel.'};
             const formData = new FormData();
             formData.append('file', file);
             let resp;
@@ -12826,7 +12834,7 @@ const app = createApp({
         }
 
         async function uploadAndApplyDecisions(event) {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
+            if (!portalCanImportDecisions()) return;
             const file = event.target.files[0];
             if (!file) return;
             kbUploadLoading.value = true;
@@ -20938,7 +20946,7 @@ const app = createApp({
             // Theme
             theme, toggleTheme,
             // Права вошедшего (portal_auth.js)
-            canOperate, canAdminPanels, canView, canDownload, withObject,
+            canOperate, canImportDecisions, canAdminPanels, canView, canDownload, withObject,
             portalForbiddenMessage, scViewerNotPrepared, scSessionStale,
             // Пользователи (сотрудники) — подпись решений + админ-гейт графика
             usersList, usersCurrentId,

@@ -6,6 +6,9 @@
   ``PUBLIC``, ``SELF``, ``COMMON``, ``VIEW:<раздел>``, ``DOWNLOAD:<раздел>``;
 * ``ADMIN_PREFIXES`` — всё остальное в перечисленных префиксах — только admin.
 
+``IMPORT_DECISIONS`` разрешает единственный POST импорта Excel сотруднику,
+связанному с аккаунтом и имеющему просмотр результатов аудита.
+
 Маршрут вне обоих перечней тоже трактуется как admin (fail closed), а тест
 ``tests/test_access_policy_coverage.py`` падает, если у маршрута нет явного
 правила — так новый роутер не может появиться «молча открытым».
@@ -35,6 +38,7 @@ COMMON = "COMMON"
 ADMIN = "ADMIN"
 VIEW = "VIEW"
 DOWNLOAD = "DOWNLOAD"
+IMPORT_DECISIONS = "IMPORT_DECISIONS"
 
 
 @dataclass(frozen=True)
@@ -63,6 +67,7 @@ HM = "/api/human-mapping/objects/{object_id}"
 PCP = "/api/project-change-preview/objects/{object_id}"
 
 _ALLOW_SPEC: dict[str, list[str]] = {
+    IMPORT_DECISIONS: ["POST /api/knowledge-base/upload-excel"],
     PUBLIC: [
         "GET /login", "GET /register",
         "POST /api/auth/login", "POST /api/auth/register", "POST /api/auth/logout",
@@ -269,6 +274,11 @@ def _check_role(ctx, policy: Policy) -> None:
         if ctx.can_download(policy.section):
             return
         raise _deny("forbidden_download", "Нет права скачивания в разделе.", section=policy.section)
+    if policy.kind == IMPORT_DECISIONS:
+        if ctx.can_import_decisions:
+            return
+        raise _deny("forbidden_decision_import",
+                    "Для загрузки решений нужны доступ к результатам аудита и связь аккаунта с сотрудником.")
     raise _deny("admin_only", "Действие доступно только администратору.")
 
 

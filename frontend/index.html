@@ -2858,7 +2858,7 @@
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                             {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
                         </button>
-                        <label v-if="canOperate" class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
+                        <label v-if="canImportDecisions" class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
                             <input type="file" accept=".xlsx" @change="uploadAndApplyDecisions" style="display:none">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                             {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
@@ -3141,7 +3141,7 @@
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                                 {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
                             </button>
-                            <label v-if="canOperate" class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
+                            <label v-if="canImportDecisions" class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
                                 <input type="file" accept=".xlsx" @change="uploadAndApplyDecisions" style="display:none">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                 {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}

@@ -119,6 +119,18 @@ class AccountContext:
         view, download = self.sections.get(section, (False, False))
         return bool(view and download)
 
+    @property
+    def can_import_decisions(self) -> bool:
+        """Сотрудник с доступом к результатам может вернуть решения из Excel.
+
+        Связь с сотрудником назначает admin; сама роль viewer и регистрация
+        этого права не дают. Имя автора дополнительно проверяет resolve_author.
+        """
+        if not self.enforces_roles or self.is_admin:
+            return True
+        return (self.role == ROLE_VIEWER and self.status == "active"
+                and bool(self.staff_id) and self.can_view("audit_results"))
+
     def as_public(self) -> dict:
         """Проекция для UI и /api/auth/me. Ни хешей, ни секретов."""
         return {
@@ -128,6 +140,7 @@ class AccountContext:
             "role": self.role if self.mode == MODE_ACCOUNTS else (
                 ROLE_ADMIN if self.is_admin else "staff"),
             "is_admin": self.is_admin,
+            "can_import_decisions": self.can_import_decisions,
             "staff_id": self.staff_id,
             "must_change_password": self.must_change_password,
             "sections": {
