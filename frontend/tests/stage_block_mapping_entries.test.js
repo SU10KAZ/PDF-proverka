@@ -331,7 +331,7 @@ describe('narrow layouts never scroll the page sideways (UNIFIED_UX_DESIGN §13)
     });
 });
 
-describe('catalog button «Смысловые блоки в шаге 2» (C13)', () => {
+describe('catalog result actions', () => {
     function load() {
         const sandbox = {Vue: {ref: value => ({value}), computed: fn => ({get value() { return fn(); }}), onMounted: () => {}},
             fetch: async () => ({ok: true, json: async () => ({})}), open: () => {},
@@ -343,25 +343,20 @@ describe('catalog button «Смысловые блоки в шаге 2» (C13)',
         return definition;
     }
 
-    it('keeps both open payloads alongside the catalog launch and selection events', () => {
+    it('keeps the normal open action alongside the catalog launch and selection events', () => {
         const definition = load();
         expect(definition.emits).toEqual(['open', 'start', 'select-pair', 'select-all']);
         const emitted = [];
         const state = definition.setup({}, {emit: (...args) => emitted.push(args)});
         const entry = {catalog_entry_id: 'e1'};
         state.open(entry);
-        state.open(entry, {target: 'blocks'});
-        expect(emitted).toEqual([['open', entry], ['open', entry, {target: 'blocks'}]]);
+        expect(emitted).toEqual([['open', entry]]);
     });
 
-    it('is disabled exactly when «Открыть» is, with the same hint', () => {
+    it('shows only the normal open button', () => {
         const template = load().template;
-        const button = template.slice(template.lastIndexOf('<button', template.indexOf('>Смысловые блоки в шаге 2</button>')),
-            template.indexOf('>Смысловые блоки в шаге 2</button>'));
-        expect(button).toContain(':disabled="opening || !entry.open.available"');
-        expect(button).toContain("'В ленте пары сейчас показан другой прогон'");
-        expect(button).toContain("@click=\"open(entry, {target: 'blocks'})\"");
         expect(template).toContain("@click=\"open(entry)\">Открыть</button>");
+        expect(template).not.toContain('Смысловые блоки в шаге 2');
         expect(template).not.toContain('openHumanMapping');
     });
 });
