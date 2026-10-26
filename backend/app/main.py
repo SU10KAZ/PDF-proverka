@@ -525,6 +525,14 @@ if _static_mount_dir is not None:
 _html_dir = _frontend_dir
 
 
+@app.get("/favicon.ico", include_in_schema=False)
+async def serve_favicon():
+    favicon_path = _frontend_static_dir / "favicon.svg"
+    if not favicon_path.exists():
+        return HTMLResponse("", status_code=404)
+    return FileResponse(favicon_path, media_type="image/svg+xml")
+
+
 @app.get("/login")
 async def serve_login(request: Request):
     """Отдать self-contained страницу входа.
