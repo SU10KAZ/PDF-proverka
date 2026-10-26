@@ -233,6 +233,9 @@ def test_repeating_plan_ratio_fills_exact_period_and_deducts_today_completed(env
     assert projected[-1]['forecast_date'] == '2026-10-30'
     people[0].update(rate='2', rate_numerator=2, rate_denominator=1, completed_today=2)
     assert svc.forecast(rows[:1], people, {}, date(2026, 10, 26))[0]['forecast_date'] == '2026-10-27'
+    started = [{**rows[0], 'state': 'in_progress'}, rows[1]]
+    projected = svc.forecast(started, people, {}, date(2026, 10, 26))
+    assert [row['forecast_date'] for row in projected] == ['2026-10-26', '2026-10-27']
 
 
 def test_real_v2_source_adapter_keeps_objects_and_versions_distinct(tmp_path, monkeypatch):

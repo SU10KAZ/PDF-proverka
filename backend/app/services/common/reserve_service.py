@@ -127,8 +127,10 @@ def forecast(rows, engineers, config, day):
         conditional = False
         for i, row in enumerate(queue):
             conditional = conditional or row['state'] == 'preparation'
-            row.update(forecast_date=dates[i] if i < len(dates) else None,
-                       conditional=conditional, unscheduled_reason=(None if i < len(dates) else
+            started = row['state'] == 'in_progress'
+            scheduled = started or i < len(dates)
+            row.update(forecast_date=day.isoformat() if started else dates[i] if i < len(dates) else None,
+                       conditional=conditional, unscheduled_reason=(None if scheduled else
                          'missing_plan' if engineer['rate_source'] == 'missing_plan' else 'zero_capacity' if rate == 0 else 'horizon_exceeded'))
             output.append(row)
     return output
