@@ -114,10 +114,13 @@ def status(session_id: str, *, repair: bool = True) -> dict[str, Any] | None:
 
 def start(session_id: str, pairs: list[dict[str, str]], *, ai_mode: str | None,
           model_profile: str | None, requested_by: str | None = None,
+          comparison_mode: str = "standard",
           parallelism: int = 5, runner: Callable[..., dict[str, Any]] | None = None) -> dict[str, Any]:
     """Поставить пары в очередь и сразу начать первую."""
     if type(parallelism) is not int or parallelism not in (5, 10):
         raise ValueError("parallelism must be 5 or 10")
+    if comparison_mode not in ("standard", "subjects"):
+        raise ValueError("unknown comparison mode")
     if store.get_session(session_id) is None:
         raise KeyError("session_not_found")
     items, seen = [], set()
@@ -139,6 +142,7 @@ def start(session_id: str, pairs: list[dict[str, str]], *, ai_mode: str | None,
             raise BatchConflictError("Очередь анализа этой сессии уже выполняется.")
         batch = {"kind": KIND, "schema_version": 1, "batch_id": uuid.uuid4().hex, "status": ACTIVE,
                  "ai_mode": ai_mode, "model_profile": model_profile, "parallelism": parallelism, "requested_by": requested_by,
+                 "comparison_mode": comparison_mode,
                  "created_at": _now(), "finished_at": None, "stop_requested": False, "items": items}
         _write(session_id, batch)
         stop = threading.Event()
@@ -205,6 +209,7 @@ def _work(session_id: str, batch_id: str, stop_event: threading.Event,
                 _update(session_id, batch_id, index, pair_id=pair_id)
                 state = runner(session_id, pair_id, input_mode="DOCUMENT",
                                ai_mode=batch.get("ai_mode"), model_profile=batch.get("model_profile"),
+                               comparison_mode=batch.get("comparison_mode", "standard"),
                                parallelism=batch.get("parallelism", 5)) or {}
                 result = str(state.get("status") or "FAILED").upper()
                 if state.get("reason_code") == "v3_cancelled":

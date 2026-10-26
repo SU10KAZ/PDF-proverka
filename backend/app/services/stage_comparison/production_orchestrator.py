@@ -6744,6 +6744,7 @@ def run_production_comparison(
     right_block_ids: Iterable[Any] = (),
     ai_mode: str | None = None,
     model_profile: str | None = None,
+    comparison_mode: str | None = None,
     parallelism: int | None = None,
     resume_from_run_id: str | None = None,
     resume_model_policy: str = "same_model",
@@ -6782,6 +6783,7 @@ def run_production_comparison(
                     run_id=control.run_id,
                     cancel_token=control.cancel_token,
                     model_profile=model_profile,
+                    comparison_mode=comparison_mode,
                     parallelism=parallelism,
                     resume_from_run_id=resume_from_run_id,
                     resume_model_policy=resume_model_policy,
@@ -6794,6 +6796,8 @@ def run_production_comparison(
         return v3_state
     if resume_from_run_id:
         raise ValueError("досборка из прогона есть только у движка V3")
+    if comparison_mode not in (None, "standard"):
+        raise ValueError("поиск по инженерным предметам доступен только в V3")
     if engine != "legacy":
         # Unknown engine must fail closed — never silent legacy.
         from datetime import datetime, timezone

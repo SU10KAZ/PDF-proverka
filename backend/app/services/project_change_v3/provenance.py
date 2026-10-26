@@ -25,6 +25,7 @@ from .source_compaction import VERSION as SOURCE_COMPACTION_VERSION
 
 
 def build_provenance(*, source_prep_version: str | None = None, **extra: Any) -> dict[str, Any]:
+    from .comparison_mode import provenance as mode_provenance
     profile = active_profile()
     transport_version = provider_transport_version()
     out: dict[str, Any] = {
@@ -54,6 +55,7 @@ def build_provenance(*, source_prep_version: str | None = None, **extra: Any) ->
         "transport_version": transport_version,
     }
     out.update(extra)
+    out.update(mode_provenance())
     return out
 
 

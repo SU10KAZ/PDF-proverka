@@ -17,6 +17,7 @@ from backend.app.services.human_mapping_production.storage import require_safe_i
 ACTIVE = contextvars.ContextVar('v3_run_storage', default=None)
 TERMINAL = {'COMPLETED', 'FROZEN', 'COMPLETED_FROZEN'}
 PROVENANCE_FIELDS = (
+    'comparison_mode', 'subject_method_version', 'subject_contract_sha256', 'subject_search',
     'engine', 'engine_version', 'provider', 'model', 'reasoning', 'thinking',
     'model_handoff',
     'mapper_prompt_version', 'mapper_prompt_sha256', 'miner_prompt_version', 'miner_prompt_sha256',
@@ -180,7 +181,8 @@ def finalize(session_id, pair_id, run_id, state):
     ]
     if (directory / 'project_change_v3_mapper_portions.json').is_file():
         artifact_names.append('project_change_v3_mapper_portions')
-    for name in ('project_change_v3_mapper_plan', 'project_change_v3_miner_plan'):
+    for name in ('project_change_v3_mapper_plan', 'project_change_v3_miner_plan',
+                 'project_change_v3_subject_search', 'project_change_v3_subject_checkpoint'):
         if (directory / (name + '.json')).is_file():
             artifact_names.append(name)
     if (directory / 'project_change_v3_dedupe.json').is_file():

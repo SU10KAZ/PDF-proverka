@@ -302,6 +302,9 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
             "engine": ENGINE_NAME,
             "engine_version": str(provenance.get("engine_version") or ""),
             "engine_variant": str(provenance.get("engine_variant") or ""),
+            "comparison_mode": provenance.get("comparison_mode", "standard"),
+            "comparison_mode_label": ("По инженерным предметам (эксперимент)"
+                                      if provenance.get("comparison_mode") == "subjects" else "Стандартный"),
             "provider": str(provenance.get("provider") or "") or None,
             "model": str(provenance.get("model")),
             "model_display": provenance_model_display(provenance),
@@ -334,6 +337,8 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
             "result_schema": str(result.get("schema")),
             "run_status": str(state.get("status")),
             "model_calls_recorded": result.get("model_calls"),
+            "usage_total": provenance.get("usage_total"),
+            "subject_search": provenance.get("subject_search"),
             "prompt_sha256": {k: str(provenance.get(k) or "") for k in
                               ("mapper_prompt_sha256", "miner_prompt_sha256", "dedupe_prompt_sha256")},
             "source_binding": {"method": "source_pdf_sha256", "old_sha256": old_sha, "new_sha256": new_sha,

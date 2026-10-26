@@ -13,7 +13,7 @@
     }
     function model(entry) {
         const e = entry.engine || {};
-        return [e.model_display || e.model || '—', e.reasoning].filter(Boolean).join(' · ');
+        return [e.comparison_mode_label, e.model_display || e.model || '—', e.reasoning].filter(Boolean).join(' · ');
     }
     function pairEntries(results, rows, objectId, objectName, sessionId) {
         const catalog = (results || []).filter(e => !objectId || e.object_id === objectId);

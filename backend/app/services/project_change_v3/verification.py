@@ -11,6 +11,7 @@ def build_verification_batches(
     page_records: dict[tuple[str, int], dict[str, Any]],
     max_items_per_batch: int = 8,
     max_batches: int | None = None,
+    context_pages: dict[str, list[tuple[str, int]]] | None = None,
 ) -> list[dict[str, Any]]:
     if max_items_per_batch < 1 or (max_batches is not None and max_batches < 0):
         raise ValueError("invalid verification limits")
@@ -27,7 +28,13 @@ def build_verification_batches(
                 raise ValueError(f"verification change missing: {work.get('projectchange_id')}")
             parameter = (change.get("changed_parameters") or [])[int(work["parameter_ordinal"]) - 1]
             sources = []
-            for side, page, block_id in work.get("evidence") or []:
+            refs = list(work.get("evidence") or [])
+            for side, page in (context_pages or {}).get(str(work.get('projectchange_id')), []):
+                for block in page_records[(side, page)]['blocks']:
+                    ref = (side, page, block['block_id'])
+                    if ref not in {tuple(r) for r in refs}:
+                        refs.append(ref)
+            for side, page, block_id in refs:
                 page_record = page_records.get((str(side), int(page)))
                 if page_record is None:
                     raise ValueError(f"verification page missing: {side}:{page}")

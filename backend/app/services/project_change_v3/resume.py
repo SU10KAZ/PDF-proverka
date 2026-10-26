@@ -321,6 +321,9 @@ def check_compatible(
     переноса путей кадров из папки донора в папку досборки, а каждый кадр —
     побайтно: модель донора видела ровно эти изображения.
     """
+    for key, default in (("comparison_mode", "standard"), ("subject_contract_sha256", None)):
+        if donor.provenance.get(key, default) != provenance.get(key, default):
+            raise ResumeRefused(f"другая методика сравнения: {key}")
     if model_policy not in {"same_model", "remaining_stages"}:
         raise ResumeRefused("неизвестная политика модели досборки")
     if (donor.partial_mining and not (donor.before_mining and model_policy == "remaining_stages")
@@ -498,6 +501,13 @@ def resume_available(session_id: str, pair_id: str, run_id: str, *, _seen: froze
                 and any(completed_gaps(directory).values()))
     if state.get("status") != "FAILED":
         return False
+    if (state.get('provenance') or {}).get('comparison_mode') == 'subjects' and state.get('pipeline_current') == 'MAPPING':
+        from .subject_search import load_checkpoint
+        try:
+            checkpoint, _ = load_checkpoint(session_id, pair_id, run_id)
+            return bool(checkpoint.get('entries'))
+        except (ValueError, OSError):
+            return False
     parent = _planning_parent(state)
     if parent:
         return resume_available(session_id, pair_id, parent, _seen=_seen | {run_id})
@@ -514,10 +524,19 @@ def resume_available(session_id: str, pair_id: str, run_id: str, *, _seen: froze
 def resume_options(session_id: str, pair_id: str, run_id: str) -> dict[str, Any]:
     """Describe recovery without preparing sources or contacting a provider."""
     from .miner_plan import max_new_calls
+    from . import run_storage
+    state = _read(run_storage.run_dir(session_id, pair_id, run_id) / 'state.json') or {}
+    if (state.get('provenance') or {}).get('comparison_mode') == 'subjects' and state.get('pipeline_current') == 'MAPPING':
+        from .subject_search import load_checkpoint
+        checkpoint, state = load_checkpoint(session_id, pair_id, run_id)
+        return {'comparison_mode': 'subjects', 'mode': 'subject_search', 'can_switch_model': False,
+                'model_profile': state['provenance']['model_profile'], 'saved_regions': len(checkpoint['entries']),
+                'planned_new_calls': None, 'max_new_miner_calls': max_new_calls()}
 
     donor = load_donor(session_id, pair_id, run_id)
     plan = donor.provenance.get("miner_plan") or {}
     return {
+        "comparison_mode": donor.provenance.get('comparison_mode', 'standard'),
         "model_profile": donor.model_profile,
         "can_switch_model": not donor.completed and (not donor.partial_mining or donor.before_mining),
         "mode": ("gaps" if donor.completed else "before_mining" if donor.before_mining

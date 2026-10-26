@@ -5791,6 +5791,14 @@
                     <span v-if="pcPipelineDetail.duration">· Длительность: {{ pcPipelineDetail.duration }}</span>
                 </div>
                 <p v-if="pcRunBanner && !pcRunBanner.cancellable" class="pc-comparison-pipeline__note" role="status">{{ pcRunBanner.text }}</p>
+                <p v-if="scProductionState?.provenance?.comparison_mode === 'subjects'" class="pc-comparison-pipeline__note">
+                    Метод: по инженерным предметам (экспериментальный).
+                    <template v-if="scProductionState.provenance.subject_search">
+                        Незакрытых вопросов поиска: {{ scProductionState.provenance.subject_search.open_search_gaps }}.
+                        Пар листов вне подробного сопоставления: {{ scProductionState.provenance.subject_search.page_pairs_unreviewed }}.
+                    </template>
+                    Полнота обнаружения изменений требует проверки.
+                </p>
                 <p v-if="pcPipeline.restored" class="pc-comparison-pipeline__note">Статусы этапов восстановлены по сохранённому результату. Время отдельных этапов не записывалось.</p>
                 <p v-else-if="pcPipeline.historical" class="pc-comparison-pipeline__note">Для этого запуска подробная история этапов не сохранена.</p>
             </section>
@@ -8166,7 +8174,11 @@
             <div class="modal pause-modal">
                 <button type="button" class="modal-close" aria-label="Закрыть" @click="scResumeDialog = null">×</button>
                 <h3 id="sc-resume-title">Досчитать из сохранённого</h3>
-                <p v-if="scResumeDialog.mode === 'before_mining'" class="pause-modal__desc">
+                <p v-if="scResumeDialog.mode === 'subject_search'" class="pause-modal__desc">
+                    Сохранено ответов поиска: {{ scResumeDialog.saved_regions }}. Анализ продолжится той же моделью
+                    и в том же режиме. Принятые ответы будут сверены с текущими источниками и использованы повторно.
+                </p>
+                <p v-else-if="scResumeDialog.mode === 'before_mining'" class="pause-modal__desc">
                     Сопоставление готово и будет сохранено. Выбранная модель выполнит поиск изменений и последующие этапы.
                 </p>
                 <p v-else-if="scResumeDialog.mode === 'partial_mining'" class="pause-modal__desc">
@@ -8224,6 +8236,20 @@
                 <p v-if="scComparisonLaunchBatch" class="pause-modal__desc sc-batch-warning">
                     Если по паре анализ уже был, он будет выполнен заново: этапы 2–6 пересчитаются,
                     сохранение принятых по ней решений инженера не гарантируется.
+                </p>
+                <fieldset v-if="scComparisonModeOptions.length" class="sc-v3-model-choice">
+                    <legend>Метод сравнения</legend>
+                    <label v-for="option in scComparisonModeOptions" :key="option.code"
+                           :class="{'is-selected': scComparisonMode === option.code}">
+                        <input type="radio" name="sc-comparison-mode" :value="option.code" v-model="scComparisonMode"
+                               :disabled="scComparisonLaunchBusy">
+                        <span>{{ option.label }}</span>
+                    </label>
+                </fieldset>
+                <p v-if="scComparisonMode === 'subjects'" class="pause-modal__desc">
+                    Ищет связи по назначению и источникам предмета, включая другие тома.
+                    Доступен для любого размера проекта. Полнота поиска пока экспериментальная;
+                    результат сохраняется отдельным прогоном для сравнения со стандартным режимом.
                 </p>
                 <fieldset v-if="scV3ModelOptions.length > 1" class="sc-v3-model-choice">
                     <legend>Модель анализа</legend>

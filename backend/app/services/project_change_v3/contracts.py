@@ -79,7 +79,8 @@ ENGINE_NAME = "projectchange_v3"
 #         verification answers are reused); TRANSIENT review failures retry after a pause.
 # 3.27.0: offline costed Mapper/Miner planning; opt-in balanced full coverage,
 #         all duplicate-image bindings, request identities and versioned recovery.
-ENGINE_VERSION = "3.27.0"
+# 3.28.0: explicit experimental subject catalog/search mode with durable recovery.
+ENGINE_VERSION = "3.28.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /3: MD is the complete text source; TEXT is authoritative, no raw PDF transcript.
 # New prompts/source identity intentionally prevent mixing old-policy checkpoints.

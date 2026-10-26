@@ -100,6 +100,7 @@ class ProductionRunRequest(BaseModel):
     #: список задаёт установка (PROJECT_COMPARISON_V3_MODEL_CHOICES); без значения —
     #: модель установки по умолчанию.
     model_profile: str | None = Field(default=None, max_length=32)
+    comparison_mode: Literal["standard", "subjects"] | None = None
     parallelism: Literal[5, 10] = 5
     #: Досборка V3: использовать карту и принятые ответы упавшего прогона этой пары.
     #: Частичный Miner досчитывает только недостающие участки на той же модели;
@@ -552,7 +553,7 @@ async def run_production_comparison(
     if request.resume_from_run_id:
         from backend.app.services.project_change_v3 import resume as v3_resume
         try:
-            await run_in_threadpool(v3_resume.load_donor, session_id, pair_id, request.resume_from_run_id)
+            await run_in_threadpool(v3_resume.resume_options, session_id, pair_id, request.resume_from_run_id)
         except ValueError as exc:  # ResumeRefused, or an unsafe id
             raise HTTPException(400, f"Досборка невозможна: {exc}") from exc
     try:
@@ -592,6 +593,7 @@ class ProductionBatchRequest(BaseModel):
     pairs: list[ProductionBatchPair] = Field(min_length=1, max_length=100)
     ai_mode: Literal["FAST", "STANDARD", "DEEP"] | None = None
     model_profile: str | None = Field(default=None, max_length=32)
+    comparison_mode: Literal["standard", "subjects"] = "standard"
     parallelism: Literal[5, 10] = 5
 
 
@@ -609,6 +611,7 @@ async def start_production_batch(session_id: str, request: ProductionBatchReques
         return await run_in_threadpool(
             production_batch.start, session_id, [p.model_dump() for p in request.pairs],
             ai_mode=request.ai_mode, model_profile=request.model_profile, parallelism=request.parallelism,
+            comparison_mode=request.comparison_mode,
             requested_by=_engineer_author(http_request),
         )
     except production_batch.BatchConflictError as exc:
@@ -655,6 +658,10 @@ async def get_production_ai_modes():
         "controlled_v2_standard": production.ai_v2_settings.enabled(),
         # Модели ProjectChange V3, из которых инженер выбирает перед запуском.
         "models": _v3_model_choices(),
+        "comparison_modes": {"default": "standard", "items": [
+            {"code": "standard", "label": "Стандартный"},
+            {"code": "subjects", "label": "По инженерным предметам — экспериментальный"},
+        ]},
     }
 
 

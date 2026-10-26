@@ -180,14 +180,21 @@ def v31_compact_miner_enabled() -> bool:
 def miner_contract(compact: bool) -> dict[str, Any]:
     """Prompt, schema and retry policy of the Miner call in the selected output format."""
     if not compact:
-        return {"format": MINER_FORMAT_V3, "prompt": MINER_PROMPT, "prompt_sha256": MINER_PROMPT_SHA256,
+        result = {"format": MINER_FORMAT_V3, "prompt": MINER_PROMPT, "prompt_sha256": MINER_PROMPT_SHA256,
                 "schema": MINER_SCHEMA, "max_attempts": MINER_MAX_ATTEMPTS, "retry_policy": MINER_RETRY_POLICY}
-    return {"format": MINER_FORMAT_V31_COMPACT, "prompt": MINER_PROMPT_V31,
+    else:
+        result = {"format": MINER_FORMAT_V31_COMPACT, "prompt": MINER_PROMPT_V31,
             "prompt_sha256": MINER_PROMPT_V31_SHA256, "schema": MINER_SCHEMA_V31,
             "max_attempts": MINER_V31_MAX_ATTEMPTS, "retry_policy": MINER_V31_RETRY_POLICY}
+    from .comparison_mode import current, SUBJECTS
+    if current() == SUBJECTS:
+        from .subject_contracts import AUTHORITY
+        result['prompt'] += '\n' + AUTHORITY
+        result['prompt_sha256'] = sha256_text(result['prompt'])
+    return result
 
 
-def miner_format_provenance(compact: bool) -> dict[str, Any]:
+def _base_miner_format_provenance(compact: bool) -> dict[str, Any]:
     """Extra provenance of a V3.1 run; nothing at all for V3 (its provenance stays byte-identical)."""
     if not compact:
         return {}
@@ -207,6 +214,17 @@ def miner_format_provenance(compact: bool) -> dict[str, Any]:
             "max_generating_attempts_per_region": MINER_V31_MAX_ATTEMPTS,
         },
     }
+
+
+def miner_format_provenance(compact: bool) -> dict[str, Any]:
+    result = _base_miner_format_provenance(compact)
+    from .comparison_mode import current, SUBJECTS
+    if current() == SUBJECTS:
+        sha = miner_contract(compact)['prompt_sha256']
+        result.update(miner_prompt_sha256=sha, miner_prompt_version=sha)
+        if 'miner_output' in result:
+            result['miner_output']['miner_prompt_sha256'] = sha
+    return result
 
 
 def _now() -> str:
@@ -477,6 +495,16 @@ def run_v3_pipeline(**kwargs: Any) -> dict[str, Any]:
     from .contracts import resolve_profile, use_profile
     requested = kwargs.pop('model_profile', None)
     parallelism = kwargs.pop('parallelism', None)
+    from . import comparison_mode, run_storage
+    mode = kwargs.pop('comparison_mode', None)
+    if kwargs.get('resume_from_run_id'):
+        source_state = run_storage.read(run_storage.run_dir(kwargs['session_id'], kwargs['pair_id'],
+                                           kwargs['resume_from_run_id']) / 'state.json') or {}
+        source_mode = (source_state.get('provenance') or {}).get('comparison_mode', 'standard')
+        if mode is not None and mode != source_mode:
+            raise ValueError('cannot change comparison mode when resuming a run')
+        mode = source_mode
+    mode = mode or comparison_mode.STANDARD
     policy = kwargs.get('resume_model_policy', 'same_model')
     if policy not in {'same_model', 'remaining_stages'}:
         raise ValueError('unknown resume model policy')
@@ -488,7 +516,7 @@ def run_v3_pipeline(**kwargs: Any) -> dict[str, Any]:
         requested = resume_mod.donor_model_profile(kwargs['session_id'], kwargs['pair_id'],
                                                    kwargs['resume_from_run_id'])
     profile = resolve_profile(requested)
-    with use_profile(profile), parallel_calls.use_concurrency(parallelism):
+    with use_profile(profile), parallel_calls.use_concurrency(parallelism), comparison_mode.selected(mode):
         return _run_v3_pipeline_stored(**kwargs)
 
 
@@ -827,7 +855,23 @@ def _run_admitted(
 
     # 3.11.0: resume a FAILED run from its saved map, Miner and unmatched answers.
     donor: resume_mod.Donor | None = None
-    if resume_from_run_id:
+    from . import comparison_mode, subject_search, run_storage
+    subjects_mode = comparison_mode.current() == comparison_mode.SUBJECTS
+    subject_checkpoint = None
+    subject_ledger = None
+    if resume_from_run_id and subjects_mode:
+        prior = run_storage.read(run_storage.run_dir(session_id, pair_id, resume_from_run_id) / 'state.json') or {}
+        if prior.get('pipeline_current') == 'MAPPING':
+            try:
+                if resume_model_policy != 'same_model':
+                    raise ValueError('subject search recovery requires the same model')
+                subject_checkpoint, prior = subject_search.load_checkpoint(session_id, pair_id, resume_from_run_id)
+                provenance['subject_recovery'] = {'run_id': resume_from_run_id,
+                    'prior_usage_total': (prior.get('provenance') or {}).get('usage_total'),
+                    'accepted_requests': len(subject_checkpoint['entries'])}
+            except Exception as exc:
+                raise fail('resume_refused', f'Не удалось восстановить поиск по предметам: {exc}', exc) from exc
+    if resume_from_run_id and subject_checkpoint is None:
         try:
             donor = resume_mod.load_donor(session_id, pair_id, resume_from_run_id)
             resume_mod.check_compatible(donor, provenance=provenance, manifest=prepared["manifest"],
@@ -867,6 +911,13 @@ def _run_admitted(
         for key in ("mapper_portioning", "mapper_plan", "miner_region_splits", "miner_region_merges"):
             if donor.provenance.get(key):
                 provenance[key] = donor.provenance[key]
+        if subjects_mode:
+            subject_ledger = run_storage.read(run_storage.run_dir(session_id, pair_id, donor.run_id) /
+                                             (subject_search.ARTIFACT + '.json'))
+            if not subject_ledger:
+                raise fail('resume_refused', 'У донора отсутствует журнал поиска по предметам')
+            _save_artifact(session_id, pair_id, subject_search.ARTIFACT, subject_ledger)
+            provenance['subject_search'] = subject_ledger['summary']
 
     structure = prepared["structure"]
     from . import mapper_planning
@@ -883,7 +934,7 @@ def _run_admitted(
     # Plan both providers before any call. Codex injected-history chunks still
     # share one context: large inputs need separate Mapper calls too.
     mapper_portions: list[mapper_portions_mod.MapperPortion] = []
-    if donor is not None:
+    if donor is not None or subjects_mode:
         pass  # the donor's map is reused: its envelope was planned by the donor run
     else:
         single_error = mapper_portions_mod_single_envelope_error(pair_id, structure)
@@ -946,6 +997,39 @@ def _run_admitted(
                                donor.rebase(donor.mapper_portions))
             except Exception as exc:  # noqa: BLE001
                 raise fail("result_persistence_failed", "V3: ответы порций Mapper не сохранены", exc) from exc
+    elif subjects_mode:
+        progress('По инженерным предметам: подготовка каталога', 'MAPPING')
+
+        def subject_invoke(**request):
+            nonlocal calls
+            try:
+                return complete(**request)
+            finally:
+                if not using_test_provider:
+                    calls += 1
+                provenance.update(receipts())
+
+        def subject_save(name, value):
+            _save_artifact(session_id, pair_id, name, value)
+            if name == subject_search.CHECKPOINT:
+                provenance['subject_checkpoint_sha256'] = subject_search.digest(value)
+
+        try:
+            search = subject_search.SubjectSearch(
+                pair_id=pair_id, run_id=run_id, structure=structure, work_dir=work_dir,
+                source_manifest=prepared['manifest'], profile=active_profile(), invoke=subject_invoke,
+                save=subject_save, progress=progress, cancelled=cancelled, donor_checkpoint=subject_checkpoint)
+            semantic_map, subject_ledger = search.run()
+            provenance['subject_search'] = subject_ledger['summary']
+            provenance['mapper_plan'] = {'mode': 'subjects', 'coverage_contract': 'candidate_search',
+                                         'complete': True, **subject_ledger['summary']}
+        except ProviderError as exc:
+            raise provider_failure('поиск по предметам', exc) from exc
+        except _V3Failure:
+            raise
+        except Exception as exc:
+            raise fail('v3_cancelled' if cancelled() else 'subject_search_failed',
+                       CANCELLED_RU if cancelled() else f'Поиск по предметам остановлен: {exc}', exc) from exc
     elif not mapper_portions:
         progress("V3: семантическое сопоставление OLD↔NEW (Mapper)", "MAPPING")
         try:
@@ -1887,11 +1971,16 @@ def _run_admitted(
     verification_enabled = os.environ.get(SOURCE_VERIFICATION_ENV, "1").strip() == "1"
     if verification_enabled and quality["verification_work_items"]:
         try:
+            review_context = subject_search.verification_context(final_changes, subject_ledger, structure) if subjects_mode else None
+            if subjects_mode:
+                _save_artifact(session_id, pair_id, subject_search.ARTIFACT, subject_ledger)
+                provenance['subject_search'] = subject_ledger['summary']
             planned_verification = build_verification_batches(
                 work_items=quality["verification_work_items"],
                 projectchanges=final_changes,
                 page_records=pages_by_key,
                 max_batches=verification_max_batches,
+                **({'context_pages': review_context, 'max_items_per_batch': 1} if subjects_mode else {}),
             )
         except Exception as exc:  # noqa: BLE001
             raise fail("verification_planning_failed", f"V3: проверка параметров не спланирована: {exc}", exc) from exc
@@ -2068,6 +2157,9 @@ def _run_admitted(
         "quality_literal_review_flags": quality["summary"]["literal_review_flags"],
         "quality_source_verification_pending": quality["summary"]["source_verification_pending"],
     }
+    if subjects_mode:
+        summary['comparison_mode'] = 'subjects'
+        summary['subject_search'] = provenance.get('subject_search')
     if source_checks is not None:
         summary["source_check_findings"] = source_checks["summary"]["findings_total"]
     if dedupe_repairs:
@@ -2093,7 +2185,8 @@ def _run_admitted(
         )
 
     needs_review = bool(
-        all_hints
+        subjects_mode
+        or all_hints
         or not coverage["summary"]["complete"]
         or quality["summary"].get("source_verification_corrected")
         or quality["summary"].get("source_verification_conflicts")
@@ -2147,5 +2240,6 @@ def run_v3_production_comparison(
         parallelism=kwargs.get("parallelism"),
         resume_from_run_id=kwargs.get("resume_from_run_id") or None,
         resume_model_policy=kwargs.get("resume_model_policy", "same_model"),
+        comparison_mode=kwargs.get("comparison_mode"),
         max_new_miner_calls=kwargs.get("max_new_miner_calls"),
     )
