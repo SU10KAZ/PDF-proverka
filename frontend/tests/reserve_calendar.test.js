@@ -25,6 +25,12 @@ const data = () => ({today:'2026-10-26',revision:0,can_edit:true, calendar:{},to
         {id:'2',engineer_id:'a',position:2,state:'preparation',title:'Two'},
         {id:'3',engineer_id:'b',position:1,state:'ready',title:'Three'}]});
 
+const catalogData = () => ({...data(), available_projects:[
+    {object_id:'o2',object_name:'272. Балчуг Эстейт',project_id:'AR/P2',version_id:'v002',title:'АР2',ready:true},
+    {object_id:'o1',object_name:'213. King & Sons',project_id:'AR/P1',version_id:'v001',title:'АР1',ready:true},
+    {object_id:'o1',object_name:'213. King & Sons',project_id:'KJ/P3',version_id:'v001',title:'КЖ',ready:false},
+]});
+
 describe('reserve calendar user actions', () => {
     it('splits pasted lines without clipping names and detects NFC/spacing/case duplicates across fields', () => {
         const h = harness();
@@ -81,5 +87,16 @@ describe('reserve calendar user actions', () => {
         h.state.closePreparation(); expect(h.state.drafts.value.a).toBe('Unfinished');
         await h.state.operate('add_preparation',{items:[{engineer_id:'a',title:'Unfinished'}]});
         expect(h.state.drafts.value).toEqual({}); expect(close).toHaveBeenCalledTimes(2);
+    });
+    it('offers unique portal objects and submits a Shift-compatible multi-selection as one assignment', async () => {
+        const initial = catalogData(), saved = {...initial, revision:1};
+        const h = harness([initial, saved]); await h.state.load();
+        expect([...h.state.objectOptions.value]).toEqual(['213. King & Sons', '272. Балчуг Эстейт']);
+        h.state.chosenProject.value = ['0', '2'];
+        h.state.targetEngineer.value = 'a';
+        await h.state.saveCatalog();
+        const sent = JSON.parse(h.fetch.mock.calls[1][1].body);
+        expect(sent.kind).toBe('assign');
+        expect(sent.items.map(item => [item.project_id, item.engineer_id])).toEqual([['AR/P2','a'],['KJ/P3','a']]);
     });
 });

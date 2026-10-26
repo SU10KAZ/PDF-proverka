@@ -96,6 +96,18 @@
             });
             const cell = (eid, iso) => cells.value.get(eid+'|'+(iso || 'none')) || [];
             const available = computed(() => data.value.available_projects.filter(p => key([p.object_name,p.title,p.code,p.version_id].join(' ')).includes(key(search.value))));
+            const objectOptions = computed(() => {
+                const objects = new Map();
+                for (const project of data.value.available_projects) {
+                    const name = String(project.object_name || '').trim();
+                    if (name && !objects.has(key(name))) objects.set(key(name), name);
+                }
+                return [...objects.values()].sort((a, b) => a.localeCompare(b, 'ru', {numeric:true}));
+            });
+            const chosenProjectIndexes = computed(() => {
+                const values = Array.isArray(chosenProject.value) ? chosenProject.value : [chosenProject.value];
+                return values.filter(value => value !== '');
+            });
             const color = task => {
                 const palette = ['#008e83','#6389cc','#af71b6','#d2a34b','#db7d78','#6e9b6a'];
                 let n = 0;
@@ -231,14 +243,16 @@
             async function openCatalog(task = null) {
                 linkTask.value = task;
                 targetEngineer.value = task?.engineer_id || activeEngineers.value[0]?.id || '';
-                catalogOpen.value = true; chosenProject.value = ''; search.value = ''; tooltip.value = null;
+                catalogOpen.value = true; chosenProject.value = task ? '' : []; search.value = ''; tooltip.value = null;
                 await nextTick(); catalogDialog.value.showModal();
             }
             function closeCatalog() { catalogDialog.value?.close(); catalogOpen.value = false; }
             function saveCatalog() {
-                const item = data.value.available_projects[Number(chosenProject.value)];
-                if (!item || chosenProject.value === '') return;
-                return linkTask.value ? operate('link', {task_id: linkTask.value.id, project:item}) : operate('assign', {items:[{...item, engineer_id:targetEngineer.value}]});
+                const items = chosenProjectIndexes.value.map(value => data.value.available_projects[Number(value)]).filter(Boolean);
+                if (!items.length) return;
+                return linkTask.value
+                    ? operate('link', {task_id: linkTask.value.id, project:items[0]})
+                    : operate('assign', {items:items.map(item => ({...item, engineer_id:targetEngineer.value}))});
             }
             function escape(event) {
                 if (event.key !== 'Escape') return;
@@ -254,6 +268,7 @@
             return {data, loading, busy, error, status, selected, dragging, insertion, pending, drafts, prepDialog, projectDialog, catalogDialog,
                 prepOpen, card, catalogOpen, linkTask, targetEngineer, chosenProject, search, anchor, tooltip, tooltipStyle,
                 canEdit, locked, activeEngineers, selectedTasks, draftErrors, draftItems, draftEngineerCount, grouped, days, columns, available,
+                objectOptions, chosenProjectIndexes,
                 key, lines, dayAdd, label, stateLabel, cell, color, tipText, load, send, operate, clickTask, openCard, showTip,
                 dragStart, dragEnd, overTask, overCell, drop, shift, openPreparation, closePreparation, openCatalog, closeCatalog, saveCatalog};
         },
@@ -298,7 +313,7 @@
 
           <dialog ref="projectDialog" class="rc-dialog rc-card-dialog" aria-labelledby="rc-card-title" @cancel="card=null"><template v-if="card"><header><div><p>Карточка подготовки</p><h3 id="rc-card-title">{{ card.title }}</h3></div><button aria-label="Закрыть карточку" @click="projectDialog.close();card=null">×</button></header><div class="rc-card-body"><p>{{ data.engineers.find(e=>e.id===card.engineer_id)?.name }}</p><p>{{ stateLabel(card.state) }} · позиция {{ card.position }}</p><p>Условная дата: {{ label(card.forecast_date) }}</p><p>Документы ещё не связаны. После выбора проекта сохранятся ID задания, инженер и место в очереди.</p><button v-if="canEdit" :disabled="locked" @click="openCatalog(card)">Связать с проектом / версией</button></div><footer><button v-if="canEdit && data.undo_operation_id" :disabled="locked" @click="operate('undo',{undo_id:data.undo_operation_id})">Отменить последнее действие</button><button @click="projectDialog.close();card=null">В календарь</button></footer><div v-if="error" class="rc-error" role="alert">{{ error }}</div></template></dialog>
 
-          <dialog ref="catalogDialog" class="rc-dialog rc-card-dialog" aria-labelledby="rc-catalog-title" @cancel="catalogOpen=false"><header><h3 id="rc-catalog-title">{{ linkTask ? 'Связать с документами' : 'Добавить проект с портала' }}</h3><button aria-label="Закрыть выбор проекта" :disabled="busy" @click="closeCatalog()">×</button></header><div v-if="catalogOpen" class="rc-card-body"><label>Найти объект, шифр или название<input v-model="search" type="search"></label><label>Проект и версия<select v-model="chosenProject" size="7"><option disabled value="">Выберите проект и версию</option><option v-for="p in available" :key="JSON.stringify([p.object_id,p.project_id,p.version_id])" :value="String(data.available_projects.indexOf(p))">{{ p.object_name }} · {{ p.title }} · {{ p.version_id }} · {{ p.ready ? 'Готов' : 'Подготовка' }}</option></select></label><label v-if="!linkTask">Инженер<select v-model="targetEngineer"><option v-for="e in activeEngineers" :key="e.id" :value="e.id">{{ e.name }}</option></select></label><p>Выберите точную версию. Совпадение названий не связывает задания автоматически.</p><div v-if="error" class="rc-error" role="alert">{{ error }}</div></div><footer><button :disabled="busy" @click="closeCatalog()">Закрыть</button><button class="rc-primary" :disabled="locked || chosenProject==='' || !targetEngineer" @click="saveCatalog()">{{ linkTask ? 'Связать' : 'Добавить в очередь' }}</button></footer></dialog>
+          <dialog ref="catalogDialog" class="rc-dialog rc-card-dialog" aria-labelledby="rc-catalog-title" @cancel="catalogOpen=false"><header><h3 id="rc-catalog-title">{{ linkTask ? 'Связать с документами' : 'Добавить проект с портала' }}</h3><button aria-label="Закрыть выбор проекта" :disabled="busy" @click="closeCatalog()">×</button></header><div v-if="catalogOpen" class="rc-card-body"><label>Найти объект, шифр или название<input v-model="search" type="search" list="rc-object-options" autocomplete="off" placeholder="Начните вводить или выберите объект"><datalist id="rc-object-options"><option v-for="name in objectOptions" :key="name" :value="name"></option></datalist></label><label>Проект и версия<select v-model="chosenProject" :multiple="!linkTask" size="7"><option v-if="linkTask" disabled value="">Выберите проект и версию</option><option v-for="p in available" :key="JSON.stringify([p.object_id,p.project_id,p.version_id])" :value="String(data.available_projects.indexOf(p))">{{ p.object_name }} · {{ p.title }} · {{ p.version_id }} · {{ p.ready ? 'Готов' : 'Подготовка' }}</option></select></label><p v-if="!linkTask" class="rc-selection-hint">Выбрано: <b>{{ chosenProjectIndexes.length }}</b>. Shift — выбрать диапазон, Ctrl / Cmd — выбрать отдельные проекты.</p><label v-if="!linkTask">Инженер<select v-model="targetEngineer"><option v-for="e in activeEngineers" :key="e.id" :value="e.id">{{ e.name }}</option></select></label><p>Выберите точную версию. Совпадение названий не связывает задания автоматически.</p><div v-if="error" class="rc-error" role="alert">{{ error }}</div></div><footer><button :disabled="busy" @click="closeCatalog()">Закрыть</button><button class="rc-primary" :disabled="locked || !chosenProjectIndexes.length || !targetEngineer" @click="saveCatalog()">{{ linkTask ? 'Связать' : 'Добавить в очередь' }}<template v-if="!linkTask && chosenProjectIndexes.length"> ({{ chosenProjectIndexes.length }})</template></button></footer></dialog>
         </section>`
     };
 
