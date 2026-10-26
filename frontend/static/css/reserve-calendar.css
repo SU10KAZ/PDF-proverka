@@ -1,5 +1,5 @@
 .sched-page{padding-top:0}
-.sched-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #dce3ed;margin-bottom:18px}
+.sched-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #dce3ed;margin-bottom:6px}
 .sched-reserve-tabs{display:flex;align-self:stretch;gap:24px;flex-shrink:0}
 .sched-reserve-tabs button{border:0;border-bottom:3px solid transparent;background:none;color:#64758b;font:600 14px inherit;padding:12px 0;cursor:pointer}
 .sched-reserve-tabs button[aria-selected=true]{color:#008e83;border-bottom-color:#008e83}

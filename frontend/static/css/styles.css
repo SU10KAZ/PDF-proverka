@@ -5546,7 +5546,7 @@ tr.row-rejected td.sc-cell-goto {
 .sched-plan__input { width: 46px; padding: 2px 6px; border: 1px solid var(--border2); border-radius: 6px; font-family: inherit; font-size: 13px; text-align: center; background: var(--card2-bg); color: var(--text); }
 
 /* stats */
-.sched-stats { margin-top: 8px; }
+.sched-stats { margin-top: 4px; }
 .sched-stats__head { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 /* таблица «План и статистика по инженерам» */
 .sched-stats__tablewrap { border: 1px solid var(--border3); border-radius: var(--radius-lg); overflow: hidden; background: var(--card-bg); }
@@ -5597,7 +5597,7 @@ tr.row-rejected td.sc-cell-goto {
 .sched-statcard__barfill.sched-low  { background: var(--red); }
 
 /* ── KPI-карточки графика ── */
-.sched-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 2px 0 14px; }
+.sched-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 0 0 6px; }
 .sched-kpi { display: flex; align-items: center; gap: 9px; min-height: 46px; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 6px 10px; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
 .sched-kpi__icon { flex-shrink: 0; width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; }
 .sched-kpi__icon svg { width: 19px; height: 19px; }

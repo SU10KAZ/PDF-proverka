@@ -14,7 +14,9 @@ describe('компоновка графика работ', () => {
         expect(topbar).toContain('Изменить план');
         expect(topbar).not.toContain('>Сегодня</button>');
         expect(topbar).not.toContain('Фильтры');
+        expect(html).not.toContain('План и статистика по инженерам — месяц');
         expect(reserveStyles).toContain('.sched-page{padding-top:0}');
+        expect(reserveStyles).toContain('margin-bottom:6px');
         expect(reserveStyles).toContain('.sched-topbar{display:flex;align-items:center;justify-content:space-between');
     });
 
@@ -27,6 +29,7 @@ describe('компоновка графика работ', () => {
     it('использует компактные KPI и отдельную обёртку для длинных счётчиков', () => {
         expect(styles).toContain('.sched-kpi { display: flex; align-items: center; gap: 9px; min-height: 46px;');
         expect(styles).toContain('.sched-kpi__body { display: flex; align-items: baseline; gap: 8px;');
+        expect(styles).toContain('gap: 10px; margin: 0 0 6px;');
         expect(styles).toContain('.sched-stats-table th:nth-child(5) { width: 14%; }');
         expect(html.match(/class="sched-remarks-values"/g)).toHaveLength(2);
         expect(styles).toContain('font-variant-numeric: tabular-nums');
