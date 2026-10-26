@@ -335,7 +335,8 @@
                 }
             }
             const processed = Number(row.processed), total = Number(row.total);
-            const units = {region: 'областей', batch: 'пакетов', portion: 'частей', parameter: 'параметров', call: 'обращений'};
+            const units = {region: 'областей', batch: 'пакетов', portion: 'частей', parameter: 'параметров',
+                call: 'обращений', group: 'групп'};
             const counter = row.processed != null && row.total != null && Number.isFinite(processed)
                 && Number.isFinite(total) && total > 0 ? `${processed} из ${total} ${units[row.unit] || ''}`.trim() : '';
             const start = Date.parse(row.started_at), end = Date.parse(row.finished_at);
@@ -343,7 +344,11 @@
                 ? `${Math.floor((end - start) / 60000)} мин ${Math.floor((end - start) / 1000) % 60} с` : '';
             const message = str(row.message).replace(/^V3:\s*/, '').replace(/\s*\((?:Mapper|Miner|Dedupe)\)/g, '');
             const verification = id === 'SOURCE_VERIFICATION' ? sourceVerificationDisplay(row, status) : {};
-            return {id, title, description, number: String(index + 1).padStart(2, '0'), status,
+            const subjectMode = (state.provenance || {}).comparison_mode === 'subjects';
+            const stageDescription = id === 'MAPPING' && subjectMode
+                ? 'Составляем каталог страниц, ищем связи и подробно сопоставляем группы предметов. Счётчик показывает текущий подэтап.'
+                : description;
+            return {id, title, description: stageDescription, number: String(index + 1).padStart(2, '0'), status,
                 label: verification.label || PIPELINE_LABELS[status] || PIPELINE_LABELS.UNKNOWN,
                 counter, duration, message, attention: verification.attention || '', detail: verification.detail || '',
                 css: ({COMPLETED: 'step-done', REUSED: 'step-done', RUNNING: 'step-running', FAILED: 'step-error',

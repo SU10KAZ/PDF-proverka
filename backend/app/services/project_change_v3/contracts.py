@@ -81,7 +81,8 @@ ENGINE_NAME = "projectchange_v3"
 #         all duplicate-image bindings, request identities and versioned recovery.
 # 3.28.0: explicit experimental subject catalog/search mode with durable recovery.
 # 3.28.1: stricter catalog evidence, one bounded correction and checked v1 recovery.
-ENGINE_VERSION = "3.28.1"
+# 3.28.2: persist exact subject substage progress, including reused answers.
+ENGINE_VERSION = "3.28.2"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /3: MD is the complete text source; TEXT is authoritative, no raw PDF transcript.
 # New prompts/source identity intentionally prevent mixing old-policy checkpoints.

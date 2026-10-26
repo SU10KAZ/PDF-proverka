@@ -86,15 +86,65 @@ def test_subject_mode_reads_sources_and_freezes_separate_result(env, monkeypatch
     run_storage.validate(env['session_id'], gf.PAIR_ID, state['run_id'])
 
 
+def test_subject_progress_reports_planned_packets_pages_and_completed_groups(env, monkeypatch):
+    from backend.app.services.stage_comparison import production_store
+    monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
+    save, chunks = production_store.save_artifact, ss.SubjectSearch.chunks
+    states = []
+
+    def record(session_id, pair_id, name, value):
+        if name == 'state':
+            states.append(deepcopy(value))
+        return save(session_id, pair_id, name, value)
+
+    def one_page(self, pages, prompt, *args, **kwargs):
+        return [[p] for p in pages] if prompt == sc.CATALOG_PROMPT else chunks(self, pages, prompt, *args, **kwargs)
+
+    monkeypatch.setattr(production_store, 'save_artifact', record)
+    monkeypatch.setattr(ss.SubjectSearch, 'chunks', one_page)
+    set_test_provider(SubjectFake(handlers=handlers()))
+    state = run(env)
+    assert state['reason_code'] == 'v3_completed', state
+    catalog_rows = [s['pipeline_stages']['MAPPING'] for s in states
+                    if (s.get('pipeline_current') == 'MAPPING' and s['message'].startswith('Каталог:'))]
+    assert {(r['processed'], r['total'], r['unit']) for r in catalog_rows} == {
+        (i, 4, 'batch') for i in range(5)}
+    assert any('Страницы: 4 из 4.' in r['message'] for r in catalog_rows)
+    assert all(r['processed'] <= r['total'] for r in catalog_rows)
+    route_rows = [s['pipeline_stages']['MAPPING'] for s in states
+                  if s.get('pipeline_current') == 'MAPPING' and s['message'].startswith('Поиск связей:')]
+    assert {(r['processed'], r['total']) for r in route_rows} == {(0, 1), (1, 1)}
+    group_rows = [s['pipeline_stages']['MAPPING'] for s in states
+                  if s.get('pipeline_current') == 'MAPPING' and s['message'].startswith('Группы предметов:')]
+    assert {(r['processed'], r['total'], r['unit']) for r in group_rows} == {(0, 1, 'group'), (1, 1, 'group')}
+    ledger = artifact(env, state, ss.ARTIFACT)
+    assert ledger['progress']['processed'] == ledger['progress']['total'] == 1
+    assert ledger['progress']['unit'] == 'group'
+
+
 def test_stopped_catalog_resumes_without_repeating_accepted_call(env, monkeypatch):
     monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
     set_test_provider(SubjectFake(handlers=handlers(fail_phase='catalog_new')))
     stopped = run(env)
     assert stopped['reason_code'] == 'TEST_STOP', stopped
+    assert stopped['pipeline_stages']['MAPPING']['processed'] == 1
+    assert stopped['pipeline_stages']['MAPPING']['total'] == 2
     from backend.app.services.project_change_v3 import resume
     assert resume.resume_available(env['session_id'], gf.PAIR_ID, stopped['run_id'])
     assert resume.resume_options(env['session_id'], gf.PAIR_ID, stopped['run_id'])['mode'] == 'subject_search'
-    fake = SubjectFake(handlers=handlers())
+    base = handlers()
+    mapping = base['MAPPING']
+
+    def check_saved_count(**request):
+        if request['prompt'] == sc.CATALOG_PROMPT:
+            assert request['data']['pages'][0]['side'] == 'NEW'
+            saved = run_storage.read(run_storage.active_dir(env['session_id'], gf.PAIR_ID) / 'state.json')
+            assert saved['pipeline_stages']['MAPPING']['processed'] == 1
+            assert saved['pipeline_stages']['MAPPING']['total'] == 2
+        return mapping(**request)
+
+    base['MAPPING'] = check_saved_count
+    fake = SubjectFake(handlers=base)
     set_test_provider(fake)
     completed = run(env, resume_from_run_id=stopped['run_id'])
     assert completed['reason_code'] == 'v3_completed', completed
@@ -234,6 +284,8 @@ def test_catalog_stops_after_two_invalid_answers_without_inventing_evidence(env)
     assert state['reason_code'] == 'subject_search_failed'
     assert 'после 2 попыток' in state['message']
     assert len(fake.calls) == 2
+    assert state['pipeline_stages']['MAPPING']['processed'] == 0
+    assert state['pipeline_stages']['MAPPING']['total'] == 2
     checkpoint = artifact(env, state, ss.CHECKPOINT)
     assert not checkpoint['entries']
     assert len(checkpoint['attempts']) == 2

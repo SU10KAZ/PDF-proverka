@@ -216,9 +216,39 @@ class SubjectSearch:
                        "source_refs": self.source_refs, "catalog": [], "links": [], "groups": [],
                        "queries": [], "gaps": [], "detailed_packets": [],
                        "coverage_contract": "candidate_search", "semantic_completeness_proven": False}
+        self.batch_progress = None
+        self.groups_total = None
+        self.groups_done = 0
         self.started = time.monotonic()
 
+    def progress_snapshot(self):
+        """UI counters for the current planned batch, never a guessed whole-run total."""
+        batch = self.batch_progress
+        if batch is None:
+            return None
+        done, total = len(batch['accepted']), batch['total']
+        label = batch['phase'].capitalize()
+        snapshot = {'phase': batch['phase'], 'processed': done, 'total': total, 'unit': 'batch',
+                    'packets_processed': done, 'packets_total': total,
+                    'message': f'{label}: готово {done} из {total} пакетов.'}
+        if batch['phase'] == 'каталог':
+            snapshot.update(pages_processed=len(batch['pages']), pages_total=len(self.index.pages))
+            snapshot['message'] += f" Страницы: {len(batch['pages'])} из {len(self.index.pages)}."
+        if self.groups_total is not None:
+            snapshot.update(processed=self.groups_done, total=self.groups_total, unit='group')
+            snapshot['message'] = (f'Группы предметов: готово {self.groups_done} из {self.groups_total}. '
+                                   + snapshot['message'])
+        return snapshot
+
+    def accepted_progress(self, key, data):
+        if self.batch_progress is not None:
+            self.batch_progress['accepted'].add(key)
+            self.batch_progress['pages'].update((p['side'], p['physical_page']) for p in data.get('pages', []))
+
     def persist(self):
+        progress = self.progress_snapshot()
+        if progress is not None:
+            self.ledger['progress'] = progress
         checkpoint = {"schema": sc.VERSION, "run_id": self.run_id, "pair_id": self.pair_id,
                       "identity": self.identity, "entries": self.entries, "attempts": self.attempts}
         if self.legacy_identity:
@@ -269,6 +299,7 @@ class SubjectSearch:
                 self.cache[key] = row
             if not any(row['key'] == key for row in self.entries):
                 self.entries.append(row)
+            self.accepted_progress(key, data)
             self.persist()
             return answer
         self.progress(f"По инженерным предметам: {phase}, принято запросов {len(self.entries)}", "MAPPING")
@@ -333,6 +364,7 @@ class SubjectSearch:
                     if error is None:
                         self.entries.append(row)
                         self.cache[key] = row
+                        self.accepted_progress(key, data)
                     self.attempts.append(row)
                     self.persist()
             if error is None:
@@ -341,8 +373,11 @@ class SubjectSearch:
             request_prompt = prompt + sc.CATALOG_REPAIR_PROMPT
             request_data = {**data, "catalog_validation": error}
 
-    def ask_many(self, jobs):
+    def ask_many(self, jobs, *, phase=None):
         """Only provider.complete runs in threads; writes/validation stay ordered locally."""
+        self.batch_progress = {'phase': phase or (jobs[0][0] if jobs else 'сопоставление'),
+                               'total': len(jobs), 'accepted': set(), 'pages': set()}
+        self.persist()  # publish the exact denominator before the first call, including cached work
         answers = {}
         def start(index, job):
             answers[index] = yield from self.ask_item(*job)
@@ -413,7 +448,7 @@ class SubjectSearch:
         plan(old, new)
         requests = [("поиск связей", sc.ROUTE_PROMPT, {"pair": self.pair_id, "old": a, "new": b},
                      sc.ROUTE_SCHEMA, [], lambda answer, a=a, b=b: validate_route(answer, a, b)) for a, b in jobs]
-        for answer in self.ask_many(requests):
+        for answer in self.ask_many(requests, phase='поиск связей'):
             self.ledger["links"].extend(answer["links"])
         # A common page is NOT a reason to merge subjects. Only explicit links
         # involving the same observation form a connected candidate group.
@@ -500,6 +535,7 @@ class SubjectSearch:
     def run(self):
         self.catalog()
         groups = self.route()
+        self.groups_total = len(groups)
         regions, seen = [], set()
         for ids in groups:
             group_id, pages = self.research(ids)
@@ -509,6 +545,8 @@ class SubjectSearch:
                     continue
                 seen.add(signature)
                 regions.append({**region, "region_id": "S-R" + signature[:16]})
+            self.groups_done += 1
+            self.persist()
         unmatched = {}
         for side in ("OLD", "NEW"):
             covered = {p for r in regions for p in r[side.lower() + "_pages"]}

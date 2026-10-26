@@ -26,6 +26,24 @@ describe('shared seven-stage comparison pipeline', () => {
         expect(panel).toEqual(comparisonPipeline(JSON.parse(JSON.stringify(state))));
         expect(stage(running({pipeline_stages: {MINING: {status: 'RUNNING'}}}), 'MINING').counter).toBe('');
     });
+    it('shows subject catalog totals and labels the denominator as the current substage', () => {
+        const result = stage(running({pipeline_current: 'MAPPING', current_stage: 'MAPPING',
+            provenance: {comparison_mode: 'subjects'}, pipeline_stages: {MAPPING: {
+                status: 'RUNNING', processed: 23, total: 148, unit: 'batch',
+                message: 'Каталог: готово 23 из 148 пакетов. Страницы: 306 из 2082.',
+            }}}), 'MAPPING');
+        expect(result.counter).toBe('23 из 148 пакетов');
+        expect(result.message).toContain('306 из 2082');
+        expect(result.description).toContain('текущий подэтап');
+    });
+    it('switches the subject counter to completed groups during detailed matching', () => {
+        const result = stage(running({pipeline_current: 'MAPPING', pipeline_stages: {MAPPING: {
+            status: 'RUNNING', processed: 2, total: 10, unit: 'group',
+            message: 'Группы предметов: готово 2 из 10. Подробное сопоставление: готово 1 из 3 пакетов.',
+        }}}), 'MAPPING');
+        expect(result.counter).toBe('2 из 10 групп');
+        expect(result.message).toContain('1 из 3 пакетов');
+    });
     it.each([
         [{status: 'FAILED', reason_code: 'miner_failed'}, 'FAILED'],
         [{status: 'FAILED', reason_code: 'v3_cancelled'}, 'CANCELLED'],

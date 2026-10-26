@@ -1019,8 +1019,12 @@ def _run_admitted(
                 provenance['subject_accepted_requests'] = len(value['entries'])
             elif name == subject_search.ARTIFACT:
                 provenance['subject_ledger_sha256'] = subject_search.digest(value)
-                written = state('RUNNING', f"По инженерным предметам: сохранено {provenance.get('subject_accepted_requests', 0)} ответов",
-                                'v3_running', calls=calls, provenance=provenance, current_stage='MAPPING')
+                details = value.get('progress') or {}
+                message = details.get('message') or (
+                    f"По инженерным предметам: сохранено {provenance.get('subject_accepted_requests', 0)} ответов")
+                counters = {key: details[key] for key in ('processed', 'total', 'unit') if key in details}
+                written = state('RUNNING', message, 'v3_running', calls=calls, provenance=provenance,
+                                current_stage='MAPPING', **counters)
                 if written['status'] == 'FAILED':
                     raise fail('result_persistence_failed', 'Не сохранено состояние поиска по предметам')
 
