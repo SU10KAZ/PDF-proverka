@@ -13,17 +13,33 @@ from backend.app.services.common import reserve_service as service
 router = APIRouter(prefix='/api/schedule/reserve', tags=['schedule'])
 
 
+class ProjectLink(BaseModel):
+    object_id: str
+    project_id: str
+    version_id: str
+    check_type: Literal['expert_review'] = 'expert_review'
+
+
+class QueueItem(BaseModel):
+    engineer_id: str
+    title: str | None = Field(default=None, max_length=4000)
+    object_id: str | None = None
+    project_id: str | None = None
+    version_id: str | None = None
+    check_type: Literal['expert_review'] = 'expert_review'
+
+
 class Operation(BaseModel):
     operation_id: UUID
     revision: int = Field(ge=0)
     kind: Literal['move', 'add_preparation', 'assign', 'link', 'start', 'undo']
-    items: list[dict] = Field(default_factory=list, max_length=1000)
+    items: list[QueueItem] = Field(default_factory=list, max_length=1000)
     task_ids: list[str] = Field(default_factory=list, max_length=1000)
     task_id: str | None = None
     engineer_id: str | None = None
     anchor_id: str | None = None
     side: Literal['before', 'after'] = 'before'
-    project: dict | None = None
+    project: ProjectLink | None = None
     undo_id: str | None = None
 
 

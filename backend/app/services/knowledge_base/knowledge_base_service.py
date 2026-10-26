@@ -573,7 +573,8 @@ def _resolve_object_id() -> str:
         return ""
 
 
-def _project_completion_day(project_id: str) -> Optional[str]:
+def _project_completion_day(project_id: str, *, review: Optional[dict] = None,
+                            source_maps: Optional[tuple[dict, dict]] = None) -> Optional[str]:
     """День завершения проекта или None, если разметка ещё не полная.
 
     «Полная» = у КАЖДОГО исходного замечания и КАЖДОЙ исходной оптимизации есть
@@ -585,7 +586,7 @@ def _project_completion_day(project_id: str) -> Optional[str]:
     Чистая функция (без object_id и без записи) — переиспользуется runtime-штампом
     и backfill-скриптом.
     """
-    review = load_expert_review(project_id) or {}
+    review = (load_expert_review(project_id) or {}) if review is None else review
     decided_find: set[str] = set()
     decided_opt: set[str] = set()
     days: list[str] = []
@@ -603,7 +604,7 @@ def _project_completion_day(project_id: str) -> Optional[str]:
         if len(ts) == 10:
             days.append(ts)
 
-    findings_map, opt_map = _load_source_item_maps(project_id)
+    findings_map, opt_map = _load_source_item_maps(project_id) if source_maps is None else source_maps
     src_find = {str(k) for k in findings_map.keys()}
     src_opt = {str(k) for k in opt_map.keys()}
     if not src_find and not src_opt:

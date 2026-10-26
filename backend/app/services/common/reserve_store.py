@@ -43,10 +43,11 @@ def transaction():
     path.parent.mkdir(parents=True, exist_ok=True)
     # Serialize first-time WAL/schema initialization across threads and workers.
     lock = open(str(path) + '.lock', 'a+b')
-    fcntl.flock(lock, fcntl.LOCK_EX)
-    conn = sqlite3.connect(path, timeout=15, isolation_level=None)
-    conn.row_factory = sqlite3.Row
+    conn = None
     try:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        conn = sqlite3.connect(path, timeout=15, isolation_level=None)
+        conn.row_factory = sqlite3.Row
         conn.execute('PRAGMA busy_timeout=15000')
         conn.execute('PRAGMA journal_mode=WAL')
         conn.execute('PRAGMA foreign_keys=ON')
@@ -62,7 +63,8 @@ def transaction():
         else:
             conn.commit()
     finally:
-        conn.close()
+        if conn is not None:
+            conn.close()
         fcntl.flock(lock, fcntl.LOCK_UN)
         lock.close()
 

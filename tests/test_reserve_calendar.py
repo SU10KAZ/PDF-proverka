@@ -185,3 +185,57 @@ def test_working_date_override_and_current_plan_no_double_coefficient(tmp_path, 
     assert src.engineers(config, date(2026, 11, 2))[0]['rate_source'] == 'missing_plan'
 
 
+def test_repeating_plan_ratio_fills_exact_period_and_deducts_today_completed(env):
+    _, people = env
+    # 42 / 22 cannot be represented by a finite decimal; the last slot must
+    # still fall on the 22nd workday, rather than slipping into the next month.
+    people[0].update(rate='1.909090909090909090909090909', rate_numerator=42, rate_denominator=22)
+    rows = [{'id': str(i), 'engineer_id': 'a', 'position': i+1, 'state': 'ready'} for i in range(42)]
+    projected = svc.forecast(rows, people, {}, date(2026, 10, 1))
+    assert projected[-1]['forecast_date'] == '2026-10-30'
+    people[0].update(rate='2', rate_numerator=2, rate_denominator=1, completed_today=2)
+    assert svc.forecast(rows[:1], people, {}, date(2026, 10, 26))[0]['forecast_date'] == '2026-10-27'
+
+
+def test_real_v2_source_adapter_keeps_objects_and_versions_distinct(tmp_path, monkeypatch):
+    from backend.app.services.common import object_service
+    monkeypatch.setenv('AUDIT_STORAGE_BACKEND', 'projects_v2')
+    monkeypatch.setenv('AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED', 'true')
+    monkeypatch.setenv('AUDIT_PROJECTS_V2_WRITE_MODE', 'projects_v2_primary')
+    root = tmp_path/'projects_v2'
+    monkeypatch.setenv('AUDIT_PROJECTS_V2_DIR', str(root))
+    registry = tmp_path/'objects.json'
+    objects = [{'id': o, 'name': o, 'projects_dir': str(tmp_path/o)} for o in ('o1', 'o2')]
+    registry.write_text(json.dumps({'objects': objects, 'current_id': 'o1'}))
+    monkeypatch.setattr(object_service, 'OBJECTS_FILE', registry)
+    monkeypatch.setattr(src.project_service, '_load_hidden_projects', lambda: set())
+    for obj in objects:
+        objdir = root/'objects'/obj['id']
+        objdir.mkdir(parents=True)
+        (objdir/'object.json').write_text(json.dumps({'object_id': obj['id'], 'display_name': obj['name']}))
+        doc = objdir/'disciplines/AR/documents/Shared'
+        doc.mkdir(parents=True)
+        (doc/'document.json').write_text(json.dumps({'document_code': 'Shared', 'object_id': obj['id'],
+            'current_version_id': 'v002', 'versions': [{'version_id': v, 'version_no': i} for i,v in enumerate(('v001','v002'),1)]}))
+        (doc/'current_version.txt').write_text('v002')
+        for vid in ('v001','v002'):
+            directory = doc/'versions'/vid
+            (directory/'01_input').mkdir(parents=True)
+            (directory/'01_input/document.pdf').write_bytes(b'fixture-source-not-read')
+            (directory/'version.json').write_text(json.dumps({'version_id':vid, 'project_info':{'name':obj['id']+' full title','section':'AR'}}))
+            analysis = directory/'03_analysis/latest'
+            analysis.mkdir(parents=True)
+            (analysis/'03_findings.json').write_text(json.dumps({'findings':[{'id':'F-1','severity':'low','text':'fixture'}]}))
+            if vid == 'v001':
+                review = directory/'04_review'
+                review.mkdir()
+                (review/'expert_review.json').write_text(json.dumps({'reviewer':'A','decisions':[
+                    {'item_id':'F-1','item_type':'finding','decision':'accepted','timestamp':'2026-10-20T10:00:00'}]}))
+    result = src.catalog()
+    assert len(result) == 4
+    assert {(r['object_id'],r['version_id']) for r in result} == {('o1','v001'),('o1','v002'),('o2','v001'),('o2','v002')}
+    assert all(r['title'] == r['object_id']+' full title' for r in result)
+    assert all(r['completed_at'] == '2026-10-20' for r in result if r['version_id']=='v001')
+    assert all(r['ready'] and not r['completed_at'] for r in result if r['version_id']=='v002')
+
+

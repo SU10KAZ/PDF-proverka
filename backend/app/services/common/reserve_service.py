@@ -6,7 +6,8 @@ import json
 import unicodedata
 import uuid
 from datetime import datetime, timedelta, timezone
-from decimal import Decimal, ROUND_FLOOR
+from fractions import Fraction
+from math import floor
 
 from backend.app.services.common import reserve_sources as sources, reserve_store as store
 
@@ -107,7 +108,8 @@ def forecast(rows, engineers, config, day):
     for engineer in engineers:
         queue = [dict(r) for r in rows if r['engineer_id'] == engineer['id'] and r['state'] in ACTIVE]
         queue.sort(key=lambda r: r['position'])
-        rate = Decimal(engineer['rate'])
+        rate = (Fraction(engineer['rate_numerator'], engineer['rate_denominator'])
+                if 'rate_numerator' in engineer else Fraction(engineer['rate']))
         dates = []
         if rate > 0 and queue:
             available = 0
@@ -116,9 +118,10 @@ def forecast(rows, engineers, config, day):
                 if not sources.is_workday(current, config, engineer):
                     continue
                 available += 1
-                previous = int((rate * (available-1)).to_integral_value(rounding=ROUND_FLOOR))
-                cumulative = int((rate * available).to_integral_value(rounding=ROUND_FLOOR))
-                dates.extend([current.isoformat()] * min(len(queue)-len(dates), cumulative-previous))
+                previous = floor(rate * (available-1))
+                cumulative = floor(rate * available)
+                quota = max(0, cumulative-previous - (engineer.get('completed_today', 0) if current == day else 0))
+                dates.extend([current.isoformat()] * min(len(queue)-len(dates), quota))
                 if len(dates) >= len(queue):
                     break
         conditional = False
@@ -141,6 +144,12 @@ def _snapshot(conn, catalog, engineers, config, actor):
         engineers.append({'id': eid, 'name': user.get('name') or eid, 'direction': 'Неактивные сотрудники',
                           'rate': '0', 'rate_source': 'inactive', 'active': False})
     by_identity = {sources.identity(c): c for c in catalog}
+    reviewers = {c.get('reviewer', '') for c in catalog if str(c.get('completed_at') or '')[:10] == sources.today().isoformat()}
+    reviewer_ids = {name: sources.reviewer_id(name) for name in reviewers}
+    for engineer in engineers:
+        engineer['completed_today'] = sum(
+            str(c.get('completed_at') or '')[:10] == sources.today().isoformat()
+            and reviewer_ids.get(c.get('reviewer', '')) == engineer['id'] for c in catalog)
     projected = forecast(rows, engineers, config, sources.today())
     for row in projected:
         item = by_identity.get(sources.identity(row), {})
@@ -153,7 +162,8 @@ def _snapshot(conn, catalog, engineers, config, actor):
         engineer.update(remaining=len(assigned), preparation=sum(r['state'] == 'preparation' for r in assigned),
                         ready=sum(r['state'] == 'ready' for r in assigned),
                         running=sum(r['state'] == 'in_progress' for r in assigned),
-                        through=max((r['forecast_date'] for r in assigned if r['forecast_date']), default=None))
+                        through=(max((r['forecast_date'] for r in assigned), default=None)
+                                 if all(r['forecast_date'] for r in assigned) else None))
     last = conn.execute('SELECT * FROM reserve_operations WHERE actor=? ORDER BY rowid DESC LIMIT 1', (actor,)).fetchone()
     undo_id = last['id'] if last and last['kind'] in ('move', 'add_preparation', 'assign') and not last['undone_by'] else None
     assigned_ids = {sources.identity(r) for r in rows if r['project_id']}
@@ -242,7 +252,10 @@ def mutate(payload, actor):
                         row = _task(eid, linked['title'], actor, linked)
                         row['state'] = 'ready' if linked['ready'] else 'preparation'
                     else:
-                        title = item.get('title', '').strip()
+                        raw_title = item.get('title')
+                        if not isinstance(raw_title, str):
+                            raise ReserveError('Укажите название проекта в каждой строке.')
+                        title = raw_title.strip()
                         if not title or len(title) > 4000 or any(c in title for c in '\r\n\u2028\u2029'):
                             raise ReserveError('Название должно занимать одну непустую строку, не более 4000 символов.')
                         key = name_key(title)
