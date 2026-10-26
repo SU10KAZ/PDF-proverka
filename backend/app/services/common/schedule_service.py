@@ -36,6 +36,7 @@ import os
 import re
 import threading
 import uuid
+from copy import deepcopy
 from datetime import datetime
 from typing import Optional
 
@@ -78,6 +79,18 @@ _DISCIPLINE_PREFIX_RE = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,5}")
 # записи (массовый импорт реестра заказчика и т.п.). В графике их не показываем.
 # Сравнение регистронезависимое.
 _SYSTEM_REVIEWERS = {"su10_registry"}
+
+_SCHEDULE_CACHE_LIMIT = 32
+_schedule_cache_lock = threading.Lock()
+_schedule_cache: dict[tuple, dict] = {}
+
+
+def _file_stamp(path) -> tuple[str, int | None, int | None]:
+    try:
+        stat = path.stat()
+        return str(path), stat.st_mtime_ns, stat.st_size
+    except OSError:
+        return str(path), None, None
 
 
 def _norm_version(version_id) -> str:
@@ -447,19 +460,37 @@ def load_decisions_log() -> tuple[list, Optional[str]]:
 
 def get_schedule(from_day: str, to_day: str, object_id: Optional[str] = None) -> dict:
     """Полный payload графика: читает лог + users + замороженные дни, агрегирует."""
-    entries, warning = load_decisions_log()
-    completions = load_schedule_completions()
     try:
         import backend.app.services.common.user_service as user_service
-        users = user_service.list_users()
+        users_file = user_service.USERS_FILE
     except Exception:
-        users = []
-    payload = build_schedule(
-        entries, from_day=from_day, to_day=to_day, object_id=object_id,
-        users=users, completions=completions,
+        user_service = None
+        users_file = ""
+    key = (
+        from_day, to_day, object_id or "",
+        _file_stamp(DECISIONS_LOG_FILE),
+        _file_stamp(SCHEDULE_COMPLETION_FILE),
+        _file_stamp(users_file) if users_file else ("", None, None),
     )
-    payload["warning"] = warning
-    return payload
+    with _schedule_cache_lock:
+        cached = _schedule_cache.get(key)
+        if cached is not None:
+            return deepcopy(cached)
+        entries, warning = load_decisions_log()
+        completions = load_schedule_completions()
+        try:
+            users = user_service.list_users() if user_service is not None else []
+        except Exception:
+            users = []
+        payload = build_schedule(
+            entries, from_day=from_day, to_day=to_day, object_id=object_id,
+            users=users, completions=completions,
+        )
+        payload["warning"] = warning
+        if len(_schedule_cache) >= _SCHEDULE_CACHE_LIMIT:
+            _schedule_cache.pop(next(iter(_schedule_cache)))
+        _schedule_cache[key] = payload
+        return deepcopy(payload)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -572,6 +572,24 @@ def test_load_supports_dict_and_list_shapes(tmp_path, monkeypatch):
     assert len(entries) == 1
 
 
+def test_get_schedule_caches_unchanged_period_and_returns_independent_payload(tmp_path, monkeypatch):
+    decisions = tmp_path / "decisions_log.json"
+    decisions.write_text(json.dumps({"entries": [
+        _entry("Инженер А.", "2026-10-10", "P1")
+    ]}), encoding="utf-8")
+    monkeypatch.setattr(schedule_service, "DECISIONS_LOG_FILE", decisions)
+    monkeypatch.setattr(schedule_service, "SCHEDULE_COMPLETION_FILE", tmp_path / "completions.json")
+    monkeypatch.setattr(schedule_service, "_schedule_cache", {})
+    original = schedule_service.load_decisions_log
+    calls = []
+    monkeypatch.setattr(schedule_service, "load_decisions_log", lambda: calls.append(True) or original())
+    first = schedule_service.get_schedule("2026-10-01", "2026-10-31")
+    first["events"].clear()
+    second = schedule_service.get_schedule("2026-10-01", "2026-10-31")
+    assert len(calls) == 1
+    assert len(second["events"]) == 1
+
+
 # ─── REST-роутер ─────────────────────────────────────────────────────────────
 
 @pytest.fixture
