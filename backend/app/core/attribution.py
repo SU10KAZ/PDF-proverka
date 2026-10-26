@@ -7,7 +7,9 @@ current_id``) и автор из тела запроса для подмены �
 
 Аккаунт без связи с сотрудником экспертное действие сохранить не может:
 ``409 account_not_linked_to_staff`` вместо записи с пустым автором.
-Исключение — выключенная авторизация (локальная разработка, тесты): там
+При импорте Excel для аккаунта без staff_id используется логин, проверенный
+сервером; это отдельное исключение, остальные экспертные действия требуют
+связи с сотрудником. При выключенной авторизации (локальная разработка, тесты)
 субъекта нет, и, как раньше, используется имя из запроса или текущий сотрудник.
 """
 from __future__ import annotations
@@ -18,7 +20,7 @@ from typing import Optional
 
 from fastapi import HTTPException, Request
 
-from backend.app.core.access import MODE_DISABLED, current_account, request_account
+from backend.app.core.access import MODE_ACCOUNTS, MODE_DISABLED, current_account, request_account
 
 
 @dataclass(frozen=True)
@@ -86,4 +88,17 @@ def actor_label(request: Optional[Request] = None, *, prefer: str = "name") -> s
     return ctx.login
 
 
-__all__ = ["Author", "NOT_LINKED", "actor_label", "resolve_author", "server_now_iso"]
+def resolve_import_author(request: Request) -> Author:
+    """Автор импорта Excel: ФИО связанного сотрудника, иначе логин аккаунта.
+
+    Новый одобренный аккаунт может вернуть решения без старой записи users.json.
+    Логин и account_id берутся из сессии; автора из Excel/формы не используем.
+    """
+    ctx = request_account(request)
+    if (ctx is not None and ctx.mode == MODE_ACCOUNTS and ctx.can_import_decisions
+            and not ctx.staff_id):
+        return Author(name=ctx.login, staff_id=None, account_id=ctx.account_id, login=ctx.login)
+    return resolve_author(request)
+
+
+__all__ = ["Author", "NOT_LINKED", "actor_label", "resolve_author", "resolve_import_author", "server_now_iso"]

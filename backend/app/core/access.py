@@ -121,15 +121,11 @@ class AccountContext:
 
     @property
     def can_import_decisions(self) -> bool:
-        """Сотрудник с доступом к результатам может вернуть решения из Excel.
-
-        Связь с сотрудником назначает admin; сама роль viewer и регистрация
-        этого права не дают. Имя автора дополнительно проверяет resolve_author.
-        """
+        """Активный viewer с доступом к результатам может вернуть решения из Excel."""
         if not self.enforces_roles or self.is_admin:
             return True
         return (self.role == ROLE_VIEWER and self.status == "active"
-                and bool(self.staff_id) and self.can_view("audit_results"))
+                and self.can_view("audit_results"))
 
     def as_public(self) -> dict:
         """Проекция для UI и /api/auth/me. Ни хешей, ни секретов."""

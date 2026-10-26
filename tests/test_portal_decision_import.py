@@ -89,8 +89,29 @@ def test_linked_employee_imports_with_own_server_author(portal):
     assert c.get("/api/admin/accounts").status_code == 403
 
 
-@pytest.mark.parametrize("login,status", [(None, 401), ("unlinked", 403), ("restricted", 403)])
-def test_missing_employee_or_section_cannot_import(portal, login, status):
+def test_approved_new_account_imports_under_login_without_staff_link(portal):
+    client, calls = portal
+    c = client("unlinked")
+    account = c.get("/api/auth/me").json()["account"]
+    assert account["staff_id"] is None
+    assert account["can_import_decisions"] is True
+    assert account["is_admin"] is False
+    response = c.post("/api/knowledge-base/upload-excel?project_id=PROJECT&staff_id=kalinina",
+                      files={"file": xlsx()}, data={"reviewer": "Калинина А.", "account_id": "999"})
+    assert response.status_code == 200, response.text
+    assert response.json()["reviewer"] == "unlinked"
+    assert calls == [{"default_project_id": "PROJECT", "reviewer": "unlinked",
+                      "account_id": account["account_id"]}]
+    assert c.post("/api/knowledge-base/expert-review/PROJECT", json=[]).status_code == 403
+    assert c.post("/api/audit/batch", json=[]).status_code == 403
+    assert c.get("/api/admin/accounts").status_code == 403
+    page = c.get("/")
+    assert '"can_import_decisions": true' in page.text
+    assert '"can_operate": false' in page.text
+
+
+@pytest.mark.parametrize("login,status", [(None, 401), ("restricted", 403)])
+def test_missing_section_or_session_cannot_import(portal, login, status):
     client, calls = portal
     c = client(login)
     if login:

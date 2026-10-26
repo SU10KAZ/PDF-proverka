@@ -9,7 +9,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Query
 
 from backend.app.core import portal_auth
-from backend.app.core.attribution import resolve_author
+from backend.app.core.attribution import resolve_author, resolve_import_author
 from backend.app.models.expert_review import (
     ExpertReviewSubmission, CustomerConfirmRequest, PatternActionRequest,
 )
@@ -187,7 +187,7 @@ async def upload_decisions_excel(
     """
     if not file.filename.endswith((".xlsx", ".xls")):
         raise HTTPException(400, "Ожидается файл .xlsx")
-    author = resolve_author(request)
+    author = resolve_import_author(request)
 
     suffix = os.path.splitext(file.filename)[1]
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:

@@ -163,7 +163,7 @@ def test_access_matrix(routes, kind, monkeypatch):
         elif pol.kind == VIEW:
             expected = kind in ("viewer_view", "viewer_full", "viewer_staff")
         elif pol.kind == IMPORT_DECISIONS:
-            expected = kind == "viewer_staff"
+            expected = kind in ("viewer_view", "viewer_full", "viewer_staff")
         else:  # DOWNLOAD
             expected = kind == "viewer_full"
         assert got is expected, (kind, m, p, str(pol))
