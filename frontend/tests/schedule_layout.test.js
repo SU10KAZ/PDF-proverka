@@ -14,6 +14,7 @@ describe('компоновка графика работ', () => {
         expect(topbar).toContain('Изменить план');
         expect(topbar).not.toContain('>Сегодня</button>');
         expect(topbar).not.toContain('Фильтры');
+        expect(reserveStyles).toContain('.sched-page{padding-top:0}');
         expect(reserveStyles).toContain('.sched-topbar{display:flex;align-items:center;justify-content:space-between');
     });
 
