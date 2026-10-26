@@ -73,7 +73,7 @@ _ALLOW_SPEC: dict[str, list[str]] = {
     PUBLIC: [
         "GET /login", "GET /register",
         "POST /api/auth/login", "POST /api/auth/register", "POST /api/auth/logout",
-        "GET /api/auth/me", "GET /api/info",
+        "GET /api/auth/me", "GET /api/info", "GET /favicon.ico",
     ],
     SELF: [
         "GET /change-password", "POST /api/auth/password", "POST /api/auth/sessions/revoke",

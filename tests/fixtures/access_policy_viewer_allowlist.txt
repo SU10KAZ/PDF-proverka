@@ -19,6 +19,7 @@ DOWNLOAD:version_comparison	GET	/api/version-comparison/objects/{object_id}/seri
 IMPORT_DECISIONS	POST	/api/knowledge-base/upload-excel
 PUBLIC	GET	/api/auth/me
 PUBLIC	GET	/api/info
+PUBLIC	GET	/favicon.ico
 PUBLIC	GET	/login
 PUBLIC	GET	/register
 PUBLIC	POST	/api/auth/login
