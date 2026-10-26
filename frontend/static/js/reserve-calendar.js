@@ -344,8 +344,6 @@
           <div v-if="loading && !data.engineers.length" class="rc-empty">Загрузка инженеров и очередей…</div>
           <div class="rc-toolbar"><strong>Очередь по инженерам</strong><div class="rc-actions"><button v-if="canEdit" :disabled="locked" @click="openCatalog()">Добавить с портала</button><button v-if="canEdit" class="rc-primary-outline" :disabled="locked" @click="openPreparation()">Проекты для подготовки</button></div></div>
           <div class="rc-legend"><span><i class="rc-swatch"></i>Готов к проверке</span><span><i class="rc-swatch rc-unrecognized"></i>Не проанализирован</span><span><i class="rc-swatch rc-manual"></i>Ещё не загружен</span><span><i class="rc-swatch running"></i>Проверка начата</span></div>
-          <div class="rc-period"><span>{{ label(anchor) }} — {{ label(days[days.length-1]?.iso) }}</span><div class="rc-actions"><button @click="anchor=dayAdd(anchor,-28)" :disabled="!anchor">‹</button><button @click="anchor=data.today">Сегодня</button><button @click="anchor=dayAdd(anchor,28)" :disabled="!anchor">›</button></div></div>
-          <p class="rc-help">Клик — открыть проект · Ctrl / Cmd + клик — выделить · перетаскивание — изменить очередь</p>
           <div v-if="selected.length" class="rc-selection"><span>Выбрано: {{ selected.length }}</span><button :disabled="locked" @click="shift(-1)">Раньше</button><button :disabled="locked" @click="shift(1)">Позже</button><button @click="selected=[]">Снять выделение</button></div>
           <div class="rc-scroll" @scroll="tooltip=null"><table class="rc-grid" aria-label="Очередь проектов по инженерам и датам">
             <colgroup><col class="rc-name-col"><col v-for="d in columns" :key="d.iso || 'none'" :class="{'rc-off-col':d.off, 'rc-unscheduled-col':!d.iso}"></colgroup>

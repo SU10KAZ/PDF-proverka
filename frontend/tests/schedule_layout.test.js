@@ -26,6 +26,8 @@ describe('компоновка графика работ', () => {
         expect(panel).not.toContain('Контроль фактически выполненных проверок по инженерам');
         expect(reserveScript).not.toContain('<header class="rc-heading">');
         expect(reserveScript).not.toContain('<div class="rc-cards">');
+        expect(reserveScript).not.toContain('<div class="rc-period">');
+        expect(reserveScript).not.toContain('<p class="rc-help">');
     });
 
     it('использует компактные KPI и отдельную обёртку для длинных счётчиков', () => {
