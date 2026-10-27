@@ -1,13 +1,26 @@
 """Folder-batch endpoints under the version-comparison router."""
 from typing import Literal
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field
 
 from backend.app.services.version_comparison import batches, settings, store
 
-router = APIRouter()
+
+async def _upload_only(request: Request):
+    """Upload permission never resumes a batch configured to run comparisons."""
+    from backend.app.core.access import require_account
+
+    ctx = require_account(request)
+    batch_id = request.path_params.get("batch_id")
+    if ctx.enforces_roles and not ctx.is_admin and batch_id and request.method != "GET":
+        data = await run_in_threadpool(guarded, batches.get, request.path_params["object_id"], batch_id)
+        if data.get("compare_neighbors"):
+            raise HTTPException(403, "Управление пакетом со сравнением доступно только администратору.")
+
+
+router = APIRouter(dependencies=[Depends(_upload_only)])
 
 
 def guarded(fn, *args):
@@ -62,7 +75,12 @@ def list_batches(object_id: str):
 
 
 @router.post("/objects/{object_id}/batches")
-def create_batch(object_id: str, body: BatchCreate):
+def create_batch(object_id: str, body: BatchCreate, request: Request):
+    from backend.app.core.access import require_account
+
+    ctx = require_account(request)
+    if body.compare_neighbors and ctx.enforces_roles and not ctx.is_admin:
+        raise HTTPException(403, "Право загрузки проектов не разрешает запуск сравнения.")
     return guarded(batches.create, object_id, body.model_dump())
 
 

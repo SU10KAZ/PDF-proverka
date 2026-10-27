@@ -5470,9 +5470,9 @@
                         4. Отчёт
                     </button>
                 </div>
-                <button v-if="scTab === 'upload'" v-show="canOperate"
+                <button v-if="scTab === 'upload'" v-show="canUploadStageProjects"
                         class="btn btn-primary sc-steps-bar__upload"
-                        :disabled="pcReadOnlySources || !currentObjectId"
+                        :disabled="pcDemo || pcBridgeActive || !currentObjectId"
                         @click="scOpenStageFolderDialog()">
                     Загрузить проекты
                 </button>

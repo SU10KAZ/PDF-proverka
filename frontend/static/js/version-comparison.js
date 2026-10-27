@@ -69,10 +69,10 @@
       <h2 class="vc-title">Сравнение версий</h2>
     </div>
     <div class="vc-head-actions">
-      <button v-if="canOperate" class="btn btn-primary" :disabled="!objectId" title="Загрузить PDF: один проект со всеми версиями, новые версии в существующий проект или сразу несколько проектов из папок; там же — прежние пакеты загрузки." @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
+      <button v-if="canUpload" class="btn btn-primary" :disabled="!objectId" title="Загрузить PDF: один проект со всеми версиями, новые версии в существующий проект или сразу несколько проектов из папок; там же — прежние пакеты загрузки." @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
     </div>
   </div>
-  <vc-batch-upload ref="batchUpload" v-if="objectId && canOperate" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
+  <vc-batch-upload ref="batchUpload" v-if="objectId && canUpload" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
   <div v-if="aiQueue && (aiQueue.current || aiQueue.waiting.length)" class="vc-ai-queue"
        title="«ИИ-описание изменений» идёт по одному проекту за раз; следующий в очереди начинается сам, когда закончится текущий">
     <b>Очередь «ИИ-описание изменений»:</b> {{ aiQueueText() }}
@@ -695,9 +695,11 @@
 
                     function fail(e) { error.value = (e && e.message) || String(e); }
                     const enc = s => encodeURIComponent(s);
-                    // Права вошедшего (portal_auth.js): viewer только смотрит — без запусков,
-                    // загрузок и ручных связей; матрица — read-only двойник matrix-view.
+                    // Запуски и ручные связи — admin; загрузка разрешается по разделу.
+                    // Матрица viewer использует read-only двойник matrix-view.
                     const canOperate = !(root.portalCan && !root.portalCan.operate());
+                    const canUpload = !root.portalCan || (root.portalCan.uploadProjects
+                        ? root.portalCan.uploadProjects('version_comparison') : canOperate);
                     const canDownload = !(root.portalCan && !root.portalCan.download('version_comparison'));
 
                     async function loadObjects() {
@@ -1454,7 +1456,7 @@
 
                     // ------------------------------------------------ загрузка
                     function openUpload() {
-                        if (!canOperate) return;  // viewer: только просмотр
+                        if (!canUpload) return;
                         Object.assign(upload, {open: true, step: 1, files: [], totalBytes: 0, sent: 0, busy: false, message: '', uploadId: '', proposal: null, groups: [], target: ''});
                     }
                     async function closeUpload() {
@@ -1471,7 +1473,7 @@
                     const mb = n => (n / 1048576).toFixed(1) + ' МБ';
                     const uploadPct = () => upload.totalBytes ? Math.min(100, Math.round(100 * upload.sent / upload.totalBytes)) : 0;
                     async function sendFiles() {
-                        if (!canOperate) return;  // viewer: только просмотр
+                        if (!canUpload) return;
                         upload.busy = true;
                         upload.sent = 0;
                         try {
@@ -1522,7 +1524,7 @@
                     }
                     const hasBadFiles = () => upload.groups.some(g => g.files.some(f => f.error));
                     async function confirmUpload() {
-                        if (!canOperate) return;  // viewer: только просмотр
+                        if (!canUpload) return;
                         upload.busy = true;
                         try {
                             await api(`/objects/${enc(objectId.value)}/uploads/${upload.uploadId}/confirm`, {method: 'POST', body: {
@@ -1574,7 +1576,7 @@
                     onMounted(() => { usePortalObject(props.portalObjectId); loadObjects(); if (canOperate) loadAiQueue(); });
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
-                    return {canOperate, canDownload, view, catalogVersion, selectedTitle, showProjects, showProject, openProject,
+                    return {canOperate, canUpload, canDownload, view, catalogVersion, selectedTitle, showProjects, showProject, openProject,
                         aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, pairReady, setSide,
                         pickRun, pairRun, rowItem, itemLabel, runCounts, progressPct, runStateLabel,

@@ -85,14 +85,16 @@ describe('folder batches',()=>{
         expect(state.groups.value.map(g=>g.title)).toEqual(['A','B']);
     });
 
-    it('uploads only selected projects and starts after every file succeeds',async()=>{
+    it.each([true, false])('uploads selected projects and starts after every file succeeds, admin=%s',async(canOperate)=>{
         const calls=[];
         class XHR {
             upload={}; status=200; responseText=JSON.stringify({received:true});
             open(method,url){this.url=url;}
             send(){calls.push(['file',this.url]); this.onload();}
         }
-        const {state,sandbox}=setup({XMLHttpRequest:XHR});
+        const {state,sandbox}=setup({XMLHttpRequest:XHR, portalCan: {
+            operate: () => canOperate, uploadProjects: section => section === 'version_comparison',
+        }});
         sandbox.VersionComparison.api=async(path,options)=>{
             calls.push([options?.method,path,options?.body]);
             if(options?.body?.items) return {...options.body,started:false,created_at:'2026-10-15T00:00:00Z',
@@ -101,10 +103,12 @@ describe('folder batches',()=>{
         };
         await pick(state,[file('Root/A/v.pdf'),file('Root/B/v.pdf'),file('Root/C/v.pdf')],true);
         state.groups.value[1].selected=false;
+        state.compare.value=true;
         state.move(state.groups.value,2,-2);
         await state.send();
         expect(state.error.value).toBe('');
         expect(calls[0][2].items.map(i=>i.source_root)).toEqual(['C','A']);
+        expect(calls[0][2].compare_neighbors).toBe(canOperate);
         expect(calls.filter(c=>c[0]==='file')).toHaveLength(2);
         expect(calls.at(-1)[1]).toMatch(/\/start$/);
         expect(state.current.value.started).toBe(true);

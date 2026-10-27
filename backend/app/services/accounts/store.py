@@ -21,6 +21,7 @@ from backend.app.core.access import (
     ROLE_VIEWER,
     SECTIONS,
     SECTIONS_WITHOUT_DOWNLOADS,
+    SECTIONS_WITH_UPLOADS,
     AccountContext,
 )
 from backend.app.services.accounts import db, passwords
@@ -86,10 +87,46 @@ def _edit_schedule(conn: sqlite3.Connection, account_id: int) -> bool:
     return bool(row and row["edit_schedule"])
 
 
+def _upload_sections(conn: sqlite3.Connection, account_id: int) -> frozenset[str]:
+    return frozenset(r["section"] for r in conn.execute(
+        "SELECT section FROM account_section_uploads WHERE account_id=?", (account_id,)))
+
+
+def _uploads(conn: sqlite3.Connection, account_id: int) -> dict[str, bool]:
+    granted = _upload_sections(conn, account_id)
+    return {s: (_upload_projects(conn, account_id) if s == "audit_results" else s in granted)
+            for s in SECTIONS if s in SECTIONS_WITH_UPLOADS}
+
+
+def _write_upload(conn, target: int, section: str, allowed: bool) -> None:
+    if section == "audit_results":
+        conn.execute(
+            "INSERT INTO account_capabilities(account_id, upload_projects) VALUES (?,?)"
+            " ON CONFLICT(account_id) DO UPDATE SET upload_projects=excluded.upload_projects",
+            (int(target), int(allowed)),
+        )
+    elif allowed:
+        conn.execute("INSERT OR IGNORE INTO account_section_uploads(account_id, section) VALUES (?,?)",
+                     (int(target), section))
+    else:
+        conn.execute("DELETE FROM account_section_uploads WHERE account_id=? AND section=?",
+                     (int(target), section))
+
+
+def _write_section_uploads(conn, target: int, raw: Mapping[str, Any]) -> None:
+    for section in SECTIONS_WITH_UPLOADS:
+        value = raw.get(section, {})
+        if not value.get("view"):
+            _write_upload(conn, target, section, False)
+        elif "upload" in value:
+            _write_upload(conn, target, section, bool(value["upload"]))
+
+
 def _public(conn: sqlite3.Connection, row: sqlite3.Row) -> dict:
     out = {k: row[k] for k in _PUBLIC_FIELDS}
     out["must_change_password"] = bool(out["must_change_password"])
-    out["upload_projects"] = _upload_projects(conn, row["id"])
+    out["uploads"] = _uploads(conn, row["id"])
+    out["upload_projects"] = any(out["uploads"].values())
     out["edit_schedule"] = _edit_schedule(conn, row["id"])
     secs = _sections(conn, row["id"])
     out["sections"] = {
@@ -112,6 +149,7 @@ def _context_from_row(conn: sqlite3.Connection, row: sqlite3.Row) -> AccountCont
         sections=_sections(conn, row["id"]),
         upload_projects=_upload_projects(conn, row["id"]),
         edit_schedule=_edit_schedule(conn, row["id"]),
+        upload_sections=_upload_sections(conn, row["id"]),
     )
 
 
@@ -398,6 +436,11 @@ def normalize_sections(raw: Mapping[str, Any]) -> dict[str, tuple[bool, bool]]:
         if download and section in SECTIONS_WITHOUT_DOWNLOADS:
             raise AccountError("no_downloads_in_section",
                                f"В разделе {section} нет выгрузок — право скачивания не назначается.")
+        if value.get("upload"):
+            if section not in SECTIONS_WITH_UPLOADS:
+                raise AccountError("no_uploads_in_section", f"В разделе {section} нет загрузки проектов.")
+            if not view:
+                raise AccountError("upload_requires_view", "Для загрузки нужен просмотр этого раздела.")
         out[section] = (view, download)
     return out
 
@@ -413,33 +456,37 @@ def _write_sections(conn, target: int, sections: Mapping[str, tuple[bool, bool]]
 
 
 def set_sections(actor: Optional[int], target: int, raw: Mapping[str, Any]) -> dict:
+    raw = raw or {}
     sections = normalize_sections(raw)
     with db.write_txn() as conn:
-        _row(conn, target)
+        row = _row(conn, target)
+        existing_uploads = _uploads(conn, target)
+        if row["status"] != "active" and any(v.get("upload") and not existing_uploads.get(s)
+                                              for s, v in raw.items()):
+            raise AccountError("upload_requires_active", "Загрузку можно разрешить только действующему пользователю.")
         _write_sections(conn, target, sections)
-        if not sections.get("audit_results", (False, False))[0]:
-            conn.execute("DELETE FROM account_capabilities WHERE account_id=?", (int(target),))
+        _write_section_uploads(conn, target, raw)
         if not sections.get("schedule", (False, False))[0]:
             conn.execute("DELETE FROM account_schedule_permissions WHERE account_id=?", (int(target),))
         _touch(conn, target)
         _event(conn, "sections_changed", actor=actor, target=target,
-               sections={s: list(v) for s, v in sections.items()})
+               sections={s: list(v) for s, v in sections.items()}, uploads=_uploads(conn, target))
         return _public(conn, _row(conn, target))
 
 
 def set_upload_projects(actor: Optional[int], target: int, allowed: bool) -> dict:
     with db.write_txn() as conn:
         row = _row(conn, target)
-        if allowed and (row["status"] != "active" or not _sections(conn, target).get("audit_results", (False, False))[0]):
-            raise AccountError("upload_requires_audit_results",
-                               "Сначала включите просмотр результатов аудита для действующего пользователя.")
-        conn.execute(
-            "INSERT INTO account_capabilities(account_id, upload_projects) VALUES (?,?)"
-            " ON CONFLICT(account_id) DO UPDATE SET upload_projects=excluded.upload_projects",
-            (int(target), int(allowed)),
-        )
+        sections = _sections(conn, target)
+        eligible = {s for s in SECTIONS_WITH_UPLOADS if sections.get(s, (False, False))[0]}
+        if allowed and (row["status"] != "active" or not eligible):
+            raise AccountError("upload_requires_section",
+                               "Сначала включите просмотр раздела с загрузкой проектов для действующего пользователя.")
+        for section in SECTIONS_WITH_UPLOADS:
+            _write_upload(conn, target, section, bool(allowed and section in eligible))
         _touch(conn, target)
-        _event(conn, "upload_projects_changed", actor=actor, target=target, allowed=bool(allowed))
+        _event(conn, "upload_projects_changed", actor=actor, target=target,
+               allowed=bool(allowed), uploads=_uploads(conn, target))
         return _public(conn, _row(conn, target))
 
 
@@ -565,8 +612,10 @@ def create_account(*, login: str, display_name: str, role: str, status: str = "a
              stamp if status != "pending" else None, actor, legacy_login),
         )
         _write_sections(conn, cur.lastrowid, secs)
+        _write_section_uploads(conn, cur.lastrowid, sections or {})
         _event(conn, event, actor=actor, target=cur.lastrowid, role=role, status=status,
                staff_id=staff_id, sections={s: list(v) for s, v in secs.items()},
+               uploads=_uploads(conn, cur.lastrowid),
                legacy_login=legacy_login)
         return _public(conn, _row(conn, cur.lastrowid))
 

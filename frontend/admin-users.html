@@ -55,7 +55,10 @@
         .account-details p { margin:6px 0 14px; }
         .detail-field { display:flex; flex-direction:column; gap:6px; margin:14px 0; color:var(--text2); font-size:12px; }
         .detail-field select { width:100%; color:var(--text); padding:7px; }
-        .account-details .matrix td { padding:7px 4px; }
+        .account-details .matrix td, .account-details .matrix th { padding:7px 4px; }
+        .account-details .matrix th { font-size:10px; }
+        .account-details .matrix td:not(:first-child), .account-details .matrix th:not(:first-child) { text-align:center; }
+        .account-details .matrix input { margin:0; cursor:pointer; }
         .account-details .matrix + button { margin-top:10px; }
         @media (max-width:1100px) { .accounts-layout { grid-template-columns:1fr; } .account-details { position:static; } }
         @media (max-width:600px) { main { padding:16px 10px; } header { padding:14px 10px; flex-wrap:wrap; } }

@@ -28,8 +28,10 @@
         importDecisions: function () {
             return caps.can_operate !== false || caps.can_import_decisions === true;
         },
-        uploadProjects: function () {
-            return caps.can_operate !== false || caps.can_upload_projects === true;
+        uploadProjects: function (section) {
+            section = section || 'audit_results';
+            return caps.can_operate !== false || !!(caps.uploads && caps.uploads[section])
+                || (section === 'audit_results' && caps.can_upload_projects === true);
         },
         editSchedule: function () { return caps.can_edit_schedule === true; },
         // Служебные панели: расход, пользователи, учётная запись модели.

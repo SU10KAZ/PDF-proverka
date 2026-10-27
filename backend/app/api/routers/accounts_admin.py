@@ -19,6 +19,7 @@ from backend.app.core.access import (
     SECTION_TITLES,
     SECTIONS,
     SECTIONS_WITHOUT_DOWNLOADS,
+    SECTIONS_WITH_UPLOADS,
     AccountContext,
     portal_mode,
     require_admin,
@@ -88,7 +89,8 @@ async def accounts_meta(ctx: AccountContext = Depends(_admin)):
     staff = await asyncio.to_thread(user_service.list_users)
     return {
         "sections": [{"code": s, "title": SECTION_TITLES[s],
-                      "downloads": s not in SECTIONS_WITHOUT_DOWNLOADS} for s in SECTIONS],
+                      "downloads": s not in SECTIONS_WITHOUT_DOWNLOADS,
+                      "uploads": s in SECTIONS_WITH_UPLOADS} for s in SECTIONS],
         "staff": [{"id": u.get("id"), "name": u.get("name")} for u in staff],
         "me": ctx.account_id,
     }

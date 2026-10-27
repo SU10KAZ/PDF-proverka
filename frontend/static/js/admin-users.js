@@ -55,26 +55,35 @@
     function statusBadge(s) { return el('span', { 'class': 'status s-' + s, text: STATUS[s] || s }); }
 
     function sectionsMatrix(acc) {
-        var table = el('table', { 'class': 'matrix' });
+        var table = el('table', { 'class': 'matrix', 'aria-label': 'Права по разделам: ' + acc.login }, [
+            el('thead', {}, [el('tr', {}, ['Раздел', 'Просмотр', 'Скачивание', 'Загрузка'].map(function (title) {
+                return el('th', { text: title });
+            }))]),
+        ]);
         meta.sections.forEach(function (sec) {
             var cur = (acc.sections || {})[sec.code] || { view: false, download: false };
-            var view = el('input', { type: 'checkbox' });
-            var dl = el('input', { type: 'checkbox' });
+            var view = el('input', { type: 'checkbox', 'aria-label': sec.title + ': просмотр' });
+            var dl = el('input', { type: 'checkbox', 'aria-label': sec.title + ': скачивание' });
+            var upload = sec.uploads ? el('input', { type: 'checkbox', 'aria-label': sec.title + ': загрузка проектов' }) : null;
             view.checked = !!cur.view;
             dl.checked = !!cur.download;
-            if (!sec.downloads) {
-                dl.disabled = true;
-                dl.title = 'В разделе нет выгрузок — право скачивания не назначается';
+            if (upload) {
+                upload.checked = !!(acc.uploads && acc.uploads[sec.code]);
+                upload.disabled = acc.status !== 'active';
+                upload.title = 'Разрешить загрузку проектов в раздел «' + sec.title + '»';
+                upload.onchange = function () { if (upload.checked) view.checked = true; };
+                upload.dataset.section = sec.code;
+                upload.dataset.kind = 'upload';
             }
-            view.onchange = function () { if (!view.checked) dl.checked = false; };
+            view.onchange = function () { if (!view.checked) { dl.checked = false; if (upload) upload.checked = false; } };
             dl.onchange = function () { if (dl.checked) view.checked = true; };
             view.dataset.section = sec.code; dl.dataset.section = sec.code;
             view.dataset.kind = 'view'; dl.dataset.kind = 'download';
             table.appendChild(el('tr', {}, [
                 el('td', { text: sec.title }),
-                el('td', {}, [el('label', {}, [view, document.createTextNode(' просмотр')])]),
-                el('td', {}, [el('label', { title: dl.title || '' }, [dl, document.createTextNode(
-                    sec.downloads ? ' скачивание' : ' скачивание (нет выгрузок)')])]),
+                el('td', {}, [view]),
+                el('td', {}, [sec.downloads ? dl : el('span', { text: '—', title: 'В разделе нет выгрузок' })]),
+                el('td', {}, [upload || el('span', { text: '—', title: 'В разделе нет загрузки проектов' })]),
             ]));
         });
         var save = el('button', { 'class': 'btn primary', text: 'Сохранить разделы', onclick: function () {
@@ -192,12 +201,16 @@
 
     function uploadPermission(acc) {
         var cb = el('input', { type: 'checkbox', 'aria-label': 'Загрузка проектов: ' + acc.login });
-        cb.checked = acc.role === 'admin' || !!acc.upload_projects;
-        var hasAudit = !!(acc.sections && acc.sections.audit_results && acc.sections.audit_results.view);
-        cb.disabled = acc.role === 'admin' || acc.status !== 'active' || !hasAudit;
+        var eligible = meta.sections.filter(function (sec) {
+            return sec.uploads && acc.sections && acc.sections[sec.code] && acc.sections[sec.code].view;
+        });
+        var enabled = eligible.filter(function (sec) { return acc.uploads && acc.uploads[sec.code]; }).length;
+        cb.checked = acc.role === 'admin' || (eligible.length > 0 && enabled === eligible.length);
+        cb.indeterminate = acc.role !== 'admin' && enabled > 0 && enabled < eligible.length;
+        cb.disabled = acc.role === 'admin' || acc.status !== 'active' || !eligible.length;
         var title = acc.role === 'admin' ? 'Администратору загрузка доступна всегда'
-            : !hasAudit ? 'Сначала включите просмотр результатов аудита в настройках пользователя'
-            : 'Разрешить загрузку проектов и новых версий с компьютера';
+            : !eligible.length ? 'Сначала включите просмотр раздела с загрузкой проектов'
+            : 'Разрешить загрузку во всех открытых разделах. Отдельные права — в настройках пользователя.';
         cb.onchange = function () {
             var allowed = cb.checked;
             cb.disabled = true;
@@ -213,7 +226,7 @@
         };
         return el('label', { 'class': 'upload-permission', title: title, onclick: function (event) {
             event.stopPropagation();
-        } }, [cb, document.createTextNode(acc.role === 'admin' ? ' всегда' : ' разрешить')]);
+        } }, [cb, document.createTextNode(acc.role === 'admin' ? ' всегда' : cb.indeterminate ? ' частично' : ' разрешить')]);
     }
 
     function accountDetails(acc) {

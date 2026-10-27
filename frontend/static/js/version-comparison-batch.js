@@ -82,7 +82,7 @@
                 <button class="btn btn-outline btn-xs" @click="groups.splice(i,1)" :disabled="locked" aria-label="Убрать проект" title="Убрать проект из списка загрузки. Файлы на компьютере не затрагиваются">×</button></td>
           </tr></tbody>
         </table>
-        <label v-if="!current" class="vc-batch-option"><input type="checkbox" v-model="compare" :disabled="locked"> После подготовки сравнить все соседние версии</label>
+        <label v-if="!current && canOperate" class="vc-batch-option"><input type="checkbox" v-model="compare" :disabled="locked"> После подготовки сравнить все соседние версии</label>
         <p v-if="!current && groups.length">Выбрано проектов: {{groups.filter(g=>g.selected).length}} · {{mb(totalSelected())}}</p>
         <div v-if="busy || sent" class="vc-progress wide"><span :style="{width: uploadPercent()+'%'}"></span></div>
         <p v-if="message" role="status">{{message}}</p>
@@ -129,6 +129,9 @@
         app.component('vc-batch-upload', {template, props: {objectId: {type: String, required: true}}, emits: ['updated'],
             setup(props, {emit}) {
                 const {ref, reactive, onMounted, onBeforeUnmount} = root.Vue;
+                const canOperate = !root.portalCan || root.portalCan.operate();
+                const canUpload = !root.portalCan || (root.portalCan.uploadProjects
+                    ? root.portalCan.uploadProjects('version_comparison') : canOperate);
                 const open = ref(false), busy = ref(false), reading = ref(false), locked = ref(false);
                 const groups = ref([]), current = ref(null), saved = ref([]), selectedId = ref('');
                 const error = ref(''), notice = ref(''), compare = ref(false), message = ref(''), sent = ref(0);
@@ -160,8 +163,7 @@
                         drafts[item.item_id]=item.files.map(f=>({...f,label:f.label || f.suggested_label || f.file_name}));
                 }
                 async function refresh() {
-                    // viewer: пакеты загрузки — служебный список (только admin), опрос не нужен.
-                    if(root.portalCan && !root.portalCan.operate()) return;
+                    if(!canUpload) return;
                     try {
                         const data=await api('');
                         if(!alive) return;
@@ -278,6 +280,7 @@
                     });
                 }
                 async function send() {
+                    if(!canUpload) return;
                     if(busy.value || reading.value) return;
                     busy.value=true; locked.value=true; cancelled=false; error.value=''; notice.value='';
                     try {
@@ -285,7 +288,7 @@
                             if(!manifest) {
                                 const chosen=groups.value.filter(g=>g.selected);
                                 if(!chosen.length || chosen.some(g=>!g.title.trim())) throw new Error('Выберите проекты и укажите названия.');
-                                manifest={batch_id:id('b'),compare_neighbors:compare.value,items:chosen.map(g=>({item_id:g.item_id,title:g.title.trim(),source_root:g.source_root,
+                                manifest={batch_id:id('b'),compare_neighbors:canOperate && compare.value,items:chosen.map(g=>({item_id:g.item_id,title:g.title.trim(),source_root:g.source_root,
                                     files:g.files.map(f=>({file_id:f.file_id,relative_path:f.relative_path,size:f.size,last_modified:f.last_modified}))}))};
                                 for(const g of chosen) for(const f of g.files) files.set(g.item_id+'/'+f.file_id,f.file);
                             }
@@ -341,7 +344,7 @@
                 function beforeUnload(event) {if(busy.value && xhr){event.preventDefault(); event.returnValue='';}}
                 onMounted(()=>{refresh(); root.addEventListener('beforeunload',beforeUnload);});
                 onBeforeUnmount(()=>{alive=false; clearTimeout(timer); if(xhr) xhr.abort(); root.removeEventListener('beforeunload',beforeUnload);});
-                return {open,busy,reading,locked,groups,current,saved,selectedId,error,notice,compare,message,sent,drafts,labels,
+                return {canOperate,canUpload,open,busy,reading,locked,groups,current,saved,selectedId,error,notice,compare,message,sent,drafts,labels,
                     mb,totalSelected,uploadPercent,batchLabel,fileProgress,hint,openNew,openSaved,openBatch,close,move,pick,drop,send,stopUpload,removeBatch,pause,act,confirmOne,confirmAll};
             }
         });

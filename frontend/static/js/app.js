@@ -88,13 +88,25 @@ function portalWsCloseAction(code) {
 
 // Изменяющие запросы viewer блокируются; связанный сотрудник может вернуть
 // решения из Excel через один явно разрешённый маршрут.
-function portalViewerBlocksRequest(method, url, allowDecisionImport = false, allowProjectUpload = false, allowScheduleEdit = false) {
+function portalProjectUploadSection(method, path) {
+    if (method === 'POST' && /^\/api\/projects\/upload-folder(?:\/precheck)?$/.test(path)) return 'audit_results';
+    if (method === 'POST' && /^\/api\/stage-comparison\/objects\/[^/]+\/stages\/[^/]+\/upload(?:-folder)?$/.test(path)) return 'stage_comparison';
+    const prefix = '/api/version-comparison/objects/[^/]+';
+    if ((method === 'POST' && new RegExp('^' + prefix + '/uploads(?:/[^/]+/(?:files|confirm))?$').test(path))
+        || (method === 'DELETE' && new RegExp('^' + prefix + '/uploads/[^/]+$').test(path))) return 'version_comparison';
+    const batches = prefix + '/batches';
+    if ((method === 'POST' && new RegExp('^' + batches + '(?:/[^/]+/(?:start|items/[^/]+/(?:confirm|action|files/[^/]+(?:/chunks/[^/]+)?)))?$').test(path))
+        || (['DELETE', 'PATCH'].includes(method) && new RegExp('^' + batches + '/[^/]+$').test(path))) return 'version_comparison';
+    return null;
+}
+
+function portalViewerBlocksRequest(method, url, allowDecisionImport = false, allowProjectUpload = false, allowScheduleEdit = false, allowSectionUploads = {}) {
     const m = String(method || 'GET').toUpperCase();
     if (m === 'GET' || m === 'HEAD' || m === 'OPTIONS') return false;
     const {path} = _portalSplitUrl(url);
     if (allowDecisionImport && m === 'POST' && path === '/api/knowledge-base/upload-excel') return false;
-    if (allowProjectUpload && m === 'POST'
-        && (path === '/api/projects/upload-folder' || path === '/api/projects/upload-folder/precheck')) return false;
+    const uploadSection = portalProjectUploadSection(m, path);
+    if (uploadSection && (allowSectionUploads[uploadSection] || (uploadSection === 'audit_results' && allowProjectUpload))) return false;
     if (allowScheduleEdit && ((m === 'PUT' && path === '/api/schedule/plan')
         || (m === 'POST' && path === '/api/schedule/reserve/operations'))) return false;
     return path.startsWith('/api/') && !path.startsWith('/api/auth/');
@@ -119,10 +131,10 @@ function portalCanImportDecisions() {
         ? window.portalCan.importDecisions() : window.portalCan.operate();
 }
 
-function portalCanUploadProjects() {
+function portalCanUploadProjects(section = 'audit_results') {
     if (typeof window === 'undefined' || !window.portalCan) return true;
     return typeof window.portalCan.uploadProjects === 'function'
-        ? window.portalCan.uploadProjects() : window.portalCan.operate();
+        ? window.portalCan.uploadProjects(section) : window.portalCan.operate();
 }
 
 function portalCanEditSchedule() {
@@ -147,6 +159,7 @@ const app = createApp({
         const canOperate = computed(() => portalCanOperate());
         const canImportDecisions = computed(() => portalCanImportDecisions());
         const canUploadProjects = computed(() => portalCanUploadProjects());
+        const canUploadStageProjects = computed(() => portalCanUploadProjects('stage_comparison'));
         const canAdminPanels = computed(() => portalCanAdmin());
         function canView(section) { return portalCanView(section); }
         function canDownload(section) { return portalCanDownload(section); }
@@ -4908,7 +4921,8 @@ const app = createApp({
                     // viewer: изменяющий запрос не уходит в сеть (вторая линия
                     // защиты за скрытыми кнопками; сервер ответил бы 403).
                     const method = (init && init.method) || (typeof input !== 'string' && input && input.method) || 'GET';
-                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0, portalCanImportDecisions(), portalCanUploadProjects(), portalCanEditSchedule())) {
+                    const uploadPermissions = Object.fromEntries(['audit_results', 'version_comparison', 'stage_comparison'].map(s => [s, portalCanUploadProjects(s)]));
+                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0, portalCanImportDecisions(), portalCanUploadProjects(), portalCanEditSchedule(), uploadPermissions)) {
                         const detail = {code: 'forbidden_viewer', message: 'действие доступно только администратору'};
                         showPortalForbidden(detail);
                         return Promise.resolve(new Response(JSON.stringify({detail}), {
@@ -15187,7 +15201,7 @@ const app = createApp({
         }
 
         function scOpenStageFolderDialog() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
+            if (!portalCanUploadProjects('stage_comparison') || pcDemo.value || pcBridgeActive.value) return;
             if (!currentObjectId.value) return;
             scResetStageFolderDialog();
             scStageFolderDialogOpen.value = true;
@@ -15290,7 +15304,7 @@ const app = createApp({
         }
 
         async function scUploadStageFolder(event) {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
+            if (!portalCanUploadProjects('stage_comparison') || pcDemo.value || pcBridgeActive.value) return;
             const input = event && event.target;
             const files = Array.from((input && input.files) || []);
             if (!currentObjectId.value || !files.length) return;
@@ -15307,7 +15321,7 @@ const app = createApp({
         }
 
         function scSubmitSelectedStageProjects() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
+            if (!portalCanUploadProjects('stage_comparison') || pcDemo.value || pcBridgeActive.value) return;
             const selected = scStageFolderCandidates.value.filter(candidate =>
                 candidate.checked && candidate.status !== 'done'
                 && !['queued', 'uploading', 'processing'].includes(candidate.status)
@@ -20737,7 +20751,7 @@ const app = createApp({
             // Theme
             theme, toggleTheme,
             // Права вошедшего (portal_auth.js)
-            canOperate, canImportDecisions, canUploadProjects, canAdminPanels, canView, canDownload, withObject,
+            canOperate, canImportDecisions, canUploadProjects, canUploadStageProjects, canAdminPanels, canView, canDownload, withObject,
             portalForbiddenMessage, scViewerNotPrepared, scSessionStale,
             // Пользователи (сотрудники) — подпись решений + админ-гейт графика
             usersList, usersCurrentId,

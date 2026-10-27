@@ -66,6 +66,12 @@ CREATE TABLE IF NOT EXISTS account_schedule_permissions (
   account_id INTEGER PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
   edit_schedule INTEGER NOT NULL DEFAULT 0 CHECK (edit_schedule IN (0,1))
 );
+-- Audit upload grants retain their legacy account_capabilities storage.
+CREATE TABLE IF NOT EXISTS account_section_uploads (
+  account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  section TEXT NOT NULL CHECK (section IN ('version_comparison','stage_comparison')),
+  PRIMARY KEY (account_id, section)
+);
 CREATE TABLE IF NOT EXISTS auth_events (
   id INTEGER PRIMARY KEY,
   at TEXT NOT NULL,

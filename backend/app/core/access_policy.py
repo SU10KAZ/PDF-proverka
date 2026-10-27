@@ -72,6 +72,22 @@ _ALLOW_SPEC: dict[str, list[str]] = {
     EDIT_SCHEDULE: ["PUT /api/schedule/plan", "POST /api/schedule/reserve/operations"],
     IMPORT_DECISIONS: ["POST /api/knowledge-base/upload-excel"],
     UPLOAD_PROJECTS: ["POST /api/projects/upload-folder", "POST /api/projects/upload-folder/precheck"],
+    f"{UPLOAD_PROJECTS}:{_VC}": [
+        f"POST {VC}/uploads", f"POST {VC}/uploads/{{upload_id}}/files",
+        f"GET {VC}/uploads/{{upload_id}}/proposal", f"POST {VC}/uploads/{{upload_id}}/confirm",
+        f"DELETE {VC}/uploads/{{upload_id}}",
+        f"GET {VC}/batches", f"POST {VC}/batches", f"GET {VC}/batches/{{batch_id}}",
+        f"DELETE {VC}/batches/{{batch_id}}", f"PATCH {VC}/batches/{{batch_id}}",
+        f"POST {VC}/batches/{{batch_id}}/start",
+        f"POST {VC}/batches/{{batch_id}}/items/{{item_id}}/files/{{file_id}}",
+        f"POST {VC}/batches/{{batch_id}}/items/{{item_id}}/files/{{file_id}}/chunks/{{index}}",
+        f"POST {VC}/batches/{{batch_id}}/items/{{item_id}}/action",
+        f"POST {VC}/batches/{{batch_id}}/items/{{item_id}}/confirm",
+    ],
+    f"{UPLOAD_PROJECTS}:{_SC}": [
+        "POST /api/stage-comparison/objects/{object_id}/stages/{stage_name}/upload",
+        "POST /api/stage-comparison/objects/{object_id}/stages/{stage_name}/upload-folder",
+    ],
     PUBLIC: [
         "GET /login", "GET /register",
         "POST /api/auth/login", "POST /api/auth/register", "POST /api/auth/logout",
@@ -284,9 +300,9 @@ def _check_role(ctx, policy: Policy) -> None:
         raise _deny("forbidden_decision_import",
                     "Для загрузки решений нужен доступ к результатам аудита.")
     if policy.kind == UPLOAD_PROJECTS:
-        if ctx.can_upload_projects:
+        if ctx.can_upload(policy.section or "audit_results"):
             return
-        raise _deny("forbidden_project_upload", "Администратор не разрешил загрузку проектов.")
+        raise _deny("forbidden_project_upload", "Администратор не разрешил загрузку проектов в этом разделе.")
     if policy.kind == EDIT_SCHEDULE and ctx.can_edit_schedule:
         return
     raise _deny("admin_only", "Действие доступно только администратору.")

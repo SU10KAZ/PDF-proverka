@@ -40,7 +40,6 @@ KNOWN_MUTATING_GETS = {
     "/api/version-comparison/objects/{object_id}/runs/{run_id}/ai/jobs/{job_id}/sheets/{spid}/check-crop/{name}",
     "/api/version-comparison/objects/{object_id}/stage-queue",
     "/api/version-comparison/objects/{object_id}/ai-sheet-match",
-    "/api/version-comparison/objects/{object_id}/batches",
     "/api/stage-comparison/sessions",
     "/api/stage-comparison/sessions/{session_id}/production/batch",
     "/api/stage-comparison/production/ai-modes",
@@ -109,7 +108,12 @@ def test_no_mutating_route_open_to_viewer(routes):
             if pol.kind == IMPORT_DECISIONS:
                 assert (m, p) == ("POST", "/api/knowledge-base/upload-excel")
             elif pol.kind == UPLOAD_PROJECTS:
-                assert m == "POST" and p in ("/api/projects/upload-folder", "/api/projects/upload-folder/precheck")
+                if pol.section is None:
+                    assert m == "POST" and p in ("/api/projects/upload-folder", "/api/projects/upload-folder/precheck")
+                elif pol.section == "stage_comparison":
+                    assert m == "POST" and p.endswith(("/upload", "/upload-folder"))
+                else:
+                    assert pol.section == "version_comparison" and ("/uploads" in p or "/batches" in p)
             elif pol.kind == EDIT_SCHEDULE:
                 assert (m, p) in (("PUT", "/api/schedule/plan"), ("POST", "/api/schedule/reserve/operations"))
             else:
@@ -131,11 +135,15 @@ def _ctx(kind):
         "viewer_staff": {s: (True, False) for s in access.SECTIONS},
         "viewer_upload": {s: (True, False) for s in access.SECTIONS},
         "viewer_calendar": {s: (True, False) for s in access.SECTIONS},
+        "viewer_upload_versions": {s: (True, False) for s in access.SECTIONS},
+        "viewer_upload_stages": {s: (True, False) for s in access.SECTIONS},
     }[kind]
     return access.AccountContext(mode="accounts", login="v", role="viewer", account_id=2,
                                  staff_id="employee" if kind == "viewer_staff" else None,
                                  upload_projects=kind == "viewer_upload",
                                  edit_schedule=kind == "viewer_calendar",
+                                 upload_sections=frozenset({"version_comparison"} if kind == "viewer_upload_versions"
+                                                          else {"stage_comparison"} if kind == "viewer_upload_stages" else {}),
                                  sections=sections)
 
 
@@ -156,7 +164,7 @@ def _allowed(conn) -> bool:
         return False
 
 
-@pytest.mark.parametrize("kind", ["viewer_none", "viewer_view", "viewer_full", "viewer_staff", "viewer_upload", "viewer_calendar", "admin"])
+@pytest.mark.parametrize("kind", ["viewer_none", "viewer_view", "viewer_full", "viewer_staff", "viewer_upload", "viewer_calendar", "viewer_upload_versions", "viewer_upload_stages", "admin"])
 def test_access_matrix(routes, kind, monkeypatch):
     monkeypatch.setenv("PORTAL_AUTH_ENABLED", "true")
     monkeypatch.setenv("PORTAL_AUTH_MODE", "accounts")
@@ -173,7 +181,8 @@ def test_access_matrix(routes, kind, monkeypatch):
         elif pol.kind == IMPORT_DECISIONS:
             expected = kind != "viewer_none"
         elif pol.kind == UPLOAD_PROJECTS:
-            expected = kind == "viewer_upload"
+            expected = kind == {None: "viewer_upload", "version_comparison": "viewer_upload_versions",
+                                "stage_comparison": "viewer_upload_stages"}[pol.section]
         elif pol.kind == EDIT_SCHEDULE:
             expected = kind == "viewer_calendar"
         else:  # DOWNLOAD

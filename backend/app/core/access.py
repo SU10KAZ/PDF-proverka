@@ -46,6 +46,7 @@ SECTIONS: tuple[str, ...] = (
 #: Разделы, в которых сейчас нет ни одной выгрузки: право скачивания в них не
 #: назначается (план, поправка 0.5).
 SECTIONS_WITHOUT_DOWNLOADS: frozenset[str] = frozenset({"knowledge_base", "schedule"})
+SECTIONS_WITH_UPLOADS: frozenset[str] = frozenset({"audit_results", "version_comparison", "stage_comparison"})
 
 SECTION_TITLES: Mapping[str, str] = {
     "audit_results": "Результаты аудита",
@@ -96,6 +97,7 @@ class AccountContext:
     legacy_staff_admin: bool = False
     upload_projects: bool = False
     edit_schedule: bool = False
+    upload_sections: frozenset[str] = field(default_factory=frozenset)
 
     @property
     def is_admin(self) -> bool:
@@ -131,10 +133,15 @@ class AccountContext:
 
     @property
     def can_upload_projects(self) -> bool:
+        return self.can_upload("audit_results")
+
+    def can_upload(self, section: str) -> bool:
+        if section not in SECTIONS_WITH_UPLOADS:
+            return False
         if not self.enforces_roles or self.is_admin:
             return True
-        return (self.role == ROLE_VIEWER and self.status == "active"
-                and self.upload_projects and self.can_view("audit_results"))
+        granted = section in self.upload_sections or (section == "audit_results" and self.upload_projects)
+        return self.role == ROLE_VIEWER and self.status == "active" and self.can_view(section) and granted
 
     @property
     def can_edit_schedule(self) -> bool:
@@ -155,6 +162,7 @@ class AccountContext:
             "can_import_decisions": self.can_import_decisions,
             "can_upload_projects": self.can_upload_projects,
             "can_edit_schedule": self.can_edit_schedule,
+            "uploads": {s: self.can_upload(s) for s in SECTIONS if s in SECTIONS_WITH_UPLOADS},
             "staff_id": self.staff_id,
             "must_change_password": self.must_change_password,
             "sections": {
@@ -249,6 +257,7 @@ __all__ = [
     "ROLE_VIEWER",
     "SECTIONS",
     "SECTIONS_WITHOUT_DOWNLOADS",
+    "SECTIONS_WITH_UPLOADS",
     "SECTION_TITLES",
     "portal_mode",
     "request_account",

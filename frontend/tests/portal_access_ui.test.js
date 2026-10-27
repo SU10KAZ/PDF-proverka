@@ -70,6 +70,20 @@ describe('чистые помощники доступа', () => {
         expect(H.portalViewerBlocksRequest('PUT', '/api/schedule/plan')).toBe(true);
     });
 
+    it('разрешает загрузку только в отмеченном разделе', () => {
+        const check = (method, path, section) => H.portalViewerBlocksRequest(method, path, false, false, false, {[section]: true});
+        expect(check('POST', '/api/stage-comparison/objects/o/stages/stage_1/upload-folder', 'stage_comparison')).toBe(false);
+        expect(check('POST', '/api/version-comparison/objects/o/uploads', 'version_comparison')).toBe(false);
+        expect(check('POST', '/api/version-comparison/objects/o/uploads/u/confirm', 'version_comparison')).toBe(false);
+        expect(check('DELETE', '/api/version-comparison/objects/o/uploads/u', 'version_comparison')).toBe(false);
+        expect(check('PATCH', '/api/version-comparison/objects/o/batches/b', 'version_comparison')).toBe(false);
+        expect(check('POST', '/api/version-comparison/objects/o/batches/b/items/i/files/f/chunks/0', 'version_comparison')).toBe(false);
+        expect(check('POST', '/api/projects/upload-folder', 'version_comparison')).toBe(true);
+        expect(check('POST', '/api/version-comparison/objects/o/uploads', 'stage_comparison')).toBe(true);
+        expect(check('POST', '/api/version-comparison/objects/o/projects/p/runs', 'version_comparison')).toBe(true);
+        expect(check('POST', '/api/stage-comparison/sessions/s/pairs/p/production/run', 'stage_comparison')).toBe(true);
+    });
+
     it('относит маршруты к разделам, служебные страницы — к admin', () => {
         expect(H.portalRouteSection('/')).toBe('audit_results');
         expect(H.portalRouteSection('/project/АР-1/findings')).toBe('audit_results');
@@ -445,9 +459,10 @@ describe('«Отчёт с ИИ-разбором» у viewer', () => {
 
 describe('сравнение версий у viewer: matrix-view', () => {
     const source = readFileSync(new URL('../static/js/version-comparison.js', import.meta.url), 'utf8');
-    function page(fetch, portalCan) {
+    function page(fetch, portalCan, extra = {}) {
         vi.useFakeTimers();
-        const sandbox = {fetch, FormData: class {}, setTimeout, clearTimeout, portalCan,
+        const sandbox = {fetch, FormData: class {append() {}}, setTimeout, clearTimeout, portalCan,
+            ...extra,
             Vue: {ref: value => ({value}), reactive: value => value, watch: () => {}, onMounted: () => {}, onBeforeUnmount: () => {}}};
         sandbox.globalThis = sandbox;
         vm.runInNewContext(source, sandbox);
@@ -469,6 +484,28 @@ describe('сравнение версий у viewer: matrix-view', () => {
         await vi.advanceTimersByTimeAsync(10000);
         expect(fetch.mock.calls.map(c => c[0])).toEqual(['/api/version-comparison/objects/obj/projects/pr/matrix-view']);
         expect(p.matrices.pr.state).toBe('not_prepared');
+        expect(p.canOperate).toBe(false);
+    });
+
+    it('viewer с загрузкой версий открывает загрузку, подтверждает состав и остаётся без прав запуска', async () => {
+        class XHR {
+            upload = {}; status = 200; responseText = '{}';
+            open() {} send() {this.onload();}
+        }
+        const fetch = vi.fn(async url => reply(url.endsWith('/uploads') ? {upload_id: 'u1'}
+            : url.endsWith('/proposal') ? {groups: [{title: 'Project', code: 'P', files: [{file_key: 'f', suggested_label: 'v1'}]}]}
+            : url.endsWith('/catalog') ? {projects: [], versions: {}} : {}));
+        const p = page(fetch, {...viewerCan(), uploadProjects: section => section === 'version_comparison'}, {XMLHttpRequest: XHR});
+        expect(p.canOperate).toBe(false);
+        expect(p.canUpload).toBe(true);
+        p.openUpload();
+        expect(p.upload.open).toBe(true);
+        p.upload.files = [{name: 'test.pdf', size: 3}];
+        await p.sendFiles();
+        expect(p.upload.step).toBe(2);
+        await p.confirmUpload();
+        expect(fetch.mock.calls.some(([url, init]) => url.endsWith('/u1/confirm') && init.method === 'POST')).toBe(true);
+        expect(p.upload.open).toBe(false);
         expect(p.canOperate).toBe(false);
     });
 
