@@ -80,10 +80,17 @@ def _upload_projects(conn: sqlite3.Connection, account_id: int) -> bool:
     return bool(row and row["upload_projects"])
 
 
+def _edit_schedule(conn: sqlite3.Connection, account_id: int) -> bool:
+    row = conn.execute("SELECT edit_schedule FROM account_schedule_permissions WHERE account_id=?",
+                       (account_id,)).fetchone()
+    return bool(row and row["edit_schedule"])
+
+
 def _public(conn: sqlite3.Connection, row: sqlite3.Row) -> dict:
     out = {k: row[k] for k in _PUBLIC_FIELDS}
     out["must_change_password"] = bool(out["must_change_password"])
     out["upload_projects"] = _upload_projects(conn, row["id"])
+    out["edit_schedule"] = _edit_schedule(conn, row["id"])
     secs = _sections(conn, row["id"])
     out["sections"] = {
         s: {"view": secs.get(s, (False, False))[0], "download": secs.get(s, (False, False))[1]}
@@ -104,6 +111,7 @@ def _context_from_row(conn: sqlite3.Connection, row: sqlite3.Row) -> AccountCont
         must_change_password=bool(row["must_change_password"]),
         sections=_sections(conn, row["id"]),
         upload_projects=_upload_projects(conn, row["id"]),
+        edit_schedule=_edit_schedule(conn, row["id"]),
     )
 
 
@@ -411,6 +419,8 @@ def set_sections(actor: Optional[int], target: int, raw: Mapping[str, Any]) -> d
         _write_sections(conn, target, sections)
         if not sections.get("audit_results", (False, False))[0]:
             conn.execute("DELETE FROM account_capabilities WHERE account_id=?", (int(target),))
+        if not sections.get("schedule", (False, False))[0]:
+            conn.execute("DELETE FROM account_schedule_permissions WHERE account_id=?", (int(target),))
         _touch(conn, target)
         _event(conn, "sections_changed", actor=actor, target=target,
                sections={s: list(v) for s, v in sections.items()})
@@ -430,6 +440,22 @@ def set_upload_projects(actor: Optional[int], target: int, allowed: bool) -> dic
         )
         _touch(conn, target)
         _event(conn, "upload_projects_changed", actor=actor, target=target, allowed=bool(allowed))
+        return _public(conn, _row(conn, target))
+
+
+def set_edit_schedule(actor: Optional[int], target: int, allowed: bool) -> dict:
+    with db.write_txn() as conn:
+        row = _row(conn, target)
+        if allowed and (row["status"] != "active" or not _sections(conn, target).get("schedule", (False, False))[0]):
+            raise AccountError("edit_requires_schedule",
+                               "Сначала включите просмотр графика работ для действующего пользователя.")
+        conn.execute(
+            "INSERT INTO account_schedule_permissions(account_id, edit_schedule) VALUES (?,?)"
+            " ON CONFLICT(account_id) DO UPDATE SET edit_schedule=excluded.edit_schedule",
+            (int(target), int(allowed)),
+        )
+        _touch(conn, target)
+        _event(conn, "edit_schedule_changed", actor=actor, target=target, allowed=bool(allowed))
         return _public(conn, _row(conn, target))
 
 

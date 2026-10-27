@@ -55,6 +55,11 @@ class UploadProjectsBody(BaseModel):
     upload_projects: bool
 
 
+class EditScheduleBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    edit_schedule: bool
+
+
 class StaffBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
     staff_id: Optional[str] = None
@@ -185,6 +190,13 @@ async def set_staff(account_id: int, body: StaffBody, ctx: AccountContext = Depe
     from backend.app.services.accounts import store
 
     return {"account": await _call(store.set_staff, ctx.account_id, account_id, body.staff_id)}
+
+
+@router.put("/accounts/{account_id}/edit-schedule")
+async def set_edit_schedule(account_id: int, body: EditScheduleBody, ctx: AccountContext = Depends(_admin)):
+    from backend.app.services.accounts import store
+
+    return {"account": await _call(store.set_edit_schedule, ctx.account_id, account_id, body.edit_schedule)}
 
 
 @router.delete("/accounts/{account_id}")

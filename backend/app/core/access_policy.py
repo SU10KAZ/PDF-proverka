@@ -40,6 +40,7 @@ VIEW = "VIEW"
 DOWNLOAD = "DOWNLOAD"
 IMPORT_DECISIONS = "IMPORT_DECISIONS"
 UPLOAD_PROJECTS = "UPLOAD_PROJECTS"
+EDIT_SCHEDULE = "EDIT_SCHEDULE"
 
 
 @dataclass(frozen=True)
@@ -68,6 +69,7 @@ HM = "/api/human-mapping/objects/{object_id}"
 PCP = "/api/project-change-preview/objects/{object_id}"
 
 _ALLOW_SPEC: dict[str, list[str]] = {
+    EDIT_SCHEDULE: ["PUT /api/schedule/plan", "POST /api/schedule/reserve/operations"],
     IMPORT_DECISIONS: ["POST /api/knowledge-base/upload-excel"],
     UPLOAD_PROJECTS: ["POST /api/projects/upload-folder", "POST /api/projects/upload-folder/precheck"],
     PUBLIC: [
@@ -285,6 +287,8 @@ def _check_role(ctx, policy: Policy) -> None:
         if ctx.can_upload_projects:
             return
         raise _deny("forbidden_project_upload", "Администратор не разрешил загрузку проектов.")
+    if policy.kind == EDIT_SCHEDULE and ctx.can_edit_schedule:
+        return
     raise _deny("admin_only", "Действие доступно только администратору.")
 
 

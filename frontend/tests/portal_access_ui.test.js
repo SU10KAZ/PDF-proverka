@@ -59,6 +59,17 @@ describe('чистые помощники доступа', () => {
         expect(H.portalViewerBlocksRequest('POST', '/api/knowledge-base/expert-review/P', true)).toBe(true);
     });
 
+    it('право календаря открывает только очередь и планы', () => {
+        const allowed = (method, path) => H.portalViewerBlocksRequest(method, path, false, false, true);
+        expect(allowed('PUT', '/api/schedule/plan')).toBe(false);
+        expect(allowed('POST', '/api/schedule/reserve/operations?object_id=x')).toBe(false);
+        expect(allowed('DELETE', '/api/schedule/plan')).toBe(true);
+        expect(allowed('POST', '/api/schedule/plan')).toBe(true);
+        expect(allowed('POST', '/api/audit/batch')).toBe(true);
+        expect(allowed('PUT', '/api/admin/accounts/4/edit-schedule')).toBe(true);
+        expect(H.portalViewerBlocksRequest('PUT', '/api/schedule/plan')).toBe(true);
+    });
+
     it('относит маршруты к разделам, служебные страницы — к admin', () => {
         expect(H.portalRouteSection('/')).toBe('audit_results');
         expect(H.portalRouteSection('/project/АР-1/findings')).toBe('audit_results');
@@ -126,6 +137,38 @@ describe('чистые помощники доступа', () => {
         expect(V.portalCanView('schedule')).toBe(true);
         expect(V.portalCanView('audit_results')).toBe(false);
         expect(V.portalCanDownload('schedule')).toBe(false);
+    });
+});
+
+describe('сохранение плана с отдельным правом календаря', () => {
+    function harness(allowed) {
+        const requests = [];
+        const ctx = helpersContext({window: {portalCan: {...viewerCan(), editSchedule: () => allowed}},
+            console, JSON, schedPlanEdit: {value: true}, schedPlanSaving: {value: false},
+            schedPlanMsg: {value: null}, schedMode: {value: 'month'},
+            schedEngineers: {value: [{id: 'expert', name: 'Эксперт'}]},
+            schedDraftFor: () => 12, schedLoadPlans: async () => {},
+            _schedPeriodRange: () => ({from: '2026-10-01', to: '2026-10-31'}),
+            fetch: async (url, init) => { requests.push({url, ...init}); return {ok: true}; },
+        });
+        vm.runInContext(extractFunction(app, 'schedSavePlans') + '\nglobalThis.save = schedSavePlans;', ctx);
+        return {ctx, requests};
+    }
+
+    it('сотрудник с правом календаря сохраняет планы без общих прав запуска', async () => {
+        const {ctx, requests} = harness(true);
+        await ctx.save();
+        expect(requests).toHaveLength(1);
+        expect(requests[0].url).toBe('/api/schedule/plan');
+        expect(requests[0].method).toBe('PUT');
+        expect(JSON.parse(requests[0].body).plans).toEqual([{engineer_id: 'expert', engineer_name: 'Эксперт', plan: 12}]);
+        expect(ctx.schedPlanEdit.value).toBe(false);
+    });
+
+    it('просмотр без права редактирования не отправляет PUT', async () => {
+        const {ctx, requests} = harness(false);
+        await ctx.save();
+        expect(requests).toHaveLength(0);
     });
 });
 

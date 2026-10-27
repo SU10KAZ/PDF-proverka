@@ -60,6 +60,12 @@ CREATE TABLE IF NOT EXISTS account_capabilities (
   account_id INTEGER PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
   upload_projects INTEGER NOT NULL DEFAULT 0 CHECK (upload_projects IN (0,1))
 );
+-- Separate additive table: older releases may clear account_capabilities when
+-- audit access is revoked; that must not affect calendar editing permissions.
+CREATE TABLE IF NOT EXISTS account_schedule_permissions (
+  account_id INTEGER PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
+  edit_schedule INTEGER NOT NULL DEFAULT 0 CHECK (edit_schedule IN (0,1))
+);
 CREATE TABLE IF NOT EXISTS auth_events (
   id INTEGER PRIMARY KEY,
   at TEXT NOT NULL,

@@ -93,17 +93,13 @@ class WorkPlanUpdate(BaseModel):
         return v.strip()
 
 
-def _require_admin(request: Request) -> str:
-    """Admin-гейт для редактирования плана → имя для `updated_by`.
+def _require_editor(request: Request) -> str:
+    """Право редактирования календаря → имя для `updated_by`."""
+    from backend.app.core.access import MODE_DISABLED, require_account
 
-    Роль берётся из серверного контекста (`core.access.require_admin`):
-    в режиме аккаунтов — role=admin аккаунта, в прежнем env_users — сотрудник
-    users.json с role=admin, при выключенной авторизации — разрешено.
-    Имя — сотрудник, связанный с аккаунтом, иначе логин.
-    """
-    from backend.app.core.access import MODE_DISABLED, require_admin
-
-    ctx = require_admin(request)
+    ctx = require_account(request)
+    if not ctx.can_edit_schedule:
+        raise HTTPException(403, {"code": "admin_only", "message": "Нет права изменять график работ."})
     if ctx.mode == MODE_DISABLED:
         cur = user_service.get_current_user()
         return (cur or {}).get("name", "") if cur else ""
@@ -137,8 +133,8 @@ async def get_plan(
 
 @router.put("/plan")
 async def put_plan(payload: WorkPlanUpdate, request: Request):
-    """Обновить план для одного периода (только администратор)."""
-    updated_by = _require_admin(request)
+    """Обновить план для одного периода с правом редактирования календаря."""
+    updated_by = _require_editor(request)
     if payload.period_start > payload.period_end:
         raise HTTPException(400, "period_start не может быть позже period_end")
     obj = (payload.object_id or "").strip() or None

@@ -31,6 +31,7 @@
         uploadProjects: function () {
             return caps.can_operate !== false || caps.can_upload_projects === true;
         },
+        editSchedule: function () { return caps.can_edit_schedule === true; },
         // Служебные панели: расход, пользователи, учётная запись модели.
         admin: function () { return caps.is_admin !== false; },
         view: function (section) {

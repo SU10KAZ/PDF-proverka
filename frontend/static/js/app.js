@@ -88,13 +88,15 @@ function portalWsCloseAction(code) {
 
 // Изменяющие запросы viewer блокируются; связанный сотрудник может вернуть
 // решения из Excel через один явно разрешённый маршрут.
-function portalViewerBlocksRequest(method, url, allowDecisionImport = false, allowProjectUpload = false) {
+function portalViewerBlocksRequest(method, url, allowDecisionImport = false, allowProjectUpload = false, allowScheduleEdit = false) {
     const m = String(method || 'GET').toUpperCase();
     if (m === 'GET' || m === 'HEAD' || m === 'OPTIONS') return false;
     const {path} = _portalSplitUrl(url);
     if (allowDecisionImport && m === 'POST' && path === '/api/knowledge-base/upload-excel') return false;
     if (allowProjectUpload && m === 'POST'
         && (path === '/api/projects/upload-folder' || path === '/api/projects/upload-folder/precheck')) return false;
+    if (allowScheduleEdit && ((m === 'PUT' && path === '/api/schedule/plan')
+        || (m === 'POST' && path === '/api/schedule/reserve/operations'))) return false;
     return path.startsWith('/api/') && !path.startsWith('/api/auth/');
 }
 
@@ -121,6 +123,12 @@ function portalCanUploadProjects() {
     if (typeof window === 'undefined' || !window.portalCan) return true;
     return typeof window.portalCan.uploadProjects === 'function'
         ? window.portalCan.uploadProjects() : window.portalCan.operate();
+}
+
+function portalCanEditSchedule() {
+    if (typeof window === 'undefined' || !window.portalCan) return true;
+    return typeof window.portalCan.editSchedule === 'function'
+        ? window.portalCan.editSchedule() : window.portalCan.admin();
 }
 
 const app = createApp({
@@ -4900,7 +4908,7 @@ const app = createApp({
                     // viewer: изменяющий запрос не уходит в сеть (вторая линия
                     // защиты за скрытыми кнопками; сервер ответил бы 403).
                     const method = (init && init.method) || (typeof input !== 'string' && input && input.method) || 'GET';
-                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0, portalCanImportDecisions(), portalCanUploadProjects())) {
+                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0, portalCanImportDecisions(), portalCanUploadProjects(), portalCanEditSchedule())) {
                         const detail = {code: 'forbidden_viewer', message: 'действие доступно только администратору'};
                         showPortalForbidden(detail);
                         return Promise.resolve(new Response(JSON.stringify({detail}), {
@@ -12019,16 +12027,8 @@ const app = createApp({
         }
         function schedIsEngineerHidden(id) { return schedHiddenEngineers.value.includes(id); }
 
-        // Право редактировать план: при выключенной auth (dev) — разрешено;
-        // при включённой — только сотрудник с ролью admin. Backend защищает PUT
-        // независимо от этого флага (это лишь видимость кнопки).
-        const schedIsAdmin = computed(() => {
-            // Права страницы (portal_auth.js): admin — владелец/администратор.
-            if (window.portalCan) return window.portalCan.admin();
-            if (!usersAuthEnabled.value) return true;
-            const u = usersList.value.find(x => x.id === usersCurrentId.value);
-            return !!u && u.role === 'admin';
-        });
+        // Право редактирования календаря; сервер независимо проверяет PUT.
+        const schedIsAdmin = computed(() => portalCanEditSchedule());
 
         // ── Расход подписки Claude по инженерам (модалка) ──────────
         const subSpendOpen = ref(false);
@@ -12112,6 +12112,7 @@ const app = createApp({
             schedPlanDraft.value = { ...schedPlanDraft.value, [engId]: n };
         }
         function schedTogglePlanEdit() {
+            if (!portalCanEditSchedule()) return;
             if (schedPlanEdit.value) { schedPlanEdit.value = false; return; }
             // Сеем черновик для ВСЕХ инженеров (не только видимых), чтобы PUT не
             // затёр план скрытых фильтром: PUT перезаписывает период целиком.
@@ -12141,7 +12142,7 @@ const app = createApp({
         }
 
         async function schedSavePlans() {
-            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
+            if (!portalCanEditSchedule()) return;
             const { from, to } = _schedPeriodRange();
             schedPlanSaving.value = true;
             schedPlanMsg.value = null;

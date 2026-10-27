@@ -95,6 +95,7 @@ class AccountContext:
     #: env_users: сотрудник users.json с role=admin (прежний «администратор»).
     legacy_staff_admin: bool = False
     upload_projects: bool = False
+    edit_schedule: bool = False
 
     @property
     def is_admin(self) -> bool:
@@ -135,6 +136,13 @@ class AccountContext:
         return (self.role == ROLE_VIEWER and self.status == "active"
                 and self.upload_projects and self.can_view("audit_results"))
 
+    @property
+    def can_edit_schedule(self) -> bool:
+        if self.is_admin:
+            return True
+        return (self.enforces_roles and self.role == ROLE_VIEWER and self.status == "active"
+                and self.edit_schedule and self.can_view("schedule"))
+
     def as_public(self) -> dict:
         """Проекция для UI и /api/auth/me. Ни хешей, ни секретов."""
         return {
@@ -146,6 +154,7 @@ class AccountContext:
             "is_admin": self.is_admin,
             "can_import_decisions": self.can_import_decisions,
             "can_upload_projects": self.can_upload_projects,
+            "can_edit_schedule": self.can_edit_schedule,
             "staff_id": self.staff_id,
             "must_change_password": self.must_change_password,
             "sections": {

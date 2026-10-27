@@ -56,16 +56,15 @@ async def get_reserve(request: Request):
     except (ValueError, OSError) as exc:
         raise HTTPException(503, {'code': 'source_unavailable', 'message': str(exc)})
     ctx = require_account(request)
-    result['can_edit'] = not ctx.enforces_roles or ctx.is_admin
+    result['can_edit'] = not ctx.enforces_roles or ctx.can_edit_schedule
     return result
 
 
 @router.post('/operations')
 async def reserve_operation(body: Operation, request: Request):
     ctx = require_account(request)
-    # Same write rights as expert decisions / normal portal operations. In
-    # env_users mode staff can operate; in accounts mode viewer stays read-only.
-    if ctx.enforces_roles and not ctx.is_admin:
+    # Legacy staff retain their rights; accounts require calendar editing access.
+    if ctx.enforces_roles and not ctx.can_edit_schedule:
         raise HTTPException(403, 'Нет права изменять очередь.')
     try:
         result = await asyncio.to_thread(service.mutate, body.model_dump(mode='json'), _actor(request))

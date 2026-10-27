@@ -233,6 +233,25 @@
         detail.appendChild(acc.role === 'admin'
             ? el('p', { 'class': 'muted', text: 'Администратору доступны все разделы и загрузка проектов.' })
             : sectionsMatrix(acc));
+        var calendar = el('input', { type: 'checkbox', 'aria-label': 'Редактирование календаря: ' + acc.login });
+        calendar.checked = acc.role === 'admin' || !!acc.edit_schedule;
+        calendar.disabled = acc.role === 'admin' || acc.status !== 'active'
+            || !(acc.sections && acc.sections.schedule && acc.sections.schedule.view);
+        calendar.onchange = function () {
+            var allowed = calendar.checked;
+            calendar.disabled = true;
+            api('PUT', '/accounts/' + acc.id + '/edit-schedule', { edit_schedule: allowed })
+                .then(function () {
+                    banner('Право редактирования календаря сохранено: ' + acc.login, 'ok');
+                    return reload();
+                }).catch(function (e) {
+                    calendar.checked = !allowed;
+                    calendar.disabled = false;
+                    banner(e.message, 'err');
+                });
+        };
+        detail.appendChild(el('label', { 'class': 'detail-field' }, [calendar,
+            document.createTextNode(' Редактирование календаря и планов работ')]));
         detail.appendChild(el('h3', { text: 'Действия' }));
         detail.appendChild(actions(acc));
         return detail;
