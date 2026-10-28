@@ -3445,7 +3445,7 @@ const app = createApp({
                 selectedProjects.value = new Set();
                 selectAllChecked.value = false;
             } else {
-                selectedProjects.value = new Set(projects.value.map(p => p.project_id));
+                selectedProjects.value = new Set(auditableProjects.value.map(p => p.project_id));
                 selectAllChecked.value = true;
             }
         }
@@ -3700,8 +3700,8 @@ const app = createApp({
             }
 
             if (batchAllMode.value) {
-                // Запуск для ВСЕХ проектов — выбираем все ID
-                const allIds = projects.value.map(p => p.project_id);
+                // Запуск для ВСЕХ проектов — выбираем все ID (без ИРД: он не аудируется)
+                const allIds = auditableProjects.value.map(p => p.project_id);
                 selectedProjects.value = new Set(allIds);
                 batchAllMode.value = false;
             }
@@ -4043,7 +4043,7 @@ const app = createApp({
                     }
                 }
             }
-            return projects.value.filter(p => !inQueue.has(p.project_id));
+            return auditableProjects.value.filter(p => !inQueue.has(p.project_id));
         });
 
         // ─── Audit Actions ───
