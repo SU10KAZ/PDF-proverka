@@ -3614,6 +3614,7 @@ const app = createApp({
         function unanalyzedPids(sectionCode) {
             return projects.value
                 .filter(p => (sectionCode === '__all__' || (p.section || 'OTHER') === sectionCode)
+                             && isSectionAuditable(p.section || 'OTHER')
                              && isProjectUnanalyzed(p))
                 .map(p => p.project_id);
         }
@@ -5089,7 +5090,7 @@ const app = createApp({
         // совпадали с карточками раздела.
         const sectionStatsMap = computed(() => {
             const m = {};
-            for (const [code, items] of projectsBySection.value) {
+            for (const [code, items] of auditableSectionGroups.value) {
                 const latest = latestProjectCards(items);
                 let expertChecked = 0, notStarted = 0, findings = 0;
                 for (const p of latest) {
@@ -5133,7 +5134,7 @@ const app = createApp({
         // ни оптимизаций.
         const sectionHasUnanalyzed = computed(() => {
             const sec = sidebarFilterSection.value;
-            if (!sec || sec === '__all__') return false;
+            if (!sec || sec === '__all__' || !isSectionAuditable(sec)) return false;
             return projects.value.some(
                 p => (p.section || 'OTHER') === sec && isProjectUnanalyzed(p)
             );
@@ -5181,6 +5182,13 @@ const app = createApp({
                 return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
             });
         });
+
+        // Разделы с аудитом — без ИРД (ТЗ, вендор-лист): таблица «Разделы
+        // проекта» и общий счётчик «Разделы» считают только проверяемые документы.
+        const auditableSectionGroups = computed(() =>
+            projectsBySection.value.filter(([code]) => isSectionAuditable(code)));
+        const auditableProjects = computed(() =>
+            projects.value.filter(p => isSectionAuditable(p.section || 'OTHER')));
 
         function toggleSection(code) {
             collapsedSections.value[code] = !collapsedSections.value[code];
@@ -5367,6 +5375,12 @@ const app = createApp({
         function getDisciplineColor(code) {
             const d = supportedDisciplines.value.find(x => x.code === code);
             return d ? d.color : '#666';
+        }
+
+        // false — раздел без аудита (IRD): документы только читаются анализом.
+        function isSectionAuditable(code) {
+            const d = supportedDisciplines.value.find(x => x.code === code);
+            return !d || d.auditable !== false;
         }
 
         function disciplineLabel(code) {
@@ -20927,6 +20941,7 @@ const app = createApp({
             sectionHasUnanalyzed,
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
+            isSectionAuditable, auditableSectionGroups, auditableProjects,
             objectName, projectsBySection, collapsedSections, toggleSection,
             sidebarSectionsOpen, sidebarFilterSection, toggleSectionsNav,
             allSectionsCollapsed, toggleAllSections,

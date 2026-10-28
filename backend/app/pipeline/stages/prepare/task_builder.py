@@ -631,7 +631,21 @@ def prepare_text_analysis_task(
                 task = task + "\n\n" + _ann
     except Exception:
         pass
-    return task
+    return _append_ird_catalog(task)
+
+
+def _append_ird_catalog(task: str) -> str:
+    """Дописать в задание каталог документов ИРД объекта (ТЗ, вендор-лист, ТУ).
+
+    Только пути к MD, без текста: модель открывает документ сама, когда он
+    нужен. Нет документов или ошибка — задание не меняется.
+    """
+    try:
+        from backend.app.services.common.ird_service import render_ird_catalog
+        catalog = render_ird_catalog()
+    except Exception:
+        return task
+    return task.rstrip() + "\n\n" + catalog if catalog else task
 
 
 def build_text_analysis_prompt(
@@ -1383,6 +1397,7 @@ def _resolve_vendor_list_path() -> Optional[Path]:
     """Найти `вендор лист.md` текущего объекта, приоритет — v2, затем legacy.
 
     Порядок:
+      0) документ типа «вендор-лист» в разделе ИРД объекта (`ird_service`);
       1) v2 лёгкий слот `projects_v2/objects/<folder>/DOC/вендор лист.md`
          (per-object, вне версий) — резолвится по bound object_id или current_id;
       2) legacy `<projects_dir объекта>/DOC/вендор лист.md`;
@@ -1391,6 +1406,12 @@ def _resolve_vendor_list_path() -> Optional[Path]:
     Возвращает None, если файла нет ни в одном месте (штатная ситуация —
     заказчик ограничений по вендорам не задал).
     """
+    # 0) ИРД объекта
+    from backend.app.services.common.ird_service import find_vendor_list_md
+    ird_path = find_vendor_list_md()
+    if ird_path is not None and ird_path.exists():
+        return ird_path
+
     # 1) v2 объектный DOC-слот
     try:
         from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
@@ -1545,7 +1566,7 @@ def prepare_optimization_task(
     )
     if prescan_section:
         task = task.rstrip() + "\n\n" + prescan_section
-    return task
+    return _append_ird_catalog(task)
 
 
 def prepare_optimization_critic_task(

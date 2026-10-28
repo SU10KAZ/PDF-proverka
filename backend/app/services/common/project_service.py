@@ -1393,6 +1393,20 @@ def get_project_info(project_id: str, *, version_id: Optional[str] = None) -> Op
     return _load_json(proj_dir / "project_info.json")
 
 
+def is_project_auditable(project_id: str) -> bool:
+    """False для документов раздела без аудита (IRD: ТЗ, вендор-лист, ТУ).
+
+    Ошибка чтения метаданных не блокирует запуск: решение «можно ли
+    аудировать» остаётся за прежними проверками (наличие PDF и т.п.).
+    """
+    from backend.app.services.common.discipline_identity import is_auditable
+    try:
+        info = get_project_info(project_id) or {}
+    except Exception:
+        return True
+    return is_auditable(info.get("section"))
+
+
 def save_project_info(
     project_id: str, data: dict, *, version_id: Optional[str] = None,
 ) -> bool:

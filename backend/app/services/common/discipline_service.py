@@ -288,6 +288,7 @@ def get_supported_disciplines() -> list[dict]:
             "color": disc.get("color", "#666"),
             "order": disc.get("order", 999),
             "has_profile": disc_dir.exists(),
+            "auditable": disc.get("auditable", True) is not False,
         })
     result.sort(key=lambda d: d["order"])
     return result

@@ -240,6 +240,26 @@ def known_codes() -> list[str]:
     return sorted(_registry())
 
 
+def is_auditable(raw: Any) -> bool:
+    """Можно ли запускать аудит по документам этого раздела.
+
+    Раздел с `"auditable": false` в реестре (IRD — исходно-разрешительная
+    документация: ТЗ, вендор-лист, ТУ) хранит справочные документы объекта.
+    Их читают этапы анализа других разделов, а сами они не проверяются.
+    Неопознанный или пустой код считается аудируемым — поведение до флага.
+    """
+    code = normalize_discipline_code(raw)
+    if not code:
+        return True
+    return _registry().get(code, {}).get("auditable", True) is not False
+
+
+def non_auditable_codes() -> set[str]:
+    """Коды разделов, по которым аудит не запускается."""
+    return {code for code, info in _registry().items()
+            if info.get("auditable", True) is False}
+
+
 def ambiguous_aliases() -> dict[str, list[str]]:
     """Алиасы, претендующие на две и более дисциплины. Диагностика реестра."""
     owners: dict[str, set[str]] = {}

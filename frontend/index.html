@@ -70,12 +70,12 @@
                     </svg>
                     <span class="nav-parent-label">Разделы</span>
                     <span class="nav-sub-badges nav-parent-badges">
-                        <span v-if="expertUncheckedCount(projects) > 0"
+                        <span v-if="expertUncheckedCount(auditableProjects) > 0"
                               class="nav-sub-badge nav-sub-badge--expert-unchecked"
-                              :title="'Не проверено экспертами: ' + expertUncheckedCount(projects) + '. Считается последняя версия С РЕЗУЛЬТАТАМИ аудита; проект уходит из счётчика после обеих галочек. Версии без аудита не считаются'">
-                            {{ expertUncheckedCount(projects) }}
+                              :title="'Не проверено экспертами: ' + expertUncheckedCount(auditableProjects) + '. Считается последняя версия С РЕЗУЛЬТАТАМИ аудита; проект уходит из счётчика после обеих галочек. Версии без аудита не считаются'">
+                            {{ expertUncheckedCount(auditableProjects) }}
                         </span>
-                        <span class="nav-sub-badge" :title="'Всего проектов: ' + uniqueProjectCount(projects) + ' (версии одного проекта считаются один раз)'">{{ uniqueProjectCount(projects) }}</span>
+                        <span class="nav-sub-badge" :title="'Всего проектов (без ИРД): ' + uniqueProjectCount(auditableProjects) + ' (версии одного проекта считаются один раз)'">{{ uniqueProjectCount(auditableProjects) }}</span>
                     </span>
                     <svg class="nav-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M4 6l4 4 4-4"/>
@@ -401,7 +401,7 @@
                     <span class="dash-sections-head__arrow"></span>
                 </div>
                 <div class="dash-sections-grid">
-                    <div v-for="[code, items] in projectsBySection" :key="code"
+                    <div v-for="[code, items] in auditableSectionGroups" :key="code"
                          class="dash-section-row"
                          @click="sidebarFilterSection = code">
                         <span class="dash-section-row__badge" :style="disciplineBadgeStyle(code)">{{ code }}</span>
@@ -456,7 +456,7 @@
                     {{ disciplineLabel(sidebarFilterSection) }}
                     <span class="dashboard-header__count"
                           :title="'Уникальных проектов в разделе; версии одного проекта считаются один раз'">({{ uniqueProjectCount(filteredSectionProjects) }})</span>
-                    <label class="section-select-all" @click.stop title="Выбрать все проекты раздела">
+                    <label v-if="isSectionAuditable(sidebarFilterSection)" class="section-select-all" @click.stop title="Выбрать все проекты раздела">
                         <input type="checkbox" :checked="isSectionSelected(sidebarFilterSection)"
                                @change="toggleSectionSelection(sidebarFilterSection)">
                     </label>

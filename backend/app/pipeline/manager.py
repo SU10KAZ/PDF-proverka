@@ -5737,6 +5737,9 @@ class PipelineManager:
                 pid for pid in project_ids
                 if pid not in existing_pending and pid not in self.active_jobs
             ]
+            # Документы ИРД (раздел без аудита) в очередь не попадают.
+            from backend.app.services.common.project_service import is_project_auditable
+            filtered = [pid for pid in filtered if is_project_auditable(pid)]
             # Версионность очереди: фиксируем effective_version_id на каждый
             # item ОДИН раз при enqueue (как это делает _enqueue_single для
             # single-start). Иначе version_id=None заставляет prefetch/resolve
@@ -7094,6 +7097,11 @@ class PipelineManager:
         latest_version_id проекта (один раз). После этого пользователь может
         создать V_{N+1}, на запущенный job-а это не повлияет.
         """
+        from backend.app.services.common.project_service import is_project_auditable
+        if not is_project_auditable(project_id):
+            raise RuntimeError(
+                f"Документ '{project_id}' относится к ИРД: аудит по нему не запускается"
+            )
         # Один раз резолвим effective_version_id — не каждый раз внутри стадии.
         from backend.app.services.common import version_service
         try:
@@ -7496,7 +7504,11 @@ class PipelineManager:
             all_ids = list(project_ids)
         else:
             projects = list_projects()
-            all_ids = [p.project_id for p in projects if p.has_pdf]
+            from backend.app.services.common.discipline_identity import is_auditable
+            all_ids = [
+                p.project_id for p in projects
+                if p.has_pdf and is_auditable(p.section)
+            ]
 
         if not all_ids:
             return {"error": "Нет проектов для обработки"}

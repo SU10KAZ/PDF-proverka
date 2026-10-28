@@ -34,6 +34,8 @@ import time
 from pathlib import Path
 from typing import Optional
 
+from backend.app.services.common.discipline_identity import is_auditable
+
 _TTL = 120.0
 _cache: dict[str, object] = {"ts": 0.0, "data": None}
 _refresh_lock = threading.Lock()
@@ -110,6 +112,9 @@ def _v2_lean_cards(object_id: str) -> list[dict]:
     for doc in a.list_documents(object_folder=folder):
         if rc._v2_doc_hidden(doc, hidden):
             continue
+        # ИРД (ТЗ, вендор-лист) не аудируется — в «не запускались» не идёт.
+        if not is_auditable(doc.get("discipline")):
+            continue
         doc_dir = Path(doc["doc_dir"])
         vid = doc.get("current_version") or "v1"
         fdata = a.read_findings(doc_dir, vid) or {}
@@ -140,7 +145,8 @@ def _object_cards(object_id: str) -> list[dict]:
         return _v2_lean_cards(object_id)
     from backend.app.services.common import project_service
     with project_service.pinned_object(object_id):
-        return [p.model_dump() for p in project_service.list_projects()]
+        return [p.model_dump() for p in project_service.list_projects()
+                if is_auditable(p.section)]
 
 
 def compute_object_stats(object_id: str) -> dict:

@@ -408,7 +408,7 @@ async def start_batch_action(request: dict):
     valid_ids = []
     for pid in req.project_ids:
         status = project_service.get_project_status(pid)
-        if status and status.has_pdf:
+        if status and status.has_pdf and project_service.is_project_auditable(pid):
             valid_ids.append(pid)
 
     if not valid_ids:
@@ -488,7 +488,7 @@ async def add_to_batch(request: dict):
     valid_ids = []
     for pid in project_ids:
         status = project_service.get_project_status(pid)
-        if status and status.has_pdf:
+        if status and status.has_pdf and project_service.is_project_auditable(pid):
             valid_ids.append(pid)
 
     if not valid_ids:
@@ -1234,6 +1234,12 @@ def _check_project(project_id: str, version_id: Optional[str] = None):
     status = project_service.get_project_status(project_id, version_id=version_id)
     if not status:
         raise HTTPException(404, f"Проект '{project_id}' не найден")
+    if not project_service.is_project_auditable(project_id):
+        raise HTTPException(
+            409,
+            f"Документ '{project_id}' относится к исходно-разрешительной "
+            f"документации (ИРД): аудит по нему не запускается",
+        )
     # Валидируем version_id явно
     if version_id:
         proj_dir = project_service.resolve_project_dir(project_id)

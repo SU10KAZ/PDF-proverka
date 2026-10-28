@@ -233,6 +233,18 @@
       "text_keywords": [],
       "order": 13
     },
+    "IRD": {
+      "code": "IRD",
+      "name": "Исходно-разрешительная документация",
+      "short_name": "Исходно-разрешительная документация",
+      "color": "#7f8c8d",
+      "folder_patterns": [
+        "ИРД"
+      ],
+      "text_keywords": [],
+      "order": 99,
+      "auditable": false
+    },
     "KM": {
       "code": "KM",
       "profile_dir": "KM",

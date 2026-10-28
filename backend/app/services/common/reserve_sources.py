@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 
 from backend.app.core.config import APP_DATA_DIR
 from backend.app.services.common import object_service, project_service, schedule_service, user_service, version_service
+from backend.app.services.common.discipline_identity import is_auditable
 from backend.app.services.common.employee_identity import reviewer_matches_user
 from backend.app.services.storage.projects_v2_adapter import document_lookup_snapshot
 
@@ -158,6 +159,9 @@ def _build_catalog() -> list[dict]:
                                 output_dir = ctx['output_dir']
                                 analyzed = any((output_dir / name).is_file() for name in (
                                     '03_findings.json', '03a_norms_verified.json', 'optimization.json'))
+                            # ИРД (ТЗ, вендор-лист) не проверяется — экспертной задачи нет.
+                            if not is_auditable(section):
+                                continue
                             review = kb.load_expert_review(project_id) or {}
                             source_maps = kb._load_source_item_maps(project_id)
                             total = sum(map(len, source_maps))
