@@ -18,6 +18,7 @@ INSERT OR IGNORE INTO reserve_meta VALUES (1, 1, 0);
 CREATE TABLE IF NOT EXISTS reserve_tasks (
   id TEXT PRIMARY KEY, engineer_id TEXT NOT NULL, position INTEGER NOT NULL,
   title TEXT NOT NULL, object_id TEXT, project_id TEXT, version_id TEXT,
+  forecast_date TEXT,
   check_type TEXT NOT NULL DEFAULT 'expert_review',
   state TEXT NOT NULL CHECK(state IN ('preparation','ready','in_progress','completed','cancelled')),
   started_at TEXT, completed_at TEXT, created_at TEXT NOT NULL,
@@ -52,6 +53,9 @@ def transaction():
         conn.execute('PRAGMA journal_mode=WAL')
         conn.execute('PRAGMA foreign_keys=ON')
         conn.executescript(SCHEMA)
+        columns = {row[1] for row in conn.execute('PRAGMA table_info(reserve_tasks)')}
+        if 'forecast_date' not in columns:
+            conn.execute('ALTER TABLE reserve_tasks ADD COLUMN forecast_date TEXT')
         if conn.execute('SELECT schema_version FROM reserve_meta').fetchone()[0] != 1:
             raise RuntimeError('Unsupported reserve calendar schema')
         conn.execute('BEGIN IMMEDIATE')

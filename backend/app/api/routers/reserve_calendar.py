@@ -39,6 +39,7 @@ class Operation(BaseModel):
     engineer_id: str | None = None
     anchor_id: str | None = None
     side: Literal['before', 'after'] = 'before'
+    forecast_date: str | None = None
     project: ProjectLink | None = None
     undo_id: str | None = None
 

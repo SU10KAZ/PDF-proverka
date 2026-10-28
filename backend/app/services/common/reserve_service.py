@@ -5,7 +5,7 @@ import hashlib
 import json
 import unicodedata
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from fractions import Fraction
 from math import floor
 
@@ -36,6 +36,7 @@ def _task(engineer_id, title, actor, linked=None):
     linked = linked or {}
     stamp = now()
     return {'id': str(uuid.uuid4()), 'engineer_id': engineer_id, 'position': 0, 'title': title,
+            'forecast_date': None,
             **{k: linked.get(k) for k in ('object_id', 'project_id', 'version_id')},
             'check_type': 'expert_review', 'state': 'preparation', 'started_at': None,
             'completed_at': None, 'created_at': stamp, 'updated_at': stamp, 'created_by': actor}
@@ -49,9 +50,10 @@ def _normalize(conn, engineers):
     for row in rows:
         if row['state'] not in ACTIVE:
             continue
-        positions[row['engineer_id']] = positions.get(row['engineer_id'], 0) + 1
-        if row['position'] != positions[row['engineer_id']]:
-            row['position'] = positions[row['engineer_id']]
+        key = (row['engineer_id'], row.get('forecast_date'))
+        positions[key] = positions.get(key, 0) + 1
+        if row['position'] != positions[key]:
+            row['position'] = positions[key]
             row['updated_at'] = now()
             store.save_task(conn, row)
 
@@ -154,7 +156,9 @@ def _snapshot(conn, catalog, engineers, config, actor):
         engineer['completed_today'] = sum(
             str(c.get('completed_at') or '')[:10] == sources.today().isoformat()
             and reviewer_ids.get(c.get('reviewer', '')) == engineer['id'] for c in catalog)
-    projected = forecast(rows, engineers, config, sources.today())
+    # Dates are explicitly assigned by a person. Forecasting from engineer
+    # capacity is intentionally not part of the reserve calendar anymore.
+    projected = [dict(r, conditional=False, unscheduled_reason=None) for r in rows if r['state'] in ACTIVE]
     for row in projected:
         item = by_identity.get(sources.identity(row), {})
         row.update({k: item.get(k) for k in ('object_name', 'code', 'section', 'progress', 'total')})
@@ -166,8 +170,8 @@ def _snapshot(conn, catalog, engineers, config, actor):
         engineer.update(remaining=len(assigned), preparation=sum(r['state'] == 'preparation' for r in assigned),
                         ready=sum(r['state'] == 'ready' for r in assigned),
                         running=sum(r['state'] == 'in_progress' for r in assigned),
-                        through=(max((r['forecast_date'] for r in assigned), default=None)
-                                 if all(r['forecast_date'] for r in assigned) else None))
+                through=(max((r.get('forecast_date') for r in assigned if r.get('forecast_date')), default=None)
+                         if all(r.get('forecast_date') for r in assigned) else None))
     last = conn.execute('SELECT * FROM reserve_operations WHERE actor=? ORDER BY rowid DESC LIMIT 1', (actor,)).fetchone()
     undo_id = last['id'] if last and last['kind'] in ('move', 'delete', 'add_preparation', 'assign') and not last['undone_by'] else None
     assigned_ids = {sources.identity(r) for r in rows if r['project_id']}
@@ -293,6 +297,17 @@ def mutate(payload, actor):
                 before = _queue_snapshot(conn, affected)
                 target_queue = [r for r in rows if r['engineer_id'] == target and r['id'] not in selected]
                 anchor = payload.get('anchor_id')
+                has_target_date = 'forecast_date' in payload
+                target_date = payload.get('forecast_date')
+                if has_target_date and target_date is not None:
+                    try:
+                        date.fromisoformat(str(target_date))
+                    except ValueError:
+                        raise ReserveError('Некорректная дата переноса.')
+                if anchor and has_target_date:
+                    anchor_row = next((r for r in target_queue if r['id'] == anchor), None)
+                    if anchor_row and anchor_row.get('forecast_date') != target_date:
+                        raise ReserveError('Место вставки изменилось. Обновите календарь.', 'anchor_changed', 409)
                 if anchor:
                     if anchor not in {r['id'] for r in target_queue}:
                         raise ReserveError('Место вставки изменилось. Обновите календарь.', 'anchor_changed', 409)
@@ -302,9 +317,29 @@ def mutate(payload, actor):
                 index = max(index, sum(r['state'] == 'in_progress' for r in target_queue))
                 target_ids = [r['id'] for r in target_queue]
                 target_ids[index:index] = [r['id'] for r in block]
+                old_dates = {r.get('forecast_date') for r in block}
+                if has_target_date:
+                    for row in block:
+                        row['forecast_date'] = target_date
                 for eid in affected - {target}:
-                    _set_order(conn, [r['id'] for r in rows if r['engineer_id'] == eid and r['id'] not in selected], eid)
-                _set_order(conn, target_ids, target)
+                    remaining = [r for r in rows if r['engineer_id'] == eid and r['id'] not in selected]
+                    for day in {r.get('forecast_date') for r in remaining}:
+                        _set_order(conn, [r['id'] for r in remaining if r.get('forecast_date') == day], eid)
+                # Preserve the order of every untouched day; only the target
+                # day's insertion order and the moved rows are changed.
+                move_dates = {r.get('forecast_date') for r in block} if not has_target_date else {target_date}
+                for day in {r.get('forecast_date') for r in target_queue} | old_dates | move_dates:
+                    day_ids = [tid for tid in target_ids if by_id[tid].get('forecast_date') == day]
+                    moved_ids = [r['id'] for r in block if r['id'] in day_ids]
+                    if day == target_date:
+                        day_ids = [tid for tid in target_ids if tid in day_ids or tid in moved_ids]
+                    for pos, tid in enumerate(day_ids, 1):
+                        row = by_id[tid]
+                        if has_target_date and tid in moved_ids:
+                            row['forecast_date'] = target_date
+                        row['position'] = pos
+                        row['updated_at'] = now()
+                        store.save_task(conn, row)
             elif kind == 'delete':
                 ids = payload.get('task_ids') or []
                 if not ids or len(ids) != len(set(ids)) or any(tid not in by_id for tid in ids):
