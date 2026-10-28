@@ -138,6 +138,32 @@ def forecast(rows, engineers, config, day):
     return output
 
 
+def _portal_dates(count, engineer, config, start):
+    """Return initial dates for portal assignments, beginning tomorrow.
+
+    The queue remains manually editable after insertion. This helper is only
+    used once, when a portal project enters the reserve queue.
+    """
+    if count <= 0:
+        return []
+    rate = (Fraction(engineer['rate_numerator'], engineer['rate_denominator'])
+            if 'rate_numerator' in engineer else Fraction(engineer.get('rate', 0)))
+    if rate <= 0:
+        return [None] * count
+    dates = []
+    available = 0
+    for offset in range(3660):
+        current = start + timedelta(days=offset)
+        if not sources.is_workday(current, config, engineer):
+            continue
+        available += 1
+        quota = max(0, floor(rate * available) - floor(rate * (available - 1)))
+        dates.extend([current.isoformat()] * min(count - len(dates), quota))
+        if len(dates) >= count:
+            break
+    return dates + [None] * (count - len(dates))
+
+
 def _snapshot(conn, catalog, engineers, config, actor):
     rows = store.tasks(conn)
     active_engineer_ids = {e['id'] for e in engineers}
@@ -278,8 +304,23 @@ def mutate(payload, actor):
                     affected.add(eid)
                     prepared.append(row)
                 before = _queue_snapshot(conn, affected)
+                schedule_dates = {}
+                if kind == 'assign':
+                    by_engineer = {e['id']: e for e in engineers}
+                    counts = {}
+                    for row in prepared:
+                        counts[row['engineer_id']] = counts.get(row['engineer_id'], 0) + 1
+                    start = sources.today() + timedelta(days=1)
+                    for eid, count in counts.items():
+                        schedule_dates[eid] = _portal_dates(count, by_engineer[eid], config, start)
+                scheduled_index = {eid: 0 for eid in schedule_dates}
                 for row in prepared:
-                    row['position'] = max((r['position'] for r in rows if r['engineer_id'] == row['engineer_id']), default=0)+1
+                    if kind == 'assign':
+                        row['forecast_date'] = schedule_dates[row['engineer_id']][scheduled_index[row['engineer_id']]]
+                        scheduled_index[row['engineer_id']] += 1
+                    row['position'] = max((r['position'] for r in rows
+                                           if r['engineer_id'] == row['engineer_id']
+                                           and r.get('forecast_date') == row.get('forecast_date')), default=0) + 1
                     store.save_task(conn, row)
                     rows.append(row)
                 result['created_ids'] = [r['id'] for r in prepared]

@@ -109,7 +109,7 @@
                         off: holidays.has(iso) || ([0,6].includes(d.getUTCDay()) && !working.has(iso))};
                 });
             });
-            const columns = computed(() => [...days.value, {iso: null, label: 'Без даты', off: false}]);
+            const columns = computed(() => days.value);
             const cells = computed(() => {
                 const map = new Map();
                 for (const task of data.value.tasks) {
@@ -251,7 +251,7 @@
                 if (!dragging.value.length || engineer.active === false) return;
                 event.preventDefault();
                 const next = data.value.tasks.find(t => t.engineer_id === engineer.id && !dragging.value.includes(t.id) && (t.forecast_date || null) === (iso || null));
-                insertion.value = {engineer_id:engineer.id, forecast_date:iso || null, anchor_id:next?.id || null, side:'before'};
+                insertion.value = {engineer_id:engineer.id, anchor_id:next?.id || null, side:'before', ...(iso ? {forecast_date: iso} : {})};
             }
             async function drop(event) {
                 if (!dragging.value.length || !insertion.value) return;
