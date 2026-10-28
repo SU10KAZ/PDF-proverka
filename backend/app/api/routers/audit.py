@@ -59,6 +59,7 @@ async def prepare_data_cancel():
 async def prepare_data_retry_failed(project_id: str, version_id: Optional[str] = None):
     """Локально пересобрать контекст блоков проекта."""
     from backend.app.pipeline.stages.prepare.prepare_service import start_retry_failed
+    _reject_non_auditable(project_id)
     return await start_retry_failed(project_id, version_id=version_id)
 
 
@@ -1219,6 +1220,16 @@ async def cancel_audit(project_id: str):
     return {"status": "cancelled"}
 
 
+def _reject_non_auditable(project_id: str) -> None:
+    """409 для документа ИРД: аудит и подготовка данных по нему не запускаются."""
+    if not project_service.is_project_auditable(project_id):
+        raise HTTPException(
+            409,
+            f"Документ '{project_id}' относится к исходно-разрешительной "
+            f"документации (ИРД): аудит по нему не запускается",
+        )
+
+
 def _check_project(project_id: str, version_id: Optional[str] = None):
     """Проверка существования проекта (и опционально — валидной версии).
 
@@ -1234,12 +1245,7 @@ def _check_project(project_id: str, version_id: Optional[str] = None):
     status = project_service.get_project_status(project_id, version_id=version_id)
     if not status:
         raise HTTPException(404, f"Проект '{project_id}' не найден")
-    if not project_service.is_project_auditable(project_id):
-        raise HTTPException(
-            409,
-            f"Документ '{project_id}' относится к исходно-разрешительной "
-            f"документации (ИРД): аудит по нему не запускается",
-        )
+    _reject_non_auditable(project_id)
     # Валидируем version_id явно
     if version_id:
         proj_dir = project_service.resolve_project_dir(project_id)

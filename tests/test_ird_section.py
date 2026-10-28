@@ -161,3 +161,13 @@ async def test_enqueue_single_rejects_ird(monkeypatch):
     monkeypatch.setattr(project_service, "is_project_auditable", lambda pid: False)
     with pytest.raises(RuntimeError, match="ИРД"):
         await pipeline_manager._enqueue_single("VL", "full")
+
+
+@pytest.mark.asyncio
+async def test_prepare_data_retry_failed_rejects_ird(monkeypatch):
+    from fastapi import HTTPException
+    from backend.app.api.routers import audit
+    monkeypatch.setattr(audit.project_service, "is_project_auditable", lambda pid: False)
+    with pytest.raises(HTTPException) as exc:
+        await audit.prepare_data_retry_failed("VL")
+    assert exc.value.status_code == 409

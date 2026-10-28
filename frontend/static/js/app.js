@@ -3680,9 +3680,17 @@ const app = createApp({
 
         const selectedCount = computed(() => selectedProjects.value.size);
 
+        // Выбранные проекты, которые можно отправить в анализ: документы ИРД
+        // (ТЗ, вендор-лист) выбираются только для скачивания пакетов.
+        function selectedAuditableIds() {
+            const auditable = new Set(auditableProjects.value.map(p => p.project_id));
+            return Array.from(selectedProjects.value).filter(id => auditable.has(id));
+        }
+        const selectedAuditableCount = computed(() => selectedAuditableIds().length);
+
         function openBatchModal() {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
-            batchModalCount.value = selectedProjects.value.size;
+            batchModalCount.value = selectedAuditableIds().length;
             batchScope.value = 'audit';
             batchExecutionMode.value = 'sequential';
             batchAllMode.value = false;
@@ -3712,7 +3720,8 @@ const app = createApp({
 
         async function startBatchAction(action, executionMode = 'sequential') {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
-            const ids = Array.from(selectedProjects.value);
+            const ids = selectedAuditableIds();
+            if (!ids.length) return;
             const lockKey = `batch:${action}:${ids.length}`;
             if (_isSubmitLocked(lockKey)) {
                 console.warn('[submit-lock] batch duplicate ignored');
@@ -3798,7 +3807,7 @@ const app = createApp({
 
         async function addToBatch() {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
-            const ids = Array.from(selectedProjects.value);
+            const ids = selectedAuditableIds();
             if (!ids.length) return;
             try {
                 const resp = await fetch('/api/audit/batch/add', {
@@ -4538,6 +4547,7 @@ const app = createApp({
         function canStartFrom(pipelineKey) {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return false;  // viewer: только просмотр
             if (!currentProject.value) return false;
+            if (!isSectionAuditable(currentProject.value.section || 'OTHER')) return false;
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const status = currentProject.value.pipeline?.[pipelineKey];
             const baseAllowed = status === 'done' || status === 'error' || status === 'skipped' || status === 'pending' || status === 'partial' || status === 'interrupted';
@@ -8253,6 +8263,9 @@ const app = createApp({
         // serverCaps определён выше (вместе с VAPI), чтобы быть доступным
         // и для api()-guard'а v2-стабов, и для canStartAuditNow.
         const canStartAuditNow = computed(() => {
+            if (currentProject.value && !isSectionAuditable(currentProject.value.section || 'OTHER')) {
+                return { ok: false, code: 'not_auditable', reason: 'Документ ИРД не анализируется — он справочник для анализа других разделов' };
+            }
             if (!window.VersionAPI) return { ok: true, reason: '' };
             // Для legacy V1 без manifest всё ещё работаем по has_pdf currentProject.
             if (!activeVersionEntry.value) {
@@ -10129,7 +10142,7 @@ const app = createApp({
             //      докачивается только недостающее);
             //   2) собрать контекст блоков (CTX) — локально, без нейросети и токенов.
             // Фильтров по наличию аудита нет: готовим все отмеченные проекты.
-            const targets = Array.from(selectedProjects.value);
+            const targets = selectedAuditableIds();
             if (!targets.length) return;
             const confirmMsg = `Подготовить данные для ${targets.length} проектов?\n\n` +
                                `1. Скачивание кропов блоков по ссылкам (crop_url)\n` +
@@ -20941,7 +20954,7 @@ const app = createApp({
             sectionHasUnanalyzed,
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
-            isSectionAuditable, auditableSectionGroups, auditableProjects,
+            isSectionAuditable, auditableSectionGroups, auditableProjects, selectedAuditableCount,
             objectName, projectsBySection, collapsedSections, toggleSection,
             sidebarSectionsOpen, sidebarFilterSection, toggleSectionsNav,
             allSectionsCollapsed, toggleAllSections,
