@@ -92,6 +92,31 @@ def test_group_move_block_display_order_transfer_and_undo(env):
     assert [r['id'] for r in moved['tasks']] == [ids[0], ids[3], ids[1], ids[2]]
 
 
+@pytest.mark.parametrize('with_date', [False, True])
+def test_portal_transfer_persists_engineer_date_and_undo(env, with_date):
+    catalog, _ = env
+    initial = call('assign', items=[
+        {'engineer_id': 'a', **catalog[0]},
+        {'engineer_id': 'a', **catalog[1]},
+        {'engineer_id': 'b', **catalog[2]},
+    ])
+    task = next(row for row in initial['tasks'] if row['project_id'] == catalog[0]['project_id'])
+    destination = next(row for row in initial['tasks'] if row['engineer_id'] == 'b')
+    extra = {'forecast_date': destination['forecast_date']} if with_date else {}
+    moved = call('move', task_ids=[task['id']], engineer_id='b',
+                 anchor_id=destination['id'], side='before', **extra)
+    persisted = svc.snapshot('test')
+    transferred = next(row for row in persisted['tasks'] if row['id'] == task['id'])
+    assert transferred['engineer_id'] == 'b'
+    assert transferred['forecast_date'] == extra.get('forecast_date', task['forecast_date'])
+    assert [row['id'] for row in persisted['tasks'] if row['engineer_id'] == 'b'] == [task['id'], destination['id']]
+    assert len(persisted['tasks']) == len(initial['tasks'])
+    undone = call('undo', undo_id=moved['operation']['id'])
+    fields = ('id', 'engineer_id', 'forecast_date', 'position', 'project_id', 'version_id')
+    assert [tuple(row[field] for field in fields) for row in undone['tasks']] == [
+        tuple(row[field] for field in fields) for row in initial['tasks']]
+
+
 def test_delete_selected_projects_reorders_queue_and_can_be_undone(env):
     initial = add('a', 'one', 'two', 'three')
     ids = [row['id'] for row in initial['tasks']]

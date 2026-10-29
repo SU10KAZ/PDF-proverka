@@ -376,6 +376,7 @@ def mutate(payload, actor):
                         day_ids = [tid for tid in target_ids if tid in day_ids or tid in moved_ids]
                     for pos, tid in enumerate(day_ids, 1):
                         row = by_id[tid]
+                        row['engineer_id'] = target
                         if has_target_date and tid in moved_ids:
                             row['forecast_date'] = target_date
                         row['position'] = pos
