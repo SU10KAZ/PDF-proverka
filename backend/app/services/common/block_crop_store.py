@@ -49,7 +49,7 @@ from backend.app.core.config import (
     BLOCK_CROP_RESTORE_TIMEOUT_S,
 )
 from backend.app.pipeline.stages.block_context.contract import (
-    MIN_USABLE_CROP_BYTES,
+    crop_image_usable,
     block_file_for,
 )
 from backend.app.services.common import block_crop_lru
@@ -255,7 +255,7 @@ def _render_from_local_pdf(blocks_dir: Path, desc: dict, out_path: Path, policy:
         logger.warning("block_crop_store: локальный ре-рендер не удался: %s", exc)
         return False
     _warn_on_size_drift(desc, w, h, out_path)
-    return out_path.is_file() and out_path.stat().st_size >= MIN_USABLE_CROP_BYTES
+    return crop_image_usable(out_path)
 
 
 def _render_from_cloud(desc: dict, out_path: Path, policy: dict, http_get) -> bool:
@@ -289,7 +289,7 @@ def _render_from_cloud(desc: dict, out_path: Path, policy: dict, http_get) -> bo
         logger.warning("block_crop_store: crop_url не отдал кроп (%s): %s", url[-24:], exc)
         return False
     _warn_on_size_drift(desc, w, h, out_path)
-    return out_path.is_file() and out_path.stat().st_size >= MIN_USABLE_CROP_BYTES
+    return crop_image_usable(out_path)
 
 
 def _warn_on_size_drift(desc: dict, w: int, h: int, out_path: Path) -> None:
@@ -379,11 +379,8 @@ def resolve_block_image(
 
     # 1. локальный файл
     local = blocks_dir / safe_name
-    try:
-        if local.is_file() and local.stat().st_size >= MIN_USABLE_CROP_BYTES:
-            return local
-    except OSError:
-        pass
+    if crop_image_usable(local):
+        return local
 
     # 2. LRU-кэш
     cached = block_crop_lru.get(blocks_dir, safe_name)
@@ -471,12 +468,9 @@ def hydrate_blocks_dir(
             continue
         report.requested += 1
         out_path = blocks_dir / safe_name
-        try:
-            if out_path.is_file() and out_path.stat().st_size >= MIN_USABLE_CROP_BYTES:
-                report.restored += 1
-                continue
-        except OSError:
-            pass
+        if crop_image_usable(out_path):
+            report.restored += 1
+            continue
         cached = block_crop_lru.get(blocks_dir, safe_name)
         if cached is not None:
             try:
@@ -758,10 +752,7 @@ def missing_block_files(
         if wanted is not None and block_id not in wanted:
             continue
         path = blocks_dir / block_file_for(entry)
-        try:
-            if path.stat().st_size >= MIN_USABLE_CROP_BYTES:
-                continue
-        except OSError:
-            pass
+        if crop_image_usable(path):
+            continue
         missing.append(block_id)
     return missing

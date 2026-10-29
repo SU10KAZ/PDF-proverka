@@ -618,12 +618,10 @@ async def run_block_analysis_findings_only(
     for r in check.get("reasons", []):
         await ctx.log(f"  · {r}", "warn" if not check["ok"] else "info")
     if not check["ok"]:
-        error = f"{BLOCK_BATCH_MODE_FINDINGS_ONLY}: prerequisites failed (нужен контекст блоков)"
+        details = "; ".join(check.get("reasons") or ["причина не указана"])
+        error = f"{BLOCK_BATCH_MODE_FINDINGS_ONLY}: prerequisites failed: {details}"
         ctx.update_pipeline_log("block_analysis", "error", error=error)
-        return StageResult.fail(
-            "Stage 01 (findings_only_block_context): контекст блоков не готов. "
-            "Запустите подготовку контекста блоков."
-        )
+        return StageResult.fail(error)
 
     ui_model = get_stage_model("block_batch")
     findings_only_compatible = {

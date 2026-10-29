@@ -27,6 +27,7 @@ from backend.app.pipeline.stages.crop_blocks.cloud_failover import (
     CropFailover, LocalSource, SourceIdentityError, availability_failure,
 )
 
+from backend.app.pipeline.stages.block_context.contract import crop_image_usable
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_FILENAME,
     BLOCKS_ANALYSIS_STAGE,
@@ -970,7 +971,7 @@ def crop_blocks(
 
         if out_file.exists() and not force:
             size_kb = out_file.stat().st_size / 1024
-            if size_kb > 1:
+            if crop_image_usable(out_file):
                 has_full = full_file.exists()
                 full_kb = round(full_file.stat().st_size / 1024, 1) if has_full else None
                 print(f"  [EXISTS] {bid} ({size_kb:.0f} KB)" +

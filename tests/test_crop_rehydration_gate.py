@@ -13,6 +13,7 @@ import json
 from types import SimpleNamespace
 
 import pytest
+from PIL import Image
 
 from backend.app.pipeline.stages.block_context.contract import crops_materialized
 
@@ -24,7 +25,7 @@ def _make_blocks_dir(tmp_path, *, with_pngs=True, n=3):
     for i in range(n):
         name = f"block_b{i}.png"
         if with_pngs:
-            (bd / name).write_bytes(b"\x89PNG\r\n\x1a\n" + b"x" * 4096)
+            Image.new("RGB", (228, 163), "white").save(bd / name)
         entries.append({"block_id": f"b{i}", "file": name, "page": 1})
     (bd / "index.json").write_text(
         json.dumps(
@@ -210,3 +211,46 @@ async def test_eviction_hook_never_raises(monkeypatch):
     await PipelineManager._maybe_evict_block_crops(mgr, job, SimpleNamespace(items=[]))
     assert job.status == JobStatus.COMPLETED
     assert logged and logged[-1][0] == "warn"
+
+
+def test_small_valid_crop_is_ready_and_reused(tmp_path):
+    from backend.app.services.common.block_crop_store import (
+        missing_block_files, resolve_block_image,
+    )
+
+    bd = _make_blocks_dir(tmp_path, n=1)
+    image = bd / "block_b0.png"
+    assert image.stat().st_size < 1024
+    assert crops_materialized(bd) == (True, [])
+    assert missing_block_files(bd) == []
+    assert resolve_block_image(bd, "b0", allow_restore=False) == image
+
+
+@pytest.mark.parametrize("payload", [b"", b"\x89PNG", b"\x89PNG\r\n\x1a\n" + b"x" * 4096])
+def test_corrupt_crop_rejected_regardless_of_size(tmp_path, payload):
+    bd = _make_blocks_dir(tmp_path, n=1)
+    (bd / "block_b0.png").write_bytes(payload)
+    assert crops_materialized(bd) == (False, ["b0"])
+
+
+@pytest.mark.asyncio
+async def test_analysis_prerequisite_error_preserves_reason(tmp_path, monkeypatch):
+    from backend.app.pipeline.stages.block_analysis import gemma_findings_only, runner
+
+    reason = "Отсутствует изображение блока b0"
+    monkeypatch.setattr(gemma_findings_only, "check_prerequisites", lambda *a, **kw: {
+        "ok": False, "reasons": [reason],
+    })
+    logged = []
+
+    async def log(*args):
+        pass
+
+    ctx = SimpleNamespace(
+        project_id="test", project_dir=tmp_path, output_dir=tmp_path,
+        log=log, update_pipeline_log=lambda *a, **kw: logged.append(kw),
+    )
+    result = await runner.run_block_analysis_findings_only(ctx)
+    assert not result.success
+    assert reason in result.error
+    assert reason in logged[-1]["error"]

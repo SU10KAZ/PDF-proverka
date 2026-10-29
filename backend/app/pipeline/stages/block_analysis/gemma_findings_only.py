@@ -4518,8 +4518,9 @@ def check_prerequisites(project_dir: Path, *, output_dir_override: Optional[Path
         _ok, _missing = crops_materialized(index_path.parent)
         if _missing:
             reasons.append(
-                f"_output/{STAGE02_BLOCKS_DIRNAME}: отсутствует {len(_missing)} PNG "
-                f"из index.json (кропы не материализованы — нужен пере-кроп)"
+                f"_output/{STAGE02_BLOCKS_DIRNAME}: отсутствуют или повреждены "
+                f"изображения {len(_missing)} блоков из index.json "
+                f"(нужен пере-кроп): {', '.join(_missing[:10])}"
             )
     context_validation = validate_block_context_summary(output_dir)
     if not context_validation.get("valid"):

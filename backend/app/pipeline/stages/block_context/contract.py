@@ -105,9 +105,19 @@ def resolve_blocks_index(output_dir: Path) -> Path:
     return resolve_blocks_dir(output_dir) / "index.json"
 
 
-#: PNG меньше этого размера считаем непригодным (обрезанная/пустая запись).
-#: Порог согласован с проверкой `size_kb > 1` в crop_blocks/blocks.py.
-MIN_USABLE_CROP_BYTES = 1024
+def crop_image_usable(path: Path) -> bool:
+    """Validate image contents, not compressed size (valid PNGs can be <1 KB)."""
+    from PIL import Image
+
+    try:
+        with Image.open(path) as image:
+            image.verify()
+        # verify checks the container; load also rejects broken pixel data.
+        with Image.open(path) as image:
+            image.load()
+        return True
+    except (OSError, ValueError, SyntaxError, Image.DecompressionBombError):
+        return False
 
 
 def block_file_for(entry: dict[str, Any]) -> str:
@@ -141,7 +151,7 @@ def crops_materialized(
 
     Проверяем КАЖДУЮ запись, а не только количество файлов: обрезанный PNG
     (например, от падения посреди записи) сохраняет количество, но картинкой не
-    является — и молча уехал бы в модель. Пара сотен ``stat`` на вызов, а зовут
+    является — и молча уехал бы в модель. Проверяем целостность и декодирование; вызывают
     эту функцию только на контрольных точках готовности.
     """
     blocks_dir = Path(blocks_dir)
@@ -165,11 +175,8 @@ def crops_materialized(
     missing: list[str] = []
     for entry in entries:
         path = blocks_dir / block_file_for(entry)
-        try:
-            if path.stat().st_size >= MIN_USABLE_CROP_BYTES:
-                continue
-        except OSError:
-            pass
+        if crop_image_usable(path):
+            continue
         missing.append(str(entry.get("block_id") or ""))
     return (not missing), missing
 
