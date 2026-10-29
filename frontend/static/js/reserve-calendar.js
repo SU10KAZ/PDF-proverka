@@ -12,7 +12,6 @@
     };
     const label = iso => iso ? new Date(iso + 'T12:00:00Z').toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', timeZone: 'UTC' }) : 'Без даты';
     const stateLabel = state => ({preparation: 'Ожидает подготовки', ready: 'Готов к проверке', in_progress: 'Проверка начата'}[state] || state);
-    const normalizedVersion = value => /^v\d+$/i.test(value || '') ? 'v'+Number(String(value).slice(1)) : value;
     const compactProject = value => {
         const chars = Array.from(String(value || '').trim());
         return chars.length > 4 ? chars.slice(0, 4).join('') + '..' : chars.join('');
@@ -393,38 +392,6 @@
         </section>`
     };
 
-    const ReviewStart = {
-        props: ['projectId', 'versionId', 'objectId', 'canOperate'],
-        setup(props) {
-            const task = ref(null), data = ref(null), busy = ref(false), error = ref('');
-            let sequence = 0, retryBody = null;
-            async function load() {
-                if (!props.projectId || !props.canOperate) { task.value = null; return; }
-                const current = ++sequence;
-                try {
-                    const value = await readResponse(await fetch(API));
-                    if (sequence !== current) return;
-                    data.value = value;
-                    task.value = value.tasks.find(t => t.project_id === props.projectId && normalizedVersion(t.version_id) === normalizedVersion(props.versionId) && t.object_id === props.objectId) || null;
-                } catch (_) { task.value = null; }
-            }
-            async function start() {
-                if (busy.value || !task.value) return;
-                busy.value = true; error.value = '';
-                retryBody ||= {operation_id: operationId(), revision:data.value.revision, kind:'start', task_id:task.value.id};
-                try {
-                    const value = await readResponse(await fetch(API+'/operations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(retryBody)}));
-                    data.value = value; retryBody = null;
-                    task.value = value.tasks.find(t=>t.id===task.value.id) || null;
-                } catch (e) { error.value = e.message; if (e.status) retryBody=null; if (e.status===409) await load(); }
-                finally { busy.value=false; }
-            }
-            watch(() => [props.projectId, props.versionId, props.objectId, props.canOperate], load, {immediate:true});
-            onBeforeUnmount(() => sequence++);
-            return {task, busy, error, start};
-        },
-        template:`<div v-if="task" class="reserve-review-start"><span v-if="task.state==='in_progress'">Проверка начата</span><button v-else class="btn btn-sm btn-primary" :disabled="busy || !task.documents_ready || task.state!=='ready'" @click="start">{{ busy ? 'Сохранение…' : 'Взять в работу' }}</button><small v-if="!task.documents_ready">Документы в подготовке</small><span v-if="error" role="alert">{{ error }}</span></div>`
-    };
-    root.ReserveCalendar = {register(app) { app.component('reserve-calendar', Calendar); app.component('reserve-review-start', ReviewStart); },
+    root.ReserveCalendar = {register(app) { app.component('reserve-calendar', Calendar); },
         helpers: {key, lines, dayAdd, duplicateFields, orderedSelection, operationId}};
 })(window);

@@ -292,7 +292,6 @@
 
         <div v-if="isProjectView && currentProject"
              class="project-version-bar">
-            <reserve-review-start :project-id="currentProject.project_id" :version-id="activeVersionId || currentProject.version_id" :object-id="currentObjectId" :can-operate="canOperate"></reserve-review-start>
             <div class="project-version-switch" :title="'Активная версия проекта'">
                 <label class="project-version-switch__label">Версия:</label>
                 <select class="project-version-switch__select"
