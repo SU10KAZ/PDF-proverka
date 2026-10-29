@@ -364,7 +364,7 @@
                   <div v-if="!d.off || cell(e.id,d.iso).length" class="rc-dots"><button v-for="t in cell(e.id,d.iso)" :key="t.id" type="button" class="rc-point" :data-task-id="t.id" :aria-label="tipText(t)" :title="tipText(t)" :aria-pressed="selected.includes(t.id)"
                     :class="{'rc-dragging':dragging.includes(t.id),'rc-insert-before':insertion?.anchor_id===t.id && insertion.side==='before','rc-insert-after':insertion?.anchor_id===t.id && insertion.side==='after','rc-unrecognized':!!t.project_id && !t.documents_ready,'rc-manual':!t.project_id,'rc-running':t.state==='in_progress'}"
                     :draggable="canEdit && !locked && t.state!=='in_progress'" @click.stop="clickTask(t,$event)" @mouseenter="showTip(t,$event)" @mouseleave="tooltip=null" @focus="showTip(t,$event)" @blur="tooltip=null"
-                    @dragstart="dragStart(t,$event)" @dragend="dragEnd" @dragover="overTask(t,$event)" @drop.stop="drop" :style="{'--rc-color':color(t)}">{{ t.section ? t.section+' · ' : '' }}{{ compactProject(t.code || t.title) }}</button></div>
+                    @dragstart="dragStart(t,$event)" @dragend="dragEnd" @dragover="overTask(t,$event)" @drop.stop="drop" :style="{'--rc-color':color(t)}"><span v-if="t.section" class="rc-point-label">{{ t.section }}</span><span class="rc-point-label">{{ compactProject(t.code || t.title) }}</span></button></div>
                   <span v-if="cell(e.id,d.iso).length" class="rc-count">{{ cell(e.id,d.iso).length }}</span>
                 </td>
               </tr>

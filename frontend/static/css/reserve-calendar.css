@@ -61,7 +61,8 @@
 .rc-avatar{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:var(--rc-tint);color:#008e83;font-size:10px;flex-shrink:0}
 .rc-cell{height:68px;position:relative}
 .rc-dots{min-height:68px;padding:7px 2px 17px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-.reserve-calendar button.rc-point{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;min-height:18px;padding:2px 3px;background:var(--teal-light,#e1f5f2);border:1px solid var(--teal-border,#71c9bf);border-radius:5px;color:var(--teal,#008e83);font-size:11px;font-weight:600;line-height:1;white-space:nowrap}
+.reserve-calendar button.rc-point{position:relative;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:100%;max-width:100%;min-width:0;min-height:18px;padding:2px 3px;background:var(--teal-light,#e1f5f2);border:1px solid var(--teal-border,#71c9bf);border-radius:5px;color:var(--teal,#008e83);font-size:11px;font-weight:600;line-height:1;white-space:nowrap}
+.rc-point-label{display:block;width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .reserve-calendar button.rc-point.rc-unrecognized{background:transparent;border:1px dashed #8b1e3f;color:#8b1e3f}
 .reserve-calendar button.rc-point.rc-manual{background:transparent;border:1px dashed #8090a5;color:#68788d}
 .reserve-calendar button.rc-point.rc-running{box-shadow:0 0 0 1px #14243c}
@@ -130,4 +131,4 @@
 .reserve-review-start{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:12px;color:#008e83;flex-wrap:wrap}
 .reserve-review-start [role=alert]{color:#a92f41;max-width:420px}
 @media(max-width:740px){.reserve-calendar{padding:12px}.rc-cards{grid-template-columns:1fr}.rc-kpi{padding:11px}.rc-fields{grid-template-columns:1fr;padding:12px}.rc-dialog>header,.rc-dialog>footer{padding:14px}.rc-field textarea{font-size:16px}.rc-toolbar{align-items:flex-start}.rc-heading h2{font-size:18px}.rc-actions{gap:6px}.rc-tooltip{left:8px!important}.rc-card-body{padding:14px}}
-@media(pointer:coarse){.reserve-calendar button{min-height:44px}.reserve-calendar button.rc-point{width:36px;height:44px;flex-basis:36px}.rc-grid{min-width:2400px}.rc-dots{min-height:100px}}
+@media(pointer:coarse){.reserve-calendar button{min-height:44px}.reserve-calendar button.rc-point{min-height:44px}.rc-grid{min-width:2400px}.rc-dots{min-height:100px}}
