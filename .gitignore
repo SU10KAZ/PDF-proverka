@@ -278,3 +278,10 @@ experiments/vectograf/*/????-????-*/
 
 # Стенд изолированных прогонов сравнения (локальный, не для релиза)
 scratch_ai/
+
+# === Локальные материалы исследований сравнения версий (октябрь 2026, не код) ===
+experiments/mapper_1388_gpt/
+experiments/projectchange_large_pair_256/
+experiments/projectchange_large_pair_256.tar.gz
+experiments/version_comparison_ai_demo1/
+/experiments/сравнение больших файлов/
