@@ -6022,11 +6022,32 @@ const app = createApp({
 
         function sectionOptimizationPackageFor(signal) {
             const process = sectionOptimizationReplicationFor(signal?.signal_id);
+            const signalSummary = signal?.package_summary || {};
+            const processSummary = process?.package_summary || {};
+            const signalScope = signalSummary.scope || {};
+            const processScope = processSummary.scope || {};
+            const processProjects = processScope.projects || [];
+            const processHasKnownProjects = processProjects.some(project => {
+                const projectId = String(project?.project_id || '').trim();
+                return projectId && projectId !== 'unknown';
+            });
+            // Старые досье сохраняли строки без project_id и давали ложный
+            // охват «1 проект, unknown». Свежий снимок сигнала содержит
+            // полный охват раздела — не позволяем досье его затирать.
+            const processScopeIsUsable = processHasKnownProjects
+                || (!signalScope.project_count && processScope.project_count);
+            const mergedScope = processScopeIsUsable
+                ? { ...signalScope, ...processScope,
+                    quantity_by_unit: {
+                        ...(signalScope.quantity_by_unit || {}),
+                        ...(processScope.quantity_by_unit || {}),
+                    }}
+                : signalScope;
             const summary = {
-                ...(signal?.package_summary || {}),
-                ...(process?.package_summary || {}),
-                scope: process?.package_summary?.scope || signal?.package_summary?.scope || {},
-                source_scope: process?.package_summary?.source_scope || signal?.package_summary?.source_scope,
+                ...signalSummary,
+                ...processSummary,
+                scope: mergedScope,
+                source_scope: processSummary.source_scope || signalSummary.source_scope,
             };
             const packageDecision = process?.package_decision || {};
             return {
@@ -6041,6 +6062,7 @@ const app = createApp({
                 positive: 'Экономика подтверждена',
                 negative: 'Экономия не подтверждена',
                 needs_data: 'Нужны данные для расчёта',
+                potential: 'Есть ориентир, расчёт не подтверждён',
             })[status] || 'Экономический эффект не определён';
         }
 
@@ -6050,6 +6072,16 @@ const app = createApp({
                 economic_no: 'Экономически не обосновано',
                 needs_data: 'Нужны экономические данные',
             })[decision] || '';
+        }
+
+        function sectionOptimizationPackageTechnicalLabel(review) {
+            const status = review?.status;
+            return ({
+                pass: 'Техника подтверждена',
+                exceptions: 'Есть технические исключения',
+                blocked: 'Есть технические блокеры',
+                not_checked: 'Техника ещё не проверена',
+            })[status] || 'Техническая проверка не завершена';
         }
 
         function sectionOptimizationPackageScopeText(summary) {
@@ -6063,6 +6095,36 @@ const app = createApp({
             const targetText = `${projects} проект(а), ${rows} строк${quantities ? ` · ${quantities}` : ''}`;
             if (!source) return targetText;
             return `цели: ${targetText}; источник: ${source.project_count || 0} проект(а), ${source.row_count || 0} строк`;
+        }
+
+        function sectionOptimizationPackageGroupsText(summary) {
+            const groups = summary?.scope?.material_groups || [];
+            if (!groups.length) return '';
+            const labels = groups.slice(0, 3).map(group => group.label).filter(Boolean).join('; ');
+            const suffix = groups.length > 3 ? '; остальные отдельно' : '';
+            return `Технических групп: ${groups.length}. Объём складывается отдельно по каждой группе${labels ? ` (${labels}${suffix})` : ''}.`;
+        }
+
+        function sectionOptimizationPackageSourceText(summary) {
+            const source = summary?.source_reference;
+            if (!source) return '';
+            const clip = value => {
+                const text = String(value || '');
+                return text.length > 180 ? `${text.slice(0, 177)}…` : text;
+            };
+            const reference = (source.refs || []).slice(0, 2).join(', ');
+            const project = (source.projects || []).slice(0, 1).join(', ');
+            const version = (source.version_ids || []).slice(0, 1).join(', ');
+            const change = source.current && source.proposed
+                ? `: ${clip(source.current)} → ${clip(source.proposed)}`
+                : '';
+            return `Основание: принятое решение ${reference || 'из источника'}${project ? ` · ${project}` : ''}${version ? ` · ${version}` : ''}${change}`;
+        }
+
+        function sectionOptimizationPackageClaimedText(summary) {
+            const claimed = summary?.claimed_savings_percent || [];
+            if (!claimed.length) return '';
+            return `Ориентир источника: ${claimed.join('%, ')}%. Это не подтверждённая экономия в деньгах.`;
         }
 
         async function saveSectionOptimizationPackageDecision(process, signal, decision) {
@@ -21057,7 +21119,9 @@ const app = createApp({
             sectionOptimizationGraphicsConclusionLabel, openSectionOptimizationGraphicsBlock,
             sectionOptimizationExpertDecisionFor, sectionOptimizationExpertDecisionLabel,
             sectionOptimizationPackageFor, sectionOptimizationPackageEconomicLabel,
-            sectionOptimizationPackageDecisionLabel, sectionOptimizationPackageScopeText,
+            sectionOptimizationPackageDecisionLabel, sectionOptimizationPackageTechnicalLabel,
+            sectionOptimizationPackageScopeText, sectionOptimizationPackageGroupsText,
+            sectionOptimizationPackageSourceText, sectionOptimizationPackageClaimedText,
             saveSectionOptimizationPackageDecision,
             sectionOptimizationImplementationFor, sectionOptimizationImplementationLabel,
             sectionOptimizationCriticReviewFor, sectionOptimizationExpertDecisionAllowed,

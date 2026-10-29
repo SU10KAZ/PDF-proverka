@@ -35,6 +35,8 @@ def test_package_summary_aggregates_scope_without_inventing_unknown_units():
     assert summary["scope"]["unknown_quantity_row_ids"] == ["r3"]
     assert summary["economic_status"] == "needs_data"
     assert summary["blockers"]
+    assert summary["scope"]["material_group_count"] == 3
+    assert all(group["project_count"] == 1 for group in summary["scope"]["material_groups"])
 
 
 def test_attach_package_summaries_keeps_all_candidates_traceable():
@@ -72,3 +74,15 @@ def test_dossier_package_summary_uses_calculated_monetary_effect():
     summary = package_summary_from_dossier(job)
     assert summary["economic_status"] == "positive"
     assert summary["effect"]["delta"] == -10
+
+
+def test_dossier_scope_falls_back_to_target_projects_for_legacy_rows():
+    summary = package_summary_from_dossier({
+        "target_project_ids": ["P1", "P2", "P3"],
+        "dossier": {
+            "candidate": {"kind": "replicate_accepted_optimization"},
+            "targets": [{"rows": [{"row_id": "r1", "quantity": "3", "unit": "шт"}]}],
+        },
+    })
+    assert summary["scope"]["project_count"] == 3
+    assert [item["project_id"] for item in summary["scope"]["projects"]] == ["P1", "P2", "P3"]

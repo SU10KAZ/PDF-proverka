@@ -540,9 +540,9 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
                     {
                         key: row.get(key)
                         for key in (
-                            "row_id", "page", "sheet", "sheet_name", "category", "position",
+                            "row_id", "project_id", "project_name", "version_id", "page", "sheet", "sheet_name", "category", "position",
                             "name", "designation", "type_mark", "code", "manufacturer", "unit",
-                            "quantity", "mass", "total_mass", "note", "source",
+                            "quantity", "mass", "total_mass", "note", "source", "canonical_key",
                         )
                     }
                     for row in rows

@@ -972,6 +972,14 @@ body {
 .section-optimization-source:hover { text-decoration: underline; }
 .section-optimization-empty { padding: 32px 18px; color: var(--text3); text-align: center; font-size: 11px; }
 .section-optimization-table-wrap .pagination-bar { margin: 0; padding: 8px; border-top: 0; }
+.section-optimization-decision-guide {
+  margin: 0 0 10px; padding: 10px 12px; border: 1px solid rgba(0,153,153,.28); border-radius: 8px;
+  background: rgba(0,153,153,.06); color: var(--text2); font-size: 11px; line-height: 1.45;
+}
+.section-optimization-decision-guide > b { display: block; margin-bottom: 4px; color: var(--teal); font-size: 12px; }
+.section-optimization-decision-guide ol { margin: 5px 0 5px 18px; padding: 0; }
+.section-optimization-decision-guide li { margin: 3px 0; }
+.section-optimization-decision-guide small { color: var(--text3); }
 
 .section-optimization-table--signals { min-width: 1280px; }
 .section-optimization-table--signals th:nth-child(1) { width: 135px; }
@@ -991,6 +999,13 @@ body {
   background: rgba(0,153,153,.06); color: var(--text2); font-size: 10px; line-height: 1.4;
 }
 .section-optimization-package-card > b { display: block; margin-bottom: 3px; color: var(--teal); font-size: 10px; }
+.section-optimization-package-card__question { margin-top: 4px; color: var(--text); font-weight: 700; }
+.section-optimization-package-card__technical { margin-top: 4px; color: #8e44ad; font-weight: 700; }
+.section-optimization-package-card__technical small { color: var(--text3); font-weight: 400; }
+.section-optimization-package-plan { margin-top: 6px; color: var(--text2); }
+.section-optimization-package-plan summary { color: var(--teal); cursor: pointer; font-weight: 750; }
+.section-optimization-package-plan ol { margin: 5px 0 4px 18px; padding: 0; }
+.section-optimization-package-plan li { margin: 2px 0; font-weight: 400; }
 .section-optimization-package-card__decision {
   display: inline-block; margin-top: 5px; padding: 3px 6px; border-radius: 5px;
   background: rgba(0,153,153,.15); color: var(--teal); font-weight: 800;

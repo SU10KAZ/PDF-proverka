@@ -196,6 +196,14 @@ describe('section optimization card', () => {
     expect(js).toContain("'/package-decision'");
     expect(js).toContain('function sectionOptimizationPackageScopeText(summary)');
     expect(js).toContain('packageDecided');
+    expect(html).toContain('Что проверить перед решением');
+    expect(html).toContain('Как принять решение по кандидату');
+    expect(html).toContain('Сокращение типоразмеров');
+    expect(html).toContain('Техника:');
+    expect(js).toContain('function sectionOptimizationPackageTechnicalLabel(review)');
+    expect(js).toContain('function sectionOptimizationPackageGroupsText(summary)');
+    expect(js).toContain('function sectionOptimizationPackageSourceText(summary)');
+    expect(js).toContain('function sectionOptimizationPackageClaimedText(summary)');
   });
 
   it('has responsive table and card styles', () => {

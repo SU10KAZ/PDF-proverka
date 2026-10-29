@@ -807,6 +807,16 @@
                     </div>
 
                     <div v-else class="section-optimization-table-wrap">
+                        <div class="section-optimization-decision-guide">
+                            <b>Как принять решение по кандидату</b>
+                            <ol>
+                                <li><strong>Определите изменение и охват.</strong> В карточке пакета указан вариант «текущий → предлагаемый», проекты и строки.</li>
+                                <li><strong>Закройте технические гейты.</strong> Проверьте пожарное исполнение, IP, размеры/сечения, нагрузку и монтаж; исключения оставьте отдельно.</li>
+                                <li><strong>Заполните экономику всего охвата.</strong> Сравните текущую и предлагаемую стоимость, монтаж/переделку и эксплуатацию в одной валюте с источником и датой.</li>
+                                <li><strong>Выберите один вердикт.</strong> «Экономически обосновано» — только при закрытой технике и отрицательной дельте; иначе «Нужны данные» или «Не обосновано».</li>
+                            </ol>
+                            <small>«Сокращение типоразмеров» — отдельный тип кандидата: сначала докажите, что варианты действительно взаимозаменяемы, а не отличаются только написанием.</small>
+                        </div>
                         <table v-if="sectionOptimizationFilteredSignals.length" class="section-optimization-table section-optimization-table--signals">
                             <thead>
                                 <tr>
@@ -836,8 +846,24 @@
                                                 <div>
                                                     Объём: {{ sectionOptimizationPackageScopeText(sectionOptimizationPackageFor(signal)) }}
                                                 </div>
+                                                <small v-if="sectionOptimizationPackageSourceText(sectionOptimizationPackageFor(signal))">
+                                                    {{ sectionOptimizationPackageSourceText(sectionOptimizationPackageFor(signal)) }}
+                                                </small>
+                                                <small v-if="sectionOptimizationPackageGroupsText(sectionOptimizationPackageFor(signal))">
+                                                    {{ sectionOptimizationPackageGroupsText(sectionOptimizationPackageFor(signal)) }}
+                                                </small>
                                                 <div>
                                                     Экономика: {{ sectionOptimizationPackageEconomicLabel(sectionOptimizationPackageFor(signal).economic_status) }}
+                                                </div>
+                                                <small v-if="sectionOptimizationPackageClaimedText(sectionOptimizationPackageFor(signal))">
+                                                    {{ sectionOptimizationPackageClaimedText(sectionOptimizationPackageFor(signal)) }}
+                                                </small>
+                                                <div class="section-optimization-package-card__question">
+                                                    Вопрос: {{ sectionOptimizationPackageFor(signal).decision_plan?.question }}
+                                                </div>
+                                                <div class="section-optimization-package-card__technical">
+                                                    Техника: {{ sectionOptimizationPackageTechnicalLabel(sectionOptimizationPackageFor(signal).technical_review) }}
+                                                    <small>{{ sectionOptimizationPackageFor(signal).technical_review?.message }}</small>
                                                 </div>
                                                 <div v-if="sectionOptimizationPackageFor(signal).effect?.delta !== null
                                                     && sectionOptimizationPackageFor(signal).effect?.delta !== undefined">
@@ -849,6 +875,13 @@
                                                 <small v-if="sectionOptimizationPackageFor(signal).blockers?.length">
                                                     Нужно проверить: {{ sectionOptimizationPackageFor(signal).blockers.slice(0, 2).join('; ') }}
                                                 </small>
+                                                <details class="section-optimization-package-plan">
+                                                    <summary>Что проверить перед решением</summary>
+                                                    <ol>
+                                                        <li v-for="step in (sectionOptimizationPackageFor(signal).decision_plan?.steps || [])" :key="step">{{ step }}</li>
+                                                    </ol>
+                                                    <small>Для расчёта нужны: {{ (sectionOptimizationPackageFor(signal).decision_plan?.required_inputs || []).join('; ') }}</small>
+                                                </details>
                                                 <span v-if="sectionOptimizationPackageFor(signal).decision"
                                                       class="section-optimization-package-card__decision">
                                                     {{ sectionOptimizationPackageDecisionLabel(sectionOptimizationPackageFor(signal).decision) }}
