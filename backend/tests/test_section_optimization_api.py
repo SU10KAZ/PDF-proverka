@@ -62,4 +62,4 @@ def test_bulk_endpoint_passes_explicit_group_and_rejects_unknown(monkeypatch, ki
         assert response.status_code == 422 and not calls
     else:
         assert response.status_code == 200
-        assert calls == [("EOM", {"object_id": "O1", "candidate_kind": kind or "replicate_accepted_optimization"})]
+        assert calls == [("EOM", {"object_id": "O1", "candidate_kind": kind or "all"})]

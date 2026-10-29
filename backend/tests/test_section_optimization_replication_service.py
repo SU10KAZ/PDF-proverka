@@ -265,6 +265,32 @@ async def test_expert_decision_is_saved_per_target_with_revision_guard():
     assert implemented["implementation_history"][0]["evidence_refs"] == ["P2:v003:лист ЭОМ-7"]
 
 
+@pytest.mark.asyncio
+async def test_package_decision_is_one_economic_gate_and_requires_reason_for_missing_data():
+    pipeline.store_latest_snapshot("EOM", _snapshot(), object_id="object-1", run_id="test-run")
+    started = replication.start_replication("EOM", "REPL-1", object_id="object-1")
+    for _ in range(30):
+        await asyncio.sleep(0)
+        job = replication.get_replication("EOM", started["replication_id"], object_id="object-1")
+        if job["status"] not in {"queued", "running"}:
+            break
+
+    with pytest.raises(ValueError, match="причину"):
+        replication.save_package_decision(
+            "EOM", job["replication_id"], "needs_data", object_id="object-1",
+            expected_input_fingerprint=job["input_fingerprint"], expected_updated_at=job["updated_at"],
+        )
+
+    saved = replication.save_package_decision(
+        "EOM", job["replication_id"], "needs_data", object_id="object-1",
+        reviewer="Инженер", note="Нужны цены на оба варианта",
+        expected_input_fingerprint=job["input_fingerprint"], expected_updated_at=job["updated_at"],
+    )
+    assert saved["package_decision"]["decision"] == "needs_data"
+    assert saved["package_status"] == "reviewed"
+    assert saved["package_summary"]["economic_status"] == "needs_data"
+
+
 def test_implementation_requires_evidence_and_prior_acceptance():
     with pytest.raises(ValueError, match="доказательство"):
         replication.update_implementation_check(

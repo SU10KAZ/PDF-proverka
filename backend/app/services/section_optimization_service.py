@@ -24,6 +24,7 @@ from typing import Any, Callable, Iterable, Optional
 
 from backend.app.services.common import object_service, project_service, version_service
 from backend.app.services.section_optimization_history_service import build_historical_ideas, read_previous_bundles
+from backend.app.services.section_optimization_package_service import attach_package_summaries
 
 
 _PAGE_RE = re.compile(r"(?m)^##\s+СТРАНИЦА\s+(\d+)\s*$")
@@ -736,6 +737,11 @@ def build_replication_signals(
         if not items or not any(item.get("spec_items") for item in items):
             continue
         source_project_ids = sorted({str(item.get("project_id") or "") for item in items if item.get("project_id")})
+        source_rows = [
+            row for row in rows
+            if str(row.get("project_id") or "") in source_project_ids
+            and max((_accepted_decision_matches_row(item, row) for item in items), default=0.0) > 0
+        ]
         target_rows: list[dict] = []
         match_scores: list[float] = []
         for row in rows:
@@ -778,6 +784,7 @@ def build_replication_signals(
             "target_project_ids": target_project_ids,
             "evidence_refs": [str(item.get("source_ref") or f"{item.get('project_id')}:{item.get('id')}") for item in items],
             "target_row_ids": [str(row.get("row_id") or "") for row in target_rows if row.get("row_id")],
+            "source_row_ids": [str(row.get("row_id") or "") for row in source_rows if row.get("row_id")],
             "items_count": len(items),
             "target_rows_count": len(target_rows),
             "match_basis": "совпадение с позициями принятого решения",
@@ -1180,7 +1187,7 @@ def synthesize_section_optimization_data(normalized: dict) -> dict:
     discovery_signals = build_self_discovery_signals(spec_rows)
     signals = replication_signals + discovery_signals
     section_code = _clean_text(normalized.get("section")).upper()
-    return {
+    result = {
         "meta": {
             "section": section_code,
             "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -1220,6 +1227,7 @@ def synthesize_section_optimization_data(normalized: dict) -> dict:
         },
         "warnings": list(normalized.get("warnings") or []),
     }
+    return attach_package_summaries(result)
 
 
 def build_section_optimization(

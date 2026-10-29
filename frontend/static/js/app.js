@@ -5730,6 +5730,13 @@ const app = createApp({
                     (sum, process) => sum + (process.expert_decisions || []).length,
                     0,
                 );
+                const packageDecided = processes.filter(process => process.package_decision).length;
+                if (packageDecided === total) {
+                    return {...storedStage, status: 'done', message: `Пакетные решения сохранены: ${packageDecided} из ${total}`};
+                }
+                if (packageDecided) {
+                    return {...storedStage, status: 'waiting', message: `Пакетные решения сохранены: ${packageDecided} из ${total}`};
+                }
                 if (targetTotal && decided === targetTotal) {
                     return {...storedStage, status: 'done', message: `Решения сохранены: ${decided} из ${targetTotal}`};
                 }
@@ -5926,6 +5933,9 @@ const app = createApp({
 
         function sectionOptimizationReplicationStatusLabel(process) {
             if (!process) return 'Ожидает запуска умного агента';
+            if (process.package_decision) {
+                return sectionOptimizationPackageDecisionLabel(process.package_decision.decision);
+            }
             if (process.agent_status !== 'complete' && process.status === 'awaiting_expert') {
                 return 'Требуется запуск умного агента';
             }
@@ -6008,6 +6018,87 @@ const app = createApp({
                 returned: 'Возвращено на доработку',
             };
             return labels[decision] || 'Решение не принято';
+        }
+
+        function sectionOptimizationPackageFor(signal) {
+            const process = sectionOptimizationReplicationFor(signal?.signal_id);
+            const summary = {
+                ...(signal?.package_summary || {}),
+                ...(process?.package_summary || {}),
+                scope: process?.package_summary?.scope || signal?.package_summary?.scope || {},
+                source_scope: process?.package_summary?.source_scope || signal?.package_summary?.source_scope,
+            };
+            const packageDecision = process?.package_decision || {};
+            return {
+                ...summary,
+                decision: packageDecision.decision || summary.decision || null,
+                decision_note: packageDecision.note || summary.decision_note || '',
+            };
+        }
+
+        function sectionOptimizationPackageEconomicLabel(status) {
+            return ({
+                positive: 'Экономика подтверждена',
+                negative: 'Экономия не подтверждена',
+                needs_data: 'Нужны данные для расчёта',
+            })[status] || 'Экономический эффект не определён';
+        }
+
+        function sectionOptimizationPackageDecisionLabel(decision) {
+            return ({
+                economic_yes: 'Экономически обосновано',
+                economic_no: 'Экономически не обосновано',
+                needs_data: 'Нужны экономические данные',
+            })[decision] || '';
+        }
+
+        function sectionOptimizationPackageScopeText(summary) {
+            const scope = summary?.scope || {};
+            const source = summary?.source_scope;
+            const projects = scope.project_count || 0;
+            const rows = scope.row_count || 0;
+            const quantities = Object.entries(scope.quantity_by_unit || {})
+                .map(([unit, value]) => `${value} ${unit}`)
+                .join('; ');
+            const targetText = `${projects} проект(а), ${rows} строк${quantities ? ` · ${quantities}` : ''}`;
+            if (!source) return targetText;
+            return `цели: ${targetText}; источник: ${source.project_count || 0} проект(а), ${source.row_count || 0} строк`;
+        }
+
+        async function saveSectionOptimizationPackageDecision(process, signal, decision) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !process || !signal || sectionOptimizationReplicationActionLoading.value) return;
+            let note = '';
+            if (decision !== 'economic_yes') {
+                note = window.prompt(
+                    decision === 'needs_data' ? 'Каких экономических данных не хватает?' : 'Почему экономия не подтверждена?',
+                    '',
+                );
+                if (note === null || !note.trim()) return;
+            }
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(
+                    sectionOptimizationReplicationsUrl(
+                        sectionCode,
+                        '/' + encodeURIComponent(process.replication_id) + '/package-decision',
+                    ),
+                    {
+                        decision,
+                        note,
+                        expected_input_fingerprint: process.input_fingerprint,
+                        expected_updated_at: process.updated_at,
+                    },
+                    { withVersion: false },
+                );
+                if (response?.replication) upsertSectionOptimizationReplication(response.replication);
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
         }
 
         function sectionOptimizationAlternativeQuantityText(evaluation) {
@@ -6227,6 +6318,10 @@ const app = createApp({
                 ...sectionOptimizationData.value,
                 replications: items,
             };
+            const cacheKey = `${currentObjectId.value || ''}|${sidebarFilterSection.value || ''}`;
+            if (_sectionOptimizationMemoryCache.has(cacheKey)) {
+                _sectionOptimizationMemoryCache.set(cacheKey, sectionOptimizationData.value);
+            }
         }
 
         async function pollSectionOptimizationReplication(sectionCode, objectId, replicationId) {
@@ -20961,6 +21056,9 @@ const app = createApp({
             sectionOptimizationReplicationStatusLabel, sectionOptimizationAgentVerdictLabel,
             sectionOptimizationGraphicsConclusionLabel, openSectionOptimizationGraphicsBlock,
             sectionOptimizationExpertDecisionFor, sectionOptimizationExpertDecisionLabel,
+            sectionOptimizationPackageFor, sectionOptimizationPackageEconomicLabel,
+            sectionOptimizationPackageDecisionLabel, sectionOptimizationPackageScopeText,
+            saveSectionOptimizationPackageDecision,
             sectionOptimizationImplementationFor, sectionOptimizationImplementationLabel,
             sectionOptimizationCriticReviewFor, sectionOptimizationExpertDecisionAllowed,
             saveSectionOptimizationExpertDecision,

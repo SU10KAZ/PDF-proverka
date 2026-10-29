@@ -48,6 +48,10 @@ from backend.app.services.section_optimization_dependency_service import (
     build_dependency_assessment,
     update_dependency_interface,
 )
+from backend.app.services.section_optimization_package_service import (
+    PACKAGE_DECISIONS,
+    package_summary_from_dossier,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -287,6 +291,8 @@ def _public_job(job: dict, *, include_dossier: bool = False) -> dict:
     result.pop("object_id", None)
     if not include_dossier:
         result.pop("dossier", None)
+    if result.get("dossier") or job.get("dossier"):
+        result["package_summary"] = package_summary_from_dossier(job)
     return result
 
 
@@ -1116,6 +1122,92 @@ def save_expert_decision(
         return result
 
 
+def save_package_decision(
+    section: str,
+    replication_id: str,
+    decision: str,
+    *,
+    object_id: Optional[str] = None,
+    reviewer: str = "",
+    note: str = "",
+    expected_input_fingerprint: str,
+    expected_updated_at: str,
+) -> dict:
+    """Save one economic decision for the whole candidate package.
+
+    Existing per-project decisions remain available as detailed exceptions. A
+    package decision deliberately does not pretend that every target has the
+    same technical conditions; those exceptions stay in the dossier.
+    """
+    code = _clean_section(section)
+    resolved_object_id = _resolve_object_id(object_id)
+    normalized_decision = str(decision or "").strip()
+    if normalized_decision not in PACKAGE_DECISIONS:
+        raise ValueError("Недопустимое пакетное экономическое решение")
+    cleaned_note = " ".join(str(note or "").split())[:3000]
+    if normalized_decision in {"economic_no", "needs_data"} and not cleaned_note:
+        raise ValueError("Для этого пакетного решения укажите причину")
+    with _LOCK:
+        path = _job_path(code, resolved_object_id, replication_id)
+        job = _load_job(path)
+        if not job:
+            raise SectionReplicationNotFound("Процесс тиражирования не найден")
+        if job.get("status") in _ACTIVE_STATUSES:
+            raise SectionReplicationConflict("Подготовка заключения ещё выполняется")
+        snapshot = get_latest_snapshot(code, object_id=resolved_object_id)
+        if _job_input_stale(job, snapshot):
+            raise SectionReplicationConflict(
+                "Досье устарело: пересчитайте кандидата по текущим версиям проектов"
+            )
+        if expected_input_fingerprint != job.get("input_fingerprint"):
+            raise SectionReplicationConflict("Решение относится к другой ревизии досье")
+        if expected_updated_at != job.get("updated_at"):
+            raise SectionReplicationConflict(
+                "Досье уже изменено другим пользователем; обновите страницу"
+            )
+        summary = package_summary_from_dossier(job)
+        if normalized_decision == "economic_yes" and summary.get("economic_status") != "positive":
+            # Без цены/сопоставимого расчёта положительный результат нельзя
+            # выдать за подтверждённую экономию.
+            raise SectionReplicationConflict(
+                "Положительный экономический эффект ещё не подтверждён расчётом"
+            )
+        if normalized_decision == "economic_yes":
+            if (job.get("critic") or {}).get("status") != "pass":
+                raise SectionReplicationConflict("Сначала закройте технические блокеры Critic")
+            if any(item.get("status") == "open" for item in job.get("data_requests") or []):
+                raise SectionReplicationConflict("Сначала ответьте на открытые запросы данных")
+            if job.get("graphics_required") and job.get("graphics_status") not in _GRAPHICS_DONE_STATUSES:
+                raise SectionReplicationConflict("Сначала завершите обязательную графическую проверку")
+        now = _utc_now()
+        job["package_decision"] = {
+            "decision": normalized_decision,
+            "note": cleaned_note,
+            "reviewer": " ".join(str(reviewer or "").split())[:300],
+            "decided_at": now,
+            "input_fingerprint": job.get("input_fingerprint"),
+            "scope": summary.get("scope") or {},
+        }
+        job["package_status"] = "reviewed"
+        job.setdefault("package_decision_history", []).append(copy.deepcopy(job["package_decision"]))
+        expert_stage = _stage_ref(job, "expert")
+        expert_stage.update({
+            "status": "done",
+            "message": {
+                "economic_yes": "Экономический эффект подтверждён по пакету",
+                "economic_no": "Экономический эффект по пакету не подтверждён",
+                "needs_data": "По пакету запрошены недостающие экономические данные",
+            }[normalized_decision],
+            "finished_at": now,
+            "metrics": {"package_decision": normalized_decision},
+        })
+        _write_job(job)
+        result = _public_job(job)
+        result["package_summary"] = summary
+        result["input_stale"] = False
+        return result
+
+
 def update_implementation_check(
     section: str,
     replication_id: str,
@@ -1461,6 +1553,7 @@ __all__ = [
     "list_replications",
     "retry_graphics",
     "save_expert_decision",
+    "save_package_decision",
     "answer_data_request",
     "start_all_replications",
     "start_replication",

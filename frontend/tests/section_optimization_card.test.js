@@ -188,6 +188,16 @@ describe('section optimization card', () => {
     expect(js).toContain('async function updateSectionOptimizationImplementation(');
   });
 
+  it('shows one economic package decision before project exceptions', () => {
+    expect(html).toContain('Решение по пакету');
+    expect(html).toContain('Экономически обосновано');
+    expect(html).toContain('Нужны данные');
+    expect(html).toContain('saveSectionOptimizationPackageDecision');
+    expect(js).toContain("'/package-decision'");
+    expect(js).toContain('function sectionOptimizationPackageScopeText(summary)');
+    expect(js).toContain('packageDecided');
+  });
+
   it('has responsive table and card styles', () => {
     expect(css).toContain('.project-card.section-optimization-card {');
     expect(css).toContain('.section-optimization-page__header {');

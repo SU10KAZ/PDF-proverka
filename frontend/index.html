@@ -831,6 +831,57 @@
                                         <td class="section-optimization-table__name">
                                             <div>{{ signal.title }}</div>
                                             <small>{{ signal.reason }}</small>
+                                            <div class="section-optimization-package-card">
+                                                <b>Решение по пакету</b>
+                                                <div>
+                                                    Объём: {{ sectionOptimizationPackageScopeText(sectionOptimizationPackageFor(signal)) }}
+                                                </div>
+                                                <div>
+                                                    Экономика: {{ sectionOptimizationPackageEconomicLabel(sectionOptimizationPackageFor(signal).economic_status) }}
+                                                </div>
+                                                <div v-if="sectionOptimizationPackageFor(signal).effect?.delta !== null
+                                                    && sectionOptimizationPackageFor(signal).effect?.delta !== undefined">
+                                                    Расчёт: {{ sectionOptimizationPackageFor(signal).effect.baseline_cost }} →
+                                                    {{ sectionOptimizationPackageFor(signal).effect.proposal_cost }}
+                                                    {{ sectionOptimizationPackageFor(signal).effect.currency }}
+                                                    (дельта {{ sectionOptimizationPackageFor(signal).effect.delta }})
+                                                </div>
+                                                <small v-if="sectionOptimizationPackageFor(signal).blockers?.length">
+                                                    Нужно проверить: {{ sectionOptimizationPackageFor(signal).blockers.slice(0, 2).join('; ') }}
+                                                </small>
+                                                <span v-if="sectionOptimizationPackageFor(signal).decision"
+                                                      class="section-optimization-package-card__decision">
+                                                    {{ sectionOptimizationPackageDecisionLabel(sectionOptimizationPackageFor(signal).decision) }}
+                                                </span>
+                                                <div v-if="canOperate && sectionOptimizationReplicationFor(signal.signal_id)
+                                                    && sectionOptimizationReplicationFor(signal.signal_id).status === 'awaiting_expert'
+                                                    && sectionOptimizationReplicationFor(signal.signal_id).agent_status === 'complete'
+                                                    && !sectionOptimizationReplicationFor(signal.signal_id).input_stale"
+                                                     class="section-optimization-package-card__actions">
+                                                    <button v-if="sectionOptimizationPackageFor(signal).economic_status !== 'positive'"
+                                                            type="button" class="btn btn-sm btn-secondary"
+                                                            @click.stop="toggleSectionOptimizationSignal(signal.signal_id)">
+                                                        Открыть расчёт
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                            :disabled="sectionOptimizationReplicationActionLoading
+                                                                || sectionOptimizationPackageFor(signal).economic_status !== 'positive'"
+                                                            title="Сначала внесите сопоставимые цены в расчёт вариантов"
+                                                            @click="saveSectionOptimizationPackageDecision(sectionOptimizationReplicationFor(signal.signal_id), signal, 'economic_yes')">
+                                                        Экономически обосновано
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                            :disabled="sectionOptimizationReplicationActionLoading"
+                                                            @click="saveSectionOptimizationPackageDecision(sectionOptimizationReplicationFor(signal.signal_id), signal, 'needs_data')">
+                                                        Нужны данные
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                            :disabled="sectionOptimizationReplicationActionLoading"
+                                                            @click="saveSectionOptimizationPackageDecision(sectionOptimizationReplicationFor(signal.signal_id), signal, 'economic_no')">
+                                                        Не обосновано
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td>
                                             <template v-if="signal.kind === 'replicate_accepted_optimization'">
@@ -1113,7 +1164,9 @@
                                                                         </button>
                                                                     </div>
                                                                 </div>
-                                                                <div v-if="canOperate && (!sectionOptimizationReplicationFor(signal.signal_id).input_stale)"
+                                                                <div v-if="canOperate && !sectionOptimizationReplicationFor(signal.signal_id).package_decision
+                                                                    && ['reject', 'needs_data', 'needs_graphics'].includes(assessment.resolved_verdict || assessment.verdict)
+                                                                    && (!sectionOptimizationReplicationFor(signal.signal_id).input_stale)"
                                                                      class="section-optimization-expert-actions">
                                                                     <button v-if="sectionOptimizationExpertDecisionAllowed(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, assessment.conditions?.length ? 'accepted_with_conditions' : 'accepted')"
                                                                             type="button" class="btn btn-sm btn-primary"
@@ -1250,7 +1303,8 @@
                 <!-- Проекты -->
                 <div class="projects-grid" :class="{'projects-grid--in-group': !group.noHeader}">
                     <!-- Первая карточка каждого раздела: сводка всех его проектов. -->
-                    <div v-if="groupIndex === 0 && isSectionAuditable(sidebarFilterSection)"
+                    <template v-if="groupIndex === 0">
+                    <div v-if="isSectionAuditable(sidebarFilterSection)"
                          class="project-card section-optimization-card"
                          role="button" tabindex="0"
                          @click="navigateToSectionOptimization(sidebarFilterSection)"
@@ -1285,6 +1339,7 @@
                             </button>
                         </div>
                     </div>
+                    </template>
                     <div v-for="p in group.projects" :key="p.project_id"
                          class="project-card" :draggable="canOperate"
                          :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id}"

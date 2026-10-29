@@ -16,6 +16,7 @@ from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.section_optimization_library_service import build_solution_library
 from backend.app.services.section_optimization_readiness_service import build_pilot_readiness
 from backend.app.services.section_optimization_candidate_types import SUPPORTED_KINDS
+from backend.app.services.section_optimization_package_service import attach_package_summaries
 
 router = APIRouter(prefix="/api/optimization", tags=["optimization"])
 
@@ -71,6 +72,13 @@ class SectionDependencyReview(BaseModel):
     status: Literal["confirmed_impact", "no_impact", "needs_coordination", "unknown"]
     note: str = Field(default="", max_length=2000)
     evidence_refs: list[str] = Field(default_factory=list, max_length=50)
+    expected_updated_at: str = Field(min_length=1, max_length=100)
+
+
+class SectionPackageDecisionRequest(BaseModel):
+    decision: Literal["economic_yes", "economic_no", "needs_data"]
+    note: str = Field(default="", max_length=3000)
+    expected_input_fingerprint: str = Field(min_length=1, max_length=128)
     expected_updated_at: str = Field(min_length=1, max_length=100)
 
 
@@ -354,6 +362,41 @@ async def save_section_replication_expert_decision(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.post("/section/{section_code}/replications/{replication_id}/package-decision")
+async def save_section_replication_package_decision(
+    section_code: str,
+    replication_id: str,
+    payload: SectionPackageDecisionRequest,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Сохранить одно экономическое решение по кандидату раздела."""
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_replication_service import (
+        SectionReplicationConflict,
+        SectionReplicationNotFound,
+        save_package_decision,
+    )
+    from backend.app.core.attribution import resolve_author
+    try:
+        result = save_package_decision(
+            code,
+            replication_id,
+            payload.decision,
+            object_id=object_id,
+            reviewer=resolve_author().name,
+            note=payload.note,
+            expected_input_fingerprint=payload.expected_input_fingerprint,
+            expected_updated_at=payload.expected_updated_at,
+        )
+        return {"status": "saved", "replication": result}
+    except SectionReplicationConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except SectionReplicationNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 @router.post("/section/{section_code}/replications/{replication_id}/data-requests/{request_id}/answer")
 async def answer_section_replication_data_request(
     section_code: str,
@@ -525,6 +568,7 @@ async def get_section_optimization(
         data = await run_in_threadpool(build_section_optimization, code, object_id=object_id)
         store_latest_snapshot(code, data, object_id=object_id)
         pipeline = get_pipeline_state(code, object_id=object_id)
+    data = attach_package_summaries(data)
     if data["meta"]["project_count"] == 0:
         raise HTTPException(404, f"В разделе '{code}' нет проектов")
     stages = list(data.get("analysis_stages") or [])
