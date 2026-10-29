@@ -80,6 +80,34 @@ def test_unicode_duplicates_batch_and_context_do_not_merge_real_projects(env):
     assert all(item['project_id'] != catalog[0]['project_id'] for item in result['available_projects'])
 
 
+@pytest.mark.parametrize('completed', [False, True])
+def test_catalog_only_offers_latest_unfinished_version(env, completed):
+    catalog, _ = env
+    old = catalog[0]
+    old['ready'] = False
+    latest = {**old, 'version_id': 'v1000', 'ready': True,
+              'completed_at': '2026-10-25' if completed else None}
+    # Deliberately unordered; numeric ordering must also work beyond v999.
+    catalog.extend([latest, {**old, 'version_id': 'v999'}])
+    other_object = {**old, 'object_id': 'another-object'}
+    catalog.append(other_object)
+    available = svc.snapshot()['available_projects']
+    assert [c['version_id'] for c in available
+            if c['object_id'] == old['object_id'] and c['project_id'] == old['project_id']] == (
+                [] if completed else ['v1000'])
+    assert other_object in available
+    assert catalog[1] in available
+
+
+def test_assigned_latest_version_does_not_reveal_old_version(env):
+    catalog, _ = env
+    latest = {**catalog[0], 'version_id': 'v002'}
+    catalog.append(latest)
+    result = call('assign', items=[{'engineer_id': 'a', **latest}])
+    assert all(c['project_id'] != latest['project_id'] for c in result['available_projects'])
+    assert result['tasks'][0]['version_id'] == 'v002'
+
+
 def test_group_move_block_display_order_transfer_and_undo(env):
     first = add('a', 'one', 'two', 'three', 'four')
     ids = [r['id'] for r in first['tasks']]

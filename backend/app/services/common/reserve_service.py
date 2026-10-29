@@ -11,6 +11,7 @@ from math import floor
 from collections import Counter
 
 from backend.app.services.common import reserve_sources as sources, reserve_store as store
+from backend.app.services.common.version_service import _version_no_from_id
 
 ACTIVE = {'preparation', 'ready', 'in_progress'}
 
@@ -236,9 +237,17 @@ def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
     last = conn.execute('SELECT * FROM reserve_operations WHERE actor=? ORDER BY rowid DESC LIMIT 1', (actor,)).fetchone()
     undo_id = last['id'] if last and last['kind'] in ('move', 'delete', 'add_preparation', 'assign') and not last['undone_by'] else None
     assigned_ids = {sources.identity(r) for r in rows if r['project_id']}
+    # Select the latest version before excluding completed/assigned entries:
+    # otherwise an obsolete unfinished version reappears in the picker.
+    latest = {}
+    for item in catalog:
+        project_key = (item['object_id'], item['project_id'], item.get('check_type', 'expert_review'))
+        previous = latest.get(project_key)
+        if previous is None or _version_no_from_id(item['version_id']) > _version_no_from_id(previous['version_id']):
+            latest[project_key] = item
     return {'revision': store.revision(conn), 'today': sources.today().isoformat(), 'engineers': engineers,
             'tasks': projected, 'undo_operation_id': undo_id,
-            'available_projects': [c for c in catalog if not c['completed_at'] and sources.identity(c) not in assigned_ids],
+            'available_projects': [c for c in latest.values() if not c['completed_at'] and sources.identity(c) not in assigned_ids],
             'calendar': {'holidays': config.get('holidays', []), 'working_dates': config.get('working_dates', []),
                          'configured': bool(config)},
             'totals': {'remaining': len(projected), 'ready': sum(r['state'] == 'ready' for r in projected),
