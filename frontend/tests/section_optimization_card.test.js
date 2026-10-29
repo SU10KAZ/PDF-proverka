@@ -121,7 +121,7 @@ describe('section optimization card', () => {
     expect(js).toContain("type_size_reduction_opportunity: 'Сокращение типоразмеров'");
     expect(js).toContain('function sectionOptimizationSignalGraphicsLabel(signal)');
     expect(js).toContain('evidenceRefs.has(item.source_ref)');
-    expect(html).toContain('Запустить проверку всей группы');
+    expect(html).toContain('Запустить проверку всех кандидатов');
     expect(html).toContain('Ожидает запуска умного агента');
     expect(html).toContain('sectionOptimizationAgentVerdictLabel(assessment.resolved_verdict || assessment.verdict)');
     expect(html).toContain('@click="startAllSectionOptimizationReplications"');
@@ -221,21 +221,18 @@ describe('candidate group counts and launch scope', () => {
     return context;
   }
 
-  it('keeps 92 total candidates and shows progress for the selected group only', () => {
+  it('keeps 92 total candidates and shows combined progress', () => {
     const context = groupContext();
     const read = code => vm.runInContext(code, context);
     expect(Array.from(read('sectionOptimizationCandidateGroups.value'), g => g.count)).toEqual([23, 69]);
-    expect(read('sectionOptimizationReplicationProgressLabel.value')).toBe('Подготовлено: 0 из 23');
-    context.sectionOptimizationCandidateKind.value = 'type_size_reduction_opportunity';
-    expect(read('sectionOptimizationReplicationProgressLabel.value')).toBe('Подготовлено: 1 из 69');
-    expect(read('sectionOptimizationReplicationPendingCount.value')).toBe(68);
+    expect(read('sectionOptimizationReplicationProgressLabel.value')).toBe('Подготовлено: 1 из 92');
+    expect(read('sectionOptimizationReplicationPendingCount.value')).toBe(91);
     delete context.sectionOptimizationData.value.capabilities;
     expect(read('sectionOptimizationCandidateReviewAvailable.value')).toBe(false);
   });
 
-  it('sends the selected group explicitly and never falls back to individual discovery launches', async () => {
+  it('starts all candidate types through one bulk request', async () => {
     const context = groupContext();
-    context.sectionOptimizationCandidateKind.value = 'type_size_reduction_opportunity';
     const calls = [];
     Object.assign(context, {
       sidebarFilterSection: {value: 'EOM'}, currentObjectId: {value: 'alia'},
@@ -249,7 +246,7 @@ describe('candidate group counts and launch scope', () => {
     vm.runInContext(js.slice(js.indexOf('        async function startAllSectionOptimizationReplications()'),
       js.indexOf('        async function pollSectionOptimizationPipeline(')), context);
     await vm.runInContext('startAllSectionOptimizationReplications()', context);
-    expect(calls).toEqual(['/replications/start-all?object_id=alia&candidate_kind=type_size_reduction_opportunity']);
+    expect(calls).toEqual(['/replications/start-all?object_id=alia&candidate_kind=all']);
     expect(context.sectionOptimizationPipelineActionError.value).toBe('404 not found');
     expect(context.sectionOptimizationReplicationActionLoading.value).toBe(false);
   });

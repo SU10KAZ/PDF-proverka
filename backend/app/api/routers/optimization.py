@@ -218,8 +218,8 @@ async def start_section_replication(
 async def start_all_section_replications(
     section_code: str,
     object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
-    candidate_kind: Literal["replicate_accepted_optimization", "type_size_reduction_opportunity"] = Query(
-        "replicate_accepted_optimization", description="Группа кандидатов для подготовки"
+    candidate_kind: Literal["all", "replicate_accepted_optimization", "type_size_reduction_opportunity"] = Query(
+        "all", description="Группа кандидатов для подготовки"
     ),
 ):
     """Запустить подготовку ещё не проверенных кандидатов выбранной группы."""

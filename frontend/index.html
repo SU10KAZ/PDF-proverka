@@ -569,14 +569,6 @@
 
                     <div v-if="sectionOptimizationTab === 'signals'"
                          class="section-optimization-replication-bulk">
-                        <div class="section-optimization-tabs" aria-label="Группы кандидатов">
-                            <button v-for="group in sectionOptimizationCandidateGroups" :key="group.kind"
-                                    :class="{active: sectionOptimizationCandidateKind === group.kind}"
-                                    :disabled="sectionOptimizationReplicationActionLoading"
-                                    @click="sectionOptimizationCandidateKind = group.kind">
-                                {{ group.title }} <span>{{ group.count }}</span>
-                            </button>
-                        </div>
                         <button v-if="canOperate" class="btn btn-sm btn-primary"
                                 :disabled="sectionOptimizationReplicationActionLoading
                                     || !sectionOptimizationAgentAvailable
@@ -585,12 +577,12 @@
                                     || !sectionOptimizationReplicationPendingCount"
                                 @click="startAllSectionOptimizationReplications">
                             {{ sectionOptimizationReplicationActionLoading
-                                ? 'Запускаю проверку группы…'
+                                ? 'Запускаю проверку кандидатов…'
                                 : (!sectionOptimizationAgentAvailable || !sectionOptimizationGraphicsAgentAvailable
                                     ? 'Графический агент подключается…'
                                     : (!sectionOptimizationCandidateReviewAvailable
-                                        ? 'Проверка этой группы пока недоступна'
-                                        : 'Запустить проверку всей группы')) }}
+                                        ? 'Проверка кандидатов пока недоступна'
+                                        : 'Запустить проверку всех кандидатов')) }}
                         </button>
                         <span>{{ sectionOptimizationAgentAvailable && sectionOptimizationGraphicsAgentAvailable
                             ? sectionOptimizationReplicationProgressLabel

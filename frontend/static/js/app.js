@@ -5533,7 +5533,6 @@ const app = createApp({
         const sectionOptimizationData = ref(null);
         const sectionOptimizationLoadedKey = ref('');
         const sectionOptimizationTab = ref('specifications');
-        const sectionOptimizationCandidateKind = ref('replicate_accepted_optimization');
         const sectionOptimizationSearch = ref('');
         const sectionOptimizationProjectFilter = ref('');
         const sectionOptimizationCollapsedProjects = ref({});
@@ -5567,12 +5566,11 @@ const app = createApp({
         ].map(group => ({...group, count: (sectionOptimizationData.value?.signals || [])
             .filter(signal => signal.kind === group.kind).length})));
         const sectionOptimizationCandidateReviewAvailable = computed(() => (
-            (sectionOptimizationData.value?.capabilities?.candidate_review_kinds
-                || ['replicate_accepted_optimization']).includes(sectionOptimizationCandidateKind.value)
+            ['replicate_accepted_optimization', 'type_size_reduction_opportunity'].every(kind =>
+                (sectionOptimizationData.value?.capabilities?.candidate_review_kinds || []).includes(kind))
         ));
         const sectionOptimizationReplicationCandidates = computed(() => (
-            (sectionOptimizationData.value?.signals || [])
-                .filter(signal => signal.kind === sectionOptimizationCandidateKind.value)
+            sectionOptimizationData.value?.signals || []
         ));
         const sectionOptimizationReplicationPendingCount = computed(() => (
             sectionOptimizationReplicationCandidates.value
@@ -6267,43 +6265,17 @@ const app = createApp({
                 || !sectionOptimizationGraphicsAgentAvailable.value
                 || !sectionOptimizationCandidateReviewAvailable.value
                 || !sectionOptimizationReplicationPendingCount.value) return;
-            const candidateKind = sectionOptimizationCandidateKind.value;
-            const pendingSignals = sectionOptimizationReplicationCandidates.value
-                .filter(signal => sectionOptimizationReplicationNeedsAgent(signal.signal_id));
             const baseUrl = sectionOptimizationReplicationsUrl(sectionCode, '/start-all');
             const bulkUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?')
-                + 'candidate_kind=' + encodeURIComponent(candidateKind);
+                + 'candidate_kind=all';
             sectionOptimizationReplicationActionLoading.value = true;
             sectionOptimizationPipelineActionError.value = '';
             try {
-                let response;
-                try {
-                    response = await apiPost(
-                        bulkUrl,
-                        undefined,
-                        { withVersion: false },
-                    );
-                } catch (bulkError) {
-                    // Совместимость на время безопасного обновления backend:
-                    // одна кнопка всё равно запускает все строки через уже
-                    // существующий одиночный endpoint.
-                    if (candidateKind !== 'replicate_accepted_optimization'
-                        || !/404|not found/i.test(bulkError?.message || '')) throw bulkError;
-                    const results = await Promise.allSettled(pendingSignals.map(signal => apiPost(
-                        sectionOptimizationReplicationsUrl(sectionCode, '/start'),
-                        {
-                            signal_id: signal.signal_id,
-                            target_project_ids: signal.target_project_ids || [],
-                        },
-                        { withVersion: false },
-                    )));
-                    response = {
-                        replications: results
-                            .filter(item => item.status === 'fulfilled' && item.value?.replication)
-                            .map(item => item.value.replication),
-                        failed_count: results.filter(item => item.status === 'rejected').length,
-                    };
-                }
+                const response = await apiPost(
+                    bulkUrl,
+                    undefined,
+                    { withVersion: false },
+                );
                 for (const replication of (response?.replications || [])) {
                     upsertSectionOptimizationReplication(replication);
                     void pollSectionOptimizationReplication(
@@ -20974,7 +20946,7 @@ const app = createApp({
             sectionOptimizationReplicationActionLoading, sectionOptimizationReplications,
             sectionOptimizationAgentAvailable,
             sectionOptimizationGraphicsAgentAvailable,
-            sectionOptimizationCandidateKind, sectionOptimizationCandidateGroups,
+            sectionOptimizationCandidateGroups,
             sectionOptimizationCandidateReviewAvailable,
             sectionOptimizationReplicationPendingCount, sectionOptimizationReplicationProgressLabel,
             sectionOptimizationFilteredSpecifications, sectionOptimizationSpecificationGroups,

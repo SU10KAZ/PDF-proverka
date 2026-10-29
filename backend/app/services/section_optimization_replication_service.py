@@ -1340,7 +1340,7 @@ def start_all_replications(
     Уже запущенные и ожидающие эксперта/графику процессы не дублируются.
     Кандидаты с ошибкой или прерванным процессом запускаются повторно.
     """
-    if candidate_kind not in SUPPORTED_KINDS:
+    if candidate_kind != "all" and candidate_kind not in SUPPORTED_KINDS:
         raise ValueError("Неизвестная группа кандидатов")
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
@@ -1351,7 +1351,7 @@ def start_all_replications(
     signals = [
         signal
         for signal in (snapshot.get("signals") or [])
-        if signal.get("kind") == candidate_kind and signal.get("signal_id")
+        if (candidate_kind == "all" or signal.get("kind") == candidate_kind) and signal.get("signal_id")
     ]
     if not signals:
         raise SectionReplicationNotFound("В сохранённом снимке нет кандидатов выбранной группы")
