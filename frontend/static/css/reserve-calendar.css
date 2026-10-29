@@ -73,6 +73,8 @@
 .rc-point.rc-insert-before:before,.rc-point.rc-insert-after:after{content:"";position:absolute;top:-4px;bottom:-4px;width:3px;border-radius:2px;background:#006e63;z-index:3}
 .rc-point.rc-insert-before:before{left:-4px}.rc-point.rc-insert-after:after{right:-4px}
 .rc-count{position:absolute;bottom:2px;right:4px;color:var(--rc-muted);font-size:10px;pointer-events:none}
+.rc-grid .rc-over-capacity{background:#fff1f2}
+.rc-over-capacity .rc-count{color:#a92f41;font-weight:700}
 .rc-grid .rc-drop-row .rc-name{background:var(--rc-tint);box-shadow:inset 3px 0 #008e83}
 .reserve-calendar .rc-assign{font-size:11px;margin:7px 0 0 32px;padding:4px 7px;color:#006e63;background:var(--rc-tint);border-color:#a5d9d1}
 .rc-summary{font-size:11px;color:var(--rc-muted);margin-top:9px}

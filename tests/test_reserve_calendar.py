@@ -329,3 +329,113 @@ def test_real_v2_source_adapter_keeps_objects_and_versions_distinct(tmp_path, mo
     assert all(r['ready'] and not r['completed_at'] for r in result if r['version_id']=='v002')
 
 
+
+
+def test_daily_limits_are_individual_and_assignment_reuses_free_slots(env):
+    catalog, people = env
+    people[1]['rate'] = '1'
+    for item in catalog[:3]:
+        call('assign', items=[{'engineer_id': 'a', **item}])
+    result = call('assign', items=[{'engineer_id': 'b', **item} for item in catalog[3:]])
+    assert sorted(row['forecast_date'] for row in result['tasks'] if row['engineer_id'] == 'a') == [
+        '2026-10-27', '2026-10-27', '2026-10-29']
+    assert sorted(row['forecast_date'] for row in result['tasks'] if row['engineer_id'] == 'b') == [
+        '2026-10-27', '2026-10-29']
+    assert result['engineers'][0]['day_limits']['2026-10-27'] == 2
+    assert result['engineers'][1]['day_limits']['2026-10-27'] == 1
+    assert result['engineers'][0]['day_limits']['2026-10-28'] == 0
+
+
+def test_group_move_over_limit_is_atomic_and_does_not_consume_operation(env):
+    initial = add('a', 'One', 'Two', 'Three')
+    ids = [row['id'] for row in initial['tasks']]
+    body = dict(operation_id=str(uuid4()), revision=initial['revision'], kind='move',
+                task_ids=ids, engineer_id='b', forecast_date='2026-10-27')
+    with pytest.raises(svc.ReserveError) as caught:
+        svc.mutate(body, 'test')
+    assert caught.value.code == 'daily_capacity_exceeded'
+    assert 'лимит 2' in str(caught.value)
+    assert svc.snapshot('test')['tasks'] == initial['tasks']
+    assert svc.snapshot('test')['revision'] == initial['revision']
+    with db.transaction() as conn:
+        assert conn.execute('SELECT COUNT(*) FROM reserve_operations WHERE id=?', (body['operation_id'],)).fetchone()[0] == 0
+    moved = svc.mutate({**body, 'task_ids': ids[:2]}, 'test')
+    assert len([row for row in moved['tasks'] if row['engineer_id'] == 'b']) == 2
+
+
+def test_capacity_counts_completions_and_blocks_unavailable_days(env):
+    catalog, people = env
+    catalog[-1].update(completed_at='2026-10-26T12:00:00', reviewer='B')
+    people[1]['unavailable'] = [{'from': '2026-10-30', 'to': '2026-10-30'}]
+    initial = add('a', 'One', 'Two')
+    ids = [row['id'] for row in initial['tasks']]
+    for day in ('2026-10-26', '2026-10-28', '2026-10-30', '2026-10-31'):
+        with pytest.raises(svc.ReserveError, match='лимит'):
+            call('move', task_ids=ids, engineer_id='b', forecast_date=day)
+    moved = call('move', task_ids=ids[:1], engineer_id='b', forecast_date='2026-10-26')
+    assert moved['engineers'][1]['day_completed']['2026-10-26'] == 1
+    assert moved['engineers'][1]['day_limits']['2026-10-26'] == 2
+
+
+def test_capacity_allows_reducing_legacy_overload_but_not_undo_bypass(env):
+    initial = add('a', 'One', 'Two', 'Three')
+    with db.transaction() as conn:
+        for row in db.tasks(conn):
+            row['forecast_date'] = '2026-10-27'
+            db.save_task(conn, row)
+    ids = [row['id'] for row in initial['tasks']]
+    # Reordering a full/overloaded day is not new work.
+    call('move', task_ids=ids[:1], engineer_id='a', forecast_date='2026-10-27')
+    moved = call('move', task_ids=ids[:1], engineer_id='b', forecast_date='2026-10-27')
+    with pytest.raises(svc.ReserveError, match='лимит'):
+        call('undo', undo_id=moved['operation']['id'])
+    assert next(row for row in svc.snapshot()['tasks'] if row['id'] == ids[0])['engineer_id'] == 'b'
+
+
+def test_api_transfer_without_date_preserves_date_and_enforces_limit(env):
+    catalog, _ = env
+    result = call('assign', items=[{'engineer_id': 'a', **p} for p in catalog[:3]])
+    result = call('assign', items=[{'engineer_id': 'b', **catalog[3]}])
+    source = next(r for r in result['tasks'] if r['engineer_id'] == 'a' and r['forecast_date'] == '2026-10-27')
+    app = FastAPI()
+    app.include_router(reserve_calendar.router)
+    client = TestClient(app)
+    moved = client.post('/api/schedule/reserve/operations?view_start=2026-11-02', json={
+        'operation_id': str(uuid4()), 'revision': result['revision'], 'kind': 'move',
+        'task_ids': [source['id']], 'engineer_id': 'b'})
+    assert moved.status_code == 200
+    value = moved.json()
+    row = next(r for r in value['tasks'] if r['id'] == source['id'])
+    assert row['forecast_date'] == '2026-10-27'
+    assert '2026-11-02' in value['engineers'][0]['day_limits']
+    another = next(r for r in value['tasks'] if r['engineer_id'] == 'a' and r['forecast_date'] == '2026-10-27')
+    rejected = client.post('/api/schedule/reserve/operations', json={
+        'operation_id': str(uuid4()), 'revision': value['revision'], 'kind': 'move',
+        'task_ids': [another['id']], 'engineer_id': 'b'})
+    assert rejected.status_code == 400
+    assert rejected.json()['detail']['code'] == 'daily_capacity_exceeded'
+
+
+def test_monthly_capacity_uses_latest_norm_and_destination_month(monkeypatch):
+    from backend.app.services.common import schedule_service, user_service
+    monkeypatch.setattr(user_service, 'list_users', lambda: [{'id': 'person', 'name': 'Person'}])
+    monkeypatch.setattr(schedule_service, 'load_work_plans', lambda: ({'plans': [
+        {'engineer_id': 'person', 'period_type': 'month', 'period_start': '2026-09-01', 'period_end': '2026-09-30', 'plan': 42},
+        {'engineer_id': 'person', 'period_type': 'week', 'period_start': '2026-10-26', 'period_end': '2026-11-01', 'plan': 100},
+        {'engineer_id': 'person', 'period_type': 'month', 'period_start': '2026-12-01', 'period_end': '2026-12-31', 'plan': 0},
+    ]}, None))
+    engineer = src.engineers({}, date(2026, 10, 29))[0]
+    assert src.daily_capacity(engineer, {}, date(2026, 10, 29)) == 2  # 42 / 22
+    assert src.daily_capacity(engineer, {}, date(2026, 11, 2)) == 2  # 42 / 21
+    assert src.daily_capacity(engineer, {}, date(2026, 12, 1)) == 0  # explicit zero
+    assert src.daily_capacity(engineer, {}, date(2026, 8, 3)) == 0  # no future norm
+    assert src.daily_capacity(engineer, {'holidays': ['2026-11-03']}, date(2026, 11, 2)) == 3  # 42 / 20
+
+
+def test_missing_norm_does_not_create_invisible_unscheduled_assignments(env):
+    catalog, people = env
+    people[0]['rate'] = '0'
+    with pytest.raises(svc.ReserveError) as caught:
+        call('assign', items=[{'engineer_id': 'a', **catalog[0]}])
+    assert caught.value.code == 'capacity_missing'
+    assert svc.snapshot()['tasks'] == []

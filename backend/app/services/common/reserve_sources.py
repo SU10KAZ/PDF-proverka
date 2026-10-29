@@ -8,10 +8,13 @@ import json
 import os
 import threading
 import time
+import calendar
 from copy import deepcopy
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta
 from decimal import Decimal
+from fractions import Fraction
+from math import ceil
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -81,6 +84,10 @@ def engineers(config: dict, day: date) -> list[dict]:
             continue
         settings = config.get('engineers', {}).get(user['id'], {})
         rate = settings.get('daily_rate', user.get('reserve_daily_rate'))
+        configured_rate = rate
+        schedule_id, _ = schedule_service.engineer_identity(user.get('name', ''))
+        capacity_plans = [p for p in plans.get('plans', [])
+                          if not p.get('object_id') and p.get('engineer_id') in (user['id'], schedule_id)]
         capacity = {}
         source = 'configured' if rate is not None else 'missing_plan'
         if rate is None:
@@ -101,8 +108,41 @@ def engineers(config: dict, day: date) -> list[dict]:
             raise ValueError('Некорректная производительность инженера: ' + user['id'])
         out.append({'id': user['id'], 'name': user.get('name') or user['id'],
                     'direction': settings.get('direction') or user.get('direction') or user.get('section') or 'Без направления',
-                    'rate': str(value), 'rate_source': source, 'unavailable': settings.get('unavailable', []), **capacity})
+                    'rate': str(value), 'rate_source': source, 'unavailable': settings.get('unavailable', []),
+                    'configured_rate': str(configured_rate) if configured_rate is not None else None,
+                    'capacity_plans': capacity_plans, **capacity})
     return sorted(out, key=lambda e: (e['direction'], e['name']))
+
+
+def daily_capacity(engineer: dict, config: dict, day: date) -> int:
+    """Whole projects per day; latest monthly plan remains the monthly norm.
+
+    Recalculate the denominator for the destination month, including holidays
+    and personal absences. Never use a future plan to fill an earlier period.
+    """
+    if engineer.get('active') is False or not is_workday(day, config, engineer):
+        return 0
+    if engineer.get('configured_rate') is not None:
+        return ceil(Fraction(engineer['configured_rate']))
+    if 'capacity_plans' not in engineer:
+        # Legacy/internal callers that already supply an explicit daily rate.
+        rate = (Fraction(engineer['rate_numerator'], engineer['rate_denominator'])
+                if 'rate_numerator' in engineer else Fraction(engineer.get('rate', '0')))
+        return max(0, ceil(rate))
+    plans = engineer['capacity_plans']
+    monthly = [p for p in plans if p.get('period_type') == 'month' and p.get('period_start', '') <= day.isoformat()]
+    if monthly:
+        plan = max(monthly, key=lambda p: (p['period_start'], p.get('updated_at', '')))
+        first = day.replace(day=1)
+        last = day.replace(day=calendar.monthrange(day.year, day.month)[1])
+    else:
+        current = [p for p in plans if p.get('period_start', '') <= day.isoformat() <= p.get('period_end', '')]
+        if not current:
+            return 0
+        plan = max(current, key=lambda p: (p.get('period_start', ''), p.get('updated_at', '')))
+        first, last = date.fromisoformat(plan['period_start']), date.fromisoformat(plan['period_end'])
+    days = sum(is_workday(first + timedelta(days=i), config, engineer) for i in range((last-first).days+1))
+    return max(0, ceil(Fraction(int(plan['plan']), days))) if days else 0
 
 
 def _build_catalog() -> list[dict]:

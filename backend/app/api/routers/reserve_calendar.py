@@ -1,5 +1,6 @@
 """Reserve calendar API. Reads use schedule access; writes follow existing operate rights."""
 import asyncio
+from datetime import date
 from typing import Literal
 from uuid import UUID
 
@@ -50,10 +51,10 @@ def _actor(request):
 
 
 @router.get('')
-async def get_reserve(request: Request):
+async def get_reserve(request: Request, view_start: date | None = None):
     actor = _actor(request)
     try:
-        result = await asyncio.to_thread(service.snapshot, actor)
+        result = await asyncio.to_thread(service.snapshot, actor, view_start)
     except (ValueError, OSError) as exc:
         raise HTTPException(503, {'code': 'source_unavailable', 'message': str(exc)})
     ctx = require_account(request)
@@ -62,13 +63,18 @@ async def get_reserve(request: Request):
 
 
 @router.post('/operations')
-async def reserve_operation(body: Operation, request: Request):
+async def reserve_operation(body: Operation, request: Request, view_start: date | None = None):
     ctx = require_account(request)
     # Legacy staff retain their rights; accounts require calendar editing access.
     if ctx.enforces_roles and not ctx.can_edit_schedule:
         raise HTTPException(403, 'Нет права изменять очередь.')
     try:
-        result = await asyncio.to_thread(service.mutate, body.model_dump(mode='json'), _actor(request))
+        payload = body.model_dump(mode='json')
+        # Transferring by the engineer name preserves dates. An explicit null
+        # still means clearing a date, rather than omitting it accidentally.
+        if body.kind == 'move' and 'forecast_date' not in body.model_fields_set:
+            payload.pop('forecast_date')
+        result = await asyncio.to_thread(service.mutate, payload, _actor(request), view_start)
         result['can_edit'] = True
         return result
     except service.ReserveError as exc:

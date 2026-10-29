@@ -164,12 +164,16 @@
                 if (card.value) card.value = value.tasks.find(t => t.id === card.value.id) || null;
                 if (!card.value && projectDialog.value?.open) projectDialog.value.close();
             }
+            const viewQuery = () => anchor.value ? '?view_start=' + encodeURIComponent(anchor.value) : '';
+            const dayLimit = (engineer, iso) => engineer.day_limits?.[iso];
+            const dayLoad = (engineer, iso) => cell(engineer.id, iso).length + (engineer.day_completed?.[iso] || 0);
+            const capacityTip = (engineer, iso) => `В очереди: ${cell(engineer.id, iso).length}. Выполнено: ${engineer.day_completed?.[iso] || 0}. Лимит: ${dayLimit(engineer, iso) ?? '—'}.`;
             async function load(silent = false) {
                 if (busy.value || loading.value) return;
                 const current = ++generation;
                 if (!silent) loading.value = true;
                 try {
-                    const value = await readResponse(await fetch(API));
+                    const value = await readResponse(await fetch(API + viewQuery()));
                     if (current === generation) { accept(value); if (!pending.value) error.value = ''; }
                 } catch (e) { if (current === generation) error.value = e.message || 'Не удалось загрузить календарь.'; }
                 finally { if (current === generation) loading.value = false; }
@@ -179,7 +183,7 @@
                 generation++; loading.value = false;
                 busy.value = true; error.value = ''; tooltip.value = null;
                 try {
-                    const response = await fetch(API+'/operations', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+                    const response = await fetch(API+'/operations'+viewQuery(), {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
                     const value = await readResponse(response);
                     pending.value = null;
                     accept(value);
@@ -335,6 +339,7 @@
                 tooltip.value = null;
                 if (!prepDialog.value?.open && !projectDialog.value?.open && !catalogDialog.value?.open) selected.value = [];
             }
+            watch(anchor, (value, previous) => { if (value && previous && value !== previous) load(true); });
             watch(() => props.active, active => { if (active) load(); }, {immediate:true});
             onMounted(() => {
                 window.addEventListener('keydown', escape);
@@ -343,7 +348,7 @@
             onBeforeUnmount(() => { generation++; clearInterval(timer); window.removeEventListener('keydown', escape); });
             return {data, loading, busy, error, status, selected, dragging, insertion, pending, drafts, prepDialog, projectDialog, catalogDialog,
                 prepOpen, card, catalogOpen, linkTask, targetEngineer, chosenProject, search, objectMenuOpen, anchor, tooltip, tooltipStyle,
-                canEdit, locked, activeEngineers, selectedTasks, draftErrors, draftItems, draftEngineerCount, grouped, days, columns, available,
+                dayLimit, dayLoad, capacityTip, canEdit, locked, activeEngineers, selectedTasks, draftErrors, draftItems, draftEngineerCount, grouped, days, columns, available,
                 objectOptions, suggestedObjects, sectionOptions, chosenProjectIndexes, objectFilter, selectedSections, moveDate,
                 key, lines, dayAdd, label, stateLabel, cell, color, tipText, load, send, operate, clickTask, openCard, showTip,
                 dragStart, dragEnd, overTask, overCell, drop, shift, moveSelected, openPreparation, closePreparation, openCatalog, closeCatalog, selectObject, chooseProject, saveCatalog, quickAddProject, compactProject};
@@ -353,6 +358,7 @@
           <div v-if="error" class="rc-error" role="alert">{{ error }} <button v-if="pending" :disabled="busy" @click="send()">Повторить сохранение</button><button v-else :disabled="loading || busy" @click="load()">Обновить данные</button></div>
           <div v-if="loading && !data.engineers.length" class="rc-empty">Загрузка инженеров и очередей…</div>
           <div class="rc-toolbar"><strong>Очередь по инженерам</strong><div class="rc-actions"><label>Начало периода <input v-model="anchor" type="date" aria-label="Начало периода"></label><button v-if="canEdit" :disabled="locked" @click="openCatalog()">Добавить с портала</button><button v-if="canEdit" class="rc-primary-outline" :disabled="locked" @click="openPreparation()">Проекты для подготовки</button></div></div>
+          <p class="rc-help">В ячейках: занято / дневной лимит инженера. Лимит — месячная норма на рабочие дни, округлённая вверх; выполненные проверки тоже занимают место.</p>
           <div v-if="selected.length" class="rc-selection"><span>Выбрано: {{ selected.length }}</span><button :disabled="locked" @click="shift(-1)">Раньше</button><button :disabled="locked" @click="shift(1)">Позже</button><input v-model="moveDate" type="date" aria-label="Дата переноса"><button :disabled="locked || !moveDate" @click="moveSelected">Перенести на дату</button><button class="rc-danger" :disabled="locked" @click="operate('delete',{task_ids:[...selected]})">Удалить ({{ selected.length }})</button><button @click="selected=[]">Снять выделение</button></div>
           <div class="rc-scroll" @scroll="tooltip=null"><table class="rc-grid" aria-label="Очередь проектов по инженерам и датам">
             <colgroup><col class="rc-name-col"><col v-for="d in columns" :key="d.iso || 'none'" :class="{'rc-off-col':d.off, 'rc-unscheduled-col':!d.iso}"></colgroup>
@@ -360,12 +366,12 @@
             <tbody v-for="g in grouped" :key="g.name"><tr class="rc-band"><th :colspan="columns.length+1">{{ g.name }} <small>{{ g.remaining }} проверок</small></th></tr>
               <tr v-for="e in g.engineers" :key="e.id" :data-engineer-id="e.id" :class="{'rc-drop-row': insertion?.engineer_id===e.id}" @dragover="overCell(e,null,$event)" @drop="drop">
                 <th class="rc-name" scope="row"><div class="rc-person"><span class="rc-avatar">{{ e.name.split(' ').map(s=>s[0]).slice(0,2).join('') }}</span><div>{{ e.name }}</div></div><button v-if="selected.length && e.active!==false" class="rc-assign" :disabled="locked" @click="operate('move',{task_ids:selected,engineer_id:e.id})">Передать сюда</button></th>
-                <td v-for="d in columns" :key="d.iso || 'none'" class="rc-cell" :class="{'rc-off':d.off,'rc-today':d.iso===data.today}" @dragover.stop="overCell(e,d.iso,$event)" @drop="drop">
+                <td v-for="d in columns" :key="d.iso || 'none'" class="rc-cell" :class="{'rc-off':d.off,'rc-today':d.iso===data.today,'rc-over-capacity':dayLimit(e,d.iso)!==undefined && dayLoad(e,d.iso)>dayLimit(e,d.iso)}" @dragover.stop="overCell(e,d.iso,$event)" @drop="drop">
                   <div v-if="!d.off || cell(e.id,d.iso).length" class="rc-dots"><button v-for="t in cell(e.id,d.iso)" :key="t.id" type="button" class="rc-point" :data-task-id="t.id" :aria-label="tipText(t)" :title="tipText(t)" :aria-pressed="selected.includes(t.id)"
                     :class="{'rc-dragging':dragging.includes(t.id),'rc-insert-before':insertion?.anchor_id===t.id && insertion.side==='before','rc-insert-after':insertion?.anchor_id===t.id && insertion.side==='after','rc-unrecognized':!!t.project_id && !t.documents_ready,'rc-manual':!t.project_id,'rc-running':t.state==='in_progress'}"
                     :draggable="canEdit && !locked && t.state!=='in_progress'" @click.stop="clickTask(t,$event)" @mouseenter="showTip(t,$event)" @mouseleave="tooltip=null" @focus="showTip(t,$event)" @blur="tooltip=null"
                     @dragstart="dragStart(t,$event)" @dragend="dragEnd" @dragover="overTask(t,$event)" @drop.stop="drop" :style="{'--rc-color':color(t)}"><span v-if="t.section" class="rc-point-label">{{ t.section }}</span><span class="rc-point-label">{{ compactProject(t.code || t.title) }}</span></button></div>
-                  <span v-if="cell(e.id,d.iso).length" class="rc-count">{{ cell(e.id,d.iso).length }}</span>
+                  <span v-if="!d.off || cell(e.id,d.iso).length" class="rc-count" :title="capacityTip(e,d.iso)">{{ dayLoad(e,d.iso) }} / {{ dayLimit(e,d.iso) ?? '—' }}</span>
                 </td>
               </tr>
             </tbody>

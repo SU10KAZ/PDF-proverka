@@ -8,6 +8,7 @@ import uuid
 from datetime import date, datetime, timedelta, timezone
 from fractions import Fraction
 from math import floor
+from collections import Counter
 
 from backend.app.services.common import reserve_sources as sources, reserve_store as store
 
@@ -138,33 +139,56 @@ def forecast(rows, engineers, config, day):
     return output
 
 
-def _portal_dates(count, engineer, config, start):
-    """Return initial dates for portal assignments, beginning tomorrow.
+def _completed_counts(catalog):
+    reviewers = {c.get('reviewer', '') for c in catalog if c.get('completed_at')}
+    ids = {name: sources.reviewer_id(name) for name in reviewers}
+    return Counter((ids.get(c.get('reviewer', '')), str(c['completed_at'])[:10])
+                   for c in catalog if c.get('completed_at'))
 
-    The queue remains manually editable after insertion. This helper is only
-    used once, when a portal project enters the reserve queue.
-    """
-    if count <= 0:
-        return []
-    rate = (Fraction(engineer['rate_numerator'], engineer['rate_denominator'])
-            if 'rate_numerator' in engineer else Fraction(engineer.get('rate', 0)))
-    if rate <= 0:
-        return [None] * count
+
+def _dated_counts(rows):
+    return Counter((r['engineer_id'], r['forecast_date']) for r in rows
+                   if r['state'] in ACTIVE and r.get('forecast_date'))
+
+
+def _portal_dates(count, engineer, config, start, occupied=None):
+    """Place new assignments in free slots, including earlier assignment batches."""
+    occupied = occupied or {}
     dates = []
-    available = 0
     for offset in range(3660):
-        current = start + timedelta(days=offset)
-        if not sources.is_workday(current, config, engineer):
-            continue
-        available += 1
-        quota = max(0, floor(rate * available) - floor(rate * (available - 1)))
-        dates.extend([current.isoformat()] * min(count - len(dates), quota))
         if len(dates) >= count:
             break
-    return dates + [None] * (count - len(dates))
+        current = start + timedelta(days=offset)
+        quota = max(0, sources.daily_capacity(engineer, config, current)
+                    - occupied.get((engineer['id'], current.isoformat()), 0))
+        dates.extend([current.isoformat()] * min(count - len(dates), quota))
+    if len(dates) < count:
+        raise ReserveError(f"{engineer['name']}: нет свободных дней с заданной нормой. "
+                           'Укажите месячный план в разделе «Выполнено».', 'capacity_missing')
+    return dates
 
 
-def _snapshot(conn, catalog, engineers, config, actor):
+def _check_capacity(before, after, engineers, config, catalog):
+    """Validate net increases only: legacy overload can still be reduced/reordered."""
+    old, new = _dated_counts(before), _dated_counts(after)
+    completed = _completed_counts(catalog)
+    people = {e['id']: e for e in engineers}
+    for (eid, iso), count in new.items():
+        if count <= old[(eid, iso)]:
+            continue
+        engineer = people.get(eid)
+        limit = sources.daily_capacity(engineer, config, date.fromisoformat(iso)) if engineer else 0
+        done = completed[(eid, iso)]
+        if count + done > limit:
+            name = engineer['name'] if engineer else eid
+            raise ReserveError(
+                f'{name}, {date.fromisoformat(iso).strftime("%d.%m.%Y")}: лимит {limit} проектов в день. '
+                f'После переноса будет {count} в очереди, уже выполнено {done}. '
+                'Выберите другой день или инженера. Норма задаётся в разделе «Выполнено».',
+                'daily_capacity_exceeded')
+
+
+def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
     rows = store.tasks(conn)
     active_engineer_ids = {e['id'] for e in engineers}
     # Keep assignments visible if an employee is subsequently deactivated.
@@ -175,6 +199,17 @@ def _snapshot(conn, catalog, engineers, config, actor):
         user = user_service.get_user_by_id(eid) or {}
         engineers.append({'id': eid, 'name': user.get('name') or eid, 'direction': 'Неактивные сотрудники',
                           'rate': '0', 'rate_source': 'inactive', 'active': False})
+    view_start = view_start or sources.today()
+    completed = _completed_counts(catalog)
+    for engineer in engineers:
+        engineer['day_limits'] = {}
+        engineer['day_completed'] = {}
+        for offset in range(28):
+            day = view_start + timedelta(days=offset)
+            engineer['day_limits'][day.isoformat()] = sources.daily_capacity(engineer, config, day)
+            engineer['day_completed'][day.isoformat()] = completed[(engineer['id'], day.isoformat())]
+        # Internal plan records are unnecessary in the calendar response.
+        engineer.pop('capacity_plans', None)
     by_identity = {sources.identity(c): c for c in catalog}
     reviewers = {c.get('reviewer', '') for c in catalog if str(c.get('completed_at') or '')[:10] == sources.today().isoformat()}
     reviewer_ids = {name: sources.reviewer_id(name) for name in reviewers}
@@ -211,7 +246,7 @@ def _snapshot(conn, catalog, engineers, config, actor):
                        'running': sum(r['state'] == 'in_progress' for r in projected)}}
 
 
-def snapshot(actor=''):
+def snapshot(actor='', view_start=None):
     config = sources.calendar_config()
     engineers = sources.engineers(config, sources.today())
     # Read sources inside the queue lock so an earlier source snapshot cannot
@@ -219,7 +254,7 @@ def snapshot(actor=''):
     with store.transaction() as conn:
         catalog = sources.catalog()
         _sync(conn, catalog, engineers)
-        return _snapshot(conn, catalog, engineers, config, actor)
+        return _snapshot(conn, catalog, engineers, config, actor, view_start)
 
 
 def _queue_snapshot(conn, engineer_ids):
@@ -243,7 +278,7 @@ def _find_catalog(catalog, value):
     return matches[0]
 
 
-def mutate(payload, actor):
+def mutate(payload, actor, view_start=None):
     operation_id = payload['operation_id']
     digest = hashlib.sha256(encode(payload).encode()).hexdigest()
     config = sources.calendar_config()
@@ -257,13 +292,14 @@ def mutate(payload, actor):
         catalog = sources.catalog()
         _sync(conn, catalog, engineers)
         if previous:
-            return {**_snapshot(conn, catalog, engineers, config, actor), 'operation': json.loads(previous['result_json']), 'replayed': True}
+            return {**_snapshot(conn, catalog, engineers, config, actor, view_start), 'operation': json.loads(previous['result_json']), 'replayed': True}
         if payload['revision'] != store.revision(conn):
             # Commit reconciliation before reporting the conflict (no user mutation).
             conflict = True
         else:
             conflict = False
             rows = [r for r in store.tasks(conn) if r['state'] in ACTIVE]
+            original_rows = [dict(r) for r in rows]
             by_id = {r['id']: r for r in rows}
             affected = set()
             result = {'id': operation_id, 'kind': kind}
@@ -312,7 +348,8 @@ def mutate(payload, actor):
                         counts[row['engineer_id']] = counts.get(row['engineer_id'], 0) + 1
                     start = sources.today() + timedelta(days=1)
                     for eid, count in counts.items():
-                        schedule_dates[eid] = _portal_dates(count, by_engineer[eid], config, start)
+                        schedule_dates[eid] = _portal_dates(count, by_engineer[eid], config, start,
+                                                           _dated_counts(rows) + _completed_counts(catalog))
                 scheduled_index = {eid: 0 for eid in schedule_dates}
                 for row in prepared:
                     if kind == 'assign':
@@ -342,7 +379,7 @@ def mutate(payload, actor):
                 target_date = payload.get('forecast_date')
                 if has_target_date and target_date is not None:
                     try:
-                        date.fromisoformat(str(target_date))
+                        target_date = date.fromisoformat(str(target_date)).isoformat()
                     except ValueError:
                         raise ReserveError('Некорректная дата переноса.')
                 if anchor and has_target_date:
@@ -444,10 +481,12 @@ def mutate(payload, actor):
                 conn.execute('UPDATE reserve_operations SET undone_by=? WHERE id=?', (operation_id, original['id']))
             else:
                 raise ReserveError('Неизвестная операция.')
+            if kind in ('move', 'assign', 'undo'):
+                _check_capacity(original_rows, store.tasks(conn), engineers, config, catalog)
             store.bump(conn)
             conn.execute('INSERT INTO reserve_operations (id,actor,request_hash,kind,before_json,after_json,result_json,created_at) VALUES (?,?,?,?,?,?,?,?)',
                          (operation_id, actor, digest, kind, encode(before), encode(_queue_snapshot(conn, affected)), encode(result), now()))
-            response = {**_snapshot(conn, catalog, engineers, config, actor), 'operation': result}
+            response = {**_snapshot(conn, catalog, engineers, config, actor, view_start), 'operation': result}
     if conflict:
         raise ReserveError('Очередь уже изменена другим пользователем. Загружены актуальные данные; повторите действие.', 'revision_conflict', 409)
     return response

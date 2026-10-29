@@ -9,7 +9,7 @@ function harness(responses = [], browserCrypto = {randomUUID}) {
     const fetch = vi.fn(async () => {
         const value = responses.shift();
         if (value instanceof Error) throw value;
-        return {ok: !value?.detail, status: value?.detail ? 409 : 200, json: async () => value};
+        return {ok: !value?.detail, status: value?.detail ? (value.httpStatus || 409) : 200, json: async () => value};
     });
     const context = {Vue: {ref: value => ({value}), computed: get => ({get value() {return get();}}),
         watch: () => {}, onMounted: () => {}, onBeforeUnmount: () => {}, nextTick: async () => {}},
@@ -32,6 +32,30 @@ const catalogData = () => ({...data(), available_projects:[
 ]});
 
 describe('reserve calendar user actions', () => {
+    it('requests limits for the visible period and includes completed projects in daily load', async () => {
+        const initial = data();
+        initial.engineers[0].day_limits = {'2026-11-02':2};
+        initial.engineers[0].day_completed = {'2026-11-02':1};
+        initial.tasks[0].forecast_date = '2026-11-02';
+        const h = harness([initial]);
+        h.state.anchor.value = '2026-11-02';
+        await h.state.load();
+        expect(h.fetch.mock.calls[0][0]).toBe('/api/schedule/reserve?view_start=2026-11-02');
+        const engineer = h.state.data.value.engineers[0];
+        expect(h.state.dayLimit(engineer, '2026-11-02')).toBe(2);
+        expect(h.state.dayLoad(engineer, '2026-11-02')).toBe(2);
+    });
+    it('shows a capacity rejection without moving cards or keeping a retry pending', async () => {
+        const h = harness([data(), {httpStatus:400, detail:{message:'Лимит 2 проектов в день.'}}]);
+        await h.state.load();
+        const original = h.state.data.value;
+        await h.state.operate('move', {task_ids:['1'], engineer_id:'b', forecast_date:'2026-10-27'});
+        expect(h.state.data.value).toBe(original);
+        expect(h.state.error.value).toBe('Лимит 2 проектов в день.');
+        expect(h.state.pending.value).toBeNull();
+        expect(h.state.locked.value).toBe(false);
+        expect(h.fetch).toHaveBeenCalledTimes(2);
+    });
     it('shows four project characters followed by two dots', () => {
         const h = harness();
         expect(h.state.compactProject('13АВ-РД-ВК1-К2')).toBe('13АВ..');
