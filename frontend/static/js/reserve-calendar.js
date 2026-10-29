@@ -102,7 +102,9 @@
             const days = computed(() => {
                 if (!anchor.value) return [];
                 const holidays = new Set(data.value.calendar.holidays || []), working = new Set(data.value.calendar.working_dates || []);
-                return Array.from({length: 28}, (_, i) => {
+                const filled = data.value.tasks.map(t => t.forecast_date).filter(Boolean).sort().pop();
+                const span = filled ? Math.max(28, Math.floor((Date.parse(filled+'T12:00:00Z') - Date.parse(anchor.value+'T12:00:00Z')) / 86400000) + 1) : 28;
+                return Array.from({length: Math.min(3660, span)}, (_, i) => {
                     const iso = dayAdd(anchor.value, i), d = new Date(iso+'T12:00:00Z');
                     return {iso, dom: d.getUTCDate(), label: label(iso), dow: d.toLocaleDateString('ru-RU', {weekday:'short', timeZone:'UTC'}),
                         off: holidays.has(iso) || ([0,6].includes(d.getUTCDay()) && !working.has(iso))};

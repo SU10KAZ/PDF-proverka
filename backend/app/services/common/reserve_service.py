@@ -201,11 +201,14 @@ def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
         engineers.append({'id': eid, 'name': user.get('name') or eid, 'direction': 'Неактивные сотрудники',
                           'rate': '0', 'rate_source': 'inactive', 'active': False})
     view_start = view_start or sources.today()
+    max_date = max((date.fromisoformat(r['forecast_date']) for r in rows
+                    if r['state'] in ACTIVE and r.get('forecast_date')), default=view_start)
+    horizon = max(28, min(3660, (max_date - view_start).days + 1))
     completed = _completed_counts(catalog)
     for engineer in engineers:
         engineer['day_limits'] = {}
         engineer['day_completed'] = {}
-        for offset in range(28):
+        for offset in range(horizon):
             day = view_start + timedelta(days=offset)
             engineer['day_limits'][day.isoformat()] = sources.daily_capacity(engineer, config, day)
             engineer['day_completed'][day.isoformat()] = completed[(engineer['id'], day.isoformat())]

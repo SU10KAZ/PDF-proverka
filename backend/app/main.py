@@ -184,6 +184,11 @@ async def lifespan(app: FastAPI):
     # поток демонический, ошибка внутри гасится в самом сервисе.
     from backend.app.services.common import object_stats
     object_stats.warm_async()
+    # The reserve calendar catalog walks every object/version on a cold cache.
+    # Warm it in the background during startup so the first calendar open does
+    # not pay the full filesystem and knowledge-base scan.
+    from backend.app.services.common import reserve_sources
+    reserve_sources.warm_async()
     # Журнал действий: мост logging (WARNING+ всех модулей → журнал) и метка
     # старта сервера — по ним в анализе видны рестарты/падения.
     action_log_core.install_logging_bridge()

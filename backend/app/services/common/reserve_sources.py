@@ -30,6 +30,7 @@ _CATALOG_CACHE_SECONDS = 120
 _catalog_cache_lock = threading.Lock()
 _catalog_cache: tuple[tuple, float, list[dict]] | None = None
 _catalog_refreshing = False
+_catalog_ready = threading.Event()
 
 
 def today() -> date:
@@ -247,11 +248,31 @@ def catalog() -> list[dict]:
         if cached and cached[0] == key:
             if now - cached[1] >= _CATALOG_CACHE_SECONDS and not _catalog_refreshing:
                 _catalog_refreshing = True
+                _catalog_ready.clear()
                 threading.Thread(target=_refresh_catalog, args=(key,), daemon=True).start()
             return deepcopy(cached[2])
-        value = _build_catalog()
-        _catalog_cache = (key, time.monotonic(), value)
-        return deepcopy(value)
+        owner = not _catalog_refreshing
+        if owner:
+            _catalog_refreshing = True
+            _catalog_ready.clear()
+    if not owner:
+        _catalog_ready.wait(timeout=300)
+        return catalog()
+    _refresh_catalog(key)
+    with _catalog_cache_lock:
+        return deepcopy((_catalog_cache or (key, 0, []))[2])
+
+
+def warm_async() -> None:
+    """Build the cold catalog after startup so opening the calendar is fast."""
+    global _catalog_refreshing
+    key = _catalog_cache_key()
+    with _catalog_cache_lock:
+        if _catalog_cache is not None or _catalog_refreshing:
+            return
+        _catalog_refreshing = True
+        _catalog_ready.clear()
+    threading.Thread(target=_refresh_catalog, args=(key,), daemon=True).start()
 
 
 def _refresh_catalog(key: tuple) -> None:
@@ -264,6 +285,7 @@ def _refresh_catalog(key: tuple) -> None:
     finally:
         with _catalog_cache_lock:
             _catalog_refreshing = False
+            _catalog_ready.set()
 
 
 def reviewer_id(name: str) -> str | None:

@@ -43,7 +43,7 @@
 .rc-selection button{font-size:12px;padding:5px 8px;color:#006e63}
 .rc-selection .rc-danger{color:#a32b3e;border-color:#e7aeb7;background:#fff5f6}
 .rc-scroll{overflow:auto;max-width:100%;max-height:65vh;border:1px solid var(--rc-line);border-radius:8px;background:#fff}
-.rc-grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:100%;min-width:1340px;color:var(--rc-ink);background:#fff;font-size:11px}
+.rc-grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:max-content;min-width:100%;color:var(--rc-ink);background:#fff;font-size:11px}
 .rc-grid col{width:46px}
 .rc-grid col.rc-name-col{width:225px}
 .rc-grid col.rc-off-col{width:8px}
