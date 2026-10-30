@@ -341,10 +341,11 @@ def package_summary_from_dossier(job: dict) -> dict:
     rows = [row for target in dossier.get("targets") or [] for row in target.get("rows") or []]
     summary = build_package_summary(candidate, rows, dossier.get("source_decisions") or [])
     target_project_ids = [str(value) for value in (job.get("target_project_ids") or []) if value]
-    if target_project_ids and (
-        summary["scope"].get("project_count") == 1
-        and (summary["scope"].get("projects") or [{}])[0].get("project_id") == "unknown"
-    ):
+    known_scope_projects = [
+        item for item in summary["scope"].get("projects") or []
+        if _text(item.get("project_id")) and _text(item.get("project_id")) != "unknown"
+    ]
+    if target_project_ids and not known_scope_projects:
         summary["scope"]["project_count"] = len(target_project_ids)
         summary["scope"]["projects"] = [
             {"project_id": project_id, "project_name": project_id, "version_id": "", "row_count": 0}
@@ -352,6 +353,8 @@ def package_summary_from_dossier(job: dict) -> dict:
         ]
     assessments = list(job.get("agent_assessments") or [])
     open_requests = [item for item in (job.get("data_requests") or []) if item.get("status") == "open"]
+    dependency = job.get("dependency_assessment") or dossier.get("dependency_assessment") or {}
+    dependency_unresolved = dependency.get("status") not in {"resolved", "not_required"}
     exceptions = [
         item for item in assessments
         if str(item.get("resolved_verdict") or item.get("verdict") or "")
@@ -366,32 +369,44 @@ def package_summary_from_dossier(job: dict) -> dict:
     ):
         technical = {
             "status": "blocked",
-            "message": "Есть незакрытые технические вопросы; сначала разберите их.",
+            "message": "Есть незакрытые технические вопросы или инженерные интерфейсы; сначала разберите их.",
             "exceptions": exceptions,
+            "dependency_status": dependency.get("status") or "not_checked",
         }
     elif exceptions:
         technical = {
             "status": "exceptions",
             "message": "Есть проекты, для которых общее решение не подтверждено.",
             "exceptions": exceptions,
+            "dependency_status": dependency.get("status") or "not_checked",
         }
     else:
+        dependency_status = dependency.get("status") or "not_checked"
         technical = {
-            "status": "pass",
-            "message": "Техническая применимость подтверждена по текущему досье.",
+            "status": "pass_with_open_interfaces" if dependency_unresolved else "pass",
+            "message": (
+                "Техническая применимость подтверждена; карту инженерных интерфейсов приложите к пакетному решению."
+                if dependency_unresolved
+                else "Техническая применимость подтверждена по текущему досье."
+            ),
             "exceptions": [],
+            "dependency_status": dependency_status,
         }
     summary["technical_review"] = technical
     evaluation = job.get("alternative_evaluation") or dossier.get("alternative_evaluation") or {}
     monetary = evaluation.get("effect", {}).get("monetary") or {}
     delta = _decimal(monetary.get("delta"))
     if delta is not None:
-        summary["economic_status"] = "positive" if delta < 0 else "negative"
+        delta_range = monetary.get("delta_range") or {}
+        worst_delta = _decimal(delta_range.get("worst"))
+        range_uncertain = worst_delta is not None and worst_delta >= 0
+        summary["economic_status"] = "needs_data" if range_uncertain else ("positive" if delta < 0 else "negative")
         summary["effect"].update({
-            "status": "calculated",
+            "status": "uncertain" if range_uncertain else "calculated",
             "baseline_cost": monetary.get("baseline"),
             "proposal_cost": monetary.get("proposal"),
             "delta": monetary.get("delta"),
+            "delta_range": delta_range,
             "currency": _text(monetary.get("currency")),
             "source": _text(monetary.get("source")),
         })
@@ -399,6 +414,10 @@ def package_summary_from_dossier(job: dict) -> dict:
             item for item in summary["blockers"]
             if "цен" not in item.lower() and "коммерчес" not in item.lower()
         ]
+        if range_uncertain:
+            summary["blockers"].append(
+                "Диапазон неопределённости пересекает нулевую экономию; нужен более точный расчёт."
+            )
     summary["decision"] = ((job.get("package_decision") or {}).get("decision"))
     summary["decision_note"] = ((job.get("package_decision") or {}).get("note") or "")
     return summary

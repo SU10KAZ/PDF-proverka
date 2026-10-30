@@ -78,6 +78,13 @@ class SectionDependencyReview(BaseModel):
 class SectionPackageDecisionRequest(BaseModel):
     decision: Literal["economic_yes", "economic_no", "needs_data"]
     note: str = Field(default="", max_length=3000)
+    reason_code: Literal[
+        "",
+        "no_saving",
+        "technically_not_applicable",
+        "insufficient_data",
+        "scope_exception",
+    ] = ""
     expected_input_fingerprint: str = Field(min_length=1, max_length=128)
     expected_updated_at: str = Field(min_length=1, max_length=100)
 
@@ -385,6 +392,7 @@ async def save_section_replication_package_decision(
             object_id=object_id,
             reviewer=resolve_author().name,
             note=payload.note,
+            reason_code=payload.reason_code,
             expected_input_fingerprint=payload.expected_input_fingerprint,
             expected_updated_at=payload.expected_updated_at,
         )

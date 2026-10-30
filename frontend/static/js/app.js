@@ -5537,6 +5537,9 @@ const app = createApp({
         const sectionOptimizationProjectFilter = ref('');
         const sectionOptimizationCollapsedProjects = ref({});
         const sectionOptimizationExpandedSignals = ref({});
+        const sectionOptimizationPackageExpanded = ref({});
+        const sectionOptimizationPackageCalcOpen = ref({});
+        const sectionOptimizationPackageDrafts = ref({});
         const sectionOptimizationPipelineActionLoading = ref(false);
         const sectionOptimizationPipelineActionError = ref('');
         const sectionOptimizationReplicationActionLoading = ref(false);
@@ -6027,14 +6030,14 @@ const app = createApp({
             const signalScope = signalSummary.scope || {};
             const processScope = processSummary.scope || {};
             const processProjects = processScope.projects || [];
-            const processHasKnownProjects = processProjects.some(project => {
-                const projectId = String(project?.project_id || '').trim();
-                return projectId && projectId !== 'unknown';
-            });
             // Старые досье сохраняли строки без project_id и давали ложный
             // охват «1 проект, unknown». Свежий снимок сигнала содержит
             // полный охват раздела — не позволяем досье его затирать.
-            const processScopeIsUsable = processHasKnownProjects
+            const processHasMeasuredRows = processProjects.some(project => {
+                const projectId = String(project?.project_id || '').trim();
+                return projectId && projectId !== 'unknown' && Number(project?.row_count || 0) > 0;
+            });
+            const processScopeIsUsable = processHasMeasuredRows
                 || (!signalScope.project_count && processScope.project_count);
             const mergedScope = processScopeIsUsable
                 ? { ...signalScope, ...processScope,
@@ -6054,6 +6057,65 @@ const app = createApp({
                 ...summary,
                 decision: packageDecision.decision || summary.decision || null,
                 decision_note: packageDecision.note || summary.decision_note || '',
+            };
+        }
+
+        function isSectionOptimizationPackageExpanded(signalId) {
+            return Boolean(sectionOptimizationPackageExpanded.value[signalId]);
+        }
+
+        function toggleSectionOptimizationPackage(signalId) {
+            sectionOptimizationPackageExpanded.value = {
+                ...sectionOptimizationPackageExpanded.value,
+                [signalId]: !isSectionOptimizationPackageExpanded(signalId),
+            };
+        }
+
+        function isSectionOptimizationPackageCalcOpen(signalId) {
+            return Boolean(sectionOptimizationPackageCalcOpen.value[signalId]);
+        }
+
+        function toggleSectionOptimizationPackageCalc(signalId) {
+            sectionOptimizationPackageCalcOpen.value = {
+                ...sectionOptimizationPackageCalcOpen.value,
+                [signalId]: !isSectionOptimizationPackageCalcOpen(signalId),
+            };
+        }
+
+        function sectionOptimizationPackageDraft(process) {
+            const key = process?.replication_id;
+            return (key && sectionOptimizationPackageDrafts.value[key]) || {};
+        }
+
+        function sectionOptimizationPackageDraftValue(process, field) {
+            const draft = sectionOptimizationPackageDraft(process);
+            if (draft[field] !== undefined) return draft[field];
+            const monetary = process?.alternative_evaluation?.effect?.monetary || {};
+            const defaults = {
+                baseline_cost: monetary.baseline ?? '',
+                proposal_cost: monetary.proposal ?? '',
+                currency: monetary.currency || '',
+                price_source: monetary.source || '',
+                price_date: monetary.price_date || '',
+                cost_composition: monetary.composition || '',
+                cost_uncertainty_percent: monetary.uncertainty_percent ?? 0,
+                type_mark_count: process?.alternative_evaluation?.proposal?.metrics?.type_mark_count ?? '',
+                total_mass_kg: process?.alternative_evaluation?.proposal?.metrics?.total_mass_kg ?? '',
+                operation_count: process?.alternative_evaluation?.proposal?.metrics?.operation_count ?? '',
+                decision_note: '',
+            };
+            return defaults[field] ?? '';
+        }
+
+        function setSectionOptimizationPackageDraft(process, field, value) {
+            const key = process?.replication_id;
+            if (!key) return;
+            sectionOptimizationPackageDrafts.value = {
+                ...sectionOptimizationPackageDrafts.value,
+                [key]: {
+                    ...(sectionOptimizationPackageDrafts.value[key] || {}),
+                    [field]: value,
+                },
             };
         }
 
@@ -6078,6 +6140,7 @@ const app = createApp({
             const status = review?.status;
             return ({
                 pass: 'Техника подтверждена',
+                pass_with_open_interfaces: 'Техника подтверждена, интерфейсы требуют согласования',
                 exceptions: 'Есть технические исключения',
                 blocked: 'Есть технические блокеры',
                 not_checked: 'Техника ещё не проверена',
@@ -6131,14 +6194,19 @@ const app = createApp({
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
             const sectionCode = sidebarFilterSection.value;
             if (!sectionCode || !process || !signal || sectionOptimizationReplicationActionLoading.value) return;
-            let note = '';
-            if (decision !== 'economic_yes') {
-                note = window.prompt(
-                    decision === 'needs_data' ? 'Каких экономических данных не хватает?' : 'Почему экономия не подтверждена?',
-                    '',
-                );
-                if (note === null || !note.trim()) return;
-            }
+            const packageSummary = sectionOptimizationPackageFor(signal);
+            const reasonCode = decision === 'economic_yes'
+                ? ''
+                : (decision === 'economic_no'
+                    ? (['blocked', 'exceptions', 'not_checked'].includes(packageSummary.technical_review?.status)
+                        ? 'technically_not_applicable' : 'no_saving')
+                    : 'insufficient_data');
+            const note = String(sectionOptimizationPackageDraftValue(process, 'decision_note') || '').trim()
+                || ({
+                    no_saving: 'Сопоставимый расчёт не подтверждает экономию.',
+                    technically_not_applicable: 'Техническая применимость для целевого объёма не подтверждена.',
+                    insufficient_data: 'Для решения не хватает сопоставимых исходных данных.',
+                }[reasonCode] || '');
             sectionOptimizationReplicationActionLoading.value = true;
             sectionOptimizationPipelineActionError.value = '';
             try {
@@ -6150,11 +6218,47 @@ const app = createApp({
                     {
                         decision,
                         note,
+                        reason_code: reasonCode,
                         expected_input_fingerprint: process.input_fingerprint,
                         expected_updated_at: process.updated_at,
                     },
                     { withVersion: false },
                 );
+                if (response?.replication) upsertSectionOptimizationReplication(response.replication);
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
+        async function saveSectionOptimizationPackageEvaluation(process, signal) {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !process || !signal || sectionOptimizationReplicationActionLoading.value) return;
+            const numberOrNull = value => {
+                if (value === undefined || value === null || String(value).trim() === '') return null;
+                const parsed = Number(String(value).replace(',', '.'));
+                return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+            };
+            const body = {
+                type_mark_count: numberOrNull(sectionOptimizationPackageDraftValue(process, 'type_mark_count')),
+                total_mass_kg: numberOrNull(sectionOptimizationPackageDraftValue(process, 'total_mass_kg')),
+                operation_count: numberOrNull(sectionOptimizationPackageDraftValue(process, 'operation_count')),
+                baseline_cost: numberOrNull(sectionOptimizationPackageDraftValue(process, 'baseline_cost')),
+                proposal_cost: numberOrNull(sectionOptimizationPackageDraftValue(process, 'proposal_cost')),
+                currency: String(sectionOptimizationPackageDraftValue(process, 'currency') || '').trim(),
+                price_source: String(sectionOptimizationPackageDraftValue(process, 'price_source') || '').trim(),
+                price_date: String(sectionOptimizationPackageDraftValue(process, 'price_date') || '').trim(),
+                cost_composition: String(sectionOptimizationPackageDraftValue(process, 'cost_composition') || '').trim(),
+                cost_uncertainty_percent: numberOrNull(sectionOptimizationPackageDraftValue(process, 'cost_uncertainty_percent')) ?? 0,
+                expected_updated_at: process.updated_at,
+            };
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(sectionOptimizationReplicationsUrl(
+                    sectionCode, '/' + encodeURIComponent(process.replication_id) + '/alternatives',
+                ), body, { withVersion: false });
                 if (response?.replication) upsertSectionOptimizationReplication(response.replication);
             } catch (error) {
                 sectionOptimizationPipelineActionError.value = error?.message || String(error);
@@ -6557,6 +6661,9 @@ const app = createApp({
                 sectionOptimizationData.value = null;
                 sectionOptimizationCollapsedProjects.value = {};
                 sectionOptimizationExpandedSignals.value = {};
+                sectionOptimizationPackageExpanded.value = {};
+                sectionOptimizationPackageCalcOpen.value = {};
+                sectionOptimizationPackageDrafts.value = {};
             }
             try {
                 const query = objectId
@@ -6722,6 +6829,9 @@ const app = createApp({
             sectionOptimizationLoadedKey.value = '';
             sectionOptimizationCollapsedProjects.value = {};
             sectionOptimizationExpandedSignals.value = {};
+            sectionOptimizationPackageExpanded.value = {};
+            sectionOptimizationPackageCalcOpen.value = {};
+            sectionOptimizationPackageDrafts.value = {};
             sectionOptimizationReplicationActionLoading.value = false;
             _sectionOptimizationReplicationPollTokens.clear();
             if (currentView.value === 'section-optimization'
@@ -21097,7 +21207,9 @@ const app = createApp({
             sectionOptimizationLoading, sectionOptimizationError,
             sectionOptimizationData, sectionOptimizationLoadedKey, sectionOptimizationMeta,
             sectionOptimizationTab, sectionOptimizationSearch, sectionOptimizationProjectFilter,
-            sectionOptimizationCollapsedProjects, sectionOptimizationExpandedSignals, sectionOptimizationProjectOptions,
+            sectionOptimizationCollapsedProjects, sectionOptimizationExpandedSignals,
+            sectionOptimizationPackageExpanded, sectionOptimizationPackageCalcOpen,
+            sectionOptimizationPackageDrafts, sectionOptimizationProjectOptions,
             sectionOptimizationPipeline, sectionOptimizationPipelineRunning,
             sectionOptimizationPipelineActionLoading, sectionOptimizationPipelineActionError,
             sectionOptimizationReplicationActionLoading, sectionOptimizationReplications,
@@ -21122,7 +21234,11 @@ const app = createApp({
             sectionOptimizationPackageDecisionLabel, sectionOptimizationPackageTechnicalLabel,
             sectionOptimizationPackageScopeText, sectionOptimizationPackageGroupsText,
             sectionOptimizationPackageSourceText, sectionOptimizationPackageClaimedText,
+            isSectionOptimizationPackageExpanded, toggleSectionOptimizationPackage,
+            isSectionOptimizationPackageCalcOpen, toggleSectionOptimizationPackageCalc,
+            sectionOptimizationPackageDraftValue, setSectionOptimizationPackageDraft,
             saveSectionOptimizationPackageDecision,
+            saveSectionOptimizationPackageEvaluation,
             sectionOptimizationImplementationFor, sectionOptimizationImplementationLabel,
             sectionOptimizationCriticReviewFor, sectionOptimizationExpertDecisionAllowed,
             saveSectionOptimizationExpertDecision,

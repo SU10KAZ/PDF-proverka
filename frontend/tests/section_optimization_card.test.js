@@ -204,6 +204,15 @@ describe('section optimization card', () => {
     expect(js).toContain('function sectionOptimizationPackageGroupsText(summary)');
     expect(js).toContain('function sectionOptimizationPackageSourceText(summary)');
     expect(js).toContain('function sectionOptimizationPackageClaimedText(summary)');
+    expect(html).toContain('Рассчитать эффект');
+    expect(html).toContain('Расчёт по всему пакету');
+    expect(html).toContain('Источник цены');
+    expect(html).toContain('Дата цены');
+    expect(html).toContain('Сохранить расчёт пакета');
+    expect(js).toContain('function toggleSectionOptimizationPackage(signalId)');
+    expect(js).toContain('async function saveSectionOptimizationPackageEvaluation(process, signal)');
+    expect(js).toContain('reason_code: reasonCode');
+    expect(js).not.toContain("window.prompt(\n                    decision === 'needs_data'");
   });
 
   it('has responsive table and card styles', () => {

@@ -1130,6 +1130,7 @@ def save_package_decision(
     object_id: Optional[str] = None,
     reviewer: str = "",
     note: str = "",
+    reason_code: str = "",
     expected_input_fingerprint: str,
     expected_updated_at: str,
 ) -> dict:
@@ -1144,6 +1145,10 @@ def save_package_decision(
     normalized_decision = str(decision or "").strip()
     if normalized_decision not in PACKAGE_DECISIONS:
         raise ValueError("Недопустимое пакетное экономическое решение")
+    normalized_reason = str(reason_code or "").strip()
+    allowed_reasons = {"", "no_saving", "technically_not_applicable", "insufficient_data", "scope_exception"}
+    if normalized_reason not in allowed_reasons:
+        raise ValueError("Недопустимая причина пакетного решения")
     cleaned_note = " ".join(str(note or "").split())[:3000]
     if normalized_decision in {"economic_no", "needs_data"} and not cleaned_note:
         raise ValueError("Для этого пакетного решения укажите причину")
@@ -1166,6 +1171,7 @@ def save_package_decision(
                 "Досье уже изменено другим пользователем; обновите страницу"
             )
         summary = package_summary_from_dossier(job)
+        technical_status = (summary.get("technical_review") or {}).get("status")
         if normalized_decision == "economic_yes" and summary.get("economic_status") != "positive":
             # Без цены/сопоставимого расчёта положительный результат нельзя
             # выдать за подтверждённую экономию.
@@ -1173,15 +1179,48 @@ def save_package_decision(
                 "Положительный экономический эффект ещё не подтверждён расчётом"
             )
         if normalized_decision == "economic_yes":
+            if technical_status not in {"pass", "pass_with_open_interfaces"}:
+                raise SectionReplicationConflict(
+                    "Сначала закройте технические гейты пакета и инженерные интерфейсы"
+                )
+            if technical_status == "pass_with_open_interfaces" and not cleaned_note:
+                raise SectionReplicationConflict(
+                    "Укажите одним комментарием, почему решение допустимо при открытой карте интерфейсов"
+                )
             if (job.get("critic") or {}).get("status") != "pass":
                 raise SectionReplicationConflict("Сначала закройте технические блокеры Critic")
             if any(item.get("status") == "open" for item in job.get("data_requests") or []):
                 raise SectionReplicationConflict("Сначала ответьте на открытые запросы данных")
             if job.get("graphics_required") and job.get("graphics_status") not in _GRAPHICS_DONE_STATUSES:
                 raise SectionReplicationConflict("Сначала завершите обязательную графическую проверку")
+        if normalized_decision == "economic_no":
+            if technical_status in {"blocked", "not_checked", "exceptions"}:
+                if normalized_reason not in {"technically_not_applicable", "scope_exception"}:
+                    raise SectionReplicationConflict(
+                        "Для незакрытой технической проверки укажите техническую причину или выберите «Нужны данные»"
+                    )
+            elif normalized_reason in {"technically_not_applicable", "scope_exception"}:
+                raise SectionReplicationConflict(
+                    "Техническую причину можно выбрать только при незакрытой применимости пакета"
+                )
+            if summary.get("economic_status") != "negative" and normalized_reason == "no_saving":
+                raise SectionReplicationConflict(
+                    "Причина «экономии нет» требует сопоставимого расчёта с отрицательным эффектом"
+                )
+            if summary.get("economic_status") == "needs_data" and normalized_reason not in {
+                "technically_not_applicable", "scope_exception"
+            }:
+                raise SectionReplicationConflict(
+                    "Сначала внесите сопоставимые цены или выберите «Нужны данные»"
+                )
+            if normalized_reason == "" and summary.get("economic_status") != "negative":
+                raise SectionReplicationConflict("Укажите причину или выберите «Нужны данные»")
+        if normalized_decision == "needs_data" and normalized_reason not in {"", "insufficient_data"}:
+            raise SectionReplicationConflict("Для решения «Нужны данные» выберите одноимённую причину")
         now = _utc_now()
         job["package_decision"] = {
             "decision": normalized_decision,
+            "reason_code": normalized_reason or ("insufficient_data" if normalized_decision == "needs_data" else ""),
             "note": cleaned_note,
             "reviewer": " ".join(str(reviewer or "").split())[:300],
             "decided_at": now,

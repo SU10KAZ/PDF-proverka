@@ -1012,6 +1012,15 @@ body {
 }
 .section-optimization-package-card__actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
 .section-optimization-package-card__actions .btn { white-space: nowrap; font-size: 9px; }
+.section-optimization-package-card__note { display: flex; flex: 1 1 220px; align-items: center; gap: 5px; color: var(--text3); font-size: 9px; }
+.section-optimization-package-card__note input { min-width: 180px; flex: 1; padding: 4px 6px; border: 1px solid var(--border2); border-radius: 5px; background: var(--card-bg); color: var(--text); font: inherit; }
+.section-optimization-package-calculation { margin-top: 8px; padding: 8px; border: 1px solid var(--border2); border-radius: 6px; background: var(--card-bg); }
+.section-optimization-package-calculation > b { display: block; color: var(--text); font-size: 10px; }
+.section-optimization-package-calculation > small { display: block; margin-top: 3px; color: var(--text3); }
+.section-optimization-package-calculation__grid { display: grid; grid-template-columns: repeat(3, minmax(130px, 1fr)); gap: 6px; margin: 7px 0; }
+.section-optimization-package-calculation__grid label { display: flex; flex-direction: column; gap: 3px; color: var(--text3); font-size: 9px; }
+.section-optimization-package-calculation__grid input { min-width: 0; padding: 4px 6px; border: 1px solid var(--border2); border-radius: 5px; background: var(--card2-bg); color: var(--text); font: inherit; }
+@media (max-width: 900px) { .section-optimization-package-calculation__grid { grid-template-columns: repeat(2, minmax(130px, 1fr)); } }
 .section-optimization-signal-project-group + .section-optimization-signal-project-group { margin-top: 7px; }
 .section-optimization-signal-project-group > small { margin: 0 0 3px; color: var(--text3) !important; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
 .section-optimization-signal-project-group--target > small { color: #8e44ad !important; }

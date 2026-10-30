@@ -872,6 +872,11 @@
                                                     {{ sectionOptimizationPackageFor(signal).effect.currency }}
                                                     (дельта {{ sectionOptimizationPackageFor(signal).effect.delta }})
                                                 </div>
+                                                <small v-if="sectionOptimizationPackageFor(signal).effect?.delta_range">
+                                                    Диапазон дельты:
+                                                    {{ sectionOptimizationPackageFor(signal).effect.delta_range.best }}…{{ sectionOptimizationPackageFor(signal).effect.delta_range.worst }}
+                                                    <span v-if="sectionOptimizationPackageFor(signal).economic_status === 'needs_data'">(пересекает нулевую экономию)</span>
+                                                </small>
                                                 <small v-if="sectionOptimizationPackageFor(signal).blockers?.length">
                                                     Нужно проверить: {{ sectionOptimizationPackageFor(signal).blockers.slice(0, 2).join('; ') }}
                                                 </small>
@@ -891,10 +896,13 @@
                                                     && sectionOptimizationReplicationFor(signal.signal_id).agent_status === 'complete'
                                                     && !sectionOptimizationReplicationFor(signal.signal_id).input_stale"
                                                      class="section-optimization-package-card__actions">
-                                                    <button v-if="sectionOptimizationPackageFor(signal).economic_status !== 'positive'"
-                                                            type="button" class="btn btn-sm btn-secondary"
-                                                            @click.stop="toggleSectionOptimizationSignal(signal.signal_id)">
-                                                        Открыть расчёт
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                            @click.stop="toggleSectionOptimizationPackageCalc(signal.signal_id)">
+                                                        {{ isSectionOptimizationPackageCalcOpen(signal.signal_id) ? 'Скрыть расчёт' : 'Рассчитать эффект' }}
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                            @click.stop="toggleSectionOptimizationPackage(signal.signal_id)">
+                                                        {{ isSectionOptimizationPackageExpanded(signal.signal_id) ? 'Скрыть технические детали' : 'Технические детали' }}
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-primary"
                                                             :disabled="sectionOptimizationReplicationActionLoading
@@ -912,6 +920,60 @@
                                                             :disabled="sectionOptimizationReplicationActionLoading"
                                                             @click="saveSectionOptimizationPackageDecision(sectionOptimizationReplicationFor(signal.signal_id), signal, 'economic_no')">
                                                         Не обосновано
+                                                    </button>
+                                                    <label class="section-optimization-package-card__note">
+                                                        Комментарий к вердикту
+                                                        <input type="text"
+                                                               :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'decision_note')"
+                                                               placeholder="Можно оставить пустым для типовой причины"
+                                                               @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'decision_note', $event.target.value)">
+                                                    </label>
+                                                </div>
+                                                <div v-if="isSectionOptimizationPackageCalcOpen(signal.signal_id)"
+                                                     class="section-optimization-package-calculation">
+                                                    <b>Расчёт по всему пакету</b>
+                                                    <small>Введите итоговые суммы по всем целевым проектам. Не складывайте разные единицы измерения в одну сумму.</small>
+                                                    <div class="section-optimization-package-calculation__grid">
+                                                        <label>Текущий вариант, всего
+                                                            <input inputmode="decimal" type="text"
+                                                                   :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'baseline_cost')"
+                                                                   @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'baseline_cost', $event.target.value)">
+                                                        </label>
+                                                        <label>Предлагаемый вариант, всего
+                                                            <input inputmode="decimal" type="text"
+                                                                   :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'proposal_cost')"
+                                                                   @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'proposal_cost', $event.target.value)">
+                                                        </label>
+                                                        <label>Валюта
+                                                            <input type="text" placeholder="RUB"
+                                                                   :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'currency')"
+                                                                   @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'currency', $event.target.value)">
+                                                        </label>
+                                                        <label>Неопределённость, %
+                                                            <input inputmode="decimal" type="text" placeholder="0"
+                                                                   :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'cost_uncertainty_percent')"
+                                                                   @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'cost_uncertainty_percent', $event.target.value)">
+                                                        </label>
+                                                        <label>Источник цены
+                                                            <input type="text" placeholder="КП №…, 2026-10-30"
+                                                                   :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'price_source')"
+                                                                   @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'price_source', $event.target.value)">
+                                                        </label>
+                                                        <label>Дата цены
+                                                            <input type="date"
+                                                                   :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'price_date')"
+                                                                   @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'price_date', $event.target.value)">
+                                                        </label>
+                                                        <label>Состав затрат
+                                                            <input type="text" placeholder="материал, монтаж, переделка"
+                                                                   :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'cost_composition')"
+                                                                   @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'cost_composition', $event.target.value)">
+                                                        </label>
+                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                            :disabled="sectionOptimizationReplicationActionLoading"
+                                                            @click="saveSectionOptimizationPackageEvaluation(sectionOptimizationReplicationFor(signal.signal_id), signal)">
+                                                        Сохранить расчёт пакета
                                                     </button>
                                                 </div>
                                             </div>
@@ -990,7 +1052,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr v-if="isSectionOptimizationSignalExpanded(signal.signal_id)"
+                                    <tr v-if="isSectionOptimizationSignalExpanded(signal.signal_id) || isSectionOptimizationPackageExpanded(signal.signal_id)"
                                         class="section-optimization-source-decisions-row">
                                         <td colspan="6">
                                             <div v-if="sectionOptimizationReplicationFor(signal.signal_id)?.engineering_passport"
