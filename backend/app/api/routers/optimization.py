@@ -792,6 +792,17 @@ async def get_section_optimization(
         "signal_count": sum(len(item.get("signal_ids") or []) for item in data["optimization_packages"]),
         "decided": sum(1 for item in data["optimization_packages"] if item.get("decision")),
     }
+    # Supplementary evidence is scoped to this object, section and package fingerprint.
+    from backend.app.services.section_optimization_pipeline_service import _section_dir, _resolve_object_id
+    try:
+        evidence_path = _section_dir(code, _resolve_object_id(object_id)) / "supplementary_evidence.json"
+        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        evidence = {}
+    for package in data["optimization_packages"]:
+        entry = evidence.get(package["package_id"]) if isinstance(evidence, dict) else None
+        if isinstance(entry, dict) and entry.get("fingerprint") == package.get("fingerprint"):
+            package["supplementary_evidence"] = entry
     data["solution_library"] = build_solution_library(all_replications)
     data["pilot_readiness"] = build_pilot_readiness(
         data, data["replications"], data.get("optimization_packages") or []

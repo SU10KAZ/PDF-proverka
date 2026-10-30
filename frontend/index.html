@@ -839,6 +839,28 @@
                                 </div>
                                 <small v-if="packageItem.proposed_actions?.length">Предлагается: {{ packageItem.proposed_actions.slice(0, 2).join(' · ') }}</small>
                                 <small v-if="packageItem.blockers?.length" class="section-optimization-portfolio__blockers">{{ packageItem.blockers.join('; ') }}</small>
+                                <div v-if="packageItem.supplementary_evidence" class="section-optimization-decision-guide">
+                                    <b>Дополнено по исходным документам · 30.10.2026</b>
+                                    <p>{{ packageItem.supplementary_evidence.summary }}</p>
+                                    <small>Это дополнительные данные. Прежнее заключение агента ещё не пересмотрено.</small>
+                                    <details>
+                                        <summary>Посмотреть характеристики и источники</summary>
+                                        <div v-for="target in packageItem.supplementary_evidence.targets" :key="target.project_id">
+                                            <b>{{ target.project_id }}</b>
+                                            <div style="overflow-x:auto"><table class="section-optimization-table">
+                                                <thead><tr><th>Позиция</th><th>Наименование / артикул</th><th>Характеристики</th><th>Количество</th></tr></thead>
+                                                <tbody><tr v-for="row in target.rows" :key="row.row_id">
+                                                    <td>{{ row.position || '—' }}</td>
+                                                    <td>{{ row.name }} · {{ row.code || row.type_mark }}</td>
+                                                    <td>{{ Object.entries(row.technical_attributes || {}).map(([key, value]) => `${({series: "Серия", ip: "IP", dimensions: "Размеры, мм", rated_current: "Ток, А", conductor_material: "Материал", conductor_count: "Число проводников"})[key] || key}: ${value}`).join('; ') || row.type_mark || 'См. наименование' }}</td>
+                                                    <td>{{ row.quantity || 'Не указано' }} {{ row.unit }}</td>
+                                                </tr></tbody>
+                                            </table></div>
+                                            <small>Источник: {{ target.source_file }}</small>
+                                        </div>
+                                    </details>
+                                    <small>{{ packageItem.supplementary_evidence.warning }}</small>
+                                </div>
                                 <details class="section-optimization-portfolio__checks">
                                     <summary>Что проверить и исключения</summary>
                                     <ul><li v-for="item in (packageItem.checklist || []).slice(0, 4)" :key="item">{{ item }}</li></ul>
