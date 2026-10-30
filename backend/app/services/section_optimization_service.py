@@ -60,6 +60,7 @@ def _pget(project: Any, key: str, default: Any = None) -> Any:
 def _clean_text(value: Any) -> str:
     text = str(value or "")
     text = text.replace("<br>", " ").replace("<br/>", " ").replace("<br />", " ")
+    text = re.sub(r"(?<=\d)\*(?=\d)", "×", text)
     text = re.sub(r"[*_`]", "", text)
     return re.sub(r"\s+", " ", text).strip()
 
@@ -114,13 +115,16 @@ def _column_map(headers: list[str]) -> dict[str, int]:
         and any("описание" in h for h in normalized_headers)
         and any("масс" in h for h in normalized_headers)
     )
+    busbar_schedule = ("серия" in normalized_headers and "ip" in normalized_headers
+                       and "артикул" in normalized_headers
+                       and any("ном" in h and "ток" in h for h in normalized_headers))
     result: dict[str, int] = {}
     for idx, h in enumerate(normalized_headers):
         field: Optional[str] = None
         if (h.startswith("поз") or "позици" in h
                 or h in {"п/п", "n п/п", "no п/п", "номер п/п"}):
             field = "position"
-        elif metal_schedule and h.startswith("марка"):
+        elif (metal_schedule or busbar_schedule) and h.startswith("марка"):
             field = "position"
         elif "наименование" in h or "техническая характеристика" in h or "описание" in h:
             field = "name"
@@ -146,6 +150,20 @@ def _column_map(headers: list[str]) -> dict[str, int]:
         elif ("количество" in h or "кол-во" in h or h == "кол во"
               or h in {"кол", "кол."}):
             field = "quantity"
+        elif (h.startswith("кол ") or h.startswith("кол.")) and "шт" in h:
+            field = "quantity"
+        elif h == "серия":
+            field = "series"
+        elif h == "ip":
+            field = "ip"
+        elif h.startswith("размер"):
+            field = "dimensions"
+        elif "ном" in h and "ток" in h:
+            field = "rated_current"
+        elif h.startswith("мат. пров"):
+            field = "conductor_material"
+        elif h.startswith("кол. пров"):
+            field = "conductor_count"
         elif "примеч" in h or "аксессуар" in h:
             field = "note"
         if field and field not in result:
@@ -396,6 +414,12 @@ def parse_specification_markdown(
                     "mass": mass,
                     "total_mass": total_mass,
                     "note": note,
+                    "technical_attributes": {
+                        field: _cell(cells, mapping, field)
+                        for field in ("series", "ip", "dimensions", "rated_current",
+                                      "conductor_material", "conductor_count")
+                        if _cell(cells, mapping, field)
+                    },
                     "raw_cells": cells,
                     "raw_headers": first,
                     "table_profile": "metal_schedule" if (
@@ -810,6 +834,14 @@ def _functional_family(row: dict) -> tuple[str, ...]:
     return tuple(sorted({word for word in words if len(word) >= 4 and word not in ignored}))
 
 
+def _physical_variant(row: dict) -> str:
+    attributes = row.get("technical_attributes") or {}
+    if attributes:
+        return " | ".join([_clean_text(row.get("code") or row.get("type_mark") or row.get("name")),
+                           *[f"{key}={value}" for key, value in sorted(attributes.items())]])
+    return _clean_text(row.get("type_mark") or row.get("designation") or row.get("name"))
+
+
 def build_self_discovery_signals(rows: list[dict]) -> list[dict]:
     """Find repeated functional families with several variants across projects.
 
@@ -827,7 +859,7 @@ def build_self_discovery_signals(rows: list[dict]) -> list[dict]:
     for family, family_rows in families.items():
         project_ids = sorted({str(row.get("project_id")) for row in family_rows})
         variants = sorted({
-            _clean_text(row.get("type_mark") or row.get("designation") or row.get("name"))
+            _physical_variant(row)
             for row in family_rows
             if _clean_text(row.get("type_mark") or row.get("designation") or row.get("name"))
         })

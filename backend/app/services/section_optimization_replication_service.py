@@ -574,7 +574,8 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
                         for key in (
                             "row_id", "project_id", "project_name", "version_id", "page", "sheet", "sheet_name", "category", "position",
                             "name", "designation", "type_mark", "code", "manufacturer", "unit",
-                            "quantity", "mass", "total_mass", "note", "source", "canonical_key",
+                            "quantity", "mass", "total_mass", "note",
+                            "technical_attributes", "raw_headers", "raw_cells", "source", "canonical_key",
                         )
                     }
                     for row in rows
@@ -606,7 +607,8 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
                     for key in (
                         "row_id", "project_id", "project_name", "version_id", "page", "sheet", "sheet_name", "category", "position",
                         "name", "designation", "type_mark", "code", "manufacturer", "unit",
-                        "quantity", "mass", "total_mass", "note", "source", "canonical_key",
+                        "quantity", "mass", "total_mass", "note",
+                            "technical_attributes", "raw_headers", "raw_cells", "source", "canonical_key",
                     )
                 }
                 for row in source_rows

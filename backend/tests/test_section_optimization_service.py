@@ -404,3 +404,35 @@ def test_graphics_are_requested_only_for_geometry_sensitive_merge_candidates():
 
     assert len(clusters) == 1
     assert clusters[0]["graphics_recommended"] is True
+
+
+def test_busbar_positions_are_not_physical_variants():
+    header = '| Серия | IP | Мат. Пров. | Кол. Пров. | Ном. ток, А | Наименование | Размер, мм | Марка | Кол, шт. | Артикул |\n|---|---|---|---|---|---|---|---|---|---|\n'
+    rows = []
+    for project in ('P1', 'P2'):
+        md = header + '\n'.join(
+            f'| E3 | 55 | Al | 4 | 5000 | Угловая секция горизонтальная | 250*250 | {mark} | 1 | E3AL45000UG |'
+            for mark in ('F-16', 'F-17', 'E-21'))
+        rows.extend(parse_specification_markdown(md, project_id=project, project_name=project, version_id='v1'))
+    assert len(rows) == 6
+    assert rows[0]['position'] == 'F-16'
+    assert rows[0]['type_mark'] == ''
+    assert rows[0]['quantity'] == '1'
+    assert rows[0]['unit'] == 'шт.'
+    assert rows[0]['technical_attributes'] == {
+        'series': 'E3', 'ip': '55', 'dimensions': '250×250', 'rated_current': '5000',
+        'conductor_material': 'Al', 'conductor_count': '4'}
+    assert build_self_discovery_signals(rows) == []
+    rows[1]['technical_attributes'] = dict(rows[1]['technical_attributes'], dimensions='300*300')
+    rows[2]['technical_attributes'] = dict(rows[2]['technical_attributes'], rated_current='4000')
+    assert len(build_self_discovery_signals(rows)) == 1
+
+
+def test_agent_receives_original_table_and_technical_attributes():
+    from backend.app.services.section_optimization_agent_service import _compact_dossier
+    row = {'row_id': 'R1', 'technical_attributes': {'ip': '55', 'rated_current': '5000'},
+           'raw_headers': ['IP', 'Ном. ток, А'], 'raw_cells': ['55', '5000']}
+    payload = _compact_dossier({'targets': [{'project_id': 'P1', 'rows': [row]}]})
+    actual = payload['targets'][0]['rows'][0]
+    for field in ('technical_attributes', 'raw_headers', 'raw_cells'):
+        assert actual[field] == row[field]
