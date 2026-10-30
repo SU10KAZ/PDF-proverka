@@ -28,6 +28,9 @@ from backend.app.pipeline.stages.crop_blocks.cloud_failover import (
 )
 
 from backend.app.pipeline.stages.crop_blocks.local_cache import VerifiedCropCache
+from backend.app.pipeline.stages.crop_blocks.download_deadline import (
+    download_with_deadline as _download_with_deadline,
+)
 
 from backend.app.pipeline.stages.block_context.contract import crop_image_usable
 from backend.app.services.storage.stage_artifacts import (
@@ -635,6 +638,7 @@ def _render_pdf_bytes_to_png(
 # 408/429) — фатальны: ретрай не поможет, сразу отдаём наверх для fallback.
 _CROP_DOWNLOAD_RETRIES = 3
 _CROP_DOWNLOAD_BACKOFF_S = 0.5
+_CROP_CLOUD_DOWNLOAD_BUDGET_S = 5.0
 
 
 def _download_with_retry(req: "urllib.request.Request", timeout: int,
@@ -688,6 +692,7 @@ def download_and_convert(
     dpi: int = 0,
     min_long_side: int = 0,
     fast_fail_availability: bool = False,
+    download_budget_s: float | None = None,
 ) -> tuple[int, int]:
     """Скачать PDF-кроп по URL и конвертировать в PNG.
 
@@ -697,7 +702,13 @@ def download_and_convert(
     """
     _require_pymupdf()
     req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
-    pdf_bytes = _download_with_retry(req, timeout, fast_fail_availability=fast_fail_availability)
+    if download_budget_s is None:
+        pdf_bytes = _download_with_retry(req, timeout, fast_fail_availability=fast_fail_availability)
+    else:
+        pdf_bytes = _download_with_deadline(
+            req, timeout, budget_s=download_budget_s,
+            fast_fail_availability=fast_fail_availability,
+        )
 
     w, h = _render_pdf_bytes_to_png(
         pdf_bytes, out_png,
@@ -791,7 +802,7 @@ def crop_blocks(
     skip_small: bool = True,
     output_dir_name: str = "blocks",
 ) -> dict:
-    """Сохранить image-блоки как PNG: проверенный кэш → PDF → облако.
+    """Сохранить image-блоки как PNG: облако с лимитом → локальный кэш/PDF.
 
     compact=True: сохраняет ДВЕ версии каждого блока:
       - block_<ID>.png       — compact (800px) — используется в батчах
@@ -1046,11 +1057,12 @@ def crop_blocks(
 
         try:
             (w, h), source = failover.crop(
-                source=local_source, provider=provider, local_first=True,
+                source=local_source, provider=provider,
                 cloud=(lambda: download_and_convert(
                     crop_url, out_file, dpi=use_dpi,
                     min_long_side=use_min_side, also_save_full=save_full,
                     fast_fail_availability=local_source is not None,
+                    download_budget_s=_CROP_CLOUD_DOWNLOAD_BUDGET_S,
                 )) if crop_url else None,
                 local=render_local,
             )
@@ -1060,7 +1072,7 @@ def crop_blocks(
             failed_records.append(_crop_failed_record(bid, pn, "crop_failed", exc))
             continue
 
-        if source == "local_pdf":
+        if source == "pdf_fallback":
             source = local_kind
         size_kb = out_file.stat().st_size / 1024
         full_kb = round(full_file.stat().st_size / 1024, 1) if compact and full_file.exists() else None

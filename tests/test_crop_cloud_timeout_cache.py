@@ -1,11 +1,10 @@
-"""Offline upload-cache identity, corruption and local-first regression tests."""
+"""Offline upload-cache identity, corruption and cloud-timeout fallback regression tests."""
 import hashlib
 import json
 
 import pytest
 
 from backend.app.pipeline.stages.crop_blocks import blocks
-from backend.app.pipeline.stages.crop_blocks.cloud_failover import CropFailover, LocalSource, SourceIdentityError
 from backend.app.services.common.blocks_json import build_result_json
 from backend.app.services.common.pdf_crop import extract_block_crop
 
@@ -13,8 +12,12 @@ from backend.app.services.common.pdf_crop import extract_block_crop
 @pytest.fixture
 def cached_version(tmp_path, monkeypatch):
     def forbidden(*a, **kw):
-        pytest.fail('local crop must not contact the network')
+        pytest.fail('tests must not contact external services')
+    def deadline(*a, **kw):
+        assert kw['budget_s'] == 5.0
+        raise TimeoutError('simulated cloud download deadline')
     monkeypatch.setattr(blocks.urllib.request, 'urlopen', forbidden)
+    monkeypatch.setattr(blocks, '_download_with_deadline', deadline)
     inp, work = tmp_path / '01_input', tmp_path / '02_work'
     inp.mkdir(); work.mkdir(); (inp / 'crops').mkdir()
     doc = blocks.fitz.open()
@@ -43,13 +46,13 @@ def run(version, **kwargs):
                              output_dir_name=str(version / 'output'), **kwargs)
 
 
-def test_verified_cache_avoids_pdf_render_and_network(cached_version, monkeypatch):
+def test_verified_cache_after_cloud_timeout_avoids_pdf_render(cached_version, monkeypatch):
     def forbidden(*a, **kw): pytest.fail('verified cache should be used')
     monkeypatch.setattr(blocks, 'crop_from_pdf', forbidden)
     result = run(cached_version)
     assert result['errors'] == 0
     assert result['blocks'][0]['source'] == 'local_cache_pdf'
-    assert result['crop_failover']['cloud_crop_attempts'] == 0
+    assert result['crop_failover']['cloud_crop_attempts'] == 1
     first = (cached_version / 'output/block_image1.png').read_bytes()
     result = run(cached_version)
     assert result['skipped'] == 1
@@ -78,19 +81,7 @@ def test_untrusted_cache_uses_exact_pdf(cached_version, mismatch):
     result = run(cached_version)
     assert result['errors'] == 0
     assert result['blocks'][0]['source'] == 'local_pdf'
-    assert result['crop_failover']['cloud_crop_attempts'] == 0
-
-
-def test_local_first_does_not_hide_source_mutation(cached_version):
-    work = cached_version / '02_work'
-    src = LocalSource(work / 'document.pdf', work / 'result.json')
-    def mutate():
-        src.pdf.write_bytes(b'wrong document')
-        raise ValueError('render failure')
-    def forbidden(): pytest.fail('source mutation must fail before network')
-    with pytest.raises(SourceIdentityError):
-        CropFailover(state_root=cached_version / 'state').crop(
-            source=src, provider='x', cloud=forbidden, local=mutate, local_first=True)
+    assert result['crop_failover']['cloud_crop_attempts'] == 1
 
 
 @pytest.mark.parametrize('dpi,compact', [(100, False), (300, False), (None, True)])
@@ -110,12 +101,3 @@ def test_cache_preserves_render_policy_and_full_image(cached_version, dpi, compa
         assert result['blocks'][0]['compact'] is True
 
 
-def test_old_breaker_does_not_skip_cloud_when_local_no_longer_renders(cached_version):
-    work = cached_version / '02_work'
-    src = LocalSource(work / 'document.pdf', work / 'result.json')
-    breaker = CropFailover(state_root=cached_version / 'state')
-    def timeout(): raise TimeoutError('old outage')
-    breaker.crop(source=src, provider='x', cloud=timeout, local=lambda: (1, 1))
-    def broken(): raise ValueError('local rendering unavailable')
-    assert breaker.crop(source=src, provider='x', cloud=lambda: (2, 3),
-                        local=broken, local_first=True) == ((2, 3), 'cloud')

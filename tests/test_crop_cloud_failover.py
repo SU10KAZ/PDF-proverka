@@ -21,6 +21,9 @@ def no_network(monkeypatch):
     def forbidden(*a, **kw):
         raise AssertionError('Unexpected real cloud access')
     monkeypatch.setattr(blocks.urllib.request, 'urlopen', forbidden)
+    monkeypatch.setattr(blocks, '_download_with_deadline',
+                        lambda req, timeout, **kw: blocks._download_with_retry(
+                            req, timeout, fast_fail_availability=kw['fast_fail_availability']))
 
 
 def document(tmp_path, n=100):
@@ -44,7 +47,7 @@ def run_crop(tmp_path):
                              output_dir_name=str(tmp_path / 'out'), force=True)
 
 
-def test_100_blocks_local_first_without_http_and_geometry(monkeypatch, tmp_path, capsys):
+def test_100_blocks_one_actual_http_call_and_geometry(monkeypatch, tmp_path, capsys):
     src = document(tmp_path)
     calls, sleeps = [], []
     def timeout(*a, **kw):
@@ -54,13 +57,13 @@ def test_100_blocks_local_first_without_http_and_geometry(monkeypatch, tmp_path,
     monkeypatch.setattr(blocks.time, 'sleep', sleeps.append)
     result = run_crop(tmp_path)
     m = result['crop_failover']
-    assert m['cloud_crop_attempts'] == len(calls) == 0
-    assert m['cloud_crop_failures'] == 0
-    assert m['cloud_crop_skipped_after_breaker'] == 0
+    assert m['cloud_crop_attempts'] == len(calls) == 1
+    assert m['cloud_crop_failures'] == 1
+    assert m['cloud_crop_skipped_after_breaker'] == 99
     assert m['local_crop_attempts'] == m['local_crop_successes'] == 100
     assert m['local_crop_failures'] == result['errors'] == 0
     assert sleeps == []
-    assert 'CLOUD_CROP_UNAVAILABLE' not in capsys.readouterr().out
+    assert capsys.readouterr().out.count('CLOUD_CROP_UNAVAILABLE') == 1
     # Exact bytes vs the existing rotated local PDF fallback, same arguments.
     expected = tmp_path / 'expected.png'
     blocks.crop_from_pdf(src.pdf, 1, [0, 0, 140, 90], 160, 120, expected,
@@ -72,19 +75,17 @@ def test_100_blocks_local_first_without_http_and_geometry(monkeypatch, tmp_path,
     assert index['blocks'][0]['source'] == 'local_pdf'
 
 
-def test_cloud_success_when_local_render_fails(monkeypatch, tmp_path):
+def test_cloud_success_unchanged(monkeypatch, tmp_path):
     src = document(tmp_path, 3)
     class Response:
         def __enter__(self): return self
         def __exit__(self, *a): pass
         def read(self): return src.pdf.read_bytes()
-    def bad_local(*a, **kw): raise ValueError('bad local geometry')
-    monkeypatch.setattr(blocks, 'crop_from_pdf', bad_local)
     calls = []
     monkeypatch.setattr(blocks.urllib.request, 'urlopen', lambda *a, **kw: calls.append(1) or Response())
     result = run_crop(tmp_path)
     assert len(calls) == 3
-    assert result['crop_failover']['local_crop_failures'] == 3
+    assert result['crop_failover']['local_crop_attempts'] == 0
     assert {b['source'] for b in result['blocks']} == {'cloud'}
 
 
@@ -109,11 +110,10 @@ def test_corrupt_cloud_content_stays_visible(monkeypatch, tmp_path):
     document(tmp_path, 2)
     def corrupt(*a, **kw): raise ValueError('corrupted content')
     monkeypatch.setattr(blocks, 'download_and_convert', corrupt)
-    monkeypatch.setattr(blocks, 'crop_from_pdf', corrupt)
     result = run_crop(tmp_path)
     assert result['errors'] == 2
     assert result['crop_failover']['cloud_crop_attempts'] == 2
-    assert result['crop_failover']['local_crop_failures'] == 2
+    assert result['crop_failover']['local_crop_attempts'] == 0
 
 
 def test_failed_local_does_not_open(tmp_path):
