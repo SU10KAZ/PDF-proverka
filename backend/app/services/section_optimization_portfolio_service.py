@@ -359,6 +359,8 @@ def build_section_optimization_portfolio(snapshot: dict, replications: list[dict
             blockers.append("Нужны сопоставимые затраты по всему применимому объёму")
         if missing_row_ids:
             blockers.append(f"Не найдены строки спецификации: {len(missing_row_ids)}")
+        if kind_key == "replicate_accepted_optimization" and any(signal.get("source_project_ids") for signal in members) and not source_rows:
+            blockers.append("Исходные строки принятого решения не вошли в текущий снимок")
         packages.append({
             "package_id": package_id,
             "fingerprint": fingerprint,

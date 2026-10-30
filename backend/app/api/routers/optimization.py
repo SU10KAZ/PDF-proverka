@@ -503,6 +503,9 @@ def _portfolio_packages(
             if package.get("missing_row_ids"):
                 package["decision_gate"]["economic_yes"]["allowed"] = False
                 package["decision_gate"]["economic_yes"]["reason"] = "Часть строк пакета отсутствует в текущем снимке раздела."
+            if package.get("kind_counts", {}).get("replicate_accepted_optimization") and package.get("source_scope", {}).get("row_count", 0) == 0:
+                package["decision_gate"]["economic_yes"]["allowed"] = False
+                package["decision_gate"]["economic_yes"]["reason"] = "Не подтверждены исходные строки принятого решения."
             untraceable = package.get("scope", {}).get("untraceable_row_ids") or []
             if untraceable:
                 package["decision_gate"]["economic_yes"]["allowed"] = False
