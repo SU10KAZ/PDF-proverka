@@ -17,6 +17,12 @@ from backend.app.services.section_optimization_library_service import build_solu
 from backend.app.services.section_optimization_readiness_service import build_pilot_readiness
 from backend.app.services.section_optimization_candidate_types import SUPPORTED_KINDS
 from backend.app.services.section_optimization_package_service import attach_package_summaries
+from backend.app.services.section_optimization_portfolio_service import build_section_optimization_portfolio
+from backend.app.services.section_optimization_portfolio_store import (
+    load_portfolio_state,
+    save_package_evaluation,
+    save_package_verdict,
+)
 
 router = APIRouter(prefix="/api/optimization", tags=["optimization"])
 
@@ -54,8 +60,10 @@ class SectionImplementationUpdate(BaseModel):
 
 
 class SectionAlternativeInputs(BaseModel):
+    proposal_standard: str = Field(default="", max_length=2000)
     type_mark_count: Optional[float] = Field(default=None, ge=0)
     total_mass_kg: Optional[float] = Field(default=None, ge=0)
+    baseline_operation_count: Optional[float] = Field(default=None, ge=0)
     operation_count: Optional[float] = Field(default=None, ge=0)
     baseline_cost: Optional[float] = Field(default=None, ge=0)
     proposal_cost: Optional[float] = Field(default=None, ge=0)
@@ -87,6 +95,25 @@ class SectionPackageDecisionRequest(BaseModel):
     ] = ""
     expected_input_fingerprint: str = Field(min_length=1, max_length=128)
     expected_updated_at: str = Field(min_length=1, max_length=100)
+
+
+class SectionPortfolioEvaluationRequest(BaseModel):
+    baseline_cost: float = Field(ge=0)
+    proposal_cost: float = Field(ge=0)
+    currency: str = Field(min_length=1, max_length=10)
+    price_source: str = Field(min_length=1, max_length=1000)
+    price_date: str = Field(min_length=1, max_length=50)
+    cost_composition: str = Field(min_length=1, max_length=2000)
+    cost_uncertainty_percent: float = Field(default=0, ge=0, le=100)
+    proposal_standard: str = Field(default="", max_length=2000)
+    expected_fingerprint: str = Field(min_length=1, max_length=128)
+
+
+class SectionPortfolioDecisionRequest(BaseModel):
+    decision: Literal["economic_yes", "economic_no", "needs_data"]
+    note: str = Field(default="", max_length=3000)
+    reason_code: Literal["", "no_saving", "technically_not_applicable", "insufficient_data", "scope_exception"] = ""
+    expected_fingerprint: str = Field(min_length=1, max_length=128)
 
 
 
@@ -405,6 +432,117 @@ async def save_section_replication_package_decision(
         raise HTTPException(400, str(exc)) from exc
 
 
+def _portfolio_packages(code: str, *, object_id: Optional[str], readonly: bool = False) -> list[dict]:
+    from backend.app.services.section_optimization_pipeline_service import get_latest_snapshot
+    from backend.app.services.section_optimization_replication_service import list_replications
+
+    snapshot = get_latest_snapshot(code, object_id=object_id, readonly=readonly)
+    if not snapshot:
+        raise HTTPException(404, "Снимок раздела ещё не подготовлен")
+    packages = build_section_optimization_portfolio(
+        snapshot, list_replications(code, object_id=object_id, repair=not readonly)
+    )
+    try:
+        state = load_portfolio_state(code, object_id=object_id)
+    except ValueError:
+        # Unit-test/read-only callers may provide a synthetic object id while
+        # supplying an in-memory snapshot.  No persisted portfolio state is
+        # equivalent to an empty state in that case.
+        state = {}
+    for package in packages:
+        evaluation = (state.get("evaluations") or {}).get(package["package_id"])
+        if evaluation:
+            baseline = float(evaluation.get("baseline_cost") or 0)
+            proposal = float(evaluation.get("proposal_cost") or 0)
+            uncertainty = float(evaluation.get("cost_uncertainty_percent") or 0) / 100
+            delta = proposal - baseline
+            package["evaluation"] = evaluation
+            package["effect"] = {
+                "status": "calculated",
+                "baseline": baseline,
+                "proposal": proposal,
+                "delta": delta,
+                "worst_delta": delta + abs(delta) * uncertainty,
+                "currency": str(evaluation.get("currency") or "").upper(),
+                "sources": 1,
+            }
+            package["economic_status"] = (
+                "positive" if delta < 0 and package["effect"]["worst_delta"] < 0 else "negative"
+            )
+            package["decision_gate"]["economic_yes"]["allowed"] = (
+                package["technical_review"]["status"] == "pass" and package["economic_status"] == "positive"
+            )
+            package["decision_gate"]["economic_no"]["allowed"] = package["economic_status"] == "negative"
+            package["blockers"] = [item for item in package.get("blockers", []) if "затраты" not in item]
+        decision = (state.get("decisions") or {}).get(package["package_id"])
+        if decision and decision.get("package_fingerprint") == package.get("fingerprint"):
+            package["decision"] = decision
+            package["decision_note"] = decision.get("note", "")
+    return packages
+
+
+def _portfolio_package(code: str, package_id: str, *, object_id: Optional[str], readonly: bool = False) -> dict:
+    for package in _portfolio_packages(code, object_id=object_id, readonly=readonly):
+        if package.get("package_id") == package_id:
+            return package
+    raise HTTPException(404, "Пакет оптимизации не найден")
+
+
+@router.post("/section/{section_code}/portfolio/{package_id}/evaluation")
+async def save_section_portfolio_evaluation(
+    section_code: str,
+    package_id: str,
+    payload: SectionPortfolioEvaluationRequest,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    code = _section_code_or_400(section_code)
+    package = _portfolio_package(code, package_id, object_id=object_id)
+    if payload.expected_fingerprint != package.get("fingerprint"):
+        raise HTTPException(409, "Пакет изменился: обновите страницу")
+    from backend.app.core.attribution import resolve_author
+    try:
+        saved = save_package_evaluation(
+            code, package_id, payload.model_dump(exclude={"expected_fingerprint"}),
+            object_id=object_id, expected_fingerprint=payload.expected_fingerprint,
+            package_fingerprint=package.get("fingerprint", ""), reviewer=resolve_author().name,
+        )
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return {"status": "saved", "evaluation": saved, "package": _portfolio_package(code, package_id, object_id=object_id)}
+
+
+@router.post("/section/{section_code}/portfolio/{package_id}/decision")
+async def save_section_portfolio_decision(
+    section_code: str,
+    package_id: str,
+    payload: SectionPortfolioDecisionRequest,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    code = _section_code_or_400(section_code)
+    package = _portfolio_package(code, package_id, object_id=object_id)
+    if payload.expected_fingerprint != package.get("fingerprint"):
+        raise HTTPException(409, "Пакет изменился: обновите страницу")
+    gate = (package.get("decision_gate") or {}).get(payload.decision) or {}
+    if not gate.get("allowed"):
+        raise HTTPException(409, gate.get("reason") or "Пакет ещё не готов к этому решению")
+    if payload.decision == "economic_yes" and (package.get("technical_review") or {}).get("status") != "pass":
+        raise HTTPException(409, "Сначала закройте технические исключения пакета")
+    from backend.app.core.attribution import resolve_author
+    try:
+        saved = save_package_verdict(
+            code, package_id, payload.decision, object_id=object_id,
+            expected_fingerprint=payload.expected_fingerprint,
+            package_fingerprint=package.get("fingerprint", ""), reviewer=resolve_author().name,
+            note=payload.note, reason_code=payload.reason_code,
+            decision_basis={"scope": package.get("scope"), "source_scope": package.get("source_scope"),
+                            "applicability": package.get("applicability"), "effect": package.get("effect"),
+                            "technical_review": package.get("technical_review")},
+        )
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return {"status": "saved", "decision": saved, "package": _portfolio_package(code, package_id, object_id=object_id)}
+
+
 @router.post("/section/{section_code}/replications/{replication_id}/data-requests/{request_id}/answer")
 async def answer_section_replication_data_request(
     section_code: str,
@@ -600,6 +738,12 @@ async def get_section_optimization(
     data["capabilities"] = capabilities
     data["pipeline"] = pipeline
     data["replications"] = list_replications(code, object_id=object_id, repair=not readonly)
+    data["optimization_packages"] = _portfolio_packages(code, object_id=object_id, readonly=readonly)
+    data["optimization_package_summary"] = {
+        "count": len(data["optimization_packages"]),
+        "signal_count": sum(len(item.get("signal_ids") or []) for item in data["optimization_packages"]),
+        "decided": sum(1 for item in data["optimization_packages"] if item.get("decision")),
+    }
     data["solution_library"] = build_solution_library(data["replications"])
     data["pilot_readiness"] = build_pilot_readiness(data, data["replications"])
     return data

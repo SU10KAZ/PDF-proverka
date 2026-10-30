@@ -57,6 +57,26 @@ def test_attach_package_summaries_keeps_all_candidates_traceable():
     assert "package_summary" not in snapshot["signals"][0]
 
 
+def test_attach_package_summaries_groups_overlapping_signals_without_cross_kind_merge():
+    snapshot = {
+        "meta": {},
+        "specification_rows": [
+            _row("r1", "P1", "3"),
+            _row("r2", "P2", "4"),
+        ],
+        "accepted_optimizations": [],
+        "signals": [
+            {"signal_id": "REPL-1", "kind": "replicate_accepted_optimization", "target_row_ids": ["r1"]},
+            {"signal_id": "REPL-2", "kind": "replicate_accepted_optimization", "target_row_ids": ["r1", "r2"]},
+            {"signal_id": "DISC-1", "kind": "type_size_reduction_opportunity", "target_row_ids": ["r1"]},
+        ],
+    }
+    result = attach_package_summaries(snapshot)
+    portfolio = result["meta"]["package_portfolio"]
+    assert any(item["overlap"] and item["signal_ids"] == ["REPL-1", "REPL-2"] for item in portfolio)
+    assert all(item["kind"] == "replicate_accepted_optimization" or item["signal_ids"] == ["DISC-1"] for item in portfolio)
+
+
 def test_dossier_package_summary_uses_calculated_monetary_effect():
     job = {
         "dossier": {
@@ -86,3 +106,82 @@ def test_dossier_scope_falls_back_to_target_projects_for_legacy_rows():
     })
     assert summary["scope"]["project_count"] == 3
     assert [item["project_id"] for item in summary["scope"]["projects"]] == ["P1", "P2", "P3"]
+
+
+def test_dossier_partition_exposes_applicable_excluded_and_unresolved_volume():
+    rows = [
+        _row("r1", "P1", "10", "шт", "A"),
+        _row("r2", "P1", "4", "шт", "B"),
+        _row("r3", "P2", "7", "шт", "C"),
+    ]
+    summary = package_summary_from_dossier({
+        "target_project_ids": ["P1", "P2"],
+        "dossier": {
+            "candidate": {"kind": "replicate_accepted_optimization"},
+            "targets": [
+                {"project_id": "P1", "rows": rows[:2]},
+                {"project_id": "P2", "rows": rows[2:]},
+            ],
+        },
+        "agent_assessments": [
+            {
+                "project_id": "P1", "verdict": "applicable_with_conditions",
+                "target_row_ids": ["r1"], "conditions": ["Сохранить IP44"],
+                "reason": "Параметры совпадают",
+            },
+            {
+                "project_id": "P1", "verdict": "reject",
+                "target_row_ids": ["r2"], "reason": "Размер отличается",
+            },
+            {
+                "project_id": "P2", "verdict": "needs_data",
+                "target_row_ids": ["r3"], "missing_data": ["Нужна нагрузка"],
+                "reason": "Нет исходной нагрузки",
+            },
+        ],
+        "critic": {"status": "pass"},
+    })
+
+    applicability = summary["applicability"]
+    assert applicability["coverage"] == {
+        "total_rows": 3,
+        "assessed_rows": 2,
+        "applicable_rows": 1,
+        "excluded_rows": 1,
+        "unresolved_rows": 1,
+        "uncovered_row_ids": ["r3"],
+    }
+    assert applicability["applicable"]["quantity_by_unit"] == {"шт": 10.0}
+    assert applicability["excluded"]["quantity_by_unit"] == {"шт": 4.0}
+    assert applicability["unresolved"]["quantity_by_unit"] == {"шт": 7.0}
+    assert summary["technical_review"]["status"] == "blocked"
+    assert summary["decision_gate"]["economic_yes"]["allowed"] is False
+    assert summary["package_verdict"]["status"] == "needs_data"
+
+
+def test_package_gate_allows_one_verdict_after_complete_applicability_and_prices():
+    summary = package_summary_from_dossier({
+        "target_project_ids": ["P1"],
+        "dossier": {
+            "candidate": {"kind": "replicate_accepted_optimization"},
+            "targets": [{"project_id": "P1", "rows": [_row("r1", "P1", "10")]}],
+        },
+        "agent_assessments": [{
+            "project_id": "P1", "verdict": "applicable_with_conditions",
+            "target_row_ids": ["r1"], "conditions": ["Сохранить IP44"],
+            "reason": "Параметры совпадают",
+        }],
+        "critic": {"status": "pass"},
+        "graphics_status": "not_required",
+        "dependency_assessment": {"status": "resolved"},
+        "alternative_evaluation": {
+            "effect": {"monetary": {
+                "delta": -100, "baseline": 1000, "proposal": 900,
+                "currency": "RUB", "source": "КП", "delta_range": {"best": -100, "worst": -100},
+            }},
+        },
+    })
+    assert summary["technical_review"]["status"] == "pass"
+    assert summary["decision_gate"]["economic_yes"]["allowed"] is True
+    assert summary["decision_gate"]["economic_yes"]["requires_note"] is True
+    assert summary["package_verdict"]["status"] == "ready"

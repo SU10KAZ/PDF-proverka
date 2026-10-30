@@ -64,3 +64,25 @@ def test_monetary_inputs_require_traceable_basis():
         apply_alternative_inputs({"baseline": {"metrics": {}}, "proposal": {"metrics": {}}}, {
             "baseline_cost": 100, "proposal_cost": 90, "currency": "RUB",
         })
+
+
+def test_type_size_evaluation_requires_one_proposal_standard():
+    evaluation = build_alternative_evaluation(
+        {"kind": "type_size_reduction_opportunity", "representative_proposal": "Сократить варианты"},
+        [],
+        [{"rows": [{"row_id": "R1", "type_mark": "A", "unit": "шт", "quantity": "2"}]}],
+    )
+    assert "Единый предлагаемый типоразмер" in evaluation["missing_inputs"][0]
+    with pytest.raises(ValueError, match="единый предлагаемый типоразмер"):
+        apply_alternative_inputs(evaluation, {"baseline_cost": 100, "proposal_cost": 90})
+
+    result = apply_alternative_inputs(evaluation, {
+        "proposal_standard": "Тип A, IP44, 230 В",
+        "baseline_operation_count": 10,
+        "operation_count": 6,
+        "baseline_cost": 100, "proposal_cost": 90,
+        "currency": "RUB", "price_source": "КП-1", "price_date": "2026-10-30",
+        "cost_composition": "материал",
+    })
+    assert result["proposal"]["standard"] == "Тип A, IP44, 230 В"
+    assert result["effect"]["natural"]["operation_delta"] == -4.0

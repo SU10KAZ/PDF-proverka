@@ -80,6 +80,9 @@ def build_alternative_evaluation(
         "Трудозатраты и число монтажных операций для обоих вариантов",
         "Цена, дата, валюта и состав затрат для денежной оценки",
     ]
+    candidate_kind = str(candidate.get("kind") or "")
+    if candidate_kind == "type_size_reduction_opportunity":
+        missing_inputs.insert(0, "Единый предлагаемый типоразмер и перечень допустимых исключений")
     if unknown_quantity_rows:
         missing_inputs.insert(0, "Единица и числовое количество для всех исходных строк")
     if current_metrics["total_mass_kg"] is None:
@@ -87,6 +90,7 @@ def build_alternative_evaluation(
 
     return {
         "evaluation_version": ALTERNATIVE_EVALUATION_VERSION,
+        "candidate_kind": candidate_kind,
         "status": "requires_inputs",
         "baseline": {
             "alternative_id": "current",
@@ -107,6 +111,7 @@ def build_alternative_evaluation(
                 "quantity_by_unit": None,
                 "total_mass_kg": None,
             },
+            "standard": None,
             "claimed_savings_percent": claimed_savings,
         },
         "effect": {
@@ -134,6 +139,16 @@ def apply_alternative_inputs(evaluation: dict, inputs: dict) -> dict:
     result = copy.deepcopy(evaluation)
     proposal = result.setdefault("proposal", {}).setdefault("metrics", {})
     baseline = result.setdefault("baseline", {}).setdefault("metrics", {})
+    candidate_kind = str(result.get("candidate_kind") or "")
+    if "proposal_standard" in inputs and inputs.get("proposal_standard") not in (None, ""):
+        standard = str(inputs.get("proposal_standard") or "").strip()
+        if len(standard) > 2000:
+            raise ValueError("Единый предлагаемый типоразмер слишком длинный")
+        result.setdefault("proposal", {})["standard"] = standard
+    if candidate_kind == "type_size_reduction_opportunity":
+        standard = str(result.get("proposal", {}).get("standard") or "").strip()
+        if not standard:
+            raise ValueError("Для сокращения типоразмеров укажите единый предлагаемый типоразмер")
     for field in ("type_mark_count", "total_mass_kg", "operation_count"):
         if field not in inputs or inputs.get(field) in (None, ""):
             continue
@@ -141,6 +156,11 @@ def apply_alternative_inputs(evaluation: dict, inputs: dict) -> dict:
         if value is None or value < 0:
             raise ValueError(f"Некорректное значение {field}")
         proposal[field] = _number(value)
+    if "baseline_operation_count" in inputs and inputs.get("baseline_operation_count") not in (None, ""):
+        value = _decimal(inputs["baseline_operation_count"])
+        if value is None or value < 0:
+            raise ValueError("Некорректное значение baseline_operation_count")
+        baseline["operation_count"] = _number(value)
 
     effect = result.setdefault("effect", {})
     natural = effect.setdefault("natural", {})

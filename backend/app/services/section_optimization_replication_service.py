@@ -266,6 +266,31 @@ def _write_job(job: dict) -> None:
     _write_json(_job_path(job["section"], job["object_id"], job["replication_id"]), job)
 
 
+def _invalidate_package_decision(job: dict, reason: str) -> None:
+    """Invalidate a verdict when evidence used by the package changes.
+
+    Keeping the old event in history is useful for audit, but exposing it as
+    the current decision after a new price, interface review or data answer is
+    unsafe.  The next read therefore shows the package as requiring review.
+    """
+    previous = job.pop("package_decision", None)
+    if not previous:
+        return
+    now = _utc_now()
+    job["package_status"] = "needs_re_review"
+    job.setdefault("package_decision_invalidations", []).append({
+        "reason": " ".join(str(reason or "Изменились доказательства").split())[:1000],
+        "previous_decision": copy.deepcopy(previous),
+        "invalidated_at": now,
+    })
+    expert = _stage_ref(job, "expert")
+    expert.update({
+        "status": "waiting",
+        "message": "Доказательства пакета изменились; требуется повторное экономическое решение",
+        "finished_at": None,
+    })
+
+
 def _start_attempt(job: dict, kind: str) -> None:
     now = _utc_now()
     job.setdefault("attempts", []).append({
@@ -444,6 +469,8 @@ def _apply_graphics_reviews(job: dict, graphics_reviews: list[dict], graphics_me
         for review in graphics_reviews
         if review.get("project_id")
     }
+    if reviews_by_project:
+        _invalidate_package_decision(job, "Изменились результаты графической проверки")
     enriched_assessments: list[dict] = []
     for assessment in job.get("agent_assessments") or []:
         enriched = dict(assessment)
@@ -506,6 +533,11 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
             for row_id in (signal.get("target_row_ids") or [])
             if row_id in rows_by_id and rows_by_id[row_id].get("project_id") in selected_projects
         ]
+        source_rows = [
+            rows_by_id[row_id]
+            for row_id in (signal.get("source_row_ids") or [])
+            if row_id in rows_by_id
+        ]
         discovery = signal.get("kind") == DISCOVERY_KIND
         if discovery:
             # Новая гипотеза не является ранее одобренным решением.
@@ -567,6 +599,17 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
                     )
                 }
                 for item in source_decisions
+            ],
+            "source_rows": [
+                {
+                    key: row.get(key)
+                    for key in (
+                        "row_id", "project_id", "project_name", "version_id", "page", "sheet", "sheet_name", "category", "position",
+                        "name", "designation", "type_mark", "code", "manufacturer", "unit",
+                        "quantity", "mass", "total_mass", "note", "source", "canonical_key",
+                    )
+                }
+                for row in source_rows
             ],
             "targets": targets,
             "guardrails": [
@@ -1172,6 +1215,7 @@ def save_package_decision(
             )
         summary = package_summary_from_dossier(job)
         technical_status = (summary.get("technical_review") or {}).get("status")
+        decision_gate = (summary.get("decision_gate") or {}).get(normalized_decision) or {}
         if normalized_decision == "economic_yes" and summary.get("economic_status") != "positive":
             # Без цены/сопоставимого расчёта положительный результат нельзя
             # выдать за подтверждённую экономию.
@@ -1179,14 +1223,28 @@ def save_package_decision(
                 "Положительный экономический эффект ещё не подтверждён расчётом"
             )
         if normalized_decision == "economic_yes":
-            if technical_status not in {"pass", "pass_with_open_interfaces"}:
+            if not decision_gate.get("allowed"):
+                gate_reason = ((decision_gate.get("reasons") or [None])[0]
+                               or "Пакет ещё не готов к положительному экономическому решению")
+                raise SectionReplicationConflict(gate_reason)
+            if technical_status not in {"pass", "pass_with_open_interfaces", "pass_with_exceptions"}:
                 raise SectionReplicationConflict(
                     "Сначала закройте технические гейты пакета и инженерные интерфейсы"
                 )
-            if technical_status == "pass_with_open_interfaces" and not cleaned_note:
-                raise SectionReplicationConflict(
-                    "Укажите одним комментарием, почему решение допустимо при открытой карте интерфейсов"
-                )
+            if decision_gate.get("requires_note") and not cleaned_note:
+                # The package is already evidence-complete.  Keep the one-click
+                # engineer flow usable while recording why the positive verdict
+                # carries conditions or exclusions.
+                generated_notes = []
+                conditions = (summary.get("technical_review") or {}).get("conditions") or []
+                if conditions:
+                    generated_notes.append("Условия: " + "; ".join(str(value) for value in conditions[:5]))
+                excluded_count = ((summary.get("applicability") or {}).get("coverage") or {}).get("excluded_rows")
+                if excluded_count:
+                    generated_notes.append(f"Исключено строк из пакета: {excluded_count}")
+                if technical_status == "pass_with_open_interfaces":
+                    generated_notes.append("Карту инженерных интерфейсов приложить к рабочей документации")
+                cleaned_note = " ".join(generated_notes)[:3000] or "Пакет принят с указанными техническими ограничениями."
             if (job.get("critic") or {}).get("status") != "pass":
                 raise SectionReplicationConflict("Сначала закройте технические блокеры Critic")
             if any(item.get("status") == "open" for item in job.get("data_requests") or []):
@@ -1199,7 +1257,10 @@ def save_package_decision(
                     raise SectionReplicationConflict(
                         "Для незакрытой технической проверки укажите техническую причину или выберите «Нужны данные»"
                     )
-            elif normalized_reason in {"technically_not_applicable", "scope_exception"}:
+            elif (
+                normalized_reason in {"technically_not_applicable", "scope_exception"}
+                and technical_status != "pass_with_exceptions"
+            ):
                 raise SectionReplicationConflict(
                     "Техническую причину можно выбрать только при незакрытой применимости пакета"
                 )
@@ -1226,6 +1287,18 @@ def save_package_decision(
             "decided_at": now,
             "input_fingerprint": job.get("input_fingerprint"),
             "scope": summary.get("scope") or {},
+            "decision_basis": {
+                "economic_status": summary.get("economic_status"),
+                "technical_status": technical_status,
+                "effect": copy.deepcopy(summary.get("effect") or {}),
+                "applicability": {
+                    "coverage": copy.deepcopy(
+                        (summary.get("applicability") or {}).get("coverage") or {}
+                    ),
+                    "exceptions": copy.deepcopy(summary.get("exceptions") or []),
+                },
+                "blockers": list(summary.get("blockers") or []),
+            },
         }
         job["package_status"] = "reviewed"
         job.setdefault("package_decision_history", []).append(copy.deepcopy(job["package_decision"]))
@@ -1341,6 +1414,7 @@ def update_alternative_evaluation(
         if job.get("dossier") is not None:
             job["dossier"]["alternative_evaluation"] = copy.deepcopy(updated)
         job.setdefault("alternative_evaluation_history", []).append(copy.deepcopy(updated))
+        _invalidate_package_decision(job, "Изменился денежный расчёт пакета")
         _write_job(job)
         result = _public_job(job)
         result["input_stale"] = _job_input_stale(job, get_latest_snapshot(code, object_id=resolved_object_id))
@@ -1371,6 +1445,7 @@ def save_dependency_review(
             "interface_id": interface_id, "status": status, "note": note,
             "evidence_refs": list(evidence_refs or []), "reviewer": reviewer, "recorded_at": _utc_now(),
         })
+        _invalidate_package_decision(job, "Изменилась проверка инженерных интерфейсов")
         _write_job(job)
         return _public_job(job)
 
@@ -1443,6 +1518,7 @@ def answer_data_request(
                 else "answer_insufficient"
             )
             request["rechecked_at"] = _utc_now()
+        _invalidate_package_decision(job, "Получен новый ответ на запрос данных")
         critic_stage = _stage_ref(job, "critic")
         critic_stage.update({
             "status": "done",

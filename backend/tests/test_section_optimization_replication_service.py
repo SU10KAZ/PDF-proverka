@@ -290,6 +290,24 @@ async def test_package_decision_is_one_economic_gate_and_requires_reason_for_mis
     assert saved["package_status"] == "reviewed"
     assert saved["package_summary"]["economic_status"] == "needs_data"
 
+    recalculated = replication.update_alternative_evaluation(
+        "EOM", job["replication_id"],
+        {
+            "baseline_cost": 100,
+            "proposal_cost": 90,
+            "currency": "RUB",
+            "price_source": "КП-1",
+            "price_date": "2026-10-30",
+            "cost_composition": "материал",
+        },
+        object_id="object-1",
+        reviewer="Инженер",
+        expected_updated_at=saved["updated_at"],
+    )
+    assert "package_decision" not in recalculated
+    assert recalculated["package_status"] == "needs_re_review"
+    assert recalculated["package_decision_invalidations"][-1]["previous_decision"]["decision"] == "needs_data"
+
 
 def test_implementation_requires_evidence_and_prior_acceptance():
     with pytest.raises(ValueError, match="доказательство"):
