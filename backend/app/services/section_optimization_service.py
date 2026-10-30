@@ -889,6 +889,74 @@ def _legacy_md(version_dir: Path) -> tuple[Optional[str], Optional[str]]:
     return None, None
 
 
+def _source_dir_md(source_dir: Path) -> tuple[Optional[str], Optional[str]]:
+    """Прочитать Markdown из legacy-папки, где артефакты лежат в extracted/."""
+    extracted = source_dir / "extracted"
+    candidates: list[Path] = []
+    if extracted.is_dir():
+        candidates.extend(sorted(extracted.glob("*_results.md")))
+        candidates.extend(sorted(extracted.glob("*_document.md")))
+        candidates.extend(sorted(extracted.glob("document.md")))
+        candidates.extend(sorted(extracted.glob("*.md")))
+    candidates.extend(sorted(source_dir.glob("*_document.md")))
+    candidates.extend(sorted(source_dir.glob("*.md")))
+    seen: set[Path] = set()
+    for path in candidates:
+        if path in seen or not path.is_file():
+            continue
+        seen.add(path)
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if text.strip():
+            return text, str(path)
+    return None, None
+
+
+def _discover_legacy_source_projects(object_id: Optional[str]) -> list[dict]:
+    """Read-only каталог старых папок с extracted-артефактами.
+
+    Эти папки уже являются источниками аудитов, но исторически не содержат
+    project_info.json и потому не попадают в общий legacy-сканер проектов.
+    Виртуальные записи используются только сборщиком оптимизации; исходники
+    не изменяются.
+    """
+    try:
+        root = object_service.get_projects_dir_for(object_id)
+        if root is None or not root.is_dir():
+            return []
+        result: list[dict] = []
+        for discipline_dir in sorted(root.iterdir()):
+            if not discipline_dir.is_dir() or discipline_dir.name.startswith("_"):
+                continue
+            match = re.match(r"^\[([^]]+)\]", discipline_dir.name)
+            if not match:
+                continue
+            section = match.group(1).strip().upper()
+            # В имени каталога используется кириллическое «ЭОМ», а в
+            # реестре/URL раздел обозначен латиницей EOM.
+            section = {"ЭОМ": "EOM"}.get(section, section)
+            for source_dir in sorted(discipline_dir.iterdir()):
+                if not source_dir.is_dir() or source_dir.name.startswith("_"):
+                    continue
+                extracted = source_dir / "extracted"
+                if not extracted.is_dir():
+                    continue
+                if not any(extracted.glob("*.md")) and not any(extracted.glob("optimization.json")):
+                    continue
+                result.append({
+                    "project_id": source_dir.name,
+                    "name": source_dir.name,
+                    "section": section,
+                    "version_id": "latest",
+                    "_optimization_source_dir": str(source_dir),
+                })
+        return result
+    except (OSError, TypeError, ValueError):
+        return []
+
+
 def _blocks_count(index: Any) -> int:
     if not isinstance(index, dict):
         return 0
@@ -941,6 +1009,24 @@ def _load_project_bundle(project: Any, *, object_id: Optional[str] = None) -> di
     project_id = str(_pget(project, "project_id", ""))
     requested_version = str(_pget(project, "version_id", "") or "") or None
     current_object_id = object_id or object_service.get_current_id()
+
+    source_dir_value = _pget(project, "_optimization_source_dir", "")
+    if source_dir_value:
+        source_dir = Path(str(source_dir_value))
+        md_text, md_file = _source_dir_md(source_dir)
+        extracted = source_dir / "extracted"
+        optimization = _safe_json(extracted / "optimization.json") or {}
+        review = _safe_json(extracted / "expert_review.json") or {}
+        return {
+            "version_id": requested_version or "latest",
+            "md_text": md_text,
+            "md_file": md_file,
+            "optimization": optimization,
+            "expert_review": review,
+            "optimization_history": {"bundles": [], "warnings": []},
+            "graphic_blocks": 0,
+            "error": None,
+        }
 
     try:
         from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
@@ -1058,8 +1144,18 @@ def _current_object_projects(object_id: Optional[str] = None) -> list[Any]:
         pass
     if object_id:
         with project_service.pinned_object(object_id):
-            return list(project_service.list_projects())
-    return list(project_service.list_projects())
+            projects = list(project_service.list_projects())
+    else:
+        projects = list(project_service.list_projects())
+
+    # Legacy EOM folders may contain complete extracted artifacts without the
+    # registration file required by the general project catalog. Keep the
+    # normal catalog entries and append only missing read-only source folders.
+    known = {str(_pget(project, "project_id", "")) for project in projects}
+    for project in _discover_legacy_source_projects(object_id):
+        if str(project.get("project_id")) not in known:
+            projects.append(project)
+    return projects
 
 
 def collect_section_optimization_data(
