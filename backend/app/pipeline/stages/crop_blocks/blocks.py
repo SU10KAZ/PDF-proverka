@@ -27,6 +27,8 @@ from backend.app.pipeline.stages.crop_blocks.cloud_failover import (
     CropFailover, LocalSource, SourceIdentityError, availability_failure,
 )
 
+from backend.app.pipeline.stages.crop_blocks.local_cache import VerifiedCropCache
+
 from backend.app.pipeline.stages.block_context.contract import crop_image_usable
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_FILENAME,
@@ -789,7 +791,7 @@ def crop_blocks(
     skip_small: bool = True,
     output_dir_name: str = "blocks",
 ) -> dict:
-    """Скачать image-блоки по crop_url из result.json и сохранить как PNG.
+    """Сохранить image-блоки как PNG: проверенный кэш → PDF → облако.
 
     compact=True: сохраняет ДВЕ версии каждого блока:
       - block_<ID>.png       — compact (800px) — используется в батчах
@@ -820,12 +822,14 @@ def crop_blocks(
     all_image_blocks = []
     failover = CropFailover()
     local_sources = {}
+    local_caches = {}
 
     for rj_path in result_json_paths:
         print(f"  OCR result: {rj_path.name}")
         with open(rj_path, "r", encoding="utf-8") as f:
             ocr_data = json.load(f)
 
+        local_caches[str(rj_path)] = VerifiedCropCache(project_path, rj_path, ocr_data)
         pages = ocr_data.get("pages", [])
         if not pages:
             print(f"  [WARN] Нет страниц в {rj_path.name}")
@@ -1013,19 +1017,42 @@ def crop_blocks(
         if not all(dims):
             local_source = None
         provider = urlsplit(crop_url).netloc if crop_url else "no-cloud"
+        local_kind = "local_pdf"
+
+        def render_local():
+            nonlocal local_kind
+            local_source.verify()
+            cached = local_caches[block_info["source_key"]].read(block_info)
+            if cached is not None:
+                try:
+                    # Same renderer and policy as cloud PDF crops, without HTTP.
+                    size = _render_pdf_bytes_to_png(
+                        cached, out_file, dpi=use_dpi, min_long_side=use_min_side,
+                    )
+                    if save_full:
+                        _render_pdf_bytes_to_png(
+                            cached, save_full, dpi=use_dpi or TARGET_DPI,
+                            min_long_side=use_min_side,
+                        )
+                    local_kind = "local_cache_pdf"
+                    return size
+                except Exception as exc:
+                    print(f"  [CACHE-MISS] {bid}: {exc}")
+            return crop_from_pdf(
+                local_source.pdf, pn, block_info["coords_px"],
+                dims[0], dims[1], out_file, dpi=use_dpi,
+                min_long_side=use_min_side, also_save_full=save_full,
+            )
+
         try:
             (w, h), source = failover.crop(
-                source=local_source, provider=provider,
+                source=local_source, provider=provider, local_first=True,
                 cloud=(lambda: download_and_convert(
                     crop_url, out_file, dpi=use_dpi,
                     min_long_side=use_min_side, also_save_full=save_full,
                     fast_fail_availability=local_source is not None,
                 )) if crop_url else None,
-                local=lambda: crop_from_pdf(
-                    local_source.pdf, pn, block_info["coords_px"],
-                    dims[0], dims[1], out_file, dpi=use_dpi,
-                    min_long_side=use_min_side, also_save_full=save_full,
-                ),
+                local=render_local,
             )
         except Exception as exc:
             print(f"  [ERROR] {bid}: {exc}")
@@ -1033,6 +1060,8 @@ def crop_blocks(
             failed_records.append(_crop_failed_record(bid, pn, "crop_failed", exc))
             continue
 
+        if source == "local_pdf":
+            source = local_kind
         size_kb = out_file.stat().st_size / 1024
         full_kb = round(full_file.stat().st_size / 1024, 1) if compact and full_file.exists() else None
         label = "DOWNLOAD" if source == "cloud" else "PDF-CROP"

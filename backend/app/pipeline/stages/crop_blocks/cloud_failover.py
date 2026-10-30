@@ -79,7 +79,7 @@ class CropFailover:
         ), 0)
 
     def crop(self, *, source: LocalSource | None, provider: str,
-             cloud, local):
+             cloud, local, local_first: bool = False):
         # Cross-process lock includes the first local fallback and OPEN write:
         # precrop and foreground (or 20 parallel workers) cannot probe together.
         key = hashlib.sha256(f'{provider}\0{source.identity if source else "no-local"}'.encode()).hexdigest()
@@ -89,7 +89,23 @@ class CropFailover:
             state = json.loads(state_path.read_text()) if state_path.exists() else {'open': False}
             if source:
                 source.verify()
-            skip = bool(cloud and source and state['open'])
+            if local_first and source:
+                self.metrics['local_crop_attempts'] += 1
+                try:
+                    result = local()
+                except SourceIdentityError:
+                    raise
+                except Exception:
+                    self.metrics['local_crop_failures'] += 1
+                    # Do not hide source mutation behind a successful cloud call.
+                    source.verify()
+                    if cloud is None:
+                        raise
+                else:
+                    source.verify()
+                    self.metrics['local_crop_successes'] += 1
+                    return result, 'local_pdf'
+            skip = bool(cloud and source and state['open'] and not local_first)
             failure = None
             if cloud and not skip:
                 self.metrics['cloud_crop_attempts'] += 1
@@ -106,7 +122,7 @@ class CropFailover:
                     failure = exc
             if skip:
                 self.metrics['cloud_crop_skipped_after_breaker'] += 1
-            if source is None:
+            if source is None or local_first:
                 raise failure or FileNotFoundError('Exact local PDF unavailable for crop')
             source.verify()
             self.metrics['local_crop_attempts'] += 1
