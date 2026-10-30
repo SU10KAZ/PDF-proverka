@@ -170,6 +170,26 @@ def _section_code_or_400(section_code: str) -> str:
     return code
 
 
+def _latest_section_replications(replications: list[dict]) -> list[dict]:
+    """Keep one current dossier per signal in the summary response.
+
+    Historical/stale jobs remain on disk and are available through the
+    dossier endpoints, but sending every retry to the section page made the
+    initial payload unnecessarily large and duplicated cards.
+    """
+    latest: dict[str, dict] = {}
+    for job in replications:
+        if job.get("input_stale"):
+            continue
+        key = str(job.get("signal_id") or job.get("replication_id") or "")
+        if not key:
+            continue
+        previous = latest.get(key)
+        if previous is None or str(job.get("updated_at") or "") > str(previous.get("updated_at") or ""):
+            latest[key] = job
+    return sorted(latest.values(), key=lambda item: str(item.get("replication_id") or ""))
+
+
 @router.post("/section/{section_code}/pipeline/run")
 async def start_section_optimization_pipeline(
     section_code: str,
@@ -432,16 +452,21 @@ async def save_section_replication_package_decision(
         raise HTTPException(400, str(exc)) from exc
 
 
-def _portfolio_packages(code: str, *, object_id: Optional[str], readonly: bool = False) -> list[dict]:
+def _portfolio_packages(
+    code: str, *, object_id: Optional[str], readonly: bool = False,
+    snapshot: Optional[dict] = None, replications: Optional[list[dict]] = None,
+) -> list[dict]:
     from backend.app.services.section_optimization_pipeline_service import get_latest_snapshot
     from backend.app.services.section_optimization_replication_service import list_replications
 
-    snapshot = get_latest_snapshot(code, object_id=object_id, readonly=readonly)
+    snapshot = snapshot or get_latest_snapshot(code, object_id=object_id, readonly=readonly)
     if not snapshot:
         raise HTTPException(404, "Снимок раздела ещё не подготовлен")
-    packages = build_section_optimization_portfolio(
-        snapshot, list_replications(code, object_id=object_id, repair=not readonly)
+    snapshot = attach_package_summaries(snapshot)
+    replications = replications if replications is not None else list_replications(
+        code, object_id=object_id, repair=not readonly
     )
+    packages = build_section_optimization_portfolio(snapshot, replications)
     try:
         state = load_portfolio_state(code, object_id=object_id)
     except ValueError:
@@ -451,7 +476,7 @@ def _portfolio_packages(code: str, *, object_id: Optional[str], readonly: bool =
         state = {}
     for package in packages:
         evaluation = (state.get("evaluations") or {}).get(package["package_id"])
-        if evaluation:
+        if evaluation and evaluation.get("package_fingerprint") == package.get("fingerprint"):
             baseline = float(evaluation.get("baseline_cost") or 0)
             proposal = float(evaluation.get("proposal_cost") or 0)
             uncertainty = float(evaluation.get("cost_uncertainty_percent") or 0) / 100
@@ -472,7 +497,23 @@ def _portfolio_packages(code: str, *, object_id: Optional[str], readonly: bool =
             package["decision_gate"]["economic_yes"]["allowed"] = (
                 package["technical_review"]["status"] == "pass" and package["economic_status"] == "positive"
             )
-            package["decision_gate"]["economic_no"]["allowed"] = package["economic_status"] == "negative"
+            if package.get("scope", {}).get("unknown_quantity_row_ids"):
+                package["decision_gate"]["economic_yes"]["allowed"] = False
+                package["decision_gate"]["economic_yes"]["reason"] = "Для части строк не указаны единицы или количество."
+            if package.get("missing_row_ids"):
+                package["decision_gate"]["economic_yes"]["allowed"] = False
+                package["decision_gate"]["economic_yes"]["reason"] = "Часть строк пакета отсутствует в текущем снимке раздела."
+            untraceable = package.get("scope", {}).get("untraceable_row_ids") or []
+            if untraceable:
+                package["decision_gate"]["economic_yes"]["allowed"] = False
+                package["decision_gate"]["economic_yes"]["reason"] = "Не все строки привязаны к проекту и версии."
+            if package.get("kind_counts", {}).get("type_size_reduction_opportunity") and not str(evaluation.get("proposal_standard") or "").strip():
+                package["decision_gate"]["economic_yes"]["allowed"] = False
+                package["decision_gate"]["economic_yes"]["reason"] = "Для сокращения типоразмеров укажите единый предлагаемый стандарт."
+            package["decision_gate"]["economic_no"]["allowed"] = (
+                package["economic_status"] == "negative"
+                or package["technical_review"]["status"] in {"exceptions", "blocked", "needs_data"}
+            )
             package["blockers"] = [item for item in package.get("blockers", []) if "затраты" not in item]
         decision = (state.get("decisions") or {}).get(package["package_id"])
         if decision and decision.get("package_fingerprint") == package.get("fingerprint"):
@@ -737,15 +778,21 @@ async def get_section_optimization(
     })
     data["capabilities"] = capabilities
     data["pipeline"] = pipeline
-    data["replications"] = list_replications(code, object_id=object_id, repair=not readonly)
-    data["optimization_packages"] = _portfolio_packages(code, object_id=object_id, readonly=readonly)
+    all_replications = list_replications(code, object_id=object_id, repair=not readonly)
+    data["replications_history_count"] = len(all_replications)
+    data["replications"] = _latest_section_replications(all_replications)
+    data["optimization_packages"] = _portfolio_packages(
+        code, object_id=object_id, readonly=readonly, snapshot=data, replications=data["replications"]
+    )
     data["optimization_package_summary"] = {
         "count": len(data["optimization_packages"]),
         "signal_count": sum(len(item.get("signal_ids") or []) for item in data["optimization_packages"]),
         "decided": sum(1 for item in data["optimization_packages"] if item.get("decision")),
     }
-    data["solution_library"] = build_solution_library(data["replications"])
-    data["pilot_readiness"] = build_pilot_readiness(data, data["replications"])
+    data["solution_library"] = build_solution_library(all_replications)
+    data["pilot_readiness"] = build_pilot_readiness(
+        data, data["replications"], data.get("optimization_packages") or []
+    )
     return data
 
 

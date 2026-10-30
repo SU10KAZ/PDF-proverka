@@ -176,7 +176,8 @@ describe('section optimization card', () => {
     expect(html).toContain('Сравнение вариантов и эффект');
     expect(html).toContain('Эффект пока потенциальный');
     expect(js).toContain('function sectionOptimizationAlternativeQuantityText(evaluation)');
-    expect(html).toContain('Указать показатели вариантов');
+    expect(html).not.toContain('Указать показатели вариантов');
+    expect(js).not.toContain('function updateSectionOptimizationAlternative(');
     expect(js).toContain("+ '/alternatives'");
     expect(html).toContain('Затрагиваемые инженерные интерфейсы');
     expect(html).toContain('dependency.required_evidence');

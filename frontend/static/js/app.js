@@ -5540,6 +5540,8 @@ const app = createApp({
         const sectionOptimizationPackageExpanded = ref({});
         const sectionOptimizationPackageCalcOpen = ref({});
         const sectionOptimizationPackageDrafts = ref({});
+        const sectionOptimizationPortfolioDrafts = ref({});
+        const sectionOptimizationPortfolioCalcOpen = ref({});
         const sectionOptimizationPipelineActionLoading = ref(false);
         const sectionOptimizationPipelineActionError = ref('');
         const sectionOptimizationReplicationActionLoading = ref(false);
@@ -5557,6 +5559,17 @@ const app = createApp({
             ['queued', 'running'].includes(sectionOptimizationPipeline.value.status)
         ));
         const sectionOptimizationReplications = computed(() => sectionOptimizationData.value?.replications || []);
+        const sectionOptimizationPackages = computed(() => {
+            let packages = sectionOptimizationData.value?.optimization_packages || [];
+            const projectId = sectionOptimizationProjectFilter.value;
+            if (projectId) packages = packages.filter(item => (item.scope?.projects || [])
+                .some(project => project.project_id === projectId));
+            const query = sectionOptimizationSearch.value.trim().toLowerCase();
+            if (query) packages = packages.filter(item => [item.title, item.question,
+                ...(item.signal_titles || []), ...(item.proposed_actions || [])]
+                .some(value => String(value || '').toLowerCase().includes(query)));
+            return packages;
+        });
         const sectionOptimizationAgentAvailable = computed(() => (
             (sectionOptimizationData.value?.analysis_stages || []).some(stage => stage.key === 'agent')
         ));
@@ -6241,6 +6254,7 @@ const app = createApp({
                 return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
             };
             const body = {
+                proposal_standard: String(sectionOptimizationPackageDraftValue(process, 'proposal_standard') || '').trim(),
                 type_mark_count: numberOrNull(sectionOptimizationPackageDraftValue(process, 'type_mark_count')),
                 total_mass_kg: numberOrNull(sectionOptimizationPackageDraftValue(process, 'total_mass_kg')),
                 operation_count: numberOrNull(sectionOptimizationPackageDraftValue(process, 'operation_count')),
@@ -6267,6 +6281,137 @@ const app = createApp({
             }
         }
 
+        function sectionOptimizationPortfolioDraftValue(packageItem, field) {
+            const id = packageItem?.package_id;
+            const saved = packageItem?.evaluation?.[field];
+            const draft = id ? sectionOptimizationPortfolioDrafts.value[id] : null;
+            return draft && Object.prototype.hasOwnProperty.call(draft, field) ? draft[field] : (saved ?? '');
+        }
+
+        function isSectionOptimizationPortfolioCalcOpen(packageItem) {
+            return Boolean(packageItem?.package_id && sectionOptimizationPortfolioCalcOpen.value[packageItem.package_id]);
+        }
+
+        function toggleSectionOptimizationPortfolioCalc(packageItem) {
+            if (!packageItem?.package_id) return;
+            const id = packageItem.package_id;
+            sectionOptimizationPortfolioCalcOpen.value = {
+                ...sectionOptimizationPortfolioCalcOpen.value,
+                [id]: !isSectionOptimizationPortfolioCalcOpen(packageItem),
+            };
+        }
+
+        function setSectionOptimizationPortfolioDraft(packageItem, field, value) {
+            if (!packageItem?.package_id) return;
+            const id = packageItem.package_id;
+            sectionOptimizationPortfolioDrafts.value = {
+                ...sectionOptimizationPortfolioDrafts.value,
+                [id]: {...(sectionOptimizationPortfolioDrafts.value[id] || {}), [field]: value},
+            };
+        }
+
+        function sectionOptimizationPortfolioDecisionGate(packageItem, decision) {
+            const gate = packageItem?.decision_gate?.[decision] || {};
+            return {...gate, reason: gate.reason || (gate.reasons || []).join('; ') || 'Недостаточно данных'};
+        }
+
+        function sectionOptimizationPortfolioScopeText(packageItem) {
+            const scope = packageItem?.scope || {};
+            const quantities = Object.entries(scope.quantity_by_unit || {})
+                .map(([unit, value]) => `${value} ${unit}`).join('; ');
+            return `${scope.project_count || 0} проектов · ${scope.row_count || 0} строк${quantities ? ` · ${quantities}` : ''}`;
+        }
+
+        function sectionOptimizationPortfolioTypeLabel(packageItem) {
+            const kinds = Object.keys(packageItem?.kind_counts || {});
+            if (kinds.length === 1 && kinds[0] === 'replicate_accepted_optimization') return 'Тиражирование';
+            if (kinds.length === 1 && kinds[0] === 'type_size_reduction_opportunity') return 'Сокращение типоразмеров';
+            return 'Смешанный пакет';
+        }
+
+        async function saveSectionOptimizationPortfolioEvaluation(packageItem) {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !packageItem || sectionOptimizationReplicationActionLoading.value) return;
+            const value = field => String(sectionOptimizationPortfolioDraftValue(packageItem, field) ?? '').trim();
+            const numeric = field => {
+                const raw = value(field).replace(',', '.');
+                if (!raw) return null;
+                const parsed = Number(raw);
+                if (!Number.isFinite(parsed) || parsed < 0) throw new Error(`Поле «${field}» должно быть числом не меньше нуля.`);
+                return parsed;
+            };
+            let baseline; let proposal; let uncertainty;
+            try {
+                baseline = numeric('baseline_cost');
+                proposal = numeric('proposal_cost');
+                uncertainty = numeric('cost_uncertainty_percent') ?? 0;
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error.message;
+                return;
+            }
+            const required = [['baseline_cost', baseline], ['proposal_cost', proposal], ['currency', value('currency')],
+                ['price_source', value('price_source')], ['price_date', value('price_date')], ['cost_composition', value('cost_composition')]];
+            const missing = required.find(([, item]) => item === null || item === '');
+            if (missing) {
+                sectionOptimizationPipelineActionError.value = `Заполните поле «${missing[0]}».`;
+                return;
+            }
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const objectQuery = currentObjectId.value ? `?object_id=${encodeURIComponent(currentObjectId.value)}` : '';
+                const response = await apiPost(`/optimization/section/${encodeURIComponent(sectionCode)}/portfolio/${encodeURIComponent(packageItem.package_id)}/evaluation${objectQuery}`, {
+                    baseline_cost: baseline, proposal_cost: proposal, currency: value('currency'),
+                    price_source: value('price_source'), price_date: value('price_date'),
+                    cost_composition: value('cost_composition'), cost_uncertainty_percent: uncertainty,
+                    proposal_standard: value('proposal_standard'), expected_fingerprint: packageItem.fingerprint,
+                }, {withVersion: false});
+                if (response?.package && sectionOptimizationData.value) {
+                    sectionOptimizationData.value = {...sectionOptimizationData.value,
+                        optimization_packages: (sectionOptimizationData.value.optimization_packages || []).map(item =>
+                            item.package_id === packageItem.package_id ? response.package : item)};
+                }
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
+        async function saveSectionOptimizationPortfolioDecision(packageItem, decision) {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !packageItem || sectionOptimizationReplicationActionLoading.value) return;
+            const note = String(sectionOptimizationPortfolioDraftValue(packageItem, 'decision_note') || '').trim();
+            if ((decision !== 'economic_yes') && !note) {
+                sectionOptimizationPipelineActionError.value = 'Для этого решения укажите причину.';
+                return;
+            }
+            const gate = sectionOptimizationPortfolioDecisionGate(packageItem, decision);
+            if (!gate.allowed) {
+                sectionOptimizationPipelineActionError.value = gate.reason || 'Пакет ещё не готов к этому решению.';
+                return;
+            }
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const objectQuery = currentObjectId.value ? `?object_id=${encodeURIComponent(currentObjectId.value)}` : '';
+                const response = await apiPost(`/optimization/section/${encodeURIComponent(sectionCode)}/portfolio/${encodeURIComponent(packageItem.package_id)}/decision${objectQuery}`, {
+                    decision, note,
+                    reason_code: decision === 'needs_data' ? 'insufficient_data' : (decision === 'economic_no' ? 'no_saving' : ''),
+                    expected_fingerprint: packageItem.fingerprint,
+                }, {withVersion: false});
+                if (response?.package && sectionOptimizationData.value) {
+                    sectionOptimizationData.value = {...sectionOptimizationData.value,
+                        optimization_packages: (sectionOptimizationData.value.optimization_packages || []).map(item =>
+                            item.package_id === packageItem.package_id ? response.package : item)};
+                }
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
         function sectionOptimizationAlternativeQuantityText(evaluation) {
             const quantities = evaluation?.baseline?.metrics?.quantity_by_unit || {};
             const parts = Object.entries(quantities).map(([unit, value]) => `${value} ${unit}`);
@@ -6276,49 +6421,6 @@ const app = createApp({
         function sectionOptimizationAlternativeMassText(evaluation) {
             const value = evaluation?.baseline?.metrics?.total_mass_kg;
             return Number.isFinite(Number(value)) && value !== null ? `${value} кг` : 'не определена';
-        }
-
-        async function updateSectionOptimizationAlternative(process) {
-            const sectionCode = sidebarFilterSection.value;
-            if (!sectionCode || !process || sectionOptimizationReplicationActionLoading.value) return;
-            const typeMarks = window.prompt('Количество типоразмеров предлагаемого варианта (пусто — неизвестно)', '');
-            if (typeMarks === null) return;
-            const mass = window.prompt('Общая масса предлагаемого варианта, кг (пусто — неизвестно)', '');
-            if (mass === null) return;
-            const baselineCost = window.prompt('Стоимость исходного варианта (пусто — без денежной оценки)', '');
-            if (baselineCost === null) return;
-            const body = {
-                type_mark_count: typeMarks.trim() ? Number(typeMarks.replace(',', '.')) : null,
-                total_mass_kg: mass.trim() ? Number(mass.replace(',', '.')) : null,
-                baseline_cost: null, proposal_cost: null, currency: '', price_source: '', price_date: '', cost_composition: '',
-                expected_updated_at: process.updated_at,
-            };
-            if (baselineCost.trim()) {
-                const proposalCost = window.prompt('Стоимость предлагаемого варианта', '');
-                const currency = window.prompt('Валюта', 'RUB');
-                const priceSource = window.prompt('Источник цен', '');
-                const priceDate = window.prompt('Дата цен, ГГГГ-ММ-ДД', '');
-                const composition = window.prompt('Состав затрат', 'материал и монтаж');
-                const uncertainty = window.prompt('Неопределённость цены, %', '10');
-                if ([proposalCost, currency, priceSource, priceDate, composition, uncertainty].some(value => value === null || !value.trim())) return;
-                Object.assign(body, {
-                    baseline_cost: Number(baselineCost.replace(',', '.')),
-                    proposal_cost: Number(proposalCost.replace(',', '.')),
-                    currency, price_source: priceSource, price_date: priceDate, cost_composition: composition,
-                    cost_uncertainty_percent: Number(uncertainty.replace(',', '.')),
-                });
-            }
-            sectionOptimizationReplicationActionLoading.value = true;
-            try {
-                const response = await apiPost(sectionOptimizationReplicationsUrl(
-                    sectionCode, '/' + encodeURIComponent(process.replication_id) + '/alternatives',
-                ), body, { withVersion: false });
-                if (response?.replication) upsertSectionOptimizationReplication(response.replication);
-            } catch (error) {
-                sectionOptimizationPipelineActionError.value = error?.message || String(error);
-            } finally {
-                sectionOptimizationReplicationActionLoading.value = false;
-            }
         }
 
         async function reviewSectionOptimizationDependency(process, dependency, status) {
@@ -6664,6 +6766,8 @@ const app = createApp({
                 sectionOptimizationPackageExpanded.value = {};
                 sectionOptimizationPackageCalcOpen.value = {};
                 sectionOptimizationPackageDrafts.value = {};
+                sectionOptimizationPortfolioDrafts.value = {};
+                sectionOptimizationPortfolioCalcOpen.value = {};
             }
             try {
                 const query = objectId
@@ -6832,6 +6936,8 @@ const app = createApp({
             sectionOptimizationPackageExpanded.value = {};
             sectionOptimizationPackageCalcOpen.value = {};
             sectionOptimizationPackageDrafts.value = {};
+            sectionOptimizationPortfolioDrafts.value = {};
+            sectionOptimizationPortfolioCalcOpen.value = {};
             sectionOptimizationReplicationActionLoading.value = false;
             _sectionOptimizationReplicationPollTokens.clear();
             if (currentView.value === 'section-optimization'
@@ -21210,6 +21316,8 @@ const app = createApp({
             sectionOptimizationCollapsedProjects, sectionOptimizationExpandedSignals,
             sectionOptimizationPackageExpanded, sectionOptimizationPackageCalcOpen,
             sectionOptimizationPackageDrafts, sectionOptimizationProjectOptions,
+            sectionOptimizationPortfolioDrafts, sectionOptimizationPackages,
+            sectionOptimizationPortfolioCalcOpen,
             sectionOptimizationPipeline, sectionOptimizationPipelineRunning,
             sectionOptimizationPipelineActionLoading, sectionOptimizationPipelineActionError,
             sectionOptimizationReplicationActionLoading, sectionOptimizationReplications,
@@ -21239,13 +21347,17 @@ const app = createApp({
             sectionOptimizationPackageDraftValue, setSectionOptimizationPackageDraft,
             saveSectionOptimizationPackageDecision,
             saveSectionOptimizationPackageEvaluation,
+            sectionOptimizationPortfolioDraftValue, setSectionOptimizationPortfolioDraft,
+            isSectionOptimizationPortfolioCalcOpen, toggleSectionOptimizationPortfolioCalc,
+            sectionOptimizationPortfolioDecisionGate, sectionOptimizationPortfolioScopeText,
+            sectionOptimizationPortfolioTypeLabel,
+            saveSectionOptimizationPortfolioEvaluation, saveSectionOptimizationPortfolioDecision,
             sectionOptimizationImplementationFor, sectionOptimizationImplementationLabel,
             sectionOptimizationCriticReviewFor, sectionOptimizationExpertDecisionAllowed,
             saveSectionOptimizationExpertDecision,
             answerSectionOptimizationDataRequest,
             updateSectionOptimizationImplementation,
             sectionOptimizationAlternativeQuantityText, sectionOptimizationAlternativeMassText,
-            updateSectionOptimizationAlternative,
             reviewSectionOptimizationDependency,
             setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
             sectionOptimizationSpecificationTypeMark,

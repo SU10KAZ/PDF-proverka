@@ -817,7 +817,80 @@
                             </ol>
                             <small>«Сокращение типоразмеров» — отдельный тип кандидата: сначала докажите, что варианты действительно взаимозаменяемы, а не отличаются только написанием.</small>
                         </div>
-                        <table v-if="sectionOptimizationFilteredSignals.length" class="section-optimization-table section-optimization-table--signals">
+                        <section v-if="sectionOptimizationPackages.length" class="section-optimization-portfolio">
+                            <div class="section-optimization-portfolio__header">
+                                <b>Пакеты оптимизации раздела</b>
+                                <span>{{ sectionOptimizationPackages.length }} пакет(ов) · решение принимается один раз по пакету</span>
+                            </div>
+                            <article v-for="packageItem in sectionOptimizationPackages" :key="packageItem.package_id" class="section-optimization-portfolio__card">
+                                <div class="section-optimization-portfolio__title">
+                                    <div><span class="section-optimization-portfolio__type">{{ sectionOptimizationPortfolioTypeLabel(packageItem) }}</span> <b>{{ packageItem.title }}</b><small>{{ packageItem.question }}</small></div>
+                                    <span v-if="packageItem.decision" class="section-optimization-package-card__decision">{{ sectionOptimizationPackageDecisionLabel(packageItem.decision.decision) }}</span>
+                                </div>
+                                <div class="section-optimization-portfolio__meta">
+                                    <span>Охват: {{ sectionOptimizationPortfolioScopeText(packageItem) }}</span>
+                                    <span v-if="packageItem.source_scope?.row_count">Источник: {{ packageItem.source_scope.project_count }} проектов · {{ packageItem.source_scope.row_count }} строк</span>
+                                    <span>Типы: {{ Object.entries(packageItem.kind_counts || {}).map(([kind, count]) => `${sectionOptimizationSignalTypeLabel({kind})}: ${count}`).join(' · ') }}</span>
+                                </div>
+                                <div class="section-optimization-portfolio__status">
+                                    <span>Техника: {{ sectionOptimizationPackageTechnicalLabel(packageItem.technical_review) }}</span>
+                                    <span>Экономика: {{ sectionOptimizationPackageEconomicLabel(packageItem.economic_status) }}</span>
+                                    <span v-if="packageItem.effect?.delta !== undefined">Дельта: {{ packageItem.effect.delta }} {{ packageItem.effect.currency }}</span>
+                                </div>
+                                <small v-if="packageItem.proposed_actions?.length">Предлагается: {{ packageItem.proposed_actions.slice(0, 2).join(' · ') }}</small>
+                                <small v-if="packageItem.blockers?.length" class="section-optimization-portfolio__blockers">{{ packageItem.blockers.join('; ') }}</small>
+                                <details class="section-optimization-portfolio__checks">
+                                    <summary>Что проверить и исключения</summary>
+                                    <ul><li v-for="item in (packageItem.checklist || []).slice(0, 4)" :key="item">{{ item }}</li></ul>
+                                    <small v-for="exception in (packageItem.applicability?.exceptions || []).slice(0, 4)" :key="exception.project_id + exception.status">{{ exception.project_name || exception.project_id }}: {{ exception.status }} · {{ exception.row_ids?.length || 0 }} строк</small>
+                                </details>
+                                <div v-if="!packageItem.decision">
+                                    <button type="button" class="btn btn-sm btn-secondary" @click="toggleSectionOptimizationPortfolioCalc(packageItem)">
+                                        {{ isSectionOptimizationPortfolioCalcOpen(packageItem) ? 'Скрыть расчёт' : 'Внести экономику пакета' }}
+                                    </button>
+                                </div>
+                                <div v-if="!packageItem.decision && isSectionOptimizationPortfolioCalcOpen(packageItem)" class="section-optimization-portfolio__form">
+                                    <div class="section-optimization-package-calculation__grid">
+                                        <label>Текущая стоимость всего
+                                            <input inputmode="decimal" type="text" :value="sectionOptimizationPortfolioDraftValue(packageItem, 'baseline_cost')" @input="setSectionOptimizationPortfolioDraft(packageItem, 'baseline_cost', $event.target.value)">
+                                        </label>
+                                        <label>Предлагаемая стоимость всего
+                                            <input inputmode="decimal" type="text" :value="sectionOptimizationPortfolioDraftValue(packageItem, 'proposal_cost')" @input="setSectionOptimizationPortfolioDraft(packageItem, 'proposal_cost', $event.target.value)">
+                                        </label>
+                                        <label>Валюта
+                                            <input type="text" placeholder="RUB" :value="sectionOptimizationPortfolioDraftValue(packageItem, 'currency')" @input="setSectionOptimizationPortfolioDraft(packageItem, 'currency', $event.target.value)">
+                                        </label>
+                                        <label>Источник и дата цены
+                                            <input type="text" placeholder="КП №…, 2026-10-30" :value="sectionOptimizationPortfolioDraftValue(packageItem, 'price_source')" @input="setSectionOptimizationPortfolioDraft(packageItem, 'price_source', $event.target.value)">
+                                        </label>
+                                        <label>Состав затрат
+                                            <input type="text" placeholder="материал, монтаж, переделка, эксплуатация" :value="sectionOptimizationPortfolioDraftValue(packageItem, 'cost_composition')" @input="setSectionOptimizationPortfolioDraft(packageItem, 'cost_composition', $event.target.value)">
+                                        </label>
+                                        <label>Предлагаемый стандарт / типоразмер
+                                            <input type="text" placeholder="для сокращения типоразмеров" :value="sectionOptimizationPortfolioDraftValue(packageItem, 'proposal_standard')" @input="setSectionOptimizationPortfolioDraft(packageItem, 'proposal_standard', $event.target.value)">
+                                        </label>
+                                        <label>Неопределённость, %
+                                            <input inputmode="decimal" type="text" placeholder="0" :value="sectionOptimizationPortfolioDraftValue(packageItem, 'cost_uncertainty_percent')" @input="setSectionOptimizationPortfolioDraft(packageItem, 'cost_uncertainty_percent', $event.target.value)">
+                                        </label>
+                                        <label>Дата цены
+                                            <input type="date" :value="sectionOptimizationPortfolioDraftValue(packageItem, 'price_date')" @input="setSectionOptimizationPortfolioDraft(packageItem, 'price_date', $event.target.value)">
+                                        </label>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-primary" :disabled="sectionOptimizationReplicationActionLoading" @click="saveSectionOptimizationPortfolioEvaluation(packageItem)">Сохранить расчёт пакета</button>
+                                    <label class="section-optimization-package-card__note">Комментарий к решению
+                                        <input type="text" placeholder="для «Нужны данные» и «Не обосновано» обязателен" :value="sectionOptimizationPortfolioDraftValue(packageItem, 'decision_note')" @input="setSectionOptimizationPortfolioDraft(packageItem, 'decision_note', $event.target.value)">
+                                    </label>
+                                    <div class="section-optimization-portfolio__actions">
+                                        <button type="button" class="btn btn-sm btn-primary" :disabled="sectionOptimizationReplicationActionLoading || !sectionOptimizationPortfolioDecisionGate(packageItem, 'economic_yes').allowed" :title="sectionOptimizationPortfolioDecisionGate(packageItem, 'economic_yes').reason" @click="saveSectionOptimizationPortfolioDecision(packageItem, 'economic_yes')">Экономически обосновано</button>
+                                        <button type="button" class="btn btn-sm btn-secondary" :disabled="sectionOptimizationReplicationActionLoading || !sectionOptimizationPortfolioDecisionGate(packageItem, 'needs_data').allowed" @click="saveSectionOptimizationPortfolioDecision(packageItem, 'needs_data')">Нужны данные</button>
+                                        <button type="button" class="btn btn-sm btn-secondary" :disabled="sectionOptimizationReplicationActionLoading || !sectionOptimizationPortfolioDecisionGate(packageItem, 'economic_no').allowed" :title="sectionOptimizationPortfolioDecisionGate(packageItem, 'economic_no').reason" @click="saveSectionOptimizationPortfolioDecision(packageItem, 'economic_no')">Не обосновано</button>
+                                    </div>
+                                </div>
+                            </article>
+                        </section>
+                        <details v-if="sectionOptimizationFilteredSignals.length" class="section-optimization-signal-details">
+                            <summary>Детали сигналов и доказательств (не требуется подтверждать каждую строку)</summary>
+                        <table class="section-optimization-table section-optimization-table--signals">
                             <thead>
                                 <tr>
                                     <th>Тип</th>
@@ -891,7 +964,7 @@
                                                       class="section-optimization-package-card__decision">
                                                     {{ sectionOptimizationPackageDecisionLabel(sectionOptimizationPackageFor(signal).decision) }}
                                                 </span>
-                                                <div v-if="canOperate && sectionOptimizationReplicationFor(signal.signal_id)
+                                                <div v-if="false && canOperate && sectionOptimizationReplicationFor(signal.signal_id)
                                                     && sectionOptimizationReplicationFor(signal.signal_id).status === 'awaiting_expert'
                                                     && sectionOptimizationReplicationFor(signal.signal_id).agent_status === 'complete'
                                                     && !sectionOptimizationReplicationFor(signal.signal_id).input_stale"
@@ -929,7 +1002,7 @@
                                                                @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'decision_note', $event.target.value)">
                                                     </label>
                                                 </div>
-                                                <div v-if="isSectionOptimizationPackageCalcOpen(signal.signal_id)"
+                                                <div v-if="false && isSectionOptimizationPackageCalcOpen(signal.signal_id)"
                                                      class="section-optimization-package-calculation">
                                                     <b>Расчёт по всему пакету</b>
                                                     <small>Введите итоговые суммы по всем целевым проектам. Не складывайте разные единицы измерения в одну сумму.</small>
@@ -968,6 +1041,11 @@
                                                             <input type="text" placeholder="материал, монтаж, переделка"
                                                                    :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'cost_composition')"
                                                                    @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'cost_composition', $event.target.value)">
+                                                        </label>
+                                                        <label>Предлагаемый стандарт / типоразмер
+                                                            <input type="text" placeholder="обязателен для сокращения типоразмеров"
+                                                                   :value="sectionOptimizationPackageDraftValue(sectionOptimizationReplicationFor(signal.signal_id), 'proposal_standard')"
+                                                                   @input="setSectionOptimizationPackageDraft(sectionOptimizationReplicationFor(signal.signal_id), 'proposal_standard', $event.target.value)">
                                                         </label>
                                                     </div>
                                                     <button type="button" class="btn btn-sm btn-primary"
@@ -1055,6 +1133,7 @@
                                     <tr v-if="isSectionOptimizationSignalExpanded(signal.signal_id) || isSectionOptimizationPackageExpanded(signal.signal_id)"
                                         class="section-optimization-source-decisions-row">
                                         <td colspan="6">
+                                            <div class="section-optimization-readonly-hint"><b>Исключения и доказательства</b> · детали ниже уточняют пакет, но отдельное решение по проекту здесь не требуется.</div>
                                             <div v-if="sectionOptimizationReplicationFor(signal.signal_id)?.engineering_passport"
                                                  class="section-optimization-engineering-passport">
                                                 <b>Инженерный паспорт решения</b>
@@ -1089,11 +1168,9 @@
                                                         {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.currency }};
                                                         диапазон {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.delta_range.best }}…{{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.delta_range.worst }}.
                                                     </small>
-                                                    <button v-if="canOperate" type="button" class="btn btn-sm btn-secondary"
-                                                            :disabled="sectionOptimizationReplicationActionLoading"
-                                                            @click="updateSectionOptimizationAlternative(sectionOptimizationReplicationFor(signal.signal_id))">
-                                                        Указать показатели вариантов
-                                                    </button>
+                                                    <small class="section-optimization-readonly-hint">
+                                                        Показатели вариантов вводятся один раз в карточке общего пакета выше.
+                                                    </small>
                                                 </div>
                                                 <div v-if="sectionOptimizationReplicationFor(signal.signal_id).dependency_assessment"
                                                      class="section-optimization-dependencies">
@@ -1352,6 +1429,7 @@
                                 </template>
                             </tbody>
                         </table>
+                        </details>
                         <div v-else class="section-optimization-empty">
                             Надёжные межпроектные совпадения пока не найдены. Это не означает отсутствие потенциала — нужен смысловой этап анализа.
                         </div>

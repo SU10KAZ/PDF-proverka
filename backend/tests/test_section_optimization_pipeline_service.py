@@ -107,6 +107,21 @@ async def test_recalculation_keeps_serving_previous_persisted_snapshot(monkeypat
 
 
 @pytest.mark.asyncio
+async def test_recalculation_does_not_replace_nonempty_snapshot_with_empty(monkeypatch):
+    previous = {"meta": {"section": "EOM", "generated_at": "old"}, "specification_rows": [{"row_id": "R1"}], "signals": []}
+    pipeline.store_latest_snapshot("EOM", previous, object_id="object-1", run_id="initial-run")
+    monkeypatch.setattr(pipeline, "collect_section_optimization_data", lambda *args, **kwargs: _collected())
+    monkeypatch.setattr(pipeline, "normalize_section_optimization_data", lambda collected: collected)
+    monkeypatch.setattr(pipeline, "synthesize_section_optimization_data", lambda normalized: {"meta": {}, "specification_rows": [], "signals": []})
+
+    pipeline.start_pipeline("EOM", object_id="object-1")
+    state = await _wait_until_settled("EOM", "object-1")
+    assert state["status"] == "ready_for_review"
+    assert state["serving_previous_snapshot"] is True
+    assert pipeline.get_latest_snapshot("EOM", object_id="object-1") == previous
+
+
+@pytest.mark.asyncio
 async def test_graphics_stage_builds_plan_without_starting_model(monkeypatch):
     monkeypatch.setattr(pipeline, "collect_section_optimization_data", lambda *args, **kwargs: _collected())
     monkeypatch.setattr(pipeline, "normalize_section_optimization_data", lambda collected: collected)

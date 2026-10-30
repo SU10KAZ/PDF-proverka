@@ -348,6 +348,21 @@ async def _run_pipeline(state: dict) -> None:
 
         _begin_stage(state, "synthesize", "Ищем проекты для тиражирования принятых решений")
         snapshot = await asyncio.to_thread(synthesize_section_optimization_data, normalized)
+        previous_snapshot = _read_json(_snapshot_path(state["section"], state["object_id"]))
+        previous_rows = len((previous_snapshot or {}).get("specification_rows") or [])
+        new_rows = len(snapshot.get("specification_rows") or [])
+        if previous_rows and not new_rows:
+            # A broken/incomplete project catalog must never erase the last
+            # usable section snapshot.  Keep it available and expose the
+            # recalculation problem in pipeline state for an administrator.
+            state["serving_previous_snapshot"] = True
+            state["snapshot_persisted"] = True
+            state["error"] = "Новый сбор не вернул строки спецификаций; сохранён предыдущий снимок раздела."
+            _finish_stage(state, "synthesize", state["error"], {"specification_rows": 0, "preserved_rows": previous_rows})
+            state["status"] = "ready_for_review"
+            state["completed_at"] = _utc_now()
+            _write_state(state)
+            return
         store_latest_snapshot(
             state["section"],
             snapshot,
