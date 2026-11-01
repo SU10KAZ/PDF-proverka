@@ -37,7 +37,7 @@ function load(fetchImpl) {
 describe('All project comparisons — catalog component', () => {
     it('uses fixed catalog columns so completed results do not resize rows', () => {
         expect(source).toContain('<col class="pc-catalog__col-project">');
-        expect(source).toContain('<col class="pc-catalog__col-docs">');
+        expect(source).not.toContain('<col class="pc-catalog__col-docs">');
         expect(source).toContain('<col class="pc-catalog__col-model">');
         expect(load(async () => ({})).definition.template).not.toContain("? '\n' +");
     });
@@ -46,9 +46,11 @@ describe('All project comparisons — catalog component', () => {
         const {definition} = load(async () => ({}));
         expect(definition.name).toBe('project-comparison-catalog');
         expect(definition.emits).toEqual(['open', 'start', 'select-pair', 'select-all']);
-        for (const column of ['Проект / раздел', 'OLD → NEW', 'Метод и модель', 'Дата', 'Изменения',
+        for (const column of ['Проект / раздел', 'Метод и модель', 'Дата', 'Изменения',
             'Требуют проверки', 'Статус', 'Запустить сравнение'])
             expect(definition.template).toContain(column);
+        expect(definition.template).not.toContain('OLD → NEW');
+        expect(definition.template).not.toContain('pc-catalog__docs');
         expect(definition.template).toContain('<th>Метод и модель</th>');
         expect(definition.template).not.toContain('<th>V3</th>');
         expect(definition.template).not.toContain('Смысловые блоки в шаге 2');
