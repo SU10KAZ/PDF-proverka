@@ -102,12 +102,32 @@ def validate_verification_answer(
         }
         for item in batch["data"]["items"]
     }
+    graphic_pages = {
+        item["work_item_id"]: {
+            (str(source["side"]), int(source["physical_page"]))
+            for source in item["sources"] if source.get("modality") == "GRAPHIC"
+        }
+        for item in batch["data"]["items"]
+    }
+    context_refs = {work_id: set() for work_id in expected}
+    for image in batch.get("images") or []:
+        label = image.get("label") or {}
+        work_id = label.get("work_item_id")
+        side_page = (str(label.get("side")), int(label.get("physical_page") or 0))
+        if (work_id in expected and image.get("path")
+                and label.get("kind") == "FULL_PAGE_CONTEXT" and label.get("block_id") == ""
+                and side_page in graphic_pages[work_id]):
+            context_refs[work_id].add((*side_page, ""))
     for result in results:
         cited = {
             (str(ref.get("side")), int(ref.get("physical_page") or 0), str(ref.get("block_id") or ""))
             for ref in result.get("evidence_refs") or []
         }
-        if not cited or not cited <= allowed_refs[result["work_item_id"]]:
+        work_id = result["work_item_id"]
+        # A supplied graphic overview can supplement a concrete source-block
+        # citation. It cannot replace that binding, cross work items, or make an
+        # unprovided page available. Keep TEXT authority in the prepared MD.
+        if not cited & allowed_refs[work_id] or not cited <= allowed_refs[work_id] | context_refs[work_id]:
             raise ValueError(f"verification cites unavailable evidence: {result['work_item_id']}")
 
 
