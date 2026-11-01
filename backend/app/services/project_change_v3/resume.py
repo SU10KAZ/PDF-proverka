@@ -549,7 +549,7 @@ def resume_options(session_id: str, pair_id: str, run_id: str) -> dict[str, Any]
         **({"gaps": dict(donor.gaps)} if donor.completed else {}),
         "saved_regions": len(donor.checkpoint.get("regions") or []),
         "planned_new_calls": plan.get("new_calls"),
-        "max_new_miner_calls": plan["max_new_calls"] if "max_new_calls" in plan else max_new_calls(),
+        "max_new_miner_calls": None,
     }
 
 

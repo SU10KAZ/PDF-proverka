@@ -159,7 +159,9 @@ def test_excessive_plan_stops_before_mining_and_mapping_can_be_reused(env, monke
     monkeypatch.setenv('PROJECT_COMPARISON_V3_MAX_NEW_MINER_CALLS', '2')
     monkeypatch.setattr(engine, '_miner_fits', lambda _p, r, _w, _c:
                         len(r['old_pages']) == len(r['new_pages']) == 1)
-    state = _run(env['session_id'])
+    from backend.tests.project_change_v3.legacy_miner_limit_fixture import legacy_miner_limit
+    with legacy_miner_limit(2):
+        state = _run(env['session_id'])
     assert state['reason_code'] == 'miner_plan_budget_exceeded'
     assert [c['stage'] for c in fake.calls] == ['MAPPING']
     assert resume.resume_available(env['session_id'], gf.PAIR_ID, state['run_id'])

@@ -127,7 +127,7 @@ def test_failure_stops_admission_and_drains_in_flight_answers(env, monkeypatch, 
     monkeypatch.setattr(engine, "_V3Failure", ObservedFailure)
 
     def write(path, value):
-        if failure == "checkpoint" and not stop_observed.is_set():
+        if failure == "checkpoint" and value.get("regions") and not stop_observed.is_set():
             raise OSError("synthetic disk failure")
         return real_write(path, value)
 

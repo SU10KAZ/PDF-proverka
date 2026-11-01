@@ -90,7 +90,6 @@ def test_repartitioning_over_budget_parent_beats_adjacent_row_packing():
 
 
 @pytest.mark.parametrize('value', ['0', '-1', '257', 'bad'])
-def test_invalid_limit_is_not_silently_disabled(monkeypatch, value):
+def test_obsolete_limit_environment_does_not_cap_or_block_the_plan(monkeypatch, value):
     monkeypatch.setenv(plan.MAX_NEW_CALLS_ENV, value)
-    with pytest.raises(ValueError):
-        plan.max_new_calls()
+    assert plan.max_new_calls() is None

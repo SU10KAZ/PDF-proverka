@@ -7,6 +7,7 @@ import pytest
 from backend.app.services.project_change_v3 import contracts, engine, miner_plan, resume, run_storage
 from backend.app.services.project_change_v3.provider import ProviderError, set_test_provider
 from backend.tests.project_change_v3 import generic_fixture as gf
+from backend.tests.project_change_v3.legacy_miner_limit_fixture import legacy_miner_limit
 from backend.tests.project_change_v3.test_failure_states import env  # noqa: F401
 from backend.tests.project_change_v3.test_miner_parallel import handlers
 from backend.tests.project_change_v3.test_partial_miner_resume import _snapshot
@@ -22,7 +23,8 @@ def planned(env, monkeypatch):
     monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
     fake = Receipted(handlers=handlers(3))
     set_test_provider(fake)
-    state = _run(env['session_id'], model_profile='opus55')
+    with legacy_miner_limit(1):
+        state = _run(env['session_id'], model_profile='opus55')
     assert state['reason_code'] == 'miner_plan_budget_exceeded', state
     assert [c['stage'] for c in fake.calls] == ['MAPPING']
     # The engine intentionally excludes FakeProvider calls from paid counters.
@@ -59,7 +61,7 @@ def test_saved_mapping_handoff_uses_only_astra_for_new_work_and_keeps_donor(env,
     for call in prov['transport_calls']:
         assert call['model'] == ('claude-opus-5-5' if call['stage'] == 'MAPPING' else 'gpt-6-astra')
     assert _snapshot(directory) == before
-    assert prov['miner_plan']['max_new_calls'] == 3 and miner_plan.max_new_calls() == 1
+    assert prov['miner_plan']['max_new_calls'] is None and miner_plan.max_new_calls() is None
     assert checked and set(checked) == {'astra'}
 
 
@@ -69,15 +71,12 @@ def test_unconfirmed_model_switch_is_refused(env, planned):
     assert state['reason_code'] == 'resume_refused' and not fake.calls
 
 
-def test_target_plan_budget_stops_before_calls_and_can_resume_again(env, planned):
+def test_old_explicit_limit_no_longer_stops_recovery(env, planned):
     fake = Receipted(handlers=handlers(3)); set_test_provider(fake)
-    stopped = _continue(env, planned, limit=1)
-    assert stopped['reason_code'] == 'miner_plan_budget_exceeded' and not fake.calls
-    assert resume.resume_options(env['session_id'], gf.PAIR_ID, stopped['run_id'])['model_profile'] == 'astra'
-    done = _run(env['session_id'], resume_from_run_id=stopped['run_id'], max_new_miner_calls=3)
+    done = _continue(env, planned, limit=1)
     assert done['status'] in {'REVIEW', 'COMPLETED'}, done
-    assert done['provenance']['model_handoff']['source_model']['model'] == 'claude-opus-5-5'
-    assert 'MAPPING' not in [c['stage'] for c in fake.calls]
+    assert [call['stage'] for call in fake.calls] == ['MINING'] * 3 + ['DEDUPE']
+    assert done['provenance']['miner_plan']['max_new_calls'] is None
 
 
 @pytest.mark.parametrize('fail_stage', ['MINING', 'DEDUPE'])
@@ -171,7 +170,7 @@ def test_public_state_and_api_expose_and_forward_the_explicit_recovery(env, plan
     assert state['resume_options'] == {
         'comparison_mode': 'standard',
         'model_profile': 'opus55', 'can_switch_model': True, 'mode': 'before_mining',
-        'saved_regions': 0, 'planned_new_calls': 3, 'max_new_miner_calls': 1,
+        'saved_regions': 0, 'planned_new_calls': 3, 'max_new_miner_calls': None,
     }
     captured = {}
     def start(*args, **kwargs):

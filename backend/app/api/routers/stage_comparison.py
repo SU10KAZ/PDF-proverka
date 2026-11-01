@@ -114,7 +114,10 @@ class ProductionRunRequest(BaseModel):
     #: После остановки планирования до первого Miner разрешён явный выбор другой модели.
     resume_from_run_id: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$")
     resume_model_policy: Literal["same_model", "remaining_stages"] = "same_model"
-    max_new_miner_calls: int | None = Field(default=None, ge=1, le=256, strict=True)
+    max_new_miner_calls: int | None = Field(
+        default=None, ge=1, le=256, strict=True, deprecated=True,
+        description="Legacy field, accepted for compatibility; the entire Miner plan is executed.",
+    )
 
 
 class ProductionDecisionUpdate(BaseModel):

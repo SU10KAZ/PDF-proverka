@@ -261,7 +261,9 @@ def test_reused_checkpoint_write_failure_stops_before_new_calls(env, partial, mo
 def test_call_limit_keeps_checkpoint_and_resume_coalesces_only_missing_parts(env, partial, monkeypatch):
     fake = _remaining(monkeypatch)
     monkeypatch.setenv('PROJECT_COMPARISON_V3_MAX_NEW_MINER_CALLS', '2')
-    stopped = _run(env['session_id'], resume_from_run_id=partial['run_id'])
+    from backend.tests.project_change_v3.legacy_miner_limit_fixture import legacy_miner_limit
+    with legacy_miner_limit(2):
+        stopped = _run(env['session_id'], resume_from_run_id=partial['run_id'])
     assert stopped['reason_code'] == 'miner_plan_budget_exceeded' and not fake.calls
     assert stopped['provenance']['miner_plan']['new_calls'] == 4
     assert len(_checkpoint(stopped)['regions']) == 9

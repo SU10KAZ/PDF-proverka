@@ -1374,16 +1374,14 @@ def _run_admitted(
             raise fail("miner_checkpoint_persistence_failed",
                        "V3: восстановленные участки Miner не удалось сохранить; новые вызовы не начаты", exc) from exc
 
-    if not reuse_complete_mining and provenance["miner_plan"]["new_calls"] > max_new_miner_calls:
+    # Keep a recovery checkpoint before admitting any Miner work. Total plan
+    # size is no longer a stop condition; bounded workers process all regions.
+    if not reused_rows:
         try:
             persist_checkpoint()
         except Exception as exc:
             raise fail("miner_checkpoint_persistence_failed",
-                       "V3: план Miner не удалось сохранить; новые вызовы не начаты", exc) from exc
-        raise fail("miner_plan_budget_exceeded",
-                   f"V3: план требует {provenance['miner_plan']['new_calls']} новых заданий Miner "
-                   f"при лимите {max_new_miner_calls}. Поиск изменений остановлен до новых вызовов; "
-                   "сопоставление и принятые ответы сохранены для продолжения.")
+                       "V3: контрольная точка Miner не сохранена; новые вызовы не начаты", exc) from exc
 
     def mine_region(index: int, region: dict[str, Any]):
         nonlocal calls, coverage

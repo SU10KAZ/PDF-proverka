@@ -16962,7 +16962,6 @@ const app = createApp({
             scResumeDialog.value = {
                 runId, pairId: scActivePair.value.id, ...options,
                 modelProfile: options.model_profile,
-                maxNewMinerCalls: options.max_new_miner_calls,
             };
         }
 
@@ -16971,15 +16970,8 @@ const app = createApp({
             if (!dialog || dialog.pairId !== scActivePair.value?.id
                     || dialog.runId !== scProductionState.value?.run_id) return;
             if (!dialog.can_switch_model && dialog.modelProfile !== dialog.model_profile) return;
-            const limit = Number(dialog.maxNewMinerCalls);
-            const withoutMiner = ['tail', 'gaps'].includes(dialog.mode);
-            if (!withoutMiner && (!Number.isInteger(limit) || limit < 1 || limit > 256)) {
-                scProductionError.value = 'Укажите целое число участков от 1 до 256.';
-                return;
-            }
             const settings = {resumeFromRunId: dialog.runId, resumeModelProfile: dialog.modelProfile};
             if (dialog.modelProfile !== dialog.model_profile) settings.resumeModelPolicy = 'remaining_stages';
-            if (!withoutMiner) settings.maxNewMinerCalls = limit;
             scResumeDialog.value = null;
             scRunProductionComparison(settings);
         }
@@ -17125,7 +17117,6 @@ const app = createApp({
                 delete runBody.model_profile;
                 if (settings.resumeModelProfile) runBody.model_profile = settings.resumeModelProfile;
                 if (settings.resumeModelPolicy) runBody.resume_model_policy = settings.resumeModelPolicy;
-                if (settings.maxNewMinerCalls != null) runBody.max_new_miner_calls = settings.maxNewMinerCalls;
             }
             const requestedAt = new Date().toISOString();
             scProductionState.value = {

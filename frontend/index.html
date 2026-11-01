@@ -8206,16 +8206,10 @@
                         <span>{{ option.label }}</span>
                     </label>
                 </fieldset>
-                <template v-if="!['tail', 'gaps'].includes(scResumeDialog.mode)">
-                    <label>Максимум новых участков в этом запуске
-                        <input type="number" min="1" max="256" step="1" v-model.number="scResumeDialog.maxNewMinerCalls">
-                    </label>
-                    <p class="pause-modal__desc">
-                        В сохранённом плане: {{ scResumeDialog.planned_new_calls ?? 'не указано' }}.
-                        Для выбранной модели план будет пересчитан; если лимита не хватит, анализ остановится до поиска изменений.
-                        Общий лимит системы не меняется.
-                    </p>
-                </template>
+                <p v-if="!['tail', 'gaps'].includes(scResumeDialog.mode)" class="pause-modal__desc">
+                    В сохранённом плане: {{ scResumeDialog.planned_new_calls ?? 'не указано' }} участков.
+                    Будут обработаны все оставшиеся участки. Принятые ответы сохраняются.
+                </p>
                 <p v-if="scProductionError" role="alert">{{ scProductionError }}</p>
                 <button type="button" class="btn btn-primary" :disabled="scProductionRunLoading || scProductionRunActive"
                         @click="scConfirmResumeProductionRun()">Продолжить анализ</button>
