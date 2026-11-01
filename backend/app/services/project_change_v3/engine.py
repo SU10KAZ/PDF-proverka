@@ -1681,6 +1681,20 @@ def _run_admitted(
                                          validate_supplemental_answer=validate_supplemental_answer)
         except resume_mod.ResumeRefused as exc:
             raise fail("resume_refused", f"V3: досборка из прогона {donor.run_id} невозможна: {exc}", exc) from exc
+        # Tail/gap continuations own a complete checkpoint too. Otherwise the
+        # empty initial checkpoint makes a subsequent recovery impossible.
+        for ordinal, (region, row) in enumerate(zip(regions, donor.checkpoint["regions"], strict=True), 1):
+            checkpoint["regions"].append({
+                **row, "ordinal": ordinal, "result": replayed["mined_regions"][ordinal - 1],
+                "semantic_region_sha256": _canonical_sha256(region),
+                "resumed_from_run_id": donor.run_id,
+                "source_run_id": row.get("source_run_id", donor.run_id),
+            })
+        try:
+            persist_checkpoint()
+        except Exception as exc:
+            raise fail("miner_checkpoint_persistence_failed",
+                       "V3: контрольная точка восстановленных ответов Miner не сохранена", exc) from exc
         mined_regions.extend(replayed["mined_regions"])
         all_changes.extend(replayed["changes"])
         all_hints.extend(replayed["hints"])

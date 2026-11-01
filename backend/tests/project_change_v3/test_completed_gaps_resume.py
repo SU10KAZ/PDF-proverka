@@ -207,3 +207,35 @@ def test_the_delay_key_never_reaches_the_provider():
 
     outcome = parallel_calls._complete(Provider(), {parallel_calls.DELAY_KEY: 0.01, "stage": "X"})
     assert outcome.response == {"ok": True} and seen == {"stage": "X"}
+
+
+def test_repeated_gap_recovery_keeps_its_own_complete_miner_checkpoint(env, monkeypatch, no_retry):
+    from backend.app.services.project_change_v3 import resume
+
+    handlers = prepare(env, monkeypatch, "SOURCE_VERIFICATION", 16)
+    good = handlers["SOURCE_VERIFICATION"]
+    handlers["SOURCE_VERIFICATION"] = _failing(good, lambda k: k["call_id"].endswith("VERIFY-B002"))
+    set_test_provider(FakeProvider(handlers=handlers))
+    first = _run(env["session_id"])
+    assert first["quality_source_verification_pending"] == 8
+    fake = FakeProvider(handlers=handlers)
+    set_test_provider(fake)
+    second = _run(env["session_id"], resume_from_run_id=first["run_id"])
+    assert second["status"] == "REVIEW"
+    assert second["quality_source_verification_pending"] == 8
+    assert _stages(fake) == [("SOURCE_VERIFICATION", f"{gf.PAIR_ID}_VERIFY-B002")]
+    # A second continuation must retain the new run's identity, not fall back
+    # to an ancestor or silently rerun Mapper/Miner.
+    donor = resume.load_donor(env["session_id"], gf.PAIR_ID, second["run_id"])
+    assert donor.run_id == second["run_id"]
+    assert donor.checkpoint["run_id"] == second["run_id"]
+    assert len(donor.checkpoint["regions"]) == len(donor.semantic_map["regions"])
+    assert all(row["source_run_id"] == first["run_id"] for row in donor.checkpoint["regions"])
+
+    handlers["SOURCE_VERIFICATION"] = good
+    fake = FakeProvider(handlers=handlers)
+    set_test_provider(fake)
+    third = _run(env["session_id"], resume_from_run_id=second["run_id"])
+    assert third["status"] == "REVIEW", third["message"]
+    assert third["quality_source_verification_pending"] == 0
+    assert _stages(fake) == [("SOURCE_VERIFICATION", f"{gf.PAIR_ID}_VERIFY-B002")]
