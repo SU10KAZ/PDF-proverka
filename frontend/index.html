@@ -6106,7 +6106,8 @@
                             <strong>Управление парой</strong>
                         </div>
 
-                        <div v-for="row in scPairRows" :key="'pair-row-'+row.index" class="sc-pair-board__row"
+                        <template v-for="row in scPairRows" :key="'pair-row-'+row.index">
+                        <div class="sc-pair-board__row"
                              :class="{
                                  'is-active': row.pair && scActivePair && row.pair.id === scActivePair.id,
                                  'is-confirmed': scIsPairRowConfirmed(row),
@@ -6148,6 +6149,12 @@
                                     <small>{{ row.left.version_id || 'source' }}</small>
                                 </div>
                                 <span v-else class="sc-pair-slot__empty">Перетащите сюда документ П</span>
+                                <button v-if="canOperate && row.left && !pcReadOnlySources" type="button"
+                                        class="sc-add-standalone-row" :disabled="scHasStandaloneUploadRow(row)"
+                                        :aria-label="'Добавить строку без левого проекта под ' + row.left.filename"
+                                        title="Добавить ниже строку без левого проекта"
+                                        @click="scSetStandaloneUploadRow(row, true)">+</button>
+
                             </div>
 
                             <template v-if="scFanItems(row)">
@@ -6275,6 +6282,19 @@
                                 </small>
                             </div>
                         </div>
+                        <div v-if="scHasStandaloneUploadRow(row) && canOperate && !pcReadOnlySources"
+                             class="sc-pair-board__row sc-standalone-upload-row">
+                            <span></span><div></div><span></span>
+                            <div class="sc-pair-slot">
+                                <button type="button" class="btn btn-sm btn-secondary"
+                                        @click="scOpenStandaloneRowUpload(row)">+ Загрузить проекты справа</button>
+                            </div>
+                            <div class="sc-pair-row-actions">
+                                <button type="button" class="pc-link" aria-label="Убрать пустую строку"
+                                        @click="scSetStandaloneUploadRow(row, false)">Убрать строку</button>
+                            </div>
+                        </div>
+                        </template>
                     </div>
                 </section>
             </div>
@@ -8260,9 +8280,15 @@
                 </header>
 
                 <div v-if="scStageUploadTarget" class="sc-stage-upload-target">
-                    Проекты встанут справа напротив <strong>{{ scStageUploadTarget.leftName }}</strong>.
-                    Если справа у него окажется больше одного проекта, они будут склеены в одну сборку
-                    и сравнены с ним одной парой.
+                    <template v-if="scStageUploadTarget.afterLeftCode">
+                        Проекты появятся в отдельных строках справа под <strong>{{ scStageUploadTarget.afterLeftName }}</strong>.
+                        Левая часть новых строк останется пустой.
+                    </template>
+                    <template v-else>
+                        Проекты встанут справа напротив <strong>{{ scStageUploadTarget.leftName }}</strong>.
+                        Если справа у него окажется больше одного проекта, они будут склеены в одну сборку
+                        и сравнены с ним одной парой.
+                    </template>
                 </div>
 
                 <div class="sc-stage-upload-context">

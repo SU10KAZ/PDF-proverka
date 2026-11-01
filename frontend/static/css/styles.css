@@ -6960,3 +6960,19 @@ tr.row-rejected td.sc-cell-goto {
     cursor: pointer;
 }
 .sc-v3-model-choice label.is-selected { border-color: var(--teal, #0f9f8f); background: rgba(15, 159, 143, .07); }
+
+.sc-add-standalone-row {
+    display: block;
+    margin: 5px auto 0;
+    width: 24px;
+    height: 24px;
+    border: 1px dashed var(--accent, #0f9f8f);
+    border-radius: 50%;
+    color: var(--accent, #0f9f8f);
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 20px;
+}
+.sc-add-standalone-row:disabled { opacity: .4; cursor: default; }
+.sc-standalone-upload-row { min-height: 44px; }

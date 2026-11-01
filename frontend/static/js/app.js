@@ -13211,6 +13211,12 @@ const app = createApp({
         const scDocumentGroupsError = ref('');
         const scDocumentGroupsBusy = ref(false);
         const scStageUploadTarget = ref(null);
+        const scStandaloneUploadRows = ref((() => {
+            try {
+                const saved = JSON.parse(localStorage.getItem('stage-comparison:upload-rows') || '[]');
+                return Array.isArray(saved) ? saved.filter(key => typeof key === 'string') : [];
+            } catch (_) { return []; }
+        })());
         let scDocumentGroupsTimer = 0;
         let scDocumentGroupsToken = 0;
         const scActivePair = ref(null);
@@ -14962,6 +14968,61 @@ const app = createApp({
             };
         }
 
+        function scStandaloneUploadKey(row) {
+            return row?.left ? `${currentObjectId.value}:${row.left.document_code}` : '';
+        }
+
+        function scHasStandaloneUploadRow(row) {
+            return scStandaloneUploadRows.value.includes(scStandaloneUploadKey(row));
+        }
+
+        function scSetStandaloneUploadRow(row, present) {
+            if (!window.portalCan?.operate() || pcReadOnlySources.value || !row?.left) return;
+            const key = scStandaloneUploadKey(row);
+            scStandaloneUploadRows.value = scStandaloneUploadRows.value.filter(item => item !== key);
+            if (present) scStandaloneUploadRows.value.push(key);
+            try {
+                localStorage.setItem('stage-comparison:upload-rows', JSON.stringify(scStandaloneUploadRows.value));
+            } catch (_) {}
+        }
+
+        function scOpenStandaloneRowUpload(row) {
+            if (!window.portalCan?.operate() || pcReadOnlySources.value || !row?.left) return;
+            scOpenStageFolderDialog();
+            if (!scStageFolderDialogOpen.value) return;
+            scStageFolderDialogStage.value = 'stage_2';
+            scStageUploadTarget.value = {
+                afterLeftCode: row.left.document_code,
+                afterLeftName: row.left.filename,
+            };
+        }
+
+        // Uploads into a standalone row stay unpaired, immediately below its anchor.
+        function scPlaceStandaloneRightDocuments(leftCode, codes) {
+            const left = scLeftDocumentByCode(leftCode);
+            if (!left) return 'Исходная строка больше не найдена';
+            const selected = new Set(codes);
+            const paths = scBoardDocumentsRight.value
+                .filter(document => selected.has(document.document_code))
+                .map(document => document.pdf_path);
+            if (!paths.length) return 'Загруженные проекты уже входят в существующую группу';
+            const moved = new Set(paths);
+            const order = scPackDocumentRows(
+                [...scDocumentOrder.left],
+                scDocumentOrder.right.map(path => moved.has(path) ? null : path),
+            );
+            const anchor = order.left.indexOf(left.pdf_path);
+            if (anchor < 0) return 'Исходная строка больше не найдена';
+            order.left.splice(anchor + 1, 0, ...paths.map(() => null));
+            order.right.splice(anchor + 1, 0, ...paths);
+            scRemoveConfirmedPairsForPaths(paths);
+            scDocumentOrder.left = order.left;
+            scDocumentOrder.right = order.right;
+            scSetStandaloneUploadRow({left}, false);
+            scPersistDocumentOrder();
+            return '';
+        }
+
         // Перетащили правый документ на «+» строки — добавить его к правым документам строки.
         function scDropOnRowPlus(row) {
             const dragging = scDraggingDocument.value;
@@ -15613,7 +15674,8 @@ const app = createApp({
 
         function scUploadBatchLabel(batch) {
             const side = batch.stageName === 'stage_1' ? 'Слева' : 'Справа';
-            const target = batch.target && batch.target.leftName ? ` → ${batch.target.leftName}` : '';
+            const target = batch.target?.afterLeftName ? ` · под ${batch.target.afterLeftName}`
+                : (batch.target?.leftName ? ` → ${batch.target.leftName}` : '');
             return `${side}: ${batch.folderName || 'проекты'}${target}`;
         }
 
@@ -15625,7 +15687,9 @@ const app = createApp({
                 return `${batch.current} из ${batch.total}${percent}`;
             }
             if (batch.failed) return `готово, ошибок: ${batch.failed}`;
-            if (batch.groupError) return 'загружено, группа не собрана — откройте';
+            if (batch.groupError) return batch.target?.afterLeftCode
+                ? 'загружено, строка не создана — откройте'
+                : 'загружено, группа не собрана — откройте';
             return `готово: ${batch.total}`;
         }
 
@@ -15780,11 +15844,15 @@ const app = createApp({
                     await scLoadObjects();
                     if (batch.target && batch.target.leftCode && uploadedCodes.length) {
                         batch.groupError = await scAssignRightDocuments(batch.target.leftCode, uploadedCodes);
+                    } else if (batch.target?.afterLeftCode && uploadedCodes.length) {
+                        batch.groupError = scPlaceStandaloneRightDocuments(batch.target.afterLeftCode, uploadedCodes);
                     }
                 }
                 const problems = [];
                 if (batch.failed) problems.push(`Не загружено проектов: ${batch.failed}. Подробности указаны в строках.`);
-                if (batch.groupError) problems.push(`Проекты загружены, но группа не собрана: ${batch.groupError}`);
+                if (batch.groupError) problems.push(batch.target?.afterLeftCode
+                    ? `Проекты загружены, но строка не создана: ${batch.groupError}`
+                    : `Проекты загружены, но группа не собрана: ${batch.groupError}`);
                 batch.error = problems.join(' ');
             } finally {
                 batch.status = 'done';
@@ -21507,6 +21575,7 @@ const app = createApp({
             scDocumentsLeft, scDocumentsRight, scDocumentOrder, scPairRows,
             scDocumentGroupsError, scDocumentGroupsBusy, scStageUploadTarget,
             scFanItems, scFanShowsPlus, scFanPath, scOpenRowUpload, scDropOnRowPlus,
+            scHasStandaloneUploadRow, scSetStandaloneUploadRow, scOpenStandaloneRowUpload,
             scRemoveGroupMember, scRebuildDocumentGroup,
             scDraggingDocument, scDocumentDragOver,
             scDraggingPairRow, scPairRowDragOver,
