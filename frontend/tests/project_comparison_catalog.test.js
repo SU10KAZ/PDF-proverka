@@ -45,7 +45,7 @@ describe('All project comparisons — catalog component', () => {
     it('registers a pair overview with saved-result and launch actions', () => {
         const {definition} = load(async () => ({}));
         expect(definition.name).toBe('project-comparison-catalog');
-        expect(definition.emits).toEqual(['open', 'start', 'select-pair', 'select-all']);
+        expect(definition.emits).toEqual(['open', 'open-pair', 'start', 'select-pair', 'select-all']);
         for (const column of ['Проект / раздел', 'Метод и модель', 'Дата', 'Изменения',
             'Требуют проверки', 'Статус', 'Запустить сравнение'])
             expect(definition.template).toContain(column);

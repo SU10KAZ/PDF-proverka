@@ -104,6 +104,57 @@ def _pair_with_persisted_status(session_id: str, pair: dict) -> dict:
     }
 
 
+def _document_run_key(document: dict) -> tuple:
+    """Versioned input identity; labels alone must never join independent groups."""
+    ref = document.get("assembly_ref") or {}
+    return tuple(document.get(key) for key in ("pdf_path", "md_path", "html_path", "version_id")) + (
+        ref.get("assembly_id"), ref.get("version_id"), ref.get("manifest_sha256"),
+    )
+
+
+def _comparison_runs(meta: dict) -> list[dict]:
+    """Read-only references to durable runs, including earlier upload sessions.
+
+    Source versions are immutable. Require exact prepared input paths/version and
+    assembly manifest, as well as the same object stage roots. Never copy runs.
+    """
+    documents = meta.get("documents") or {}
+    allowed = {
+        side: {_document_run_key(doc) for doc in documents.get(stage, [])}
+        for side, stage in (("left", "stage_1"), ("right", "stage_2"))
+    }
+    found = {}
+    entries = [{"id": meta["id"], **{key: meta.get(key) for key in ("stage_a_path", "stage_b_path")}}]
+    entries += [entry for entry in _read_index()["sessions"] if entry.get("id") != meta["id"]]
+    for entry in entries:
+        if any(entry.get(key) != meta.get(key) for key in ("stage_a_path", "stage_b_path")):
+            continue
+        sid = str(entry.get("id") or "")
+        for pid in _pair_ids(sid):
+            pair = _load_pair(sid, pid)
+            if not pair or any(_document_run_key(pair.get(side) or {}) not in allowed[side]
+                               for side in ("left", "right")):
+                continue
+            state = _read_json(paths_mod.production_state_path(sid, pid))
+            if not isinstance(state, dict) or not state.get("run_id"):
+                continue
+            key = tuple(_document_run_key(pair[side]) for side in ("left", "right"))
+            # Active work wins over historical results; otherwise choose latest activity.
+            rank = (state.get("status") == "RUNNING", str(state.get("last_activity_at") or state.get("started_at") or ""))
+            if key in found and found[key][0] >= rank:
+                continue
+            summary = {name: state.get(name) for name in (
+                "run_id", "status", "message", "current_stage", "processed", "total", "unit",
+                "pipeline_stages", "last_activity_at", "engine",
+            )}
+            plan = (state.get("provenance") or {}).get("mapper_plan") or {}
+            accepted = plan.get("accepted_portions", 0)
+            summary["saved_mapping_portions"] = (len(accepted) if isinstance(accepted, list) else accepted) if plan.get("complete") else 0
+            found[key] = (rank, {"session_id": sid, "pair_id": pid,
+                                 "left": pair["left"], "right": pair["right"], "state": summary})
+    return [value[1] for value in found.values()]
+
+
 def _session_payload(meta: dict) -> dict:
     session_id = str(meta["id"])
     pairs = [
@@ -122,6 +173,7 @@ def _session_payload(meta: dict) -> dict:
         "document_pairing": meta.get("document_pairing"),
         "warnings": meta.get("warnings") or [],
         "pairs": pairs,
+        "comparison_runs": _comparison_runs(meta),
     }
 
 

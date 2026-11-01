@@ -3419,11 +3419,23 @@
 
     function registerDiagram(app) {
         app.component('semantic-block-comparison', {
-            props: {store: {type: Object, required: true}, filterMode: {type: String, default: 'all'}},
+            props: {store: {type: Object, required: true}, filterMode: {type: String, default: 'all'},
+                runState: {type: Object, default: null}},
             emits: ['show-all'],
             setup(props, {emit}) {
                 const {ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount} = root.Vue;
                 const store = props.store, S = store.state;
+                const progressMessage = computed(() => {
+                    const run = props.runState;
+                    if (!run) return '';
+                    const plan = run.provenance?.mapper_plan;
+                    const accepted = plan?.accepted_portions;
+                    const saved = plan?.complete ? (Array.isArray(accepted) ? accepted.length : Number(accepted || 0)) : 0;
+                    if (run.status !== 'RUNNING' && !saved) return '';
+                    return (saved ? 'Сопоставление сохранено: ' + saved + ' порций. ' : '')
+                        + (run.message || '')
+                        + ' Смысловые блоки появятся после подготовки результата.';
+                });
                 const viewport = ref(null), canvas = ref(null), lines = ref([]);
                 const size = reactive({width: 1, height: 1});
                 const active = ref(''), visible = reactive(new Set()), failed = reactive(new Map());
@@ -3786,7 +3798,7 @@
                     stopped = true; observer?.disconnect(); resize?.disconnect();
                     if (frame) root.cancelAnimationFrame(frame);
                 });
-                return {S, store, viewport, canvas, size, data, pages, visibleLines, active, visible, failed, neighbours,
+                return {S, store, progressMessage, viewport, canvas, size, data, pages, visibleLines, active, visible, failed, neighbours,
                     focusOnly, selectionTool, sheetVisible, blockVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock,
                     zoom, zoomWheel, resetZoom, rasterSource, pageFailed, imageFailed, retrySheet,
                     pendingOnly, pendingCount, shownCount, totalCount, counts, selectedLink, linkDetail, activeLinks, activeCard, chooseLink,
@@ -3879,7 +3891,7 @@
                 <div class="sbm-simple__head"><h3>Старый проект</h3><h3>Новый проект</h3></div>
                 <p v-if="error" class="sbm-simple__message" role="alert">Не удалось загрузить смысловые блоки.
                     <button type="button" class="sbm-link" @click="store.retry()">Повторить</button></p>
-                <p v-else-if="empty" class="sbm-simple__message" role="status">{{ S.loading ? 'Загрузка смысловых блоков…' : 'В выбранном результате пока нет смысловых блоков.' }}</p>
+                <p v-else-if="empty" class="sbm-simple__message" role="status">{{ S.loading ? 'Загрузка смысловых блоков…' : (progressMessage || 'В выбранном результате пока нет смысловых блоков.') }}</p>
                 <p v-else-if="pendingOnly && !pendingCount" class="sbm-simple__message" role="status">У всех показанных в этом результате блоков есть связи. Их правильность ещё нужно проверить.</p>
                 <p v-else-if="filterMode === 'connected' && !data.edges.length" class="sbm-simple__message" role="status">Блоков со связями пока нет.</p>
                 <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="clearEditSelection()">

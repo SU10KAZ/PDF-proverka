@@ -14170,7 +14170,9 @@ const app = createApp({
                 rows.push({index: rows.length, left, right, pair, group,
                     members: scGroupMembers(group), secondary: true});
             }
-            return rows;
+            const runs = scSession.value?.comparison_runs || [];
+            return rows.map(row => ({...row, comparisonRun: runs.find(run =>
+                run.left?.pdf_path === row.left?.pdf_path && run.right?.pdf_path === row.right?.pdf_path) || null}));
         });
         const scVisiblePairRows = computed(() => scPairRows.value.filter(row => !row.secondary)
             .flatMap(row => [row, ...scPairRows.value.filter(item => item.secondary
@@ -15326,6 +15328,13 @@ const app = createApp({
         }
 
         function scPairRowStatus(row) {
+            const run = row.comparisonRun;
+            if (run?.state?.status === 'RUNNING') return {tone: 'running', label:
+                (run.state.saved_mapping_portions ? run.state.saved_mapping_portions + ' порций сохранено · ' : '')
+                + (run.state.current_stage === 'MINING' ? 'Поиск изменений ' + run.state.processed + '/' + run.state.total
+                    : run.state.message || 'Анализ выполняется')};
+            if (run?.state?.saved_mapping_portions) return {tone: 'saved',
+                label: 'Сопоставление сохранено: ' + run.state.saved_mapping_portions + ' порций'};
             const groupStatus = scGroupStatus(row.group);
             if (groupStatus) return groupStatus;
             if (!row.left || !row.right) return {tone: 'incomplete', label: 'Нужен документ с обеих сторон'};
@@ -16069,6 +16078,15 @@ const app = createApp({
 
         async function scOpenPairRow(row) {
             if (!row || !row.left || !row.right || scPairRowBusy(row)) return;
+            const saved = row.comparisonRun;
+            if (saved) {
+                try {
+                    await pcEnsureResultSession(saved.session_id, scSelectedObject.value.id);
+                    const pair = scPairs.value.find(item => item.id === saved.pair_id);
+                    if (!pair) throw new Error('Сохранённая пара недоступна.');
+                    return await scOpenPair(pair);
+                } catch (error) { scSessionError.value = String(error.message || error); return; }
+            }
             const context = scBeginPairOpen();
             if (!context) return;
             const state = scMutablePairRowState(row);
@@ -16098,6 +16116,7 @@ const app = createApp({
 
         async function scOpenPairRowResult(row) {
             if (!row || !row.left || !row.right || scPairRowBusy(row) || pcCatalogOpening.value) return;
+            if (row.comparisonRun?.state?.status === 'RUNNING') return scOpenPairRow(row);
             const entry = scRowCatalogEntry(row);
             if (entry) return pcOpenCatalogEntry(entry);
             return scOpenPairRow(row);
@@ -18363,7 +18382,7 @@ const app = createApp({
         }
 
         function scCatalogCanStart(row) {
-            return Boolean(row?.left && row?.right && !scGroupStatus(row.group)
+            return Boolean(row?.left && row?.right && row.comparisonRun?.state?.status !== 'RUNNING' && !scGroupStatus(row.group)
                 && !pcReadOnlySources.value && !pcCatalogOpening.value && !scPairRowBusy(row)
                 && !scSessionLoading.value && !scObjectsLoading.value && !scPairingSaving.value
                 && !scPairingMatching.value && !scDocumentGroupsBusy.value
@@ -18372,6 +18391,7 @@ const app = createApp({
         }
 
         function scCatalogPairStatus(row) {
+            if (row.comparisonRun) return scPairRowStatus(row).label;
             return scGroupStatus(row.group)?.label || scBatchBadge(row)?.label
                 || (!row.left || !row.right ? 'Нужен документ с обеих сторон' : 'Не запускалось');
         }

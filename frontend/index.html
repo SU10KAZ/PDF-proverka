@@ -5787,7 +5787,7 @@
                 :row-checked="scBatchRowChecked" :all-checked="scBatchAllChecked"
                 :selection-disabled="scBatchRunning || pcReadOnlySources || scSessionLoading || scObjectsLoading"
                 @select-pair="scToggleBatchRow" @select-all="scToggleBatchAll"
-                :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry" @start="scStartCatalogPair"></project-comparison-catalog>
+                :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry" @open-pair="scOpenPairRowResult" @start="scStartCatalogPair"></project-comparison-catalog>
 
             <details v-if="canOperate && (pcUiEnabled && scActivePair && scTab === 'links')" class="pc-advanced"><summary>Дополнительно</summary>
                 <label>Вид сравнения <select v-model="scProductionInputMode" :disabled="scProductionMutating || scProductionRunActive">
@@ -6741,7 +6741,7 @@
                     </div>
                     </div>
                     <semantic-block-comparison v-if="scBlockStore && scStage2Mode === 'blocks'"
-                                               :store="scBlockStore" :filter-mode="scBlocksFilterMode" @show-all="scBlocksFilterMode = 'all'"></semantic-block-comparison>
+                                               :store="scBlockStore" :run-state="scProductionState" :filter-mode="scBlocksFilterMode" @show-all="scBlocksFilterMode = 'all'"></semantic-block-comparison>
                     </div>
                 </template>
             </div>

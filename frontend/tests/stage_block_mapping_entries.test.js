@@ -345,7 +345,7 @@ describe('catalog result actions', () => {
 
     it('keeps the normal open action alongside the catalog launch and selection events', () => {
         const definition = load();
-        expect(definition.emits).toEqual(['open', 'start', 'select-pair', 'select-all']);
+        expect(definition.emits).toEqual(['open', 'open-pair', 'start', 'select-pair', 'select-all']);
         const emitted = [];
         const state = definition.setup({}, {emit: (...args) => emitted.push(args)});
         const entry = {catalog_entry_id: 'e1'};

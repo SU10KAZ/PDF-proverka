@@ -87,6 +87,7 @@ test('two groups sharing a left source render separately without duplicating sav
     h.scGroupAssemblyDocument = group => ({pdf_path: group.group_id + '.pdf'});
     h.scGroupMembers = () => [];
     h.scPairs = {value: []};
+    h.scSession = {value: {comparison_runs: []}};
     vm.runInContext(functions('        const scPairRows = computed(', '        // Веер'), h);
     const rows = vm.runInContext('scVisiblePairRows.value', h);
     assert.deepEqual(plain(rows.map(row => [row.left.pdf_path, row.group?.group_id || null, row.index])),

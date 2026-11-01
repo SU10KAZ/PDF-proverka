@@ -67,7 +67,7 @@
                     pairStatus: {type: Function, default: () => 'Не запускалось'},
                     rowChecked: {type: Function, default: () => false},
                     selectionDisabled: Boolean, allChecked: Boolean},
-                emits: ['open', 'start', 'select-pair', 'select-all'],
+                emits: ['open', 'open-pair', 'start', 'select-pair', 'select-all'],
                 setup(props, {emit}) {
                     const {ref, computed, onMounted} = root.Vue;
                     const catalog = ref(null);
@@ -143,7 +143,9 @@
                                 <small>{{ sourceLabel(entry.result_source) }}<template v-if="entry.variants_in_pair > 1">
                                     · {{ entry.is_current ? 'Текущий' : (entry.is_primary ? 'основной' : 'вариант') }}</template></small></td>
                             <td v-if="entry.pending_pair" class="pc-catalog__actions">
-                                <button v-if="canOperate" type="button" class="btn btn-sm btn-primary" :disabled="startDisabled(entry)"
+                                <button v-if="entry.pending_pair.comparisonRun" type="button" class="btn btn-sm btn-primary"
+                                    :disabled="opening || pairsLoading" @click="$emit('open-pair', entry.pending_pair)">Открыть</button>
+                                <button v-else-if="canOperate" type="button" class="btn btn-sm btn-primary" :disabled="startDisabled(entry)"
                                     @click="start(entry)">Запустить сравнение</button>
                             </td>
                             <td v-else class="pc-catalog__actions">
