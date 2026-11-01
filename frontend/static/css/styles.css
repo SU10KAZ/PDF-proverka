@@ -4499,7 +4499,7 @@ tr.row-rejected td.sc-cell-goto {
     min-width: 0;
     padding: 2px 8px;
 }
-.sc-pair-row-actions > div { display: flex; flex-wrap: nowrap; gap: 4px; }
+.sc-pair-row-actions > div { display: flex; flex-wrap: wrap; gap: 4px; }
 .sc-pair-row-actions .btn-sm { padding: 4px 8px; font-size: 11px; }
 .sc-pair-row-status {
     justify-self: start;
@@ -6976,3 +6976,9 @@ tr.row-rejected td.sc-cell-goto {
 }
 .sc-add-standalone-row:disabled { opacity: .4; cursor: default; }
 .sc-standalone-upload-row { min-height: 44px; }
+
+/* Порядок участников совпадает с порядком склейки. */
+.sc-pair-fan .sc-pair-fan__item .sc-pair-document--member:has(.sc-member-order) { grid-template-columns: auto minmax(0, 1fr) auto auto; }
+.sc-member-order { display: inline-flex; align-items: center; gap: 2px; }
+.sc-member-order button { border: 0; background: transparent; color: var(--text3); padding: 0 2px; cursor: pointer; }
+.sc-member-order button:disabled { opacity: .35; cursor: default; }

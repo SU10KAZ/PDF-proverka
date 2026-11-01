@@ -30,7 +30,7 @@
 .pc-v1 .sc-pair-fan__item { padding: 1px 0; }
 .pc-v1 .sc-pair-fan-links { min-height: 26px; }
 .sc-pair-plus--inline { display: inline-flex; align-self: center; flex: 0 0 auto; }
-.sc-pair-plus--inline button { width: 28px; min-height: 26px; justify-content: center; padding: 2px; }
+.sc-pair-plus--inline button { width: auto; min-height: 26px; justify-content: center; padding: 2px 6px; }
 .sc-pair-plus--inline button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: var(--radius); }
 .pc-v1 .sc-pair-board__arrow { color: var(--teal); font-size: 14px; }
 .pc-v1 .sc-pair-document.is-confirmed { background: var(--blue-light); border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }

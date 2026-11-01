@@ -54,12 +54,12 @@ describe('группы «один слева → несколько справа
     expect(html).toContain('@drop.prevent.stop="scDropOnRowPlus(row)"');
     expect(app).toContain("scStageFolderDialogStage.value = 'stage_2';");
     expect(html).toContain(':disabled="scStageUploadIsBusy || !!scStageUploadTarget"');
-    expect(app).toContain('batch.groupError = await scAssignRightDocuments(batch.target.leftCode, uploadedCodes);');
+    expect(app).toContain('batch.groupError = await scAssignRightDocuments(batch.target.leftCode, uploadedCodes, batch.target.groupId);');
   });
 
   it('склеивает правые проекты группы в сборку через API групп', () => {
     expect(app).toContain('/document-groups${suffix}');
-    expect(app).toContain('body: JSON.stringify({left_document_code: leftCode, member_codes: all})');
+    expect(app).toContain('body: JSON.stringify({left_document_code: leftCode, member_codes: all, group_id: groupId})');
     expect(app).toContain("{method: 'DELETE'}");
     expect(app).toContain('/rebuild`, {method: \'POST\'}');
   });
@@ -95,7 +95,7 @@ describe('фоновые загрузки проектов', () => {
   });
 
   it('ставит новую загрузку в очередь, а не блокирует кнопки', () => {
-    expect(html).toContain(':disabled="pcReadOnlySources || !currentObjectId"\n                        @click="scOpenStageFolderDialog()"');
+    expect(html).toContain(':disabled="pcDemo || pcBridgeActive || !currentObjectId"\n                        @click="scOpenStageFolderDialog()"');
     expect(app).toContain("while ((batch = scUploadBatches.value.find(item => item.status === 'queued')))");
     expect(app).toContain('batch.objectId, batch.stageName, candidate, retainBackup');
   });

@@ -414,3 +414,47 @@ def test_independent_group_api_accepts_new_group_and_explicit_target(groups_env)
     assert second.json()["group"]["group_id"] != first.json()["group"]["group_id"]
     bad = client.post(url, json={"left_document_code": "P-2", "member_codes": ["RD-K3"], "group_id": second.json()["group"]["group_id"]})
     assert bad.status_code == 404
+
+
+def test_manual_order_is_saved_then_used_by_rebuild(groups_env):
+    group = document_groups.add_members("obj-test", "P-1", ["RD-K1", "RD-K2", "RD-K3"])["group"]
+    document_groups.list_groups("obj-test")
+    codes = ["RD-K3", "RD-K1", "RD-K2"]
+    client = TestClient(_app())
+    response = client.put(f"/api/stage-comparison/objects/obj-test/document-groups/{group['group_id']}/order",
+                          json={"member_codes": codes})
+    assert response.status_code == 200
+    changed = response.json()["group"]
+    assert changed["stale"] is True
+    assert changed["assembly_version_id"] == group["assembly_version_id"]
+    assert [m["document_code"] for m in document_groups.list_groups("obj-test")["groups"][0]["members"]] == codes
+    rebuilt = document_groups.rebuild("obj-test", group["group_id"])["group"]
+    state = assemblies.get_assembly("obj-test", rebuilt["assembly_id"], rebuilt["assembly_version_id"])
+    assert [s["document_code"] for s in state["sources"]] == codes
+    assert rebuilt["stale"] is False
+
+
+@pytest.mark.parametrize("codes", [["RD-K1"], ["RD-K1", "RD-K1"], ["RD-K1", "RD-K3"]])
+def test_reorder_rejects_missing_duplicate_and_foreign_members(groups_env, codes):
+    group = document_groups.add_members("obj-test", "P-1", ["RD-K1", "RD-K2"])["group"]
+    with pytest.raises(document_groups.DocumentGroupError, match="ровно один раз"):
+        document_groups.reorder_members("obj-test", group["group_id"], codes)
+    assert document_groups._read("obj-test")["groups"][0]["members"] == ["RD-K1", "RD-K2"]
+
+
+def test_adding_and_removing_members_preserve_manual_order(groups_env):
+    group = document_groups.add_members("obj-test", "P-1", ["RD-K1", "RD-K2"])["group"]
+    document_groups.reorder_members("obj-test", group["group_id"], ["RD-K2", "RD-K1"])
+    added = document_groups.add_members("obj-test", "P-1", ["RD-K3"])["group"]
+    assert [m["document_code"] for m in added["members"]] == ["RD-K2", "RD-K1", "RD-K3"]
+    removed = document_groups.remove_member("obj-test", group["group_id"], "RD-K1")["group"]
+    assert [m["document_code"] for m in removed["members"]] == ["RD-K2", "RD-K3"]
+    assert removed["stale"] is False
+
+
+def test_reorder_rejects_building_group(groups_env, monkeypatch):
+    group = document_groups.add_members("obj-test", "P-1", ["RD-K1", "RD-K2"])["group"]
+    monkeypatch.setattr(document_groups, "_assembly_state", lambda *args: {"status": "RUNNING"})
+    with pytest.raises(document_groups.DocumentGroupError) as error:
+        document_groups.reorder_members("obj-test", group["group_id"], ["RD-K2", "RD-K1"])
+    assert error.value.code == "GROUP_BUSY"

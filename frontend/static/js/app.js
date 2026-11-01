@@ -14954,6 +14954,37 @@ const app = createApp({
             return '';
         }
 
+        const scGroupMemberDrag = ref(null);
+        function scCanReorderGroup(row) {
+            return Boolean(row?.group && !pcReadOnlySources.value && !scDocumentGroupsBusy.value
+                && !scPairRowBusy(row) && !SC_GROUP_BUILDING.includes(row.group.status));
+        }
+        function scStartGroupMemberDrag(event, row, member) {
+            if (!scCanReorderGroup(row)) { event.preventDefault(); return; }
+            scGroupMemberDrag.value = {groupId: row.group.group_id, code: member.document_code};
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', member.document_code);
+        }
+        function scFinishGroupMemberDrag() { scGroupMemberDrag.value = null; }
+        function scDropGroupMember(row, member) {
+            const drag = scGroupMemberDrag.value;
+            scFinishGroupMemberDrag();
+            if (drag?.groupId !== row.group.group_id) return;
+            return scMoveGroupMember(row, drag.code, row.members.findIndex(item => item.document_code === member.document_code));
+        }
+        function scMoveGroupMember(row, code, targetIndex) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
+            if (!scCanReorderGroup(row)) return;
+            const codes = row.members.map(member => member.document_code);
+            const from = codes.indexOf(code);
+            if (from < 0 || targetIndex < 0 || targetIndex >= codes.length || from === targetIndex) return;
+            codes.splice(targetIndex, 0, codes.splice(from, 1)[0]);
+            return scChangeDocumentGroups(`/${encodeURIComponent(row.group.group_id)}/order`, {
+                method: 'PUT', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({member_codes: codes}),
+            });
+        }
+
         function scRemoveGroupMember(row, member) {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!row || !row.group || !member || pcReadOnlySources.value) return;
@@ -21583,6 +21614,7 @@ const app = createApp({
             scFanItems, scFanShowsPlus, scFanPath, scOpenRowUpload, scDropOnRowPlus,
             scHasStandaloneUploadRow, scSetStandaloneUploadRow, scOpenStandaloneRowUpload,
             scRemoveGroupMember, scRebuildDocumentGroup,
+            scCanReorderGroup, scStartGroupMemberDrag, scFinishGroupMemberDrag, scDropGroupMember, scMoveGroupMember,
             scDraggingDocument, scDocumentDragOver,
             scDraggingPairRow, scPairRowDragOver,
             scPendingPairSelection, scConfirmedDocumentPairs,

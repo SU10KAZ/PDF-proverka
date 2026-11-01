@@ -46,6 +46,10 @@ class DocumentGroupMembersRequest(BaseModel):
     group_id: str | None = None
 
 
+class DocumentGroupOrderRequest(BaseModel):
+    member_codes: list[str] = Field(min_length=1, max_length=32)
+
+
 class CompositionCompletenessRequest(BaseModel):
     value: Literal["COMPLETE", "INCOMPLETE", "UNKNOWN"]
 
@@ -342,6 +346,11 @@ async def add_document_group_members(object_id: str, request: DocumentGroupMembe
 @router.delete("/objects/{object_id}/document-groups/{group_id}/members/{document_code}")
 async def remove_document_group_member(object_id: str, group_id: str, document_code: str):
     return await _run_document_groups(document_groups.remove_member, object_id, group_id, document_code)
+
+
+@router.put("/objects/{object_id}/document-groups/{group_id}/order")
+async def reorder_document_group(object_id: str, group_id: str, request: DocumentGroupOrderRequest):
+    return await _run_document_groups(document_groups.reorder_members, object_id, group_id, request.member_codes)
 
 
 @router.post("/objects/{object_id}/document-groups/{group_id}/rebuild")

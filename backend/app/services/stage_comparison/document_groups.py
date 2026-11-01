@@ -120,6 +120,10 @@ def _ordered(codes: Iterable[str]) -> list[str]:
     return sorted(_unique(codes), key=_natural_key)
 
 
+def _member_order(group: dict[str, Any]) -> list[str]:
+    return _unique(group["members"]) if group.get("manual_order") else _ordered(group["members"])
+
+
 def _assembly_state(object_id: str, group: dict[str, Any]) -> dict[str, Any]:
     assembly_id = str(group.get("assembly_id") or "")
     version_id = str(group.get("assembly_version_id") or "")
@@ -148,8 +152,8 @@ def _view(object_id: str, group: dict[str, Any], right: dict[str, dict[str, Any]
         code: str(right[code]["version_id"]) for code in group["members"] if code in right
     }
     # Нужна пересборка, если после сборки загрузили новую версию участника,
-    # участник пропал со стороны stage_2 или сборка склеена не в порядке кодов.
-    expected = [(code, current_versions.get(code)) for code in _ordered(group["members"])]
+    # участник пропал со стороны stage_2 или изменён порядок склейки.
+    expected = [(code, current_versions.get(code)) for code in _member_order(group)]
     stale = bool(state) and built_versions != expected
     return {
         "group_id": group["group_id"],
@@ -161,7 +165,7 @@ def _view(object_id: str, group: dict[str, Any], right: dict[str, dict[str, Any]
                 "version_id": current_versions.get(code),
                 "present": code in right,
             }
-            for code in _ordered(group["members"])
+            for code in _member_order(group)
         ],
         "assembly_id": group.get("assembly_id") or None,
         "assembly_version_id": group.get("assembly_version_id") or None,
@@ -237,7 +241,7 @@ def _launch_build(object_id: str, group: dict[str, Any], right: dict[str, dict[s
             "MEMBER_NOT_FOUND",
             "Справа нет документов: " + ", ".join(missing),
         )
-    group["members"] = _ordered(group["members"])
+    group["members"] = _member_order(group)
     refs = [right[code]["source_ref"] for code in group["members"]]
     try:
         prepared = assemblies.create_assembly(
@@ -300,7 +304,10 @@ def add_members(
                 group["independent"] = True
             groups.append(group)
         before = list(group["members"])
-        group["members"] = _ordered([*group["members"], *codes])
+        group["members"] = (
+            _unique([*_member_order(group), *codes]) if group.get("manual_order")
+            else _ordered([*group["members"], *codes])
+        )
         group["updated_at"] = _now()
         dissolved = _drop_small_groups(object_id, groups)
         if len(group["members"]) >= (1 if group.get("independent") else MIN_MEMBERS) and (
@@ -349,6 +356,26 @@ def remove_member(object_id: str, group_id: str, document_code: str) -> dict[str
             "group": _view(object_id, group, right) if group in data["groups"] else None,
             "released": released,
         }
+
+
+def reorder_members(object_id: str, group_id: str, member_codes: list[str]) -> dict[str, Any]:
+    """Сохранить порядок склейки. Пересборка запускается отдельным действием."""
+    _require_enabled()
+    with _lock:
+        data = _read(object_id)
+        group = next((g for g in data["groups"] if g["group_id"] == group_id), None)
+        if group is None:
+            raise DocumentGroupError("GROUP_NOT_FOUND", "Группа не найдена")
+        right = _current_sources(object_id, RIGHT_STAGE)
+        if _view(object_id, group, right)["status"] in BUILDING_STATUSES:
+            raise DocumentGroupError("GROUP_BUSY", "Дождитесь завершения сборки")
+        if len(member_codes) != len(group["members"]) or set(member_codes) != set(group["members"]):
+            raise DocumentGroupError("BAD_MEMBER_ORDER", "Порядок должен содержать всех участников группы ровно один раз")
+        group["members"] = list(member_codes)
+        group["manual_order"] = True
+        group["updated_at"] = _now()
+        _write(object_id, data)
+        return {"group": _view(object_id, group, right), "released": []}
 
 
 def rebuild(object_id: str, group_id: str) -> dict[str, Any]:
@@ -416,4 +443,5 @@ __all__ = [
     "list_groups",
     "rebuild",
     "remove_member",
+    "reorder_members",
 ]
