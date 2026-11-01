@@ -214,3 +214,51 @@ def test_sheet_suffixed_page_headers_are_accepted_and_kept(assembly_env):
     md = (work / "document.md").read_text(encoding="utf-8")
     assert "## Page 2 — Sheet 1 — Содержание тома" in md
     assert "## Page 4" in md
+
+
+def test_omitted_md_pages_without_blocks_are_preserved(assembly_env):
+    version = _source(assembly_env, "GAPS", "v001", pages=4)
+    work = version / "02_work"
+    md_path = work / "document.md"
+    text = md_path.read_text()
+    text = text[:text.index("## Page 2")] + text[text.index("## Page 4"):]
+    md_path.write_text(text)
+    blocks_path = work / "blocks.json"
+    blocks = json.loads(blocks_path.read_text())
+    blocks["blocks"] = [b for b in blocks["blocks"] if b["page_index"] not in (1, 2)]
+    blocks_path.write_text(json.dumps(blocks))
+    [source] = service.list_sources("obj-test")["items"]
+    built = service.create_assembly(object_id="obj-test", name="Gaps", section="OV", source_refs=[source["source_ref"]])
+    output = service._root("obj-test") / built["assembly_id"] / "versions" / built["version_id"] / "02_work"
+    from backend.app.services.common.results_md import parse_results_md
+    parsed = parse_results_md((output / "document.md").read_text())
+    assert parsed.page_numbers == [1, 2, 3, 4]
+    assert parsed.page(2).blocks == parsed.page(3).blocks == []
+    assert [b.page for b in parsed.blocks] == [1, 4]
+    with fitz.open(output / "document.pdf") as pdf:
+        assert pdf.page_count == 4
+    assert service.origin_for_page("obj-test", built["assembly_id"], built["version_id"], 3)["page"]["source_page"] == 3
+    assert md_path.read_text() == text
+
+
+@pytest.mark.parametrize("replacement", ["", "## Page 1", "## Page 4"])
+def test_missing_occupied_or_duplicate_or_outside_md_page_is_rejected(assembly_env, replacement):
+    version = _source(assembly_env, "BAD", "v001", pages=3)
+    path = version / "02_work/document.md"
+    path.write_text(path.read_text().replace("## Page 2", replacement))
+    [source] = service.list_sources("obj-test")["items"]
+    with pytest.raises(service.AssemblyError) as error:
+        service.preview("obj-test", [source["source_ref"]])
+    assert error.value.code == "PAGE_COVERAGE_MISMATCH"
+
+
+def test_md_block_page_must_match_json(assembly_env):
+    version = _source(assembly_env, "MOVED", "v001", pages=2)
+    path = version / "02_work/blocks.json"
+    blocks = json.loads(path.read_text())
+    blocks["blocks"][0]["page_index"] = 1
+    path.write_text(json.dumps(blocks))
+    [source] = service.list_sources("obj-test")["items"]
+    with pytest.raises(service.AssemblyError) as error:
+        service.preview("obj-test", [source["source_ref"]])
+    assert error.value.code == "OCR_PACKAGE_MISMATCH"

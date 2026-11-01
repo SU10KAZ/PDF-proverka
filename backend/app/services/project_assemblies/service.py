@@ -234,11 +234,6 @@ def _preflight_one(source: dict[str, Any]) -> dict[str, Any]:
             )
     with fitz.open(paths["pdf"]) as pdf:
         page_count = pdf.page_count
-    if md.page_numbers != list(range(1, page_count + 1)):
-        raise AssemblyError(
-            "PAGE_COVERAGE_MISMATCH",
-            f"{source['document_code']}: страницы MD не покрывают PDF",
-        )
     page_indexes = [row.get("page_index") for row in blocks["pages"] if isinstance(row, dict)]
     if len(page_indexes) != page_count or set(page_indexes) != set(range(page_count)):
         raise AssemblyError("PAGE_COVERAGE_MISMATCH", f"{source['document_code']}: pages[] не покрывает PDF")
@@ -259,6 +254,26 @@ def _preflight_one(source: dict[str, Any]) -> dict[str, Any]:
             raise AssemblyError("BAD_BLOCK_PAGE", f"{source['document_code']}: блок без корректной страницы") from exc
         if page_index not in range(page_count):
             raise AssemblyError("BAD_BLOCK_PAGE", f"{source['document_code']}: блок за пределами PDF")
+    # Some exports omit MD sections for pages with no OCR blocks. The PDF
+    # and pages[] still cover those pages; _project_md emits empty sections.
+    # Never infer missing content or accept duplicate/out-of-order headings.
+    md_pages = md.page_numbers
+    missing_pages = set(range(1, page_count + 1)) - set(md_pages)
+    occupied_pages = {int(row["page_index"]) + 1 for row in blocks["blocks"]}
+    if (md_pages != sorted(set(md_pages))
+            or any(page < 1 or page > page_count for page in md_pages)
+            or missing_pages & occupied_pages):
+        raise AssemblyError(
+            "PAGE_COVERAGE_MISMATCH",
+            f"{source['document_code']}: страницы MD не покрывают PDF",
+            details={"pdf_page_count": page_count, "missing_md_pages": sorted(missing_pages)},
+        )
+    json_pages_by_id = {str(row["block_id"]): int(row["page_index"]) + 1 for row in blocks["blocks"]}
+    if any(block.page != json_pages_by_id[block.block_id] for block in md.blocks):
+        raise AssemblyError(
+            "OCR_PACKAGE_MISMATCH",
+            f"{source['document_code']}: страницы блоков MD и blocks.json не совпадают",
+        )
     html_text = paths["html"].read_text(encoding="utf-8")
     sheet_index = sheet_matching.extract_sheet_index_from_results_html(html_text)
     return {
