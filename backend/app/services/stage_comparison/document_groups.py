@@ -154,6 +154,7 @@ def _view(object_id: str, group: dict[str, Any], right: dict[str, dict[str, Any]
     return {
         "group_id": group["group_id"],
         "left_document_code": group["left_document_code"],
+        "independent": bool(group.get("independent")),
         "members": [
             {
                 "document_code": code,
@@ -254,7 +255,10 @@ def _launch_build(object_id: str, group: dict[str, Any], right: dict[str, dict[s
     group["assembly_version_id"] = prepared["version_id"]
 
 
-def add_members(object_id: str, left_document_code: str, member_codes: list[str]) -> dict[str, Any]:
+def add_members(
+    object_id: str, left_document_code: str, member_codes: list[str],
+    *, new_group: bool = False, group_id: str | None = None,
+) -> dict[str, Any]:
     """Добавить правые документы к левому. Два и больше — собирается сборка."""
     _require_enabled()
     left_code = str(left_document_code or "").strip()
@@ -269,11 +273,22 @@ def add_members(object_id: str, left_document_code: str, member_codes: list[str]
         right = _current_sources(object_id, RIGHT_STAGE)
         data = _read(object_id)
         groups = data["groups"]
-        # Правый документ принадлежит не более чем одной группе.
+        if new_group and group_id:
+            raise DocumentGroupError("BAD_GROUP_TARGET", "Нельзя одновременно создать и выбрать группу")
+        if group_id:
+            group = next((g for g in groups if g["group_id"] == group_id
+                          and g["left_document_code"] == left_code), None)
+            if group is None:
+                raise DocumentGroupError("GROUP_NOT_FOUND", "Группа документов не найдена")
+        else:
+            group = None if new_group else next((g for g in groups
+                if g["left_document_code"] == left_code and not g.get("independent")), None)
+        if new_group and any(set(codes) & set(g["members"]) for g in groups):
+            raise DocumentGroupError("MEMBER_ALREADY_GROUPED", "Проект уже входит в другую группу")
+        # Each right document belongs to only one comparison, even for the same left source.
         for other in groups:
-            if other["left_document_code"] != left_code:
+            if other is not group:
                 other["members"] = [code for code in other["members"] if code not in codes]
-        group = next((g for g in groups if g["left_document_code"] == left_code), None)
         if group is None:
             group = {
                 "group_id": "grp_" + uuid.uuid4().hex[:16],
@@ -281,12 +296,14 @@ def add_members(object_id: str, left_document_code: str, member_codes: list[str]
                 "members": [],
                 "created_at": _now(),
             }
+            if new_group:
+                group["independent"] = True
             groups.append(group)
         before = list(group["members"])
         group["members"] = _ordered([*group["members"], *codes])
         group["updated_at"] = _now()
         dissolved = _drop_small_groups(object_id, groups)
-        if len(group["members"]) >= MIN_MEMBERS and (
+        if len(group["members"]) >= (1 if group.get("independent") else MIN_MEMBERS) and (
             group["members"] != before or not group.get("assembly_version_id")
             or _view(object_id, group, right)["stale"]
         ):
@@ -302,7 +319,7 @@ def _drop_small_groups(object_id: str, groups: list[dict[str, Any]]) -> list[dic
     """Убрать группы меньше двух документов; вернуть освободившиеся пары."""
     released: list[dict[str, str]] = []
     for group in list(groups):
-        if len(group["members"]) >= MIN_MEMBERS:
+        if len(group["members"]) >= (1 if group.get("independent") else MIN_MEMBERS):
             continue
         _detach_all(object_id, group)
         for code in group["members"]:

@@ -6106,7 +6106,7 @@
                             <strong>Управление парой</strong>
                         </div>
 
-                        <template v-for="row in scPairRows" :key="'pair-row-'+row.index">
+                        <template v-for="(row, visibleIndex) in scVisiblePairRows" :key="row.secondary ? row.group.group_id : 'pair-row-'+row.index">
                         <div class="sc-pair-board__row"
                              :class="{
                                  'is-active': row.pair && scActivePair && row.pair.id === scActivePair.id,
@@ -6117,22 +6117,22 @@
                              @dragover.prevent="scDragPairRowOver($event, row.index)"
                              @drop.prevent="scDropPairRow(row.index)">
                             <span class="sc-pair-board__number sc-pair-row-handle"
-                                  :draggable="!pcReadOnlySources && !scPairRowBusy(row)"
+                                  :draggable="!pcReadOnlySources && !row.secondary && !scPairRowBusy(row)"
                                   title="Перетащите всю пару выше или ниже"
                                   @dragstart="scStartPairRowDrag($event, row)"
                                   @dragend="scFinishPairRowDrag()">
                                 <input v-if="pcUiEnabled && !pcReadOnlySources && row.left && row.right" type="checkbox" class="sc-batch-check"
                                     :checked="scBatchRowChecked(row)" :disabled="scBatchRunning" draggable="false"
-                                    :aria-label="'Отметить пару ' + (row.index + 1) + ' для анализа'" title="Отметить для анализа"
+                                    :aria-label="'Отметить пару ' + (visibleIndex + 1) + ' для анализа'" title="Отметить для анализа"
                                     @mousedown.stop @click.stop @change="scToggleBatchRow(row, $event.target.checked)">
-                                <small>{{ row.index + 1 }}</small><i>⠿</i>
+                                <small>{{ visibleIndex + 1 }}</small><i>⠿</i>
                             </span>
 
                             <div class="sc-pair-slot"
                                  :class="{'is-drag-over': scDocumentDragOver.left === row.index}"
                                  @dragover.prevent="scDragDocumentOver($event, 'left', row.index)"
                                  @drop.prevent="scDropDocument('left', row.index)">
-                                <div v-if="row.left" class="sc-pair-document" :draggable="!pcReadOnlySources && !scPairRowBusy(row)"
+                                <div v-if="row.left" class="sc-pair-document" :draggable="!pcReadOnlySources && !row.secondary && !scPairRowBusy(row)"
                                      role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
                                      :class="{
                                          'is-dragging': scIsDraggingDocument('left', row.index),
@@ -6149,10 +6149,10 @@
                                     <small>{{ row.left.version_id || 'source' }}</small>
                                 </div>
                                 <span v-else class="sc-pair-slot__empty">Перетащите сюда документ П</span>
-                                <button v-if="canOperate && row.left && !pcReadOnlySources" type="button"
+                                <button v-if="canOperate && row.left && !row.secondary && !pcReadOnlySources" type="button"
                                         class="sc-add-standalone-row" :disabled="scHasStandaloneUploadRow(row)"
-                                        :aria-label="'Добавить строку без левого проекта под ' + row.left.filename"
-                                        title="Добавить ниже строку без левого проекта"
+                                        :aria-label="'Добавить отдельное сравнение для ' + row.left.filename"
+                                        title="Добавить ещё одно сравнение с этим исходным проектом"
                                         @click="scSetStandaloneUploadRow(row, true)">+</button>
 
                             </div>
@@ -6187,7 +6187,7 @@
                                              :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
                                              @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
                                              @drop.prevent="scDropDocument('right', row.index)">
-                                            <div v-if="row.right" class="sc-pair-document" :draggable="!pcReadOnlySources && !scPairRowBusy(row)"
+                                            <div v-if="row.right" class="sc-pair-document" :draggable="!pcReadOnlySources && !row.secondary && !scPairRowBusy(row)"
                                                  role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
                                                  :class="{
                                                      'is-dragging': scIsDraggingDocument('right', row.index),
@@ -6215,7 +6215,7 @@
                                      :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
                                      @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
                                      @drop.prevent="scDropDocument('right', row.index)">
-                                    <div v-if="row.right" class="sc-pair-document" :draggable="!pcReadOnlySources && !scPairRowBusy(row)"
+                                    <div v-if="row.right" class="sc-pair-document" :draggable="!pcReadOnlySources && !row.secondary && !scPairRowBusy(row)"
                                          role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
                                          :class="{
                                              'is-dragging': scIsDraggingDocument('right', row.index),
@@ -6282,12 +6282,12 @@
                                 </small>
                             </div>
                         </div>
-                        <div v-if="scHasStandaloneUploadRow(row) && canOperate && !pcReadOnlySources"
+                        <div v-if="!row.secondary && scHasStandaloneUploadRow(row) && canOperate && !pcReadOnlySources"
                              class="sc-pair-board__row sc-standalone-upload-row">
                             <span></span><div></div><span></span>
                             <div class="sc-pair-slot">
                                 <button type="button" class="btn btn-sm btn-secondary"
-                                        @click="scOpenStandaloneRowUpload(row)">+ Загрузить проекты справа</button>
+                                        @click="scOpenStandaloneRowUpload(row)">+ Загрузить проекты для отдельного сравнения</button>
                             </div>
                             <div class="sc-pair-row-actions">
                                 <button type="button" class="pc-link" aria-label="Убрать пустую строку"
@@ -8281,8 +8281,8 @@
 
                 <div v-if="scStageUploadTarget" class="sc-stage-upload-target">
                     <template v-if="scStageUploadTarget.afterLeftCode">
-                        Проекты появятся в отдельных строках справа под <strong>{{ scStageUploadTarget.afterLeftName }}</strong>.
-                        Левая часть новых строк останется пустой.
+                        Проекты образуют отдельную группу для сравнения с <strong>{{ scStageUploadTarget.afterLeftName }}</strong>.
+                        Существующая группа сохранится отдельно.
                     </template>
                     <template v-else>
                         Проекты встанут справа напротив <strong>{{ scStageUploadTarget.leftName }}</strong>.

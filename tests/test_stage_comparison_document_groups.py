@@ -375,3 +375,42 @@ def test_pair_of_other_documents_and_own_work_are_not_overwritten(session_env):
     assert store._inherit_pair_work(store._load_session_meta(second["id"]), with_own["id"]) is False
     saved = json.loads(paths.sheet_links_path(second["id"], with_own["id"]).read_text(encoding="utf-8"))
     assert saved["links"] == [{"id": "mine"}]
+
+
+def test_independent_group_reuses_left_without_changing_original(groups_env):
+    first = document_groups.add_members("obj-test", "P-1", ["RD-K1", "RD-K2"])["group"]
+    second = document_groups.add_members("obj-test", "P-1", ["RD-K3"], new_group=True)["group"]
+    groups = document_groups.list_groups("obj-test")["groups"]
+    assert len(groups) == 2
+    assert groups[0]["assembly_id"] == first["assembly_id"]
+    assert [m["document_code"] for m in groups[0]["members"]] == ["RD-K1", "RD-K2"]
+    assert second["independent"] is True
+    assert second["left_document_code"] == first["left_document_code"]
+    assert second["assembly_id"] != first["assembly_id"]
+    assert all(g["status"] == "READY" and not g["stale"] for g in groups)
+    assert len(_attached()) == 2
+    _stage_document(groups_env, "stage_2", "RD-K4")
+    updated = document_groups.add_members("obj-test", "P-1", ["RD-K4"], group_id=second["group_id"])["group"]
+    assert [m["document_code"] for m in updated["members"]] == ["RD-K3", "RD-K4"]
+    assert document_groups.list_groups("obj-test")["groups"][0]["assembly_id"] == first["assembly_id"]
+
+
+def test_independent_group_cannot_take_existing_group_members(groups_env):
+    first = document_groups.add_members("obj-test", "P-1", ["RD-K1", "RD-K2"])["group"]
+    with pytest.raises(document_groups.DocumentGroupError) as error:
+        document_groups.add_members("obj-test", "P-1", ["RD-K2", "RD-K3"], new_group=True)
+    assert error.value.code == "MEMBER_ALREADY_GROUPED"
+    assert document_groups.list_groups("obj-test")["groups"][0]["assembly_id"] == first["assembly_id"]
+
+
+def test_independent_group_api_accepts_new_group_and_explicit_target(groups_env):
+    client = TestClient(_app())
+    url = "/api/stage-comparison/objects/obj-test/document-groups"
+    first = client.post(url, json={"left_document_code": "P-1", "member_codes": ["RD-K1", "RD-K2"]})
+    assert first.status_code == 200
+    second = client.post(url, json={"left_document_code": "P-1", "member_codes": ["RD-K3"], "new_group": True})
+    assert second.status_code == 200
+    assert second.json()["group"]["independent"] is True
+    assert second.json()["group"]["group_id"] != first.json()["group"]["group_id"]
+    bad = client.post(url, json={"left_document_code": "P-2", "member_codes": ["RD-K3"], "group_id": second.json()["group"]["group_id"]})
+    assert bad.status_code == 404

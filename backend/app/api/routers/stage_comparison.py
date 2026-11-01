@@ -42,6 +42,8 @@ class CreatePairRequest(BaseModel):
 class DocumentGroupMembersRequest(BaseModel):
     left_document_code: str = Field(min_length=1)
     member_codes: list[str] = Field(min_length=1, max_length=32)
+    new_group: bool = False
+    group_id: str | None = None
 
 
 class CompositionCompletenessRequest(BaseModel):
@@ -333,6 +335,7 @@ async def list_document_groups(object_id: str):
 async def add_document_group_members(object_id: str, request: DocumentGroupMembersRequest):
     return await _run_document_groups(
         document_groups.add_members, object_id, request.left_document_code, request.member_codes,
+        new_group=request.new_group, group_id=request.group_id,
     )
 
 

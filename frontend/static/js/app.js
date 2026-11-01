@@ -14091,7 +14091,8 @@ const app = createApp({
             && !scPairingDirty.value && !scPairingSaving.value
         ));
         const scGroupsByLeftCode = computed(() =>
-            new Map(scDocumentGroups.value.map(group => [group.left_document_code, group]))
+            new Map(scDocumentGroups.value.filter(group => !group.independent)
+                .map(group => [group.left_document_code, group]))
         );
         function scIsGroupedComparison(pair) {
             const right = pair && pair.right;
@@ -14145,7 +14146,7 @@ const app = createApp({
                 right: new Map(scBoardDocumentsRight.value.map(item => [item.pdf_path, item])),
             };
             const length = Math.max(scDocumentOrder.left.length, scDocumentOrder.right.length);
-            return Array.from({length}, (_, index) => {
+            const rows = Array.from({length}, (_, index) => {
                 const left = documents.left.get(scDocumentOrder.left[index]) || null;
                 const group = left ? scGroupsByLeftCode.value.get(left.document_code) || null : null;
                 const right = group
@@ -14160,7 +14161,20 @@ const app = createApp({
                     : null;
                 return {index, left, right, pair, group, members};
             });
+            for (const group of scDocumentGroups.value.filter(item => item.independent)) {
+                const left = scDocumentsLeft.value.find(item => item.document_code === group.left_document_code);
+                if (!left) continue;
+                const right = scGroupAssemblyDocument(group);
+                const pair = left && right ? scPairs.value.find(item =>
+                    item.left?.pdf_path === left.pdf_path && item.right?.pdf_path === right.pdf_path) || null : null;
+                rows.push({index: rows.length, left, right, pair, group,
+                    members: scGroupMembers(group), secondary: true});
+            }
+            return rows;
         });
+        const scVisiblePairRows = computed(() => scPairRows.value.filter(row => !row.secondary)
+            .flatMap(row => [row, ...scPairRows.value.filter(item => item.secondary
+                && item.left.pdf_path === row.left?.pdf_path)]));
 
         // Веер соединяет только документы; кнопка добавления стоит в управлении парой.
         function scFanItems(row) {
@@ -14921,17 +14935,18 @@ const app = createApp({
         }
 
         // Правые документы строки + новые: один — обычная пара, больше — группа.
-        async function scAssignRightDocuments(leftCode, codes) {
+        async function scAssignRightDocuments(leftCode, codes, groupId = null) {
             if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const left = scLeftDocumentByCode(leftCode);
             if (!left) return '';
-            const row = scPairRows.value.find(item => item.left && item.left.pdf_path === left.pdf_path);
+            const row = scPairRows.value.find(item => item.left && item.left.pdf_path === left.pdf_path
+                && (groupId ? item.group?.group_id === groupId : !item.secondary));
             const all = [...new Set([...scRowRightCodes(row), ...codes.filter(Boolean)])];
-            if (projectAssembliesEnabled && all.length > 1) {
+            if (projectAssembliesEnabled && (all.length > 1 || groupId)) {
                 return scChangeDocumentGroups('', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({left_document_code: leftCode, member_codes: all}),
+                    body: JSON.stringify({left_document_code: leftCode, member_codes: all, group_id: groupId}),
                 });
             }
             const right = scRightDocumentByCode(all[0]);
@@ -14965,6 +14980,7 @@ const app = createApp({
                 leftCode: row.left.document_code,
                 leftPdf: row.left.pdf_path,
                 leftName: row.left.filename,
+                groupId: row.group?.group_id || null,
             };
         }
 
@@ -14997,30 +15013,16 @@ const app = createApp({
             };
         }
 
-        // Uploads into a standalone row stay unpaired, immediately below its anchor.
-        function scPlaceStandaloneRightDocuments(leftCode, codes) {
+        // A separate comparison reuses the left source without merging its right groups.
+        async function scPlaceStandaloneRightDocuments(leftCode, codes) {
             const left = scLeftDocumentByCode(leftCode);
             if (!left) return 'Исходная строка больше не найдена';
-            const selected = new Set(codes);
-            const paths = scBoardDocumentsRight.value
-                .filter(document => selected.has(document.document_code))
-                .map(document => document.pdf_path);
-            if (!paths.length) return 'Загруженные проекты уже входят в существующую группу';
-            const moved = new Set(paths);
-            const order = scPackDocumentRows(
-                [...scDocumentOrder.left],
-                scDocumentOrder.right.map(path => moved.has(path) ? null : path),
-            );
-            const anchor = order.left.indexOf(left.pdf_path);
-            if (anchor < 0) return 'Исходная строка больше не найдена';
-            order.left.splice(anchor + 1, 0, ...paths.map(() => null));
-            order.right.splice(anchor + 1, 0, ...paths);
-            scRemoveConfirmedPairsForPaths(paths);
-            scDocumentOrder.left = order.left;
-            scDocumentOrder.right = order.right;
-            scSetStandaloneUploadRow({left}, false);
-            scPersistDocumentOrder();
-            return '';
+            const error = await scChangeDocumentGroups('', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({left_document_code: leftCode, member_codes: codes, new_group: true}),
+            });
+            if (!error) scSetStandaloneUploadRow({left}, false);
+            return error;
         }
 
         // Перетащили правый документ на «+» строки — добавить его к правым документам строки.
@@ -15035,7 +15037,7 @@ const app = createApp({
                 scPlaceRightDocument(row.left.pdf_path, document.pdf_path);
                 return;
             }
-            if (document.document_code) scAssignRightDocuments(row.left.document_code, [document.document_code]);
+            if (document.document_code) scAssignRightDocuments(row.left.document_code, [document.document_code], row.group?.group_id);
         }
 
         async function scSaveDocumentPairing() {
@@ -15107,7 +15109,7 @@ const app = createApp({
             if (pcReadOnlySources.value) return;
             const row = scPairRows.value[index];
             if (!['left', 'right'].includes(side) || !scDocumentOrder[side][index]
-                    || (row && scPairRowBusy(row))) return;
+                    || (row && scPairRowDragLocked(row))) return;
             scFinishPairRowDrag();
             scDraggingDocument.value = {side, index};
             scPendingPairSelection.value = null;
@@ -15122,7 +15124,7 @@ const app = createApp({
             if (!dragging || dragging.side !== side) return;
             const sourceRow = scPairRows.value[dragging.index];
             const targetRow = scPairRows.value[index];
-            if ((sourceRow && scPairRowBusy(sourceRow)) || (targetRow && scPairRowBusy(targetRow))) return;
+            if ((sourceRow && scPairRowDragLocked(sourceRow)) || (targetRow && scPairRowDragLocked(targetRow))) return;
             if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
             scDocumentDragOver[side] = index;
         }
@@ -15132,7 +15134,7 @@ const app = createApp({
             if (!dragging || dragging.side !== side) return;
             const sourceRow = scPairRows.value[dragging.index];
             const targetRow = scPairRows.value[index];
-            if ((sourceRow && scPairRowBusy(sourceRow)) || (targetRow && scPairRowBusy(targetRow))) return;
+            if ((sourceRow && scPairRowDragLocked(sourceRow)) || (targetRow && scPairRowDragLocked(targetRow))) return;
             const values = [...scDocumentOrder[side]];
             while (values.length <= index) values.push(null);
             scRemoveConfirmedPairsForPaths([values[dragging.index], values[index]]);
@@ -15156,7 +15158,7 @@ const app = createApp({
 
         function scStartPairRowDrag(event, row) {
             if (pcReadOnlySources.value) return;
-            if (!row || scPairRowBusy(row)) return;
+            if (!row || scPairRowDragLocked(row)) return;
             scFinishDocumentDrag();
             scPendingPairSelection.value = null;
             scDraggingPairRow.value = row.index;
@@ -15170,7 +15172,7 @@ const app = createApp({
             const sourceIndex = scDraggingPairRow.value;
             if (sourceIndex === null || sourceIndex === undefined) return;
             const targetRow = scPairRows.value[index];
-            if (targetRow && scPairRowBusy(targetRow)) return;
+            if (targetRow && scPairRowDragLocked(targetRow)) return;
             if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
             scPairRowDragOver.value = index;
         }
@@ -15180,7 +15182,7 @@ const app = createApp({
             if (sourceIndex === null || sourceIndex === undefined) return;
             const sourceRow = scPairRows.value[sourceIndex];
             const targetRow = scPairRows.value[index];
-            if ((sourceRow && scPairRowBusy(sourceRow)) || (targetRow && scPairRowBusy(targetRow))) {
+            if ((sourceRow && scPairRowDragLocked(sourceRow)) || (targetRow && scPairRowDragLocked(targetRow))) {
                 scFinishPairRowDrag();
                 return;
             }
@@ -15203,6 +15205,10 @@ const app = createApp({
 
         function scIsDraggingPairRow(index) {
             return scDraggingPairRow.value === index;
+        }
+
+        function scPairRowDragLocked(row) {
+            return Boolean(row?.secondary) || scPairRowBusy(row);
         }
 
         function scPairRowKey(row) {
@@ -15232,7 +15238,7 @@ const app = createApp({
 
         function scSelectPairDocument(side, row) {
             if (pcReadOnlySources.value) return;
-            if (!['left', 'right'].includes(side) || !row || !row[side] || scPairRowBusy(row)) return;
+            if (!['left', 'right'].includes(side) || !row || row.secondary || !row[side] || scPairRowBusy(row)) return;
             const document = row[side];
             const clicked = {side, index: row.index, pdfPath: document.pdf_path};
             const pending = scPendingPairSelection.value;
@@ -15843,9 +15849,9 @@ const app = createApp({
                     scPairData.value = null;
                     await scLoadObjects();
                     if (batch.target && batch.target.leftCode && uploadedCodes.length) {
-                        batch.groupError = await scAssignRightDocuments(batch.target.leftCode, uploadedCodes);
+                        batch.groupError = await scAssignRightDocuments(batch.target.leftCode, uploadedCodes, batch.target.groupId);
                     } else if (batch.target?.afterLeftCode && uploadedCodes.length) {
-                        batch.groupError = scPlaceStandaloneRightDocuments(batch.target.afterLeftCode, uploadedCodes);
+                        batch.groupError = await scPlaceStandaloneRightDocuments(batch.target.afterLeftCode, uploadedCodes);
                     }
                 }
                 const problems = [];
@@ -21572,7 +21578,7 @@ const app = createApp({
             scStageCandidateStatusText, scToggleAllStageCandidates,
             scCloseStageFolderDialog, scSubmitSelectedStageProjects,
             scSessionLoading, scSession, scSessionError,
-            scDocumentsLeft, scDocumentsRight, scDocumentOrder, scPairRows,
+            scDocumentsLeft, scDocumentsRight, scDocumentOrder, scPairRows, scVisiblePairRows,
             scDocumentGroupsError, scDocumentGroupsBusy, scStageUploadTarget,
             scFanItems, scFanShowsPlus, scFanPath, scOpenRowUpload, scDropOnRowPlus,
             scHasStandaloneUploadRow, scSetStandaloneUploadRow, scOpenStandaloneRowUpload,
