@@ -124,7 +124,7 @@ describe('Catalog wiring in the comparison page', () => {
         expect(html).toContain(':object-id="currentObjectId || \'\'"');
         expect(html).not.toContain('id="pc-catalog-focus"');  // плашка «Результат каталога» убрана
         expect(app).toContain('window.ProjectComparisonCatalog.register(app);');
-        expect(html).toContain(':pair-rows="scPairRows"');
+        expect(html).toContain(':pair-rows="scVisiblePairRows"');
         expect(html).toContain('@start="scStartCatalogPair"');
     });
 
@@ -194,6 +194,29 @@ describe('all pair rows alongside saved results', () => {
             [matching, row(1)], 'obj', 'Объект', 's');
         expect(entries.map(e => e.catalog_entry_id)).toEqual([main.catalog_entry_id, 'variant', entries[2].catalog_entry_id, 'old-version']);
         expect(entries[2].pending_pair.index).toBe(1);
+    });
+    it('keeps additional assemblies beside their source in the catalog and launch queue', () => {
+        const {sandbox} = load(async () => ({}));
+        const primary = row(0);
+        const next = row(1);
+        const extra = row(2, {left: primary.left, secondary: true});
+        const context = {scPairRows: {value: [primary, next, extra]},
+            computed: fn => ({get value() { return fn(); }}), pcReadOnlySources: {value: false},
+            SC_BATCH: {key: r => r.left && r.right}};
+        vm.createContext(context);
+        for (const [start, end] of [
+            ['const scVisiblePairRows = computed(', '// Веер соединяет'],
+            ['const scBatchSelectableRows = computed(', 'const scBatchSelectedRows = computed('],
+        ]) {
+            const fragment = app.slice(app.indexOf(start), app.indexOf(end, app.indexOf(start)));
+            vm.runInContext(fragment.replace('const ', 'var '), context);
+        }
+        expect(context.scVisiblePairRows.value).toEqual([primary, extra, next]);
+        expect(context.scBatchSelectableRows.value).toEqual([primary, extra, next]);
+        const saved = entry({documents: {old: next.left, new: next.right}});
+        const entries = sandbox.ProjectComparisonCatalog.pairEntries([saved],
+            context.scVisiblePairRows.value, 'obj', 'Объект', 'latest');
+        expect(entries.map(e => e.selection_pair)).toEqual([primary, extra, next]);
     });
     it('labels groups and updates placeholder rows reactively after upload', async () => {
         const {definition, mounted} = load(async () => ({ok: true, json: async () => ({schema: 'project-comparison-catalog/1', entries: []})}));

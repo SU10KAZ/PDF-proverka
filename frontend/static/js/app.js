@@ -18355,7 +18355,7 @@ const app = createApp({
         const scBatchRunning = computed(() => SC_BATCH.running(scBatch.value));
         const scBatchSummary = computed(() => SC_BATCH.summary(scBatch.value));
         const scBatchSelectableRows = computed(() => (pcReadOnlySources.value ? []
-            : scPairRows.value.filter(row => SC_BATCH.key(row))));
+            : scVisiblePairRows.value.filter(row => SC_BATCH.key(row))));
         const scBatchSelectedRows = computed(() => scBatchSelectableRows.value
             .filter(row => scBatchChecked[SC_BATCH.key(row)]));
         const scBatchAllChecked = computed(() => scBatchSelectableRows.value.length > 0
