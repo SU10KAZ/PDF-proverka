@@ -109,11 +109,12 @@ describe('All project comparisons — catalog component', () => {
             return {ok: true, json: async () => payload};
         });
         const emitted = [];
-        const state = definition.setup({activeEntryId: '', opening: false, error: ''},
+        const state = definition.setup({activeEntryId: '', opening: false, error: '', sessionId: 's',
+            pairRows: [{left: {document_code: 'ШИФР-СТАРЫЙ'}, right: {}, pair: {id: 'p'}}]},
             {emit: (...args) => emitted.push(args)});
         await mounted[0]();
         expect(calls).toEqual(['/api/project-comparison/catalog']);
-        expect(state.entries.value.map(e => e.title)).toEqual(['ШИФР-НОВЫЙ']);
+        expect(state.entries.value.map(e => e.title)).toEqual(['ШИФР-СТАРЫЙ']);
         expect(state.model(state.entries.value[0])).toBe('Claude Opus 5 · xhigh');
         state.open(state.entries.value[0]);
         expect(emitted[0][0]).toBe('open');
@@ -128,7 +129,8 @@ describe('All project comparisons — catalog component', () => {
             entry({title: 'СВОЙ'}),
             entry({catalog_entry_id: 'pcc1_' + 'b'.repeat(32), object_id: 'other', title: 'ЧУЖОЙ'})]};
         const {definition, mounted} = load(async () => ({ok: true, json: async () => payload}));
-        const state = definition.setup({objectId: 'obj'}, {emit: () => {}});
+        const pairRows = [{left: {document_code: 'СВОЙ'}, right: {}, pair: {id: 'p'}}];
+        const state = definition.setup({objectId: 'obj', sessionId: 's', pairRows}, {emit: () => {}});
         await mounted[0]();
         expect(state.entries.value.map(e => e.title)).toEqual(['СВОЙ']);
         const empty = definition.setup({objectId: 'none'}, {emit: () => {}});
@@ -191,7 +193,7 @@ describe('all pair rows alongside saved results', () => {
         const saved = entry({documents: {old: rows[0].left, new: rows[0].right}, counts: {projectchanges: 0}});
         const entries = sandbox.ProjectComparisonCatalog.pairEntries([saved], rows, 'obj', 'Объект', 'latest');
         expect(entries).toHaveLength(2);
-        expect(entries[0]).toMatchObject(saved);
+        expect(entries[0]).toMatchObject({...saved, title: 'OLD-0'});
         expect(entries[0].selection_pair).toBe(rows[0]);
         expect(entries[0].counts.projectchanges).toBe(0);
         expect(entries[1].pending_pair).toBe(rows[1]);
@@ -220,7 +222,7 @@ describe('all pair rows alongside saved results', () => {
             expect(state.entries.value).toHaveLength(2);
         }
     });
-    it('matches recorded pair ids, preserves saved variants, and never merges another object or source version', () => {
+    it('shows one row per configured pair and excludes historical variants and obsolete source pairs', () => {
         const {sandbox} = load(async () => ({}));
         const matching = row(0, {pair: {id: 'p'}});
         const main = entry();
@@ -230,8 +232,32 @@ describe('all pair rows alongside saved results', () => {
         const foreign = entry({catalog_entry_id: 'foreign', object_id: 'other'});
         const entries = sandbox.ProjectComparisonCatalog.pairEntries([main, variant, oldVersion, foreign],
             [matching, row(1)], 'obj', 'Объект', 's');
-        expect(entries.map(e => e.catalog_entry_id)).toEqual([main.catalog_entry_id, 'variant', entries[2].catalog_entry_id, 'old-version']);
-        expect(entries[2].pending_pair.index).toBe(1);
+        expect(entries).toHaveLength(2);
+        expect(entries[0].catalog_entry_id).toBe(main.catalog_entry_id);
+        expect(entries[1].pending_pair.index).toBe(1);
+        expect(sandbox.ProjectComparisonCatalog.pairEntries([main], [], 'obj', '', 's')).toEqual([]);
+    });
+    it('mirrors three IOS1.1 groups despite three saved runs of the first pair', () => {
+        const {sandbox, definition} = load(async () => ({}));
+        const rows = [0, 1, 2].map(i => row(i, {left: {pdf_path: '/ios11', document_code: 'ИОС1.1'},
+            pair: {id: 'p' + i}, group: {}, members: Array(5).fill({})}));
+        rows[0].comparisonRun = {state: {run_id: 'current'}};
+        const saved = (i, id, extra = {}) => entry({catalog_entry_id: id, run_id: id,
+            documents: {old: rows[i].left, new: rows[i].right},
+            open: {session_id: 's', pair_id: 'p' + i}, ...extra});
+        const history = [saved(0, 'old-a'), saved(0, 'old-b', {is_primary: false}),
+            saved(0, 'current', {is_current: true}), saved(1, 'second'),
+            entry({catalog_entry_id: 'obsolete-source'})];
+        for (const results of [history, [...history].reverse()]) {
+            const entries = sandbox.ProjectComparisonCatalog.pairEntries(results, rows, 'obj', '', 's');
+            expect(entries).toHaveLength(3);
+            expect(entries.map(e => e.selection_pair)).toEqual(rows);
+            expect(entries.map(e => e.catalog_entry_id).slice(0, 2)).toEqual(['current', 'second']);
+            expect(entries[2].pending_pair).toBe(rows[2]);
+            expect(entries.every(e => e.title === 'ИОС1.1 · сборка из 5')).toBe(true);
+        }
+        expect(definition.template).toContain('pairStatus(entry.selection_pair)');
+        expect(definition.template).not.toContain('Заморожен');
     });
     it('keeps additional assemblies beside their source in the catalog and launch queue', () => {
         const {sandbox} = load(async () => ({}));
@@ -476,7 +502,7 @@ describe('shared selection between source rows and catalog', () => {
         expect(result[0].selection_pair).toBe(row);
         expect(result[0].pending_pair).toBeUndefined();
         expect(result[1].selection_pair).toBe(pending);
-        expect(result[2].selection_pair).toBeUndefined();
+        expect(result).toHaveLength(2);
         expect(saved.selection_pair).toBeUndefined();
     });
 

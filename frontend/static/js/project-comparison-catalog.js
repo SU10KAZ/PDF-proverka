@@ -1,6 +1,6 @@
 (function (root) {
     'use strict';
-    // Pair overview: saved results plus current source pairs without a result.
+    // Compact mirror of the configured source rows, in their displayed order.
     // Launch requests go through the existing parent comparison dialog.
     const API = '/api/project-comparison/catalog';
     const SOURCE_LABEL = {LIVE_RUN: 'прогон V3', SEALED_SNAPSHOT: 'запечатанный снимок'};
@@ -36,27 +36,38 @@
     }
     function pairEntries(results, rows, objectId, objectName, sessionId) {
         const catalog = (results || []).filter(e => !objectId || e.object_id === objectId);
-        const used = new Set();
         const entries = [];
         for (const row of rows || []) {
             if (!row.left || !row.right) continue;
-            const matches = catalog.filter(e => !used.has(e.catalog_entry_id) && row.left && row.right
-                && ((row.pair?.id && e.open?.session_id === sessionId && e.open?.pair_id === row.pair.id)
+            const matches = catalog.filter(e =>
+                ((row.pair?.id && e.open?.session_id === sessionId && e.open?.pair_id === row.pair.id)
                     || (row.left.pdf_path && row.right.pdf_path
                         && e.documents?.old?.pdf_path === row.left.pdf_path
                         && e.documents?.new?.pdf_path === row.right.pdf_path)));
+            const title = row.left?.document_code || row.left?.filename || row.right?.document_code || row.right?.filename;
+            const rowTitle = title + (row.group && row.members?.length ? ' · сборка из ' + row.members.length : '');
+            // Multiple completed runs describe one configured pair, not extra
+            // rows. Prefer its current run, then the current/primary result.
+            const runId = row.comparisonRun?.state?.run_id;
+            const rank = e => [Boolean(runId && e.run_id === runId),
+                Boolean(row.pair?.id && e.open?.session_id === sessionId && e.open?.pair_id === row.pair.id),
+                Boolean(e.is_current), Boolean(e.is_primary)];
+            matches.sort((a, b) => {
+                const ar = rank(a), br = rank(b);
+                for (let i = 0; i < ar.length; i++) if (ar[i] !== br[i]) return Number(br[i]) - Number(ar[i]);
+                return String(b.frozen_at || '').localeCompare(String(a.frozen_at || ''))
+                    || String(a.catalog_entry_id).localeCompare(String(b.catalog_entry_id));
+            });
             if (matches.length) {
-                matches.forEach(e => { entries.push({...e, selection_pair: row}); used.add(e.catalog_entry_id); });
+                entries.push({...matches[0], title: rowTitle, selection_pair: row});
                 continue;
             }
-            const title = row.left?.document_code || row.left?.filename || row.right?.document_code || row.right?.filename;
             entries.push({catalog_entry_id: 'pair:' + JSON.stringify([row.left?.pdf_path, row.right?.pdf_path, row.index]),
                 pending_pair: row, selection_pair: row, object_id: objectId, object_name: objectName,
-                title: title + (row.group && row.members?.length ? ' · сборка из ' + row.members.length : ''),
+                title: rowTitle,
                 documents: {old: row.left || {}, new: row.right || {}}, engine: {}, counts: {}});
         }
-        // Keep earlier source versions and saved variants accessible too.
-        return entries.concat(catalog.filter(e => !used.has(e.catalog_entry_id)));
+        return entries;
     }
 
     root.ProjectComparisonCatalog = {
@@ -64,7 +75,7 @@
         register(app) {
             app.component('project-comparison-catalog', {
                 props: {activeEntryId: {type: String, default: ''}, opening: Boolean, error: {type: String, default: ''},
-                    // Current object: the catalog lists only its results (empty = no object chosen, show all).
+                    // The source table owns the row list; results only enrich those rows.
                     objectId: {type: String, default: ''}, objectName: {type: String, default: ''},
                     sessionId: {type: String, default: ''}, pairRows: {type: Array, default: () => []},
                     pairsLoading: Boolean, canStart: {type: Function, default: () => false},
@@ -148,11 +159,8 @@
                             <td :title="entry.frozen_at_source">{{ date(entry.frozen_at) }}</td>
                             <td class="num pc-catalog__count">{{ entry.counts.projectchanges ?? '—' }}</td>
                             <td class="num">{{ entry.counts.unresolved_hints ?? '—' }}</td>
-                            <td v-if="entry.pending_pair" class="pc-catalog__state"><span class="pc-catalog__state-line"
-                                :title="pairStatus(entry.pending_pair)">{{ pairStatus(entry.pending_pair) }}</span></td>
-                            <td v-else class="pc-catalog__state"><span class="pc-catalog__state-line"><span class="pc-catalog__status">Заморожен</span>
-                                <small>{{ sourceLabel(entry.result_source) }}<template v-if="entry.variants_in_pair > 1">
-                                    · {{ entry.is_current ? 'Текущий' : (entry.is_primary ? 'основной' : 'вариант') }}</template></small></span></td>
+                            <td class="pc-catalog__state"><span class="pc-catalog__state-line"
+                                :title="pairStatus(entry.selection_pair)">{{ pairStatus(entry.selection_pair) }}</span></td>
                             <td v-if="entry.pending_pair" class="pc-catalog__actions">
                                 <span v-if="isRunning(entry)" class="pc-catalog__running" role="status"
                                     aria-label="Сравнение выполняется" title="По этой паре выполняется сравнение">
