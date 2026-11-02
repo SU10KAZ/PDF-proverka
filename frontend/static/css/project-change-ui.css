@@ -32,6 +32,13 @@
 .sc-pair-plus--inline { display: inline-flex; align-self: center; flex: 0 0 auto; }
 .sc-pair-plus--inline button { width: auto; min-height: 26px; justify-content: center; padding: 2px 6px; }
 .sc-pair-plus--inline button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: var(--radius); }
+.sc-pair-row-actions__buttons { align-items: center; }
+.sc-pair-row-actions__secondary { display: grid; gap: 4px; width: 176px; flex: 0 0 auto; }
+.sc-pair-row-actions__secondary .sc-pair-plus { width: 100%; border: 0; }
+.sc-pair-row-actions__secondary .btn,
+.sc-pair-row-actions__secondary .sc-pair-plus button { width: 100%; height: 28px; min-height: 28px; box-sizing: border-box; }
+.sc-pair-row-actions__secondary .sc-pair-plus button { border: 1px dashed var(--border2); border-radius: var(--radius); }
+.sc-pair-row-actions__secondary .sc-pair-plus.is-drag-over button { border-color: var(--accent, #0f9f8f); }
 .pc-v1 .sc-pair-board__arrow { color: var(--teal); font-size: 14px; }
 .pc-v1 .sc-pair-document.is-confirmed { background: var(--blue-light); border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
 .pc-v1 .sc-pair-board__header, .pc-v1 .sc-pair-board__row { min-width: 856px; grid-template-columns: 64px minmax(250px, 420px) 44px minmax(250px, 420px) minmax(220px, 1fr); }

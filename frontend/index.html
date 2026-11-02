@@ -6253,22 +6253,25 @@
                                             :disabled="pcCatalogOpening" :title="scRowCatalogTitle(row)"
                                             @click="pcOpenCatalogEntry(scRowCatalogEntry(row))">{{ scRowCatalogLabel(row) }}</button>
                                 </span>
-                                <div>
-                                    <span v-if="canOperate && (scFanShowsPlus(row))" class="sc-pair-plus sc-pair-plus--inline"
-                                          :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
-                                          @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
-                                          @drop.prevent.stop="scDropOnRowPlus(row)">
-                                        <button type="button" :disabled="scDocumentGroupsBusy"
-                                                :aria-label="'Добавить проекты справа для ' + row.left.filename"
-                                                :title="'Добавить проекты справа для ' + row.left.filename"
-                                                @click="scOpenRowUpload(row)">
-                                            <b aria-hidden="true">+</b><span>Добавить в сборку</span>
-                                        </button>
-                                    </span>
-                                    <button v-if="canOperate && row.left && !row.secondary && !pcReadOnlySources" type="button"
+                                <div class="sc-pair-row-actions__buttons">
+                                    <div v-if="canOperate && (scFanShowsPlus(row) || (row.left && !row.secondary && !pcReadOnlySources))"
+                                         class="sc-pair-row-actions__secondary">
+                                        <button v-if="canOperate && row.left && !row.secondary && !pcReadOnlySources" type="button"
                                             class="btn btn-sm btn-secondary" :disabled="scHasStandaloneUploadRow(row)"
                                             title="Добавить ещё одно сравнение с этим исходным проектом"
-                                            @click="scSetStandaloneUploadRow(row, true)">+ Отдельное сравнение</button>
+                                            @click="scSetStandaloneUploadRow(row, true)">Копировать сравнение</button>
+                                        <span v-if="canOperate && (scFanShowsPlus(row))" class="sc-pair-plus sc-pair-plus--inline"
+                                              :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
+                                              @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
+                                              @drop.prevent.stop="scDropOnRowPlus(row)">
+                                            <button type="button" :disabled="scDocumentGroupsBusy"
+                                                    :aria-label="'Добавить проект справа для ' + row.left.filename"
+                                                    :title="'Добавить проект справа для ' + row.left.filename"
+                                                    @click="scOpenRowUpload(row)">
+                                                <b aria-hidden="true">+</b><span>Добавить проект</span>
+                                            </button>
+                                        </span>
+                                    </div>
                                     <button class="btn btn-sm btn-secondary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || pcCatalogOpening"
                                             @click="scOpenPairRowResult(row)">Открыть</button>
