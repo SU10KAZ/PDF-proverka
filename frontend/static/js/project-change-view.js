@@ -219,6 +219,10 @@
                 text: (str(state.message) || 'Причина не указана.') + (reason ? ` (${reason})` : ''),
                 resumable: state.resume_available === true, runId: str(state.run_id)};
         }
+        const consolidation = normalizedConsolidation(state.consolidation);
+        const consolidationNotice = consolidationBanner(consolidation, nowMs);
+        if (['COMPLETED', 'REVIEW'].includes(status) && consolidationNotice
+                && consolidationNotice.tone !== 'completed') return consolidationNotice;
         if (['COMPLETED', 'REVIEW'].includes(status) && state.resume_available === true
                 && state.resume_options?.mode === 'gaps') {
             // Завершённый прогон с упавшими пакетами разбора/проверки: досчитываются только они.
@@ -237,7 +241,17 @@
         return ['COMPLETED', 'REVIEW'].includes(status) ? consolidationBanner(state.consolidation, nowMs) : null;
     }
     // Последний этап прогона — «Сведение дублей» (Консолидатор): ход и итог, если он не COMPLETED.
+    function normalizedConsolidation(stage) {
+        if (!stage || typeof stage !== 'object') return stage;
+        const failed = Number(stage.stats?.calls?.PROVIDER_FAILED || 0);
+        if (!['COMPLETED', 'FAILED'].includes(stage.status) || failed <= 0) return stage;
+        const accepted = Number(stage.stats?.calls?.ACCEPTED || 0);
+        return {...stage, status: accepted > 0 ? 'PARTIAL' : 'FAILED',
+            message: `Сведение дублей ${accepted > 0 ? 'выполнено частично' : 'не выполнено'}. Ошибок модели: ${failed}. `
+                + 'Исходные карточки сохранены. Можно повторить сведение выбранной моделью.'};
+    }
     function consolidationBanner(stage, nowMs) {
+        stage = normalizedConsolidation(stage);
         if (!stage || typeof stage !== 'object') return null;
         const status = str(stage.status).toUpperCase();
         if (status === 'RUNNING') {
@@ -256,8 +270,8 @@
                 text: failed ? `Ошибки модели: ${failed}. Можно повторить сведение выбранной моделью.`
                     : 'Можно повторить сведение дублей без повторного сравнения документов.'};
         }
-        if (['FAILED', 'INTERRUPTED', 'CANCELLED', 'SKIPPED'].includes(status)) {
-            const title = {FAILED: 'Сведение дублей не удалось', INTERRUPTED: 'Сведение дублей прервано',
+        if (['FAILED', 'PARTIAL', 'INTERRUPTED', 'CANCELLED', 'SKIPPED'].includes(status)) {
+            const title = {PARTIAL: 'Сведение дублей выполнено частично', FAILED: 'Сведение дублей не удалось', INTERRUPTED: 'Сведение дублей прервано',
                 CANCELLED: 'Сведение дублей остановлено', SKIPPED: 'Сведение дублей не выполнялось'}[status];
             const reason = str(stage.reason_code);
             return {tone: 'warning', cancellable: false, title, consolidationRetry: true,
@@ -312,7 +326,7 @@
         const interrupted = state.orphaned_run === true;
         const current = state.pipeline_current || ({PERSISTING: 'RESULT', HUMAN_MAPPING: 'RESULT'}[state.current_stage])
             || state.current_stage || (state.pipeline_pending ? 'SOURCE_PREPARATION' : '');
-        const consolidation = state.consolidation;
+        const consolidation = normalizedConsolidation(state.consolidation);
         const stages = COMPARISON_STAGES.map(([id, title, description], index) => {
             const row = {...(saved[id] || {})};
             let status = row.status || ((hasHistory && !restored) || state.pipeline_pending ? 'WAITING' : 'UNKNOWN');

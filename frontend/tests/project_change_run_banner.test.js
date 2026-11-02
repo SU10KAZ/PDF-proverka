@@ -114,3 +114,17 @@ describe('ProjectChange run banner (V3 run state above the change list)', () => 
         expect(html).toContain(':key="(scProductionState && scProductionState.consolidation && scProductionState.consolidation.consolidator_run_id) || \'\'"');
     });
 });
+
+it.each([[0, 'FAILED'], [2, 'PARTIAL']])('exposes historical consolidation failures despite verification gaps (%s accepted)', (accepted, status) => {
+    const saved = {engine: 'projectchange_v3', status: 'REVIEW', run_id: 'r',
+        resume_available: true, resume_options: {mode: 'gaps', gaps: {verification_batches_failed: 4}},
+        consolidation: {status: 'COMPLETED', stats: {calls: {ACCEPTED: accepted, PROVIDER_FAILED: 3}}}};
+    const original = JSON.stringify(saved);
+    const banner = V.runBanner(saved, T0);
+    expect(banner.consolidationRetry).toBe(true);
+    expect(banner.text).toContain('Ошибок модели: 3');
+    const result = V.comparisonPipeline(saved).stages.find(s => s.id === 'RESULT');
+    expect(result.status).toBe(status);
+    expect(result.message).not.toContain('сведение дублей завершено');
+    expect(JSON.stringify(saved)).toBe(original);
+});

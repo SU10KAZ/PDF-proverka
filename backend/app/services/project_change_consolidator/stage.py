@@ -84,6 +84,12 @@ def public_status(session_id: str, pair_id: str, run_id: str | None) -> dict[str
     out = {**value, "live": live}
     if value.get("status") == "RUNNING" and not live:
         out.update(status="INTERRUPTED", message="Сведение дублей прервано перезапуском портала.")
+    failures = ((value.get("stats") or {}).get("calls") or {}).get("PROVIDER_FAILED", 0)
+    if value.get("status") == "COMPLETED" and failures:
+        accepted = ((value.get("stats") or {}).get("calls") or {}).get("ACCEPTED", 0)
+        out.update(status="PARTIAL" if accepted else "FAILED",
+                   reason_code="provider_failed",
+                   message=f"Ошибки модели в {failures} вызовах. Итоговое сведение дублей не завершено; исходные карточки сохранены.")
     return out
 
 

@@ -228,3 +228,16 @@ def test_provider_failures_are_not_a_successful_stage(env):
     assert out['status'] == 'FAILED'
     assert out['reason_code'] == 'provider_failed'
     assert out['stats']['consolidated_cards'] == 0
+
+@pytest.mark.parametrize('accepted, expected', [(0, 'FAILED'), (2, 'PARTIAL')])
+def test_public_status_corrects_historical_false_success(monkeypatch, accepted, expected):
+    saved = {'schema': S.SCHEMA, 'source_run_id': 'r', 'status': 'COMPLETED',
+             'stats': {'calls': {'PROVIDER_FAILED': 3, 'ACCEPTED': accepted}}}
+    before = copy.deepcopy(saved)
+    monkeypatch.setattr(S, 'read_status', lambda *args: saved)
+    monkeypatch.setattr(S, 'is_live', lambda *args: False)
+    public = S.public_status('s', 'p', 'r')
+    assert public['status'] == expected
+    assert public['reason_code'] == 'provider_failed'
+    assert saved == before
+    assert S.public_status('s', 'p', 'other') is None
