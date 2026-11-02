@@ -13,12 +13,13 @@ from backend.app.services.project_change_consolidator.storage import SHADOW_DIR_
 from backend.tests.project_change_consolidator.test_e2e_production_boundary import consolidate, env  # noqa: F401
 from backend.tests.project_change_v3 import generic_fixture as gf
 
-COMPLETED = {"status": "COMPLETED", "reason_code": "v3_completed", "run_id": "r" * 32, "session_id": "s", "pair_id": "p"}
+COMPLETED = {"status": "COMPLETED", "reason_code": "v3_completed", "run_id": "r" * 32, "session_id": "s", "pair_id": "p",
+             "provenance": {"provider": "codex_cli_subscription", "model": "gpt-6-astra", "model_profile": "astra", "reasoning": "xhigh"}}
 
 
 @pytest.fixture(autouse=True)
 def _clean_env(monkeypatch):
-    for name in (S.FLAG, S.PROVIDER_ENV, S.MAX_CALLS_ENV):
+    for name in (S.FLAG, "PROJECTCHANGE_CONSOLIDATOR_PROVIDER", S.MAX_CALLS_ENV):
         monkeypatch.delenv(name, raising=False)
 
 
@@ -76,13 +77,34 @@ def test_stage_is_on_by_default_and_skips_with_a_closed_gate(monkeypatch, tmp_pa
     out = S.run("s", "p", dict(COMPLETED))
     assert (out["status"], out["reason_code"], out["calls_done"]) == ("SKIPPED", "provider_unavailable", 0)
     assert S.read_status("s", "p")["status"] == "SKIPPED"
-    monkeypatch.setenv(S.PROVIDER_ENV, "openrouter:any:high")
-    assert S.run("s", "p", dict(COMPLETED))["reason_code"] == "bad_provider_config"
+    monkeypatch.setenv("PROJECTCHANGE_CONSOLIDATOR_PROVIDER", "openrouter:any:high")
+    assert S.run("s", "p", dict(COMPLETED))["reason_code"] == "provider_unavailable"
 
 
-def test_default_provider_is_opus_55_without_calls():
-    provider = S.provider_from_spec(S.DEFAULT_PROVIDER)
-    assert (provider.model, provider.reasoning, provider.call_count) == ("claude-opus-5-5", "xhigh", 0)
+@pytest.mark.parametrize("key", ["astra", "sol61", "opus5", "opus55"])
+def test_source_model_controls_provider_and_readiness(monkeypatch, tmp_path, key):
+    from backend.app.services.project_change_v3 import contracts, provider, provider_gate
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path))
+    monkeypatch.setenv("PROJECTCHANGE_CONSOLIDATOR_PROVIDER", "claude_code_cli:wrong:xhigh")
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_CLAUDE_BIN", "/pinned/claude")
+    profile = contracts.MODEL_PROFILES[key]
+    seen = []
+    real = provider.get_provider
+    def create():
+        instance = real()
+        seen.append((instance.model, contracts.active_profile().key))
+        if profile.selection == "claude":
+            assert instance.binary == "/pinned/claude"
+        return instance
+    monkeypatch.setattr(provider, "get_provider", create)
+    def readiness():
+        assert contracts.active_profile() == profile
+        return {"available": False, "reason": "test"}
+    monkeypatch.setattr(provider_gate, "check_provider_readiness", readiness)
+    state = {**COMPLETED, "provenance": {"provider": profile.provider, "model": profile.model, "model_profile": key}}
+    out = S.run("s", "p", state)
+    assert out["reason_code"] == "provider_unavailable"
+    assert seen == [(profile.model, key)]
 
 
 def test_running_status_without_a_live_stage_is_interrupted(monkeypatch, tmp_path):
@@ -194,3 +216,15 @@ def test_retry_endpoint_needs_a_completed_run(env):  # noqa: F811
     client, sid = env["client"], env["session_id"]
     response = client.post(f"/api/stage-comparison/sessions/{sid}/pairs/{gf.PAIR_ID}/production/consolidation")
     assert response.status_code == 409
+
+
+def test_provider_failures_are_not_a_successful_stage(env):
+    from backend.app.services.project_change_v3.provider import FakeProvider, ProviderError
+    _client, sid, state = _run_pair(env)
+    def fail(**kwargs):
+        raise ProviderError('provider_unavailable', 'test failure')
+    fake = FakeProvider(handlers={C.STAGE: fail})
+    out = S.run(sid, gf.PAIR_ID, state, provider=fake)
+    assert out['status'] == 'FAILED'
+    assert out['reason_code'] == 'provider_failed'
+    assert out['stats']['consolidated_cards'] == 0

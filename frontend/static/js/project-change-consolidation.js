@@ -580,7 +580,7 @@
                         <button v-if="canDownload" type="button" class="btn btn-sm btn-primary" @click="download('zip')"
                             title="Архив: Excel с готовыми результатами + папки «Было» и «Стало» с PDF и MD каждого документа, без запуска модели">Классический отчёт</button>
                         <button v-if="canOperate || canDownload" type="button" class="btn btn-sm btn-secondary" :disabled="running || starting" @click="makeReport"
-                            :title="ready ? 'Скачать заполненный отчёт' : 'Разбор по корзинам моделью Claude Opus 5.5, затем отчёт'">
+                            :title="ready ? 'Скачать заполненный отчёт' : 'Разбор по корзинам моделью, выбранной при запуске сравнения, затем отчёт'">
                             {{ running || starting ? 'ИИ-разбор выполняется…' : 'Отчёт с ИИ-разбором' }}</button>
                         <button v-if="canOperate && running" type="button" class="btn btn-sm btn-secondary" @click="cancelRun">Остановить</button>
                         <button v-if="canOperate && analysis?.available && !running" type="button" class="btn btn-sm btn-secondary"

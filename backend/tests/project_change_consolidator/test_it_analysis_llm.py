@@ -145,7 +145,7 @@ def test_api_refuses_without_a_ready_provider_and_reports_state(ready, monkeypat
     assert Counter(not r.get("basket") for r in it_analysis.load(ready["session_id"], gf.PAIR_ID, ready["view"])["rows"])[True] == 1
 
 
-def test_readiness_checks_opus55_even_when_default_is_codex(monkeypatch):
+def test_readiness_checks_bound_source_model(monkeypatch):
     from backend.app.services.project_change_v3 import contracts, provider_gate
 
     seen = []
@@ -154,8 +154,9 @@ def test_readiness_checks_opus55_even_when_default_is_codex(monkeypatch):
         seen.append(contracts.active_profile().key)
         return {"available": True}
     monkeypatch.setattr(provider_gate, "check_provider_readiness", gate)
-    L._readiness()
-    assert seen == ["opus55"]
+    with contracts.use_profile(contracts.MODEL_PROFILES["sol61"]):
+        L._readiness()
+    assert seen == ["sol61"]
     assert contracts.active_profile().key == "astra"
 
 
@@ -205,3 +206,24 @@ def test_failed_replacement_keeps_current_analysis(ready, monkeypatch):
     with pytest.raises(OSError):
         it_analysis.store(sid, gf.PAIR_ID, view, [], **kwargs)
     assert it_analysis.load(sid, gf.PAIR_ID, view) == before
+
+
+@pytest.mark.parametrize("key", ["astra", "sol61", "opus5", "opus55"])
+def test_it_worker_uses_source_profile_including_background_thread(monkeypatch, tmp_path, key):
+    from backend.app.services.project_change_v3 import source_model, contracts
+    import threading
+    profile = contracts.MODEL_PROFILES[key]
+    monkeypatch.setattr(source_model, "for_run", lambda s, p, r: profile)
+    monkeypatch.setattr(L.it_analysis, "load", lambda *a: None)
+    monkeypatch.setattr(L, "_base", lambda *a: tmp_path)
+    monkeypatch.setattr(L, "_readiness", lambda: None)
+    seen = []
+    done = threading.Event()
+    def execute(*args, **kwargs):
+        seen.append((contracts.active_profile().key, kwargs["provider"].model, args[4]["model"]))
+        done.set()
+    monkeypatch.setattr(L, "_execute", execute)
+    L.start("session", "pair", {"source_run_id": "source", "consolidator_run_id": key, "consolidated": [{}]},
+            document_code="test", object_label="test", author="test")
+    assert done.wait(5)
+    assert seen == [(key, profile.model, profile.model)]

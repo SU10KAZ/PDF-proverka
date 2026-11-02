@@ -1,4 +1,4 @@
-"""Разбор итоговых карточек по четырём корзинам моделью (Claude Opus 5.5 по подписке).
+"""Разбор итоговых карточек по четырём корзинам моделью исходного прогона.
 
 Кнопка «Сформировать отчёт»: если разбора нет — фоновый прогон. Карточки идут
 пачками по ``BATCH_SIZE``; в каждом вызове — промпт ``prompts/project_change/it_baskets_ru.md``,
@@ -26,7 +26,7 @@ from . import it_analysis
 from .report_xlsx import BASKETS, CARD_COLUMNS, CONFIDENCE, ID_RE, it_id
 
 STAGE = "PROJECTCHANGE_IT_BASKETS"
-MODEL, REASONING = "claude-opus-5-5", "xhigh"
+from backend.app.services.project_change_v3.contracts import REASONING
 BATCH_SIZE = 5
 PD_CHARS_BUDGET = 400_000
 RD_CHARS_BUDGET = 350_000
@@ -233,18 +233,13 @@ def run_state(session_id: str, pair_id: str, view: dict[str, Any]) -> dict[str, 
 
 
 def _default_provider():
-    from backend.app.services.project_change_v3.provider import ClaudeOpusProvider
-
-    return ClaudeOpusProvider(model=MODEL, reasoning=REASONING,
-                              binary=os.environ.get("PROJECT_COMPARISON_V3_CLAUDE_BIN", "").strip() or None)
+    from backend.app.services.project_change_v3.provider import get_provider
+    return get_provider()
 
 
 def _readiness() -> None:
     from backend.app.services.project_change_v3 import provider_gate
-    from backend.app.services.project_change_v3.contracts import MODEL_PROFILES, use_profile
-
-    with use_profile(MODEL_PROFILES["opus55"]):
-        gate = provider_gate.check_provider_readiness()
+    gate = provider_gate.check_provider_readiness()
     if not gate.get("available"):
         raise RunRefused("provider_unavailable", "Модель недоступна: " + str(gate.get("reason") or gate))
 
@@ -264,18 +259,27 @@ def start(session_id: str, pair_id: str, view: dict[str, Any], *, document_code:
         todo = [i for i in range(n) if it_id(i) in failed]
         if not todo:
             raise RunRefused("already_done", "Разбор моделью уже готов.")
+    from contextlib import nullcontext
+    from backend.app.services.project_change_v3 import source_model
+    from backend.app.services.project_change_v3.contracts import use_profile
+    try:
+        profile = source_model.for_run(session_id, pair_id, view["source_run_id"]) if provider_factory is None else None
+    except (ValueError, OSError) as exc:
+        raise RunRefused("source_model_unavailable", str(exc)) from exc
     key = _key(view, session_id, pair_id)
     with _lock:
         if key in _running:
             raise RunRefused("running", "Разбор уже идёт.")
         if check_readiness:
-            _readiness()
+            with use_profile(profile) if profile else nullcontext():
+                _readiness()
         cancel = threading.Event()
         _running[key] = {"cancel": cancel, "thread": None}
     run_id = uuid.uuid4().hex
     base = _base(session_id, pair_id, view)
     groups = batches(n) if len(todo) == n else [todo[s:s + BATCH_SIZE] for s in range(0, len(todo), BATCH_SIZE)]
-    state = {"schema": RUN_SCHEMA, "run_id": run_id, "status": "QUEUED", "model": MODEL, "reasoning": REASONING,
+    state = {"schema": RUN_SCHEMA, "run_id": run_id, "status": "QUEUED", "model": profile.model if profile else None, "reasoning": REASONING,
+             "model_profile": profile.key if profile else None, "source_run_id": view["source_run_id"],
              "started_at": _now(), "finished_at": None, "started_by": author, "force": force,
              "batches_total": len(groups), "batches_done": 0, "batches_failed": 0,
              "items_total": len(todo), "current": None, "errors": []}
@@ -288,9 +292,10 @@ def start(session_id: str, pair_id: str, view: dict[str, Any], *, document_code:
 
     def work():
         try:
-            _execute(session_id, pair_id, view, groups, state, base, cancel,
-                     provider=(provider_factory or _default_provider)(),
-                     system=f"{document_code} · {object_label}", author=author, previous=current, force=force)
+            with use_profile(profile) if profile else nullcontext():
+                _execute(session_id, pair_id, view, groups, state, base, cancel,
+                         provider=(provider_factory or _default_provider)(),
+                         system=f"{document_code} · {object_label}", author=author, previous=current, force=force)
         except Exception as exc:  # непредвиденный сбой: состояние не должно «висеть» в RUNNING
             state.update(status="FAILED", finished_at=_now(),
                          errors=state["errors"] + [f"{type(exc).__name__}: {exc}"])
@@ -362,7 +367,7 @@ def _execute(session_id, pair_id, view, groups, state, base, cancel_event, *, pr
         _write(base / "model_run.json", state)
         data, receipt = batch_payload(view, indices, system=system, pd=pd, rd=rd)
         call_dir = run_dir / f"{n:02d}"
-        _write(call_dir / "REQUEST.json", {**receipt, "stage": STAGE, "model": MODEL, "reasoning": REASONING})
+        _write(call_dir / "REQUEST.json", {**receipt, "stage": STAGE, "model": state["model"], "reasoning": state["reasoning"]})
         response, error = None, None
         try:
             response = provider.complete(stage=STAGE, call_id=f"{state['run_id'][:12]}-{n:02d}", pair_id=pair_id,
@@ -412,7 +417,7 @@ def _finish(session_id, pair_id, view, rows, failed, state, base, *, author, pre
                 _write(base / "model_run.json", state)
                 return
             it_analysis.store(session_id, pair_id, view, rows, warnings=warnings, source=it_analysis.SOURCE_MODEL,
-                              author=author, extra={"model": MODEL, "reasoning": REASONING,
+                              author=author, extra={"model": state["model"], "reasoning": state["reasoning"],
                                                     "model_run_id": state["run_id"], "failed_ids": failed_ids})
     state.update(status="CANCELLED" if cancelled else ("COMPLETED" if not failed_ids else
                                                       ("PARTIAL" if len(failed_ids) < n else "FAILED")),

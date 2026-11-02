@@ -2,8 +2,7 @@
 
 Идёт сразу за V3 в том же прогоне: под тем же замком пары и с тем же токеном
 отмены («Остановить анализ» останавливает и его).  По умолчанию включён;
-``PROJECTCHANGE_CONSOLIDATION_STAGE=0`` выключает.  Модель — Claude Opus 5.5
-через Claude Code CLI (``PROJECTCHANGE_CONSOLIDATOR_PROVIDER`` переопределяет),
+``PROJECTCHANGE_CONSOLIDATION_STAGE=0`` выключает. Модель берётся из исходного прогона,
 без запасной модели; вызовы идут только через открытый шлюз V3.
 
 Результат V3 этап не меняет: Консолидатор пишет свой замороженный прогон в
@@ -17,6 +16,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import ExitStack
 import logging
 import os
 import threading
@@ -27,9 +27,7 @@ from typing import Any
 log = logging.getLogger(__name__)
 
 FLAG = "PROJECTCHANGE_CONSOLIDATION_STAGE"
-PROVIDER_ENV = "PROJECTCHANGE_CONSOLIDATOR_PROVIDER"
 MAX_CALLS_ENV = "PROJECTCHANGE_CONSOLIDATOR_MAX_CALLS"
-DEFAULT_PROVIDER = "claude_code_cli:claude-opus-5-5:xhigh"
 DEFAULT_MAX_CALLS = 40
 STATUS_FILE = "projectchange_consolidation_stage.json"
 SCHEMA = "projectchange-consolidation-stage/1"
@@ -47,15 +45,6 @@ def max_calls() -> int:
         return max(0, int(os.environ.get(MAX_CALLS_ENV, str(DEFAULT_MAX_CALLS))))
     except ValueError:
         return DEFAULT_MAX_CALLS
-
-
-def provider_from_spec(spec: str) -> Any:
-    parts = [p.strip() for p in (spec or "").split(":")]
-    if len(parts) != 3 or parts[0] != "claude_code_cli" or not parts[1] or not parts[2]:
-        raise ValueError(f"unsupported provider configuration {spec!r}")
-    from backend.app.services.project_change_v3.provider import ClaudeOpusProvider
-
-    return ClaudeOpusProvider(model=parts[1], reasoning=parts[2])
 
 
 def source_completed(state: Any) -> bool:
@@ -154,11 +143,16 @@ def run(session_id: str, pair_id: str, v3_state: Any, *, cancel_token: Any = Non
         base.update(extra, reason_code=reason_code, message=message, finished_at=_now())
         return _write(session_id, pair_id, {**base, "status": status})
 
+    profile_context = ExitStack()
     try:
         _write(session_id, pair_id, {**base, "status": "RUNNING", "message": "Подготовка сведения дублей"})
         if provider is None:
             try:
-                provider = provider_from_spec(os.environ.get(PROVIDER_ENV, "").strip() or DEFAULT_PROVIDER)
+                from backend.app.services.project_change_v3 import source_model
+                from backend.app.services.project_change_v3.contracts import use_profile
+                profile = source_model.from_state(v3_state)
+                profile_context.enter_context(use_profile(profile))
+                provider = v3_provider.get_provider()
             except ValueError as exc:
                 return finish("SKIPPED", "bad_provider_config", str(exc))
             from backend.app.services.project_change_v3 import provider_gate
@@ -168,6 +162,8 @@ def run(session_id: str, pair_id: str, v3_state: Any, *, cancel_token: Any = Non
                 return finish("SKIPPED", "provider_unavailable",
                               f"Модель недоступна ({gate.get('reason')}), сведение дублей не выполнялось.")
         base["model"] = getattr(provider, "model", None)
+        base["provider"] = getattr(provider, "provider", None)
+        base["reasoning"] = getattr(provider, "reasoning", None)
         if cancel_token is not None and hasattr(provider, "cancel_token"):
             provider.cancel_token = cancel_token  # отмена прогона убивает CLI-сессию вызова
         from backend.app.services.project_change_v3 import run_storage
@@ -208,11 +204,16 @@ def run(session_id: str, pair_id: str, v3_state: Any, *, cancel_token: Any = Non
         if manifest.get("state") != "COMPLETED":
             return finish("FAILED", str(manifest.get("reason_code") or "validation_failed"),
                           "Результат сведения дублей не прошёл проверку.", **done)
+        failures = (manifest.get("stats") or {}).get("calls", {}).get("PROVIDER_FAILED", 0)
+        if failures:
+            return finish("FAILED", "provider_failed",
+                          f"Ошибка модели в {failures} вызовах; сведение дублей не завершено.", **done)
         _drop_older(session_id, pair_id, store_root, run_id, str(done["consolidator_run_id"]))
         return finish("COMPLETED", **done)
     except Exception as exc:  # noqa: BLE001 — сбой этапа не роняет прогон V3
         log.exception("consolidation stage failed for %s/%s", pair_id, run_id)
         return finish("FAILED", type(exc).__name__, f"{type(exc).__name__}: {exc}"[:500])
     finally:
+        profile_context.close()
         with _LIVE_LOCK:
             _LIVE.discard(key)
