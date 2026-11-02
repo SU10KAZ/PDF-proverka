@@ -201,7 +201,7 @@ describe('all pair rows alongside saved results', () => {
         expect(entries[1].counts.projectchanges).toBeUndefined();
         expect(entries.some(e => e.pending_pair === rows[2] || e.pending_pair === rows[3])).toBe(false);
     });
-    it('waits for both catalog and pairs without showing an intermediate partial list', async () => {
+    it('shows source rows immediately while catalog metadata is pending', async () => {
         for (const pairsFirst of [true, false]) {
             let reply;
             const {definition, mounted} = load(() => new Promise(resolve => { reply = resolve; }));
@@ -210,12 +210,12 @@ describe('all pair rows alongside saved results', () => {
             const state = definition.setup(props, {emit: () => {}});
             const pending = mounted[0]();
             if (pairsFirst) props.pairsLoading = false;
-            expect(state.entries.value).toHaveLength(0);
+            expect(state.entries.value).toHaveLength(2);
             reply({ok: true, json: async () => ({schema: 'project-comparison-catalog/1', entries: [saved]})});
             await pending;
             if (!pairsFirst) {
-                expect(state.overviewLoading.value).toBe(true);
-                expect(state.entries.value).toHaveLength(0);
+                expect(state.overviewLoading.value).toBe(false);
+                expect(state.entries.value).toHaveLength(2);
                 props.pairsLoading = false;
             }
             expect(state.overviewLoading.value).toBe(false);
@@ -291,7 +291,7 @@ describe('all pair rows alongside saved results', () => {
         props.pairRows = [...props.pairRows, row(1)];
         expect(state.entries.value).toHaveLength(2);
         props.pairsLoading = true;
-        expect(state.entries.value).toHaveLength(0);
+        expect(state.entries.value).toHaveLength(2);
     });
     it('emits the exact source row only when launching is allowed; loading and errors prevent launch', async () => {
         const {definition, mounted} = load(async () => ({ok: true, json: async () => ({schema: 'project-comparison-catalog/1', entries: []})}));

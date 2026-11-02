@@ -88,8 +88,8 @@
                     const catalog = ref(null);
                     const loading = ref(true);
                     const loadError = ref('');
-                    const overviewLoading = computed(() => loading.value || props.pairsLoading);
-                    const entries = computed(() => overviewLoading.value ? [] : pairEntries(catalog.value?.entries, props.pairRows,
+                    const overviewLoading = computed(() => !!props.pairsLoading && !props.pairRows?.length);
+                    const entries = computed(() => pairEntries(catalog.value?.entries, props.pairRows,
                         props.objectId, props.objectName, props.sessionId));
                     let loadId = 0;
                     async function load() {

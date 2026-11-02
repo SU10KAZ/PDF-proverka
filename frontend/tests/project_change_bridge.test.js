@@ -102,7 +102,7 @@ const loadStart=app.indexOf('async function pcLoadBridge(');
 const loadCode=app.slice(loadStart,app.indexOf('const pcSheetFilter',loadStart));
 function loadHarness(){
     let reply;
-    const context={PC:V,pcUiEnabled:{value:true},pcCatalogFocus:{value:null},pcLoadToken:0,pcContextEpoch:0,pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
+    const context={pcLoading:{value:false},scProductionState:{value:null},scActivePair:{value:null},URLSearchParams,PC:V,pcUiEnabled:{value:true},pcCatalogFocus:{value:null},pcLoadToken:0,pcContextEpoch:0,pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
         pcBridgeActive:{value:true},pcBridgeEnvelope:{value:{revision:'source',decision_revision:5}},
         pcBridgeUnavailable:{value:false},pcHistory:{value:{}},pcError:{value:''},scSession:{value:{id:'viewer'}},
         fetch:()=>new Promise(r=>{reply=r;})};
@@ -110,6 +110,21 @@ function loadHarness(){
     return {context,load:()=>context.pcLoadBridge(),reply:(status,data={})=>reply({status,ok:status===200,json:async()=>data})};
 }
 describe('preview refresh failure and stale responses',()=>{
+    it('requests only the opened run and keeps loading until its response arrives',async()=>{
+        const h=loadHarness(), urls=[];
+        h.context.pcBridgeActive.value=false;
+        h.context.scSession.value={id:'session'};
+        h.context.scActivePair.value={id:'pair'};
+        h.context.scProductionState.value={run_id:'run'};
+        const fetch=h.context.fetch;
+        h.context.fetch=url=>{urls.push(url);return fetch(url);};
+        const pending=h.load();
+        expect(h.context.pcLoading.value).toBe(true);
+        expect(urls[0]).toContain('?session_id=session&pair_id=pair&run_id=run');
+        h.reply(200,{schema_version:'project-change-view/1',object_id:V.OBJECT,items:[]});
+        await pending;
+        expect(h.context.pcLoading.value).toBe(false);
+    });
     it('continues ordinary document workflow when no dataset endpoint is available',async()=>{
         const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();h.reply(404);
         expect(await p).toBe(false);expect(h.context.pcBridgeUnavailable.value).toBe(false);
@@ -159,7 +174,7 @@ const objectsCode=app.slice(objectsStart,app.indexOf('function scBuildStageFolde
 describe('ordinary document loading across object switches',()=>{
     it.each([false,true])('loads cards at startup only for the sealed snapshot viewer: %s',async snapshot=>{
         const calls=[];
-        const context={pcContextEpoch:0,pcLoadBridge:async()=>{calls.push('cards');return true;},
+        const context={currentObjectId:{value:'obj'},pcContextEpoch:0,pcLoadBridge:async()=>{calls.push('cards');return true;},
             scObjectsLoading:{value:false},scObjectsError:{value:''},scObjects:{value:[]},
             scSelectedObject:{value:{requires_snapshot_viewer:snapshot}},
             fetch:async()=>({ok:true,json:async()=>({items:[]})}),
@@ -172,7 +187,7 @@ describe('ordinary document loading across object switches',()=>{
     });
     it.each([true,false])('ignores a stale ordinary object listing (HTTP success: %s)',async ok=>{
         let reply,refreshes=0;
-        const context={pcContextEpoch:0,pcLoadBridge:async()=>false,
+        const context={currentObjectId:{value:'obj'},pcContextEpoch:0,pcLoadBridge:async()=>false,
             scObjectsLoading:{value:false},scObjectsError:{value:''},scObjects:{value:['current']},
             fetch:()=>new Promise(resolve=>{reply=resolve;}),scRefreshSession:async()=>{refreshes++;}};
         vm.createContext(context);vm.runInContext(objectsCode,context);

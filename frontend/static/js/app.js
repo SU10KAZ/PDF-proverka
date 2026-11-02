@@ -13351,6 +13351,7 @@ const app = createApp({
         const pcUiEnabled = computed(() => true);
         const pcBridgeEnvelope = ref(null);
         const pcBridgeUnavailable = ref(false);
+        const pcLoading = ref(false);
         const pcApi = computed(() => '/api/project-change-preview/objects/' + encodeURIComponent(currentObjectId.value));
         const pcEnvelope = computed(() => pcUiEnabled.value
             ? pcBridgeEnvelope.value || scPairData.value?.project_change_presentation || scSession.value?.project_change_presentation : null);
@@ -13370,7 +13371,7 @@ const app = createApp({
         let pcContextEpoch = 0;
         watch(currentObjectId, () => {
             pcCatalogFocus.value = null;
-            pcContextEpoch++; pcLoadToken++; pcBridgeEnvelope.value = null; pcHistory.value = {}; pcBridgeUnavailable.value = false;
+            pcContextEpoch++; pcLoadToken++; pcLoading.value = false; pcBridgeEnvelope.value = null; pcHistory.value = {}; pcBridgeUnavailable.value = false;
             scSessionRequestToken++; scInvalidatePairOpen(); scResetProductionReview();
             scSession.value = null; scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
             scDocumentGroupsToken++; clearTimeout(scDocumentGroupsTimer); scDocumentGroups.value = []; scDocumentGroupsError.value = '';
@@ -13394,9 +13395,10 @@ const app = createApp({
         async function pcLoadCatalogEntries() {
             const token = ++pcCatalogEntriesToken;
             try {
-                const response = await fetch('/api/project-comparison/catalog');
+                const objectId = currentObjectId.value;
+                const response = await fetch('/api/project-comparison/catalog?object_id=' + encodeURIComponent(objectId));
                 const data = await response.json().catch(() => ({}));
-                if (token !== pcCatalogEntriesToken) return;
+                if (token !== pcCatalogEntriesToken || objectId !== currentObjectId.value) return;
                 pcCatalogEntries.value = response.ok && Array.isArray(data.entries) ? data.entries : [];
             } catch (_) {
                 // Без каталога строка просто не покажет отметку; сам каталог выводит свою ошибку.
@@ -13436,7 +13438,7 @@ const app = createApp({
         });
         watch(() => scActivePair.value?.id, id => {
             pcConsolidationPanel.value = false;
-            if (pcCatalogFocus.value && pcCatalogFocus.value.pair_id !== id) { pcCatalogFocus.value = null; pcLoadBridge(); }
+            if (pcCatalogFocus.value && pcCatalogFocus.value.pair_id !== id) pcCatalogFocus.value = null;
         });
         async function pcWaitFor(ready, timeoutMs = 60000) {
             const started = Date.now();
@@ -13662,9 +13664,15 @@ const app = createApp({
             const token = ++pcLoadToken;
             const epoch = pcContextEpoch;
             const hadViewer = pcBridgeActive.value;
+            pcLoading.value = true;
             try {
                 const selectedUrl = typeof explicitUrl === 'string' ? explicitUrl : pcCatalogFocus.value?.presentation_api;
-                const response = await fetch(selectedUrl || '/api/stage-comparison/objects/' + encodeURIComponent(objectId) + '/project-changes');
+                let url = selectedUrl || '/api/stage-comparison/objects/' + encodeURIComponent(objectId) + '/project-changes';
+                const runId = scProductionState.value?.run_id;
+                if (!selectedUrl && !hadViewer && scSession.value?.id && scActivePair.value?.id && runId) {
+                    url += '?' + new URLSearchParams({session_id: scSession.value.id, pair_id: scActivePair.value.id, run_id: runId});
+                }
+                const response = await fetch(url);
                 // A previous object must never continue into the new object's session.
                 if (token !== pcLoadToken || epoch !== pcContextEpoch) return true;
                 if (response.status === 404 && !hadViewer) {
@@ -13704,6 +13712,8 @@ const app = createApp({
                     return hadViewer;
                 }
                 return true;
+            } finally {
+                if (token === pcLoadToken && epoch === pcContextEpoch) pcLoading.value = false;
             }
         }
         const pcSheetFilter = ref('all');
@@ -15531,7 +15541,7 @@ const app = createApp({
                 } else if (!activeId) {
                     const restoredId = scStoredActivePairId(data.id);
                     const restoredPair = scPairs.value.find(pair => pair.id === restoredId);
-                    if (restoredPair) await scOpenPair(restoredPair, {preserveTab: true});
+                    if (restoredPair) void scOpenPair(restoredPair, {preserveTab: true});
                     else if (restoredId) scForgetActivePair(data.id);
                 }
             } catch (error) {
@@ -15550,7 +15560,7 @@ const app = createApp({
             scObjectsLoading.value = true;
             scObjectsError.value = '';
             try {
-                const response = await fetch('/api/stage-comparison/objects');
+                const response = await fetch('/api/stage-comparison/objects?object_id=' + encodeURIComponent(currentObjectId.value));
                 const data = await response.json().catch(() => ({}));
                 if (epoch !== pcContextEpoch) return;
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
@@ -16008,7 +16018,12 @@ const app = createApp({
             // Restoring a saved pair must not navigate away from documentation upload.
             if (!options?.preserveTab) scTab.value = 'links';
             scFocusLeftPage(1);
-            if (!pcBridgeActive.value) void scLoadProductionReview({silent: true});
+            if (!pcBridgeActive.value) {
+                const saved = (scSession.value?.comparison_runs || []).find(run =>
+                    run.session_id === scSession.value.id && run.pair_id === data.pair.id);
+                if (saved?.state) scApplyProductionState(saved.state);
+                void scLoadProductionReview({silent: true});
+            }
         }
 
         async function scCreatePairForDocuments(leftPdf, rightPdf, sessionId) {
@@ -21602,7 +21617,7 @@ const app = createApp({
             migratedStatusLabel, migratedStatusTone, findingMigratedBadge,
             findingExtRegBadge,
             // Documentation comparison shell
-            pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
+            pcUiEnabled, pcDebug, pcDemo, pcLoading, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
             pcChanges, pcEnvelopeValid, pcError, pcDecide, pcExpertSaved, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcQualityBanner, pcConsolidationPanel,
             pcPipeline, pcPipelineExpanded, pcPipelineDetail,
             pcConsolidationStarting, pcRetryConsolidation,

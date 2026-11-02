@@ -5,7 +5,7 @@
         register(app) {
             app.component('project-change-list', {
                 props: {changes: {type: Array, default: () => []}, report: Boolean, demo: Boolean,
-                    error: String, available: Boolean, persistent: Boolean, readonly: Boolean, saving: Boolean,
+                    error: String, loading: Boolean, available: Boolean, persistent: Boolean, readonly: Boolean, saving: Boolean,
                     history: {type:Object, default:()=>({})}, pairs: {type:Array, default:()=>[]},
                     resultHref: {type:String, default:''}, selectedPairId: {type:String, default:''}, revealId: String, objectId: {type:String, default:''}},
                 emits: ['decision', 'open-evidence', 'reset-decisions', 'refresh', 'history', 'open-upload', 'expert-saved'],
@@ -229,7 +229,8 @@
                         <span v-for="[label, count] in groups" :key="label" class="pc-source">{{ label }} — {{ count }}</span>
                         <small>Экспорт пока недоступен.</small>
                     </div>
-                    <p v-if="!visible.length && !needsPair" class="pc-empty">{{ report
+                    <p v-if="loading && !visible.length" class="pc-empty" role="status">Загрузка сохранённого отчёта…</p>
+                    <p v-if="!loading && !visible.length && !needsPair" class="pc-empty">{{ report
                         ? 'Подтверждённых изменений пока нет.'
                         : 'Для выбранной пары пока нет результатов анализа изменений.' }}</p>
                     <div v-if="visible.length" class="pc-table-scroll" tabindex="0" aria-label="Таблица изменений">

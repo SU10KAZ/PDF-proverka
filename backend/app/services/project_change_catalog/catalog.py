@@ -139,10 +139,10 @@ def _entry_id(kind: str, object_id: str, session_id: str, pair_id: str, variant:
 
 
 def _objects() -> dict[str, str]:
-    from backend.app.services.stage_comparison import objects as objects_mod
+    from backend.app.services.common import object_service
 
     return {str(item["id"]): str(item.get("name") or item["id"])
-            for item in objects_mod.list_objects().get("items") or [] if item.get("id")}
+            for item in object_service.list_objects() if item.get("id")}
 
 
 def _document(doc: dict[str, Any], sha: str) -> dict[str, Any]:

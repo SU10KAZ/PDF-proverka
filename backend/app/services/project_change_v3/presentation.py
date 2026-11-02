@@ -431,11 +431,12 @@ def _pair_ids(session_id: str) -> list[str]:
 
     from backend.app.services.stage_comparison import paths
 
-    session = store.get_session(session_id) or {}
+    # Discovery needs IDs only, never sheet maps or historical run summaries.
+    pair_ids = store._pair_ids(session_id)
     # Only pairs that ever persisted a V3 result can publish one.
     return [
-        str(p["id"]) for p in session.get("pairs") or []
-        if p.get("id") and run_storage.artifact_path(session_id, str(p["id"]), "project_change_v3_result").is_file()
+        pid for pid in pair_ids
+        if run_storage.artifact_path(session_id, pid, "project_change_v3_result").is_file()
     ]
 
 
@@ -443,11 +444,13 @@ def object_v3_parts(object_id: str) -> dict[str, Any]:
     from .scope import sessions_for_object
 
     parts: dict[str, Any] = {"items": [], "unresolved_hints": [], "runs": [], "pairs": []}
-    for session_id in sessions_for_object(object_id):
-        for pair_id in _pair_ids(session_id):
-            scope = run_storage.ACTIVE.get()
-            if scope and scope[:2] != (session_id, pair_id):
-                continue
+    scope = run_storage.ACTIVE.get()
+    sessions = sessions_for_object(object_id)
+    if scope:
+        # Keep ownership validation, but never discover unrelated pairs for a run URL.
+        sessions = [scope[0]] if scope[0] in sessions else []
+    for session_id in sessions:
+        for pair_id in ([scope[1]] if scope else _pair_ids(session_id)):
             view = pair_presentation(session_id, pair_id, object_id=object_id)
             if view is None:
                 continue
@@ -659,11 +662,13 @@ def _resolve_evidence(object_id: str, evidence_id: str) -> tuple[Path, dict[str,
 
     from .scope import sessions_for_object
 
-    for session_id in sessions_for_object(object_id):
-        for pair_id in _pair_ids(session_id):
-            scope = run_storage.ACTIVE.get()
-            if scope and scope[:2] != (session_id, pair_id):
-                continue
+    scope = run_storage.ACTIVE.get()
+    sessions = sessions_for_object(object_id)
+    if scope:
+        # Keep ownership validation, but never discover unrelated pairs for a run URL.
+        sessions = [scope[0]] if scope[0] in sessions else []
+    for session_id in sessions:
+        for pair_id in ([scope[1]] if scope else _pair_ids(session_id)):
             published = published_run(session_id, pair_id)
             if published is None:
                 continue

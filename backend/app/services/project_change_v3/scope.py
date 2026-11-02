@@ -22,13 +22,20 @@ def _resolved(value: object) -> str:
 
 
 def _object_stage_paths() -> dict[str, tuple[str, str]]:
-    from backend.app.services.stage_comparison import objects as objects_mod
+    from backend.app.services.common import object_service
+    from backend.app.services.stage_comparison import stage_upload
 
+    # Ownership needs paths, not PDF counts or assembled document manifests.
     out: dict[str, tuple[str, str]] = {}
-    for item in objects_mod.list_objects().get("items") or []:
-        stages = {s.get("name"): s.get("path") for s in item.get("stages") or []}
-        if stages.get("stage_1") and stages.get("stage_2"):
-            out[str(item["id"])] = (_resolved(stages["stage_1"]), _resolved(stages["stage_2"]))
+    for item in object_service.list_objects():
+        oid = str(item.get("id") or "")
+        if not oid:
+            continue
+        try:
+            _, root = stage_upload.resolve_object_dir(oid, create=False)
+        except stage_upload.StageUploadError:
+            continue
+        out[oid] = (_resolved(root / "stage_1"), _resolved(root / "stage_2"))
     return out
 
 

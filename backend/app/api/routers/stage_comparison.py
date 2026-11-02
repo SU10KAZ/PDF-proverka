@@ -290,9 +290,9 @@ def _authorized_human_contour_author(request: Request) -> str:
 
 
 @router.get("/objects")
-async def list_comparison_objects():
+async def list_comparison_objects(object_id: str | None = Query(default=None, min_length=1, max_length=128)):
     # Подсчёт PDF обходом папок всех объектов — вне event loop (этап 8).
-    data = await run_in_threadpool(objects_mod.list_objects)
+    data = await run_in_threadpool(objects_mod.list_objects, object_id) if object_id else await run_in_threadpool(objects_mod.list_objects)
     from backend.app.core.access import read_only_request
 
     if read_only_request():

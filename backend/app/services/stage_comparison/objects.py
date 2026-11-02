@@ -34,12 +34,12 @@ def _stage_pdf_count(path: Path) -> int:
     return 0
 
 
-def list_objects() -> dict:
+def list_objects(object_id: str | None = None) -> dict:
     """Все platform-объекты с вычисленными путями comparison/stage_1|2."""
     items: list[dict] = []
     for obj in object_service.list_objects():
         oid = str(obj.get("id") or "")
-        if not oid:
+        if not oid or (object_id is not None and oid != object_id):
             continue
         try:
             _, comparison_dir = stage_upload.resolve_object_dir(oid, create=False)

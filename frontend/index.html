@@ -6775,7 +6775,7 @@
                 :session-id="scSession?.id || ''" :pair-id="scActivePair?.id || ''"
                 @panel="pcConsolidationPanel = $event" @open-evidence="pcOpenEvidence"></project-change-consolidation>
             <project-change-list :result-href="pcCatalogFocus?.human_mapping_url || ''" v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report') && !pcConsolidationPanel"
-                :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
+                :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError" :loading="pcLoading || scPairLoading || scProductionLoading"
                 :available="pcEnvelopeValid" :persistent="pcBridgeActive" :readonly="pcDecisionReadOnly" :saving="pcSaving" :history="pcHistory"
                 :pairs="scPairs" :selected-pair-id="scActivePair?.id || ''" :object-id="currentObjectId || ''"
                 :reveal-id="scProductionReturnTargetId" @open-upload="scTab = 'upload'"
