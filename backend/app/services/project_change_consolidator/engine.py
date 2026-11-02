@@ -11,6 +11,9 @@ error leaves its cluster unmerged; nothing is invented to fill the gap.
 from __future__ import annotations
 
 import time
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
+from contextvars import copy_context
+from copy import copy, deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Callable
@@ -178,7 +181,8 @@ def provider_config(provider: Any) -> dict[str, str]:
 
 def execute(prepared: PreparedRun, provider: Any, *, max_calls: int,
             on_record: Callable[[dict[str, Any]], None],
-            should_stop: Callable[[], bool] = lambda: False) -> list[dict[str, Any]]:
+            should_stop: Callable[[], bool] = lambda: False, workers: int = 1,
+            reused: dict[str, dict[str, Any]] | None = None) -> list[dict[str, Any]]:
     """One generation per READY call, 0 retries; every record reaches ``on_record`` before validation."""
     from backend.app.services.project_change_v3.provider import ProviderError
 
@@ -187,7 +191,13 @@ def execute(prepared: PreparedRun, provider: Any, *, max_calls: int,
         raise CallPlanExceeded(len(ready), max_calls)
     config = provider_config(provider)
     records: list[dict[str, Any]] = []
-    for call in ready:
+    if not 1 <= workers <= 10:
+        raise ValueError("consolidation workers must be between 1 and 10")
+
+    def complete(call, provider):
+        for name in ('last_transport', 'last_response'):
+            if hasattr(provider, name):
+                setattr(provider, name, None)
         record: dict[str, Any] = {
             "call_id": call.call_id, "cluster_id": call.cluster_id, "mode": call.mode, "members": call.members,
             "payload_sha256": call.payload_sha256, "model_visible_sha256": call.model_visible_sha256,
@@ -209,13 +219,45 @@ def execute(prepared: PreparedRun, provider: Any, *, max_calls: int,
                 record.update(status="PROVIDER_EXCEPTION", error_code=type(exc).__name__, error=str(exc)[:2000],
                               raw_response=getattr(provider, "last_response", None))
             record["duration_s"] = round(time.monotonic() - t0, 3)
-        transport = getattr(provider, "last_transport", None)
+        transport = deepcopy(getattr(provider, "last_transport", None))
         record["transport"] = transport
         record["model_visible_sha256_verified"] = (
             None if not isinstance(transport, dict) or "model_visible_payload_sha256" not in transport
             else transport["model_visible_payload_sha256"] == call.model_visible_sha256)
         record["raw_response_sha256"] = None if record["raw_response"] is None else sha256_json(record["raw_response"])
         record["finished_at"] = _now()
-        on_record(record)
-        records.append(record)
-    return records
+        return record
+
+    # Workers own provider receipts; all persistence/progress runs on the coordinator.
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="consolidation") as pool:
+        waiting = iter(ready)
+        pending = {}
+        exhausted = False
+        while pending or not exhausted:
+            while len(pending) < workers and not exhausted:
+                call = next(waiting, None)
+                if call is None:
+                    exhausted = True
+                    break
+                saved = (reused or {}).get(call.call_id)
+                if saved is not None and not should_stop():
+                    record = deepcopy(saved)
+                    on_record(record)
+                    records.append(record)
+                    continue
+                if should_stop():
+                    record = complete(call, copy(provider))
+                    on_record(record)
+                    records.append(record)
+                    continue
+                instance = copy(provider) if workers > 1 else provider
+                pending[pool.submit(copy_context().run, complete, call, instance)] = call
+            if pending:
+                done, _ = wait(pending, return_when=FIRST_COMPLETED)
+                for future in done:
+                    pending.pop(future)
+                    record = future.result()
+                    on_record(record)
+                    records.append(record)
+    order = {call.call_id: i for i, call in enumerate(ready)}
+    return sorted(records, key=lambda record: order[record['call_id']])

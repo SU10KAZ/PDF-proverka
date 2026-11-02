@@ -136,3 +136,17 @@ def test_failed_run_checks_publish_no_result(tmp_path, monkeypatch):
         ShadowStore(root).load_completed(prepared.bundle.source_run_id, manifest["consolidator_run_id"],
                                          source_result_sha256=prepared.bundle.result_sha256)
     assert exc.value.code == "SHADOW_NOT_COMPLETED"
+
+
+def test_reuses_only_matching_validated_model_answers(tmp_path):
+    from backend.app.services.project_change_consolidator.shadow import reusable_records
+    prepared, fake, root, first = _run(tmp_path)
+    config = E.provider_config(fake)
+    assert len(reusable_records(root, prepared, config)) == 3
+    assert reusable_records(root, prepared, {**config, 'model': 'another-model'}) == {}
+    second_provider = FakeProvider(handlers={C.STAGE: scripted})
+    second = run_shadow(prepared.bundle, second_provider, root, max_calls=12,
+                        prepared=prepared, workers=3, reuse_previous=True)
+    assert second['state'] == 'COMPLETED'
+    assert second['calls_reused'] == 3 and second_provider.calls == []
+    assert second['stats'] == first['stats']

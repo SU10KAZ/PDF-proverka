@@ -58,7 +58,7 @@ def test_live_provider_is_refused_without_allow_live_and_freeze(tmp_path, monkey
     spec = _spec(tmp_path)
     import backend.app.services.project_change_consolidator.stage as hook
 
-    monkeypatch.setattr(hook, "provider_from_spec", lambda s: (_ for _ in ()).throw(AssertionError("provider built")))
+    monkeypatch.setattr(hook, "provider_from_spec", lambda s: (_ for _ in ()).throw(AssertionError("provider built")), raising=False)
     live = ["--bundle", str(spec), "--provider", "claude_code_cli:claude-opus-5:xhigh", "--max-calls", "12"]
     assert runner.main([*live, "--out", str(tmp_path / "a")]) == 2
     assert runner.main([*live, "--out", str(tmp_path / "b"), "--allow-live", "--expect-freeze", "0" * 64]) == 2

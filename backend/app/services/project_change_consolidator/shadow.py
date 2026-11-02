@@ -9,6 +9,7 @@ exact source result sha256.
 from __future__ import annotations
 
 import hashlib
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable
@@ -135,9 +136,47 @@ def run_checks(prepared: PreparedRun, outcomes: list[CallOutcome], result: dict[
     return checks
 
 
+def reusable_records(store_root, prepared, config):
+    """Reuse only validated, byte-identical requests for the same source and model."""
+    found = {}
+    source_doc = {"identity": prepared.bundle.identity(), "files": prepared.bundle.files}
+    calls = {c.call_id: c for c in prepared.ready_calls}
+    root = Path(store_root) / prepared.bundle.source_run_id
+    for run_dir in sorted(root.iterdir()) if root.is_dir() else []:
+        try:
+            if json.loads((run_dir / "SOURCE_BUNDLE.json").read_text()) != source_doc:
+                continue
+        except (OSError, ValueError):
+            continue
+        for receipt in run_dir.glob('calls/*/RECEIPT.json'):
+            try:
+                record = json.loads(receipt.read_text())
+                call = calls.get(record.get('call_id'))
+                visible = json.loads((receipt.parent / 'MODEL_VISIBLE.json').read_text())
+                response = json.loads((receipt.parent / 'RESPONSE.json').read_text())
+                raw = response.get('raw_response')
+                if (call is None or record.get('status') != 'RESPONDED'
+                        or record.get('provider_config') != config
+                        or visible.get('prompt_sha256') != prepared.prompt_sha256
+                        or any(visible.get(k) != v for k, v in prepared.contracts().items())
+                        or record.get('payload_sha256') != call.payload_sha256
+                        or record.get('model_visible_sha256') != call.model_visible_sha256
+                        or record.get('model_visible_sha256_verified') is False
+                        or raw is None or sha256_json(raw) != record.get('raw_response_sha256')):
+                    continue
+                record['raw_response'] = raw
+                if validate_call(prepared, call, record, consolidator_run_id=run_dir.name).status != 'ACCEPTED':
+                    continue
+                record['reused_from_run'] = run_dir.name
+                found[call.call_id] = record
+            except (OSError, ValueError, TypeError, KeyError):
+                continue
+    return found
+
+
 def run_shadow(bundle: Any, provider: Any, store_root: Path | str, *, max_calls: int,
                watch_roots: Iterable[Path] = (), flags: dict[str, str] | None = None,
-               prepared: PreparedRun | None = None, should_stop: Callable[[], bool] = lambda: False,
+               prepared: PreparedRun | None = None, workers: int = 1, reuse_previous: bool = False, should_stop: Callable[[], bool] = lambda: False,
                on_event: Callable[[str, dict[str, Any]], None] = lambda kind, data: None) -> dict[str, Any]:
     """Run one shadow consolidation; returns the frozen manifest.  Raises CallPlanExceeded before any write."""
     prepared = prepared or prepare(bundle)
@@ -147,6 +186,7 @@ def run_shadow(bundle: Any, provider: Any, store_root: Path | str, *, max_calls:
     before = snapshot(watch)
     freeze = prepared.input_freeze()
     config = provider_config(provider)
+    reused = reusable_records(store_root, prepared, config) if reuse_previous else {}
     store = ShadowStore(store_root)
     run = store.create_run(bundle.source_run_id)
     started = _now()
@@ -171,7 +211,8 @@ def run_shadow(bundle: Any, provider: Any, store_root: Path | str, *, max_calls:
             run.write(f"{d}/RECEIPT.json", {k: v for k, v in record.items() if k != "raw_response"})
             on_event("call", {"call_id": record["call_id"], "status": record["status"]})
 
-        records = execute(prepared, provider, max_calls=max_calls, on_record=on_record, should_stop=should_stop)
+        records = execute(prepared, provider, max_calls=max_calls, on_record=on_record, should_stop=should_stop,
+                          workers=workers, reused=reused)
         by_call = {r["call_id"]: r for r in records}
         outcomes = []
         for c in prepared.calls:
@@ -190,7 +231,7 @@ def run_shadow(bundle: Any, provider: Any, store_root: Path | str, *, max_calls:
         result_sha = None
         if not failed:
             result_sha = run.write(RESULT, result)
-        usage = [r.get("transport", {}).get("usage") for r in records if isinstance(r.get("transport"), dict)]
+        usage = [r.get("transport", {}).get("usage") for r in records if isinstance(r.get("transport"), dict) and not r.get("reused_from_run")]
         return run.finalize({
             "session_id": bundle.session_id, "pair_id": bundle.pair_id,
             "source_result_sha256": bundle.result_sha256, "source_bundle_sha256": sha256_json(source_doc),
@@ -203,7 +244,9 @@ def run_shadow(bundle: Any, provider: Any, store_root: Path | str, *, max_calls:
             "created_at": started, "completed_at": _now(),
             "calls_planned": len(prepared.ready_calls),
             "calls_made": sum(1 for r in records if r["status"] not in ("CANCELLED_BEFORE_SEND",)),
-            "automatic_retries": 0,
+            "automatic_retries": 0, "parallelism": workers,
+            "calls_reused": sum(bool(r.get("reused_from_run")) for r in records),
+            "calls_sent": sum(r["status"] != "CANCELLED_BEFORE_SEND" and not r.get("reused_from_run") for r in records),
             "usage_total": {k: sum(int((u or {}).get(k) or 0) for u in usage)
                             for k in ("input_tokens", "cached_input_tokens", "output_tokens",
                                       "reasoning_output_tokens")},

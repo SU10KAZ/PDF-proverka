@@ -153,3 +153,53 @@ def test_stop_request_cancels_before_send():
     fake = FakeProvider(handlers={C.STAGE: _keep_all})
     records = E.execute(prepared, fake, max_calls=12, on_record=lambda r: None, should_stop=lambda: True)
     assert fake.calls == [] and all(r["status"] == "CANCELLED_BEFORE_SEND" for r in records)
+
+
+def test_parallel_calls_isolate_receipts_and_preserve_context(tmp_path):
+    import threading
+    from contextvars import ContextVar
+    prepared = E.prepare(_three_buildings_and_pump())
+    from backend.tests.project_change_consolidator.test_validator import build
+    prepared, *_ = build(tmp_path)
+    assert len(prepared.ready_calls) == 3
+    barrier = threading.Barrier(3)
+    selected = ContextVar('selected', default='wrong')
+    selected.set('source-model')
+    coordinator = threading.get_ident()
+
+    class Provider:
+        model = 'source-model'
+        reasoning = 'xhigh'
+        provider = 'fake'
+        last_transport = None
+        last_response = None
+
+        def complete(self, **kw):
+            assert selected.get() == self.model
+            self.last_transport = {'call_id': kw['call_id']}
+            barrier.wait(timeout=3)
+            return {'call_id': kw['call_id']}
+
+    persisted = []
+    def save(record):
+        assert threading.get_ident() == coordinator
+        persisted.append(record)
+    records = E.execute(prepared, Provider(), max_calls=12, workers=3, on_record=save)
+    assert len(persisted) == 3
+    assert all(r['status'] == 'RESPONDED' and r['transport']['call_id'] == r['call_id'] for r in records)
+
+
+def test_parallel_cancellation_stops_admission(tmp_path):
+    import threading
+    from backend.tests.project_change_consolidator.test_validator import build
+    prepared, *_ = build(tmp_path)
+    stopped = threading.Event()
+    barrier = threading.Barrier(2)
+    def answer(**kw):
+        barrier.wait(timeout=3)
+        return {}
+    fake = FakeProvider(handlers={C.STAGE: answer})
+    records = E.execute(prepared, fake, max_calls=12, workers=2,
+                        should_stop=stopped.is_set, on_record=lambda record: stopped.set())
+    assert len(fake.calls) == 2
+    assert sum(r['status'] == 'CANCELLED_BEFORE_SEND' for r in records) == 1

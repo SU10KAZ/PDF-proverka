@@ -186,6 +186,9 @@ def run(session_id: str, pair_id: str, v3_state: Any, *, cancel_token: Any = Non
         if total > allowed:
             return finish("SKIPPED", "call_plan_exceeded",
                           f"Нужно {total} вызовов модели, разрешено {allowed} ({MAX_CALLS_ENV}).", calls_total=total)
+        from backend.app.services.project_change_v3.parallel_calls import concurrency
+        workers = concurrency("PROJECTCHANGE_CONSOLIDATOR_CONCURRENCY")
+        base["parallelism"] = workers
         base["calls_total"] = total
         _write(session_id, pair_id, {**base, "status": "RUNNING", "message": "Модель сводит дубли изменений"})
         production = paths.production_dir(session_id, pair_id)
@@ -201,7 +204,7 @@ def run(session_id: str, pair_id: str, v3_state: Any, *, cancel_token: Any = Non
         manifest = run_shadow(bundle, provider, store_root, max_calls=allowed,
                               watch_roots=[run_storage.run_dir(session_id, pair_id, run_id),
                                            production / "current_run.json"],
-                              prepared=prepared,
+                              prepared=prepared, workers=workers, reuse_previous=True,
                               should_stop=cancelled, on_event=on_event)
         done = {"consolidator_run_id": manifest.get("consolidator_run_id"), "stats": manifest.get("stats"),
                 "calls_done": manifest.get("calls_made", base["calls_done"])}
