@@ -34,7 +34,7 @@ def _run(session_id, **kwargs):
 def _failing(handler, should_fail):
     def wrapped(**kwargs):
         if should_fail(kwargs):
-            raise ProviderError("TRANSIENT", "exceeded retry limit, last status: 429 Too Many Requests")
+            raise ProviderError("TRANSIENT", "temporary connection reset")
         return handler(**kwargs)
     return wrapped
 
@@ -146,7 +146,7 @@ def test_a_transient_review_failure_is_retried_after_a_pause(env, monkeypatch): 
     def flaky(**kwargs):
         seen.append((kwargs["call_id"], time.monotonic()))
         if kwargs["call_id"] == f"{gf.PAIR_ID}_U-R001_UNMATCHED":
-            raise ProviderError("TRANSIENT", "429 Too Many Requests")
+            raise ProviderError("TRANSIENT", "temporary connection reset")
         return good(**kwargs)
 
     handlers["UNMATCHED_REVIEW"] = flaky

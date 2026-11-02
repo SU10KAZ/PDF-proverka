@@ -636,7 +636,7 @@ def load_checkpoint(session_id, pair_id, run_id):
     directory = run_storage.run_dir(session_id, pair_id, run_id)
     state = read(directory / "state.json") or {}
     manifest = read(directory / "run_manifest.json") or {}
-    if (state.get("status") != "FAILED" or not recoverable_search_state(state)
+    if (state.get("status") not in {"FAILED", "PAUSED"} or not recoverable_search_state(state)
             or (state.get("provenance") or {}).get("comparison_mode") != "subjects"
             or (manifest.get("session_id"), manifest.get("pair_id"), manifest.get("run_id")) !=
                (session_id, pair_id, run_id)):

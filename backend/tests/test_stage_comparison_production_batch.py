@@ -186,3 +186,13 @@ def test_explicit_parallelism_is_persisted_and_forwarded(env):
     done = _wait(B, built['session_id'])
     assert done['parallelism'] == 10
     assert received == [10]
+
+
+def test_capacity_pause_is_not_reported_as_completed(env):
+    built, B = env
+    def runner(*args, **kwargs):
+        return {"status": "PAUSED", "run_id": "paused_run", "message": "Прогресс сохранён"}
+    B.start(built["session_id"], _pairs(built), ai_mode=None, model_profile=None, runner=runner)
+    done = _wait(B, built["session_id"])
+    assert done["items"][0]["status"] == "PAUSED"
+    assert done["items"][0]["run_id"] == "paused_run"

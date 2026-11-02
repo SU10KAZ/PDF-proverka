@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 KIND = "stage_comparison_production_batch"
 ACTIVE = "RUNNING"
-FINAL_ITEM = {"COMPLETED", "REVIEW", "FAILED", "CANCELLED", "STOPPED", "INTERRUPTED", "SKIPPED"}
+FINAL_ITEM = {"PAUSED", "COMPLETED", "REVIEW", "FAILED", "CANCELLED", "STOPPED", "INTERRUPTED", "SKIPPED"}
 MAX_ITEMS = 100
 
 _lock = threading.RLock()

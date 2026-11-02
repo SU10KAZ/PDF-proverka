@@ -245,7 +245,7 @@ def load_donor(session_id: str, pair_id: str, donor_run_id: str, *, _seen: froze
     gaps = completed_gaps(directory) if completed else {}
     if completed and not any(gaps.values()):
         raise ResumeRefused("в завершённом прогоне нечего досчитывать: все пакеты разбора и проверки приняты")
-    if state.get("status") != "FAILED" and not completed:
+    if state.get("status") not in {"FAILED", "PAUSED"} and not completed:
         raise ResumeRefused(f"дособрать можно только упавший прогон или завершённый с пробелами, "
                             f"а этот в состоянии {state.get('status')}")
     parent = _planning_parent(state)
@@ -271,7 +271,7 @@ def load_donor(session_id: str, pair_id: str, donor_run_id: str, *, _seen: froze
     checkpoint = _read(checkpoint_path)
     regions = semantic_map.get("regions") or []
     rows = checkpoint.get("regions") or []
-    planning_only = partial and state.get("reason_code") == "miner_plan_budget_exceeded"
+    planning_only = partial and state.get("reason_code") in {"miner_plan_budget_exceeded", "v3_capacity_paused"}
     if (checkpoint.get("run_id") != donor_run_id or checkpoint.get("regions_total") != len(regions)
             or (not rows and not planning_only) or (not partial and len(regions) != len(rows))):
         raise ResumeRefused("контрольная точка Miner донора неполная")
@@ -504,7 +504,7 @@ def resume_available(session_id: str, pair_id: str, run_id: str, *, _seen: froze
     if _is_completed(state):
         return ((directory / "project_change_v3_miner_results.json").is_file()
                 and any(completed_gaps(directory).values()))
-    if state.get("status") != "FAILED":
+    if state.get("status") not in {"FAILED", "PAUSED"}:
         return False
     from .subject_search import load_checkpoint, recoverable_search_state
     if recoverable_search_state(state):
@@ -523,7 +523,7 @@ def resume_available(session_id: str, pair_id: str, run_id: str, *, _seen: froze
         return True
     ref = (state.get("provenance") or {}).get("miner_checkpoint") or {}
     return (state.get("pipeline_current") == "MINING" and bool(ref.get("sha256"))
-            and (int(ref.get("regions") or 0) > 0 or state.get("reason_code") == "miner_plan_budget_exceeded"))
+            and (int(ref.get("regions") or 0) > 0 or state.get("reason_code") in {"miner_plan_budget_exceeded", "v3_capacity_paused"}))
 
 
 def resume_options(session_id: str, pair_id: str, run_id: str) -> dict[str, Any]:

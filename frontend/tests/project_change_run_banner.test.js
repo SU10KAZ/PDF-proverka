@@ -11,6 +11,16 @@ const state = extra => ({engine: 'projectchange_v3', status: 'RUNNING', run_id: 
     message: 'V3: поиск изменений, регион 3 из 12 (Miner)', model_calls: 3, orphaned_run: false, ...extra});
 
 describe('ProjectChange run banner (V3 run state above the change list)', () => {
+    it('shows a saved capacity pause with manual continuation', () => {
+        const paused = state({status: 'PAUSED', reason_code: 'v3_capacity_paused',
+            message: 'Модель перегружена; прогресс сохранён', resume_available: true});
+        expect(V.runBanner(paused, T0)).toMatchObject({cancellable: false, resumable: true,
+            title: 'Анализ на паузе · прогресс сохранён', runId: 'r1'});
+        const pipeline = V.comparisonPipeline({...paused, pipeline_current: 'MINING',
+            pipeline_stages: {MINING: {status: 'PAUSED', processed: 17, total: 18, unit: 'region'}}});
+        expect(pipeline.title).toBe('Анализ на паузе · прогресс сохранён');
+        expect(pipeline.stages.find(s => s.id === 'MINING')).toMatchObject({label: 'На паузе'});
+    });
     it('shows a running V3 analysis with stage, elapsed time, model calls and a stop control', () => {
         const b = V.runBanner(state(), T0 + 17 * 60000 + 5000);
         expect(b).toMatchObject({tone: 'running', cancellable: true, title: 'Идёт анализ изменений'});

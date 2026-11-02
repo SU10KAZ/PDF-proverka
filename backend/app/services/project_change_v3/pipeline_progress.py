@@ -39,10 +39,12 @@ class PipelineProgress:
                 self.stages[key].update(values)
                 if values.get("status") in {"COMPLETED", "SKIPPED", "PARTIAL", "REUSED"}:
                     self.stages[key].setdefault("finished_at", now)
-        if status in {"FAILED", "COMPLETED", "REVIEW"}:
+        if status in {"FAILED", "PAUSED", "COMPLETED", "REVIEW"}:
             key = self.current or "SOURCE_PREPARATION"
             row = self.stages[key]
-            if status == "FAILED":
+            if status == "PAUSED":
+                row.update(status="PAUSED", message=message, paused_at=now)
+            elif status == "FAILED":
                 row.update(status="CANCELLED" if reason == "v3_cancelled" else "FAILED",
                            message=message, finished_at=now)
             elif row["status"] == "RUNNING":

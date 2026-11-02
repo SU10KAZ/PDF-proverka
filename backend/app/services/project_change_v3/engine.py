@@ -516,7 +516,8 @@ def run_v3_pipeline(**kwargs: Any) -> dict[str, Any]:
         requested = resume_mod.donor_model_profile(kwargs['session_id'], kwargs['pair_id'],
                                                    kwargs['resume_from_run_id'])
     profile = resolve_profile(requested)
-    with use_profile(profile), parallel_calls.use_concurrency(parallelism), comparison_mode.selected(mode):
+    with (use_profile(profile), parallel_calls.use_concurrency(parallelism),
+          comparison_mode.selected(mode), parallel_calls.use_capacity_policy()):
         return _run_v3_pipeline_stored(**kwargs)
 
 
@@ -609,7 +610,8 @@ def _run_v3_pipeline(
             max_new_miner_calls=max_new_miner_calls,
         )
     except _V3Failure as failure:
-        return state("FAILED", failure.message, failure.reason,
+        return state("PAUSED" if failure.reason == "v3_capacity_paused" else "FAILED",
+                     failure.message, failure.reason,
                      calls=failure.model_calls, provenance=failure.provenance)
     except Exception as exc:  # noqa: BLE001 — a crash must never leave RUNNING
         logger.exception("V3 pipeline crashed: session=%s pair=%s run=%s", session_id, pair_id, run_id)
@@ -739,6 +741,35 @@ def _run_admitted(
             **({"miner_attempt_store": dict(attempts_ref)} if attempts_ref else {}),
         }
 
+    capacity = parallel_calls.capacity_policy()
+    if capacity is not None:
+        provenance["capacity_control"] = {"policy": "10_to_5_then_60_120_240/1",
+                                          "effective_parallelism": capacity.limit, "events": capacity.events}
+
+        def capacity_event(event, outcome, retry):
+            nonlocal calls
+            provenance["capacity_control"]["effective_parallelism"] = capacity.limit
+            if retry:
+                # The final attempt is accounted by the item's normal consumer.
+                if outcome.receipt:
+                    transport_calls.append({"stage": event["stage"], "call_id": event["call_id"],
+                                            **outcome.receipt})
+                if not using_test_provider and outcome.receipt:
+                    calls += 1
+            _save_artifact(session_id, pair_id, "project_change_v3_capacity_control",
+                           {**provenance["capacity_control"], "transport_calls": list(transport_calls)})
+            stage = {"MAPPER": "MAPPING"}.get(event["stage"], event["stage"])
+            message = (f"V3: модель перегружена, параллельность снижена до {capacity.limit}"
+                       if event["delay_s"] == 0 else
+                       f"V3: модель перегружена, повтор запроса через {event['delay_s']:.0f} с"
+                       if retry else "V3: повторы исчерпаны; досчитываем остальные блоки этапа перед паузой")
+            written = state("RUNNING", message, "v3_running", calls=calls,
+                            provenance={**provenance, **receipts()}, current_stage=stage)
+            if written["status"] == "FAILED":
+                raise _V3Failure(written["reason_code"], written["message"], calls, provenance)
+
+        capacity.on_retry = capacity_event
+
     def fail(reason: str, message: str, exc: BaseException | None = None) -> _V3Failure:
         if exc is not None:
             logger.error(
@@ -782,13 +813,27 @@ def _run_admitted(
             raise _V3Failure(written["reason_code"], written["message"], calls, {**provenance, **receipts()})
 
     def complete(**kwargs: Any) -> dict[str, Any]:
-        # Every contacted call is receipted, including a failed one.
+        # Single-call stages obey the same retry policy without changing inputs.
+        answer = None
+        def item(_index, _value):
+            nonlocal answer, calls
+            outcome = yield kwargs
+            if outcome.receipt:
+                transport_calls.append({"stage": kwargs["stage"], "call_id": kwargs["call_id"], **outcome.receipt})
+            if outcome.error and not using_test_provider and outcome.receipt:
+                calls += 1
+            if outcome.error:
+                raise outcome.error
+            answer = outcome.response
         try:
-            return provider.complete(**kwargs)
-        finally:
-            receipt = getattr(provider, "last_transport", None)
-            if receipt:
-                transport_calls.append({"stage": kwargs["stage"], "call_id": kwargs["call_id"], **receipt})
+            parallel_calls.run_items([(0, None)], start_item=item, provider=provider, workers=1,
+                                     control=parallel_calls.CallControl(), cancelled=cancelled,
+                                     on_completed=lambda: None, thread_name="v3-single")
+            if cancelled():
+                raise fail("v3_cancelled", CANCELLED_RU)
+            return answer
+        except parallel_calls.CapacityPause as exc:
+            raise fail("v3_capacity_paused", str(exc)) from exc
 
     try:
         miner_workers = parallel_calls.concurrency(parallel_calls.MINER_CONCURRENCY_ENV)
@@ -842,12 +887,12 @@ def _run_admitted(
         source_identity = _source_identity({"OLD": old_paths, "NEW": new_paths})
     except (SourcePreparationError, FileNotFoundError, KeyError, ValueError, OSError) as exc:
         raise fail("source_preparation_failed", f"V3: подготовка источников не удалась: {exc}", exc) from exc
-    provenance = build_provenance(
+    provenance.update(build_provenance(
         source_prep_version=prepared["source_packaging_version"],
         structure_sha256=prepared["structure_sha256"],
         miner_concurrency=miner_workers, mapper_concurrency=mapper_workers, **review_settings,
         **miner_format_provenance(compact),
-    )
+    ))
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_source_manifest", prepared["manifest"])
     except Exception as exc:  # noqa: BLE001
@@ -1058,6 +1103,8 @@ def _run_admitted(
             provenance['subject_search'] = subject_ledger['summary']
             provenance['mapper_plan'] = {'mode': 'subjects', 'coverage_contract': 'candidate_search',
                                          'complete': True, **subject_ledger['summary']}
+        except parallel_calls.CapacityPause as exc:
+            raise fail('v3_capacity_paused', str(exc)) from exc
         except subject_search.SubjectRecoveryError as exc:
             raise fail('resume_refused', f'Не удалось восстановить поиск по предметам: {exc}', exc) from exc
         except ProviderError as exc:
@@ -1150,7 +1197,7 @@ def _run_admitted(
         def mapping_progress() -> None:
             done = len(portion_maps_by_index)
             progress(f"V3: сопоставление OLD↔NEW, готово {done} из {len(mapper_portions)} порций "
-                     f"(до {mapper_workers} одновременно)", "MAPPING",
+                     f"(до {min(mapper_workers, capacity.limit) if capacity else mapper_workers} одновременно)", "MAPPING",
                      processed=done, total=len(mapper_portions), unit="portion")
 
         mapping_progress()
@@ -1160,6 +1207,8 @@ def _run_admitted(
                 workers=mapper_workers, control=mapping_control, cancelled=cancelled,
                 on_completed=mapping_progress, thread_name="v3-mapper",
             )
+        except parallel_calls.CapacityPause as exc:
+            raise fail("v3_capacity_paused", str(exc)) from exc
         except _V3Failure as exc:
             raise fail(exc.reason, exc.message) from exc
         except Exception as exc:
@@ -1648,7 +1697,7 @@ def _run_admitted(
         def mining_progress() -> None:
             done = len(analysed_region_ids)
             progress(f"V3: поиск изменений, готово {done} из {len(regions)} участков "
-                     f"(до {miner_workers} одновременно)", "MINING",
+                     f"(до {min(miner_workers, capacity.limit) if capacity else miner_workers} одновременно)", "MINING",
                      processed=done, total=len(regions), unit="region")
 
         mining_progress()
@@ -1659,6 +1708,8 @@ def _run_admitted(
                 workers=miner_workers, control=mining_control, cancelled=cancelled,
                 on_completed=mining_progress, thread_name="v3-miner",
             )
+        except parallel_calls.CapacityPause as exc:
+            raise fail("v3_capacity_paused", str(exc)) from exc
         except _V3Failure as exc:
             # In-flight answers were drained and saved after the first error.
             # Refresh counts/receipts rather than publishing its earlier snapshot.
@@ -1770,12 +1821,15 @@ def _run_admitted(
         review_attempts.sort(key=lambda r: (r["stage"], r["batch_id"]))
         return row
 
+    review_capacity_pause = None
+
     def run_review_batches(batches, start_item, workers, stage, label, completed):
+        nonlocal review_capacity_pause
         if not batches:
             return
         def report():
             progress(f"V3: {label}, обработано {len(completed)} из {len(batches)} пакетов "
-                     f"(до {workers} одновременно)", stage,
+                     f"(до {min(workers, capacity.limit) if capacity else workers} одновременно)", stage,
                      processed=len(completed), total=len(batches), unit="batch")
         report()
         try:
@@ -1784,6 +1838,8 @@ def _run_admitted(
                 workers=workers, control=parallel_calls.CallControl(), cancelled=cancelled,
                 on_completed=report, thread_name=f"v3-{stage.lower()}",
             )
+        except parallel_calls.CapacityPause as exc:
+            review_capacity_pause = str(exc)
         except _V3Failure as exc:
             # Every in-flight answer has now been drained and saved.
             raise fail(exc.reason, exc.message) from exc
@@ -1912,6 +1968,9 @@ def _run_admitted(
     except Exception as exc:  # noqa: BLE001
         raise fail("result_persistence_failed", "V3: результаты майнера не сохранены", exc) from exc
 
+    if review_capacity_pause:
+        raise fail("v3_capacity_paused", review_capacity_pause)
+
     # 4. Lightweight dedupe.
     dedupe_lossless = dedupe_lossless_enabled()
     unmatched_pending = coverage["summary"].get("content_unmatched_pending", 0)
@@ -2001,6 +2060,9 @@ def _run_admitted(
         bad = resume_mod.mismatched_calls(transport_calls, provenance, donor)
         if bad:
             raise fail("v3_model_mixing", f"V3: неожиданная конфигурация модели в вызовах: {bad}")
+
+    if review_capacity_pause:
+        raise fail("v3_capacity_paused", review_capacity_pause)
 
     verify_call_models()
 
@@ -2114,6 +2176,9 @@ def _run_admitted(
         _save_artifact(session_id, pair_id, "project_change_v3_quality", quality)
     except Exception as exc:  # noqa: BLE001
         raise fail("quality_persistence_failed", "V3: реестр качества результата не сохранён", exc) from exc
+
+    if review_capacity_pause:
+        raise fail("v3_capacity_paused", review_capacity_pause)
 
     verify_call_models()
 

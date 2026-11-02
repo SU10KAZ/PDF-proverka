@@ -44,3 +44,12 @@ it('показывает дату нового завершённого анал
     expect(B.badge({status: 'REVIEW'}).label).toBe('Анализ выполнен');
     expect(B.badge({status: 'REVIEW', finished_at: 'invalid'}).label).toBe('Анализ выполнен');
 });
+
+
+it('отличает сохранённую паузу от завершённого анализа', () => {
+    expect(B.badge({status: 'PAUSED', message: 'capacity'})).toMatchObject({
+        label: 'На паузе · прогресс сохранён', title: 'capacity'});
+    const summary = B.summary({status: 'DONE', items: [{status: 'PAUSED'}]});
+    expect(summary.done).toBe(1);
+    expect(summary.failed).toBe(0);
+});

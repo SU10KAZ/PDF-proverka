@@ -15333,6 +15333,8 @@ const app = createApp({
                 (run.state.saved_mapping_portions ? run.state.saved_mapping_portions + ' порций сохранено · ' : '')
                 + (run.state.current_stage === 'MINING' ? 'Поиск изменений ' + run.state.processed + '/' + run.state.total
                     : run.state.message || 'Анализ выполняется')};
+            if (run?.state?.status === 'PAUSED') return {tone: 'saved',
+                label: 'На паузе · прогресс сохранён'};
             if (run?.state?.saved_mapping_portions) return {tone: 'saved',
                 label: 'Сопоставление сохранено: ' + run.state.saved_mapping_portions + ' порций'};
             const groupStatus = scGroupStatus(row.group);

@@ -6908,7 +6908,7 @@ def _consolidation_status(session_id: str, pair_id: str, state: Mapping[str, Any
 
 def _v3_resume_available(session_id: str, pair_id: str, state: Mapping[str, Any]) -> bool:
     # FAILED — досборка упавшего прогона; REVIEW/COMPLETED — досчёт упавших пакетов (V3 3.26.0).
-    if (state.get("engine") != "projectchange_v3" or state.get("status") not in {"FAILED", "REVIEW", "COMPLETED"}
+    if (state.get("engine") != "projectchange_v3" or state.get("status") not in {"FAILED", "PAUSED", "REVIEW", "COMPLETED"}
             or not state.get("run_id")):
         return False
     try:

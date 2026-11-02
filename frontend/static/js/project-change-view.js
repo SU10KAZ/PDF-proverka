@@ -208,6 +208,10 @@
             if (Number(state.model_calls) > 0) parts.push(`обращений к модели: ${Number(state.model_calls)}`);
             return {tone: 'running', cancellable: true, title: 'Идёт анализ изменений', text: parts.join(' · ')};
         }
+        if (status === 'PAUSED') {
+            return {tone: 'failed', cancellable: false, title: 'Анализ на паузе · прогресс сохранён',
+                text: str(state.message), resumable: state.resume_available === true, runId: str(state.run_id)};
+        }
         if (status === 'FAILED') {
             const reason = str(state.reason_code);
             // Miner этого прогона сохранён: его можно досчитать с Dedupe без повторного анализа областей.
@@ -263,7 +267,7 @@
         ['SOURCE_VERIFICATION', 'Проверка по источникам', 'Перепроверяем параметры, единицы и принадлежность значений нужному объекту.'],
         ['RESULT', 'Подготовка результата', 'Сохраняем изменения, подготавливаем сопоставления и выполняем включённое итоговое сведение дублей.'],
     ];
-    const PIPELINE_LABELS = {WAITING: 'Ожидает', RUNNING: 'Выполняется', COMPLETED: 'Выполнено',
+    const PIPELINE_LABELS = {PAUSED: 'На паузе', WAITING: 'Ожидает', RUNNING: 'Выполняется', COMPLETED: 'Выполнено',
         PARTIAL: 'Требует внимания', FAILED: 'Ошибка', CANCELLED: 'Остановлено',
         INTERRUPTED: 'Прервано', SKIPPED: 'Пропущено', REUSED: 'Из сохранённого', UNKNOWN: 'Нет данных об этапе'};
     function sourceVerificationDisplay(row, status) {
@@ -352,10 +356,11 @@
                 label: verification.label || PIPELINE_LABELS[status] || PIPELINE_LABELS.UNKNOWN,
                 counter, duration, message, attention: verification.attention || '', detail: verification.detail || '',
                 css: ({COMPLETED: 'step-done', REUSED: 'step-done', RUNNING: 'step-running', FAILED: 'step-error',
-                    PARTIAL: 'step-partial', CANCELLED: 'step-partial', INTERRUPTED: 'step-partial'}[status]) || 'step-pending'};
+                    PAUSED: 'step-partial', PARTIAL: 'step-partial', CANCELLED: 'step-partial', INTERRUPTED: 'step-partial'}[status]) || 'step-pending'};
         });
         let title = 'Анализ выполняется';
-        if (failed) title = state.reason_code === 'v3_cancelled' ? 'Анализ остановлен' : 'Анализ не завершён';
+        if (state.status === 'PAUSED') title = 'Анализ на паузе · прогресс сохранён';
+        else if (failed) title = state.reason_code === 'v3_cancelled' ? 'Анализ остановлен' : 'Анализ не завершён';
         else if (interrupted) title = 'Анализ прерван';
         else if (terminal) {
             const result = stages[6];

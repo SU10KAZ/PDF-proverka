@@ -11,13 +11,14 @@
         RUNNING: {label: 'Идёт анализ', tone: 'running'},
         COMPLETED: {label: 'Анализ готов', tone: 'ok'},
         REVIEW: {label: 'Анализ готов', tone: 'ok'},
+        PAUSED: {label: 'На паузе · прогресс сохранён', tone: 'muted'},
         FAILED: {label: 'Ошибка анализа', tone: 'error'},
         CANCELLED: {label: 'Анализ остановлен', tone: 'muted'},
         STOPPED: {label: 'Снято с очереди', tone: 'muted'},
         INTERRUPTED: {label: 'Прервано перезапуском', tone: 'error'},
         SKIPPED: {label: 'Пропущено', tone: 'muted'},
     };
-    const DONE = new Set(['COMPLETED', 'REVIEW', 'FAILED', 'CANCELLED', 'STOPPED', 'INTERRUPTED', 'SKIPPED']);
+    const DONE = new Set(['PAUSED', 'COMPLETED', 'REVIEW', 'FAILED', 'CANCELLED', 'STOPPED', 'INTERRUPTED', 'SKIPPED']);
 
     function key(row) {
         return row && row.left && row.right && row.left.pdf_path && row.right.pdf_path
