@@ -652,3 +652,25 @@ def clear_cache() -> None:
     with _cache_lock:
         _cache.clear()
     _snapshot_services.clear()
+
+
+def progress_for_object(object_id: str) -> dict[str, Any]:
+    """Small uncached status snapshots; never load results, PDFs or call models."""
+    from backend.app.services.stage_comparison import paths
+    from backend.app.services.project_change_consolidator.stage import public_status
+
+    items = []
+    fields = ('engine', 'run_id', 'status', 'current_stage', 'pipeline_current',
+              'pipeline_stages', 'message', 'reason_code', 'processed', 'total', 'unit',
+              'human_mapping_published', 'consolidation_expected')
+    for sid, pid in _live_candidates(object_id):
+        try:
+            state = json.loads(paths.production_state_path(sid, pid).read_text())
+        except (OSError, ValueError):
+            continue
+        if not isinstance(state, dict):
+            continue
+        compact = {key: state[key] for key in fields if key in state}
+        compact['consolidation'] = public_status(sid, pid, state.get('run_id'))
+        items.append({'session_id': sid, 'pair_id': pid, 'state': compact})
+    return {'schema': 'project-comparison-progress/1', 'items': items}

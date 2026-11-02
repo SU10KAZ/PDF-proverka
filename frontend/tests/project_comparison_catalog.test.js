@@ -25,14 +25,15 @@ function load(fetchImpl) {
     const computed = fn => ({get value() { return fn(); }});
     const mounted = [];
     const watched = [];
+    const timers = [], unmounted = [];
     const opened = [];
-    const sandbox = {Vue: {ref, computed, onMounted: fn => mounted.push(fn), watch: (get, fn) => watched.push({get, fn})}, fetch: fetchImpl,
+    const sandbox = {setTimeout: fn => { timers.push(fn); return timers.length; }, clearTimeout: () => {}, Vue: {ref, computed, onMounted: fn => mounted.push(fn), onUnmounted: fn => unmounted.push(fn), watch: (get, fn) => watched.push({get, fn})}, fetch: fetchImpl,
         open: (...args) => opened.push(args), localStorage: {getItem: () => null, setItem: () => {}}};
     sandbox.globalThis = sandbox;
     vm.runInNewContext(source, sandbox);
     let definition;
     sandbox.ProjectComparisonCatalog.register({component: (name, def) => { definition = {name, ...def}; }});
-    return {sandbox, definition, mounted, opened, watched};
+    return {sandbox, definition, mounted, opened, watched, timers, unmounted};
 }
 
 describe('All project comparisons — catalog component', () => {
@@ -134,7 +135,7 @@ describe('All project comparisons — catalog component', () => {
         await mounted[0]();
         expect(state.entries.value.map(e => e.title)).toEqual(['СВОЙ']);
         const empty = definition.setup({objectId: 'none'}, {emit: () => {}});
-        await mounted[1]();
+        await mounted[2]();
         expect(empty.entries.value).toEqual([]);
         expect(definition.template).toContain('В этом объекте пока нет пар для сравнения.');
     });
@@ -530,4 +531,39 @@ describe('shared selection between source rows and catalog', () => {
         expect(html).toContain('@select-pair="scToggleBatchRow"');
         expect(html).toContain('@select-all="scToggleBatchAll"');
     });
+});
+
+it('shows stage and counter and exposes historical errors in the new column', () => {
+    const {sandbox, definition} = load(async () => ({}));
+    vm.runInNewContext(readFileSync(new URL('../static/js/project-change-view.js', import.meta.url), 'utf8'), sandbox);
+    const progress = sandbox.ProjectComparisonCatalog.progressLabel;
+    const state = {engine: 'projectchange_v3', status: 'REVIEW', consolidation:
+        {status: 'RUNNING', live: true, calls_done: 4, calls_total: 48}};
+    expect(progress(state)).toBe('07/7 · Сведение дублей · 4 из 48 обращений');
+    expect(progress({...state, consolidation: {status: 'COMPLETED', stats: {calls: {PROVIDER_FAILED: 3}}}}))
+        .toContain('Ошибка');
+    expect(progress(null)).toBe('—');
+    expect(definition.template.indexOf('<th>Ход выполнения</th>')).toBeGreaterThan(definition.template.indexOf('<th>Статус</th>'));
+});
+
+it('polls progress separately, rejects late object responses and stops on unmount', async () => {
+    const requests = [];
+    const {definition, mounted, watched, timers, unmounted, sandbox} = load(url => new Promise(resolve => requests.push({url, resolve})));
+    sandbox.ProjectChangeView = {comparisonPipeline: state => ({title: state.message, stages: []})};
+    const props = {objectId: '272', sessionId: 's'};
+    const ui = definition.setup(props, {emit: () => {}});
+    const first = mounted[1]();
+    expect(requests[0].url).toBe('/api/project-comparison/catalog/progress?object_id=272');
+    props.objectId = 'other'; watched[1].fn();
+    requests[0].resolve({ok: true, json: async () => ({schema: 'project-comparison-progress/1', items: [
+        {session_id: 's', pair_id: 'p', state: {message: 'stale'}}]})});
+    await first;
+    expect(ui.rowProgress(entry())).toBe('—');
+    requests[1].resolve({ok: true, json: async () => ({schema: 'project-comparison-progress/1', items: [
+        {session_id: 's', pair_id: 'p', state: {message: 'fresh'}}]})});
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(ui.rowProgress(entry())).toBe('fresh');
+    expect(timers).toHaveLength(1);
+    unmounted[0](); await timers[0]();
+    expect(requests).toHaveLength(2);
 });

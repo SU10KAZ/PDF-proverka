@@ -384,3 +384,6 @@
 [data-theme="dark"] .sc-batch-status.is-error { background: rgba(185, 28, 28, .15); }
 .sc-batch-warning { color: #b45309; font-size: 12px; }
 [data-theme="dark"] .sc-batch-warning { color: #fbbf24; }
+
+.pc-catalog__col-progress { width: 240px; }
+.pc-catalog__progress { white-space: normal; overflow-wrap: anywhere; font-size: 12px; }

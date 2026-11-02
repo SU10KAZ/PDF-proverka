@@ -510,3 +510,21 @@ def test_exact_snapshot_api_stays_snapshot_when_live_exists(env):
     assert response.status_code == 200, response.text
     assert len(response.json()['items']) == 3
     assert {i['source_run_id'] for i in response.json()['items']} == {'projectchange_v3_production_snapshot'}
+
+
+def test_progress_reads_only_small_states_for_selected_object(tmp_path, monkeypatch):
+    from backend.app.services.project_change_catalog import catalog
+    from backend.app.services.stage_comparison import paths
+    from backend.app.services.project_change_consolidator import stage
+    saved = tmp_path / 'state.json'
+    saved.write_text(json.dumps({'engine': 'projectchange_v3', 'run_id': 'r',
+                                'status': 'REVIEW', 'provenance': {'large': 'excluded'}}))
+    requested = []
+    monkeypatch.setattr(catalog, '_live_candidates', lambda obj: requested.append(obj) or [('s', 'p')])
+    monkeypatch.setattr(paths, 'production_state_path', lambda *args: saved)
+    monkeypatch.setattr(stage, 'public_status', lambda *args: {'status': 'RUNNING', 'calls_done': 4, 'calls_total': 48})
+    data = catalog.progress_for_object('272')
+    assert requested == ['272']
+    assert data['items'][0]['state']['consolidation']['calls_done'] == 4
+    assert 'provenance' not in data['items'][0]['state']
+    assert data['items'][0]['session_id'] == 's'

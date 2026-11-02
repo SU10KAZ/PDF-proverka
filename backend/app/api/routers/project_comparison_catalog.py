@@ -25,3 +25,9 @@ def catalog_entry(entry_id: str):
         if entry['catalog_entry_id'] == entry_id:
             return entry
     raise HTTPException(404, 'Catalog entry not found')
+
+
+@router.get('/progress')
+def catalog_progress(object_id: str = Query(min_length=1, max_length=128,
+                                           pattern=r'^[A-Za-z0-9_-]+$')):
+    return catalog.progress_for_object(object_id)

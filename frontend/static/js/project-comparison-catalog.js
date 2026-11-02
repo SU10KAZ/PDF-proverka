@@ -70,8 +70,21 @@
         return entries;
     }
 
+    function progressLabel(state) {
+        if (!state) return '—';
+        const pipeline = root.ProjectChangeView?.comparisonPipeline(state);
+        if (!pipeline) return '—';
+        const rows = pipeline.stages;
+        const row = rows.find(s => s.status === 'RUNNING')
+            || rows.find(s => ['FAILED', 'INTERRUPTED', 'CANCELLED', 'PAUSED'].includes(s.status))
+            || (state.consolidation ? rows.find(s => s.id === 'RESULT') : null);
+        if (!row) return pipeline.title;
+        const title = row.id === 'RESULT' && state.consolidation ? 'Сведение дублей' : row.title;
+        return `${row.number}/7 · ${title} · ${row.status === 'RUNNING' ? row.counter || row.label : row.label}`;
+    }
+
     root.ProjectComparisonCatalog = {
-        date, model, effort, pairEntries, isRunning,
+        date, model, effort, pairEntries, isRunning, progressLabel,
         register(app) {
             app.component('project-comparison-catalog', {
                 props: {activeEntryId: {type: String, default: ''}, opening: Boolean, error: {type: String, default: ''},
@@ -84,13 +97,40 @@
                     selectionDisabled: Boolean, allChecked: Boolean},
                 emits: ['open', 'open-pair', 'start', 'select-pair', 'select-all'],
                 setup(props, {emit}) {
-                    const {ref, computed, onMounted, watch} = root.Vue;
+                    const {ref, computed, onMounted, onUnmounted, watch} = root.Vue;
                     const catalog = ref(null);
                     const loading = ref(true);
                     const loadError = ref('');
                     const overviewLoading = computed(() => !!props.pairsLoading && !props.pairRows?.length);
                     const entries = computed(() => pairEntries(catalog.value?.entries, props.pairRows,
                         props.objectId, props.objectName, props.sessionId));
+                    const progress = ref([]);
+                    const progressError = ref(false);
+                    let progressTimer = null, progressToken = 0, disposed = false;
+                    async function pollProgress() {
+                        clearTimeout(progressTimer);
+                        const token = ++progressToken;
+                        if (!props.objectId || disposed) return;
+                        try {
+                            const response = await fetch(API + '/progress?object_id=' + encodeURIComponent(props.objectId));
+                            if (!response.ok) throw new Error('progress unavailable');
+                            const data = await response.json();
+                            if (data.schema !== 'project-comparison-progress/1' || !Array.isArray(data.items)) throw new Error('invalid progress');
+                            if (token !== progressToken || disposed) return;
+                            progress.value = data.items; progressError.value = false;
+                        } catch (_) {
+                            if (token === progressToken) progressError.value = true;
+                        } finally {
+                            if (token === progressToken && !disposed) progressTimer = setTimeout(pollProgress, 5000);
+                        }
+                    }
+                    function rowProgress(entry) {
+                        if (progressError.value) return 'Обновление недоступно';
+                        const sid = entry.open?.session_id || props.sessionId;
+                        const pid = entry.open?.pair_id || entry.selection_pair?.pair?.id;
+                        const current = progress.value.find(p => p.session_id === sid && p.pair_id === pid);
+                        return progressLabel(current?.state || entry.selection_pair?.comparisonRun?.state);
+                    }
                     let loadId = 0;
                     async function load() {
                         const requestId = ++loadId;
@@ -124,10 +164,13 @@
                         if (!props.selectionDisabled) emit('select-all', checked);
                     }
                     onMounted(load);
+                    onMounted(pollProgress);
+                    onUnmounted?.(() => { disposed = true; progressToken++; loadId++; clearTimeout(progressTimer); });
                     watch(() => props.objectId, () => { catalog.value = null; load(); });
+                    watch(() => props.objectId, () => { progress.value = []; progressError.value = false; pollProgress(); });
                     // viewer (portal_auth.js): только просмотр — без запуска и выбора пар для анализа.
                     const canOperate = !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
-                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, isRunning, start, startDisabled, selectPair, selectAll, canOperate,
+                    return {rowProgress, catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, isRunning, start, startDisabled, selectPair, selectAll, canOperate,
                         sourceLabel: s => SOURCE_LABEL[s] || s,
                         open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
@@ -142,11 +185,11 @@
                     <table class="pc-catalog__table">
                         <colgroup><col class="pc-catalog__col-select"><col class="pc-catalog__col-project">
                             <col class="pc-catalog__col-model"><col class="pc-catalog__col-date">
-                            <col class="pc-catalog__col-count"><col class="pc-catalog__col-review"><col class="pc-catalog__col-status"><col class="pc-catalog__col-actions"></colgroup>
+                            <col class="pc-catalog__col-count"><col class="pc-catalog__col-review"><col class="pc-catalog__col-status"><col class="pc-catalog__col-progress"><col class="pc-catalog__col-actions"></colgroup>
                         <thead><tr><th><input v-if="canOperate" type="checkbox" aria-label="Выбрать все пары для анализа"
                             :checked="allChecked" :disabled="selectionDisabled || !entries.some(e => e.selection_pair)"
                             @change="selectAll($event.target.checked)"></th><th>Проект / раздел</th><th>Метод и модель</th><th>Дата</th>
-                            <th class="num">Изменения</th><th class="num">Требуют проверки</th><th>Статус</th><th></th></tr></thead>
+                            <th class="num">Изменения</th><th class="num">Требуют проверки</th><th>Статус</th><th>Ход выполнения</th><th></th></tr></thead>
                         <tbody>
                         <tr v-for="entry in entries" :key="entry.catalog_entry_id" :data-entry-id="entry.catalog_entry_id"
                             :class="{'is-active': entry.catalog_entry_id === activeEntryId}">
@@ -161,6 +204,7 @@
                             <td class="num">{{ entry.counts.unresolved_hints ?? '—' }}</td>
                             <td class="pc-catalog__state"><span class="pc-catalog__state-line"
                                 :title="pairStatus(entry.selection_pair)">{{ pairStatus(entry.selection_pair) }}</span></td>
+                            <td class="pc-catalog__progress" :title="rowProgress(entry)">{{ rowProgress(entry) }}</td>
                             <td v-if="entry.pending_pair" class="pc-catalog__actions">
                                 <span v-if="isRunning(entry)" class="pc-catalog__running" role="status"
                                     aria-label="Сравнение выполняется" title="По этой паре выполняется сравнение">
