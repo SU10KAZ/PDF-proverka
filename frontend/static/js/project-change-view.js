@@ -249,6 +249,13 @@
             }
             return {tone: 'running', cancellable: true, title: 'Последний этап: сведение дублей', text: parts.join(' · ')};
         }
+        if (status === 'COMPLETED') {
+            const failed = Number(stage.stats?.calls?.PROVIDER_FAILED || 0);
+            return {tone: failed ? 'warning' : 'completed', cancellable: false, consolidationRetry: true,
+                title: failed ? 'Сведение дублей не удалось' : 'Сведение дублей завершено',
+                text: failed ? `Ошибки модели: ${failed}. Можно повторить сведение выбранной моделью.`
+                    : 'Можно повторить сведение дублей без повторного сравнения документов.'};
+        }
         if (['FAILED', 'INTERRUPTED', 'CANCELLED', 'SKIPPED'].includes(status)) {
             const title = {FAILED: 'Сведение дублей не удалось', INTERRUPTED: 'Сведение дублей прервано',
                 CANCELLED: 'Сведение дублей остановлено', SKIPPED: 'Сведение дублей не выполнялось'}[status];

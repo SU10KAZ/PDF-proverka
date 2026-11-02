@@ -105,7 +105,9 @@ describe('ProjectChange run banner (V3 run state above the change list)', () => 
         expect(failed).toMatchObject({tone: 'warning', consolidationRetry: true, title: 'Сведение дублей прервано'});
         expect(V.runBanner(done({status: 'SKIPPED', reason_code: 'call_plan_exceeded', message: 'Нужно 50 вызовов'}), T0).text)
             .toBe('Нужно 50 вызовов (call_plan_exceeded)');
-        expect(V.runBanner(done({status: 'COMPLETED'}), T0)).toBeNull();
+        expect(V.runBanner(done({status: 'COMPLETED'}), T0)).toMatchObject({consolidationRetry: true, cancellable: false});
+        expect(V.runBanner(done({status: 'COMPLETED', stats: {calls: {PROVIDER_FAILED: 48}}}), T0))
+            .toMatchObject({consolidationRetry: true, tone: 'warning', title: 'Сведение дублей не удалось'});
         expect(V.runBanner(done(null), T0)).toBeNull();
         const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
         expect(html).toContain('@click="pcRetryConsolidation()"');
