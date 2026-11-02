@@ -73,25 +73,30 @@
                     selectionDisabled: Boolean, allChecked: Boolean},
                 emits: ['open', 'open-pair', 'start', 'select-pair', 'select-all'],
                 setup(props, {emit}) {
-                    const {ref, computed, onMounted} = root.Vue;
+                    const {ref, computed, onMounted, watch} = root.Vue;
                     const catalog = ref(null);
                     const loading = ref(true);
                     const loadError = ref('');
                     const overviewLoading = computed(() => loading.value || props.pairsLoading);
                     const entries = computed(() => overviewLoading.value ? [] : pairEntries(catalog.value?.entries, props.pairRows,
                         props.objectId, props.objectName, props.sessionId));
+                    let loadId = 0;
                     async function load() {
+                        const requestId = ++loadId;
                         loading.value = true; loadError.value = '';
                         try {
-                            const response = await fetch(API);
+                            const url = props.objectId ? API + '?object_id=' + encodeURIComponent(props.objectId) : API;
+                            const response = await fetch(url);
                             const data = await response.json().catch(() => ({}));
+                            if (requestId !== loadId) return;
                             if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                             if (data.schema !== 'project-comparison-catalog/1' || !Array.isArray(data.entries))
                                 throw new Error('Неверный контракт каталога.');
                             catalog.value = data;
                         } catch (error) {
+                            if (requestId !== loadId) return;
                             loadError.value = 'Каталог недоступен: ' + String(error.message || error);
-                        } finally { loading.value = false; }
+                        } finally { if (requestId === loadId) loading.value = false; }
                     }
                     function startDisabled(entry) {
                         return loading.value || !!loadError.value || props.pairsLoading || props.opening
@@ -108,6 +113,7 @@
                         if (!props.selectionDisabled) emit('select-all', checked);
                     }
                     onMounted(load);
+                    watch(() => props.objectId, () => { catalog.value = null; load(); });
                     // viewer (portal_auth.js): только просмотр — без запуска и выбора пар для анализа.
                     const canOperate = !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
                     return {catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, isRunning, start, startDisabled, selectPair, selectAll, canOperate,

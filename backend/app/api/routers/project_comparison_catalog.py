@@ -10,9 +10,11 @@ _ENTRY_ID = re.compile(r'pcc1_[0-9a-f]{32}')
 
 
 @router.get('')
-def list_catalog(diagnostics: bool = Query(default=False)):
+def list_catalog(diagnostics: bool = Query(default=False),
+                 object_id: str | None = Query(default=None, min_length=1, max_length=128,
+                                             pattern=r'^[A-Za-z0-9_-]+$')):
     # Diagnostics (failed/partial runs, no cards) are returned only on request.
-    return catalog.cached_catalog(include_diagnostics=diagnostics)
+    return catalog.cached_catalog(include_diagnostics=diagnostics, object_id=object_id)
 
 
 @router.get('/entries/{entry_id}')

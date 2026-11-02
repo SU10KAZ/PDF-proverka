@@ -24,17 +24,37 @@ function load(fetchImpl) {
     const ref = value => ({value});
     const computed = fn => ({get value() { return fn(); }});
     const mounted = [];
+    const watched = [];
     const opened = [];
-    const sandbox = {Vue: {ref, computed, onMounted: fn => mounted.push(fn)}, fetch: fetchImpl,
+    const sandbox = {Vue: {ref, computed, onMounted: fn => mounted.push(fn), watch: (get, fn) => watched.push({get, fn})}, fetch: fetchImpl,
         open: (...args) => opened.push(args), localStorage: {getItem: () => null, setItem: () => {}}};
     sandbox.globalThis = sandbox;
     vm.runInNewContext(source, sandbox);
     let definition;
     sandbox.ProjectComparisonCatalog.register({component: (name, def) => { definition = {name, ...def}; }});
-    return {sandbox, definition, mounted, opened};
+    return {sandbox, definition, mounted, opened, watched};
 }
 
 describe('All project comparisons — catalog component', () => {
+    it('requests only the selected object and ignores a late response after switching objects', async () => {
+        const requests = [];
+        const {definition, mounted, watched} = load(url => new Promise(resolve => requests.push({url, resolve})));
+        const props = {objectId: 'first'};
+        const state = definition.setup(props, {emit: () => {}});
+        const first = mounted[0]();
+        expect(requests[0].url).toBe('/api/project-comparison/catalog?object_id=first');
+        props.objectId = 'second';
+        watched[0].fn();
+        expect(requests[1].url).toBe('/api/project-comparison/catalog?object_id=second');
+        requests[0].resolve({ok: true, json: async () => ({schema: 'project-comparison-catalog/1', entries: [entry()]})});
+        await first;
+        expect(state.catalog.value).toBeNull();
+        expect(state.loading.value).toBe(true);
+        requests[1].resolve({ok: true, json: async () => ({schema: 'project-comparison-catalog/1', entries: []})});
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(state.loading.value).toBe(false);
+        expect(state.entries.value).toEqual([]);
+    });
     it('uses fixed catalog columns so completed results do not resize rows', () => {
         expect(source).toContain('<col class="pc-catalog__col-project">');
         expect(source).not.toContain('<col class="pc-catalog__col-docs">');

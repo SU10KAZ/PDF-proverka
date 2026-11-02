@@ -48,7 +48,7 @@ TRUTH_TOKENS = re.compile(r"\b(REAL15|PROVEN10|F13|SUPPORTED|PARTIALLY_SUPPORTED
 TRUTH_KEYS = re.compile(r"source[_-]first|expected[_-]changes|recall|quality[_-]audit|miss[_-]trace", re.IGNORECASE)
 _CACHE_TTL_SECONDS = 15.0
 _cache_lock = threading.Lock()
-_cache: dict[bool, tuple[float, dict[str, Any]]] = {}
+_cache: dict[tuple[bool, str | None], tuple[float, dict[str, Any]]] = {}
 _snapshot_services: dict[str, Any] = {}
 _region_counts: dict[tuple[str, int, int], int] = {}
 
@@ -205,22 +205,29 @@ def _diagnostic_label(state: dict[str, Any]) -> str:
     return "PARTIAL"
 
 
-def _live_candidates() -> list[tuple[str, str]]:
+def _live_candidates(object_id: str | None = None) -> list[tuple[str, str]]:
     from backend.app.services.stage_comparison import paths, store
+    from backend.app.services.project_change_v3.scope import sessions_for_object
 
     out = []
-    for session in store.list_sessions():
+    sessions = ([{"id": sid} for sid in sessions_for_object(object_id)]
+                if object_id else store.list_sessions())
+    for session in sessions:
         session_id = str(session.get("id") or "")
         if not session_id:
             continue
-        for pair in (store.get_session(session_id) or {}).get("pairs") or []:
-            pair_id = str(pair.get("id") or "")
+        # Discovery needs only pair IDs, not the session payload with every
+        # historical run's state/results. Those are loaded below per candidate.
+        pair_root = paths.pairs_root(session_id)
+        for pair_path in sorted(pair_root.iterdir()) if pair_root.is_dir() else []:
+            pair_id = pair_path.name
             if pair_id and (paths.production_dir(session_id, pair_id) / "state.json").is_file():
                 out.append((session_id, pair_id))
     return out
 
 
-def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[str, Any] | None:
+def _live_entry(session_id: str, pair_id: str, objects: dict[str, str], *,
+                scoped_object_id: str | None = None) -> dict[str, Any] | None:
     """Catalog entry of one pair's persisted V3 run; None when the pair has no V3 state."""
     from backend.app.services.human_mapping_production.storage import InvalidScopeId
     from backend.app.services.project_change_v3 import presentation
@@ -252,7 +259,8 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
     if not old_sha or not new_sha:
         raise EntryRejected("DIAGNOSTIC_ONLY", "SOURCE_IDENTITY_MISSING")
     try:
-        object_id = object_id_for_session(session_id)
+        # Scoped discovery has already proven session ownership by stage paths.
+        object_id = scoped_object_id or object_id_for_session(session_id)
     except (ScopeUnresolved, InvalidScopeId, ValueError) as exc:
         raise EntryRejected("DIAGNOSTIC_ONLY", "OBJECT_UNRESOLVED") from exc
     # Source hash binding: the run is shown only while its sources are unchanged.
@@ -559,19 +567,19 @@ def _public(entry: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_catalog(*, include_diagnostics: bool = False, registry: Path | None = None,
-                  data_root: Path | None = None) -> dict[str, Any]:
+                  data_root: Path | None = None, object_id: str | None = None) -> dict[str, Any]:
     """Deterministic catalog of completed/frozen results (no timestamps of its own)."""
     objects = _objects()
     diagnostics: list[dict[str, Any]] = []
     entries: list[dict[str, Any]] = []
     from backend.app.services.project_change_v3 import run_storage
     import contextlib
-    candidates = [(sid, pid, rid) for sid, pid in _live_candidates()
+    candidates = [(sid, pid, rid) for sid, pid in _live_candidates(object_id)
                   for rid in (run_storage.run_ids(sid, pid) or [None])]
     for session_id, pair_id, rid in candidates:
         try:
             with run_storage.selected(session_id, pair_id, rid) if rid else contextlib.nullcontext():
-                entry = _live_entry(session_id, pair_id, objects)
+                entry = _live_entry(session_id, pair_id, objects, scoped_object_id=object_id)
             if entry is not None:
                 assert_no_truth(_public(entry))
                 entries.append(entry)
@@ -583,6 +591,10 @@ def build_catalog(*, include_diagnostics: bool = False, registry: Path | None = 
             diagnostics.append({"result_source": LIVE_RUN, "session_id": session_id, "pair_id": pair_id,
                                 "run_id": rid, "label": "DIAGNOSTIC_ONLY", "reason": f"READ_ERROR:{type(exc).__name__}"})
     for spec in _registry(registry):
+        if object_id:
+            from backend.app.services.project_change_preview.service import OBJECT as SNAPSHOT_OBJECT
+            if object_id != SNAPSHOT_OBJECT:
+                continue
         try:
             for entry in _snapshot_entries(spec, objects, diagnostics, data_root or APP_DATA):
                 try:
@@ -622,15 +634,17 @@ def build_catalog(*, include_diagnostics: bool = False, registry: Path | None = 
     return catalog
 
 
-def cached_catalog(*, include_diagnostics: bool = False) -> dict[str, Any]:
+def cached_catalog(*, include_diagnostics: bool = False, object_id: str | None = None) -> dict[str, Any]:
     now = time.monotonic()
+    key = (include_diagnostics, object_id)
     with _cache_lock:
-        hit = _cache.get(include_diagnostics)
+        hit = _cache.get(key)
         if hit and now - hit[0] < _CACHE_TTL_SECONDS:
             return hit[1]
-    value = build_catalog(include_diagnostics=include_diagnostics)
+    value = build_catalog(include_diagnostics=include_diagnostics, object_id=object_id)
     with _cache_lock:
-        _cache[include_diagnostics] = (now, value)
+        # A slow cold build must still get a full cache lifetime.
+        _cache[key] = (time.monotonic(), value)
     return value
 
 

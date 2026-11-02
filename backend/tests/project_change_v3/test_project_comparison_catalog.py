@@ -441,6 +441,53 @@ def test_api_schema_and_utf8(env):
     assert client.get("/api/project-comparison/catalog/entries/not-an-id").status_code == 400
 
 
+def test_scoped_catalog_skips_foreign_runs_and_snapshots(env):
+    _run(env)
+    expected = _build(env)['entries']
+    from backend.app.services.stage_comparison import store
+
+    def no_session_payload(*args, **kwargs):
+        raise AssertionError('catalog discovery must not construct full session payloads')
+
+    env['monkeypatch'].setattr(store, 'get_session', no_session_payload)
+    env['monkeypatch'].setattr(env['catalog'], '_snapshot_entries',
+                              lambda *args: pytest.fail('foreign snapshots must not be loaded'))
+    response = env['client'].get('/api/project-comparison/catalog', params={'object_id': gf.OBJECT_ID})
+    assert response.status_code == 200
+    assert response.json()['entries'] == expected
+    env['monkeypatch'].setattr(env['catalog'], '_live_entry',
+                              lambda *args, **kwargs: pytest.fail('foreign runs must not be loaded'))
+    empty = env['client'].get('/api/project-comparison/catalog', params={'object_id': 'unknown'})
+    assert empty.status_code == 200 and empty.json()['entries'] == []
+    assert env['client'].get('/api/project-comparison/catalog?object_id=../x').status_code == 422
+
+
+def test_catalog_cache_lifetime_starts_after_build_and_is_scoped(monkeypatch):
+    from backend.app.services.project_change_catalog import catalog
+    clock = [0.0]
+    calls = []
+    monkeypatch.setattr(catalog.time, 'monotonic', lambda: clock[0])
+
+    def slow_build(**kwargs):
+        calls.append(kwargs)
+        clock[0] += 30
+        return {'entries': [kwargs['object_id']]}
+
+    catalog.clear_cache()
+    monkeypatch.setattr(catalog, 'build_catalog', slow_build)
+    try:
+        assert catalog.cached_catalog(object_id='a')['entries'] == ['a']
+        clock[0] += 1
+        assert catalog.cached_catalog(object_id='a')['entries'] == ['a']
+        assert len(calls) == 1
+        assert catalog.cached_catalog(object_id='b')['entries'] == ['b']
+        assert len(calls) == 2
+        assert catalog.cached_catalog(object_id='a')['entries'] == ['a']
+        assert len(calls) == 3  # the first object's entry has now expired
+    finally:
+        catalog.clear_cache()
+
+
 def test_catalog_code_does_not_hardcode_results():
     source = (REPO / "backend/app/services/project_change_catalog/catalog.py").read_text(encoding="utf-8")
     ui = (REPO / "frontend/static/js/project-comparison-catalog.js").read_text(encoding="utf-8")
