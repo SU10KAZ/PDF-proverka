@@ -42,6 +42,24 @@ describe('All project comparisons — catalog component', () => {
         expect(load(async () => ({})).definition.template).not.toContain("? '\n' +");
     });
 
+    it('indicates only a live comparison, including a new run beside a saved result', () => {
+        const {sandbox, definition} = load(async () => ({}));
+        const row = {left: {pdf_path: '/old'}, right: {pdf_path: '/new'},
+            comparisonRun: {state: {status: 'RUNNING'}}};
+        const saved = entry({documents: {old: row.left, new: row.right}});
+        const [result] = sandbox.ProjectComparisonCatalog.pairEntries([saved], [row], 'obj', '', 'latest');
+        expect(result.pending_pair).toBeUndefined();
+        expect(sandbox.ProjectComparisonCatalog.isRunning(result)).toBe(true);
+        for (const status of ['PAUSED', 'FAILED', 'REVIEW', 'COMPLETED']) {
+            row.comparisonRun.state.status = status;
+            expect(sandbox.ProjectComparisonCatalog.isRunning(result)).toBe(false);
+        }
+        row.comparisonRun.state = {status: 'RUNNING', orphaned_run: true};
+        expect(sandbox.ProjectComparisonCatalog.isRunning(result)).toBe(false);
+        expect(sandbox.ProjectComparisonCatalog.isRunning(entry())).toBe(false);
+        expect(definition.template).toContain('aria-label="Сравнение выполняется"');
+    });
+
     it('registers a pair overview with saved-result and launch actions', () => {
         const {definition} = load(async () => ({}));
         expect(definition.name).toBe('project-comparison-catalog');

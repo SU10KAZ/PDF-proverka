@@ -30,6 +30,10 @@
         if (m.resumed) parts.push('с продолжением; учитывать предыдущие запуски');
         return parts.join(' · ') || '—';
     }
+    function isRunning(entry) {
+        const state = entry?.selection_pair?.comparisonRun?.state;
+        return state?.status === 'RUNNING' && state.orphaned_run !== true;
+    }
     function pairEntries(results, rows, objectId, objectName, sessionId) {
         const catalog = (results || []).filter(e => !objectId || e.object_id === objectId);
         const used = new Set();
@@ -56,7 +60,7 @@
     }
 
     root.ProjectComparisonCatalog = {
-        date, model, effort, pairEntries,
+        date, model, effort, pairEntries, isRunning,
         register(app) {
             app.component('project-comparison-catalog', {
                 props: {activeEntryId: {type: String, default: ''}, opening: Boolean, error: {type: String, default: ''},
@@ -106,7 +110,7 @@
                     onMounted(load);
                     // viewer (portal_auth.js): только просмотр — без запуска и выбора пар для анализа.
                     const canOperate = !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
-                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, start, startDisabled, selectPair, selectAll, canOperate,
+                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, effort, isRunning, start, startDisabled, selectPair, selectAll, canOperate,
                         sourceLabel: s => SOURCE_LABEL[s] || s,
                         open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
@@ -138,17 +142,26 @@
                             <td :title="entry.frozen_at_source">{{ date(entry.frozen_at) }}</td>
                             <td class="num pc-catalog__count">{{ entry.counts.projectchanges ?? '—' }}</td>
                             <td class="num">{{ entry.counts.unresolved_hints ?? '—' }}</td>
-                            <td v-if="entry.pending_pair"><span>{{ pairStatus(entry.pending_pair) }}</span></td>
-                            <td v-else><span class="pc-catalog__status">Заморожен</span>
+                            <td v-if="entry.pending_pair" class="pc-catalog__state"><span class="pc-catalog__state-line"
+                                :title="pairStatus(entry.pending_pair)">{{ pairStatus(entry.pending_pair) }}</span></td>
+                            <td v-else class="pc-catalog__state"><span class="pc-catalog__state-line"><span class="pc-catalog__status">Заморожен</span>
                                 <small>{{ sourceLabel(entry.result_source) }}<template v-if="entry.variants_in_pair > 1">
-                                    · {{ entry.is_current ? 'Текущий' : (entry.is_primary ? 'основной' : 'вариант') }}</template></small></td>
+                                    · {{ entry.is_current ? 'Текущий' : (entry.is_primary ? 'основной' : 'вариант') }}</template></small></span></td>
                             <td v-if="entry.pending_pair" class="pc-catalog__actions">
+                                <span v-if="isRunning(entry)" class="pc-catalog__running" role="status"
+                                    aria-label="Сравнение выполняется" title="По этой паре выполняется сравнение">
+                                    <span class="pc-catalog__running-spinner" aria-hidden="true"></span>
+                                </span>
                                 <button v-if="entry.pending_pair.comparisonRun" type="button" class="btn btn-sm btn-primary"
                                     :disabled="opening || pairsLoading" @click="$emit('open-pair', entry.pending_pair)">Открыть</button>
                                 <button v-else-if="canOperate" type="button" class="btn btn-sm btn-primary" :disabled="startDisabled(entry)"
                                     @click="start(entry)">Запустить сравнение</button>
                             </td>
                             <td v-else class="pc-catalog__actions">
+                                <span v-if="isRunning(entry)" class="pc-catalog__running" role="status"
+                                    aria-label="Сравнение выполняется" title="По этой паре выполняется сравнение">
+                                    <span class="pc-catalog__running-spinner" aria-hidden="true"></span>
+                                </span>
                                 <button type="button" class="btn btn-sm btn-primary" :disabled="opening || !entry.open.available"
                                     :title="entry.open.available ? 'Открыть в сравнении проекта' : 'В ленте пары сейчас показан другой прогон'"
                                     @click="open(entry)">Открыть</button>
