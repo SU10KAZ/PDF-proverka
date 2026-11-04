@@ -15,7 +15,7 @@ test('global shell permits session writes and blocks only snapshot decisions',as
     });
     await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
     const base='http://127.0.0.1:'+server.address().port;
-    const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'/opt/google/chrome/chrome',args:['--no-sandbox']});
+    const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'/opt/google/chrome/chrome',chromiumSandbox: true, args: ['--disable-namespace-sandbox']});
     const audit=newAudit();
     try{
         for(const [id,flag] of [['4f3e5916',''],['OTHER','?projectChangeUi=1']]){

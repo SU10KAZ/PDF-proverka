@@ -11,7 +11,7 @@ const out = path.resolve(__dirname, '../../deliverables/project_change_ui_v1/scr
 fs.mkdirSync(out, {recursive: true});
 (async () => {
     const browser = await chromium.launch({headless: true,
-        ...(process.env.PC_CHROME ? {executablePath: process.env.PC_CHROME} : {}), args: ['--no-sandbox']});
+        ...(process.env.PC_CHROME ? {executablePath: process.env.PC_CHROME} : {}), chromiumSandbox: true, args: ['--disable-namespace-sandbox']});
     const page = await browser.newPage({viewport: {width: 1600, height: 1100}});
     const errors = [], mutations = [];
     page.on('pageerror', error => errors.push(error.message));

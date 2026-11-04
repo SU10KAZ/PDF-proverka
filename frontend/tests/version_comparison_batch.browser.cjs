@@ -24,7 +24,7 @@ test('thirty folders: select, exclude, upload, review and reopen the persisted q
       <script src="/batch.js"></script><script src="/vc.js"></script><script>
       localStorage.setItem('version-comparison:object','obj');
       const app=Vue.createApp({});VersionComparison.register(app);app.mount('#app');</script></html>`;
-    const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN || '/opt/google/chrome/chrome',args:['--no-sandbox']});
+    const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN || '/opt/google/chrome/chrome',chromiumSandbox: true, args: ['--disable-namespace-sandbox']});
     try {
         const page=await browser.newPage({viewport:{width:1360,height:900}});
         page.on('pageerror',e=>errors.push(e.message));

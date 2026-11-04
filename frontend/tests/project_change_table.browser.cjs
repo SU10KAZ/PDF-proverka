@@ -39,7 +39,7 @@ async function newContext(id){
     return createContext(browser,{base,objectId:id,cookies,audit});
 }
 (async()=>{
-    browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'/opt/google/chrome/chrome',args:['--no-sandbox']});
+    browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'/opt/google/chrome/chrome',chromiumSandbox: true, args: ['--disable-namespace-sandbox']});
     const c=await newContext(object);page=await c.newPage();
     await page.goto(base+'/#/stage-comparison');await page.locator('.sc-pair-board__row').first().waitFor();
     await check('A: canonical object opens the production shell without a flag',async()=>{

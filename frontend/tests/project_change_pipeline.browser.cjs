@@ -51,7 +51,7 @@ test('pipeline appears only on tabs 2/3 and preserves progress across tabs/reloa
     });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const browser = await chromium.launch({headless: true, executablePath: process.env.CHROME_BIN || '/opt/google/chrome/chrome',
-        args: ['--no-sandbox']});
+        chromiumSandbox: true, args: ['--disable-namespace-sandbox']});
     try {
         const page = await browser.newPage({viewport: {width: 1684, height: 960}});
         const errors = [];

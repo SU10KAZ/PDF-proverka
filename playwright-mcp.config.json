@@ -1,0 +1,10 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "channel": "chrome",
+      "chromiumSandbox": true,
+      "args": ["--disable-namespace-sandbox"]
+    }
+  }
+}

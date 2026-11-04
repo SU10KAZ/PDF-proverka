@@ -52,7 +52,7 @@ test('edit semantic links on sheets, persist decisions, reassign, recover reject
         store.load({sessionId:'session',pairId:'pair'}).then(()=>{ready.value=true;});</script></html>`);
     });
     await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-    const browser=await chromium.launch({headless:true,executablePath:'/opt/google/chrome/chrome',args:['--no-sandbox']});
+    const browser=await chromium.launch({headless:true,executablePath:'/opt/google/chrome/chrome',chromiumSandbox: true, args: ['--disable-namespace-sandbox']});
     try{
         const page=await browser.newPage({viewport:{width:1440,height:1050}});page.setDefaultTimeout(7000);
         const base='http://127.0.0.1:'+server.address().port;

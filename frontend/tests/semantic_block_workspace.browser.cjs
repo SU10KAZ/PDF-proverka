@@ -74,7 +74,7 @@ async function reloadToRow(prefix) {
 
 (async () => {
     browser = await chromium.launch({headless: true, executablePath: process.env.CHROME_BIN || '/opt/google/chrome/chrome',
-        args: ['--no-sandbox']});
+        chromiumSandbox: true, args: ['--disable-namespace-sandbox']});
     context = await browser.newContext({viewport: {width: 1600, height: 1100}, serviceWorkers: 'block'});
     context.setDefaultTimeout(20000);
     await context.route('**/*', route => {

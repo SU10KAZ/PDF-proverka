@@ -12,7 +12,7 @@ const api=base+'/api/project-change-preview/objects/'+object;
 const out=path.resolve(__dirname,'../../deliverables/project_change_backend_bridge_v1');
 fs.mkdirSync(out+'/screenshots',{recursive:true});
 (async()=>{
- const browser=await chromium.launch({headless:true,executablePath:process.env.PC_CHROME,args:['--no-sandbox']});
+ const browser=await chromium.launch({headless:true,executablePath:process.env.PC_CHROME,chromiumSandbox: true, args: ['--disable-namespace-sandbox']});
  const page=await browser.newPage({viewport:{width:1600,height:1100}});
  const errors=[],writes=[],checks=[];
  page.on('pageerror',e=>errors.push(e.message));
