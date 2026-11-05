@@ -1,0 +1,437 @@
+[
+  {
+    "project": "13АВ-РД-АК2-ПА_V1",
+    "agent": "Codex",
+    "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+    "sha256": "73253a02211ea3a5b786d3953d1a9beafb8a58007c2e1c5e21785a23033c26f5",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 34,
+        "header": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "sheet": "Сверка кабелей",
+        "nonempty_rows": 16,
+        "header": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "project": "13АВ-РД-АК2-ПА_V1",
+    "agent": "Sonnet",
+    "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+    "sha256": "b693b7b488f1317538c487aeaac963096b2b1e48f3d3b79a1da19c977ea95360",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 130,
+        "header": [
+          "ID",
+          "Раздел",
+          "Документ",
+          "Лист",
+          "Страница PDF",
+          "Местоположение",
+          "Категория",
+          "Замечание",
+          "Доказательства",
+          "Второй источник",
+          "Нормативное основание",
+          "Последствия",
+          "Приоритет",
+          "Достоверность",
+          "Проверка инженера",
+          "Решение инженера",
+          "Комментарий инженера",
+          "Результат перепроверки по PDF",
+          "Первичные ID (внутр.)"
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00542664-ИТП.ТМ_V3",
+    "agent": "Codex",
+    "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+    "sha256": "d5050f8df4dc68908d90b07c6079b5bb1b76f3530a07ef05f525ee0927b7f08e",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 26,
+        "header": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00542664-ИТП.ТМ_V3",
+    "agent": "Sonnet",
+    "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+    "sha256": "1eadd6d6c980e66a84e696deb61f1ecc9373dc5e8ae9c16cddd3bd34355318aa",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 68,
+        "header": [
+          "ID",
+          "Раздел",
+          "Документ",
+          "Лист",
+          "Страница PDF",
+          "Местоположение",
+          "Категория",
+          "Замечание",
+          "Доказательства",
+          "Второй источник",
+          "Нормативное основание",
+          "Последствия",
+          "Приоритет",
+          "Достоверность",
+          "Проверка инженера",
+          "Решение инженера",
+          "Комментарий инженера"
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00580716-АР6.2_V1",
+    "agent": "Codex",
+    "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+    "sha256": "139f5c30f47ddebe2bd721e9a2be206268449fc958fcfd1cbdd3109734e7d9c2",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 20,
+        "header": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00580716-АР6.2_V1",
+    "agent": "Sonnet",
+    "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+    "sha256": "2c851aaa8ea654121cd865f5a3859f3190fcd05ace79a39074f0976729b6a1a1",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 57,
+        "header": [
+          "ID",
+          "Раздел",
+          "Документ",
+          "Лист",
+          "Страница PDF",
+          "Местоположение",
+          "Категория",
+          "Замечание",
+          "Доказательства",
+          "Второй источник",
+          "Нормативное основание",
+          "Последствия",
+          "Приоритет",
+          "Достоверность",
+          "Проверка инженера",
+          "Решение инженера",
+          "Комментарий инженера"
+        ]
+      },
+      {
+        "sheet": "Пояснения",
+        "nonempty_rows": 8,
+        "header": [
+          "Объект",
+          "Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1), Москва, Раменки"
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00580716-ВК_2-2_V2",
+    "agent": "Codex",
+    "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+    "sha256": "aac7590cc1ebd4d85d4020769be4242ede2b45e4734a1534189a88b3408aa7f7",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 18,
+        "header": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00580716-ВК_2-2_V2",
+    "agent": "Sonnet",
+    "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+    "sha256": "6dda69b9f42b49e4ce5dbcc51a0cffc4bb5b5aaed7bf1cb8c6e9c1f602860612",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 44,
+        "header": [
+          "ID",
+          "Раздел",
+          "Документ",
+          "Лист",
+          "Страница PDF",
+          "Местоположение",
+          "Категория",
+          "Замечание",
+          "Доказательства",
+          "Второй источник",
+          "Нормативное основание",
+          "Последствия",
+          "Приоритет",
+          "Достоверность",
+          "Проверка инженера",
+          "Решение инженера",
+          "Комментарий инженера"
+        ]
+      },
+      {
+        "sheet": "Пояснения",
+        "nonempty_rows": 6,
+        "header": [
+          "Назначение",
+          "Таблица замечаний предварительного независимого аудита; окончательные решения принимают инженеры."
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00580716-КМ1.2_V1",
+    "agent": "Codex",
+    "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+    "sha256": "71df05f88b2778b617b3a6a50538666df65907026f708bcb4d6a735dc767367a",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 17,
+        "header": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00580716-КМ1.2_V1",
+    "agent": "Sonnet",
+    "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+    "sha256": "34a2d5ab7929b985a12a2aaf600eb8eade262218add97d6d0cb13bd2c4f58bd2",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 20,
+        "header": [
+          "ID",
+          "Раздел",
+          "Документ",
+          "Лист",
+          "Страница PDF",
+          "Местоположение",
+          "Категория",
+          "Замечание",
+          "Доказательства",
+          "Второй источник",
+          "Нормативное основание",
+          "Последствия",
+          "Приоритет",
+          "Достоверность",
+          "Проверка инженера",
+          "Решение инженера",
+          "Комментарий инженера"
+        ]
+      },
+      {
+        "sheet": "Пересчёт спецификации",
+        "nonempty_rows": 37,
+        "header": [
+          "Графа спецификации л.2",
+          "Показатель",
+          "Спецификация л.2",
+          "Пересчёт по таблицам элементов",
+          "Разница (пересчёт − спец.)",
+          "Комментарий"
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00580716-ЭОМ_2-1_V2",
+    "agent": "Codex",
+    "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+    "sha256": "dd4c85b596d8bf1838cb06d095ce1c74dcaafbc20da12d081c89ebd879956121",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 24,
+        "header": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "project": "ПД-00580716-ЭОМ_2-1_V2",
+    "agent": "Sonnet",
+    "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+    "sha256": "9932c9dfa20ade6fe0b2b28ee5dd8b88233401f9d591816049576aa805ebf7db",
+    "sheets": [
+      {
+        "sheet": "Замечания",
+        "nonempty_rows": 160,
+        "header": [
+          "ID",
+          "Раздел",
+          "Документ",
+          "Лист",
+          "Страница PDF",
+          "Местоположение",
+          "Категория",
+          "Замечание",
+          "Доказательства",
+          "Второй источник",
+          "Нормативное основание",
+          "Последствия",
+          "Приоритет",
+          "Достоверность",
+          "Проверка инженера",
+          "Решение инженера",
+          "Комментарий инженера"
+        ]
+      },
+      {
+        "sheet": "Справка",
+        "nonempty_rows": 8,
+        "header": [
+          "Объект",
+          "Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1), Москва, Раменки. Том ПД-00580716-ЭОМ 2-1 «Силовое электрооборудование. Надземная часть», секции С2, С3, стадия Р."
+        ]
+      },
+      {
+        "sheet": "Трассировка",
+        "nonempty_rows": 160,
+        "header": [
+          "ID",
+          "Раздел",
+          "Лист(ы)",
+          "Страница(ы) PDF",
+          "Кол-во объединённых наблюдений",
+          "Независимая перепроверка по растру",
+          "Результат перепроверки"
+        ]
+      }
+    ]
+  }
+]

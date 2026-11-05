@@ -1,0 +1,108 @@
+{
+  "fixture_kind": "synthetic; demonstrates code, not historical defect",
+  "dedup": {
+    "input": [
+      {
+        "problem_class": "parameter_mismatch",
+        "affected_entity": "PUMP-K12",
+        "claim_type": "contradiction",
+        "context_status": "sufficient",
+        "confidence": 0.95,
+        "counterevidence_checked": true,
+        "evidence_kind": "drawing",
+        "evidence_quote": "K12: source A vs source B",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "id": "F-power",
+        "finding": "Мощность K12: 0.55 против 1.5 кВт",
+        "parameter": "power"
+      },
+      {
+        "problem_class": "parameter_mismatch",
+        "affected_entity": "PUMP-K12",
+        "claim_type": "contradiction",
+        "context_status": "sufficient",
+        "confidence": 0.95,
+        "counterevidence_checked": true,
+        "evidence_kind": "drawing",
+        "evidence_quote": "K12: source A vs source B",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "id": "F-mass",
+        "finding": "Масса K12: 18 против 28 кг",
+        "parameter": "mass"
+      }
+    ],
+    "published": [
+      {
+        "problem_class": "parameter_mismatch",
+        "affected_entity": "PUMP-K12",
+        "claim_type": "contradiction",
+        "context_status": "sufficient",
+        "confidence": 0.95,
+        "counterevidence_checked": true,
+        "evidence_kind": "drawing",
+        "evidence_quote": "K12: source A vs source B",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "id": "F-mass",
+        "finding": "Масса K12: 18 против 28 кг",
+        "parameter": "mass",
+        "_evidence_gate": {
+          "status": "published",
+          "reasons": []
+        }
+      }
+    ],
+    "deferred": [
+      {
+        "problem_class": "parameter_mismatch",
+        "affected_entity": "PUMP-K12",
+        "claim_type": "contradiction",
+        "context_status": "sufficient",
+        "confidence": 0.95,
+        "counterevidence_checked": true,
+        "evidence_kind": "drawing",
+        "evidence_quote": "K12: source A vs source B",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "id": "F-power",
+        "finding": "Мощность K12: 0.55 против 1.5 кВт",
+        "parameter": "power",
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      }
+    ],
+    "report": {
+      "schema_version": 1,
+      "candidates": 2,
+      "published": 1,
+      "deferred": 1,
+      "min_confidence": 0.8,
+      "max_published_per_block": null,
+      "reason_counts": {
+        "block_duplicate": 1
+      }
+    }
+  },
+  "absence_checked": {
+    "findings": [
+      {
+        "id": "A1",
+        "problem": "Отсутствует насос K12",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "absence_checked": [
+          "wrong-page"
+        ]
+      }
+    ],
+    "stats": {
+      "scanned": 1,
+      "absence_claims": 1,
+      "candidates": 0,
+      "verified": false,
+      "downgraded": 0
+    },
+    "verifier_calls": 0
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "rules": 145,
+  "unique_rule_ids": 145,
+  "historical_rows": 539,
+  "unique_case_keys": 539,
+  "rule_counts": {
+    "Общие": 28,
+    "АК": 23,
+    "ИТП": 25,
+    "АР": 13,
+    "КМ": 12,
+    "ВК": 17,
+    "ЭОМ": 27
+  },
+  "decision_counts": {
+    "Отклонено": 363,
+    "Принято": 176
+  },
+  "learning_label_counts": {
+    "profile": 238,
+    "disputed": 30,
+    "accepted": 134,
+    "technical_rejection": 97,
+    "mixed": 31,
+    "duplicate": 9
+  },
+  "workbook_comparison_fields_per_row": [
+    "id",
+    "title",
+    "description",
+    "decision",
+    "rejection_reason",
+    "comment",
+    "codex_ids",
+    "sonnet_ids"
+  ],
+  "workbook_mismatches": [],
+  "books": [
+    {
+      "project": "13АВ-РД-АК2-ПА_V1",
+      "current": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1 аудит/Unified_Engineering_Audit.xlsx",
+      "current_sha256": "87806062507dc69ffac56988b497efb8515ec96cc8f8e5c391091ee82deb7f9b",
+      "historical": "historical_versions/13АВ-РД-АК2-ПА_V1/Unified_Engineering_Audit.xlsx",
+      "historical_sha256": "5e80106c33bbdc793b33dfbe40b01069cc9487278f6ec88f461bdafe5deefc06",
+      "case_rows": 144,
+      "decisions": {
+        "Отклонено": 119,
+        "Принято": 25
+      }
+    },
+    {
+      "project": "ПД-00542664-ИТП.ТМ_V3",
+      "current": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3 аудит/Unified_Engineering_Audit.xlsx",
+      "current_sha256": "fd40855e61a4c18635636fcb6850e60895e843ff35b8b8aa0c3c8efb54185743",
+      "historical": "historical_versions/ПД-00542664-ИТП.ТМ_V3/Unified_Engineering_Audit.xlsx",
+      "historical_sha256": "198d9d42bb315e0070a48e4bc4625b0ecf0d4c541856555dd19f34b7772b7b7f",
+      "case_rows": 81,
+      "decisions": {
+        "Отклонено": 46,
+        "Принято": 35
+      }
+    },
+    {
+      "project": "ПД-00580716-АР6.2_V1",
+      "current": "workspace/ПД-00580716-АР6.2_V1/ПД-00580716-АР6.2_V1 аудит/Unified_Engineering_Audit.xlsx",
+      "current_sha256": "b8d6aa6c25310c40bfdc1f8bd7bfc3386dac3a79edfe7418a3360969db3ce754",
+      "historical": "historical_versions/ПД-00580716-АР6.2_V1/Unified_Engineering_Audit.xlsx",
+      "historical_sha256": "5cdb26dc236ee626c7018887d6d3a60ba1ebef4299efd6fda681104698eb2e7e",
+      "case_rows": 65,
+      "decisions": {
+        "Отклонено": 42,
+        "Принято": 23
+      }
+    },
+    {
+      "project": "ПД-00580716-ВК_2-2_V2",
+      "current": "workspace/ПД-00580716-ВК_2-2_V2/ПД-00580716-ВК_2-2_V2 аудит/Unified_Engineering_Audit.xlsx",
+      "current_sha256": "357752b9778cca59418526d2d5a412dfb3a52be1ae84da27991454abbfdae875",
+      "historical": "historical_versions/ПД-00580716-ВК_2-2_V2/Unified_Engineering_Audit.xlsx",
+      "historical_sha256": "6cd3533b44ba190ea3cb6fcabb1753a03e4d892c0b431590438c80f29706ccb6",
+      "case_rows": 52,
+      "decisions": {
+        "Отклонено": 32,
+        "Принято": 20
+      }
+    },
+    {
+      "project": "ПД-00580716-КМ1.2_V1",
+      "current": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1 аудит/Unified_Engineering_Audit.xlsx",
+      "current_sha256": "023f5ddb0def28bbe86d7bfaf22f3630194634757afbc94b24f9fe15b74dde1c",
+      "historical": "historical_versions/ПД-00580716-КМ1.2_V1/Unified_Engineering_Audit.xlsx",
+      "historical_sha256": "fd2787594ec0585373b5cbcf5c2c3078ee10cfed9493100e96454e9baa93657d",
+      "case_rows": 30,
+      "decisions": {
+        "Принято": 6,
+        "Отклонено": 24
+      }
+    },
+    {
+      "project": "ПД-00580716-ЭОМ_2-1_V2",
+      "current": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2 аудит/Unified_Engineering_Audit.xlsx",
+      "current_sha256": "74767b5e3f9b91a7ca6f174b9a4a9e7f801712c433ad29684b3d7a145def164e",
+      "historical": "historical_versions/ПД-00580716-ЭОМ_2-1_V2/Unified_Engineering_Audit.xlsx",
+      "historical_sha256": "28021924db79e760c5b74e912764d2b006973b5ae7c559e0d4af67b1b62a0acb",
+      "case_rows": 167,
+      "decisions": {
+        "Принято": 67,
+        "Отклонено": 100
+      }
+    }
+  ],
+  "archive_sha256": "2d622d0820bcccafcdc9228ec64916cdf91568e6b1b1744dbd636358b376ccf1"
+}

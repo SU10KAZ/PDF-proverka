@@ -1,0 +1,2822 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-11-05",
+  "path_base": "Paths are relative to the extracted package root; canonical targets after deduplication.",
+  "purpose": "Навигация для агента AuditManager, без новой инженерной экспертизы.",
+  "stages": [
+    {
+      "id": "S0",
+      "title": "Исходные проекты и первоначальные аудиты",
+      "description": "Оригинальные PDF, отдельные первоначальные выдачи Codex и Sonnet. Производные results/blocks рядом с PDF помогают навигации, но не заменяют оригинал.",
+      "artifacts": []
+    },
+    {
+      "id": "S1",
+      "title": "Объединение и проверка инженерами",
+      "description": "Текущие Unified_Engineering_Audit.xlsx содержат решения инженеров. Шесть ZIP в корне — отдельные исторические снимки: в них может не быть позднейших комментариев.",
+      "artifacts": [
+        {
+          "path": "workspace/analysis_feedback/baseline_comparison.json",
+          "role": "Сравнение текущих и архивных данных",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3335
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "Общий разбор обратной связи",
+      "description": "Центральная нормализация 539 исторических строк, семантические разборы пар дисциплин и исходные общие правила.",
+      "artifacts": [
+        {
+          "path": "analysis_feedback",
+          "role": "Каталог общего разбора",
+          "exists": true,
+          "kind": "directory"
+        },
+        {
+          "path": "workspace/analysis_feedback/records.json",
+          "role": "Нормализованные исходные строки",
+          "exists": true,
+          "kind": "file",
+          "bytes": 1851454
+        },
+        {
+          "path": "workspace/analysis_feedback/summary.json",
+          "role": "Сводные счётчики",
+          "exists": true,
+          "kind": "file",
+          "bytes": 4114
+        },
+        {
+          "path": "workspace/analysis_feedback/conclusions.json",
+          "role": "Общие выводы",
+          "exists": true,
+          "kind": "file",
+          "bytes": 17965
+        },
+        {
+          "path": "workspace/Разбор_обратной_связи_2026-11-03.html",
+          "role": "Читаемый общий разбор",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2261702
+        },
+        {
+          "path": "workspace/Правила_аудита_2026-11-03.txt",
+          "role": "Исходные общие правила",
+          "exists": true,
+          "kind": "file",
+          "bytes": 16335
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "title": "Центральный алгоритм v2 и общий повтор шести проектов",
+      "description": "Самостоятельная общая серия. Инструкция находится в Audit_Algorithm, результаты — в центральном runs; они фиксировались до раскрытия эталона. Это не локальные повторы внутри папок дисциплин.",
+      "artifacts": [
+        {
+          "path": "Audit_Algorithm",
+          "role": "Инструкция и скрипты центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        {
+          "path": "workspace/Audit_Algorithm/algorithm_v1_original.txt",
+          "role": "Первоначальный промпт Codex, не реализация AuditManager",
+          "exists": true,
+          "kind": "file",
+          "bytes": 30677
+        },
+        {
+          "path": "workspace/Audit_Algorithm/v1_source_hashes.json",
+          "role": "Происхождение v1",
+          "exists": true,
+          "kind": "file",
+          "bytes": 1355
+        },
+        {
+          "path": "workspace/Audit_Algorithm/algorithm_v2_protocol.md",
+          "role": "Протокол центрального v2",
+          "exists": true,
+          "kind": "file",
+          "bytes": 12846
+        },
+        {
+          "path": "workspace/Audit_Algorithm/algorithm_v2_complete.txt",
+          "role": "Полная инструкция центрального v2",
+          "exists": true,
+          "kind": "file",
+          "bytes": 44019
+        },
+        {
+          "path": "workspace/Audit_Algorithm/evaluation_protocol.md",
+          "role": "Протокол сопоставления",
+          "exists": true,
+          "kind": "file",
+          "bytes": 8764
+        },
+        {
+          "path": "workspace/Audit_Algorithm/review_overrides.json",
+          "role": "Правки ручного сопоставления",
+          "exists": true,
+          "kind": "file",
+          "bytes": 13877
+        },
+        {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/manifest.json",
+          "role": "Входные данные и хеши",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3218
+        },
+        {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/Сравнение_v1_v2.xlsx",
+          "role": "Общее сравнение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 136918
+        },
+        {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/Итог_повторной_проверки.html",
+          "role": "Читаемые выводы",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2246909
+        },
+        {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/Прочитать_сначала.txt",
+          "role": "Состав серии",
+          "exists": true,
+          "kind": "file",
+          "bytes": 1929
+        },
+        {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/benchmark.json",
+          "role": "Исторический эталон",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2107097
+        },
+        {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/comparison_old_all.json",
+          "role": "Сопоставление старых строк",
+          "exists": true,
+          "kind": "file",
+          "bytes": 1978185
+        },
+        {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/comparison_new_all.json",
+          "role": "Сопоставление новых строк",
+          "exists": true,
+          "kind": "file",
+          "bytes": 397275
+        },
+        {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/comparison_summary.json",
+          "role": "Сводные показатели",
+          "exists": true,
+          "kind": "file",
+          "bytes": 15747
+        },
+        {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/verdict.json",
+          "role": "Выводы центральной серии",
+          "exists": true,
+          "kind": "file",
+          "bytes": 6429
+        },
+        {
+          "path": "history_archives/07_recheck_v2.html",
+          "role": "Исторический архив центрального v2",
+          "exists": true,
+          "kind": "file",
+          "bytes": 55874844
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "title": "Отдельные локальные уроки и повторы по дисциплинам",
+      "description": "В каждой проектной папке есть разбор, профильное дополнение v2, последняя самостоятельная инструкция и отдельный повтор. АК, ИТП, ВК, КМ и ЭОМ объявляют v3; АР не указывает номер версии. Состав, условия и единицы оценки различаются.",
+      "artifacts": []
+    },
+    {
+      "id": "S5",
+      "title": "Универсальный свод v4",
+      "description": "Сведение алгоритмов и известных положительных/отрицательных случаев. Сборка не является новым повторным аудитом или выполненным сравнением с AuditManager.",
+      "artifacts": [
+        {
+          "path": "Universal_Audit_2026-11-04",
+          "role": "Полный свод",
+          "exists": true,
+          "kind": "directory"
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/Прочитать_сначала.md",
+          "role": "Входная инструкция",
+          "exists": true,
+          "kind": "file",
+          "bytes": 4280
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/Универсальный_алгоритм_аудита_v4.md",
+          "role": "Самостоятельная рабочая инструкция",
+          "exists": true,
+          "kind": "file",
+          "bytes": 243035
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/Универсальный_алгоритм_аудита_v4.md",
+          "role": "Текстовая копия",
+          "exists": true,
+          "kind": "file",
+          "bytes": 243035
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/Правила_и_кейсы.html",
+          "role": "Каталог правил и случаев",
+          "exists": true,
+          "kind": "file",
+          "bytes": 4859382
+        },
+        {
+          "path": "Universal_Audit_2026-11-04/runtime",
+          "role": "Правила исполнителя",
+          "exists": true,
+          "kind": "directory"
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/evaluation/cases.json",
+          "role": "Исторические случаи для оценщика",
+          "exists": true,
+          "kind": "file",
+          "bytes": 3820581
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/evaluation/rules_with_examples.json",
+          "role": "Правила с примерами",
+          "exists": true,
+          "kind": "file",
+          "bytes": 1267818
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/evaluation/conflicts_and_boundaries.json",
+          "role": "Спорные случаи и границы",
+          "exists": true,
+          "kind": "file",
+          "bytes": 24966
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/evaluation/rerun_lessons.json",
+          "role": "Уроки локальных повторов",
+          "exists": true,
+          "kind": "file",
+          "bytes": 9619
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/source_manifest.json",
+          "role": "Источники и хеши",
+          "exists": true,
+          "kind": "file",
+          "bytes": 24591
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/Состав_и_решения_объединения.md",
+          "role": "Решения по сведению",
+          "exists": true,
+          "kind": "file",
+          "bytes": 7780
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/Сравнение_с_AuditManager.md",
+          "role": "Протокол будущего сравнения",
+          "exists": true,
+          "kind": "file",
+          "bytes": 10133
+        },
+        {
+          "path": "workspace/Universal_Audit_2026-11-04/comparison_setup.json",
+          "role": "Условия будущего запуска AuditManager",
+          "exists": true,
+          "kind": "file",
+          "bytes": 810
+        },
+        {
+          "path": "history_archives/08_universal_v4.html",
+          "role": "Исторический архив свода",
+          "exists": true,
+          "kind": "file",
+          "bytes": 4509138
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "discipline": "АК",
+      "project": "13АВ-РД-АК2-ПА_V1",
+      "directory": {
+        "path": "13АВ-РД-АК2-ПА_V1",
+        "role": "Папка проекта",
+        "exists": true,
+        "kind": "directory"
+      },
+      "primary_pdf": {
+        "path": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1.pdf",
+        "role": "Первичный PDF",
+        "exists": true,
+        "kind": "file",
+        "bytes": 10745979
+      },
+      "derived_extractions": [
+        {
+          "path": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1_results.md",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 705932
+        },
+        {
+          "path": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1_results.html",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 936943
+        },
+        {
+          "path": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1_blocks.json",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 208441
+        }
+      ],
+      "initial_audits": {
+        "Codex": {
+          "directory": {
+            "path": "13АВ-РД-АК2-ПА_V1/Audit_Result_Codex_High",
+            "role": "Первоначальный Codex",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Codex: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 24794
+            },
+            {
+              "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Codex_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Codex: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 15340
+            },
+            {
+              "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Codex_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Codex: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 10372
+            },
+            {
+              "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Codex_High/Audit_Summary.md",
+              "role": "Первоначальный Codex: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 12268
+            }
+          ]
+        },
+        "Sonnet": {
+          "directory": {
+            "path": "13АВ-РД-АК2-ПА_V1/Audit_Result_Sonnet_High",
+            "role": "Первоначальный Sonnet",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Sonnet: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 115468
+            },
+            {
+              "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Sonnet_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Sonnet: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 19256
+            },
+            {
+              "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Sonnet_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Sonnet: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 12487
+            },
+            {
+              "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Result_Sonnet_High/Audit_Summary.md",
+              "role": "Первоначальный Sonnet: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 12773
+            }
+          ]
+        }
+      },
+      "engineer_review": {
+        "path": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1 аудит/Unified_Engineering_Audit.xlsx",
+        "role": "Текущая инженерная оценка",
+        "exists": true,
+        "kind": "file",
+        "bytes": 353865
+      },
+      "historical_zip": {
+        "path": "history_archives/01_ak.html",
+        "role": "Исторический снимок в корне",
+        "exists": true,
+        "kind": "file",
+        "bytes": 1198479
+      },
+      "central_feedback": [
+        {
+          "path": "workspace/analysis_feedback/13АВ-РД-АК2-ПА_V1.json",
+          "role": "Нормализация проекта",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2055813
+        },
+        {
+          "path": "workspace/analysis_feedback/ak_itp_analysis.md",
+          "role": "Разбор пары дисциплин",
+          "exists": true,
+          "kind": "file",
+          "bytes": 73430
+        },
+        {
+          "path": "workspace/analysis_feedback/ak_itp_cases.json",
+          "role": "Кейсы пары",
+          "exists": true,
+          "kind": "file",
+          "bytes": 76270
+        }
+      ],
+      "local_feedback": {
+        "directory": {
+          "path": "13АВ-РД-АК2-ПА_V1/Audit_Lessons_2026-11-03",
+          "role": "Локальные уроки",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Lessons_2026-11-03/analysis_verification.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 959
+          },
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Lessons_2026-11-03/Audit_Algorithm_v2.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 24061
+          },
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Lessons_2026-11-03/Feedback_Analysis.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 57652
+          },
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Lessons_2026-11-03/method_analysis.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 26201
+          },
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Lessons_2026-11-03/missed_analysis.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 58148
+          },
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Lessons_2026-11-03/rejection_analysis.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 102775
+          },
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Lessons_2026-11-03/review.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 1322946
+          }
+        ]
+      },
+      "profile_algorithm_v2": {
+        "path": "workspace/13АВ-РД-АК2-ПА_V1/Audit_Lessons_2026-11-03/Audit_Algorithm_v2.md",
+        "role": "Профильное дополнение v2",
+        "exists": true,
+        "kind": "file",
+        "bytes": 24061
+      },
+      "latest_universal_algorithm": {
+        "file": {
+          "path": "workspace/13АВ-РД-АК2-ПА_V1/Engineering_Audit_Universal.md",
+          "role": "Последняя самостоятельная инструкция",
+          "exists": true,
+          "kind": "file",
+          "bytes": 51457
+        },
+        "declared_version": "3.0",
+        "note": "Версия прочитана из исходного текста."
+      },
+      "local_rerun": {
+        "directory": {
+          "path": "13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03",
+          "role": "Отдельный локальный повтор",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03/Engineering_Audit_Recheck.xlsx",
+            "role": "Локальный повтор: Engineering_Audit_Recheck.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 49515
+          },
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03/Comparison_With_Engineers.xlsx",
+            "role": "Локальный повтор: Comparison_With_Engineers.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 45634
+          },
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03/Audit_Comparison_Report.md",
+            "role": "Локальный повтор: Audit_Comparison_Report.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 21845
+          }
+        ],
+        "book_sheets": {
+          "Engineering_Audit_Recheck.xlsx": [
+            "Замечания",
+            "Допроверка",
+            "Вопросы и ограничения",
+            "Охват",
+            "Редакционные и снятые"
+          ],
+          "Comparison_With_Engineers.xlsx": [
+            "Итоги",
+            "Сопоставление",
+            "Решения инженеров"
+          ]
+        },
+        "first_pass_artifacts": [
+          {
+            "path": "workspace/13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03/work/manifest.json",
+            "role": "Сохранённый этап локальной проверки",
+            "exists": true,
+            "kind": "file",
+            "bytes": 11688
+          }
+        ],
+        "missing_separate_standard_files": [
+          {
+            "standard_name": "Coverage_Report.xlsx",
+            "checked_directory": "13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03",
+            "exists": false,
+            "interpretation": "Нет отдельного файла под стандартным именем; информация может быть в фактической книге и отчёте."
+          },
+          {
+            "standard_name": "Audit_Statistics.xlsx",
+            "checked_directory": "13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03",
+            "exists": false,
+            "interpretation": "Нет отдельного файла под стандартным именем; информация может быть в фактической книге и отчёте."
+          },
+          {
+            "standard_name": "Audit_Summary.md",
+            "checked_directory": "13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03",
+            "exists": false,
+            "interpretation": "Нет отдельного файла под стандартным именем; информация может быть в фактической книге и отчёте."
+          }
+        ],
+        "interpretation": "Первичный проход и допроверки после эталона разделены. Основной проверяющий знал историю: весь локальный эксперимент не заявлен слепым. Отдельных стандартных Coverage_Report.xlsx, Audit_Statistics.xlsx и Audit_Summary.md здесь нет; используйте фактическую книгу, её листы и Audit_Comparison_Report.md."
+      },
+      "central_v2": {
+        "directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1",
+          "role": "Проект центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1/Engineering_Audit.xlsx",
+            "role": "Центральный v2: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 18084
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1/Coverage_Report.xlsx",
+            "role": "Центральный v2: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 12412
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1/Audit_Statistics.xlsx",
+            "role": "Центральный v2: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 5115
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1/Audit_Summary.md",
+            "role": "Центральный v2: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 5904
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1/findings.json",
+            "role": "Центральный v2: findings.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 58242
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1/candidates.json",
+            "role": "Центральный v2: candidates.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 27976
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1/coverage.json",
+            "role": "Центральный v2: coverage.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 121843
+          }
+        ],
+        "input_copy": {
+          "path": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1.pdf",
+          "role": "Копия первичного входа",
+          "exists": true,
+          "kind": "file",
+          "bytes": 10745979
+        },
+        "comparison_directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/evaluation/13АВ-РД-АК2-ПА_V1",
+          "role": "Сопоставление центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "comparison_files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/13АВ-РД-АК2-ПА_V1/comparison_old.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 100334
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/13АВ-РД-АК2-ПА_V1/comparison_new.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 8392
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/13АВ-РД-АК2-ПА_V1/old_records.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 667499
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1/findings.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 58242
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/13АВ-РД-АК2-ПА_V1/candidates.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 27976
+          }
+        ],
+        "frozen_manifest": {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/frozen_13АВ-РД-АК2-ПА_V1.json",
+          "role": "Фиксация до раскрытия эталона",
+          "exists": true,
+          "kind": "file",
+          "bytes": 561
+        }
+      }
+    },
+    {
+      "discipline": "ИТП/ТМ",
+      "project": "ПД-00542664-ИТП.ТМ_V3",
+      "directory": {
+        "path": "ПД-00542664-ИТП.ТМ_V3",
+        "role": "Папка проекта",
+        "exists": true,
+        "kind": "directory"
+      },
+      "primary_pdf": {
+        "path": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3.pdf",
+        "role": "Первичный PDF",
+        "exists": true,
+        "kind": "file",
+        "bytes": 50366083
+      },
+      "derived_extractions": [
+        {
+          "path": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3_results.md",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 775136
+        },
+        {
+          "path": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3_results.html",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 994150
+        },
+        {
+          "path": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3_blocks.json",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 156877
+        }
+      ],
+      "initial_audits": {
+        "Codex": {
+          "directory": {
+            "path": "ПД-00542664-ИТП.ТМ_V3/Audit_Result_Codex_High",
+            "role": "Первоначальный Codex",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Codex: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 17609
+            },
+            {
+              "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Codex_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Codex: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 21512
+            },
+            {
+              "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Codex_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Codex: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 9553
+            },
+            {
+              "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Codex_High/Audit_Summary.md",
+              "role": "Первоначальный Codex: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 13962
+            }
+          ]
+        },
+        "Sonnet": {
+          "directory": {
+            "path": "ПД-00542664-ИТП.ТМ_V3/Audit_Result_Sonnet_High",
+            "role": "Первоначальный Sonnet",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Sonnet: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 50189
+            },
+            {
+              "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Sonnet_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Sonnet: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 38313
+            },
+            {
+              "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Sonnet_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Sonnet: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 10412
+            },
+            {
+              "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Result_Sonnet_High/Audit_Summary.md",
+              "role": "Первоначальный Sonnet: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 34645
+            }
+          ]
+        }
+      },
+      "engineer_review": {
+        "path": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3 аудит/Unified_Engineering_Audit.xlsx",
+        "role": "Текущая инженерная оценка",
+        "exists": true,
+        "kind": "file",
+        "bytes": 158971
+      },
+      "historical_zip": {
+        "path": "history_archives/02_itp.html",
+        "role": "Исторический снимок в корне",
+        "exists": true,
+        "kind": "file",
+        "bytes": 117222069
+      },
+      "central_feedback": [
+        {
+          "path": "workspace/analysis_feedback/ПД-00542664-ИТП.ТМ_V3.json",
+          "role": "Нормализация проекта",
+          "exists": true,
+          "kind": "file",
+          "bytes": 1337150
+        },
+        {
+          "path": "workspace/analysis_feedback/ak_itp_analysis.md",
+          "role": "Разбор пары дисциплин",
+          "exists": true,
+          "kind": "file",
+          "bytes": 73430
+        },
+        {
+          "path": "workspace/analysis_feedback/ak_itp_cases.json",
+          "role": "Кейсы пары",
+          "exists": true,
+          "kind": "file",
+          "bytes": 76270
+        }
+      ],
+      "local_feedback": {
+        "directory": {
+          "path": "ПД-00542664-ИТП.ТМ_V3/Audit_Feedback_Analysis_2026-11-03",
+          "role": "Локальные уроки",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Feedback_Analysis_2026-11-03/analysis_metrics.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 1076
+          },
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Feedback_Analysis_2026-11-03/feedback_cases.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 12198
+          },
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Feedback_Analysis_2026-11-03/feedback_data.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 520198
+          },
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Feedback_Analysis_2026-11-03/Алгоритм_инженерного_аудита_v2.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 19110
+          },
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Feedback_Analysis_2026-11-03/Разбор_обратной_связи.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 34815
+          }
+        ]
+      },
+      "profile_algorithm_v2": {
+        "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Feedback_Analysis_2026-11-03/Алгоритм_инженерного_аудита_v2.md",
+        "role": "Профильное дополнение v2",
+        "exists": true,
+        "kind": "file",
+        "bytes": 19110
+      },
+      "latest_universal_algorithm": {
+        "file": {
+          "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Алгоритм_инженерного_аудита_универсальный_v3.md",
+          "role": "Последняя самостоятельная инструкция",
+          "exists": true,
+          "kind": "file",
+          "bytes": 45207
+        },
+        "declared_version": "3",
+        "note": "Версия прочитана из исходного текста."
+      },
+      "local_rerun": {
+        "directory": {
+          "path": "ПД-00542664-ИТП.ТМ_V3/Audit_Recheck_v3_2026-11-03",
+          "role": "Отдельный локальный повтор",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Recheck_v3_2026-11-03/Engineering_Audit.xlsx",
+            "role": "Локальный повтор: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 19414
+          },
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Recheck_v3_2026-11-03/Comparison_With_Engineer.xlsx",
+            "role": "Локальный повтор: Comparison_With_Engineer.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 31419
+          },
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Recheck_v3_2026-11-03/Audit_Summary.md",
+            "role": "Локальный повтор: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 19620
+          },
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Recheck_v3_2026-11-03/Coverage_Report.xlsx",
+            "role": "Локальный повтор: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 26014
+          },
+          {
+            "path": "workspace/ПД-00542664-ИТП.ТМ_V3/Audit_Recheck_v3_2026-11-03/Audit_Statistics.xlsx",
+            "role": "Локальный повтор: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 13146
+          }
+        ],
+        "book_sheets": {
+          "Engineering_Audit.xlsx": [
+            "Замечания"
+          ],
+          "Comparison_With_Engineer.xlsx": [
+            "Итог",
+            "Пропуски",
+            "Сопоставление 81"
+          ]
+        },
+        "first_pass_artifacts": [],
+        "missing_separate_standard_files": [],
+        "interpretation": "Проверка прямо названа ретроспективной: решения инженеров были известны. Отчёт различает предметно проверенные 75 страниц и остальные автоматически обработанные страницы."
+      },
+      "central_v2": {
+        "directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3",
+          "role": "Проект центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3/Engineering_Audit.xlsx",
+            "role": "Центральный v2: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 23819
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3/Coverage_Report.xlsx",
+            "role": "Центральный v2: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 23482
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3/Audit_Statistics.xlsx",
+            "role": "Центральный v2: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 5439
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3/Audit_Summary.md",
+            "role": "Центральный v2: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 9912
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3/findings.json",
+            "role": "Центральный v2: findings.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 85161
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3/candidates.json",
+            "role": "Центральный v2: candidates.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 81983
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3/coverage.json",
+            "role": "Центральный v2: coverage.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 569731
+          }
+        ],
+        "input_copy": {
+          "path": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3.pdf",
+          "role": "Копия первичного входа",
+          "exists": true,
+          "kind": "file",
+          "bytes": 50366083
+        },
+        "comparison_directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/evaluation/ПД-00542664-ИТП.ТМ_V3",
+          "role": "Сопоставление центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "comparison_files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00542664-ИТП.ТМ_V3/comparison_old.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 76521
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00542664-ИТП.ТМ_V3/comparison_new.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 17738
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00542664-ИТП.ТМ_V3/old_records.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 259922
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3/findings.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 85161
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00542664-ИТП.ТМ_V3/candidates.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 81983
+          }
+        ],
+        "frozen_manifest": {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/frozen_ПД-00542664-ИТП.ТМ_V3.json",
+          "role": "Фиксация до раскрытия эталона",
+          "exists": true,
+          "kind": "file",
+          "bytes": 564
+        }
+      }
+    },
+    {
+      "discipline": "АР",
+      "project": "ПД-00580716-АР6.2_V1",
+      "directory": {
+        "path": "ПД-00580716-АР6.2_V1",
+        "role": "Папка проекта",
+        "exists": true,
+        "kind": "directory"
+      },
+      "primary_pdf": {
+        "path": "workspace/ПД-00580716-АР6.2_V1/ПД-00580716-АР6.2_V1.pdf",
+        "role": "Первичный PDF",
+        "exists": true,
+        "kind": "file",
+        "bytes": 35723412
+      },
+      "derived_extractions": [
+        {
+          "path": "workspace/ПД-00580716-АР6.2_V1/ПД-00580716-АР6.2_V1_results.md",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 275724
+        },
+        {
+          "path": "workspace/ПД-00580716-АР6.2_V1/ПД-00580716-АР6.2_V1_results.html",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 328216
+        },
+        {
+          "path": "workspace/ПД-00580716-АР6.2_V1/ПД-00580716-АР6.2_V1_blocks.json",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 62293
+        }
+      ],
+      "initial_audits": {
+        "Codex": {
+          "directory": {
+            "path": "ПД-00580716-АР6.2_V1/Audit_Result_Codex_High",
+            "role": "Первоначальный Codex",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Codex: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 15311
+            },
+            {
+              "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Codex_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Codex: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 11770
+            },
+            {
+              "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Codex_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Codex: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 6963
+            },
+            {
+              "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Codex_High/Audit_Summary.md",
+              "role": "Первоначальный Codex: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 16074
+            }
+          ]
+        },
+        "Sonnet": {
+          "directory": {
+            "path": "ПД-00580716-АР6.2_V1/Audit_Result_Sonnet_High",
+            "role": "Первоначальный Sonnet",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Sonnet: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 39005
+            },
+            {
+              "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Sonnet_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Sonnet: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 11951
+            },
+            {
+              "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Sonnet_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Sonnet: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 12255
+            },
+            {
+              "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Sonnet_High/Audit_Summary.md",
+              "role": "Первоначальный Sonnet: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 11276
+            }
+          ]
+        }
+      },
+      "engineer_review": {
+        "path": "workspace/ПД-00580716-АР6.2_V1/ПД-00580716-АР6.2_V1 аудит/Unified_Engineering_Audit.xlsx",
+        "role": "Текущая инженерная оценка",
+        "exists": true,
+        "kind": "file",
+        "bytes": 111846
+      },
+      "historical_zip": {
+        "path": "history_archives/03_ar.html",
+        "role": "Исторический снимок в корне",
+        "exists": true,
+        "kind": "file",
+        "bytes": 117008574
+      },
+      "central_feedback": [
+        {
+          "path": "workspace/analysis_feedback/ПД-00580716-АР6.2_V1.json",
+          "role": "Нормализация проекта",
+          "exists": true,
+          "kind": "file",
+          "bytes": 625742
+        },
+        {
+          "path": "workspace/analysis_feedback/ar_km_analysis.md",
+          "role": "Разбор пары дисциплин",
+          "exists": true,
+          "kind": "file",
+          "bytes": 42444
+        },
+        {
+          "path": "workspace/analysis_feedback/ar_km_cases.json",
+          "role": "Кейсы пары",
+          "exists": true,
+          "kind": "file",
+          "bytes": 22505
+        }
+      ],
+      "local_feedback": {
+        "directory": {
+          "path": "ПД-00580716-АР6.2_V1/Audit_Feedback_2026-11-03",
+          "role": "Локальные уроки",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Feedback_2026-11-03/Audit_Algorithm_v2.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 22501
+          },
+          {
+            "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Feedback_2026-11-03/Feedback_Analysis.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 28633
+          },
+          {
+            "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Feedback_2026-11-03/Feedback_Cases.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 202151
+          }
+        ]
+      },
+      "profile_algorithm_v2": {
+        "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Feedback_2026-11-03/Audit_Algorithm_v2.md",
+        "role": "Профильное дополнение v2",
+        "exists": true,
+        "kind": "file",
+        "bytes": 22501
+      },
+      "latest_universal_algorithm": {
+        "file": {
+          "path": "workspace/ПД-00580716-АР6.2_V1/Engineering_Audit_Universal.md",
+          "role": "Последняя самостоятельная инструкция",
+          "exists": true,
+          "kind": "file",
+          "bytes": 43328
+        },
+        "declared_version": null,
+        "note": "В тексте АР номер версии не объявлен; исходный файл не переименовывается."
+      },
+      "local_rerun": {
+        "directory": {
+          "path": "ПД-00580716-АР6.2_V1/Audit_Rerun_2026-11-03",
+          "role": "Отдельный локальный повтор",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Rerun_2026-11-03/Engineering_Audit.xlsx",
+            "role": "Локальный повтор: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 38257
+          },
+          {
+            "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Rerun_2026-11-03/Comparison_With_Engineer.xlsx",
+            "role": "Локальный повтор: Comparison_With_Engineer.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 75406
+          },
+          {
+            "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Rerun_2026-11-03/Audit_Summary.md",
+            "role": "Локальный повтор: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 19623
+          },
+          {
+            "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Rerun_2026-11-03/Coverage_Report.xlsx",
+            "role": "Локальный повтор: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 31181
+          },
+          {
+            "path": "workspace/ПД-00580716-АР6.2_V1/Audit_Rerun_2026-11-03/Audit_Statistics.xlsx",
+            "role": "Локальный повтор: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 13752
+          }
+        ],
+        "book_sheets": {
+          "Engineering_Audit.xlsx": [
+            "Навигация",
+            "Замечания",
+            "Журнал кандидатов",
+            "Внешние источники"
+          ],
+          "Comparison_With_Engineer.xlsx": [
+            "Итог сравнения",
+            "Все 65 строк",
+            "Принятые Sonnet",
+            "Ошибки Codex",
+            "Оставшиеся пробелы",
+            "Оценки инженеров"
+          ]
+        },
+        "first_pass_artifacts": [
+          {
+            "path": "ПД-00580716-АР6.2_V1/Audit_Rerun_2026-11-03/work/phase_A",
+            "role": "Сохранённый этап локальной проверки",
+            "exists": true,
+            "kind": "directory"
+          }
+        ],
+        "missing_separate_standard_files": [],
+        "interpretation": "Контроль не полностью слепой: координатор знал ответы; один исполнитель сообщил о случайном раскрытии кратких старых сводок. Первичный phase_A и последующее сравнение разделены."
+      },
+      "central_v2": {
+        "directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1",
+          "role": "Проект центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1/Engineering_Audit.xlsx",
+            "role": "Центральный v2: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 16919
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1/Coverage_Report.xlsx",
+            "role": "Центральный v2: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 8888
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1/Audit_Statistics.xlsx",
+            "role": "Центральный v2: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 5090
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1/Audit_Summary.md",
+            "role": "Центральный v2: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 8008
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1/findings.json",
+            "role": "Центральный v2: findings.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 49877
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1/candidates.json",
+            "role": "Центральный v2: candidates.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 33693
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1/coverage.json",
+            "role": "Центральный v2: coverage.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 19070
+          }
+        ],
+        "input_copy": {
+          "path": "workspace/ПД-00580716-АР6.2_V1/ПД-00580716-АР6.2_V1.pdf",
+          "role": "Копия первичного входа",
+          "exists": true,
+          "kind": "file",
+          "bytes": 35723412
+        },
+        "comparison_directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-АР6.2_V1",
+          "role": "Сопоставление центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "comparison_files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-АР6.2_V1/comparison_old.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 74989
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-АР6.2_V1/comparison_new.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 10323
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-АР6.2_V1/old_records.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 187064
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1/findings.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 49877
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-АР6.2_V1/candidates.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 33693
+          }
+        ],
+        "frozen_manifest": {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/frozen_ПД-00580716-АР6.2_V1.json",
+          "role": "Фиксация до раскрытия эталона",
+          "exists": true,
+          "kind": "file",
+          "bytes": 559
+        }
+      }
+    },
+    {
+      "discipline": "ВК",
+      "project": "ПД-00580716-ВК_2-2_V2",
+      "directory": {
+        "path": "ПД-00580716-ВК_2-2_V2",
+        "role": "Папка проекта",
+        "exists": true,
+        "kind": "directory"
+      },
+      "primary_pdf": {
+        "path": "workspace/ПД-00580716-ВК_2-2_V2/ПД-00580716-ВК_2-2_V2.pdf",
+        "role": "Первичный PDF",
+        "exists": true,
+        "kind": "file",
+        "bytes": 53748545
+      },
+      "derived_extractions": [
+        {
+          "path": "workspace/ПД-00580716-ВК_2-2_V2/ПД-00580716-ВК_2-2_V2_results.md",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 351413
+        },
+        {
+          "path": "workspace/ПД-00580716-ВК_2-2_V2/ПД-00580716-ВК_2-2_V2_results.html",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 463032
+        },
+        {
+          "path": "workspace/ПД-00580716-ВК_2-2_V2/ПД-00580716-ВК_2-2_V2_blocks.json",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 81264
+        }
+      ],
+      "initial_audits": {
+        "Codex": {
+          "directory": {
+            "path": "ПД-00580716-ВК_2-2_V2/Audit_Result_Codex_High",
+            "role": "Первоначальный Codex",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Codex: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 13709
+            },
+            {
+              "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Codex_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Codex: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 13856
+            },
+            {
+              "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Codex_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Codex: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 11757
+            },
+            {
+              "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Codex_High/Audit_Summary.md",
+              "role": "Первоначальный Codex: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 14566
+            }
+          ]
+        },
+        "Sonnet": {
+          "directory": {
+            "path": "ПД-00580716-ВК_2-2_V2/Audit_Result_Sonnet_High",
+            "role": "Первоначальный Sonnet",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Sonnet: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 34227
+            },
+            {
+              "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Sonnet_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Sonnet: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 10731
+            },
+            {
+              "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Sonnet_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Sonnet: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 11776
+            },
+            {
+              "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Result_Sonnet_High/Audit_Summary.md",
+              "role": "Первоначальный Sonnet: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 9772
+            }
+          ]
+        }
+      },
+      "engineer_review": {
+        "path": "workspace/ПД-00580716-ВК_2-2_V2/ПД-00580716-ВК_2-2_V2 аудит/Unified_Engineering_Audit.xlsx",
+        "role": "Текущая инженерная оценка",
+        "exists": true,
+        "kind": "file",
+        "bytes": 136838
+      },
+      "historical_zip": {
+        "path": "history_archives/05_vk.html",
+        "role": "Исторический снимок в корне",
+        "exists": true,
+        "kind": "file",
+        "bytes": 116950309
+      },
+      "central_feedback": [
+        {
+          "path": "workspace/analysis_feedback/ПД-00580716-ВК_2-2_V2.json",
+          "role": "Нормализация проекта",
+          "exists": true,
+          "kind": "file",
+          "bytes": 777846
+        },
+        {
+          "path": "workspace/analysis_feedback/vk_eom_analysis.md",
+          "role": "Разбор пары дисциплин",
+          "exists": true,
+          "kind": "file",
+          "bytes": 94129
+        },
+        {
+          "path": "workspace/analysis_feedback/vk_eom_cases.json",
+          "role": "Кейсы пары",
+          "exists": true,
+          "kind": "file",
+          "bytes": 116561
+        }
+      ],
+      "local_feedback": {
+        "directory": {
+          "path": "ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03",
+          "role": "Локальные уроки",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03/Audit_Algorithm_v2.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 22188
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03/Audit_Lessons.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 26690
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03/Learning_Cases.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 166615
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03/metrics_analysis.txt",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 13718
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03/misses_analysis.txt",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 21699
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03/rejections_analysis.txt",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 18633
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03/review_data.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 530638
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03/verification.json",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 317
+          }
+        ]
+      },
+      "profile_algorithm_v2": {
+        "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Feedback_2026-11-03/Audit_Algorithm_v2.md",
+        "role": "Профильное дополнение v2",
+        "exists": true,
+        "kind": "file",
+        "bytes": 22188
+      },
+      "latest_universal_algorithm": {
+        "file": {
+          "path": "workspace/ПД-00580716-ВК_2-2_V2/Engineering_Audit_Universal.md",
+          "role": "Последняя самостоятельная инструкция",
+          "exists": true,
+          "kind": "file",
+          "bytes": 48343
+        },
+        "declared_version": "3.0",
+        "note": "Версия прочитана из исходного текста."
+      },
+      "local_rerun": {
+        "directory": {
+          "path": "ПД-00580716-ВК_2-2_V2/Audit_Recheck_2026-11-03",
+          "role": "Отдельный локальный повтор",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Recheck_2026-11-03/Engineering_Audit.xlsx",
+            "role": "Локальный повтор: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 47027
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Recheck_2026-11-03/Comparison_With_Engineer.xlsx",
+            "role": "Локальный повтор: Comparison_With_Engineer.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 27662
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Recheck_2026-11-03/Comparison_Report.md",
+            "role": "Локальный повтор: Comparison_Report.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 10133
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Recheck_2026-11-03/Coverage_Report.xlsx",
+            "role": "Локальный повтор: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 16131
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Recheck_2026-11-03/Audit_Statistics.xlsx",
+            "role": "Локальный повтор: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 11365
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Recheck_2026-11-03/Audit_Summary.md",
+            "role": "Локальный повтор: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 28911
+          }
+        ],
+        "book_sheets": {
+          "Engineering_Audit.xlsx": [
+            "Замечания",
+            "Обоснования",
+            "Журнал проверки"
+          ],
+          "Comparison_With_Engineer.xlsx": [
+            "Итог",
+            "Пропущенные темы",
+            "Отклонённые Codex",
+            "Все принятые группы",
+            "Новые замечания",
+            "Источники"
+          ]
+        },
+        "first_pass_artifacts": [
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Recheck_2026-11-03/work/run_manifest.json",
+            "role": "Сохранённый этап локальной проверки",
+            "exists": true,
+            "kind": "file",
+            "bytes": 1772
+          },
+          {
+            "path": "workspace/ПД-00580716-ВК_2-2_V2/Audit_Recheck_2026-11-03/work/coordination/audit_before_final_review.json",
+            "role": "Сохранённый этап локальной проверки",
+            "exists": true,
+            "kind": "file",
+            "bytes": 65719
+          }
+        ],
+        "missing_separate_standard_files": [],
+        "interpretation": "Локальные показатели считают строки, темы и инженерские группы. Не переносите их знаменатели на центральный v2; смотрите Comparison_Report.md и журнал."
+      },
+      "central_v2": {
+        "directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2",
+          "role": "Проект центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2/Engineering_Audit.xlsx",
+            "role": "Центральный v2: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 17703
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2/Coverage_Report.xlsx",
+            "role": "Центральный v2: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 11232
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2/Audit_Statistics.xlsx",
+            "role": "Центральный v2: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 5203
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2/Audit_Summary.md",
+            "role": "Центральный v2: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 7904
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2/findings.json",
+            "role": "Центральный v2: findings.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 58546
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2/candidates.json",
+            "role": "Центральный v2: candidates.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 43820
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2/coverage.json",
+            "role": "Центральный v2: coverage.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 77859
+          }
+        ],
+        "input_copy": {
+          "path": "workspace/ПД-00580716-ВК_2-2_V2/ПД-00580716-ВК_2-2_V2.pdf",
+          "role": "Копия первичного входа",
+          "exists": true,
+          "kind": "file",
+          "bytes": 53748545
+        },
+        "comparison_directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-ВК_2-2_V2",
+          "role": "Сопоставление центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "comparison_files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-ВК_2-2_V2/comparison_old.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 260063
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-ВК_2-2_V2/comparison_new.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 11309
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-ВК_2-2_V2/old_records.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 188255
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2/findings.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 58546
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ВК_2-2_V2/candidates.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 43820
+          }
+        ],
+        "frozen_manifest": {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/frozen_ПД-00580716-ВК_2-2_V2.json",
+          "role": "Фиксация до раскрытия эталона",
+          "exists": true,
+          "kind": "file",
+          "bytes": 560
+        }
+      }
+    },
+    {
+      "discipline": "КМ",
+      "project": "ПД-00580716-КМ1.2_V1",
+      "directory": {
+        "path": "ПД-00580716-КМ1.2_V1",
+        "role": "Папка проекта",
+        "exists": true,
+        "kind": "directory"
+      },
+      "primary_pdf": {
+        "path": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1.pdf",
+        "role": "Первичный PDF",
+        "exists": true,
+        "kind": "file",
+        "bytes": 2984862
+      },
+      "derived_extractions": [
+        {
+          "path": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1_results.md",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 291925
+        },
+        {
+          "path": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1_results.html",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 383249
+        },
+        {
+          "path": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1_blocks.json",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 64285
+        }
+      ],
+      "initial_audits": {
+        "Codex": {
+          "directory": {
+            "path": "ПД-00580716-КМ1.2_V1/Audit_Result_Codex_High",
+            "role": "Первоначальный Codex",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Codex: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 14862
+            },
+            {
+              "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Codex_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Codex: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 9813
+            },
+            {
+              "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Codex_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Codex: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 6367
+            },
+            {
+              "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Codex_High/Audit_Summary.md",
+              "role": "Первоначальный Codex: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 12670
+            }
+          ]
+        },
+        "Sonnet": {
+          "directory": {
+            "path": "ПД-00580716-КМ1.2_V1/Audit_Result_Sonnet_High",
+            "role": "Первоначальный Sonnet",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Sonnet: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 21731
+            },
+            {
+              "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Sonnet_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Sonnet: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 9906
+            },
+            {
+              "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Sonnet_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Sonnet: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 9229
+            },
+            {
+              "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Result_Sonnet_High/Audit_Summary.md",
+              "role": "Первоначальный Sonnet: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 9458
+            }
+          ]
+        }
+      },
+      "engineer_review": {
+        "path": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1 аудит/Unified_Engineering_Audit.xlsx",
+        "role": "Текущая инженерная оценка",
+        "exists": true,
+        "kind": "file",
+        "bytes": 69785
+      },
+      "historical_zip": {
+        "path": "history_archives/04_km.html",
+        "role": "Исторический снимок в корне",
+        "exists": true,
+        "kind": "file",
+        "bytes": 116957882
+      },
+      "central_feedback": [
+        {
+          "path": "workspace/analysis_feedback/ПД-00580716-КМ1.2_V1.json",
+          "role": "Нормализация проекта",
+          "exists": true,
+          "kind": "file",
+          "bytes": 355450
+        },
+        {
+          "path": "workspace/analysis_feedback/ar_km_analysis.md",
+          "role": "Разбор пары дисциплин",
+          "exists": true,
+          "kind": "file",
+          "bytes": 42444
+        },
+        {
+          "path": "workspace/analysis_feedback/ar_km_cases.json",
+          "role": "Кейсы пары",
+          "exists": true,
+          "kind": "file",
+          "bytes": 22505
+        }
+      ],
+      "local_feedback": {
+        "directory": {
+          "path": "ПД-00580716-КМ1.2_V1/Review_Lessons_2026-11-03",
+          "role": "Локальные уроки",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Review_Lessons_2026-11-03/Audit_Algorithm_v2.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 22788
+          },
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Review_Lessons_2026-11-03/Audit_Feedback_Analysis.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 26438
+          }
+        ]
+      },
+      "profile_algorithm_v2": {
+        "path": "workspace/ПД-00580716-КМ1.2_V1/Review_Lessons_2026-11-03/Audit_Algorithm_v2.md",
+        "role": "Профильное дополнение v2",
+        "exists": true,
+        "kind": "file",
+        "bytes": 22788
+      },
+      "latest_universal_algorithm": {
+        "file": {
+          "path": "workspace/ПД-00580716-КМ1.2_V1/Engineering_Audit_Algorithm_Universal.md",
+          "role": "Последняя самостоятельная инструкция",
+          "exists": true,
+          "kind": "file",
+          "bytes": 46496
+        },
+        "declared_version": "3.0",
+        "note": "Версия прочитана из исходного текста."
+      },
+      "local_rerun": {
+        "directory": {
+          "path": "ПД-00580716-КМ1.2_V1/Audit_Recheck_2026-11-03",
+          "role": "Отдельный локальный повтор",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Recheck_2026-11-03/Engineering_Audit.xlsx",
+            "role": "Локальный повтор: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 15060
+          },
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Recheck_2026-11-03/Comparison_With_Engineer.xlsx",
+            "role": "Локальный повтор: Comparison_With_Engineer.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 19669
+          },
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Recheck_2026-11-03/Audit_Summary.md",
+            "role": "Локальный повтор: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 22738
+          },
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Recheck_2026-11-03/Coverage_Report.xlsx",
+            "role": "Локальный повтор: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 14708
+          },
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Recheck_2026-11-03/Audit_Statistics.xlsx",
+            "role": "Локальный повтор: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 11551
+          }
+        ],
+        "book_sheets": {
+          "Engineering_Audit.xlsx": [
+            "Обзор",
+            "Замечания",
+            "Как читать"
+          ],
+          "Comparison_With_Engineer.xlsx": [
+            "Сравнение",
+            "Правила сравнения"
+          ]
+        },
+        "first_pass_artifacts": [
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Recheck_2026-11-03/work/above/independent_first_pass.json",
+            "role": "Сохранённый этап локальной проверки",
+            "exists": true,
+            "kind": "file",
+            "bytes": 19141
+          },
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Recheck_2026-11-03/work/lower/lower_findings.json",
+            "role": "Сохранённый этап локальной проверки",
+            "exists": true,
+            "kind": "file",
+            "bytes": 4123
+          },
+          {
+            "path": "workspace/ПД-00580716-КМ1.2_V1/Audit_Recheck_2026-11-03/work/connections/connections_findings.json",
+            "role": "Сохранённый этап локальной проверки",
+            "exists": true,
+            "kind": "file",
+            "bytes": 21591
+          }
+        ],
+        "missing_separate_standard_files": [],
+        "interpretation": "Сохранены первые проходы и последующее согласование с известной обратной связью. Самостоятельное снятие, пояснение инженера и нерешённая гипотеза различаются."
+      },
+      "central_v2": {
+        "directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1",
+          "role": "Проект центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1/Engineering_Audit.xlsx",
+            "role": "Центральный v2: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 13849
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1/Coverage_Report.xlsx",
+            "role": "Центральный v2: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 7414
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1/Audit_Statistics.xlsx",
+            "role": "Центральный v2: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 4838
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1/Audit_Summary.md",
+            "role": "Центральный v2: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 5764
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1/findings.json",
+            "role": "Центральный v2: findings.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 43459
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1/candidates.json",
+            "role": "Центральный v2: candidates.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 27150
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1/coverage.json",
+            "role": "Центральный v2: coverage.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 14797
+          }
+        ],
+        "input_copy": {
+          "path": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1.pdf",
+          "role": "Копия первичного входа",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2984862
+        },
+        "comparison_directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-КМ1.2_V1",
+          "role": "Сопоставление центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "comparison_files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-КМ1.2_V1/comparison_old.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 21732
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-КМ1.2_V1/comparison_new.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 5443
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-КМ1.2_V1/old_records.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 93278
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1/findings.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 43459
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-КМ1.2_V1/candidates.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 27150
+          }
+        ],
+        "frozen_manifest": {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/frozen_ПД-00580716-КМ1.2_V1.json",
+          "role": "Фиксация до раскрытия эталона",
+          "exists": true,
+          "kind": "file",
+          "bytes": 559
+        }
+      }
+    },
+    {
+      "discipline": "ЭОМ",
+      "project": "ПД-00580716-ЭОМ_2-1_V2",
+      "directory": {
+        "path": "ПД-00580716-ЭОМ_2-1_V2",
+        "role": "Папка проекта",
+        "exists": true,
+        "kind": "directory"
+      },
+      "primary_pdf": {
+        "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2.pdf",
+        "role": "Первичный PDF",
+        "exists": true,
+        "kind": "file",
+        "bytes": 115143296
+      },
+      "derived_extractions": [
+        {
+          "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2_results.md",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 734488
+        },
+        {
+          "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2_results.html",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 984985
+        },
+        {
+          "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2_blocks.json",
+          "role": "Производное извлечение",
+          "exists": true,
+          "kind": "file",
+          "bytes": 167516
+        }
+      ],
+      "initial_audits": {
+        "Codex": {
+          "directory": {
+            "path": "ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Codex_High",
+            "role": "Первоначальный Codex",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Codex_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Codex: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 19543
+            },
+            {
+              "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Codex_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Codex: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 18259
+            },
+            {
+              "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Codex_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Codex: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 7465
+            },
+            {
+              "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Codex_High/Audit_Summary.md",
+              "role": "Первоначальный Codex: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 15655
+            }
+          ]
+        },
+        "Sonnet": {
+          "directory": {
+            "path": "ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Sonnet_High",
+            "role": "Первоначальный Sonnet",
+            "exists": true,
+            "kind": "directory"
+          },
+          "files": [
+            {
+              "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Sonnet_High/Engineering_Audit.xlsx",
+              "role": "Первоначальный Sonnet: Engineering_Audit.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 138786
+            },
+            {
+              "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Sonnet_High/Coverage_Report.xlsx",
+              "role": "Первоначальный Sonnet: Coverage_Report.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 19091
+            },
+            {
+              "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Sonnet_High/Audit_Statistics.xlsx",
+              "role": "Первоначальный Sonnet: Audit_Statistics.xlsx",
+              "exists": true,
+              "kind": "file",
+              "bytes": 12649
+            },
+            {
+              "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Sonnet_High/Audit_Summary.md",
+              "role": "Первоначальный Sonnet: Audit_Summary.md",
+              "exists": true,
+              "kind": "file",
+              "bytes": 17881
+            }
+          ]
+        }
+      },
+      "engineer_review": {
+        "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2 аудит/Unified_Engineering_Audit.xlsx",
+        "role": "Текущая инженерная оценка",
+        "exists": true,
+        "kind": "file",
+        "bytes": 385698
+      },
+      "historical_zip": {
+        "path": "history_archives/06_eom.html",
+        "role": "Исторический снимок в корне",
+        "exists": true,
+        "kind": "file",
+        "bytes": 118153533
+      },
+      "central_feedback": [
+        {
+          "path": "workspace/analysis_feedback/ПД-00580716-ЭОМ_2-1_V2.json",
+          "role": "Нормализация проекта",
+          "exists": true,
+          "kind": "file",
+          "bytes": 2146634
+        },
+        {
+          "path": "workspace/analysis_feedback/vk_eom_analysis.md",
+          "role": "Разбор пары дисциплин",
+          "exists": true,
+          "kind": "file",
+          "bytes": 94129
+        },
+        {
+          "path": "workspace/analysis_feedback/vk_eom_cases.json",
+          "role": "Кейсы пары",
+          "exists": true,
+          "kind": "file",
+          "bytes": 116561
+        }
+      ],
+      "local_feedback": {
+        "directory": {
+          "path": "ПД-00580716-ЭОМ_2-1_V2/Audit_Lessons_2026-11-03",
+          "role": "Локальные уроки",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Lessons_2026-11-03/Accepted_Sonnet_Findings.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 175242
+          },
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Lessons_2026-11-03/Audit_Algorithm_v2.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 21968
+          },
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Lessons_2026-11-03/Audit_Retrospective.md",
+            "role": "Материал локального разбора",
+            "exists": true,
+            "kind": "file",
+            "bytes": 21024
+          }
+        ]
+      },
+      "profile_algorithm_v2": {
+        "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Lessons_2026-11-03/Audit_Algorithm_v2.md",
+        "role": "Профильное дополнение v2",
+        "exists": true,
+        "kind": "file",
+        "bytes": 21968
+      },
+      "latest_universal_algorithm": {
+        "file": {
+          "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Engineering_Audit_Universal_v3.md",
+          "role": "Последняя самостоятельная инструкция",
+          "exists": true,
+          "kind": "file",
+          "bytes": 59027
+        },
+        "declared_version": "3",
+        "note": "Версия прочитана из исходного текста."
+      },
+      "local_rerun": {
+        "directory": {
+          "path": "ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01",
+          "role": "Отдельный локальный повтор",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/Engineering_Audit.xlsx",
+            "role": "Локальный повтор: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 62732
+          },
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/Comparison_With_Engineer.xlsx",
+            "role": "Локальный повтор: Comparison_With_Engineer.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 147476
+          },
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/Reaudit_Comparison.md",
+            "role": "Локальный повтор: Reaudit_Comparison.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 50070
+          },
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/Coverage_Report.xlsx",
+            "role": "Локальный повтор: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 21557
+          },
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/Audit_Statistics.xlsx",
+            "role": "Локальный повтор: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 9072
+          },
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/Audit_Summary.md",
+            "role": "Локальный повтор: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 10836
+          },
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/Audit_Working_Register.xlsx",
+            "role": "Локальный повтор: Audit_Working_Register.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 160771
+          }
+        ],
+        "book_sheets": {
+          "Engineering_Audit.xlsx": [
+            "Замечания",
+            "Вопросы",
+            "Уточнения",
+            "После сравнения"
+          ],
+          "Comparison_With_Engineer.xlsx": [
+            "Итог",
+            "Сопоставление 167",
+            "Контроль 8 отклонений"
+          ]
+        },
+        "first_pass_artifacts": [
+          {
+            "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/work/manifest.json",
+            "role": "Сохранённый этап локальной проверки",
+            "exists": true,
+            "kind": "file",
+            "bytes": 28460
+          },
+          {
+            "path": "ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/work/primary_snapshot",
+            "role": "Сохранённый этап локальной проверки",
+            "exists": true,
+            "kind": "directory"
+          }
+        ],
+        "missing_separate_standard_files": [],
+        "interpretation": "Первичные 47 записей и последующая переклассификация после сравнения разделены. Финальный класс строк не равен замороженной первичной оценке; новые решения инженеров не присвоены."
+      },
+      "central_v2": {
+        "directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2",
+          "role": "Проект центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2/Engineering_Audit.xlsx",
+            "role": "Центральный v2: Engineering_Audit.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 13017
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2/Coverage_Report.xlsx",
+            "role": "Центральный v2: Coverage_Report.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 10013
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2/Audit_Statistics.xlsx",
+            "role": "Центральный v2: Audit_Statistics.xlsx",
+            "exists": true,
+            "kind": "file",
+            "bytes": 4796
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2/Audit_Summary.md",
+            "role": "Центральный v2: Audit_Summary.md",
+            "exists": true,
+            "kind": "file",
+            "bytes": 4843
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2/findings.json",
+            "role": "Центральный v2: findings.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 31939
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2/candidates.json",
+            "role": "Центральный v2: candidates.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 20729
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2/coverage.json",
+            "role": "Центральный v2: coverage.json",
+            "exists": true,
+            "kind": "file",
+            "bytes": 87444
+          }
+        ],
+        "input_copy": {
+          "path": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2.pdf",
+          "role": "Копия первичного входа",
+          "exists": true,
+          "kind": "file",
+          "bytes": 115143296
+        },
+        "comparison_directory": {
+          "path": "Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-ЭОМ_2-1_V2",
+          "role": "Сопоставление центральной серии",
+          "exists": true,
+          "kind": "directory"
+        },
+        "comparison_files": [
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-ЭОМ_2-1_V2/comparison_old.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 114801
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-ЭОМ_2-1_V2/comparison_new.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 5593
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/ПД-00580716-ЭОМ_2-1_V2/old_records.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 711094
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2/findings.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 31939
+          },
+          {
+            "path": "workspace/Audit_Recheck_v2_2026-11-03/runs/ПД-00580716-ЭОМ_2-1_V2/candidates.json",
+            "role": "Центральное сопоставление",
+            "exists": true,
+            "kind": "file",
+            "bytes": 20729
+          }
+        ],
+        "frozen_manifest": {
+          "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/frozen_ПД-00580716-ЭОМ_2-1_V2.json",
+          "role": "Фиксация до раскрытия эталона",
+          "exists": true,
+          "kind": "file",
+          "bytes": 562
+        }
+      }
+    }
+  ],
+  "additional_historical_archives": [
+    {
+      "path": "history_archives/09_original_rar.html",
+      "role": "Дополнительный исторический RAR; содержание и принадлежность этапам здесь не проверены",
+      "exists": true,
+      "kind": "file",
+      "bytes": 398685412
+    }
+  ],
+  "important_boundaries": [
+    "Центральный v2 и локальные повторы — разные серии, их результаты и показатели не взаимозаменяемы.",
+    "Сохранённый промпт Codex v1 не является кодом/конфигурацией классического AuditManager.",
+    "Универсальный v4 — сборка правил, а не выполненный новый аудит или сравнение с AuditManager.",
+    "Полный исторический архив предназначен для изучения; для независимого испытания старые ответы нужно скрыть до фиксации результата."
+  ],
+  "verification": {
+    "method": "Проверено существование перечисленных путей. Названия листов двух локальных книг каждого проекта прочитаны из xl/workbook.xml. Техническая достоверность замечаний заново не оценивалась.",
+    "unique_existing_paths": 336,
+    "projects": 6,
+    "primary_pdfs": 6,
+    "initial_codex_files": 24,
+    "initial_sonnet_files": 24,
+    "current_engineer_workbooks": 6,
+    "historical_project_zips": 6,
+    "profile_v2_algorithms": 6,
+    "latest_universal_algorithms": 6,
+    "local_audits": 6,
+    "local_comparisons": 6,
+    "central_v2_runs": 6,
+    "missing_required_paths": [],
+    "missing_separate_standard_files": [
+      {
+        "project": "13АВ-РД-АК2-ПА_V1",
+        "standard_name": "Coverage_Report.xlsx",
+        "checked_directory": "13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03",
+        "exists": false,
+        "interpretation": "Нет отдельного файла под стандартным именем; информация может быть в фактической книге и отчёте."
+      },
+      {
+        "project": "13АВ-РД-АК2-ПА_V1",
+        "standard_name": "Audit_Statistics.xlsx",
+        "checked_directory": "13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03",
+        "exists": false,
+        "interpretation": "Нет отдельного файла под стандартным именем; информация может быть в фактической книге и отчёте."
+      },
+      {
+        "project": "13АВ-РД-АК2-ПА_V1",
+        "standard_name": "Audit_Summary.md",
+        "checked_directory": "13АВ-РД-АК2-ПА_V1/Reaudit_2026-11-03",
+        "exists": false,
+        "interpretation": "Нет отдельного файла под стандартным именем; информация может быть в фактической книге и отчёте."
+      }
+    ]
+  }
+}

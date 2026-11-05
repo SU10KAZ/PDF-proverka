@@ -1,0 +1,214 @@
+[
+  {
+    "id": "P01",
+    "priority": "1",
+    "title": "Границы версии и поставки",
+    "change_point": "извлечение данных; реестр объектов; междокументная сверка",
+    "proposed_behavior": "Перед проверкой фиксировать версию комплекта, источники, стадию и режим. Для каждой позиции связывать сноску и ответственную поставку. Вести разные множества: расчёт нагрузки, графическая схема, текущий заказ. Ссылка на смежника исключает позицию из заказа только адресно и не исключает её электрическую/функциональную нагрузку.",
+    "implementation_targets": "CFG: backend/app/core/config.py:303 — _STAGE_MODEL_DEFAULTS\nLOAD: backend/app/pipeline/stages/prepare/task_builder.py:187 — def load_template_for_llm\nT: prompts/pipeline/en/text_analysis_task.md:1 — файл целиком\nM: prompts/pipeline/en/findings_merge_task.md:1 — файл целиком\nMCODE: backend/app/pipeline/stages/findings_merge/runner.py:427 — def merge_similar_findings",
+    "case_keys": [
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-002",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-011",
+      "ПД-00580716-ВК_2-2_V2::U-051",
+      "13АВ-РД-АК2-ПА_V1::UNI-137"
+    ],
+    "filter_pairs": "F01",
+    "expected_benefit": "Снять ложный дефицит без потери истинно отсутствующего исполнения.",
+    "regression_risk": "Ошибочная область сноски скроет целую группу позиций; при неоднозначности оставить вопрос.",
+    "verification": "Каждое исключение имеет адрес сноски и перечень затронутых ID; F01 и новые проекты."
+  },
+  {
+    "id": "P02",
+    "priority": "2",
+    "title": "Реестр физических объектов и связей",
+    "change_point": "реестр объектов; извлечение данных; профильная проверка",
+    "proposed_behavior": "Добавить область уникальности (система/шкаф/клеммник/этаж), физический экземпляр, тип связи и источник геометрии. Обойти маркированные и немаркированные рёбра. Для АК выделить профиль автоматики, считать точки матрицы отдельно от подписей; для ЭОМ разделять N/PE/полюса; для КМ собирать все виды одного изделия.",
+    "implementation_targets": "GRAPH: backend/app/pipeline/stages/block_grounding/block_source_router.py:742 — def resolve_block_package\nB: backend/app/pipeline/stages/block_analysis/gemma_findings_only.py:372 — SYSTEM_PROMPT_BASE\nD: backend/app/services/common/discipline_service.py:106 — def load_discipline",
+    "case_keys": [
+      "13АВ-РД-АК2-ПА_V1::UNI-007",
+      "13АВ-РД-АК2-ПА_V1::UNI-100",
+      "13АВ-РД-АК2-ПА_V1::UNI-014",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-008",
+      "ПД-00580716-КМ1.2_V1::UA-003"
+    ],
+    "filter_pairs": "F02",
+    "expected_benefit": "Вернуть находки из графики и уменьшить ложные связи/дубли.",
+    "regression_risk": "Неверно склеенный объект распространит ошибку на несколько документов.",
+    "verification": "Раздельные физические экземпляры остаются раздельными; AK100 два сегмента сохраняются, AK7 не превращается в три AO."
+  },
+  {
+    "id": "P03",
+    "priority": "1",
+    "title": "Проверяемое отсутствие и опровержение",
+    "change_point": "междокументная сверка; фильтрация",
+    "proposed_behavior": "Для снятия кандидата требовать конкретное контрдоказательство той же версии и того же тезиса. Поиск по тексту, связанным видам и спецификации оформлять квитанцией: область, запросы, найденные адреса, непроверенные части. Непустое поле absence_checked или гипотеза «возможно входит в комплект» не закрывают проверку. Недостаток данных сохраняет открытый кандидат.",
+    "implementation_targets": "A: backend/app/pipeline/stages/text_analysis/absence_guard.py:81 — def enforce_absence_guard\nR: backend/app/pipeline/stages/block_analysis/document_retrieval.py:104 — def retrieve_document_context\nV: backend/app/pipeline/stages/findings_verify/runner.py:150 — async def run_findings_verify\nG: backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py:748 — def gate_findings",
+    "case_keys": [
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-008",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-011",
+      "ПД-00580716-КМ1.2_V1::UA-003",
+      "ПД-00580716-ВК_2-2_V2::U-035"
+    ],
+    "filter_pairs": "F02",
+    "expected_benefit": "Уменьшить ложное «нет» и необоснованные снятия полезного замечания.",
+    "regression_risk": "Поиск дорог; чрезмерное требование полноты может увеличить очередь вопросов.",
+    "verification": "Проверить present/absent/unknown отдельно, запретить закрытие только по boolean; синтетическая репродукция и F02."
+  },
+  {
+    "id": "P04",
+    "priority": "2",
+    "title": "Типизированные сравнения и воспроизводимые расчёты",
+    "change_point": "реестр объектов; профильная проверка; междокументная сверка",
+    "proposed_behavior": "Каждую величину хранить с единицей, режимом, стороной аппарата, физической точкой, базой размера, точностью и источником. Для суммы хранить состав слагаемых и вычисление. Сначала доказать сопоставимость, затем считать. Документный конфликт выпускать независимо от доказанности аварийного последствия. Неполный режим оставлять вопросом.",
+    "implementation_targets": "T: prompts/pipeline/en/text_analysis_task.md:1 — файл целиком\nITP: prompts/disciplines/ITP/checklist.md:1 — файл целиком\nEOM: prompts/disciplines/EOM/checklist.md:1 — файл целиком\nAR: prompts/disciplines/AR/checklist.md:1 — файл целиком\nKM: prompts/disciplines/KM/checklist.md:1 — файл целиком",
+    "case_keys": [
+      "ПД-00542664-ИТП.ТМ_V3::UNI-044",
+      "ПД-00542664-ИТП.ТМ_V3::UNI-058",
+      "ПД-00542664-ИТП.ТМ_V3::UNI-063",
+      "ПД-00542664-ИТП.ТМ_V3::UNI-072",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-076",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-003",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-014"
+    ],
+    "filter_pairs": "F03 F04",
+    "expected_benefit": "Снять ложные суммы разных режимов и вернуть пропущенную арифметику.",
+    "regression_risk": "Неправильно назначенный режим способен скрыть реальное противоречие.",
+    "verification": "Проверить 8×0.4+0.2=3.4; ветви 8.71+4.63=13.34 отдельно от расчёта 12.13; не объявлять насос негодным без единого режима."
+  },
+  {
+    "id": "P05",
+    "priority": "2",
+    "title": "Двусторонний баланс состава и поставки",
+    "change_point": "междокументная сверка; профильная проверка",
+    "proposed_behavior": "Выполнять обе стороны сравнения по точному исполнению и физическим экземплярам: объект→материалы и строка СО→объекты. Разворачивать кратности марок, состав комплекта, все системы и вертикальные/локальные объёмы. Проверять обязательные поля каждой строки. Общий итог не заменяет проверку состава.",
+    "implementation_targets": "T: prompts/pipeline/en/text_analysis_task.md:1 — файл целиком\nM: prompts/pipeline/en/findings_merge_task.md:1 — файл целиком\nKM: prompts/disciplines/KM/checklist.md:1 — файл целиком\nVK: prompts/disciplines/VK/checklist.md:1 — файл целиком\nAR: prompts/disciplines/AR/checklist.md:1 — файл целиком\nEOM: prompts/disciplines/EOM/checklist.md:1 — файл целиком\nMCODE: backend/app/pipeline/stages/findings_merge/runner.py:427 — def merge_similar_findings",
+    "case_keys": [
+      "ПД-00580716-КМ1.2_V1::UA-014",
+      "ПД-00580716-КМ1.2_V1::UA-013",
+      "ПД-00580716-ВК_2-2_V2::U-035",
+      "ПД-00580716-ВК_2-2_V2::U-021",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-017",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-036",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-011"
+    ],
+    "filter_pairs": "F01 F05",
+    "expected_benefit": "Восстановить пропуски количеств и закупочных исполнений.",
+    "regression_risk": "Повторный учёт общих трасс или заводских комплектов даст ложный дефицит.",
+    "verification": "В КМ считать локальные ошибки и общий итог одной причинной группой; VK35 пустая ячейка не исчезает; FRHF не заменять HF."
+  },
+  {
+    "id": "P06",
+    "priority": "3",
+    "title": "Применимость требований и интерфейсов",
+    "change_point": "профильная проверка; междокументная сверка",
+    "proposed_behavior": "Требование представлять как условие→множество объектов→проверяемый критерий→исключения→стадия. Различать факт в проекте, контрактную полноту и нормативное нарушение. Каталог применять к точному исполнению, аналогу и редакции. Типовой узел проверять на каждом интерфейсе; неизвестное — адресный вопрос, не доказанный дефект и не автоматическое снятие.",
+    "implementation_targets": "NORM: backend/app/pipeline/stages/norms/runner.py:327 — async def run_norm_verification\nITP: prompts/disciplines/ITP/checklist.md:1 — файл целиком\nAR: prompts/disciplines/AR/checklist.md:1 — файл целиком\nKM: prompts/disciplines/KM/checklist.md:1 — файл целиком\nVK: prompts/disciplines/VK/checklist.md:1 — файл целиком\nEOM: prompts/disciplines/EOM/checklist.md:1 — файл целиком",
+    "case_keys": [
+      "ПД-00542664-ИТП.ТМ_V3::UNI-017",
+      "ПД-00542664-ИТП.ТМ_V3::UNI-064",
+      "ПД-00542664-ИТП.ТМ_V3::UNI-068",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-039",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-059",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-005"
+    ],
+    "filter_pairs": "F06",
+    "expected_benefit": "Уменьшить необоснованные нормативные претензии, сохранить реальные несостыковки.",
+    "regression_risk": "Недоступность паспорта не должна убирать закупочный конфликт; риск устаревших общих чисел checklist.",
+    "verification": "Проверить точный FC073E/OD73 и OD76.1; отдельно полюсность и аксессуар; спорные пары сначала только в наблюдении."
+  },
+  {
+    "id": "P07",
+    "priority": "1",
+    "title": "Факт, значимость и уверенность отдельно",
+    "change_point": "фильтрация; итоговая выдача",
+    "proposed_behavior": "Разделить факт/статус проверки, confidence, последствия и приоритет. Подтверждение второго детектора повышает доказанность, но само не повышает серьёзность. Не запрещать классы «редакционное», «PE», «КМД», «нет расчёта». Сохранять полезное противоречие исполнения без выдуманного последствия, а вопросы показывать отдельно от доказанных нарушений.",
+    "implementation_targets": "M: prompts/pipeline/en/findings_merge_task.md:1 — файл целиком\nG: backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py:748 — def gate_findings\nQUALITY: backend/app/services/findings/finding_quality.py:192 — def evaluate_finding_practicality\nTRIAGE: backend/app/pipeline/stages/critic_v2_triage/runner.py:222 — def run_critic_v2_triage\nMCODE: backend/app/pipeline/stages/findings_merge/runner.py:427 — def merge_similar_findings",
+    "case_keys": [
+      "13АВ-РД-АК2-ПА_V1::UNI-057",
+      "13АВ-РД-АК2-ПА_V1::UNI-065",
+      "ПД-00580716-ВК_2-2_V2::U-014",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-076",
+      "ПД-00580716-КМ1.2_V1::UA-012"
+    ],
+    "filter_pairs": "F07",
+    "expected_benefit": "Сохранить полезные факты и снизить раздутую серьёзность.",
+    "regression_risk": "Рост низкоприоритетных строк увеличит время инженера; нужна явная очередь и измерение нагрузки.",
+    "verification": "Один и два одинаковых доказательства дают одинаковые последствия/приоритет; прежние полезные факты не исчезают из-за ярлыка."
+  },
+  {
+    "id": "P08",
+    "priority": "1",
+    "title": "Жизненный цикл кандидата и атомарное объединение",
+    "change_point": "объединение; фильтрация; итоговая выдача",
+    "proposed_behavior": "Ввести стабильный candidate_id и атом тезиса (объект, параметр, режим, версия, место). До финала сверять все кандидаты: опубликован, объединён с перечислением исходных тезисов, опровергнут с доказательством, вне профиля с причиной, недостаточно данных, не проверен. Общая правка не делает разные дефекты дублями. Запрещать необъяснённую потерю кандидата при каждом переходе.",
+    "implementation_targets": "G: backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py:748 — def gate_findings\nMCODE: backend/app/pipeline/stages/findings_merge/runner.py:427 — def merge_similar_findings\nPROV: backend/app/pipeline/stages/block_analysis/provenance.py:1 — файл целиком\nEXPORT: backend/app/services/export/excel_service.py:14 — async def generate_excel",
+    "case_keys": [
+      "ПД-00542664-ИТП.ТМ_V3::UNI-040",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-076",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-017",
+      "ПД-00580716-ВК_2-2_V2::U-050",
+      "ПД-00580716-ВК_2-2_V2::U-051",
+      "13АВ-РД-АК2-ПА_V1::UNI-065"
+    ],
+    "filter_pairs": "F08",
+    "expected_benefit": "Вернуть найденные, но не выпущенные замечания и сохранить независимые параметры.",
+    "regression_risk": "Излишнее дробление создаёт дубли и нагрузку; нужен стабильный причинный parent_id.",
+    "verification": "Кандидаты CE-X029/J006/J011 получают итоговый статус; синтетические мощность и масса K12 не склеиваются; parent сохраняет все children."
+  },
+  {
+    "id": "P09",
+    "priority": "2",
+    "title": "Покрытие объект×операция и проверенный индекс",
+    "change_point": "реестр объектов; профильная проверка; итоговая выдача",
+    "proposed_behavior": "Зафиксировать набор документов, объектов и применимых операций. Для каждой операции хранить выполнено/неприменимо/нехватка данных/не проверено и доказательство; статус «прочитан лист» не закрывает операции. Использовать индекс для адресной загрузки контекста с проверкой хеша источника. Первым проходом ввести отчёт покрытия без подавления находок.",
+    "implementation_targets": "GRAPH: backend/app/pipeline/stages/block_grounding/block_source_router.py:742 — def resolve_block_package\nR: backend/app/pipeline/stages/block_analysis/document_retrieval.py:104 — def retrieve_document_context\nB: backend/app/pipeline/stages/block_analysis/gemma_findings_only.py:372 — SYSTEM_PROMPT_BASE\nT: prompts/pipeline/en/text_analysis_task.md:1 — файл целиком",
+    "case_keys": [
+      "13АВ-РД-АК2-ПА_V1::UNI-100",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-035",
+      "ПД-00580716-ВК_2-2_V2::U-021",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-027"
+    ],
+    "filter_pairs": "F02 F05",
+    "expected_benefit": "Поймать систематические пропуски без безразмерного раздувания промпта.",
+    "regression_risk": "Индекс может унаследовать пропущенный объект; его полноту проверять независимо от найденных замечаний.",
+    "verification": "Проверить немаркированные рёбра, все системы DN125, все отходящие линии; измерять время/токены на операцию и цену индекса."
+  },
+  {
+    "id": "P10",
+    "priority": "0",
+    "title": "Слепое сравнение и сохранение классического метода",
+    "change_point": "план испытания; итоговая выдача",
+    "proposed_behavior": "Заморозить baseline, модели, флаги, prompts, версии документов и цены. До запуска кандидата утвердить атомарный эталон и пары; исполнителям не давать cases/history/ответы/названия контрольных дефектов. Хешировать финальные findings, candidates, coverage до раскрытия истории. Добавления после раскрытия считать отдельным диагностическим этапом.",
+    "implementation_targets": "PIPE: backend/app/pipeline/manager.py:4680 — async def _run_findings_verify\nTESTS: tests/test_audit_coverage_honesty.py:1 — файл целиком\nVERDICT: backend/app/services/findings/verdict_preservation.py:1 — файл целиком",
+    "case_keys": [
+      "13АВ-РД-АК2-ПА_V1::UNI-100",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-017",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-076",
+      "ПД-00580716-ВК_2-2_V2::U-035"
+    ],
+    "filter_pairs": "все F01–F08",
+    "expected_benefit": "Обеспечить доказуемое сравнение с реальным AuditManager и сохранение его сильных сторон.",
+    "regression_risk": "Известные проекты уже DEV-known; никакая новая изоляция не сделает их впервые слепыми.",
+    "verification": "Сначала шесть проектов как регрессия, затем новые проекты с резервом; критерии и бюджеты — в протоколе отчёта."
+  },
+  {
+    "id": "P11",
+    "priority": "0",
+    "title": "Атомарный эталон обратной связи",
+    "change_point": "реестр контрольных случаев; итоговая выдача",
+    "proposed_behavior": "Хранить исходный тезис дословно, решение инженера, причину, комментарий, новый уточнённый тезис и поздний вывод отдельными полями с авторством/датой. Изменение смысла создаёт новый атом, не подтверждает автоматически исходный. Поздний learning_label не использовать как техническую истину.",
+    "implementation_targets": "VERDICT: backend/app/services/findings/verdict_preservation.py:1 — файл целиком\nEXPORT: backend/app/services/export/excel_service.py:14 — async def generate_excel",
+    "case_keys": [
+      "ПД-00580716-ВК_2-2_V2::U-034",
+      "ПД-00580716-АР6.2_V1::UNI-AR6.2-039",
+      "ПД-00542664-ИТП.ТМ_V3::UNI-072",
+      "ПД-00580716-ЭОМ_2-1_V2::UNI-028",
+      "ПД-00580716-КМ1.2_V1::UA-005",
+      "13АВ-РД-АК2-ПА_V1::UNI-137"
+    ],
+    "filter_pairs": "F06 F08",
+    "expected_benefit": "Не обучить фильтры на ошибочной причине отклонения или подменённом тезисе.",
+    "regression_risk": "Дорогая ручная разметка; конфликтующие случаи не включать в жёсткие positive/negative до решения.",
+    "verification": "Инженер утверждает каждый спорный атом; исторические 539 строк не становятся знаменателем recall."
+  }
+]

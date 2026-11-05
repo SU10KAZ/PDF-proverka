@@ -1,0 +1,30 @@
+{
+  "rules": 145,
+  "historical_rows": 539,
+  "controls": 46,
+  "filter_pairs": 8,
+  "priorities": 11,
+  "engineer_questions": 13,
+  "status_counts": {
+    "частично реализовано": 132,
+    "конфликтует": 4,
+    "отсутствует": 9
+  },
+  "workbook_sheets": [
+    "Как читать",
+    "Матрица145",
+    "Приоритеты",
+    "Не переносить",
+    "Контроли",
+    "Пары фильтров",
+    "Вопросы инженеру",
+    "История539",
+    "Источники кода",
+    "Источники архива",
+    "Исходные правила v4",
+    "Карта истории",
+    "Первые 12 аудитов"
+  ],
+  "all_ids_accounted_for": true,
+  "note": "No implementation or model runs. Rule status is whole-rule implementation completeness, not effectiveness."
+}

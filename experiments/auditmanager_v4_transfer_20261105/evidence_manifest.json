@@ -1,0 +1,217 @@
+[
+  {
+    "id": "AK18",
+    "source": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1.pdf",
+    "pdf_page": 18,
+    "sha256": "993d3f278d7b2b816c68a6e600b5ae58b6a33b9ec19a91c0678905c6a636d24a",
+    "render_scale": 1.007838745800672,
+    "image": "AK18.png",
+    "image_sha256": "8d63977989589c2ceecba4382f2aef3ca744a9535fff71727f26cd57b9d8a52c"
+  },
+  {
+    "id": "AK40",
+    "source": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1.pdf",
+    "pdf_page": 40,
+    "sha256": "993d3f278d7b2b816c68a6e600b5ae58b6a33b9ec19a91c0678905c6a636d24a",
+    "render_scale": 0.7550335570469798,
+    "image": "AK40.png",
+    "image_sha256": "bf0d53dc5051cf6ca60a96bc4629e41edf5c47a2a0df265fba27013c1b131df3"
+  },
+  {
+    "id": "ITP13",
+    "source": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3.pdf",
+    "pdf_page": 13,
+    "sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+    "render_scale": 0.5036373810856184,
+    "image": "ITP13.png",
+    "image_sha256": "230b296575de83e58ba88e7438685a3519b778a7f9ebc6c4c635b36441ac8261"
+  },
+  {
+    "id": "ITP44",
+    "source": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3.pdf",
+    "pdf_page": 44,
+    "sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+    "render_scale": 2,
+    "image": "ITP44.png",
+    "image_sha256": "ad8f8ed6eb1fada4057bd5bdfa27f607d9c1652d9a854764422b911f588fba95"
+  },
+  {
+    "id": "ITP07",
+    "source": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3.pdf",
+    "pdf_page": 7,
+    "sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+    "render_scale": 1.0327022375215147,
+    "image": "ITP07.png",
+    "image_sha256": "95d1b7c9133524c448ad5b09acbdc281bc80a694443bf5a088e4c3206776cea3"
+  },
+  {
+    "id": "KM09",
+    "source": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1.pdf",
+    "pdf_page": 9,
+    "sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+    "render_scale": 0.5341246290801187,
+    "image": "KM09.png",
+    "image_sha256": "6dce071c3d1b59545d8940766af15f56e3f93072478a83c9a9d2cfabc15a2920"
+  },
+  {
+    "id": "KM04",
+    "source": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1.pdf",
+    "pdf_page": 4,
+    "sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+    "render_scale": 1.5113350125944585,
+    "image": "KM04.png",
+    "image_sha256": "2a08710b559f23fb1f20afe6497a7a3dc2adb7188fcdae42916a6985373498d6"
+  },
+  {
+    "id": "VK35",
+    "source": "workspace/ПД-00580716-ВК_2-2_V2/ПД-00580716-ВК_2-2_V2.pdf",
+    "pdf_page": 35,
+    "sha256": "f09ce961100a59d1cde655bd62824011098746fe9bf0f3d664e4af0e17c27df6",
+    "render_scale": 1.5116396127161598,
+    "image": "VK35.png",
+    "image_sha256": "22b579a90a39fe91df3bd985de5279452c31436f771da5c83d2a140e8de01c85"
+  },
+  {
+    "id": "EOM08",
+    "source": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2.pdf",
+    "pdf_page": 8,
+    "sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4",
+    "render_scale": 1.007838745800672,
+    "image": "EOM08.png",
+    "image_sha256": "94fbe103a8982febd8e614e2df8addd67faefd6afc652d2d0e929bf692c36ccc"
+  },
+  {
+    "id": "EOMfoot",
+    "source": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/work/p18_external_footnotes.png",
+    "sha256": "2f8eb9e652243af25002063a5f919d4cd430156b4bca47208ef7cfa5fe1b40d5",
+    "image": "EOMfoot.png",
+    "kind": "historical working crop",
+    "image_sha256": "8f518120b7cf7875036014dbd3c9d50e90df88d42f0a2597d385788d0d71261c"
+  },
+  {
+    "id": "ARscreen",
+    "source": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Codex_High/work/details/screen_table.png",
+    "sha256": "3071c24a80c4a58231700de5e9a265988869202e2d2ec4024070def007072a95",
+    "image": "ARscreen.png",
+    "kind": "historical working crop",
+    "image_sha256": "569de97ac27c2bcd45c54073c34e9c8f9d3a8093060a161dc4f67b9cec1d8740"
+  },
+  {
+    "id": "ARelev",
+    "source": "workspace/ПД-00580716-АР6.2_V1/Audit_Result_Codex_High/work/details/screen_elevations.png",
+    "sha256": "bc9a655177bd666b4901e7a7e8d9f68ce22561b94d2c4051d789a81ad58e4eeb",
+    "image": "ARelev.png",
+    "kind": "historical working crop",
+    "image_sha256": "d0b259285f4f287871c827fee9ce510ac901846920902beb9f6275bd86c0abb9"
+  },
+  {
+    "id": "AK40detail",
+    "source": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1.pdf",
+    "pdf_page": 40,
+    "clip_normalized": [
+      0.37,
+      0.12,
+      0.47,
+      0.38
+    ],
+    "sha256": "993d3f278d7b2b816c68a6e600b5ae58b6a33b9ec19a91c0678905c6a636d24a",
+    "image": "AK40detail.png",
+    "image_sha256": "5e20166e2648c908cb5570ab7ad8ecedeb33cccf4462c7d7409848bc3e2a03ef"
+  },
+  {
+    "id": "ITP13detail",
+    "source": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3.pdf",
+    "pdf_page": 13,
+    "clip_normalized": [
+      0.12,
+      0.32,
+      0.65,
+      0.55
+    ],
+    "sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+    "image": "ITP13detail.png",
+    "image_sha256": "70140bf542c4a3cae5ceeff6033c90a94e89545768c084dc3d3db751cb6891c9"
+  },
+  {
+    "id": "ITP45",
+    "source": "workspace/ПД-00542664-ИТП.ТМ_V3/ПД-00542664-ИТП.ТМ_V3.pdf",
+    "pdf_page": 45,
+    "clip_normalized": null,
+    "sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+    "image": "ITP45.png",
+    "image_sha256": "26b1623d7389bf0a1f731735a9eb6389da857e7ab55f360871bdc18bcf493f1c"
+  },
+  {
+    "id": "KM09detail",
+    "source": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1.pdf",
+    "pdf_page": 9,
+    "clip_normalized": [
+      0.81,
+      0.01,
+      0.99,
+      0.36
+    ],
+    "sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+    "image": "KM09detail.png",
+    "image_sha256": "94089cad07d8f66ddf9f37195e2b118a206f2dadae45aea72d348da71e9ad063"
+  },
+  {
+    "id": "AR13",
+    "source": "workspace/ПД-00580716-АР6.2_V1/ПД-00580716-АР6.2_V1.pdf",
+    "pdf_page": 13,
+    "clip_normalized": null,
+    "sha256": "43bfc527f13e9e5b91da23c66e321107a1ae5357caec900e1385ae9ecdf7c283",
+    "image": "AR13.png",
+    "image_sha256": "c27fed83f141e225a2287b572f910684a53508004340738aa87493707c37a71a"
+  },
+  {
+    "id": "EOM18",
+    "source": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2.pdf",
+    "pdf_page": 18,
+    "clip_normalized": null,
+    "sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4",
+    "image": "EOM18.png",
+    "image_sha256": "0db9352ea59368a73040209a6442c61d6b586abb2889a664b5920b1a74c8bfaf"
+  },
+  {
+    "id": "EOM41",
+    "source": "workspace/ПД-00580716-ЭОМ_2-1_V2/ПД-00580716-ЭОМ_2-1_V2.pdf",
+    "pdf_page": 41,
+    "clip_normalized": null,
+    "sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4",
+    "image": "EOM41.png",
+    "image_sha256": "35dcd66278ad2b1f03a03c931d43d952fcc0e675e7b43ecf56f9b7867db7a3ad"
+  },
+  {
+    "id": "EOM_spc_p18_c2",
+    "source": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/work/spc_p18_c2.png",
+    "sha256": "b07e4d1b5d4a212e31ca98c3d68c0de400b379c4f88166bcf6446bff1b3d7140",
+    "image": "EOM_spc_p18_c2.png",
+    "kind": "historical working crop",
+    "image_sha256": "3e8fcb18d79b53fd0ef9ce2490173cd3caaa7e35a9f3a860284252559d718818"
+  },
+  {
+    "id": "EOM_spc_p18_c3",
+    "source": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_2026-11-03_01/work/spc_p18_c3.png",
+    "sha256": "1503fb5d126fd272418bad3df0a3a85581acfb3ebe2d841e969ecc38637ecb0a",
+    "image": "EOM_spc_p18_c3.png",
+    "kind": "historical working crop",
+    "image_sha256": "57a0747102d72736067515a00a857318dda96eb29f3bea73343bd7c2a31e94dd"
+  },
+  {
+    "id": "EOM_spec_c2513",
+    "source": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Codex_High/work/spec_c2513.png",
+    "sha256": "498a1d63f3e0f3a3be7ff975e22bdcf7f3fc62da3f5cc2b99f139b2532721958",
+    "image": "EOM_spec_c2513.png",
+    "kind": "historical working crop",
+    "image_sha256": "cbbe0186db569f99124b912b0be1879ca9057b44f5610b9c575e398a13b33407"
+  },
+  {
+    "id": "EOM_spec_c3510",
+    "source": "workspace/ПД-00580716-ЭОМ_2-1_V2/Audit_Result_Codex_High/work/spec_c3510.png",
+    "sha256": "0d6f6b78fb5458077a2f8b1b9b7f439c10e078559aa7775510b93acda40dac77",
+    "image": "EOM_spec_c3510.png",
+    "kind": "historical working crop",
+    "image_sha256": "fc85a8508881a539d11079b665e2db8f6af1602688997438a4f8bbd53e9544ef"
+  }
+]

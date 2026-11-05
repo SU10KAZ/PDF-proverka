@@ -1,0 +1,39 @@
+{
+  "process_pid": 3081503,
+  "cwd": "/home/coder/auditmanager/releases/ui-real-25dbe648/app",
+  "environment": {
+    "AUDIT_DATA_DIR": "/home/coder/projects/PDF-proverka",
+    "AUDIT_PROJECTS_DIR": "<unset>",
+    "AUDIT_PROMPTS_DIR": "<unset>",
+    "AUDIT_APP_DATA_DIR": "/home/coder/projects/PDF-proverka/backend/app/data",
+    "AUDIT_OPENROUTER_ENABLED": "false",
+    "AUDIT_SECOND_LEG": "<unset>",
+    "STAGE01_THIRD_LEG_ENABLED": "true",
+    "STAGE01_THIRD_LEG_MODEL": "<unset>",
+    "STAGE01_CLAUDE_LEG_ENABLED": "<unset>",
+    "STAGE01_CLAUDE_LEG_MODEL": "<unset>",
+    "STAGE01_CLAUDE_LEG_DISCIPLINES": "<unset>",
+    "PIPELINE_VERIFIER_ENABLED": "<unset>",
+    "PIPELINE_ABSENCE_GUARD_ENABLED": "<unset>",
+    "CRITIC_V2_ENABLED": "true",
+    "CRITIC_V2_LLM_ENABLED": "false",
+    "CRITIC_V2_PROFILE": "assisted_round2_candidate",
+    "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED": "true",
+    "PIPELINE_NORMS_AFTER_MERGE_ENABLED": "true",
+    "FINDINGS_DEDUP_PHASE0_ENABLED": "<unset>"
+  },
+  "stage_models": {
+    "text_analysis": "codex/gpt-6-astra",
+    "block_batch": "ensemble/gpt-codex",
+    "findings_merge": "codex/gpt-6-astra",
+    "findings_critic": "codex/gpt-6-astra",
+    "findings_corrector": "codex/gpt-6-astra",
+    "norm_verify": "codex/gpt-6-astra",
+    "norm_fix": "codex/gpt-6-astra",
+    "norm_requote": "codex/gpt-6-astra",
+    "optimization": "ensemble/claude-codex-opt",
+    "optimization_critic": "codex/gpt-6-astra",
+    "optimization_corrector": "codex/gpt-6-astra"
+  },
+  "model_substitution_file_exists": false
+}

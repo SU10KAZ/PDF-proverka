@@ -1,0 +1,617 @@
+{
+  "projects": [
+    {
+      "project": "13АВ-РД-АК2-ПА_V1",
+      "old_rows": 144,
+      "new_findings": 26,
+      "new_confidence": {
+        "confirmed": 17,
+        "potential": 1,
+        "conflict": 7,
+        "needs_data": 1
+      },
+      "new_classification": {
+        "accepted_reference": 13,
+        "partial": 2,
+        "rejected_reference": 10,
+        "unreviewed": 1
+      },
+      "candidate_count": 36,
+      "unissued_candidate_status": {
+        "refuted": 7,
+        "needs_data": 3
+      },
+      "groups": {
+        "codex_accepted": {
+          "total": 10,
+          "none": 2,
+          "full": 7,
+          "partial": 1,
+          "full_with_confirmed_finding": 4,
+          "full_questions_only": 3,
+          "disposition": {
+            "not_present": 2,
+            "issued": 7,
+            "partial": 1
+          }
+        },
+        "codex_rejected": {
+          "total": 21,
+          "none": 12,
+          "partial": 2,
+          "full": 7,
+          "full_with_confirmed_finding": 6,
+          "full_questions_only": 1,
+          "disposition": {
+            "not_present": 10,
+            "partial": 2,
+            "issued": 7,
+            "refuted_candidate": 2
+          }
+        },
+        "sonnet_new78": {
+          "total": 7,
+          "none": 4,
+          "partial": 2,
+          "full": 1,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 1,
+          "disposition": {
+            "not_present": 4,
+            "partial": 2,
+            "issued": 1
+          }
+        },
+        "sonnet_other28": {
+          "total": 8,
+          "none": 2,
+          "full": 4,
+          "partial": 2,
+          "full_with_confirmed_finding": 4,
+          "full_questions_only": 0,
+          "disposition": {
+            "not_present": 2,
+            "issued": 4,
+            "partial": 2
+          }
+        },
+        "sonnet_rejected": {
+          "total": 98,
+          "none": 89,
+          "partial": 3,
+          "full": 6,
+          "full_with_confirmed_finding": 5,
+          "full_questions_only": 1,
+          "disposition": {
+            "not_present": 88,
+            "refuted_candidate": 1,
+            "partial": 3,
+            "issued": 6
+          }
+        }
+      }
+    },
+    {
+      "project": "ПД-00542664-ИТП.ТМ_V3",
+      "old_rows": 81,
+      "new_findings": 32,
+      "new_confidence": {
+        "confirmed": 12,
+        "potential": 1,
+        "conflict": 18,
+        "needs_data": 1
+      },
+      "new_classification": {
+        "accepted_reference": 23,
+        "partial": 4,
+        "unreviewed": 2,
+        "rejected_reference": 3
+      },
+      "candidate_count": 57,
+      "unissued_candidate_status": {
+        "refuted": 10,
+        "needs_data": 8,
+        "potential": 1,
+        "conflict": 1
+      },
+      "groups": {
+        "codex_accepted": {
+          "total": 18,
+          "full": 11,
+          "none": 3,
+          "partial": 4,
+          "full_with_confirmed_finding": 3,
+          "full_questions_only": 8,
+          "disposition": {
+            "issued": 11,
+            "not_present": 2,
+            "partial": 4,
+            "held_candidate": 1
+          }
+        },
+        "codex_rejected": {
+          "total": 5,
+          "full": 4,
+          "none": 1,
+          "full_with_confirmed_finding": 4,
+          "full_questions_only": 0,
+          "disposition": {
+            "issued": 4,
+            "not_present": 1
+          }
+        },
+        "sonnet_new78": {
+          "total": 10,
+          "full": 4,
+          "none": 4,
+          "partial": 2,
+          "full_with_confirmed_finding": 1,
+          "full_questions_only": 3,
+          "disposition": {
+            "issued": 4,
+            "not_present": 3,
+            "partial": 2,
+            "held_candidate": 1
+          }
+        },
+        "sonnet_other28": {
+          "total": 7,
+          "full": 2,
+          "partial": 3,
+          "none": 2,
+          "full_with_confirmed_finding": 2,
+          "full_questions_only": 0,
+          "disposition": {
+            "issued": 2,
+            "partial": 3,
+            "not_present": 2
+          }
+        },
+        "sonnet_rejected": {
+          "total": 41,
+          "none": 34,
+          "full": 3,
+          "partial": 4,
+          "full_with_confirmed_finding": 1,
+          "full_questions_only": 2,
+          "disposition": {
+            "held_candidate": 2,
+            "refuted_candidate": 2,
+            "not_present": 30,
+            "issued": 3,
+            "partial": 4
+          }
+        }
+      }
+    },
+    {
+      "project": "ПД-00580716-АР6.2_V1",
+      "old_rows": 65,
+      "new_findings": 20,
+      "new_confidence": {
+        "conflict": 12,
+        "confirmed": 3,
+        "needs_data": 4,
+        "potential": 1
+      },
+      "new_classification": {
+        "accepted_reference": 12,
+        "unreviewed": 1,
+        "rejected_reference": 6,
+        "partial": 1
+      },
+      "candidate_count": 41,
+      "unissued_candidate_status": {
+        "refuted": 16,
+        "needs_data": 5
+      },
+      "groups": {
+        "codex_accepted": {
+          "total": 13,
+          "full": 10,
+          "none": 3,
+          "full_with_confirmed_finding": 2,
+          "full_questions_only": 8,
+          "disposition": {
+            "issued": 10,
+            "held_candidate": 2,
+            "not_present": 1
+          }
+        },
+        "codex_rejected": {
+          "total": 4,
+          "partial": 1,
+          "none": 2,
+          "full": 1,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 1,
+          "disposition": {
+            "partial": 1,
+            "not_present": 2,
+            "issued": 1
+          }
+        },
+        "sonnet_new78": {
+          "total": 6,
+          "none": 5,
+          "full": 1,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 1,
+          "disposition": {
+            "not_present": 5,
+            "issued": 1
+          }
+        },
+        "sonnet_other28": {
+          "total": 4,
+          "none": 3,
+          "full": 1,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 1,
+          "disposition": {
+            "not_present": 2,
+            "held_candidate": 1,
+            "issued": 1
+          }
+        },
+        "sonnet_rejected": {
+          "total": 38,
+          "full": 5,
+          "none": 29,
+          "partial": 4,
+          "full_with_confirmed_finding": 1,
+          "full_questions_only": 4,
+          "disposition": {
+            "issued": 5,
+            "not_present": 28,
+            "partial": 4,
+            "refuted_candidate": 1
+          }
+        }
+      }
+    },
+    {
+      "project": "ПД-00580716-ВК_2-2_V2",
+      "old_rows": 52,
+      "new_findings": 21,
+      "new_confidence": {
+        "confirmed": 11,
+        "potential": 1,
+        "conflict": 5,
+        "needs_data": 4
+      },
+      "new_classification": {
+        "accepted_reference": 16,
+        "rejected_reference": 3,
+        "partial": 2
+      },
+      "candidate_count": 41,
+      "unissued_candidate_status": {
+        "refuted": 12,
+        "needs_data": 7
+      },
+      "groups": {
+        "codex_accepted": {
+          "total": 10,
+          "full": 10,
+          "full_with_confirmed_finding": 6,
+          "full_questions_only": 4,
+          "disposition": {
+            "issued": 10
+          }
+        },
+        "codex_rejected": {
+          "total": 5,
+          "none": 3,
+          "partial": 1,
+          "full": 1,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 1,
+          "disposition": {
+            "not_present": 3,
+            "partial": 1,
+            "issued": 1
+          }
+        },
+        "sonnet_new78": {
+          "total": 4,
+          "partial": 1,
+          "full": 2,
+          "none": 1,
+          "full_with_confirmed_finding": 1,
+          "full_questions_only": 1,
+          "disposition": {
+            "partial": 1,
+            "issued": 2,
+            "not_present": 1
+          }
+        },
+        "sonnet_other28": {
+          "total": 6,
+          "full": 4,
+          "partial": 2,
+          "full_with_confirmed_finding": 3,
+          "full_questions_only": 1,
+          "disposition": {
+            "issued": 4,
+            "partial": 2
+          }
+        },
+        "sonnet_rejected": {
+          "total": 27,
+          "none": 25,
+          "full": 1,
+          "partial": 1,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 1,
+          "disposition": {
+            "not_present": 20,
+            "refuted_candidate": 4,
+            "issued": 1,
+            "partial": 1,
+            "held_candidate": 1
+          }
+        }
+      }
+    },
+    {
+      "project": "ПД-00580716-КМ1.2_V1",
+      "old_rows": 30,
+      "new_findings": 18,
+      "new_confidence": {
+        "confirmed": 9,
+        "conflict": 7,
+        "needs_data": 2
+      },
+      "new_classification": {
+        "rejected_reference": 4,
+        "unreviewed": 7,
+        "accepted_reference": 3,
+        "partial": 3,
+        "mixed": 1
+      },
+      "candidate_count": 30,
+      "unissued_candidate_status": {
+        "refuted": 9,
+        "needs_data": 2,
+        "duplicate": 1
+      },
+      "groups": {
+        "codex_accepted": {
+          "total": 6,
+          "partial": 1,
+          "full": 3,
+          "none": 2,
+          "full_with_confirmed_finding": 2,
+          "full_questions_only": 1,
+          "disposition": {
+            "partial": 1,
+            "issued": 3,
+            "not_present": 2
+          }
+        },
+        "codex_rejected": {
+          "total": 9,
+          "none": 5,
+          "full": 4,
+          "full_with_confirmed_finding": 1,
+          "full_questions_only": 3,
+          "disposition": {
+            "not_present": 3,
+            "issued": 4,
+            "refuted_candidate": 2
+          }
+        },
+        "sonnet_new78": {
+          "total": 0,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 0,
+          "disposition": {}
+        },
+        "sonnet_other28": {
+          "total": 0,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 0,
+          "disposition": {}
+        },
+        "sonnet_rejected": {
+          "total": 15,
+          "partial": 1,
+          "none": 14,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 0,
+          "disposition": {
+            "partial": 1,
+            "refuted_candidate": 3,
+            "not_present": 10,
+            "held_candidate": 1
+          }
+        }
+      }
+    },
+    {
+      "project": "ПД-00580716-ЭОМ_2-1_V2",
+      "old_rows": 167,
+      "new_findings": 14,
+      "new_confidence": {
+        "conflict": 6,
+        "confirmed": 4,
+        "needs_data": 2,
+        "potential": 2
+      },
+      "new_classification": {
+        "accepted_reference": 9,
+        "rejected_reference": 4,
+        "unreviewed": 1
+      },
+      "candidate_count": 32,
+      "unissued_candidate_status": {
+        "refuted": 9,
+        "needs_data": 9
+      },
+      "groups": {
+        "codex_accepted": {
+          "total": 13,
+          "full": 5,
+          "none": 6,
+          "partial": 2,
+          "full_with_confirmed_finding": 2,
+          "full_questions_only": 3,
+          "disposition": {
+            "issued": 5,
+            "not_present": 6,
+            "partial": 2
+          }
+        },
+        "codex_rejected": {
+          "total": 8,
+          "full": 3,
+          "none": 4,
+          "partial": 1,
+          "full_with_confirmed_finding": 1,
+          "full_questions_only": 2,
+          "disposition": {
+            "issued": 3,
+            "not_present": 4,
+            "partial": 1
+          }
+        },
+        "sonnet_new78": {
+          "total": 51,
+          "none": 48,
+          "full": 2,
+          "partial": 1,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 2,
+          "disposition": {
+            "not_present": 45,
+            "refuted_candidate": 1,
+            "issued": 2,
+            "held_candidate": 2,
+            "partial": 1
+          }
+        },
+        "sonnet_other28": {
+          "total": 3,
+          "none": 1,
+          "partial": 2,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 0,
+          "disposition": {
+            "not_present": 1,
+            "partial": 2
+          }
+        },
+        "sonnet_rejected": {
+          "total": 92,
+          "none": 90,
+          "full": 1,
+          "partial": 1,
+          "full_with_confirmed_finding": 0,
+          "full_questions_only": 1,
+          "disposition": {
+            "not_present": 85,
+            "held_candidate": 4,
+            "refuted_candidate": 1,
+            "issued": 1,
+            "partial": 1
+          }
+        }
+      }
+    }
+  ],
+  "total": {
+    "old_rows": 539,
+    "new_findings": 131,
+    "new_classification": {
+      "accepted_reference": 76,
+      "partial": 12,
+      "rejected_reference": 30,
+      "unreviewed": 12,
+      "mixed": 1
+    },
+    "new_confidence": {
+      "confirmed": 56,
+      "potential": 6,
+      "conflict": 55,
+      "needs_data": 14
+    },
+    "candidate_count": 237,
+    "old_accepted_unissued_seen": 8,
+    "groups": {
+      "codex_accepted": {
+        "total": 70,
+        "none": 16,
+        "full": 46,
+        "partial": 8,
+        "full_with_confirmed_finding": 19,
+        "full_questions_only": 27,
+        "disposition": {
+          "not_present": 13,
+          "issued": 46,
+          "partial": 8,
+          "held_candidate": 3
+        }
+      },
+      "codex_rejected": {
+        "total": 52,
+        "none": 27,
+        "partial": 5,
+        "full": 20,
+        "full_with_confirmed_finding": 12,
+        "full_questions_only": 8,
+        "disposition": {
+          "not_present": 23,
+          "partial": 5,
+          "issued": 20,
+          "refuted_candidate": 4
+        }
+      },
+      "sonnet_new78": {
+        "total": 78,
+        "none": 62,
+        "partial": 6,
+        "full": 10,
+        "full_with_confirmed_finding": 2,
+        "full_questions_only": 8,
+        "disposition": {
+          "not_present": 58,
+          "partial": 6,
+          "issued": 10,
+          "held_candidate": 3,
+          "refuted_candidate": 1
+        }
+      },
+      "sonnet_other28": {
+        "total": 28,
+        "none": 8,
+        "full": 11,
+        "partial": 9,
+        "full_with_confirmed_finding": 9,
+        "full_questions_only": 2,
+        "disposition": {
+          "not_present": 7,
+          "issued": 11,
+          "partial": 9,
+          "held_candidate": 1
+        }
+      },
+      "sonnet_rejected": {
+        "total": 311,
+        "none": 281,
+        "partial": 14,
+        "full": 16,
+        "full_with_confirmed_finding": 7,
+        "full_questions_only": 9,
+        "disposition": {
+          "not_present": 261,
+          "refuted_candidate": 12,
+          "partial": 14,
+          "issued": 16,
+          "held_candidate": 8
+        }
+      }
+    }
+  },
+  "generated_utc": "2026-11-03T17:11:49.522848+00:00"
+}

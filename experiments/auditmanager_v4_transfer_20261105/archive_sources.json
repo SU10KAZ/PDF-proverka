@@ -1,0 +1,77 @@
+[
+  {
+    "path": "START.html",
+    "sha256": "bc06956fff92ae4fa9774ed34c5ab5b90d369e6b661f0a6c112f7812682c8db3",
+    "bytes": 8107
+  },
+  {
+    "path": "00_README.md",
+    "sha256": "d801c61690baa7ff492306e20cb4a4162ea867676673d3126ce85b4a5154c1e8",
+    "bytes": 6426
+  },
+  {
+    "path": "PROJECT_MAP.json",
+    "sha256": "695602fc247b82fa0929b32149b6a2f9521b05382978a7d725c5ab27f67a1d84",
+    "bytes": 114912
+  },
+  {
+    "path": "PATH_MAP.json",
+    "sha256": "0feecc55143f4202ae66aae093dfdc09a28cabc84dfa6e084434a21f89ed5aa6",
+    "bytes": 483821
+  },
+  {
+    "path": "SOURCE_HISTORY.json",
+    "sha256": "f8da68dafaa8afcaffd67c1c925bc0a10a12a1c4be1dd75a90ac88c051df20b8",
+    "bytes": 3150065
+  },
+  {
+    "path": "RESOLVE_PATH.py",
+    "sha256": "8707fed5f3ed3e330da4109cfba653902ff340b58e62d70ec96eefbd95a79365",
+    "bytes": 4760
+  },
+  {
+    "path": "workspace/AuditManager_Full_Handoff_2026-11-05/01_Карта_этапов_и_проектов.md",
+    "sha256": "91e9a9d413d67832fab6b4d6c61c75396688b93d9f751815cd05ebe66118f3ce",
+    "bytes": 55633
+  },
+  {
+    "path": "workspace/AuditManager_Full_Handoff_2026-11-05/02_Что_сработало_и_что_нет.md",
+    "sha256": "4f5d2cac0dc4132bb671b2978e85f8fda39d347c4be2f20a109342b6c7ab4d70",
+    "bytes": 42694
+  },
+  {
+    "path": "workspace/Universal_Audit_2026-11-04/Универсальный_алгоритм_аудита_v4.md",
+    "sha256": "5409b4e2e2c4ff538fb8d6a60227123e088493f08e01ed676ba8df212166ad1f",
+    "bytes": 243035
+  },
+  {
+    "path": "workspace/Universal_Audit_2026-11-04/runtime/rules.json",
+    "sha256": "d3c4672b476e2ca90e7a7b3d044af845afd50d0e7e19a7852e469dc1178af3cd",
+    "bytes": 229091
+  },
+  {
+    "path": "workspace/Universal_Audit_2026-11-04/evaluation/cases.json",
+    "sha256": "b3dbd49f81d70e50f864848872c3cc96297c2098d4475431029be477d3b0bc56",
+    "bytes": 3820581
+  },
+  {
+    "path": "workspace/Universal_Audit_2026-11-04/evaluation/rerun_lessons.json",
+    "sha256": "c917352b88a78d1cc074349b57f0fa4cfc95e66fac178ee469017f02fb65d3e8",
+    "bytes": 9619
+  },
+  {
+    "path": "workspace/Universal_Audit_2026-11-04/evaluation/conflicts_and_boundaries.json",
+    "sha256": "f6a40f2fa0e6cdef7ad89cd9ee08cc500b8081ec1679915c40ec918ae4e2f50e",
+    "bytes": 24966
+  },
+  {
+    "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/comparison_summary.json",
+    "sha256": "a673eb5493894ffdba172a6a720bc6233cd2a012ba47297712e08294da888784",
+    "bytes": 15747
+  },
+  {
+    "path": "workspace/Audit_Recheck_v2_2026-11-03/evaluation/verdict.json",
+    "sha256": "117b1fd285eccaa2d799ee4a6d4be20767b21f6c1f8fc6b156532bade557c3cd",
+    "bytes": 6429
+  }
+]
