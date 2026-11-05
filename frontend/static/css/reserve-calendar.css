@@ -130,5 +130,11 @@
 .rc-project-list__empty{display:block;padding:12px;color:var(--rc-muted);font-size:12px;text-align:center}
 .rc-selection-hint{margin:-8px 0 15px!important}
 .rc-card-body p{font-size:13px;color:var(--rc-muted)}
+.rc-grid .rc-unavailable{background:#f5f0fb}
+.reserve-calendar .rc-event{width:100%;padding:4px 1px;font-size:10px;line-height:1.2;overflow:hidden;text-overflow:ellipsis}
+.reserve-calendar .rc-event-vacation{background:#eee7fa;border-color:#c3acdf;color:#65468a}
+.reserve-calendar .rc-event-external{background:#fff0dc;border-color:#dfbc81;color:#835b20}
+.rc-event-dates{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rc-card-body textarea{display:block;width:100%;padding:8px;margin-top:6px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;color:var(--rc-ink);font:13px/1.5 Arial,sans-serif;resize:vertical}
 @media(max-width:740px){.reserve-calendar{padding:12px}.rc-cards{grid-template-columns:1fr}.rc-kpi{padding:11px}.rc-fields{grid-template-columns:1fr;padding:12px}.rc-dialog>header,.rc-dialog>footer{padding:14px}.rc-field textarea{font-size:16px}.rc-toolbar{align-items:flex-start}.rc-heading h2{font-size:18px}.rc-actions{gap:6px}.rc-tooltip{left:8px!important}.rc-card-body{padding:14px}}
 @media(pointer:coarse){.reserve-calendar button{min-height:44px}.reserve-calendar button.rc-point{min-height:44px}.rc-grid{min-width:2400px}.rc-dots{min-height:100px}}

@@ -63,7 +63,7 @@
         }
         return data;
     }
-    const empty = () => ({engineers: [], tasks: [], available_projects: [], totals: {}, calendar: {}, revision: 0});
+    const empty = () => ({engineers: [], tasks: [], events: [], available_projects: [], totals: {}, calendar: {}, revision: 0});
 
     const Calendar = {
         props: {active: Boolean}, emits: ['open-project'],
@@ -76,6 +76,12 @@
             const objectFilter = ref(''), selectedSections = ref([]), moveDate = ref('');
             const lastChosenProject = ref('');
             const tooltip = ref(null), tooltipStyle = ref({});
+            const eventDialog = ref(null), eventOpen = ref(false), eventDraft = ref({});
+            const eventLabel = event => event.kind === 'vacation' ? 'Отпуск' : 'Посторонняя задача';
+            const eventsAt = (eid, iso) => (data.value.events || []).filter(e => e.engineer_id === eid && e.date_from <= iso && e.date_to >= iso);
+            const eventTip = event => [eventLabel(event), label(event.date_from) + ' — ' + label(event.date_to), event.comment].filter(Boolean).join('\n');
+            const validEvent = computed(() => eventDraft.value.engineer_id && eventDraft.value.date_from && eventDraft.value.date_to >= eventDraft.value.date_from
+                && (eventDraft.value.kind === 'vacation' || eventDraft.value.comment?.trim()));
             let suppressClickUntil = 0, generation = 0, timer;
             const canEdit = computed(() => !!data.value.can_edit);
             const locked = computed(() => busy.value || !!pending.value);
@@ -102,15 +108,17 @@
             const days = computed(() => {
                 if (!anchor.value) return [];
                 const holidays = new Set(data.value.calendar.holidays || []), working = new Set(data.value.calendar.working_dates || []);
-                const filled = data.value.tasks.map(t => t.forecast_date).filter(Boolean).sort().pop();
+                const filled = [...data.value.tasks.map(t => t.forecast_date), ...(data.value.events || []).map(e => e.date_to)].filter(Boolean).sort().pop();
                 const span = filled ? Math.max(28, Math.floor((Date.parse(filled+'T12:00:00Z') - Date.parse(anchor.value+'T12:00:00Z')) / 86400000) + 1) : 28;
                 return Array.from({length: Math.min(3660, span)}, (_, i) => {
                     const iso = dayAdd(anchor.value, i), d = new Date(iso+'T12:00:00Z');
                     return {iso, dom: d.getUTCDate(), label: label(iso), dow: d.toLocaleDateString('ru-RU', {weekday:'short', timeZone:'UTC'}),
+                        busy: (data.value.events || []).some(e => e.date_from <= iso && e.date_to >= iso),
                         off: holidays.has(iso) || ([0,6].includes(d.getUTCDay()) && !working.has(iso))};
                 });
             });
-            const columns = computed(() => days.value);
+            const columns = computed(() => data.value.tasks.some(t => !t.forecast_date)
+                ? [{iso:null, label:'Подготовка и проекты без даты', dow:'Подготовка / очередь', off:false}, ...days.value] : days.value);
             const cells = computed(() => {
                 const map = new Map();
                 for (const task of data.value.tasks) {
@@ -156,11 +164,13 @@
                 task.version_id && 'Версия: '+task.version_id, data.value.engineers.find(e => e.id === task.engineer_id)?.name,
                 stateLabel(task.state), (task.conditional ? 'Условная дата: ' : 'Прогноз: ') + (task.forecast_date ? label(task.forecast_date) : 'не рассчитан'),
                 task.unscheduled_reason === 'missing_plan' ? 'Задайте план инженера в разделе «Выполнено».' : '',
+                task.source_missing ? 'Источник временно недоступен. Задание сохранено в очереди.' : '',
                 task.total ? 'Решений: '+task.progress+' из '+task.total : ''].filter(Boolean).join('\n');
 
             function accept(value) {
+                const previousToday = data.value.today;
                 data.value = value;
-                if (!anchor.value) anchor.value = value.today;
+                if (!anchor.value || anchor.value === previousToday) anchor.value = value.today;
                 selected.value = selected.value.filter(id => value.tasks.some(t => t.id === id));
                 if (card.value) card.value = value.tasks.find(t => t.id === card.value.id) || null;
                 if (!card.value && projectDialog.value?.open) projectDialog.value.close();
@@ -193,6 +203,10 @@
                     if (body.kind === 'assign') { chosenProject.value = []; lastChosenProject.value = ''; }
                     if (body.kind === 'link') closeCatalog();
                     if (body.kind === 'link') { projectDialog.value?.close(); card.value = null; }
+                    if (body.kind === 'save_event' || body.kind === 'delete_event') {
+                        status.value = body.kind === 'save_event' ? 'Занятость сохранена. Проекты перенесены на доступные рабочие дни.' : 'Запись занятости удалена.';
+                        closeEvent(true);
+                    }
                     return true;
                 } catch (e) {
                     // With an HTTP response the result is conclusive. A lost
@@ -252,11 +266,11 @@
                 const r = event.currentTarget.getBoundingClientRect();
                 insertion.value = {engineer_id:task.engineer_id, anchor_id:task.id, side:event.clientX < r.left+r.width/2 ? 'before' : 'after', ...(task.forecast_date !== undefined ? {forecast_date: task.forecast_date || null} : {})};
             }
-            function overCell(engineer, iso, event) {
+            function overCell(engineer, iso, event, setDate = !!iso) {
                 if (!dragging.value.length || engineer.active === false) return;
                 event.preventDefault();
                 const next = data.value.tasks.find(t => t.engineer_id === engineer.id && !dragging.value.includes(t.id) && (t.forecast_date || null) === (iso || null));
-                insertion.value = {engineer_id:engineer.id, anchor_id:next?.id || null, side:'before', ...(iso ? {forecast_date: iso} : {})};
+                insertion.value = {engineer_id:engineer.id, anchor_id:next?.id || null, side:'before', ...(setDate ? {forecast_date: iso || null} : {})};
             }
             async function drop(event) {
                 if (!dragging.value.length || !insertion.value) return;
@@ -335,19 +349,36 @@
                 lastChosenProject.value = value;
                 return saveCatalog();
             }
+            async function openEvent(event = null, engineerId = '') {
+                eventDraft.value = event ? {...event} : {kind:'vacation', engineer_id:engineerId || activeEngineers.value[0]?.id || '',
+                    date_from:data.value.today, date_to:data.value.today, comment:''};
+                eventOpen.value = true; tooltip.value = null;
+                await nextTick(); eventDialog.value.showModal();
+            }
+            function closeEvent(force = false) {
+                if (busy.value && !force) return;
+                eventDialog.value?.close(); eventOpen.value = false;
+            }
+            function saveEvent() {
+                if (!validEvent.value) return;
+                const draft = eventDraft.value;
+                return operate('save_event', {event_id:draft.id || null, event_kind:draft.kind, engineer_id:draft.engineer_id,
+                    date_from:draft.date_from, date_to:draft.date_to, comment:draft.comment});
+            }
             function escape(event) {
                 if (event.key !== 'Escape') return;
                 tooltip.value = null;
-                if (!prepDialog.value?.open && !projectDialog.value?.open && !catalogDialog.value?.open) selected.value = [];
+                if (!prepDialog.value?.open && !projectDialog.value?.open && !catalogDialog.value?.open && !eventDialog.value?.open) selected.value = [];
             }
             watch(anchor, (value, previous) => { if (value && previous && value !== previous) load(true); });
             watch(() => props.active, active => { if (active) load(); }, {immediate:true});
             onMounted(() => {
                 window.addEventListener('keydown', escape);
-                timer = setInterval(() => { if (props.active && !document.hidden && !prepOpen.value && !catalogOpen.value && !dragging.value.length && !pending.value) load(true); }, 30000);
+                timer = setInterval(() => { if (props.active && !document.hidden && !prepOpen.value && !catalogOpen.value && !eventOpen.value && !dragging.value.length && !pending.value) load(true); }, 30000);
             });
             onBeforeUnmount(() => { generation++; clearInterval(timer); window.removeEventListener('keydown', escape); });
             return {data, loading, busy, error, status, selected, dragging, insertion, pending, drafts, prepDialog, projectDialog, catalogDialog,
+                eventDialog, eventOpen, eventDraft, eventLabel, eventsAt, eventTip, validEvent, openEvent, closeEvent, saveEvent,
                 prepOpen, card, catalogOpen, linkTask, targetEngineer, chosenProject, search, objectMenuOpen, anchor, tooltip, tooltipStyle,
                 dayLimit, dayLoad, capacityTip, canEdit, locked, activeEngineers, selectedTasks, draftErrors, draftItems, draftEngineerCount, grouped, days, columns, available,
                 objectOptions, suggestedObjects, sectionOptions, chosenProjectIndexes, objectFilter, selectedSections, moveDate,
@@ -358,31 +389,43 @@
         <section class="reserve-calendar" aria-label="Календарь запаса" :aria-busy="loading || busy">
           <div v-if="error" class="rc-error" role="alert">{{ error }} <button v-if="pending" :disabled="busy" @click="send()">Повторить сохранение</button><button v-else :disabled="loading || busy" @click="load()">Обновить данные</button></div>
           <div v-if="loading && !data.engineers.length" class="rc-empty">Загрузка инженеров и очередей…</div>
-          <div class="rc-toolbar"><strong>Очередь по инженерам</strong><div class="rc-actions"><label>Начало периода <input v-model="anchor" type="date" aria-label="Начало периода"></label><button v-if="canEdit" :disabled="locked" @click="openCatalog()">Добавить с портала</button><button v-if="canEdit" class="rc-primary-outline" :disabled="locked" @click="openPreparation()">Проекты для подготовки</button></div></div>
-          <p class="rc-help">В ячейках: занято / дневной лимит инженера. Лимит — месячная норма на рабочие дни, округлённая вверх; выполненные проверки тоже занимают место.</p>
+          <div class="rc-toolbar"><strong>Очередь по инженерам</strong><div class="rc-actions"><label>Начало периода <input v-model="anchor" type="date" aria-label="Начало периода"></label><button v-if="canEdit" :disabled="locked" @click="openCatalog()">Добавить с портала</button><button v-if="canEdit" class="rc-primary-outline" :disabled="locked" @click="openPreparation()">Проекты для подготовки</button><button v-if="canEdit" :disabled="locked" @click="openEvent()">Отпуск / посторонняя задача</button></div></div>
+          <p class="rc-help">В ячейках: занято / дневной лимит инженера. Лимит — месячная норма на рабочие дни, округлённая вверх; выполненные проверки тоже занимают место. Незавершённые проекты переносятся на доступные рабочие дни. Подготовка без даты показана в первой колонке.</p>
           <div v-if="selected.length" class="rc-selection"><span>Выбрано: {{ selected.length }}</span><button :disabled="locked" @click="shift(-1)">Раньше</button><button :disabled="locked" @click="shift(1)">Позже</button><input v-model="moveDate" type="date" aria-label="Дата переноса"><button :disabled="locked || !moveDate" @click="moveSelected">Перенести на дату</button><button class="rc-danger" :disabled="locked" @click="operate('delete',{task_ids:[...selected]})">Удалить ({{ selected.length }})</button><button @click="selected=[]">Снять выделение</button></div>
           <div class="rc-scroll" @scroll="tooltip=null"><table class="rc-grid" aria-label="Очередь проектов по инженерам и датам">
-            <colgroup><col class="rc-name-col"><col v-for="d in columns" :key="d.iso || 'none'" :class="{'rc-off-col':d.off, 'rc-unscheduled-col':!d.iso}"></colgroup>
-            <thead><tr><th class="rc-name">Инженер / остаток</th><th v-for="d in columns" :key="d.iso || 'none'" :title="d.label" :class="{'rc-off':d.off,'rc-today':d.iso===data.today}"><template v-if="!d.off"><b>{{ d.iso ? d.dom : 'Без даты' }}</b><small>{{ d.dow }}</small></template></th></tr></thead>
+            <colgroup><col class="rc-name-col"><col v-for="d in columns" :key="d.iso || 'none'" :class="{'rc-off-col':d.off && !d.busy, 'rc-unscheduled-col':!d.iso}"></colgroup>
+            <thead><tr><th class="rc-name">Инженер / остаток</th><th v-for="d in columns" :key="d.iso || 'none'" :title="d.label" :class="{'rc-off':d.off,'rc-today':d.iso===data.today}"><template v-if="!d.off || d.busy"><b>{{ d.iso ? d.dom : 'Без даты' }}</b><small>{{ d.dow }}</small></template></th></tr></thead>
             <tbody v-for="g in grouped" :key="g.name"><tr class="rc-band"><th :colspan="columns.length+1">{{ g.name }} <small>{{ g.remaining }} проверок</small></th></tr>
               <tr v-for="e in g.engineers" :key="e.id" :data-engineer-id="e.id" :class="{'rc-drop-row': insertion?.engineer_id===e.id}" @dragover="overCell(e,null,$event)" @drop="drop">
                 <th class="rc-name" scope="row"><div class="rc-person"><span class="rc-avatar">{{ e.name.split(' ').map(s=>s[0]).slice(0,2).join('') }}</span><div>{{ e.name }}</div></div><button v-if="selected.length && e.active!==false" class="rc-assign" :disabled="locked" @click="operate('move',{task_ids:selected,engineer_id:e.id})">Передать сюда</button></th>
-                <td v-for="d in columns" :key="d.iso || 'none'" class="rc-cell" :class="{'rc-off':d.off,'rc-today':d.iso===data.today,'rc-over-capacity':dayLimit(e,d.iso)!==undefined && dayLoad(e,d.iso)>dayLimit(e,d.iso)}" @dragover.stop="overCell(e,d.iso,$event)" @drop="drop">
-                  <div v-if="!d.off || cell(e.id,d.iso).length" class="rc-dots"><button v-for="t in cell(e.id,d.iso)" :key="t.id" type="button" class="rc-point" :data-task-id="t.id" :aria-label="tipText(t)" :aria-pressed="selected.includes(t.id)"
+                <td v-for="d in columns" :key="d.iso || 'none'" class="rc-cell" :class="{'rc-off':d.off,'rc-today':d.iso===data.today,'rc-unavailable':eventsAt(e.id,d.iso).length,'rc-over-capacity':dayLimit(e,d.iso)!==undefined && dayLoad(e,d.iso)>dayLimit(e,d.iso)}" @dragover.stop="overCell(e,d.iso,$event,true)" @drop="drop">
+                  <div v-if="!d.off || cell(e.id,d.iso).length || eventsAt(e.id,d.iso).length" class="rc-dots"><button v-for="event in eventsAt(e.id,d.iso)" :key="event.id" type="button" class="rc-event" :class="'rc-event-'+event.kind" :title="eventTip(event)" :aria-label="eventTip(event)" @click.stop="openEvent(event)">{{ event.kind==='vacation' ? 'Отп.' : 'Задача' }}</button><button v-for="t in cell(e.id,d.iso)" :key="t.id" type="button" class="rc-point" :data-task-id="t.id" :aria-label="tipText(t)" :aria-pressed="selected.includes(t.id)"
                     :class="{'rc-dragging':dragging.includes(t.id),'rc-insert-before':insertion?.anchor_id===t.id && insertion.side==='before','rc-insert-after':insertion?.anchor_id===t.id && insertion.side==='after','rc-unrecognized':!!t.project_id && !t.documents_ready,'rc-manual':!t.project_id,'rc-running':t.state==='in_progress'}"
                     :draggable="canEdit && !locked && t.state!=='in_progress'" @click.stop="clickTask(t,$event)" @mouseenter="showTip(t,$event)" @mouseleave="tooltip=null" @focus="showTip(t,$event)" @blur="tooltip=null"
                     @dragstart="dragStart(t,$event)" @dragend="dragEnd" @dragover="overTask(t,$event)" @drop.stop="drop" :style="{'--rc-color':color(t)}"><span v-if="t.section" class="rc-point-label">{{ t.section }}</span><span class="rc-point-label">{{ compactProject(t.code || t.title) }}</span></button></div>
-                  <span v-if="!d.off || cell(e.id,d.iso).length" class="rc-count" :title="capacityTip(e,d.iso)">{{ dayLoad(e,d.iso) }} / {{ dayLimit(e,d.iso) ?? '—' }}</span>
+                  <span v-if="d.iso && (!d.off || cell(e.id,d.iso).length)" class="rc-count" :title="capacityTip(e,d.iso)">{{ dayLoad(e,d.iso) }} / {{ dayLimit(e,d.iso) ?? '—' }}</span>
                 </td>
               </tr>
             </tbody>
           </table></div>
-          <div class="rc-legend"><span><i class="rc-legend-chip"></i>Готов к проверке</span><span><i class="rc-legend-chip rc-unrecognized"></i>Не проанализирован</span><span><i class="rc-legend-chip rc-manual"></i>Ещё не загружен</span></div>
+          <div class="rc-legend"><span><i class="rc-legend-chip"></i>Готов к проверке</span><span><i class="rc-legend-chip rc-unrecognized"></i>Не проанализирован</span><span><i class="rc-legend-chip rc-manual"></i>Ещё не загружен</span><span><i class="rc-legend-chip rc-event-vacation"></i>Отпуск</span><span><i class="rc-legend-chip rc-event-external"></i>Посторонняя задача</span></div>
           <div class="rc-status" role="status" aria-live="polite"><span>{{ busy ? 'Сохранение…' : status }}</span><button v-if="canEdit && data.undo_operation_id" :disabled="locked" @click="operate('undo',{undo_id:data.undo_operation_id})">Отменить последнее действие</button></div>
           <aside v-if="tooltip" class="rc-tooltip" role="tooltip" :style="tooltipStyle">{{ tipText(tooltip) }}</aside>
 
+          <dialog ref="eventDialog" class="rc-dialog rc-card-dialog" aria-labelledby="rc-event-title" @cancel.prevent="closeEvent()">
+            <header><div><h3 id="rc-event-title">{{ eventDraft.id ? eventLabel(eventDraft) : 'Занятость сотрудника' }}</h3><p>Занятость на полный день. Проекты на эти даты будут перенесены на доступные рабочие дни.</p></div><button aria-label="Закрыть занятость" :disabled="busy" @click="closeEvent()">×</button></header>
+            <div v-if="eventOpen" class="rc-card-body">
+              <label>Сотрудник<select v-model="eventDraft.engineer_id" :disabled="locked || !canEdit"><option v-for="e in data.engineers" :key="e.id" :value="e.id" :disabled="e.active===false">{{ e.name }}</option></select></label>
+              <label>Вид занятости<select v-model="eventDraft.kind" :disabled="locked || !canEdit"><option value="vacation">Отпуск</option><option value="external">Посторонняя задача</option></select></label>
+              <div class="rc-event-dates"><label>С даты<input v-model="eventDraft.date_from" type="date" :disabled="locked || !canEdit"></label><label>По дату включительно<input v-model="eventDraft.date_to" type="date" :min="eventDraft.date_from" :disabled="locked || !canEdit"></label></div>
+              <label>Комментарий{{ eventDraft.kind==='external' ? ' (обязательно)' : '' }}<textarea v-model="eventDraft.comment" maxlength="4000" rows="4" :disabled="locked || !canEdit" placeholder="Чем занят сотрудник"></textarea></label>
+            </div>
+            <div v-if="error" class="rc-error" role="alert">{{ error }} <button v-if="pending" :disabled="busy" @click="send()">Повторить сохранение</button></div>
+            <footer><button v-if="canEdit && eventDraft.id" class="rc-danger" :disabled="locked" @click="operate('delete_event',{event_id:eventDraft.id})">Удалить запись</button><div class="rc-actions"><button :disabled="busy" @click="closeEvent()">Закрыть</button><button v-if="canEdit" class="rc-primary" :disabled="locked || !validEvent" @click="saveEvent()">Сохранить</button></div></footer>
+          </dialog>
+
           <dialog ref="prepDialog" class="rc-dialog" aria-labelledby="rc-prep-title" @cancel.prevent="closePreparation()" @click="($event.target===prepDialog) && closePreparation()">
-            <header><div><h3 id="rc-prep-title">Проекты для подготовки</h3><p>Вставьте список каждому инженеру через Ctrl + V.<br>Одна непустая строка — один проект. Добавление в конец очереди.</p></div><button aria-label="Закрыть окно подготовки" :disabled="busy" @click="closePreparation()">×</button></header>
+            <header><div><h3 id="rc-prep-title">Проекты для подготовки</h3><p>Вставьте список каждому инженеру через Ctrl + V.<br>Одна непустая строка — один проект. Записи появятся в колонке «Без даты»; дату можно назначить переносом.</p></div><button aria-label="Закрыть окно подготовки" :disabled="busy" @click="closePreparation()">×</button></header>
             <div v-if="prepOpen" class="rc-fields"><section v-for="e in activeEngineers" :key="e.id" class="rc-field" :class="{'rc-invalid':draftErrors[e.id]}"><label :for="'rc-draft-'+e.id">{{ e.name }} <span>{{ e.direction }}</span></label><textarea :id="'rc-draft-'+e.id" v-model="drafts[e.id]" :disabled="locked" :aria-invalid="!!draftErrors[e.id]" :aria-describedby="draftErrors[e.id] ? 'rc-error-'+e.id : undefined" placeholder="Вставьте названия проектов, каждое с новой строки"></textarea><div class="rc-field-foot">К добавлению: <b>{{ lines(drafts[e.id]).length }}</b></div><div v-if="draftErrors[e.id]" :id="'rc-error-'+e.id" class="rc-field-error">Повторы или некорректные строки: {{ draftErrors[e.id] }}</div></section></div>
             <div v-if="error" class="rc-error" role="alert">{{ error }} <button v-if="pending" :disabled="busy" @click="send()">Повторить сохранение</button></div>
             <footer><span>К добавлению: <b>{{ draftItems.length }}</b> · инженеров: {{ draftEngineerCount }}</span><div class="rc-actions"><button :disabled="busy" @click="closePreparation()">Закрыть</button><button class="rc-primary" :disabled="locked || !draftItems.length || draftItems.length>1000 || Object.keys(draftErrors).length>0" @click="operate('add_preparation',{items:draftItems})">Добавить в очереди</button></div></footer>

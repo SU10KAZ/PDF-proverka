@@ -175,3 +175,79 @@ describe('reserve calendar user actions', () => {
         expect(close).not.toHaveBeenCalled();
     });
 });
+
+describe('reserve preparation and employee availability', () => {
+    it('shows all three undated preparation projects in the first visible column', async () => {
+        const initial = data();
+        initial.tasks = ['ОВ1', 'ОВ2', 'ОВ3'].map((title, i) => ({id:String(i), title, engineer_id:'a', position:i+1, state:'preparation', forecast_date:null}));
+        const h = harness([initial]);
+        await h.state.load();
+        expect(h.state.columns.value[0].iso).toBeNull();
+        expect(h.state.cell('a', h.state.columns.value[0].iso).map(t => t.title)).toEqual(['ОВ1','ОВ2','ОВ3']);
+        expect(h.state.columns.value[1].iso).toBe('2026-10-26');
+    });
+    it('advances an open current-day view at midnight but keeps a manually selected period', async () => {
+        const h = harness([data(), {...data(), today:'2026-10-27'}, {...data(), today:'2026-10-28'}]);
+        await h.state.load();
+        await h.state.load(true);
+        expect(h.state.anchor.value).toBe('2026-10-27');
+        h.state.anchor.value = '2026-10-01';
+        await h.state.load(true);
+        expect(h.state.anchor.value).toBe('2026-10-01');
+    });
+    it('keeps vacation dates including weekends visible with the full comment', async () => {
+        const event = {id:'e1', engineer_id:'a', kind:'vacation', date_from:'2026-10-30', date_to:'2026-11-01', comment:'Согласованный отпуск'};
+        const h = harness([{...data(), events:[event]}]);
+        await h.state.load();
+        expect(h.state.eventsAt('a','2026-10-30')).toEqual([event]);
+        expect(h.state.eventsAt('a','2026-11-01')).toEqual([event]);
+        expect(h.state.eventsAt('b','2026-10-31')).toEqual([]);
+        expect(h.state.eventsAt('a',null)).toEqual([]);
+        expect(h.state.days.value.find(d => d.iso === '2026-10-31')).toMatchObject({busy:true,off:true});
+        expect(h.state.eventTip(event)).toContain('Согласованный отпуск');
+    });
+    it('requires a comment for external work and persists the full inclusive date range', async () => {
+        const h = harness([data(), {...data(), revision:1}]);
+        await h.state.load();
+        h.state.eventDialog.value = {showModal:vi.fn(), close:vi.fn()};
+        await h.state.openEvent(null, 'b');
+        h.state.eventDraft.value.kind = 'external';
+        expect(h.state.validEvent.value).toBeFalsy();
+        await h.state.saveEvent();
+        expect(h.fetch).toHaveBeenCalledTimes(1);
+        h.state.eventDraft.value.comment = 'Подготовить ответ\nзаказчику';
+        h.state.eventDraft.value.date_to = '2026-10-29';
+        await h.state.saveEvent();
+        expect(JSON.parse(h.fetch.mock.calls[1][1].body)).toMatchObject({kind:'save_event', event_kind:'external',
+            engineer_id:'b', date_from:'2026-10-26', date_to:'2026-10-29', comment:'Подготовить ответ\nзаказчику'});
+        expect(h.state.eventOpen.value).toBe(false);
+        expect(h.state.eventDialog.value.close).toHaveBeenCalledOnce();
+    });
+    it('retains an edited event after a conflict and denies read-only writes', async () => {
+        const event = {id:'event', engineer_id:'a', kind:'external', date_from:'2026-10-26', date_to:'2026-10-27', comment:'Старая задача'};
+        const h = harness([{...data(),events:[event]}, {detail:{message:'Занятость изменилась'}}, {...data(),revision:2,events:[event]}]);
+        await h.state.load();
+        h.state.eventDialog.value = {showModal:vi.fn(),close:vi.fn()};
+        await h.state.openEvent(event);
+        h.state.eventDraft.value.comment = 'Обновлённая задача';
+        await h.state.saveEvent();
+        expect(h.state.eventDraft.value.comment).toBe('Обновлённая задача');
+        expect(h.state.eventOpen.value).toBe(true);
+        expect(h.state.eventDialog.value.close).not.toHaveBeenCalled();
+        h.state.data.value.can_edit = false;
+        await h.state.saveEvent();
+        expect(h.fetch).toHaveBeenCalledTimes(3);
+    });
+});
+
+it('clears the date when dropping in the undated column but preserves it when dropping on an engineer', async () => {
+    const h = harness([data()]);
+    await h.state.load();
+    h.state.dragging.value = ['1'];
+    const engineer = h.state.data.value.engineers[0];
+    const event = {preventDefault:vi.fn()};
+    h.state.overCell(engineer, null, event, true);
+    expect(h.state.insertion.value).toMatchObject({engineer_id:'a', forecast_date:null});
+    h.state.overCell(engineer, null, event);
+    expect(h.state.insertion.value).not.toHaveProperty('forecast_date');
+});

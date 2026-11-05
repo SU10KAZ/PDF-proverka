@@ -65,7 +65,7 @@ def _sync(conn, catalog, engineers):
     by_identity = {sources.identity(c): c for c in catalog}
     rows = store.tasks(conn)
     known = {sources.identity(r) for r in rows if r['project_id']}
-    active_engineers = {e['id'] for e in engineers}
+    active_engineers = {e['id'] for e in engineers if e.get('active') is not False}
     changed = False
     # Existing human review activity is the platform's pre-calendar start event.
     for item in catalog:
@@ -85,7 +85,8 @@ def _sync(conn, catalog, engineers):
         item = by_identity.get(sources.identity(row))
         before = dict(row)
         if item is None:
-            row['state'] = 'cancelled'  # deleted/hidden/replaced upstream version
+            # A missing/hidden source is not evidence of a completed review.
+            continue
         elif item['completed_at']:
             row.update(state='completed', completed_at=item['completed_at'])
         elif item['started_at']:
@@ -189,20 +190,91 @@ def _check_capacity(before, after, engineers, config, catalog):
                 'daily_capacity_exceeded')
 
 
-def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
-    rows = store.tasks(conn)
-    active_engineer_ids = {e['id'] for e in engineers}
-    # Keep assignments visible if an employee is subsequently deactivated.
-    inactive_ids = ({r['engineer_id'] for r in rows if r['state'] in ACTIVE} - active_engineer_ids
-                    - sources.RESERVE_EXCLUDED_ENGINEER_IDS)
-    for eid in sorted(inactive_ids):
+def _with_events(engineers, events):
+    return [dict(e, unavailable=[*e.get('unavailable', []), *[
+        {'from': event['date_from'], 'to': event['date_to']}
+        for event in events if event['engineer_id'] == e['id']]]) for e in engineers]
+
+
+def _calendar_engineers(conn, engineers):
+    events = store.events(conn)
+    known = {e['id'] for e in engineers}
+    inactive = (({r['engineer_id'] for r in store.tasks(conn) if r['state'] in ACTIVE}
+                 | {e['engineer_id'] for e in events}) - known - sources.RESERVE_EXCLUDED_ENGINEER_IDS)
+    for eid in sorted(inactive):
         from backend.app.services.common import user_service
         user = user_service.get_user_by_id(eid) or {}
-        engineers.append({'id': eid, 'name': user.get('name') or eid, 'direction': 'Неактивные сотрудники',
-                          'rate': '0', 'rate_source': 'inactive', 'active': False})
+        engineers = [*engineers, {'id': eid, 'name': user.get('name') or eid, 'direction': 'Неактивные сотрудники',
+                                 'rate': '0', 'rate_source': 'inactive', 'active': False}]
+    return _with_events(engineers, events)
+
+
+def _roll_forward(conn, catalog, engineers, config):
+    """Carry unfinished work forward, preserving IDs and spilling into free workdays."""
+    today = sources.today()
+    rows = store.tasks(conn)
+    completed = _completed_counts(catalog)
+    changed = False
+    for engineer in engineers:
+        engineer_changed = False
+        queue = [r for r in rows if r['engineer_id'] == engineer['id'] and r['state'] in ACTIVE
+                 and (r.get('forecast_date') or r['state'] == 'in_progress')]
+        def needs_roll(row):
+            value = row.get('forecast_date')
+            return not value or value < today.isoformat() or not sources.is_workday(date.fromisoformat(value), config, engineer)
+        if not any(needs_roll(r) for r in queue):
+            continue
+        queue.sort(key=lambda r: (r['state'] != 'in_progress', r.get('forecast_date') or today.isoformat(),
+                                 r['position'], r['id']))
+        occupied = completed.copy()
+        limits = {}
+        cursor = today
+        for row in queue:
+            earliest = date.fromisoformat(row['forecast_date']) if row.get('forecast_date') and row['state'] != 'in_progress' else today
+            start = max(cursor, earliest)
+            first_workday = None
+            target = None
+            for offset in range(3660):
+                day = start + timedelta(days=offset)
+                if not sources.is_workday(day, config, engineer):
+                    continue
+                first_workday = first_workday or day
+                if day not in limits:
+                    limits[day] = sources.daily_capacity(engineer, config, day)
+                if occupied[(engineer['id'], day.isoformat())] < limits[day]:
+                    target = day
+                    break
+            # A removed/zero plan must never make existing work disappear.
+            # Keep it visible with an overloaded-day indicator until a plan is set.
+            target = target or first_workday or start
+            cursor = target
+            occupied[(engineer['id'], target.isoformat())] += 1
+            if row.get('forecast_date') != target.isoformat():
+                row.update(forecast_date=target.isoformat(), updated_at=now())
+                store.save_task(conn, row)
+                changed = True
+                engineer_changed = True
+        # Preserve queue order when several old dates land on the same day.
+        if engineer_changed:
+            positions = Counter()
+            for row in queue:
+                positions[row['forecast_date']] += 1
+                if row['position'] != positions[row['forecast_date']]:
+                    row.update(position=positions[row['forecast_date']], updated_at=now())
+                    store.save_task(conn, row)
+    if changed:
+        store.bump(conn)
+
+
+def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
+    rows = store.tasks(conn)
+    visible_ids = {e['id'] for e in engineers}
+    events = [e for e in store.events(conn) if e['engineer_id'] in visible_ids]
+    rows = [r for r in rows if r['engineer_id'] in visible_ids]
     view_start = view_start or sources.today()
-    max_date = max((date.fromisoformat(r['forecast_date']) for r in rows
-                    if r['state'] in ACTIVE and r.get('forecast_date')), default=view_start)
+    max_date = max([view_start, *[date.fromisoformat(r['forecast_date']) for r in rows
+                   if r['state'] in ACTIVE and r.get('forecast_date')],
+                   *[date.fromisoformat(e['date_to']) for e in events]])
     horizon = max(28, min(3660, (max_date - view_start).days + 1))
     completed = _completed_counts(catalog)
     for engineer in engineers:
@@ -221,8 +293,8 @@ def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
         engineer['completed_today'] = sum(
             str(c.get('completed_at') or '')[:10] == sources.today().isoformat()
             and reviewer_ids.get(c.get('reviewer', '')) == engineer['id'] for c in catalog)
-    # Dates are explicitly assigned by a person. Forecasting from engineer
-    # capacity is intentionally not part of the reserve calendar anymore.
+    # Undated preparation stays visible separately; dated work is rolled forward
+    # before this snapshot, without changing actual completion history.
     projected = [dict(r, conditional=False, unscheduled_reason=None) for r in rows if r['state'] in ACTIVE]
     for row in projected:
         item = by_identity.get(sources.identity(row), {})
@@ -230,6 +302,7 @@ def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
         # Readiness must still be enforced for an already started project if its
         # upstream artifacts were removed. A click never changes this flag.
         row['documents_ready'] = bool(item.get('ready'))
+        row['source_missing'] = bool(row['project_id'] and not item)
     for engineer in engineers:
         assigned = [r for r in projected if r['engineer_id'] == engineer['id']]
         engineer.update(remaining=len(assigned), preparation=sum(r['state'] == 'preparation' for r in assigned),
@@ -249,7 +322,7 @@ def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
         if previous is None or _version_no_from_id(item['version_id']) > _version_no_from_id(previous['version_id']):
             latest[project_key] = item
     return {'revision': store.revision(conn), 'today': sources.today().isoformat(), 'engineers': engineers,
-            'tasks': projected, 'undo_operation_id': undo_id,
+            'tasks': projected, 'events': events, 'undo_operation_id': undo_id,
             'available_projects': [c for c in latest.values() if not c['completed_at'] and sources.identity(c) not in assigned_ids],
             'calendar': {'holidays': config.get('holidays', []), 'working_dates': config.get('working_dates', []),
                          'configured': bool(config)},
@@ -265,7 +338,9 @@ def snapshot(actor='', view_start=None):
     # reverse a concurrent start/completion reconciled by another request.
     with store.transaction() as conn:
         catalog = sources.catalog()
+        engineers = _calendar_engineers(conn, engineers)
         _sync(conn, catalog, engineers)
+        _roll_forward(conn, catalog, engineers, config)
         return _snapshot(conn, catalog, engineers, config, actor, view_start)
 
 
@@ -294,7 +369,8 @@ def mutate(payload, actor, view_start=None):
     operation_id = payload['operation_id']
     digest = hashlib.sha256(encode(payload).encode()).hexdigest()
     config = sources.calendar_config()
-    engineers = sources.engineers(config, sources.today())
+    base_engineers = sources.engineers(config, sources.today())
+    engineers = base_engineers
     engineer_ids = {e['id'] for e in engineers}
     kind = payload['kind']
     with store.transaction() as conn:
@@ -302,7 +378,9 @@ def mutate(payload, actor, view_start=None):
         if previous and (previous['actor'] != actor or previous['request_hash'] != digest):
             raise ReserveError('Ключ запроса уже использован для другой операции.', 'idempotency_conflict', 409)
         catalog = sources.catalog()
+        engineers = _calendar_engineers(conn, base_engineers)
         _sync(conn, catalog, engineers)
+        _roll_forward(conn, catalog, engineers, config)
         if previous:
             return {**_snapshot(conn, catalog, engineers, config, actor, view_start), 'operation': json.loads(previous['result_json']), 'replayed': True}
         if payload['revision'] != store.revision(conn):
@@ -394,6 +472,8 @@ def mutate(payload, actor, view_start=None):
                         target_date = date.fromisoformat(str(target_date)).isoformat()
                     except ValueError:
                         raise ReserveError('Некорректная дата переноса.')
+                    if target_date < sources.today().isoformat():
+                        raise ReserveError('Незавершённый проект нельзя перенести в прошедший день.')
                 if anchor and has_target_date:
                     anchor_row = next((r for r in target_queue if r['id'] == anchor), None)
                     if anchor_row and anchor_row.get('forecast_date') != target_date:
@@ -468,6 +548,47 @@ def mutate(payload, actor, view_start=None):
                 row['updated_at'] = now()
                 store.save_task(conn, row)
                 _normalize(conn, engineers)
+            elif kind in ('save_event', 'delete_event'):
+                events = store.events(conn)
+                event_id = payload.get('event_id')
+                old_event = next((e for e in events if e['id'] == event_id), None)
+                if (event_id or kind == 'delete_event') and not old_event:
+                    raise ReserveError('Запись занятости не найдена.', 'event_not_found', 404)
+                affected = {old_event['engineer_id']} if old_event else set()
+                if kind == 'save_event':
+                    eid = payload.get('engineer_id')
+                    if eid not in engineer_ids:
+                        raise ReserveError('Активный инженер не найден.')
+                    event_kind = payload.get('event_kind')
+                    if event_kind not in ('vacation', 'external'):
+                        raise ReserveError('Выберите отпуск или постороннюю задачу.')
+                    try:
+                        first = date.fromisoformat(str(payload.get('date_from')))
+                        last = date.fromisoformat(str(payload.get('date_to')))
+                    except ValueError:
+                        raise ReserveError('Укажите даты начала и окончания занятости.')
+                    if last < first or (last - first).days >= 3660 or last > sources.today() + timedelta(days=3660):
+                        raise ReserveError('Проверьте даты занятости: период не более десяти лет, окончание не раньше начала.')
+                    comment = str(payload.get('comment') or '').strip()
+                    if len(comment) > 4000 or (event_kind == 'external' and not comment):
+                        raise ReserveError('Для посторонней задачи нужен комментарий, не более 4000 символов.')
+                    if any(e['id'] != event_id and e['engineer_id'] == eid
+                           and e['date_from'] <= last.isoformat() and e['date_to'] >= first.isoformat() for e in events):
+                        raise ReserveError('У сотрудника уже отмечена занятость в выбранный период.', 'event_overlap', 409)
+                    stamp = now()
+                    event = {**(old_event or {'id': str(uuid.uuid4()), 'created_at': stamp, 'created_by': actor}),
+                             'engineer_id': eid, 'kind': event_kind, 'date_from': first.isoformat(),
+                             'date_to': last.isoformat(), 'comment': comment, 'updated_at': stamp}
+                    affected.add(eid)
+                    before = _queue_snapshot(conn, affected)
+                    store.save_event(conn, event)
+                else:
+                    before = _queue_snapshot(conn, affected)
+                    event = None
+                    conn.execute('DELETE FROM reserve_events WHERE id=?', (event_id,))
+                result.update(event_before=old_event, event_after=event)
+                engineers = _calendar_engineers(conn, base_engineers)
+                _roll_forward(conn, catalog, engineers, config)
             elif kind == 'undo':
                 original = conn.execute('SELECT * FROM reserve_operations WHERE id=? AND actor=?', (payload.get('undo_id'), actor)).fetchone()
                 if not original or original['undone_by'] or original['kind'] not in ('move', 'delete', 'add_preparation', 'assign'):

@@ -41,12 +41,13 @@ def add(eid='a', *names):
 def test_fractional_quota_workdays_absence_zero_and_conditional(env):
     _, people = env
     people[0]['unavailable'] = [{'from': '2026-10-29', 'to': '2026-10-29'}]
-    result = add('a', *map(str, range(9)))
-    assert [t['forecast_date'] for t in result['tasks']] == ['2026-10-26', '2026-10-27', '2026-10-27',
+    rows = add('a', *map(str, range(9)))['tasks']
+    result = svc.forecast(rows, people, src.calendar_config(), src.today())
+    assert [t['forecast_date'] for t in result] == ['2026-10-26', '2026-10-27', '2026-10-27',
         '2026-10-30', '2026-10-30', '2026-11-02', '2026-11-02', '2026-11-03', '2026-11-04']
-    assert all(t['conditional'] for t in result['tasks'])
+    assert all(t['conditional'] for t in result)
     people[0]['rate'] = '0'
-    assert all(t['forecast_date'] is None for t in svc.snapshot()['tasks'])
+    assert all(t['forecast_date'] is None for t in svc.forecast(rows, people, src.calendar_config(), src.today()))
 
 
 def test_atomic_multi_engineer_add_idempotency_and_full_names(env):
@@ -467,3 +468,173 @@ def test_missing_norm_does_not_create_invisible_unscheduled_assignments(env):
         call('assign', items=[{'engineer_id': 'a', **catalog[0]}])
     assert caught.value.code == 'capacity_missing'
     assert svc.snapshot()['tasks'] == []
+
+
+def test_overdue_queue_rolls_every_day_and_only_completed_review_disappears(env, monkeypatch):
+    catalog, people = env
+    people[0]['rate'] = '1'
+    monkeypatch.setattr(src, 'calendar_config', lambda: {})
+    first = call('assign', items=[{'engineer_id': 'a', **p} for p in catalog[:3]])
+    ids = {r['project_id']: r['id'] for r in first['tasks']}
+    monkeypatch.setattr(src, 'today', lambda: date(2026, 10, 29))
+    rolled = svc.snapshot()
+    by_project = {r['project_id']: r for r in rolled['tasks']}
+    assert [by_project[p['project_id']]['forecast_date'] for p in catalog[:3]] == [
+        '2026-10-29', '2026-10-30', '2026-11-02']
+    assert {r['project_id']: r['id'] for r in rolled['tasks']} == ids
+    assert svc.snapshot()['revision'] == rolled['revision']
+    monkeypatch.setattr(src, 'today', lambda: date(2026, 10, 30))
+    assert min(r['forecast_date'] for r in svc.snapshot()['tasks']) == '2026-10-30'
+    catalog[0].update(completed_at='2026-10-30', reviewer='A')
+    remaining = svc.snapshot()['tasks']
+    assert {r['id'] for r in remaining} == set(ids.values()) - {ids[catalog[0]['project_id']]}
+    assert all(r['forecast_date'] >= '2026-10-30' for r in remaining)
+
+
+def test_rollover_skips_holidays_weekends_absence_and_completed_slots(env, monkeypatch):
+    catalog, people = env
+    people[0].update(rate='1', unavailable=[{'from': '2026-10-29', 'to': '2026-10-29'}])
+    call('assign', items=[{'engineer_id': 'a', **catalog[0]}])
+    catalog[-1].update(completed_at='2026-10-30', reviewer='A')
+    monkeypatch.setattr(src, 'today', lambda: date(2026, 10, 28))
+    result = svc.snapshot()
+    assert result['tasks'][0]['forecast_date'] == '2026-11-02'
+
+
+def test_started_work_and_missing_source_stay_visible_without_a_plan(env, monkeypatch):
+    catalog, people = env
+    assigned = call('assign', items=[{'engineer_id': 'a', **catalog[0]}])
+    task_id = assigned['tasks'][0]['id']
+    call('start', task_id=task_id)
+    people[0]['rate'] = '0'
+    catalog.pop(0)
+    monkeypatch.setattr(src, 'today', lambda: date(2026, 10, 29))
+    result = svc.snapshot()
+    assert result['tasks'][0]['id'] == task_id
+    assert result['tasks'][0]['state'] == 'in_progress'
+    assert result['tasks'][0]['source_missing']
+    assert result['tasks'][0]['forecast_date'] == '2026-10-29'
+    assert result['engineers'][0]['day_limits']['2026-10-29'] == 0
+
+
+def test_rollover_preserves_order_when_dates_merge_and_rejects_stale_mutation(env, monkeypatch):
+    catalog, people = env
+    people[0]['rate'] = '1'
+    initial = call('assign', items=[{'engineer_id': 'a', **p} for p in catalog[:2]])
+    ids = [r['id'] for r in sorted(initial['tasks'], key=lambda r: r['forecast_date'])]
+    people[0]['rate'] = '3'
+    monkeypatch.setattr(src, 'today', lambda: date(2026, 10, 30))
+    with pytest.raises(svc.ReserveError) as error:
+        svc.mutate(dict(operation_id=str(uuid4()), revision=initial['revision'], kind='delete', task_ids=ids), 'test')
+    assert error.value.code == 'revision_conflict'
+    rolled = svc.snapshot()
+    assert [r['id'] for r in rolled['tasks']] == ids
+    assert [r['position'] for r in rolled['tasks']] == [1, 2]
+    assert {r['forecast_date'] for r in rolled['tasks']} == {'2026-10-30'}
+
+
+def test_preparation_without_dates_persists_with_zero_plan(env):
+    _, people = env
+    people[0]['rate'] = '0'
+    created = add('a', 'ОВ — 1', 'ОВ — 2', 'ОВ — 3')
+    assert len(created['tasks']) == 3
+    assert all(r['forecast_date'] is None for r in created['tasks'])
+    assert svc.snapshot()['tasks'] == created['tasks']
+
+
+def test_vacation_moves_existing_and_new_projects_and_is_idempotent(env):
+    catalog, _ = env
+    initial = call('assign', items=[{'engineer_id': 'a', **p} for p in catalog[:2]])
+    body = dict(operation_id=str(uuid4()), revision=initial['revision'], kind='save_event',
+                engineer_id='a', event_kind='vacation', date_from='2026-10-27', date_to='2026-10-30', comment='Отпуск')
+    result = svc.mutate(body, 'test')
+    assert {r['forecast_date'] for r in result['tasks']} == {'2026-11-02'}
+    assert result['engineers'][0]['day_limits']['2026-10-27'] == 0
+    assert len(svc.mutate(body, 'test')['events']) == 1
+    more = call('assign', items=[{'engineer_id': 'a', **catalog[2]}])
+    assert next(r for r in more['tasks'] if r['project_id'] == catalog[2]['project_id'])['forecast_date'] == '2026-11-03'
+    with pytest.raises(svc.ReserveError, match='лимит'):
+        call('move', task_ids=[initial['tasks'][0]['id']], engineer_id='a', forecast_date='2026-10-29')
+    assert svc.snapshot()['events'][0]['comment'] == 'Отпуск'
+
+
+def test_external_task_requires_comment_can_be_edited_and_deleted(env):
+    result = call('save_event', engineer_id='a', event_kind='external', date_from='2026-10-26', date_to='2026-10-27', comment='Совещание с заказчиком')
+    event = result['events'][0]
+    updated = call('save_event', event_id=event['id'], engineer_id='b', event_kind='external',
+                   date_from='2026-10-29', date_to='2026-10-30', comment='  Подготовка ответа\nзаказчику  ')
+    assert updated['events'][0]['id'] == event['id']
+    assert updated['events'][0]['comment'] == 'Подготовка ответа\nзаказчику'
+    assert updated['engineers'][0]['day_limits']['2026-10-26'] == 2
+    assert updated['engineers'][1]['day_limits']['2026-10-29'] == 0
+    deleted = call('delete_event', event_id=event['id'])
+    assert deleted['events'] == []
+    assert deleted['engineers'][1]['day_limits']['2026-10-29'] == 2
+    with db.transaction() as conn:
+        operation = conn.execute('SELECT result_json FROM reserve_operations WHERE id=?', (deleted['operation']['id'],)).fetchone()
+        assert json.loads(operation[0])['event_before']['comment'] == 'Подготовка ответа\nзаказчику'
+
+
+@pytest.mark.parametrize('extra', [
+    {'comment': '  '}, {'comment': 'x' * 4001}, {'date_to': '2026-10-25'},
+    {'date_from': 'invalid'}, {'engineer_id': 'missing'}, {'event_kind': 'unknown'},
+])
+def test_invalid_event_does_not_change_queue_or_availability(env, extra):
+    payload = dict(engineer_id='a', event_kind='external', date_from='2026-10-26', date_to='2026-10-27', comment='Работа')
+    before = svc.snapshot()
+    with pytest.raises(svc.ReserveError):
+        call('save_event', **{**payload, **extra})
+    assert svc.snapshot() == before
+
+
+def test_event_overlap_and_concurrent_edit_are_rejected(env):
+    first = call('save_event', engineer_id='a', event_kind='vacation', date_from='2026-10-26', date_to='2026-10-30')
+    with pytest.raises(svc.ReserveError) as error:
+        call('save_event', engineer_id='a', event_kind='external', date_from='2026-10-30', date_to='2026-11-02', comment='Работа')
+    assert error.value.code == 'event_overlap'
+    with pytest.raises(svc.ReserveError) as error:
+        svc.mutate(dict(operation_id=str(uuid4()), revision=0, kind='delete_event', event_id=first['events'][0]['id']), 'test')
+    assert error.value.code == 'revision_conflict'
+    assert len(svc.snapshot()['events']) == 1
+
+
+def test_event_api_persistence_and_validation_across_sessions(env):
+    app = FastAPI()
+    app.include_router(reserve_calendar.router)
+    first, second = TestClient(app), TestClient(app)
+    body = dict(operation_id=str(uuid4()), revision=0, kind='save_event', engineer_id='a',
+                event_kind='external', date_from='2026-10-26', date_to='2026-10-26', comment='Работа над сметой')
+    response = first.post('/api/schedule/reserve/operations', json=body)
+    assert response.status_code == 200
+    assert second.get('/api/schedule/reserve').json()['events'] == response.json()['events']
+    response = first.post('/api/schedule/reserve/operations', json={**body, 'event_kind': 'unknown'})
+    assert response.status_code == 422
+
+
+def test_rollover_prioritizes_started_review_over_older_unstarted_work(env, monkeypatch):
+    catalog, people = env
+    people[0]['rate'] = '1'
+    result = call('assign', items=[{'engineer_id': 'a', **p} for p in catalog[:2]])
+    started_id = next(r['id'] for r in result['tasks'] if r['project_id'] == catalog[1]['project_id'])
+    call('start', task_id=started_id)
+    monkeypatch.setattr(src, 'today', lambda: date(2026, 10, 30))
+    result = svc.snapshot()
+    assert next(r for r in result['tasks'] if r['id'] == started_id)['forecast_date'] == '2026-10-30'
+    assert next(r for r in result['tasks'] if r['id'] != started_id)['forecast_date'] == '2026-11-02'
+    assert svc.snapshot()['revision'] == result['revision']
+
+
+def test_vacation_can_be_added_to_existing_database_without_changing_task_ids(env):
+    first = add('a', 'Подготовка')
+    with db.transaction() as conn:
+        conn.execute('DROP TABLE reserve_events')
+    after = call('save_event', engineer_id='a', event_kind='vacation', date_from='2026-10-26', date_to='2026-10-27')
+    assert [t['id'] for t in after['tasks']] == [t['id'] for t in first['tasks']]
+    assert len(after['events']) == 1
+
+
+def test_past_manual_move_is_rejected_without_hiding_project(env):
+    initial = add('a', 'Подготовка')
+    with pytest.raises(svc.ReserveError, match='прошедший день'):
+        call('move', engineer_id='a', task_ids=[initial['tasks'][0]['id']], forecast_date='2026-10-23')
+    assert svc.snapshot()['tasks'] == initial['tasks']

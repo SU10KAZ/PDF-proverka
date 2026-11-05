@@ -33,7 +33,7 @@ class QueueItem(BaseModel):
 class Operation(BaseModel):
     operation_id: UUID
     revision: int = Field(ge=0)
-    kind: Literal['move', 'delete', 'add_preparation', 'assign', 'link', 'start', 'undo']
+    kind: Literal['move', 'delete', 'add_preparation', 'assign', 'link', 'start', 'undo', 'save_event', 'delete_event']
     items: list[QueueItem] = Field(default_factory=list, max_length=1000)
     task_ids: list[str] = Field(default_factory=list, max_length=1000)
     task_id: str | None = None
@@ -43,6 +43,11 @@ class Operation(BaseModel):
     forecast_date: str | None = None
     project: ProjectLink | None = None
     undo_id: str | None = None
+    event_id: str | None = None
+    event_kind: Literal['vacation', 'external'] | None = None
+    date_from: date | None = None
+    date_to: date | None = None
+    comment: str = Field(default='', max_length=4000)
 
 
 def _actor(request):

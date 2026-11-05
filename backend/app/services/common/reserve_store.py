@@ -26,6 +26,12 @@ CREATE TABLE IF NOT EXISTS reserve_tasks (
   UNIQUE(object_id, project_id, version_id, check_type)
 );
 CREATE INDEX IF NOT EXISTS reserve_queue ON reserve_tasks(engineer_id, position);
+CREATE TABLE IF NOT EXISTS reserve_events (
+  id TEXT PRIMARY KEY, engineer_id TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK(kind IN ('vacation','external')),
+  date_from TEXT NOT NULL, date_to TEXT NOT NULL, comment TEXT NOT NULL,
+  created_at TEXT NOT NULL, updated_at TEXT NOT NULL, created_by TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS reserve_operations (
   id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_hash TEXT NOT NULL,
   kind TEXT NOT NULL, before_json TEXT NOT NULL, after_json TEXT NOT NULL,
@@ -75,6 +81,19 @@ def transaction():
 
 def tasks(conn) -> list[dict]:
     return [dict(r) for r in conn.execute('SELECT * FROM reserve_tasks ORDER BY engineer_id, position, id')]
+
+
+def events(conn) -> list[dict]:
+    return [dict(r) for r in conn.execute('SELECT * FROM reserve_events ORDER BY date_from, engineer_id, id')]
+
+
+def save_event(conn, event: dict):
+    keys = list(event)
+    conn.execute(
+        f"INSERT INTO reserve_events ({','.join(keys)}) VALUES ({','.join('?' for _ in keys)}) "
+        f"ON CONFLICT(id) DO UPDATE SET {','.join(k+'=excluded.'+k for k in keys if k != 'id')}",
+        list(event.values()),
+    )
 
 
 def revision(conn) -> int:

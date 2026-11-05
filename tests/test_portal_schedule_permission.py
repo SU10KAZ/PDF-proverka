@@ -23,9 +23,9 @@ def portal(tmp_path, monkeypatch):
     viewer = store.create_account(login="viewer", display_name="Viewer", role="viewer", password="viewer-password-1",
                                   sections={"schedule": {"view": True}, "audit_results": {"view": True}})
     calls = []
-    monkeypatch.setattr(reserve_service, "snapshot", lambda actor: {"tasks": [], "revision": 0})
+    monkeypatch.setattr(reserve_service, "snapshot", lambda actor, view_start=None: {"tasks": [], "revision": 0})
 
-    def mutate(body, actor):
+    def mutate(body, actor, view_start=None):
         calls.append((body, actor))
         return {"tasks": [], "revision": 1}
 
@@ -62,7 +62,8 @@ def test_grant_all_calendar_operations_and_revoke_in_existing_session(portal):
     admin, viewer, owner, account, calls = portal
     path = f"/api/admin/accounts/{account['id']}/edit-schedule"
     assert viewer.get("/api/schedule/reserve").json()["can_edit"] is False
-    assert operation(viewer).status_code == 403
+    for kind in ("add_preparation", "save_event", "delete_event"):
+        assert operation(viewer, kind).status_code == 403
     assert plan(viewer).status_code == 403
     assert viewer.put(path, json={"edit_schedule": True}).status_code == 403
     assert not calls
@@ -71,7 +72,7 @@ def test_grant_all_calendar_operations_and_revoke_in_existing_session(portal):
     assert caps["can_edit_schedule"] is True and caps["is_admin"] is False and caps["role"] == "viewer"
     assert '"can_edit_schedule": true' in viewer.get("/").text
     assert viewer.get("/api/schedule/reserve").json()["can_edit"] is True
-    for kind in ("add_preparation", "assign", "link", "move", "delete", "start", "undo"):
+    for kind in ("add_preparation", "assign", "link", "move", "delete", "start", "undo", "save_event", "delete_event"):
         assert operation(viewer, kind).status_code == 200
     assert all(actor == f"account:{account['id']}" for _, actor in calls)
     assert plan(viewer).status_code == 200
