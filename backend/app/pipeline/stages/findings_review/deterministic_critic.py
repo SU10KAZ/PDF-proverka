@@ -228,11 +228,16 @@ def build_index(blocks_analysis, doc_graph) -> _Index:
                 continue
             tbid = tb.get("block_id") or tb.get("id")
             if tbid:
-                idx.text_block_ids.add(str(tbid))
+                tbid = str(tbid)
+                idx.text_block_ids.add(tbid)
+                idx.block_page[tbid] = pnum
             txt = tb.get("text_norm") or tb.get("text") or ""
+            if tbid and txt:
+                idx.block_text[tbid] = str(txt)[:_MAX_BLOCK_TEXT_CHARS]
             if txt:
                 text_parts.append(str(txt))
         idx.text_block_ids.add(f"page_{pnum}_text")
+        idx.block_page[f"page_{pnum}_text"] = pnum
         if text_parts:
             idx.page_text[pnum] = " ".join(text_parts)[:_MAX_PAGE_TEXT_CHARS]
         for ib in page.get("image_blocks") or []:
@@ -240,6 +245,7 @@ def build_index(blocks_analysis, doc_graph) -> _Index:
                 ibid = ib.get("block_id") or ib.get("id")
                 if ibid:
                     idx.image_block_ids.add(str(ibid))
+                    idx.block_page.setdefault(str(ibid), pnum)
 
     return idx
 
@@ -262,8 +268,12 @@ def _block_ids_in_text(*texts: str) -> list:
     return out
 
 
-def _referenced_block_ids(finding: dict):
-    """Вернуть (image_refs, text_refs, evidence_pages)."""
+def _referenced_block_ids(finding: dict, idx: _Index | None = None):
+    """Вернуть ссылки; тип известных блоков определяет document_graph.
+
+    related/source_block_ids не содержат типа. Их нельзя считать только
+    графикой: merge передаёт в этих полях также реальные TEXT-блоки.
+    """
     image_refs, text_refs, pages = [], [], set()
 
     for ev in finding.get("evidence") or []:
@@ -299,6 +309,17 @@ def _referenced_block_ids(finding: dict):
         else:
             image_refs.append(bid)
 
+    if idx is not None:
+        refs = list(dict.fromkeys(image_refs + text_refs))
+        declared_text = set(text_refs)
+        image_refs, text_refs = [], []
+        for bid in refs:
+            if bid in idx.text_block_ids:
+                text_refs.append(bid)
+            elif bid in idx.image_block_ids:
+                image_refs.append(bid)
+            else:
+                (text_refs if bid in declared_text else image_refs).append(bid)
     return list(dict.fromkeys(image_refs)), list(dict.fromkeys(text_refs)), pages
 
 
@@ -316,7 +337,7 @@ def _mk_review(fid, verdict, failed, reason, evidence_checked, suggested_fix=Non
 def deterministic_verdict(finding: dict, idx: _Index):
     """Вердикт по проверкам 1/2/4 или None (структурно чисто → на LLM 3/5)."""
     fid = finding.get("id") or finding.get("finding_id")
-    image_refs, text_refs, ev_pages = _referenced_block_ids(finding)
+    image_refs, text_refs, ev_pages = _referenced_block_ids(finding, idx)
 
     # ─── Проверка 1: evidence_presence ───
     if not image_refs and not text_refs:
@@ -328,11 +349,11 @@ def deterministic_verdict(finding: dict, idx: _Index):
 
     # ─── Проверка 2: block_exists ───
     existing_image = [b for b in image_refs if b in idx.image_block_ids]
-    existing_text = [b for b in text_refs if (b in idx.text_block_ids or b.endswith("_text"))]
-    if image_refs and not existing_image and not existing_text:
+    existing_text = [b for b in text_refs if b in idx.text_block_ids]
+    if not existing_image and not existing_text:
         return _mk_review(
             fid, "phantom_block", ["block_exists"],
-            f"block_id отсутствуют в 01_blocks_analysis.json: {image_refs}.",
+            f"block_id отсутствуют в индексах графики и текста: {image_refs + text_refs}.",
             [],
         )
 
@@ -340,7 +361,7 @@ def deterministic_verdict(finding: dict, idx: _Index):
 
     # ─── Проверка 4: page_sheet_correct ───
     ref_pages = set(ev_pages)
-    for b in existing_image:
+    for b in existing_image + existing_text:
         if b in idx.block_page:
             ref_pages.add(idx.block_page[b])
     fpage = _normalize_finding_page(finding.get("page"))
@@ -353,7 +374,7 @@ def deterministic_verdict(finding: dict, idx: _Index):
     ):
         fsheet = str(finding.get("sheet") or "")
         ref_sheets = {idx.page_to_sheet.get(p, "") for p in ref_pages}
-        ref_sheets |= {idx.block_sheet.get(b, "") for b in existing_image}
+        ref_sheets |= {idx.block_sheet.get(b, "") for b in evidence_checked}
         ref_sheets.discard("")
         if not (fsheet and fsheet in ref_sheets):
             return _mk_review(
@@ -400,7 +421,7 @@ def _page_in(fpage, ref_pages) -> bool:
 
 def _finding_context(finding: dict, idx: _Index) -> str:
     fid = finding.get("id") or finding.get("finding_id")
-    image_refs, _text_refs, ev_pages = _referenced_block_ids(finding)
+    image_refs, text_refs, ev_pages = _referenced_block_ids(finding, idx)
     lines = [f"### {fid}"]
     for key in ("problem", "title"):
         if finding.get(key):
@@ -415,10 +436,10 @@ def _finding_context(finding: dict, idx: _Index) -> str:
         lines.append(f"norm: {finding['norm']}")
 
     shown = 0
-    for b in image_refs:
+    for b in image_refs + text_refs:
         if shown >= _MAX_BLOCKS_PER_FINDING:
             break
-        if b not in idx.image_block_ids:
+        if b not in idx.image_block_ids and b not in idx.text_block_ids:
             continue
         p = idx.block_page.get(b, "?")
         s = idx.block_sheet.get(b, "?")
@@ -601,7 +622,7 @@ async def run_deterministic_critic(
     for finding in candidates:
         fid = finding.get("id") or finding.get("finding_id")
         sem = semantic.get(str(fid))
-        image_refs, text_refs, _ = _referenced_block_ids(finding)
+        image_refs, text_refs, _ = _referenced_block_ids(finding, idx)
         ev_checked = [b for b in image_refs if b in idx.image_block_ids] + [
             b for b in text_refs if (b in idx.text_block_ids or b.endswith("_text"))
         ]

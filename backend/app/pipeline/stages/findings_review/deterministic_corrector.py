@@ -96,11 +96,11 @@ def _remove_phantom_blocks(finding: dict, idx: _Index) -> int:
     removed = 0
 
     def _exists_image(bid) -> bool:
-        return str(bid) in idx.image_block_ids
+        return str(bid) in idx.image_block_ids or str(bid) in idx.text_block_ids
 
     def _exists_text(bid) -> bool:
         b = str(bid)
-        return b in idx.text_block_ids or b.endswith("_text")
+        return b in idx.text_block_ids or b in idx.image_block_ids
 
     for key in ("related_block_ids", "source_block_ids"):
         lst = finding.get(key)
@@ -144,10 +144,10 @@ def _remove_phantom_blocks(finding: dict, idx: _Index) -> int:
 
 def _fix_page_sheet(finding: dict, idx: _Index) -> bool:
     """Выставить page/sheet по страницам реальных evidence-блоков."""
-    image_refs, _text_refs, ev_pages = _referenced_block_ids(finding)
+    image_refs, text_refs, ev_pages = _referenced_block_ids(finding, idx)
     pages = set(ev_pages)
-    for b in image_refs:
-        if b in idx.image_block_ids and b in idx.block_page:
+    for b in image_refs + text_refs:
+        if b in idx.block_page:
             pages.add(idx.block_page[b])
     pages_sorted = sorted(p for p in pages if p is not None)
     if not pages_sorted:
@@ -157,7 +157,7 @@ def _fix_page_sheet(finding: dict, idx: _Index) -> bool:
     # sheet: сначала document_graph (page→sheet), затем sheet самого evidence-блока
     sheet = idx.page_to_sheet.get(first)
     if not sheet:
-        for b in image_refs:
+        for b in image_refs + text_refs:
             if idx.block_page.get(b) == first and idx.block_sheet.get(b):
                 sheet = idx.block_sheet[b]
                 break
@@ -212,7 +212,7 @@ def correct_findings(findings_data, review_data, blocks_analysis, doc_graph):
                 changed = True
             # если evidence не осталось — это уже no_evidence → понижаем
             # (критичные/экономические — помечаем на ручную проверку, #31)
-            img, txt, _ = _referenced_block_ids(finding)
+            img, txt, _ = _referenced_block_ids(finding, idx)
             if not img and not txt:
                 if _downgrade_or_flag(finding) == "downgraded":
                     result.downgraded += 1

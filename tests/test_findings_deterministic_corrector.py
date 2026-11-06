@@ -230,3 +230,32 @@ def test_missing_review_returns_error(tmp_path):
     (tmp_path / "03_findings.json").write_text(json.dumps({"findings": []}), encoding="utf-8")
     res = _run(dcorr.run_deterministic_corrector(tmp_path, write=True))
     assert res.error is not None
+
+
+def test_phantom_cleanup_preserves_real_text_in_untyped_fields():
+    graph = {"pages": [{"page": 47, "sheet_no_raw": "9", "text_blocks": [
+        {"block_id": "blk_text", "text": "расчёт"},
+    ]}]}
+    finding = {"id": "F-016", "page": 47, "severity": "ЭКСПЛУАТАЦИОННОЕ",
+               "related_block_ids": ["blk_text", "blk_ghost"],
+               "source_block_ids": ["blk_text", "blk_ghost"],
+               "evidence": [{"block_id": "blk_text"}, {"block_id": "blk_ghost"}]}
+    data, result = dcorr.correct_findings({"findings": [finding]},
+        _review(("F-016", "phantom_block", "legacy review")), {}, graph)
+    assert finding["related_block_ids"] == ["blk_text"]
+    assert finding["source_block_ids"] == ["blk_text"]
+    assert finding["evidence"] == [{"block_id": "blk_text"}]
+    assert result.downgraded == 0
+    assert finding["severity"] == "ЭКСПЛУАТАЦИОННОЕ"
+
+
+def test_text_reference_page_can_be_corrected():
+    graph = {"pages": [{"page": 47, "sheet_no_raw": "9", "text_blocks": [
+        {"block_id": "blk_text", "text": "расчёт"},
+    ]}]}
+    finding = {"id": "F-016", "page": 4, "source_block_ids": ["blk_text"]}
+    _, result = dcorr.correct_findings({"findings": [finding]},
+        _review(("F-016", "page_mismatch", "wrong page")), {}, graph)
+    assert finding["page"] == 47
+    assert finding["sheet"] == "9"
+    assert result.page_fixed == 1

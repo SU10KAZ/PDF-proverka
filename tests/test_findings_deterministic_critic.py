@@ -196,3 +196,33 @@ def test_chunk_input_filename(tmp_path):
     ))
     assert res.findings_total == 1
     assert (tmp_path / "03_findings_review_001.json").exists()
+
+
+def test_text_ids_in_untyped_references_are_real_evidence():
+    graph = {"pages": [{"page": 47, "sheet_no_raw": "9", "text_blocks": [
+        {"block_id": "blk_calculation", "text": "G=61,12 м³/ч; v=0,66 м/с"},
+    ]}]}
+    for field in ("related_block_ids", "source_block_ids"):
+        finding = {"id": "F-016", "page": 47, field: ["blk_calculation"]}
+        idx = dc.build_index({}, graph)
+        assert dc.deterministic_verdict(finding, idx) is None
+        assert "G=61,12" in dc._finding_context(finding, idx)
+
+
+def test_known_text_reference_still_checks_page():
+    graph = {"pages": [{"page": 47, "text_blocks": [
+        {"block_id": "blk_calculation", "text": "расчёт"},
+    ]}]}
+    finding = {"id": "F-016", "page": 4, "source_block_ids": ["blk_calculation"]}
+    review = dc.deterministic_verdict(finding, dc.build_index({}, graph))
+    assert review["verdict"] == "page_mismatch"
+    assert review["evidence_checked"] == ["blk_calculation"]
+
+
+def test_unknown_text_reference_is_not_accepted_by_suffix():
+    idx = dc.build_index({}, {"pages": [{"page": 47}]})
+    for bid in ("blk_unknown", "page_999_text"):
+        finding = {"id": "F-016", "evidence_text_refs": [bid]}
+        assert dc.deterministic_verdict(finding, idx)["verdict"] == "phantom_block"
+    finding = {"id": "F-016", "page": 47, "evidence_text_refs": ["page_47_text"]}
+    assert dc.deterministic_verdict(finding, idx) is None
