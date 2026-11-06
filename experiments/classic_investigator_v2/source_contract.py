@@ -82,12 +82,18 @@ def assess(corpus,entries):
             'limits':'Successful response and matching source delivery only. Not proof of correct reading, all objects discovered, executed operations, valid findings or release readiness.'}
 
 
-def completion(source_report,operations):
-    # A declaration or a cited source is not an execution receipt.
-    unresolved=[op.get('id') for op in operations if op.get('status')!='performed' or not op.get('execution_receipt')]
-    return {'can_claim_complete':source_report['source_delivery_complete'] and not unresolved and bool(operations),
+def completion(source_report,operations,*,corpus=None):
+    from operation_receipts import verify
+    unresolved=[]
+    for op in operations:
+        receipt=op.get('execution_receipt')
+        if op.get('status')!='performed' or corpus is None or not isinstance(receipt,dict):
+            unresolved.append(op.get('id'));continue
+        if not verify(corpus,op.get('specification',{}),receipt):unresolved.append(op.get('id'))
+    return {'can_claim_complete':False,
+            'arithmetic_execution_complete':source_report['source_delivery_complete'] and not unresolved and bool(operations),
             'unresolved_operation_ids':unresolved,'operation_inventory_exists':bool(operations),
-            'limits':'Procedural gate only. Receipt correctness and inventory completeness require separate checks. needs_data/out_of_scope remain explicit, not checked.'}
+            'limits':'Source delivery and reproducible arithmetic only. Engineering completeness still requires object/operation inventory review, regimes, units, graphical checks and candidate disposition.'}
 
 
 if __name__=='__main__':
