@@ -30,6 +30,28 @@ class CircuitTests(unittest.TestCase):
         result = reconcile(rows, [self.observation('C17', 'active')], same_panel_scope_confirmed=True)
         self.assertEqual(result['rows'][0]['status'], 'table_id_present_parameters_unchecked')
 
+    def test_parent_link_routes_to_check_without_suppressing_or_guessing(self):
+        observations = [self.observation('C171', 'active'), self.observation('C172', 'active')]
+        links = [{'child_id': 'C171', 'parent_table_id': 'C17',
+                  'evidence_quote': 'branch passes through shared device', 'source_refs': ['graphic-1']}]
+        result = reconcile([{'id': 'C17'}], observations, same_panel_scope_confirmed=True, parent_links=links)
+        self.assertEqual(result['rows'][0]['status'], 'possible_parent_aggregation_requires_check')
+        self.assertEqual(result['rows'][1]['status'], 'active_line_missing_table_row_question')
+        self.assertEqual(len(result['rows']), 2)
+        self.assertFalse(any(row['technical_defect_confirmed'] for row in result['rows']))
+        result['rows'][0]['parent_links'][0]['source_refs'].append('mutated')
+        self.assertEqual(links[0]['source_refs'], ['graphic-1'])
+
+    def test_missing_parent_and_unsupported_link_stay_unresolved(self):
+        obs = [self.observation('C171', 'active')]
+        links = [{'child_id': 'C171', 'parent_table_id': 'C17',
+                  'evidence_quote': 'branch', 'source_refs': ['graphic-1']}]
+        result = reconcile([], obs, same_panel_scope_confirmed=True, parent_links=links)
+        self.assertEqual(result['rows'][0]['status'], 'parent_relation_unresolved')
+        links[0]['source_refs'] = []
+        with self.assertRaises(ValueError):
+            reconcile([], obs, same_panel_scope_confirmed=True, parent_links=links)
+
 
 if __name__ == '__main__':
     unittest.main()

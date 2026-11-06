@@ -26,9 +26,18 @@ def table_rows(text):
     return rows
 
 
-def reconcile(rows, observations, *, same_panel_scope_confirmed=False):
+def reconcile(rows, observations, *, same_panel_scope_confirmed=False, parent_links=()):
     table_counts = Counter(circuit_id(r['id']) for r in rows)
     graph_counts = Counter(circuit_id(r['id']) for r in observations)
+    # A link is supplied evidence to investigate, never inferred by removing
+    # digits from a cable/ breaker identifier and never proof of load inclusion.
+    links = {}
+    for link in parent_links:
+        child = circuit_id(link['child_id'])
+        parent = circuit_id(link['parent_table_id'])
+        if child == parent or not link.get('evidence_quote') or not link.get('source_refs'):
+            raise ValueError('Parent relation needs distinct IDs and source evidence')
+        links.setdefault(child, []).append(copy.deepcopy(link))
     results = []
     for observation in observations:
         item = copy.deepcopy(observation)
@@ -48,12 +57,20 @@ def reconcile(rows, observations, *, same_panel_scope_confirmed=False):
             status = 'reserve_no_missing_load_claim'
         elif table_counts[key]:
             status = 'table_id_present_parameters_unchecked'
+        elif links.get(key):
+            parents = {circuit_id(link['parent_table_id']) for link in links[key]}
+            if len(parents) != 1 or any(table_counts[parent] != 1 for parent in parents):
+                status = 'parent_relation_unresolved'
+            else:
+                status = 'possible_parent_aggregation_requires_check'
         else:
             status = 'active_line_missing_table_row_question'
         results.append({'observation': item, 'normalized_id': key, 'status': status,
+                        'parent_links': links.get(key, []),
                         'technical_defect_confirmed': False})
     return {'rows': results, 'counts': dict(Counter(x['status'] for x in results)),
             'limits': 'Only observed circuit identifiers in the supplied same-panel table. '
                       'Graphic transcription and extraction completeness require validation. '
+                      'Parent links do not prove aggregation, arithmetic or regime compatibility. '
                       'No missing-power quantity, equipment inadequacy or procurement deficit inferred.',
             'complete_engineering_check': False}
