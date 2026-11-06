@@ -1,5 +1,5 @@
 import unittest
-from preservation_contract import assess
+from preservation_contract import assess, assess_source_adjudication
 
 
 class PreservationContractTests(unittest.TestCase):
@@ -38,6 +38,23 @@ class PreservationContractTests(unittest.TestCase):
         self.sources[0]['candidate']['value_found'] = 'Group A: 8.5 A'
         self.response['reviews'][0]['issues'][0]['source_quote'] = 'Group A: 8.5 A'
         self.assertTrue(assess(self.sources, self.outputs, self.response)['contract_complete'])
+
+    def test_source_patch_contract_and_stale_edit_rejected(self):
+        payload = {'source_candidates': self.sources, 'final_findings': self.outputs,
+                   'review_issues': [{'issue_id': 'T-1:0', 'output_ids': ['F-4']}],
+                   'source_packet': {'authoritative_text': [{'block_id': 'b', 'text': 'Criterion passes.'}],
+                                     'location_metadata': []}}
+        response = {'decisions': [{'issue_id': 'T-1:0', 'decision': 'change_supported', 'reason': 'Retain caveat',
+                     'evidence': [{'kind': 'TEXT', 'id': 'b', 'quote': 'Criterion passes.'}]}],
+                    'patches': [{'finding_id': 'F-4', 'field': 'description', 'old_value': 'Difference exists.',
+                                 'new_value': 'Difference exists. Criterion passes.', 'issue_ids': ['T-1:0']}]}
+        self.assertTrue(assess_source_adjudication(payload, response)['contract_complete'])
+        self.assertEqual(self.outputs[0]['description'], 'Difference exists.')
+        response['patches'][0]['old_value'] = 'stale'
+        self.assertFalse(assess_source_adjudication(payload, response)['contract_complete'])
+        response['patches'][0]['old_value'] = 'Difference exists.'
+        response['decisions'][0]['evidence'][0]['quote'] = 'fabricated'
+        self.assertFalse(assess_source_adjudication(payload, response)['contract_complete'])
 
 
 if __name__ == '__main__':
