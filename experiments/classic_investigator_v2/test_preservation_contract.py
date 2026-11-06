@@ -34,6 +34,11 @@ class PreservationContractTests(unittest.TestCase):
         self.response['reviews'][0]['status'] = 'preserved'
         self.assertFalse(assess(self.sources, self.outputs, self.response)['contract_complete'])
 
+    def test_literal_evidence_field_is_part_of_original_candidate(self):
+        self.sources[0]['candidate']['value_found'] = 'Group A: 8.5 A'
+        self.response['reviews'][0]['issues'][0]['source_quote'] = 'Group A: 8.5 A'
+        self.assertTrue(assess(self.sources, self.outputs, self.response)['contract_complete'])
+
 
 if __name__ == '__main__':
     unittest.main()

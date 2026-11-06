@@ -51,7 +51,7 @@ def assess(sources, outputs, response):
             errors.append('preserved_without_clean_output_link')
         if status == 'partial' and not issues:
             errors.append('partial_without_explanation')
-        source_text = source_map.get(sid, {}).get('finding', '')
+        source_texts = list(text_fields(source_map.get(sid, {})))
         output_texts = [text for i in ids for text in text_fields(output_map[i])]
         for index, issue in enumerate(issues):
             if not isinstance(issue, dict):
@@ -59,7 +59,7 @@ def assess(sources, outputs, response):
             if issue.get('kind') not in {'lost_caveat', 'missing_atomic_claim', 'unjustified_strengthening', 'unresolved_disposition'}:
                 errors.append(f'issue{index}:unknown_kind')
             quote = issue.get('source_quote')
-            if not isinstance(quote, str) or not quote or quote not in source_text:
+            if not isinstance(quote, str) or not quote or not any(quote in text for text in source_texts):
                 errors.append(f'issue{index}:source_quote_not_literal')
             quote = issue.get('output_quote')
             if not isinstance(quote, str) or (quote and not any(quote in text for text in output_texts)):
