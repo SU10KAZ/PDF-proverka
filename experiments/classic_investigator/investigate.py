@@ -199,7 +199,7 @@ def configure(work):
     codex_runner.run_codex_exec = deny
 
 
-async def run(work, discipline, provider):
+async def run(work, discipline, provider, *, resume=False):
     configure(work)
     from backend.app.services.llm import codex_runner, claude_json_runner
     from subscription_retry import retry_subscription_call
@@ -208,22 +208,44 @@ async def run(work, discipline, provider):
     for name,digest in project['files'].items():
         if sha(source/name) != digest: raise ValueError('Frozen source changed')
     out = work/'runs'/f'{discipline}_{provider}'
-    out.mkdir(parents=True, exist_ok=False)
+    out.mkdir(parents=True, exist_ok=resume)
     corpus = Corpus(source, out/'images'); started = time.time()
     state = {'status':'running','model':MODELS[provider], 'started':started,'steps':0,'usage':[],
              'code_sha256':sha(__file__), 'prompt_sha256':hashlib.sha256(PROMPT.encode()).hexdigest(),
              'findings':[], 'operations':[], 'limitations':['single supplied document only; no adjacent cipher expansion yet']}
-    write(out/'status.json',state)
+    fresh_state = state
     messages = [{'role':'system','content':PROMPT}, {'role':'user','content':json.dumps({'project':project['project'], 'catalogue':corpus.catalogue()},ensure_ascii=False)}]
-    images = []; candidates = {}
+    images = []; candidates = {}; first_step = 0
+    if resume:
+        state = read(out/'status.json')
+        if state['status'] != 'failed': raise ValueError('Only failed run can resume')
+        if state['model'] != MODELS[provider] or state['prompt_sha256'] != fresh_state['prompt_sha256']:
+            raise ValueError('Resume would change model or prompt')
+        first_step = state['steps']
+        request = read(out/f'{first_step:02d}_request.json')
+        messages, images = request['messages'], request['images']
+        for previous in range(first_step):
+            for item in read(out/f'{previous:02d}_evidence.json'):
+                action = item.get('action')
+                if action and 'error' not in item.get('result', {}): corpus.execute(action)
+        candidates = {f['id']:f for f in state['findings']}
+        started = state['started']
+        history = out/'recovery'/str(time.time_ns()); history.mkdir(parents=True)
+        shutil.copyfile(out/'status.json',history/'status.json')
+        if (out/f'{first_step:02d}_response.json').exists():
+            shutil.copyfile(out/f'{first_step:02d}_response.json',history/'response.json')
+        state.update(status='running',error=None,resumed_at=time.time(),recovery_code_sha256=sha(__file__))
+        await asyncio.sleep(10)
+    write(out/'status.json',state)
     def record(attempt):
         with (out/'attempts.jsonl').open('a') as f: f.write(json.dumps(attempt)+'\n')
     try:
-        for step in range(24):
+        for step in range(first_step, 24):
             if (work/'STOP_REQUESTED.json').exists(): raise RuntimeError('Stopped by user')
             if time.time()-started >= 14400:
                 state['status']='budget_exhausted'; break
-            messages.append({'role':'user','content':f'Ход {step+1}/24. Сохрани текущие кандидаты и перечисли непроверенное, если бюджет заканчивается.'})
+            if not (resume and step == first_step):
+                messages.append({'role':'user','content':f'Ход {step+1}/24. Сохрани текущие кандидаты и перечисли непроверенное, если бюджет заканчивается.'})
             write(out/f'{step:02d}_request.json', {'messages':messages, 'images':images})
             fn = codex_runner.run_codex_json_messages if provider=='codex' else claude_json_runner.run_claude_json_messages
             result = await retry_subscription_call(fn, messages, model=MODELS[provider],timeout=600,
@@ -277,6 +299,7 @@ async def run(work, discipline, provider):
 if __name__=='__main__':
     p=argparse.ArgumentParser(); p.add_argument('command',choices=['prepare','run']); p.add_argument('--work',type=Path,default=DEFAULT_WORK)
     p.add_argument('--manifest',type=Path);p.add_argument('--discipline',choices=['AK','ITP','AR','KM','VK','EOM']);p.add_argument('--provider',choices=list(MODELS))
+    p.add_argument('--resume',action='store_true')
     a=p.parse_args();a.work.mkdir(parents=True,exist_ok=True)
     if a.command=='prepare': prepare(a.work,a.manifest)
-    else: asyncio.run(run(a.work,a.discipline,a.provider))
+    else: asyncio.run(run(a.work,a.discipline,a.provider,resume=a.resume))

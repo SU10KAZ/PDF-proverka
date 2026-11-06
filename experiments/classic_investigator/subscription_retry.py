@@ -11,7 +11,7 @@ import time
 
 RETRY_DELAY_SECONDS = 10
 _FATAL = re.compile(r'unauthorized|not authenticated|invalid api key|permission denied|unsupported model|model_not_found|insufficient_quota|quota exceeded|usage limit reached', re.I)
-_TRANSIENT = re.compile(r'\b(429|500|502|503|504|529)\b|too many requests|rate[_ ]limit|overload|at capacity|temporarily unavailable|service unavailable|bad gateway|internal server error|connection (?:reset|refused|closed)|stream (?:error|disconnected)|(?:codex|claude)[_ ]timeout|\[timeout\]', re.I)
+_TRANSIENT = re.compile(r'(?:claude|codex)_json_not_found|\b(429|500|502|503|504|529)\b|too many requests|rate[_ ]limit|overload|at capacity|temporarily unavailable|service unavailable|bad gateway|internal server error|connection (?:reset|refused|closed)|stream (?:error|disconnected)|(?:codex|claude)[_ ]timeout|\[timeout\]', re.I)
 _USAGE_FIELDS = ('input_tokens', 'output_tokens', 'cached_tokens', 'cache_write_tokens', 'reasoning_tokens', 'cost_usd', 'duration_ms')
 
 
