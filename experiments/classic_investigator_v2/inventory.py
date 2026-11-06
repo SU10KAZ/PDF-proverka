@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import sys
 import time
+import fcntl
 from source_contract import Corpus,read,write,sha
 from investigate import configure
 from subscription_retry import retry_subscription_call
@@ -85,9 +86,45 @@ def registry(packet_results):
             'limits':'All observations retained separately. Links are proposals, graph facts unverified, operation list incomplete until cross-document review.'}
 
 
-async def run(work,disc):
+def recover(out,batch,source_hashes):
+    state=read(out/'status.json')
+    if state['status'] not in {'failed','running'}:
+        raise ValueError('Inventory is already terminal/completed')
+    if state['source_hashes']!=source_hashes or read(out/'plan.json')!=batch:
+        raise ValueError('Resume source or packet plan changed')
+    if state['prompt_sha256']!=hashlib.sha256(PROMPT.encode()).hexdigest():
+        raise ValueError('Resume prompt changed')
+    count=state['completed_packets']
+    if not isinstance(count,int) or not 0<=count<=len(batch):
+        raise ValueError('Invalid completed packet count')
+    results=[]
+    for i in range(count):
+        prefix=state.get('accepted_responses',{}).get(str(i),f'{i:03d}')
+        request=read(out/f'{prefix}_request.json')
+        delivered=json.loads(request['messages'][1]['content'])
+        if delivered['packet']!=batch[i] or request['messages'][0]['content']!=PROMPT:
+            raise ValueError('Completed request differs from frozen packet')
+        response=read(out/f'{prefix}_response.json')
+        if response.get('error'):raise ValueError('Accepted response has an error')
+        validate(response['json'],batch[i])
+        results.append((f'P{i:03d}',response['json']))
+    return state,results
+
+
+def unused_prefix(out,index):
+    base=f'{index:03d}';prefix=base;n=0
+    while any(out.glob(f'{prefix}_*.json')):
+        n+=1;prefix=f'{base}_retry{n:02d}'
+    return prefix
+
+
+async def run(work,disc,resume=False):
     target=work/'inventory_v2';target.mkdir(exist_ok=True)
-    out=target/disc;out.mkdir(exist_ok=False)
+    out=target/disc
+    if not resume:out.mkdir(exist_ok=False)
+    if not out.is_dir():raise ValueError('No inventory to resume')
+    lock=(out/'.lock').open('a')
+    fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     corpus=Corpus(work/'sources'/disc,out/'images');batch=packets(corpus)
     source=next(p for p in read(work/'manifest.json') if p['discipline']==disc)
     for name,digest in source['files'].items():
@@ -97,9 +134,17 @@ async def run(work,disc):
     state={'status':'running','discipline':disc,'model':'gpt-6-astra','started':time.time(),'packets':len(batch),
            'completed_packets':0,'source_hashes':source['files'],'code_sha256':sha(__file__),
            'prompt_sha256':hashlib.sha256(PROMPT.encode()).hexdigest(),'usage':[]}
-    write(out/'plan.json',batch);write(out/'status.json',state);results=[]
+    results=[]
+    if resume:
+        state,results=recover(out,batch,source['files'])
+        write(out/f'resume_{time.time_ns()}_previous_status.json',state)
+        state.setdefault('resumptions',[]).append({'timestamp':time.time(),'code_sha256':sha(__file__),'from_packet':len(results)})
+        state.update(status='running');state.pop('error',None);state.pop('finished',None)
+    else:write(out/'plan.json',batch)
+    write(out/'status.json',state)
     try:
         for i,packet in enumerate(batch):
+            if i<len(results):continue
             if (work/'STOP_REQUESTED.json').exists():raise RuntimeError('Stop requested')
             images=[];image_receipts=[]
             for block in packet:
@@ -107,26 +152,40 @@ async def run(work,disc):
                     receipt,attached=corpus.execute({'tool':'image','id':block['id']})
                     images.extend(attached);image_receipts.append(receipt)
             messages=[{'role':'system','content':PROMPT},{'role':'user','content':json.dumps({'packet':packet,'image_receipts':image_receipts},ensure_ascii=False)}]
-            request=out/f'{i:03d}_request.json';write(request,{'messages':messages,'images':images,'image_receipts':image_receipts})
-            attempts=[]
-            def record(a):attempts.append(a);write(out/f'{i:03d}_attempts.json',attempts)
             async def call(*a,**kw):
                 assert_allowed(work,kw['model'])
                 return await codex_runner.run_codex_json_messages(*a,**kw)
-            result=await retry_subscription_call(call,messages,model='gpt-6-astra',timeout=600,reasoning_effort='medium',
-                stage='source_inventory',project_id=disc,image_paths=images,allowed_tools='',
-                stop_requested=lambda:(work/'STOP_REQUESTED.json').exists(),on_attempt=record)
-            write(out/f'{i:03d}_response.json',{'json':result.json_data,'text':result.text,'error':result.error_message})
-            state['usage'].append({k:getattr(result,k,None) for k in ('input_tokens','output_tokens','duration_ms','cost_usd')})
-            if result.is_error:raise RuntimeError(result.error_message)
-            validate(result.json_data,packet)
+            for validation_attempt in range(3):
+                prefix=unused_prefix(out,i)
+                write(out/f'{prefix}_request.json',{'messages':messages,'images':images,'image_receipts':image_receipts})
+                attempts=[]
+                def record(a):attempts.append(a);write(out/f'{prefix}_attempts.json',attempts)
+                result=await retry_subscription_call(call,messages,model='gpt-6-astra',timeout=600,reasoning_effort='medium',
+                    stage='source_inventory',project_id=disc,image_paths=images,allowed_tools='',
+                    stop_requested=lambda:(work/'STOP_REQUESTED.json').exists(),on_attempt=record)
+                write(out/f'{prefix}_response.json',{'json':result.json_data,'text':result.text,'error':result.error_message})
+                state['usage'].append({k:getattr(result,k,None) for k in ('input_tokens','output_tokens','duration_ms','cost_usd')})
+                write(out/'status.json',state)
+                if result.is_error:raise RuntimeError(result.error_message)
+                try:validate(result.json_data,packet)
+                except (ValueError,TypeError,KeyError) as exc:
+                    write(out/f'{prefix}_validation.json',{'accepted':False,'error':str(exc)})
+                    if validation_attempt==2:raise
+                    print(f'{disc} packet {i}: invalid source response; retry in 10 seconds',flush=True)
+                    await asyncio.sleep(10)
+                    continue
+                write(out/f'{prefix}_validation.json',{'accepted':True})
+                state.setdefault('accepted_responses',{})[str(i)]=prefix
+                break
             results.append((f'P{i:03d}',result.json_data));write(out/'registry.json',registry(results))
             state['completed_packets']=i+1;write(out/'status.json',state)
             print(f'{disc} inventory {i+1}/{len(batch)} objects={len(result.json_data["objects"])}',flush=True)
         state['status']='inventory_complete_unverified'
     except Exception as exc:state.update(status='failed',error=f'{type(exc).__name__}: {exc}');raise
-    finally:state['finished']=time.time();write(out/'status.json',state)
+    finally:
+        state['finished']=time.time();write(out/'status.json',state)
+        lock.close()
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--work',type=Path,required=True);p.add_argument('--discipline',required=True,choices=['AK','ITP','AR','KM','VK','EOM']);a=p.parse_args()
-    asyncio.run(run(a.work,a.discipline))
+    p=argparse.ArgumentParser();p.add_argument('--work',type=Path,required=True);p.add_argument('--discipline',required=True,choices=['AK','ITP','AR','KM','VK','EOM']);p.add_argument('--resume',action='store_true');a=p.parse_args()
+    asyncio.run(run(a.work,a.discipline,a.resume))
