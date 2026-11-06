@@ -13,6 +13,7 @@ from collections import Counter
 from backend.app.services.common import reserve_sources as sources, reserve_store as store
 from backend.app.services.common.version_service import _version_no_from_id
 
+# in_progress is accepted only to reconcile records from older releases.
 ACTIVE = {'preparation', 'ready', 'in_progress'}
 
 
@@ -47,7 +48,7 @@ def _task(engineer_id, title, actor, linked=None):
 def _normalize(conn, engineers):
     order = {e['id']: i for i, e in enumerate(engineers)}
     rows = sorted(store.tasks(conn), key=lambda r: (order.get(r['engineer_id'], len(order)),
-                  r['engineer_id'], r['state'] != 'in_progress', r['position'], r['id']))
+                  r['engineer_id'], r['position'], r['id']))
     positions = {}
     for row in rows:
         if row['state'] not in ACTIVE:
@@ -61,43 +62,24 @@ def _normalize(conn, engineers):
 
 
 def _sync(conn, catalog, engineers):
-    """Reconcile upstream readiness/progress/completion, retaining queue IDs and order."""
+    """Reconcile readiness/completion without inferring a start from review decisions."""
     by_identity = {sources.identity(c): c for c in catalog}
     rows = store.tasks(conn)
-    known = {sources.identity(r) for r in rows if r['project_id']}
-    active_engineers = {e['id'] for e in engineers if e.get('active') is not False}
     changed = False
-    # Existing human review activity is the platform's pre-calendar start event.
-    for item in catalog:
-        if item['completed_at'] or not item['started_at'] or sources.identity(item) in known:
-            continue
-        engineer = sources.reviewer_id(item['reviewer'])
-        if engineer in active_engineers:
-            row = _task(engineer, item['title'], 'platform:expert-review', item)
-            row.update(state='in_progress', started_at=item['started_at'], position=len(rows)+1)
-            store.save_task(conn, row)
-            rows.append(row)
-            known.add(sources.identity(item))
-            changed = True
     for row in rows:
-        if not row['project_id'] or row['state'] not in ACTIVE:
+        if row['state'] not in ACTIVE:
             continue
-        item = by_identity.get(sources.identity(row))
+        item = by_identity.get(sources.identity(row)) if row['project_id'] else None
         before = dict(row)
-        if item is None:
-            # A missing/hidden source is not evidence of a completed review.
-            continue
-        elif item['completed_at']:
-            row.update(state='completed', completed_at=item['completed_at'])
-        elif item['started_at']:
-            row['state'] = 'in_progress'
-            row['started_at'] = row['started_at'] or item['started_at']
-            # A real review outside the calendar establishes its actual engineer.
-            actual = sources.reviewer_id(item['reviewer'])
-            if actual in active_engineers:
-                row['engineer_id'] = actual
-        elif row['state'] != 'in_progress':
-            row['state'] = 'ready' if item['ready'] else 'preparation'
+        # Legacy started rows become ordinary movable assignments, even when
+        # their source has disappeared. Review activity never assigns or pins work.
+        if row['state'] == 'in_progress':
+            row.update(state='ready' if item and item['ready'] else 'preparation', started_at=None)
+        if item:
+            if item['completed_at']:
+                row.update(state='completed', completed_at=item['completed_at'])
+            else:
+                row['state'] = 'ready' if item['ready'] else 'preparation'
         if row != before:
             row['updated_at'] = now()
             store.save_task(conn, row)
@@ -132,9 +114,8 @@ def forecast(rows, engineers, config, day):
         conditional = False
         for i, row in enumerate(queue):
             conditional = conditional or row['state'] == 'preparation'
-            started = row['state'] == 'in_progress'
-            scheduled = started or i < len(dates)
-            row.update(forecast_date=day.isoformat() if started else dates[i] if i < len(dates) else None,
+            scheduled = i < len(dates)
+            row.update(forecast_date=dates[i] if i < len(dates) else None,
                        conditional=conditional, unscheduled_reason=(None if scheduled else
                          'missing_plan' if engineer['rate_source'] == 'missing_plan' else 'zero_capacity' if rate == 0 else 'horizon_exceeded'))
             output.append(row)
@@ -218,19 +199,19 @@ def _roll_forward(conn, catalog, engineers, config):
     for engineer in engineers:
         engineer_changed = False
         queue = [r for r in rows if r['engineer_id'] == engineer['id'] and r['state'] in ACTIVE
-                 and (r.get('forecast_date') or r['state'] == 'in_progress')]
+                 and r.get('forecast_date')]
         def needs_roll(row):
             value = row.get('forecast_date')
             return not value or value < today.isoformat() or not sources.is_workday(date.fromisoformat(value), config, engineer)
         if not any(needs_roll(r) for r in queue):
             continue
-        queue.sort(key=lambda r: (r['state'] != 'in_progress', r.get('forecast_date') or today.isoformat(),
+        queue.sort(key=lambda r: (r.get('forecast_date') or today.isoformat(),
                                  r['position'], r['id']))
         occupied = completed.copy()
         limits = {}
         cursor = today
         for row in queue:
-            earliest = date.fromisoformat(row['forecast_date']) if row.get('forecast_date') and row['state'] != 'in_progress' else today
+            earliest = date.fromisoformat(row['forecast_date']) if row.get('forecast_date') else today
             start = max(cursor, earliest)
             first_workday = None
             target = None
@@ -299,15 +280,13 @@ def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
     for row in projected:
         item = by_identity.get(sources.identity(row), {})
         row.update({k: item.get(k) for k in ('object_name', 'code', 'section', 'progress', 'total')})
-        # Readiness must still be enforced for an already started project if its
-        # upstream artifacts were removed. A click never changes this flag.
+        # Readiness follows upstream artifacts; opening a card never changes it.
         row['documents_ready'] = bool(item.get('ready'))
         row['source_missing'] = bool(row['project_id'] and not item)
     for engineer in engineers:
         assigned = [r for r in projected if r['engineer_id'] == engineer['id']]
         engineer.update(remaining=len(assigned), preparation=sum(r['state'] == 'preparation' for r in assigned),
                         ready=sum(r['state'] == 'ready' for r in assigned),
-                        running=sum(r['state'] == 'in_progress' for r in assigned),
                 through=(max((r.get('forecast_date') for r in assigned if r.get('forecast_date')), default=None)
                          if all(r.get('forecast_date') for r in assigned) else None))
     last = conn.execute('SELECT * FROM reserve_operations WHERE actor=? ORDER BY rowid DESC LIMIT 1', (actor,)).fetchone()
@@ -327,8 +306,7 @@ def _snapshot(conn, catalog, engineers, config, actor, view_start=None):
             'calendar': {'holidays': config.get('holidays', []), 'working_dates': config.get('working_dates', []),
                          'configured': bool(config)},
             'totals': {'remaining': len(projected), 'ready': sum(r['state'] == 'ready' for r in projected),
-                       'preparation': sum(r['state'] == 'preparation' for r in projected),
-                       'running': sum(r['state'] == 'in_progress' for r in projected)}}
+                       'preparation': sum(r['state'] == 'preparation' for r in projected)}}
 
 
 def snapshot(actor='', view_start=None):
@@ -459,8 +437,6 @@ def mutate(payload, actor, view_start=None):
                 selected = set(ids)
                 display_order = {e['id']: i for i, e in enumerate(engineers)}
                 block = sorted((by_id[tid] for tid in ids), key=lambda r: (display_order.get(r['engineer_id'], len(engineers)), r['engineer_id'], r['position']))
-                if any(r['state'] == 'in_progress' for r in block):
-                    raise ReserveError('Начатую проверку нельзя переносить.', 'already_started', 409)
                 affected = {target} | {r['engineer_id'] for r in block}
                 before = _queue_snapshot(conn, affected)
                 target_queue = [r for r in rows if r['engineer_id'] == target and r['id'] not in selected]
@@ -484,7 +460,6 @@ def mutate(payload, actor, view_start=None):
                     index = next(i for i, r in enumerate(target_queue) if r['id'] == anchor) + (payload.get('side') == 'after')
                 else:
                     index = len(target_queue)
-                index = max(index, sum(r['state'] == 'in_progress' for r in target_queue))
                 target_ids = [r['id'] for r in target_queue]
                 target_ids[index:index] = [r['id'] for r in block]
                 old_dates = {r.get('forecast_date') for r in block}
@@ -517,34 +492,25 @@ def mutate(payload, actor, view_start=None):
                     raise ReserveError('Выберите существующие задания для удаления.')
                 selected = set(ids)
                 deleted = [by_id[tid] for tid in ids]
-                if any(row['state'] == 'in_progress' for row in deleted):
-                    raise ReserveError('Начатую проверку нельзя удалить.', 'already_started', 409)
                 affected = {row['engineer_id'] for row in deleted}
                 before = _queue_snapshot(conn, affected)
                 for tid in ids:
                     conn.execute('DELETE FROM reserve_tasks WHERE id=?', (tid,))
                 _normalize(conn, engineers)
                 result['deleted_ids'] = ids
-            elif kind in ('start', 'link'):
+            elif kind == 'link':
                 row = by_id.get(payload.get('task_id'))
                 if not row:
                     raise ReserveError('Задание больше не находится в активной очереди.', 'task_not_found', 404)
                 affected = {row['engineer_id']}
                 before = _queue_snapshot(conn, affected)
-                if kind == 'link':
-                    if row['project_id'] or row['state'] == 'in_progress':
-                        raise ReserveError('Задание уже связано с документами.', 'already_linked', 409)
-                    item = _find_catalog(catalog, payload.get('project') or {})
-                    if item['completed_at'] or any(sources.identity(r) == sources.identity(item) for r in store.tasks(conn)):
-                        raise ReserveError('Эта версия уже назначена или завершена.', 'duplicate_task', 409)
-                    row.update({k: item[k] for k in ('object_id', 'project_id', 'version_id')})
-                    row['state'] = 'ready' if item['ready'] else 'preparation'
-                else:
-                    item = _find_catalog(catalog, row) if row['project_id'] else None
-                    if item is None or not item['ready'] or row['state'] not in ('ready', 'in_progress'):
-                        raise ReserveError('Документы ещё не готовы к экспертной проверке.', 'not_ready', 409)
-                    if row['state'] != 'in_progress':
-                        row.update(state='in_progress', started_at=now())
+                if row['project_id']:
+                    raise ReserveError('Задание уже связано с документами.', 'already_linked', 409)
+                item = _find_catalog(catalog, payload.get('project') or {})
+                if item['completed_at'] or any(sources.identity(r) == sources.identity(item) for r in store.tasks(conn)):
+                    raise ReserveError('Эта версия уже назначена или завершена.', 'duplicate_task', 409)
+                row.update({k: item[k] for k in ('object_id', 'project_id', 'version_id')})
+                row['state'] = 'ready' if item['ready'] else 'preparation'
                 row['updated_at'] = now()
                 store.save_task(conn, row)
                 _normalize(conn, engineers)

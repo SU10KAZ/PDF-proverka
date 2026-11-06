@@ -87,6 +87,19 @@ describe('reserve calendar user actions', () => {
         h.state.clickTask(task,{});
         expect(h.emit).toHaveBeenCalledWith('open-project',expect.objectContaining({project_id:'AR/Full',version_id:'v002',object_id:'o'}));
     });
+    it('allows selecting and dragging assignments with legacy started state', async () => {
+        const initial = data();
+        initial.tasks[0].state = 'in_progress';
+        const h = harness([initial]);
+        await h.state.load();
+        const task = h.state.data.value.tasks[0];
+        h.state.clickTask(task, {ctrlKey:true});
+        expect(h.state.selected.value).toEqual(['1']);
+        const preventDefault = vi.fn();
+        h.state.dragStart(task, {preventDefault, dataTransfer:{setData:vi.fn()}});
+        expect(preventDefault).not.toHaveBeenCalled();
+        expect(h.state.dragging.value).toEqual(['1']);
+    });
     it('orders multi-row selections by current display order, not click order', () => {
         const h = harness();
         expect(h.orderedSelection(data(),['3','2','1']).map(t=>t.id)).toEqual(['1','2','3']);

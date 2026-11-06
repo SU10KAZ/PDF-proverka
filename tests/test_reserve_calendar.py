@@ -160,13 +160,17 @@ def test_delete_selected_projects_reorders_queue_and_can_be_undone(env):
     assert [row['position'] for row in restored['tasks']] == [1, 2, 3]
 
 
-def test_delete_rejects_started_project(env):
+def legacy_start(task_id):
+    with db.transaction() as conn:
+        conn.execute("UPDATE reserve_tasks SET state='in_progress', started_at='2026-10-26' WHERE id=?", (task_id,))
+
+
+def test_legacy_started_project_can_be_deleted(env):
     catalog, _ = env
     assigned = call('assign', items=[{'engineer_id': 'a', **catalog[0]}])
     task_id = assigned['tasks'][0]['id']
-    call('start', task_id=task_id)
-    with pytest.raises(svc.ReserveError, match='Начатую проверку нельзя удалить'):
-        call('delete', task_ids=[task_id])
+    legacy_start(task_id)
+    assert call('delete', task_ids=[task_id])['tasks'] == []
 
 
 def test_undo_does_not_erase_newer_actions_or_started_tasks(env):
@@ -189,21 +193,15 @@ def test_batch_undo_only_removes_created_rows_and_survives_other_queue_changes(e
     assert undone['tasks'][0]['id'] == original['tasks'][0]['id']
 
 
-def test_link_preserves_id_assignment_and_position_and_start_promotes(env):
+def test_link_preserves_id_assignment_and_position_and_allows_move(env):
     catalog, _ = env
     result = add('a', 'manual first', 'manual future')
     first, future = result['tasks']
     linked = call('link', task_id=future['id'], project=catalog[0])
     actual = next(r for r in linked['tasks'] if r['id'] == future['id'])
     assert (actual['engineer_id'], actual['position'], actual['state']) == ('a', 2, 'ready')
-    with pytest.raises(svc.ReserveError, match='не готовы'):
-        call('start', task_id=first['id'])
-    started = call('start', task_id=future['id'])
-    assert started['tasks'][0]['id'] == future['id']
-    stamp = started['tasks'][0]['started_at']
-    with pytest.raises(svc.ReserveError, match='Начатую'):
-        call('move', task_ids=[future['id']], engineer_id='b')
-    assert svc.snapshot()['tasks'][0]['started_at'] == stamp
+    moved = call('move', task_ids=[future['id']], engineer_id='b')
+    assert next(r for r in moved['tasks'] if r['id'] == future['id'])['engineer_id'] == 'b'
 
 
 def test_real_review_outside_calendar_and_version_specific_completion(env):
@@ -212,7 +210,8 @@ def test_real_review_outside_calendar_and_version_specific_completion(env):
     ids = [r['id'] for r in assignment['tasks']]
     catalog[1].update(started_at='2026-10-26T12:00:00', reviewer='A', progress=1)
     started = svc.snapshot()
-    assert started['tasks'][0]['id'] == ids[1] and started['tasks'][0]['state'] == 'in_progress'
+    assert [r['id'] for r in started['tasks']] == ids
+    assert all(r['state'] == 'ready' and r['started_at'] is None for r in started['tasks'])
     catalog[1]['completed_at'] = '2026-10-26'
     catalog.append({**catalog[1], 'version_id': 'v002', 'completed_at': None, 'started_at': None})
     complete = svc.snapshot()
@@ -312,7 +311,7 @@ def test_repeating_plan_ratio_fills_exact_period_and_deducts_today_completed(env
     assert svc.forecast(rows[:1], people, {}, date(2026, 10, 26))[0]['forecast_date'] == '2026-10-27'
     started = [{**rows[0], 'state': 'in_progress'}, rows[1]]
     projected = svc.forecast(started, people, {}, date(2026, 10, 26))
-    assert [row['forecast_date'] for row in projected] == ['2026-10-26', '2026-10-27']
+    assert [row['forecast_date'] for row in projected] == ['2026-10-27', '2026-10-27']
 
 
 def test_real_v2_source_adapter_keeps_objects_and_versions_distinct(tmp_path, monkeypatch):
@@ -505,13 +504,13 @@ def test_started_work_and_missing_source_stay_visible_without_a_plan(env, monkey
     catalog, people = env
     assigned = call('assign', items=[{'engineer_id': 'a', **catalog[0]}])
     task_id = assigned['tasks'][0]['id']
-    call('start', task_id=task_id)
+    legacy_start(task_id)
     people[0]['rate'] = '0'
     catalog.pop(0)
     monkeypatch.setattr(src, 'today', lambda: date(2026, 10, 29))
     result = svc.snapshot()
     assert result['tasks'][0]['id'] == task_id
-    assert result['tasks'][0]['state'] == 'in_progress'
+    assert result['tasks'][0]['state'] == 'preparation'
     assert result['tasks'][0]['source_missing']
     assert result['tasks'][0]['forecast_date'] == '2026-10-29'
     assert result['engineers'][0]['day_limits']['2026-10-29'] == 0
@@ -611,16 +610,16 @@ def test_event_api_persistence_and_validation_across_sessions(env):
     assert response.status_code == 422
 
 
-def test_rollover_prioritizes_started_review_over_older_unstarted_work(env, monkeypatch):
+def test_rollover_keeps_date_order_for_legacy_started_review(env, monkeypatch):
     catalog, people = env
     people[0]['rate'] = '1'
     result = call('assign', items=[{'engineer_id': 'a', **p} for p in catalog[:2]])
     started_id = next(r['id'] for r in result['tasks'] if r['project_id'] == catalog[1]['project_id'])
-    call('start', task_id=started_id)
+    legacy_start(started_id)
     monkeypatch.setattr(src, 'today', lambda: date(2026, 10, 30))
     result = svc.snapshot()
-    assert next(r for r in result['tasks'] if r['id'] == started_id)['forecast_date'] == '2026-10-30'
-    assert next(r for r in result['tasks'] if r['id'] != started_id)['forecast_date'] == '2026-11-02'
+    assert next(r for r in result['tasks'] if r['id'] == started_id)['forecast_date'] == '2026-11-02'
+    assert next(r for r in result['tasks'] if r['id'] != started_id)['forecast_date'] == '2026-10-30'
     assert svc.snapshot()['revision'] == result['revision']
 
 
@@ -638,3 +637,41 @@ def test_past_manual_move_is_rejected_without_hiding_project(env):
     with pytest.raises(svc.ReserveError, match='прошедший день'):
         call('move', engineer_id='a', task_ids=[initial['tasks'][0]['id']], forecast_date='2026-10-23')
     assert svc.snapshot()['tasks'] == initial['tasks']
+
+
+@pytest.mark.parametrize('event_kind', ['vacation', 'external'])
+def test_busy_period_moves_legacy_and_following_work_without_loss(env, event_kind):
+    catalog, people = env
+    people[0]['rate'] = '1'
+    initial = call('assign', items=[{'engineer_id': 'a', **p} for p in catalog[:3]])
+    ordered = sorted(initial['tasks'], key=lambda r: r['forecast_date'])
+    ids = [r['id'] for r in ordered]
+    legacy_start(ids[0])
+    catalog[0].update(started_at='2026-10-26', reviewer='B', progress=1)
+    result = call('save_event', engineer_id='a', event_kind=event_kind,
+                  date_from='2026-10-27', date_to='2026-10-29', comment='Занятость')
+    tasks = sorted(result['tasks'], key=lambda r: r['forecast_date'])
+    assert [r['id'] for r in tasks] == ids
+    assert [r['forecast_date'] for r in tasks] == ['2026-10-30', '2026-11-02', '2026-11-03']
+    assert all(r['engineer_id'] == 'a' and r['state'] == 'ready' for r in tasks)
+    assert svc.snapshot()['tasks'] == result['tasks']
+
+
+def test_inherited_review_activity_does_not_auto_assign_or_reassign(env):
+    catalog, _ = env
+    catalog[0].update(version_id='v002', started_at='2026-10-26', reviewer='B', progress=1)
+    assert svc.snapshot()['tasks'] == []
+    assigned = call('assign', items=[{'engineer_id': 'a', **catalog[0]}])
+    task = assigned['tasks'][0]
+    moved = call('move', task_ids=[task['id']], engineer_id='a', forecast_date='2026-11-05')
+    assert moved['tasks'][0]['state'] == 'ready'
+    assert moved['tasks'][0]['forecast_date'] == '2026-11-05'
+    assert moved['tasks'][0]['engineer_id'] == 'a'
+
+
+def test_start_operation_is_removed_from_api(env):
+    app = FastAPI()
+    app.include_router(reserve_calendar.router)
+    response = TestClient(app).post('/api/schedule/reserve/operations', json={
+        'operation_id': str(uuid4()), 'revision': 0, 'kind': 'start', 'task_id': 'legacy'})
+    assert response.status_code == 422

@@ -11,7 +11,7 @@
         return d.toISOString().slice(0, 10);
     };
     const label = iso => iso ? new Date(iso + 'T12:00:00Z').toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', timeZone: 'UTC' }) : 'Без даты';
-    const stateLabel = state => ({preparation: 'Ожидает подготовки', ready: 'Готов к проверке', in_progress: 'Проверка начата'}[state] || state);
+    const stateLabel = state => ({preparation: 'Ожидает подготовки', ready: 'Готов к проверке'}[state] || state);
     const compactProject = value => {
         const chars = Array.from(String(value || '').trim());
         return chars.length > 4 ? chars.slice(0, 4).join('') + '..' : chars.join('');
@@ -101,7 +101,6 @@
                     return { name, engineers, remaining: tasks.length,
                         ready: tasks.filter(t => t.state === 'ready').length,
                         preparation: tasks.filter(t => t.state === 'preparation').length,
-                        running: tasks.filter(t => t.state === 'in_progress').length,
                         through: tasks.some(t => !t.forecast_date) ? null : tasks.map(t => t.forecast_date).sort().pop() };
                 });
             });
@@ -198,7 +197,7 @@
                     const value = await readResponse(response);
                     pending.value = null;
                     accept(value);
-                    status.value = body.kind === 'undo' ? 'Действие отменено.' : body.kind === 'delete' ? 'Выбранные проекты удалены из очереди.' : body.kind === 'start' ? 'Проверка начата. Очередь пересчитана.' : 'Изменения сохранены. Очереди и прогноз пересчитаны.';
+                    status.value = body.kind === 'undo' ? 'Действие отменено.' : body.kind === 'delete' ? 'Выбранные проекты удалены из очереди.' : 'Изменения сохранены. Очереди и прогноз пересчитаны.';
                     if (body.kind === 'add_preparation') { drafts.value = {}; closePreparation(true); }
                     if (body.kind === 'assign') { chosenProject.value = []; lastChosenProject.value = ''; }
                     if (body.kind === 'link') closeCatalog();
@@ -230,7 +229,7 @@
             function clickTask(task, event) {
                 if (Date.now() < suppressClickUntil || dragging.value.length) return;
                 if (event.ctrlKey || event.metaKey) {
-                    if (!canEdit.value || task.state === 'in_progress') return;
+                    if (!canEdit.value) return;
                     selected.value = selected.value.includes(task.id) ? selected.value.filter(id => id !== task.id) : [...selected.value, task.id];
                     tooltip.value = null;
                 } else if (task.project_id) emit('open-project', task);
@@ -249,7 +248,7 @@
                     top: Math.min(r.bottom+10, window.innerHeight*0.48)+'px'};
             }
             function dragStart(task, event) {
-                if (locked.value || !canEdit.value || task.state === 'in_progress') { event.preventDefault(); return; }
+                if (locked.value || !canEdit.value) { event.preventDefault(); return; }
                 dragging.value = selected.value.includes(task.id) ? selectedTasks.value.map(t => t.id) : [task.id];
                 tooltip.value = null;
                 event.dataTransfer.effectAllowed = 'move';
@@ -285,7 +284,7 @@
                 const edge = direction < 0 ? block[0] : block[block.length-1];
                 const queue = data.value.tasks.filter(t => t.engineer_id === edge.engineer_id && !selected.value.includes(t.id));
                 const neighbor = direction < 0 ? queue.filter(t => t.position < edge.position).pop() : queue.find(t => t.position > edge.position);
-                if (!neighbor || (direction < 0 && neighbor.state === 'in_progress')) return;
+                if (!neighbor) return;
                 return operate('move', {task_ids: selected.value, engineer_id:edge.engineer_id, anchor_id:neighbor.id, side:direction < 0 ? 'before' : 'after'});
             }
             function moveSelected() {
@@ -400,8 +399,8 @@
                 <th class="rc-name" scope="row"><div class="rc-person"><span class="rc-avatar">{{ e.name.split(' ').map(s=>s[0]).slice(0,2).join('') }}</span><div>{{ e.name }}</div></div><button v-if="selected.length && e.active!==false" class="rc-assign" :disabled="locked" @click="operate('move',{task_ids:selected,engineer_id:e.id})">Передать сюда</button></th>
                 <td v-for="d in columns" :key="d.iso || 'none'" class="rc-cell" :class="{'rc-off':d.off,'rc-today':d.iso===data.today,'rc-unavailable':eventsAt(e.id,d.iso).length,'rc-over-capacity':dayLimit(e,d.iso)!==undefined && dayLoad(e,d.iso)>dayLimit(e,d.iso)}" @dragover.stop="overCell(e,d.iso,$event,true)" @drop="drop">
                   <div v-if="!d.off || cell(e.id,d.iso).length || eventsAt(e.id,d.iso).length" class="rc-dots"><button v-for="event in eventsAt(e.id,d.iso)" :key="event.id" type="button" class="rc-event" :class="'rc-event-'+event.kind" :title="eventTip(event)" :aria-label="eventTip(event)" @click.stop="openEvent(event)">{{ event.kind==='vacation' ? 'Отп.' : 'Задача' }}</button><button v-for="t in cell(e.id,d.iso)" :key="t.id" type="button" class="rc-point" :data-task-id="t.id" :aria-label="tipText(t)" :aria-pressed="selected.includes(t.id)"
-                    :class="{'rc-dragging':dragging.includes(t.id),'rc-insert-before':insertion?.anchor_id===t.id && insertion.side==='before','rc-insert-after':insertion?.anchor_id===t.id && insertion.side==='after','rc-unrecognized':!!t.project_id && !t.documents_ready,'rc-manual':!t.project_id,'rc-running':t.state==='in_progress'}"
-                    :draggable="canEdit && !locked && t.state!=='in_progress'" @click.stop="clickTask(t,$event)" @mouseenter="showTip(t,$event)" @mouseleave="tooltip=null" @focus="showTip(t,$event)" @blur="tooltip=null"
+                    :class="{'rc-dragging':dragging.includes(t.id),'rc-insert-before':insertion?.anchor_id===t.id && insertion.side==='before','rc-insert-after':insertion?.anchor_id===t.id && insertion.side==='after','rc-unrecognized':!!t.project_id && !t.documents_ready,'rc-manual':!t.project_id}"
+                    :draggable="canEdit && !locked" @click.stop="clickTask(t,$event)" @mouseenter="showTip(t,$event)" @mouseleave="tooltip=null" @focus="showTip(t,$event)" @blur="tooltip=null"
                     @dragstart="dragStart(t,$event)" @dragend="dragEnd" @dragover="overTask(t,$event)" @drop.stop="drop" :style="{'--rc-color':color(t)}"><span v-if="t.section" class="rc-point-label">{{ t.section }}</span><span class="rc-point-label">{{ compactProject(t.code || t.title) }}</span></button></div>
                   <span v-if="d.iso && (!d.off || cell(e.id,d.iso).length)" class="rc-count" :title="capacityTip(e,d.iso)">{{ dayLoad(e,d.iso) }} / {{ dayLimit(e,d.iso) ?? '—' }}</span>
                 </td>
