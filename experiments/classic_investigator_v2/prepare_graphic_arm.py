@@ -28,22 +28,25 @@ def append_candidate(graph, compact, block_id, candidate):
 def prepare(work, disc, response, block_id):
     raw = read(response)
     findings = raw.get('json', {}).get('findings', [])
-    if raw.get('error') or len(findings) != 1:
-        raise ValueError('Probe requires exactly one saved successful detector finding')
+    if raw.get('error') or not isinstance(findings, list) or not findings:
+        raise ValueError('Probe requires a nonempty saved successful detector response')
     project = next(p for p in read(work/'classic_control/input_manifest.json') if p['discipline'] == disc)
     source_version, source_out = Path(project['version_dir']), Path(project['output_dir'])
     graph, compact = read(source_out/'01_blocks_analysis.json'), read(source_out/'01_blocks_for_text.json')
     numbers = [int(f['id'][2:]) for b in graph['block_analyses'] for f in b.get('findings', []) if f['id'].startswith('G-')]
-    model_finding = findings[0]
-    candidate = {'id': f'G-{max(numbers, default=0)+1:03d}',
+    candidates = []
+    for index, model_finding in enumerate(findings):
+        candidate = {'id': f'G-{max(numbers, default=0)+index+1:03d}',
                  'severity': model_finding['severity'], 'category': model_finding['category'],
                  'finding': model_finding['finding'] + '\n\nРекомендация: ' + model_finding.get('recommendation', ''),
                  'norm': None, 'norm_quote': model_finding.get('norm_quote'),
                  'value_found': model_finding.get('value_found'), 'block_evidence': block_id,
                  'highlight_regions': [], 'provenance': {'found_by': ['codex'],
                  'detector_summary': 'saved source-only context replay; downstream retention probe',
-                 'model': raw.get('usage', {}).get('model'), 'response_sha256': sha(response)}}
-    graph, compact = append_candidate(graph, compact, block_id, candidate)
+                 'model': raw.get('usage', {}).get('model'), 'response_sha256': sha(response),
+                 'response_finding_index': index}, 'saved_detector_finding': copy.deepcopy(model_finding)}
+        graph, compact = append_candidate(graph, compact, block_id, candidate)
+        candidates.append(candidate)
     arm = work/'operation_arm'/disc
     arm.mkdir(parents=True, exist_ok=False)
     root = arm/'classic_control'
@@ -61,7 +64,8 @@ def prepare(work, disc, response, block_id):
     shutil.copyfile(source_out/'02_text_analysis.json', out/'02_text_analysis.json')
     for path in version.rglob('*.json'):
         path.write_text(path.read_text().replace(str(source_version), str(version)))
-    write(arm/'injection.json', {'kind': 'saved_graphic_candidate', 'candidate': candidate,
+    write(arm/'injection.json', {'kind': 'saved_graphic_candidates', 'candidates': candidates,
+          'selection': 'Entire saved response; no candidate filtering',
           'source_response': str(response), 'source_response_sha256': sha(response),
           'baseline_inputs': {n: sha(source_out/n) for n in
           ['01_blocks_analysis.json', '01_blocks_for_text.json', '02_text_analysis.json']},
@@ -73,10 +77,10 @@ def prepare(work, disc, response, block_id):
           'code_sha256': sha(executor.__file__), 'preparer_sha256': sha(__file__),
           'baseline_code_files': baseline['source_files'], 'stage_models': baseline['stage_models'],
           'injection_sha256': sha(arm/'injection.json'),
-          'scope': 'Same finished classic candidates plus one actual saved source-only graphic finding; replay merge/verify only.',
+          'scope': 'Same finished classic candidates plus every finding in one actual saved source-only response; replay merge/verify only.',
           'limits': 'Known development control. Judge/evidence gate bypassed intentionally. No whole-project discovery credit or end-to-end acceptance. Check retention of all baseline useful atoms separately.',
           'source_history_supplied': False, 'production_changed': False})
-    print(disc, candidate['id'], 'prepared downstream-only graphic retention probe')
+    print(disc, [c['id'] for c in candidates], 'prepared downstream-only graphic retention probe')
 
 
 if __name__ == '__main__':
