@@ -203,6 +203,7 @@ async def run(work, discipline, provider, *, resume=False):
     configure(work)
     from backend.app.services.llm import codex_runner, claude_json_runner
     from subscription_retry import retry_subscription_call
+    from quota_policy import assert_allowed
     project = next(p for p in read(work/'manifest.json') if p['discipline']==discipline)
     source = work/'sources'/discipline
     for name,digest in project['files'].items():
@@ -248,7 +249,10 @@ async def run(work, discipline, provider, *, resume=False):
                 messages.append({'role':'user','content':f'Ход {step+1}/24. Сохрани текущие кандидаты и перечисли непроверенное, если бюджет заканчивается.'})
             write(out/f'{step:02d}_request.json', {'messages':messages, 'images':images})
             fn = codex_runner.run_codex_json_messages if provider=='codex' else claude_json_runner.run_claude_json_messages
-            result = await retry_subscription_call(fn, messages, model=MODELS[provider],timeout=600,
+            async def guarded(*args, **kwargs):
+                assert_allowed(work, kwargs.get('model'))
+                return await fn(*args, **kwargs)
+            result = await retry_subscription_call(guarded, messages, model=MODELS[provider],timeout=600,
                 reasoning_effort='medium', stage='classic_investigation', project_id=discipline,
                 image_paths=images, allowed_tools='',
                 stop_requested=lambda:(work/'STOP_REQUESTED.json').exists() or time.time()-started>=14400,

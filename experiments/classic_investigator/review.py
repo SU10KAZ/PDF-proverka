@@ -8,6 +8,7 @@ import time
 
 from investigate import Corpus, MODELS, PROMPT, configure, read, sha, write
 from subscription_retry import retry_subscription_call
+from quota_policy import assert_allowed
 
 REVIEW_PROMPT = '''Ты выполняешь независимую проверку кандидатов инженерного аудита.
 Полученные кандидаты — гипотезы, а не факты. Другой аудитор может ошибаться.
@@ -86,7 +87,8 @@ async def review_job(work,job):
     if sha(work/'runs'/job['origin_run']/'status.json')!=job['origin_sha256']:raise ValueError('Sealed candidates changed')
     messages=[{'role':'system','content':REVIEW_PROMPT+TOOLS},
         {'role':'user','content':json.dumps({'candidates':job['candidates'],'catalogue':corpus.catalogue()},ensure_ascii=False)}]
-    state={'status':'running','job':job['id'],'model':MODELS[job['reviewer']],'steps':0,'started':time.time(),'assessments':[],'usage':[]}
+    state={'status':'running','job':job['id'],'model':MODELS[job['reviewer']],'steps':0,'started':time.time(),'assessments':[],'usage':[],
+           'review_assignment':{k:job.get(k) for k in ('origin_run','reviewer','previous_job','original_reviewer','independence_limit')}}
     write(out/'status.json',state)
     attached=[];assessments={}
     def record(attempt):
@@ -100,7 +102,10 @@ async def review_job(work,job):
             messages.append({'role':'user','content':json.dumps(context,ensure_ascii=False)})
             write(out/f'{step:02d}_request.json',{'messages':messages,'attached_images':attached})
             fn=codex_runner.run_codex_json_messages if job['reviewer']=='codex' else claude_json_runner.run_claude_json_messages
-            result=await retry_subscription_call(fn,messages,model=MODELS[job['reviewer']],reasoning_effort='medium',
+            async def guarded(*args, **kwargs):
+                assert_allowed(work, kwargs.get('model'))
+                return await fn(*args, **kwargs)
+            result=await retry_subscription_call(guarded,messages,model=MODELS[job['reviewer']],reasoning_effort='medium',
                 timeout=600,stage='classic_candidate_review',project_id=job['id'],allowed_tools='',
                 image_paths=[x['path'] for x in attached],stop_requested=lambda:(work/'STOP_REQUESTED.json').exists() or time.time()-state['started']>7200,on_attempt=record)
             write(out/f'{step:02d}_response.json',{'text':result.text,'json':result.json_data,'error':result.error_message})
@@ -133,9 +138,9 @@ async def review_job(work,job):
     print(job['id'],state['status'],len(assessments),'/',len(job['candidates']),flush=True)
 
 
-async def run_all(work):
+async def run_all(work, jobs_manifest=None):
     configure(work)
-    jobs=read(work/'review/jobs.json')
+    jobs=read(jobs_manifest or work/'review/jobs.json')
     # Existing jobs are never silently overwritten; failures remain visible.
     pending=[j for j in jobs if not (work/'review/jobs'/j['id']).exists()]
     semaphore=asyncio.Semaphore(2)
@@ -145,5 +150,5 @@ async def run_all(work):
     await asyncio.gather(*(launch(job) for job in pending))
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('command',choices=['prepare','run']);p.add_argument('--work',type=Path,required=True)
-    a=p.parse_args();prepare(a.work) if a.command=='prepare' else asyncio.run(run_all(a.work))
+    p=argparse.ArgumentParser();p.add_argument('command',choices=['prepare','run']);p.add_argument('--work',type=Path,required=True);p.add_argument('--jobs-manifest',type=Path)
+    a=p.parse_args();prepare(a.work) if a.command=='prepare' else asyncio.run(run_all(a.work,a.jobs_manifest))
