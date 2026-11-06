@@ -898,17 +898,27 @@ def _split_finding_text(value: Any) -> tuple[str, str]:
 
 
 def _dimension_receipt(item: dict[str, Any]) -> str:
-    """Вернуть детерминированный расчёт для простой размерной цепочки."""
-    finding = str(item.get("finding") or "")
-    if not re.search(r"сумм|цепоч", finding, re.IGNORECASE):
+    """Пересчитать только явное сложение длин в миллиметрах.
+
+    Список произвольных чисел не задаёт операнды и общий размер. При
+    неоднозначности сохраняем исходную находку без расчётной приписки.
+    """
+    from decimal import Decimal
+
+    raw = str(item.get("value_found") or "").strip()
+    number = r"\d+(?:[.,]\d+)?"
+    operand = rf"{number}\s*(?:мм)?"
+    match = re.fullmatch(
+        rf"(?P<parts>{operand}(?:\s*\+\s*{operand})+)\s*=\s*"
+        rf"(?P<stated>{number})\s*мм\.?", raw, re.IGNORECASE,
+    )
+    if not match:
         return ""
-    raw = str(item.get("value_found") or "")
-    values = [int(token) for token in re.findall(r"\d{2,5}", raw)]
-    if len(values) < 3:
-        return ""
-    parts, stated = values[:-1], values[-1]
-    calculated = sum(parts)
-    expression = " + ".join(str(value) for value in parts)
+    parts = [Decimal(token.replace(",", "."))
+             for token in re.findall(number, match.group("parts"))]
+    stated = Decimal(match.group("stated").replace(",", "."))
+    expression = " + ".join(format(value, "f") for value in parts)
+    calculated = format(sum(parts), "f")
     return f"Расчётная проверка: {expression} = {calculated} мм; указанный общий размер — {stated} мм."
 
 

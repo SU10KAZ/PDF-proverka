@@ -106,14 +106,14 @@ def test_atomicity_guard_splits_distinct_serious_findings_from_same_block(tmp_pa
                                 "severity": "КРИТИЧЕСКОЕ",
                                 "category": "dimensions",
                                 "finding": "Пом. 19: цепочка не сходится.\n\nРекомендация: Исправить цепочку 19.",
-                                "value_found": "580, 580, 1155",
+                                "value_found": "580 + 580 = 1155 мм",
                             },
                             {
                                 "id": "G-015",
                                 "severity": "КРИТИЧЕСКОЕ",
                                 "category": "dimensions",
                                 "finding": "Пом. 20: цепочка не сходится.\n\nРекомендация: Исправить цепочку 20.",
-                                "value_found": "80, 800, 680, 1555",
+                                "value_found": "80 + 800 + 680 = 1555 мм",
                             },
                         ],
                     }
@@ -337,3 +337,12 @@ def test_atomicity_guard_keeps_cross_block_dedup_and_recommendations(tmp_path):
 
     assert result is merged
     assert len(result["findings"]) == 2
+
+
+def test_dimension_receipt_requires_explicit_length_equation():
+    assert "1160 мм" in targeted._dimension_receipt({"value_found": "580 + 580 = 1155 мм"})
+    assert "4.0 мм" in targeted._dimension_receipt({"value_found": "1,5 мм + 2,5 мм = 4,1 мм"})
+    for value in ("580, 580, 1155", "580 + 580 = 1155", "1 м + 500 мм = 1500 мм",
+                  "Ру=5,4 кВт; Кс=1,00; Рр=5,4 кВт; 0,40+0,40+0,20 кВт",
+                  "0,40 кВт + 0,20 кВт = 0,60 кВт", "ЩС1 2×40 мм; общий 200 мм"):
+        assert targeted._dimension_receipt({"finding": "Сумма цепочки не сходится", "value_found": value}) == ""
