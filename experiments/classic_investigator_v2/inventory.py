@@ -118,7 +118,9 @@ def unused_prefix(out,index):
     return prefix
 
 
-async def run(work,disc,resume=False):
+async def run(work,disc,resume=False,request_timeout=600):
+    if request_timeout <= 0:
+        raise ValueError('Request timeout must be positive')
     target=work/'inventory_v2';target.mkdir(exist_ok=True)
     out=target/disc
     if not resume:out.mkdir(exist_ok=False)
@@ -138,9 +140,11 @@ async def run(work,disc,resume=False):
     if resume:
         state,results=recover(out,batch,source['files'])
         write(out/f'resume_{time.time_ns()}_previous_status.json',state)
-        state.setdefault('resumptions',[]).append({'timestamp':time.time(),'code_sha256':sha(__file__),'from_packet':len(results)})
+        state.setdefault('resumptions',[]).append({'timestamp':time.time(),'code_sha256':sha(__file__),'from_packet':len(results),
+                                                 'request_timeout_seconds':request_timeout})
         state.update(status='running');state.pop('error',None);state.pop('finished',None)
     else:write(out/'plan.json',batch)
+    state['request_timeout_seconds']=request_timeout
     write(out/'status.json',state)
     try:
         for i,packet in enumerate(batch):
@@ -157,10 +161,11 @@ async def run(work,disc,resume=False):
                 return await codex_runner.run_codex_json_messages(*a,**kw)
             for validation_attempt in range(3):
                 prefix=unused_prefix(out,i)
-                write(out/f'{prefix}_request.json',{'messages':messages,'images':images,'image_receipts':image_receipts})
+                write(out/f'{prefix}_request.json',{'messages':messages,'images':images,'image_receipts':image_receipts,
+                                                  'request_timeout_seconds':request_timeout})
                 attempts=[]
                 def record(a):attempts.append(a);write(out/f'{prefix}_attempts.json',attempts)
-                result=await retry_subscription_call(call,messages,model='gpt-6-astra',timeout=600,reasoning_effort='medium',
+                result=await retry_subscription_call(call,messages,model='gpt-6-astra',timeout=request_timeout,reasoning_effort='medium',
                     stage='source_inventory',project_id=disc,image_paths=images,allowed_tools='',
                     stop_requested=lambda:(work/'STOP_REQUESTED.json').exists(),on_attempt=record)
                 write(out/f'{prefix}_response.json',{'json':result.json_data,'text':result.text,'error':result.error_message})
@@ -187,5 +192,5 @@ async def run(work,disc,resume=False):
         lock.close()
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--work',type=Path,required=True);p.add_argument('--discipline',required=True,choices=['AK','ITP','AR','KM','VK','EOM']);p.add_argument('--resume',action='store_true');a=p.parse_args()
-    asyncio.run(run(a.work,a.discipline,a.resume))
+    p=argparse.ArgumentParser();p.add_argument('--work',type=Path,required=True);p.add_argument('--discipline',required=True,choices=['AK','ITP','AR','KM','VK','EOM']);p.add_argument('--resume',action='store_true');p.add_argument('--request-timeout',type=int,default=600);a=p.parse_args()
+    asyncio.run(run(a.work,a.discipline,a.resume,a.request_timeout))
