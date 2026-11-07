@@ -27,6 +27,13 @@ def trace(candidates,final):
                      'technical_status':'not_inferred_from_trace'})
     return {'rows':rows,'counts':dict(Counter(r['status'] for r in rows)),
             'ambiguous_source_ids':ambiguities,
+            'reused_source_candidates':[
+                {'source_id':r['candidate']['id'],
+                 'output_ids':[f.get('id') for f in r['linked_outputs']],
+                 'review_status':'check_duplicate_or_valid_atom_split',
+                 'automatic_removal_allowed':False}
+                for r in rows if r['candidate'].get('id') not in ambiguities
+                and len(r['linked_outputs'])>1],
             'limits':'ID linkage is navigation, not proof that every atom survived. Unlinked is not proof of technical falsity or actual loss. Split, merged, reworded and removed candidates require explicit semantic disposition.'}
 
 

@@ -16,5 +16,16 @@ class TraceTests(unittest.TestCase):
         r=trace(self.rows*2,[{'source_finding_ids':['T-1']}])
         self.assertEqual(r['ambiguous_source_ids'],['T-1'])
         self.assertTrue(all(x['status']=='ambiguous_source_id' for x in r['rows']))
+        self.assertEqual(r['reused_source_candidates'],[])
+    def test_valid_split_and_duplicate_both_require_semantic_review(self):
+        for second in ['B conflicts.','A conflicts.']:
+            final=[{'id':'F1','source_finding_ids':['T-1'],'problem':'A conflicts.'},
+                   {'id':'F2','source_finding_ids':['T-1'],'problem':second}]
+            r=trace(self.rows,final)
+            self.assertEqual(r['reused_source_candidates'],[{
+                'source_id':'T-1','output_ids':['F1','F2'],
+                'review_status':'check_duplicate_or_valid_atom_split',
+                'automatic_removal_allowed':False}])
+            self.assertEqual(r['rows'][0]['linked_outputs'],final)
 
 if __name__=='__main__':unittest.main()
