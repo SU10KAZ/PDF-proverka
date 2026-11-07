@@ -99,6 +99,11 @@ def recover(out,batch,source_hashes):
         raise ValueError('Invalid completed packet count')
     results=[]
     for i in range(count):
+        partition=state.get('accepted_partitions',{}).get(str(i))
+        if partition:
+            from accept_inventory_partition import load_accepted
+            results.extend(load_accepted(partition,batch[i],i,source_hashes,sha(out/'plan.json')))
+            continue
         prefix=state.get('accepted_responses',{}).get(str(i),f'{i:03d}')
         request=read(out/f'{prefix}_request.json')
         delivered=json.loads(request['messages'][1]['content'])
@@ -140,7 +145,7 @@ async def run(work,disc,resume=False,request_timeout=600):
     if resume:
         state,results=recover(out,batch,source['files'])
         write(out/f'resume_{time.time_ns()}_previous_status.json',state)
-        state.setdefault('resumptions',[]).append({'timestamp':time.time(),'code_sha256':sha(__file__),'from_packet':len(results),
+        state.setdefault('resumptions',[]).append({'timestamp':time.time(),'code_sha256':sha(__file__),'from_packet':state['completed_packets'],
                                                  'request_timeout_seconds':request_timeout})
         state.update(status='running');state.pop('error',None);state.pop('finished',None)
     else:write(out/'plan.json',batch)
@@ -148,7 +153,7 @@ async def run(work,disc,resume=False,request_timeout=600):
     write(out/'status.json',state)
     try:
         for i,packet in enumerate(batch):
-            if i<len(results):continue
+            if i<state['completed_packets']:continue
             if (work/'STOP_REQUESTED.json').exists():raise RuntimeError('Stop requested')
             images=[];image_receipts=[]
             for block in packet:
