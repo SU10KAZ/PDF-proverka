@@ -72,8 +72,15 @@ def validate(data,packet):
 def registry(packet_results):
     # Preserve every observation; propose identity links rather than merge facts
     # across unknown systems/zones or similarly named products.
-    observations=[];links={};checks=[]
+    observations=[];links={};checks=[];limitations=[];reviewed=[]
     for packet_id,data in packet_results:
+        reviewed.append({'packet_id':packet_id,
+                         'source_ids':list(data.get('reviewed_source_ids',[])),
+                         'meaning':'Response covers delivered fragments; not proof all objects were read'})
+        for index,limit in enumerate(data.get('limitations',[])):
+            limitations.append({'id':f'{packet_id}:L{index+1:04d}',
+                                'packet_id':packet_id,**limit,
+                                'status':'pending_source_followup'})
         for index,obj in enumerate(data['objects']):
             oid=f'{packet_id}:O{index+1:04d}'
             observations.append({'observation_id':oid,**obj,'status':'unverified_source_observation'})
@@ -82,7 +89,8 @@ def registry(packet_results):
             for n,check in enumerate(obj.get('checks',[])):
                 checks.append({'id':f'{oid}:C{n+1:02d}','observation_id':oid,**check,'status':'not_checked'})
     return {'observations':observations,'proposed_identity_links':[{'key':list(k),'observation_ids':v,'status':'needs_identity_review'} for k,v in links.items() if len(v)>1],
-            'operations':checks,'engineering_review_complete':False,
+            'operations':checks,'source_limitations':limitations,
+            'reviewed_source_fragments':reviewed,'engineering_review_complete':False,
             'limits':'All observations retained separately. Links are proposals, graph facts unverified, operation list incomplete until cross-document review.'}
 
 

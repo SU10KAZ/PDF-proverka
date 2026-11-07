@@ -7,6 +7,18 @@ from pathlib import Path
 from inventory import packets,validate,registry,recover,unused_prefix,PROMPT
 
 class InventoryTests(unittest.TestCase):
+    def test_limitations_survive_empty_objects_and_repeated_block_fragments(self):
+        data={'reviewed_source_ids':['g'],'objects':[],
+              'limitations':[{'block_id':'g','reason':'Small pump labels need enlargement'}]}
+        r=registry([('P014:S000',data),('P014:S001',data)])
+        self.assertEqual(len(r['source_limitations']),2)
+        self.assertEqual([x['id'] for x in r['source_limitations']],
+                         ['P014:S000:L0001','P014:S001:L0001'])
+        self.assertTrue(all(x['status']=='pending_source_followup' for x in r['source_limitations']))
+        self.assertEqual(r['source_limitations'][0]['reason'],data['limitations'][0]['reason'])
+        self.assertEqual(len(r['reviewed_source_fragments']),2)
+        self.assertFalse(r['engineering_review_complete'])
+        self.assertEqual(r['operations'],[])
     def test_every_text_character_and_graphic_in_packets(self):
         c=SimpleNamespace(blocks={'a':{'kind':'TEXT','text':'A'*35000},'g':{'kind':'IMAGE','text':'preview'},'b':{'kind':'TEXT','text':'end'}})
         batches=packets(c);parts=[p for b in batches for p in b]
