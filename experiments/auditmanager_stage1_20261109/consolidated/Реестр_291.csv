@@ -76,7 +76,7 @@ B-AK-F-027,AK,classic_usefulness,Первичная проверка не зав
 B-AK-F-028,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-029,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-030,AK,classic_usefulness,Первичная проверка не завершена,,,
-B-AK-F-031,AK,classic_usefulness,Первичная проверка не завершена,,,
+B-AK-F-031,AK,classic_usefulness,confirmed_distinct_schedule_identifier_conflicts,Технические замечания,"Уточнить идентификаторы в СО: позиция21.10 повторена у разных интерфейсных кабелей3×2×0,78 и2×2×0,78; в строке22.9 треугольных бирок указан35341, соответствующий лотку строки22.4; BSD2120 повторён в строках22.6 подвеса и22.13 трубыДу32. Согласовать позиции и марки, сохранив отдельные изделия.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json
 B-AK-F-032,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-033,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-034,AK,classic_usefulness,Первичная проверка не завершена,,,

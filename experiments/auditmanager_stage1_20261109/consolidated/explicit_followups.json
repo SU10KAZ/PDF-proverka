@@ -77,6 +77,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-031"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для исправления уточнить артикулы требуемых бирок и трубы; точный BSD2120 проверить по первичному каталогу, если он используется для выбора исправления. До этого не считать установленной полную правильную замену и не заявлять фактическую ошибку поставки."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-035"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
