@@ -1,9 +1,9 @@
 {
-  "scope": "All decision JSON and primary_adjudication links; explicit path/hash pairs and legacy image maps; exact TEXT slices where source path is provided.",
+  "scope": "All decision JSON, primary_adjudication links and followup control pairs; explicit path/hash pairs and legacy image maps; exact TEXT slices where source path is provided.",
   "limits": "Does not verify unlabeled references, external URLs, engineering conclusions, or independent discovery. Passing does not freeze the benchmark.",
   "summary": {
-    "documents_inspected": 259,
-    "unique_file_hash_checks": 214,
+    "documents_inspected": 261,
+    "unique_file_hash_checks": 215,
     "failures": 0,
     "engineering_acceptance": false
   },
@@ -1292,6 +1292,12 @@
       "expected_sha256": "0cb20f61733935ecf0f6d51d38494179923a4a6016caa74e8a9fa80e84130b12",
       "status": "ok",
       "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F026_sheet_title_scope.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+      "expected_sha256": "a2d5749fa0d002959e990f973cf794cc4aaba74af15b100c0ff0c072e2ab0822",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/signal_count_control_pair.json/positive/evidence"
     }
   ]
 }

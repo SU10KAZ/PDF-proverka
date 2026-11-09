@@ -1,0 +1,128 @@
+{
+  "control_id": "PAIR-AK-SIGNAL-COUNT-001",
+  "visibility": "Evaluator-only; do not disclose counts, findings or historical answers to independent discovery before sealed outputs.",
+  "proposed_behavior": "Считать точки по строке и всем колонкам; различать функциональные сигналы, интерфейсы и аппаратную ёмкость. Исправлять спорное число, сохраняя доказанную часть кандидата.",
+  "negative": {
+    "candidate_ids": [
+      "H-AK-7"
+    ],
+    "evidence": {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK7_primary_check.json",
+      "sha256": "03559d66b582f6bfe450b0acebc1134162473b95714ffa16f5eef58a44cd77d6"
+    },
+    "expected": "Не выдаватьAO3 против итога2 на листе14: отмечены2 точки."
+  },
+  "positive": {
+    "candidate_ids": [
+      "B-AK-F-047",
+      "B-AK-F-048",
+      "B-AK-F-049"
+    ],
+    "evidence": {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+      "sha256": "a2d5749fa0d002959e990f973cf794cc4aaba74af15b100c0ff0c072e2ab0822"
+    },
+    "expected": "Сохранить на листе21 DI12/10 иDO6/5; исправитьF048, а не снять всю тему."
+  },
+  "count_register": {
+    "DI": {
+      "columns": [
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        11,
+        12,
+        15,
+        16,
+        17,
+        "Пожар от АПС"
+      ],
+      "observed": 12,
+      "printed": 10,
+      "difference": 2
+    },
+    "DO": {
+      "columns": [
+        2,
+        8,
+        10,
+        11,
+        14,
+        16
+      ],
+      "observed": 6,
+      "printed": 5,
+      "difference": 1
+    },
+    "AI": {
+      "columns": [
+        1,
+        9,
+        13
+      ],
+      "observed": 3,
+      "printed": 3
+    },
+    "AO": {
+      "columns": [
+        7,
+        10,
+        11,
+        16
+      ],
+      "observed": 4,
+      "printed": 4
+    },
+    "excluded": "Ethernet: отдельная строка Интерфейс"
+  },
+  "required_assertions": [
+    {
+      "id": "N1",
+      "expected": "Лист14: ложное утверждение о трёхAO отсутствует; при снятии найденного кандидата указано2 точки и итог2."
+    },
+    {
+      "id": "P1",
+      "expected": "Лист21:DI12 против10, включая ненумерованный Пожар от АПС."
+    },
+    {
+      "id": "P2",
+      "expected": "Лист21:DO6 против5; оба типа расхождений сохранены после объединения."
+    },
+    {
+      "id": "N2",
+      "expected": "Лист21:не выдавать ошибку согласованныхAI3/AO4; Ethernet не считатьDI."
+    },
+    {
+      "id": "P3",
+      "expected": "F048 сDI11 исправлен до12 с сохранением истории исходного кандидата; совпадающая частьF049 объединена."
+    },
+    {
+      "id": "N3",
+      "expected": "Не утверждать нехватку аппаратных каналов или обязательную покупку модулей без внутренней схемы и состава контроллера."
+    }
+  ],
+  "evaluation_rules": {
+    "unit": "Одна тема матрицы листа21, два обязательных проверяемых расхождения; не три дефекта по числу кандидатов.",
+    "filter_credit": "Отсутствие ложного тезиса без трассы кандидата не доказывает работу фильтра.",
+    "partial_coverage": "ТолькоDI или толькоDO —частичное сохранение.",
+    "failure_conditions": [
+      "Сняты все спорные подсчёты",
+      "Опубликованы одновременноDI11 иDI12 как независимые дефекты",
+      "Пропущен ненумерованный входАПС",
+      "ИнтерфейсEthernet посчитан дискретным входом",
+      "Число точек названо доказанной нехваткой аппаратных каналов"
+    ]
+  },
+  "evidence_limits": [
+    "Положительная сторона подтверждена первичной графической проверкой, но не принята инженером как отдельная новая находка. Это недостаток исторической контрольной пары, а не основание скрыть факт.",
+    "Обе стороны относятся к одному известному проекту; переносимость на новые матрицы не проверена.",
+    "Подсчёт точек не подтверждает правильность выбораDI/DO/AI/AO для каждой функции."
+  ],
+  "readiness": "ready_for_regression_design_with_explicit_engineer_pair_gap",
+  "implementation_test_status": "not_executed",
+  "new_engineer_review": false,
+  "production_promotion_allowed": false
+}

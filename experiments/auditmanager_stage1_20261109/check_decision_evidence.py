@@ -80,8 +80,10 @@ def main():
 
     for path in sorted((HERE / 'decisions').glob('*.json')):
         inspect(path)
+    for path in sorted((HERE / 'followup').glob('*control_pair.json')):
+        inspect(path)
     report = {
-        'scope': 'All decision JSON and primary_adjudication links; explicit path/hash pairs and legacy image maps; exact TEXT slices where source path is provided.',
+        'scope': 'All decision JSON, primary_adjudication links and followup control pairs; explicit path/hash pairs and legacy image maps; exact TEXT slices where source path is provided.',
         'limits': 'Does not verify unlabeled references, external URLs, engineering conclusions, or independent discovery. Passing does not freeze the benchmark.',
         'summary': {'documents_inspected': len(visited), 'unique_file_hash_checks': len(checks),
                     'failures': len(failures), 'engineering_acceptance': False},
