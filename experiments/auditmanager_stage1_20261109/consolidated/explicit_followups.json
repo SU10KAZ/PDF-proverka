@@ -271,6 +271,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-041"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для заключения о неправильной диспетчеризации проверить привязку физических агрегатов к программным тегам и смысл ролей при ротации. До этого учитывать только документальную неоднозначность; последствия оставить неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-044"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
