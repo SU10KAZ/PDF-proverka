@@ -74,6 +74,16 @@
     },
     {
       "candidate_ids": [
+        "B-AR-F-009"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F009_club_classification_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "При включении вопроса в профиль пожарной безопасности получить технологическое задание и обоснование в ПД/СТУ, затем проверить применимые требования. До этого классификацию не оценивать ни как ошибочную, ни как правильную; вопрос вне кровельного технического профиля учитывать отдельно."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AR-F-010"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F010_glass_formula.json",
