@@ -1,0 +1,1291 @@
+{
+  "scope": "All decision JSON and primary_adjudication links; explicit path/hash pairs and legacy image maps; exact TEXT slices where source path is provided.",
+  "limits": "Does not verify unlabeled references, external URLs, engineering conclusions, or independent discovery. Passing does not freeze the benchmark.",
+  "summary": {
+    "documents_inspected": 259,
+    "unique_file_hash_checks": 213,
+    "failures": 0,
+    "engineering_acceptance": false
+  },
+  "failures": [],
+  "checks": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AK/document.md",
+      "expected_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json/source_md"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-100/images/blk_397f9663589b40bfbde9b898e99e5117_6471b342ae3c.png",
+      "expected_sha256": "5fe56dbbe789f7a17d76ad35715fb3fdd6c41341f01163df8fe2bd10fb043523",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-013/images/blk_96ed7d88fb23414bb14d93191a89365a_6471b342ae3c.png",
+      "expected_sha256": "abb6073822fe994025366f14b31891457235f22301052507c98ace3ba3cdf2f4",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-014/images/blk_065a335469904b2db1640b480b321503_6471b342ae3c.png",
+      "expected_sha256": "9de311b87395d954555fab773f35ab5169df336da92b035ae3fad6d372cdc4f0",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+      "expected_sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK14.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/status.json",
+      "expected_sha256": "fd6a5186d490e2b1c4168eae3f54ecdd2885c009762bf9240b16ad50c1c278e2",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json/model_review"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AK/document.pdf",
+      "expected_sha256": "993d3f278d7b2b816c68a6e600b5ae58b6a33b9ec19a91c0678905c6a636d24a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json/source_pdf"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_96ed7d88fb23414bb14d93191a89365a_6471b342ae3c.png",
+      "expected_sha256": "abb6073822fe994025366f14b31891457235f22301052507c98ace3ba3cdf2f4",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json/images/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_cd9d763d198246859c3df42c18b5c3d8_6471b342ae3c.png",
+      "expected_sha256": "548f857e64cd1a6cce1ca57a89008c062ee86487926da1c6d43059a150041c46",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json/images/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_f784be4786274e8c84f32d874ed99969_6471b342ae3c.png",
+      "expected_sha256": "22c233210d0654acfaa4b0230963edbf8d6a273d01e12954376194a1a9c46b1a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json/images/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_127bea47b93f4214ac6430c54b21517a_6471b342ae3c.png",
+      "expected_sha256": "941f8cee84deb119dd83c1d850638aa541c167b07cdabc535281eac4a4c8c384",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json/images/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_47163e69651c48528b3e054d5a5db095_6471b342ae3c.png",
+      "expected_sha256": "496b078921517d8d9ece12de3b370e6c4d53a8d0205098995bcd3d5c437327c8",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json/images/4"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+      "expected_sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/images/blk_e3e39f8820d7474caa10ab626d2a2c91_6471b342ae3c.png",
+      "expected_sha256": "7db6be9bf95ef72b6a7263604688598d84c7c99e2e9b2c391b4499585a65685e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-57/status.json",
+      "expected_sha256": "e12bfdeab937a01d483bc0fd4d200c913d9c9f4a6e57f55517c86d9e82eede00",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json/model_review"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-57/images/blk_28e6a3fa2bff45aabce4aed90feff741_6471b342ae3c.png",
+      "expected_sha256": "fdd7f317af766840193d21605424ff4904db894205e8f85d6e77d7023a9fe307",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json/confirmed_instances/0/image"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-57/images/blk_e3e39f8820d7474caa10ab626d2a2c91_6471b342ae3c.png",
+      "expected_sha256": "7db6be9bf95ef72b6a7263604688598d84c7c99e2e9b2c391b4499585a65685e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json/confirmed_instances/1/image"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-57/images/blk_2aeda93ede5444ebb33f638cd45586f2_6471b342ae3c.png",
+      "expected_sha256": "608481451e0fb498958af3b837212314bbe389a6d03cda2386065c936ae229b4",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json/confirmed_instances/2/image"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-57/images/blk_4e142b330766407099c7d561f0a8eb6a_6471b342ae3c.png",
+      "expected_sha256": "9ae1f6395770aba842841b391e65678b19f9965fa0f7fd5d91654faaec24d78c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json/confirmed_instances/5/image"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-65/images/blk_1421872a752e4019a31247d056c0e9bc_6471b342ae3c.png",
+      "expected_sha256": "1410ed1f39381527f126aa20e9e15b82115997500089e890c19766e69e017200",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-65/images/blk_127bea47b93f4214ac6430c54b21517a_6471b342ae3c.png",
+      "expected_sha256": "941f8cee84deb119dd83c1d850638aa541c167b07cdabc535281eac4a4c8c384",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK7_primary_check.json",
+      "expected_sha256": "03559d66b582f6bfe450b0acebc1134162473b95714ffa16f5eef58a44cd77d6",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK7.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/images/blk_111d72792143470fa098e0dace155f1f_6471b342ae3c.png",
+      "expected_sha256": "297a4985247a4b799e36628468b821aeb5a02d7fa10c2fe1a2f1e3459e1b087d",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/images/blk_206d5fa1055148c5b12414a2919fbe84_6471b342ae3c.png",
+      "expected_sha256": "e201c2c8758083ae833e2bc3ab4c1904a3319761855ad5e875dc2acc0a74a7d7",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/images/blk_8de25b2b318647aeac8b3298fe03a98c_6471b342ae3c.png",
+      "expected_sha256": "b54763019037ba3ba7d8f175cf48976475c175221389291c2ef8e970d5199bd0",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/evidence/AK_F003_BIS_pair.png",
+      "expected_sha256": "220d1aedccdaffcec6010e0d756b447c06e88b1d1e1b6524aaf9a262d6dd9475",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-001/images/blk_aa15c30f0e7e48988cadcac795e1ccff_6471b342ae3c.png",
+      "expected_sha256": "909fa0d7ba4050d6083f152d43eaf198d4498097773f4a57cefc90e53b9e3723",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-001/images/blk_07ee87d0cd9b46359b3c2b177440fe89_6471b342ae3c.png",
+      "expected_sha256": "11ff60df6c2abfccaaa96ebd33002eef1c8b5a4c8cfefffea93fbfe1cab9f1df",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-001/images/blk_54608a880c2545aa926c442d213988c3_6471b342ae3c.png",
+      "expected_sha256": "c1c24ed843c7a79eb6ae6ef79b86fd4610e177c96abcd272a08adc6a475cd4ae",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-011/images/blk_7785cb8293734c16b18fc1aff53c761f_6471b342ae3c.png",
+      "expected_sha256": "cb77f0ab9fff75ed26cf94abb22776af6fba7da5eda1674d029ae486a62104a0",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-002/images/blk_523708af1c384b0e8bc6767d93644336_6471b342ae3c.png",
+      "expected_sha256": "d058bc436483b480e5ab2931f20dfa1e001f4e4cc5ffc616d20c563fd515a4b2",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-002/images/blk_e7bf605cde374aec808e8a5deb78ce97_6471b342ae3c.png",
+      "expected_sha256": "df6e33671207588bc63129d8149a0d5569e706bba79288a46a881ff2df21bee4",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-002/images/blk_b2b11f12b2c24e10bebb7fb32c3680f5_6471b342ae3c.png",
+      "expected_sha256": "1731191b44089dbb391fc862f29a751f5ea2551343a7ef019b5f1d7970ba1d2d",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-003/images/blk_28e6a3fa2bff45aabce4aed90feff741_6471b342ae3c.png",
+      "expected_sha256": "fdd7f317af766840193d21605424ff4904db894205e8f85d6e77d7023a9fe307",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-003/images/blk_c0ed6bca935843c18344796377677f2f_6471b342ae3c.png",
+      "expected_sha256": "0c76a58aabd6a56db6826a50ed65be8cec7d123d2760b7339a271e197d743ded",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-009/images/blk_4e142b330766407099c7d561f0a8eb6a_6471b342ae3c.png",
+      "expected_sha256": "9ae1f6395770aba842841b391e65678b19f9965fa0f7fd5d91654faaec24d78c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-003/images/blk_1421872a752e4019a31247d056c0e9bc_6471b342ae3c.png",
+      "expected_sha256": "1410ed1f39381527f126aa20e9e15b82115997500089e890c19766e69e017200",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json/graphic_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-003/images/blk_127bea47b93f4214ac6430c54b21517a_6471b342ae3c.png",
+      "expected_sha256": "941f8cee84deb119dd83c1d850638aa541c167b07cdabc535281eac4a4c8c384",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json/graphic_evidence/4"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/evidence/AK_F014_Pkr41_connections.png",
+      "expected_sha256": "2e81d65e7eca70d19827a88ebecdd0720bf1930749d3be69cb1cfbbcf7c50369",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json/graphic_evidence/5"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-003/images/blk_2aeda93ede5444ebb33f638cd45586f2_6471b342ae3c.png",
+      "expected_sha256": "608481451e0fb498958af3b837212314bbe389a6d03cda2386065c936ae229b4",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-004/images/blk_47163e69651c48528b3e054d5a5db095_6471b342ae3c.png",
+      "expected_sha256": "496b078921517d8d9ece12de3b370e6c4d53a8d0205098995bcd3d5c437327c8",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F018_drive_system_assignment.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-005/images/blk_0c71a5773a2348d0822a526b8c88b16a_6471b342ae3c.png",
+      "expected_sha256": "4c44695ee5bef2e4f151df0040e977809c72c9174ec44de39da5d71ed0d35f4c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-012/images/blk_dc32b584ce9748a5b520a300112b12de_6471b342ae3c.png",
+      "expected_sha256": "a827a010f00af84d9775baee7c0711be19fcb2031f5445b067db07ce8c5cee53",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F027_sensor_interface_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-006/images/blk_400a32e7aac048e6a9d6da65c598995f_6471b342ae3c.png",
+      "expected_sha256": "3fa3a3a00d02f1a66b3b652dcab028fc8924aaaf342311f6c3c3d83820be23b2",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F027_sensor_interface_scope.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/evidence/AK_F029_manufacturer_page1.png",
+      "expected_sha256": "a51cb7cc33a0ad5f7d4c6b5890aea1645f943e8b24ee81477e616f3f82007c48",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-007/images/blk_b8712be58c8b43f6ac75cfa6420d5479_6471b342ae3c.png",
+      "expected_sha256": "de450bd9d36249806bb6358387cf7018bb351effa42e947be9e454a2cc964278",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-008/images/blk_6995cff7e34a4a41b99ec565101c4e02_6471b342ae3c.png",
+      "expected_sha256": "ca3965531c49f19cd8aa33502576a5b350990130db554c12cd84a58c5ae59206",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F034_sheet_title_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-009/images/blk_28e6a3fa2bff45aabce4aed90feff741_6471b342ae3c.png",
+      "expected_sha256": "fdd7f317af766840193d21605424ff4904db894205e8f85d6e77d7023a9fe307",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F038_temperature_graphic_connection.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-7/images/blk_07ee87d0cd9b46359b3c2b177440fe89_6471b342ae3c.png",
+      "expected_sha256": "11ff60df6c2abfccaaa96ebd33002eef1c8b5a4c8cfefffea93fbfe1cab9f1df",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-011/images/blk_66980560083f4bb483d5ce1f9c8156e2_6471b342ae3c.png",
+      "expected_sha256": "5a8aadf7421dbb750ebd68088957151994659844140870ec4573d7045f2c5898",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json/graphic_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-010/images/blk_2aeda93ede5444ebb33f638cd45586f2_6471b342ae3c.png",
+      "expected_sha256": "608481451e0fb498958af3b837212314bbe389a6d03cda2386065c936ae229b4",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-010/images/blk_1421872a752e4019a31247d056c0e9bc_6471b342ae3c.png",
+      "expected_sha256": "1410ed1f39381527f126aa20e9e15b82115997500089e890c19766e69e017200",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-011/images/blk_5999641136b84d1c9a5dd129e06ae055_6471b342ae3c.png",
+      "expected_sha256": "7b6433f4b33f88503ed996a9f21ccaa93508bcc0c6a9461de0efe912a7685c3f",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F046_position_range_editorial.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-012/images/blk_1c493988cdf14cee9ad351ef2e706470_6471b342ae3c.png",
+      "expected_sha256": "48f85fb80bd6fa6a2b814649aefd557cb3a04df801f58aa9dc1505964f626995",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F052_local_cable_balance.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-013/images/blk_f784be4786274e8c84f32d874ed99969_6471b342ae3c.png",
+      "expected_sha256": "22c233210d0654acfaa4b0230963edbf8d6a273d01e12954376194a1a9c46b1a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-014/images/blk_40bad73db9d44699955a7a4682f309a8_6471b342ae3c.png",
+      "expected_sha256": "d122ea694561ef79f25eb3c2f9eeee116086629e1552a1b8018d57c88fe61a13",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F059_thermostat_supply_routes.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-015/images/blk_3a652e527d9242058c018c7b7199b5e6_6471b342ae3c.png",
+      "expected_sha256": "4c854616e7761782aadf7dec2ff891b03bc0bf1ba7e2ae56b482120239d7a0fa",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F061_penetration_detail_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-015/images/blk_3ce77761b19f4562bb8fdf7579aa80ec_6471b342ae3c.png",
+      "expected_sha256": "64caf1db89b9415910cbeca4aadc5a31a40a34bc9c769c45c56d23787f194625",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F061_penetration_detail_scope.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-015/images/blk_256f5749f1274c84b54b8873170bdccc_6471b342ae3c.png",
+      "expected_sha256": "93a8d8670901d1506cf4fe9655274dddd60e97663b88b89d5a2434f8e0a873c4",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F061_penetration_detail_scope.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-015/images/blk_111d72792143470fa098e0dace155f1f_6471b342ae3c.png",
+      "expected_sha256": "297a4985247a4b799e36628468b821aeb5a02d7fa10c2fe1a2f1e3459e1b087d",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F062_rs485_termination_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
+      "expected_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json/source_md"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-14/images/blk_602b484f088b4a029d3ba6e01df3f645_6471b342ae3c.png",
+      "expected_sha256": "756b7c51316bf45c91c9f0fc4b71d0ea2c3f5c1198b35e96c1291554a409b92e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-14/images/blk_f3aec0b585f6435080a6caa87767ba7c_6471b342ae3c.png",
+      "expected_sha256": "c0a1ce365f968dfa675cffdc72ed07b23fbbff989ce7c586dec8304282f61fdf",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-14/images/blk_7542a26ddb2e4317bf9a1c3e1e239b62_6471b342ae3c.png",
+      "expected_sha256": "efde05d0c85777a3ca9dbff7acbd32cb63403b1c792681b96e79cd435b1340ad",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/register.json",
+      "expected_sha256": "a47375b9201515d802e6cf5b490d4c58b200a0ea265e81b2507647d1acfb9770",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json/historical_source"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
+      "expected_sha256": "df73701f0cbb7275908c4ab51a94c3a5987c248b5e16d2dd3fc34968997bb98a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR17.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-17/images/blk_3d63e546cfb54b108a681fffc5c2e192_6471b342ae3c.png",
+      "expected_sha256": "a8b9a17637546f4f8e53fee18c1a1d3fe5a208bcbd5c4dac5c2a9fe705c3643c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json/GRAPHIC_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-17/images/blk_622df5aee83e4bb09a3944020fb92380_6471b342ae3c.png",
+      "expected_sha256": "aa3c7c7301803532077bd94d60a26367d3d8f98ecda26da63a05658c6da55c82",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json/GRAPHIC_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-17/images/blk_c52dea9d372c4c468025a641ffac8192_6471b342ae3c.png",
+      "expected_sha256": "86be55d606bfe2ca5f7f826143a07b931ab1f98279f429c2843c5cd5e2d234ce",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json/GRAPHIC_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-17/images/blk_fc7a4e61819c4c0ca3606d47a0282ae6_6471b342ae3c.png",
+      "expected_sha256": "bf2a9091cb2d6db96f4fc9aa0a58731ccbc671b7bbcd8e90641afb78fb9e4f58",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json/GRAPHIC_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-35/images/blk_eb6d781a540446879deec9e102cbd450_6471b342ae3c.png",
+      "expected_sha256": "ca5fdcc604e65839e91b364f6b6066fff3bda0ababb69a6407e200ece5edc173",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR35_unlabelled_areas.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-35/images/blk_602b484f088b4a029d3ba6e01df3f645_6471b342ae3c.png",
+      "expected_sha256": "756b7c51316bf45c91c9f0fc4b71d0ea2c3f5c1198b35e96c1291554a409b92e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR35_unlabelled_areas.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AR-003/images/blk_602b484f088b4a029d3ba6e01df3f645_6471b342ae3c.png",
+      "expected_sha256": "756b7c51316bf45c91c9f0fc4b71d0ea2c3f5c1198b35e96c1291554a409b92e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-39/images/blk_0fe02f45469f44bda5c419dc4901d78c_6471b342ae3c.png",
+      "expected_sha256": "b8344d8ccf2bca61961025284f71ff30d382e5b0997e6212d68e3ceb4028b44c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AR-004/images/blk_c2c52346b94e41d082d3db11655d2706_6471b342ae3c.png",
+      "expected_sha256": "ead79354c47b83627bd0814624c2cdf082eeee93bef61b365ad7f237c4e0272f",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AR-004/images/blk_eb64722d53da4f5aa3e984fa2fb552c5_6471b342ae3c.png",
+      "expected_sha256": "f8b35b653efa83f2ecc618861d38ba47a243e2a55c87c88e4b0688ebf7b0e4cf",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-3/images/blk_b6f2b57505d842e2bdc39369c3b5d93a_6471b342ae3c.png",
+      "expected_sha256": "550828262ed5b6271d3c4e323ae0ad4f2e863cdad4e975f4cfdd139dacbb7a8d",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-3/images/blk_092e358681fc45ada6058a3f894b2582_6471b342ae3c.png",
+      "expected_sha256": "a7c0d027d37694df364affef8a03a9198112a2efedfe1ac9eeff419863a6d422",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-3/images/blk_0fe02f45469f44bda5c419dc4901d78c_6471b342ae3c.png",
+      "expected_sha256": "b8344d8ccf2bca61961025284f71ff30d382e5b0997e6212d68e3ceb4028b44c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-3/images/blk_602b484f088b4a029d3ba6e01df3f645_6471b342ae3c.png",
+      "expected_sha256": "756b7c51316bf45c91c9f0fc4b71d0ea2c3f5c1198b35e96c1291554a409b92e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json/graphic_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-59/images/blk_a904b495f6cc409eb97d93ceaa3cf274_6471b342ae3c.png",
+      "expected_sha256": "842f697e0fef720a0e206a872019fe780c232cafa519dcd494c6c64641fa9f7d",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AR-002/images/blk_70fe5a65859f4c0ab666ce5e17f1452d_6471b342ae3c.png",
+      "expected_sha256": "55d8e9edeb963045400dfe6d22d1185a8224df7ddfc03670ccf76eff953adc02",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F012_parapet_drain_slope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AR-004/images/blk_3833cfb33b574f36b5a8f0764f7471e5_6471b342ae3c.png",
+      "expected_sha256": "918645f9882016161704834fa62798a954dad3d089cebca622b343508b370efc",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F018_screen_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AR-004/images/blk_f09f368364644083843f0762eb294a7d_6471b342ae3c.png",
+      "expected_sha256": "2071c2ce4369aa0f4c912d611a9e80dd27a0040aff696d251b456f03bcb084f9",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F019_drain_dimension_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AR-003/images/blk_b9257ef1636a40f9a224955e061eb46e_6471b342ae3c.png",
+      "expected_sha256": "3683ad2cef28faab603b22c197c3c59f4adc9c95b92060b48d96cd27a15c015b",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AR-003/images/blk_82cbe376e70f4cc3833a1203b0d0a0ee_6471b342ae3c.png",
+      "expected_sha256": "a2a5d1340162584e023efe8cf56439d5373e20ec0e17565c10f5e571bae9aeea",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.md",
+      "expected_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json/source_md"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-28/images/blk_8fac348a820c41aeb2d941339987da14_837e404d8cdb.png",
+      "expected_sha256": "a068f46d18cbbce1640e10ba1216c66b12cc748d90fac86c62a5431efdf2dc15",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/ITP/document.md",
+      "expected_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json/source_md"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-002/images/blk_b8c120f6cbc04397b8c5514a03fa3152_6471b342ae3c.png",
+      "expected_sha256": "16d8b3dbcee4c85db38cbfc8f5ed1c9b552a4ac6a2b65a958eb8ad882f31b9af",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-015.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-005/images/blk_6d5640f1a71b440cb7ca3f2c177af08a_6471b342ae3c.png",
+      "expected_sha256": "92d5af6cfcae365cd55fd01312236aa867d4574985ce4676d99be54da0111b7f",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-024.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/ITP72b_primary_TEXT.json",
+      "expected_sha256": "c8023442394ed2250416f2dab16df23a9a0683f86e3485cf50664aca3dccb4e7",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-025.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-010/images/blk_27af51f0cd26488ea08ffa55589b0c3e_6471b342ae3c.png",
+      "expected_sha256": "98e4b39aa2d0b631f3e3e59530a08244ec08ccd151da244ca89d66cb05e62efa",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-010/images/blk_06029d59a01b4b779037ffcee1ae5260_6471b342ae3c.png",
+      "expected_sha256": "22b9cf8b1db0b9779e3bdfa6bc192f877824b90fb558166be23e1663f6d4e52e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-010/images/blk_871a2c95697d4a93adb86dd3e2456614_6471b342ae3c.png",
+      "expected_sha256": "89b0885857ee0651c32cc79d43dfb6c4d6031aa6476c1954bcdb35cdf2b0e46d",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-010/images/blk_94b58ecf5d404f7d90c272d267eb2e48_6471b342ae3c.png",
+      "expected_sha256": "587e7a18786646f5619b17a14b69ee7dc0bbf77a5baf1c89f55571cade619c25",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-012/images/blk_693e53fec5744b27b721eb667e933ef5_6471b342ae3c.png",
+      "expected_sha256": "1b329fdafbd256776c706398dbbf860c9bff5230a1363d489ac9b4a2f8401504",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-012/images/blk_693e53fec5744b27b721eb667e933ef5_152304e2eab4.png",
+      "expected_sha256": "5f4104c4d2ccfc43969c9644c66ecc6e119f5f82b196656449e445f292512865",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
+      "expected_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-KM-F-021.json/source_md"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/VK/document.md",
+      "expected_sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-008.json/source_md"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json",
+      "expected_sha256": "e3ec650ec4a4018cbb7a98b37de89d710f45f3bf069a81682a7631f96b49dcd5",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM11.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/runs/EOM_codex/images/blk_8fac348a820c41aeb2d941339987da14_b22fe10b8595.png",
+      "expected_sha256": "afaac6d33a9da1ba13afb7e4499fa90e4e8aa33a8c5a4aa74697000f725cbed5",
+      "status": "ok",
+      "context": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json/images"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/source_images/blk_513e35c4f8a7432986e9a498d4573996_2200f573c23a.png",
+      "expected_sha256": "092b7e6fe6dc0025bef4607913e27ba30c081e6d2fcf790e2ac1e290ab6938c3",
+      "status": "ok",
+      "context": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json/images"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-111/images/blk_4b5016856cc94ec088efe86a8ec2a925_6471b342ae3c.png",
+      "expected_sha256": "cefe19c6c17af46686cf6b6d0f2d911fa16d3a393473f3200b3c9ba9bfd63184",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-27/images/blk_4e968dd71c7149aca85e4195d5c3de49_64b4f8629c9d.png",
+      "expected_sha256": "ee73eed5771cd83923012f781d1a58a72e12e5985d0a8c41b5441c571fdd0e62",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM27_active_socket_circuits.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-5/images/blk_4e968dd71c7149aca85e4195d5c3de49_98a3b5b7c2e2.png",
+      "expected_sha256": "abbc7beb93e7a3d29884e5927d430a72f1fbee9908efe40f568906a6c18834fd",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM5_shunt_trip_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-5/images/blk_513e35c4f8a7432986e9a498d4573996_b392285fc767.png",
+      "expected_sha256": "a6ee197e32e3eab4d58650a27277843ce7bf4b4dea8569af61c946f28942ee6e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM5_shunt_trip_identity.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-70/images/blk_aac0d4eb9b294c218e9de35c7a5dda11_6471b342ae3c.png",
+      "expected_sha256": "9573b860132e34ce4c282f5f084f37b8da559207e2fd9859a36f2f0bccdcebee",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/EOM76_primary_GRAPHIC.json",
+      "expected_sha256": "11c73e4e0438d3409202aeeed9cf626195826a3b9f0053c0cf4ba0c9a7fb16af",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_36068a499bde44769a64017e35fba41d.png",
+      "expected_sha256": "7bb9bf894564e1053930e9ce2f3dd488ec4b845d6ffe376b61cf22d82a6b29a6",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/EOM76_primary_GRAPHIC.json/image_sha256"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM8_primary_refutation.json",
+      "expected_sha256": "70382fc940e66ef269ab8b012014bee051d23554e0c71d03c35a171d42d05217",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM8.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.pdf",
+      "expected_sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM8_primary_refutation.json/source_pdf"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/images/blk_f1dabf6d0ec34f599959c0f4c002fc1d_d87d62534de9.png",
+      "expected_sha256": "07f13a3d0dd260c8062714bd5209fdac266937b4ae17c93fdd3893bed931e105",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM8_primary_refutation.json/image"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/EOM8_crop_receipt.json",
+      "expected_sha256": "caac5e2cd7812bc7af302675260618eac4fbf215cc147c2228d1f1ca5d7d1b1e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM8_primary_refutation.json/crop_receipt"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-002/images/blk_aac0d4eb9b294c218e9de35c7a5dda11_6471b342ae3c.png",
+      "expected_sha256": "9573b860132e34ce4c282f5f084f37b8da559207e2fd9859a36f2f0bccdcebee",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-002/images/blk_afe25191170644b09e517f34b5500150_6471b342ae3c.png",
+      "expected_sha256": "85499f6625df853ec8e3c3c6a68bd007533e8e282e4efa42b7236be75c3fe60d",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-002/images/blk_bff3aa753df547ec83b1266204928ad6_6471b342ae3c.png",
+      "expected_sha256": "41d2aea3258735d56552d2c6da661e5d981bb6d21bba5337b68569f79a07074b",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F011_meter_internal_symbols.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-003/images/blk_fbd847573ddd408aae3067c0c1bb9dde_6471b342ae3c.png",
+      "expected_sha256": "4bd6ca3a717bb7260451eab166b6919b858ff42684b8496a02fa47c3f4921be7",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F014_phase_A_current.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-003/images/blk_fbd847573ddd408aae3067c0c1bb9dde_04997cf66515.png",
+      "expected_sha256": "d8e56b0a1a71a32a6db31e8be07ed28970bc1a7242b04e14c4e470bf7e04a574",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-003/images/blk_fbd847573ddd408aae3067c0c1bb9dde_63836d457cba.png",
+      "expected_sha256": "763a988312ccaf57335e60621e0de6b12fbfadfd1d9b5ae7724f172b69bf95d6",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-003/images/blk_8a00c129168b4f21a94ae8b1c3581a4b_6471b342ae3c.png",
+      "expected_sha256": "f011b3691294032e5a9f776315c3ad423ea31c2f119a31eb261054e3d145974c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-004/images/blk_78ea210434524e3f9c120cb6dfe2d620_6471b342ae3c.png",
+      "expected_sha256": "9570e08542574daf23555b678c6891270357378da98d2abe0e3b2129b7137a49",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-004/images/blk_ca30e6e10e074c64a8ee87789591480c_6471b342ae3c.png",
+      "expected_sha256": "0039ad06f5ef6b2fb691b47a78a5e325a16c40292e27799e5d667cd81854b440",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-005/images/blk_af9f7cd6dba549149cd7152de8b85c41_6471b342ae3c.png",
+      "expected_sha256": "ffab106d95cdadae2535f16b56d1a27a5d64ffd9a9d769960f419c50fa0cb7a0",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F021_F023_controller_voltage_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-006/images/blk_093ddb2393604f25acc1035ea56fb849_6471b342ae3c.png",
+      "expected_sha256": "a86fd26368b8ef3f5fb1af507e1c4d7e48d61d457d209ac4ea0348e5cd49ee88",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-006/images/blk_df95942d720b43bea700fb8897d65cd8_6471b342ae3c.png",
+      "expected_sha256": "a88c9d5e5468a7a9460c12b83d0eefbc027afc2e5707a36c1c50cf0a6f1a9502",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-006/images/blk_03a27c5915f346d8a6dcae1a7ff5c0b2_6471b342ae3c.png",
+      "expected_sha256": "9ebbc7657497833bca2421767911c23b0fbabadab01f9f0ebd650ca48667e9bd",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-006/images/blk_e711cefb283642b380ccb060295464b5_6471b342ae3c.png",
+      "expected_sha256": "1e4fa1cd102ab967283510282ed50a47cf335d50add7d3951f799592a1560cd6",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json/graphic_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-006/images/blk_5cd7f6fbfedd4f6180108050325082de_6471b342ae3c.png",
+      "expected_sha256": "eabc85d5b4bfe92f052d78f9996797c20dcb3c2cb0f9e29ecebb9bce0040e7d9",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F027_penetration_material_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-006/images/blk_eecde8b541dd4b21a39a0ba7f0260bba_6471b342ae3c.png",
+      "expected_sha256": "8f6eeb4209732f12729dbfd34569f6f22bd12b87c95f8b59c7cdf4e2d63e8c6c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-007/images/blk_e9d70b5ef3504a009fe4711839535a08_6471b342ae3c.png",
+      "expected_sha256": "74eb1c1b7d9f50b73cc440fa4afef78d2b58e11d3b9e0bac45cacff1cb71c1c8",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-010/images/blk_c93a166cc7d848569cd704dc711422bf_6471b342ae3c.png",
+      "expected_sha256": "46f76d6027f960a18ba52ea2fb4434443a7d79ed0737c891ecce32d0a8a6c123",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F043_hanger_fireproofing_supply.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F052_unsubstantiated_norm_status.json",
+      "expected_sha256": "a5ecfe3e524454366f9e96b4ee356d5a2840b34b3349b20a25b70bf3df884886",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F047_unsubstantiated_norm_status.json/prior_evidence"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json",
+      "expected_sha256": "b0245ce36dbb9f5dc795807eacea4e2fcb4ca55d00a30f5af6ec276862a2d436",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-EOM-2.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/images/blk_bd26d730d0a84c57900a87e3f5a47cce_f72e17367c47.png",
+      "expected_sha256": "6c88974da58c901d3c28b6d41a70396f760b27887b79c40b4e13bc20cbe79669",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json/images/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/images/blk_8fac348a820c41aeb2d941339987da14_14602e9c3b23.png",
+      "expected_sha256": "b6e6fd3b339889cdf9c75c3f87d12d9d30b61a5d1dd44a7f96e5c6040fc15f59",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json/images/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/images/blk_513e35c4f8a7432986e9a498d4573996_7a34ab99f936.png",
+      "expected_sha256": "77fd9d0836dd53a21510f3637bff8adf43bc2e873559bdad444d352f35e47394",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json/images/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/EOM2_crop_receipt.json",
+      "expected_sha256": "927c061ac847b323bd77b03f212c314e0a3cd003590313f627941640c88a7d65",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json/crop_receipts/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/EOM2_p5_receipt.json",
+      "expected_sha256": "d5256bebbf7da66e3651a99228308cce7505f9a66b9b07def29e6edcb87d98e1",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json/crop_receipts/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/EOM2_p6_receipt.json",
+      "expected_sha256": "ebdecd732d4e3e48720b1ab8d89a7f4196d251005aec2058ab8e66b4f0dfc79c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json/crop_receipts/2"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+      "expected_sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-012/images/blk_d0a62bc2e56f4d07bb33a73622429881_6471b342ae3c.png",
+      "expected_sha256": "299c416127d122f207aa222b3d53c96baffa869a228325303f3cde07a2992dc0",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+      "expected_sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json/GRAPHIC_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+      "expected_sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json/GRAPHIC_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-ITP-58/images/blk_7527066e645e47bb917a9fc17fb82ccc_6471b342ae3c.png",
+      "expected_sha256": "18fdc6f73edbff022a5501b459d742ffb45892a4297a9da0a3aa5d2f63e28180",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-ITP-58/images/blk_d4b7a506870a4c3dbe5a3d19eb26dfdc_6471b342ae3c.png",
+      "expected_sha256": "adee2b951fe982e8272572cf3bedcf8e5cc0d507b2c22463daf1c96747bb7f6c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-ITP-72/images/blk_0103a941fa5a4b0d9141a4149e927bff_22fccda509e8.png",
+      "expected_sha256": "426452dcb596fd96a7859dde0509210c44b4fa467cbfacd2eeac6ac2488b61ba",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP72_wall_and_velocity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-000/images/blk_0103a941fa5a4b0d9141a4149e927bff_4486d87d5b19.png",
+      "expected_sha256": "93f7210eaa2dcc8704a8885b6546b525b93eaaa87ebb7347567d8aa6da688a20",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-000/images/blk_0103a941fa5a4b0d9141a4149e927bff_bfea5c90b263.png",
+      "expected_sha256": "c86388df966c9ed44e14c82826c6f8fc8a0bbd2f6576369e4098a3600738b94b",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-000/images/blk_0103a941fa5a4b0d9141a4149e927bff_494f8f29a6ce.png",
+      "expected_sha256": "64003070553acdd5175aa3d8447c3294ef11eb5be945611eae46ddadddd19a35",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-001/images/blk_94b58ecf5d404f7d90c272d267eb2e48_6471b342ae3c.png",
+      "expected_sha256": "587e7a18786646f5619b17a14b69ee7dc0bbf77a5baf1c89f55571cade619c25",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F005_test_pressure_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-002/images/blk_0103a941fa5a4b0d9141a4149e927bff_6471b342ae3c.png",
+      "expected_sha256": "60c43870c6173a484efc79ecb242b17e92d04d3f5a0017556c62099fd7f194b5",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F009_GVS_inlet_temperature.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-008/images/blk_693e53fec5744b27b721eb667e933ef5_50f139a652bc.png",
+      "expected_sha256": "d2fa8f1dcc67c42a6744896bb4462a604a17c95cc1cf02e6a1f2692f0a977abb",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-013/images/blk_cc80e7962a094791b984d8fb5391e886_6471b342ae3c.png",
+      "expected_sha256": "9ea915d495bd3afd133bffdf16ed0417d5012772b64a16972857f17908c33f42",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F045_door_joint_context.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-011/images/blk_6496640ac5e44e98a89acc7af56d0509_6471b342ae3c.png",
+      "expected_sha256": "cff061b180408d4357b8681c0a829a2fd1c5453066869f43127683254493124c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-011/images/blk_5d085f4c917a4e568fd33327e6f8edea_6471b342ae3c.png",
+      "expected_sha256": "0b7b41c0958da66a3f656c4884d605175f5438cdfdb7e9d58fea0125b6aa598c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-011/images/blk_dbf7b3d84e5642c9805145cb7502e78d_6471b342ae3c.png",
+      "expected_sha256": "ef1a5ab0dfa9bc1ab68d912415613016726e51e648a08e4db88fcb8f3e004d68",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-12/images/blk_d986c7bfb02a433b975de506295fd0f9_6471b342ae3c.png",
+      "expected_sha256": "93a145b37c601eff00622b0f1f2ad17c8ce559ad3e344ef22f7f5c924ed8d6cb",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-12/images/blk_00eaf91abb0f48a38267e99e757644a1_6471b342ae3c.png",
+      "expected_sha256": "b13829917dc6e70598566ba2d012895121d30e3b07cf30063ef3bd1fdd0ba93c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-12/images/blk_32a409cc3ad1431a9b93259722f9a866_6471b342ae3c.png",
+      "expected_sha256": "e562886915d0b2ee563254d3555b37293abcc30450a434270ed5e727e63e44ad",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-12/images/blk_d39eda30ae7d471f97d09e3f41e1a33f_6471b342ae3c.png",
+      "expected_sha256": "8af32c0a37c328617df92101994b12ce00e8a6ad04b9a2ec65877ac1842f16cc",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json/graphic_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-12/images/blk_e3a065c965414cc9a95c5488f8e41108_6471b342ae3c.png",
+      "expected_sha256": "ea0aed454b8672b86ba6b026b12b7f1f31c1ce55e0b379d7e25f36a7bcad9315",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json/graphic_evidence/4"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-13/images/blk_8e8d4c0218c6473ab7885f5aed70bafd_6471b342ae3c.png",
+      "expected_sha256": "fcb61f5fe094ab11ecba7d7d3966b6a6557fee3012c7f2f2d9a53df9bf6160ed",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM13_F004_S2_anchor_multiplicity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-14/images/blk_1849759086c445e687f8c0e2b424250b_6471b342ae3c.png",
+      "expected_sha256": "a9604a26c0b07962a190e4ca2e0a7a71bb31f72cf88d7b4777f46b408c3ebdbd",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-14/images/blk_6bb0b4fa825241f087dbf06ba2178a0c_6471b342ae3c.png",
+      "expected_sha256": "e8d4c17e5428bf63a4dfc64a428dcf53ba1f2ec5e9109639e988eb6abdf086ec",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/KM3_primary_GRAPHIC.json",
+      "expected_sha256": "255952d3bff75f41a8d0825baed7dd1988efa895a514d5835c6238a2dde45255",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM3.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_441423dd5fb448c89a33b610c54783ba.png",
+      "expected_sha256": "e483f14964b885d339bef19552b34da013314ab6decdb262dc166ee44048f08e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/KM3_primary_GRAPHIC.json/image_sha256"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-5/images/blk_eff2811805d64c26b34d72e41ecbb194_6471b342ae3c.png",
+      "expected_sha256": "11395253491730fa59e947cd11bfe19223623569afe55bd0d296cb513bdd664c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM5_S3_bent_handrail_developed_length.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-6/images/blk_ae8f7849e07147388fc213cff1fbb43f_6471b342ae3c.png",
+      "expected_sha256": "f3eb76122ae3395cb38ba4e3a3a7990aaa5b9527ff2ec7355f5970fb7d2f7fa1",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-6/images/blk_eb2afbd2b4c14b3ba20b6cea72f825b8_6471b342ae3c.png",
+      "expected_sha256": "8b60c041766ac5318a02c3fbe3bc6c7784fe63f1ba8d5b85f808f72e063e0886",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-6/images/blk_44d5d64039f74e2188935e15eabafb7d_6471b342ae3c.png",
+      "expected_sha256": "8d8cad6252b3084f522d2a93294926e5f8a950f306b893faab075aa598239a31",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-6/images/blk_cfd1c741a6fa4cd99c3eccd1d42afc7d_6471b342ae3c.png",
+      "expected_sha256": "32f3344e10ed4baf616bb4ab1ecc4bbf2cd8f08adff2cbfbf8ce561a1c6e9886",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json/graphic_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-6/images/blk_2a44dd3981b94cc2bc63d79e8d2f2264_6471b342ae3c.png",
+      "expected_sha256": "f43da3add5cff94dbc53587581379dad398a56dfaff8a484f98b49c98c397650",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json/graphic_evidence/4"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-9/images/blk_fe7bfb2c1c0b469ca1c3e2cb30686758_6471b342ae3c.png",
+      "expected_sha256": "15de82a1683f6d9ff127ea2c5a052291a4785488c774e94e282b3e389d8ba026",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM9_LK5_landing_elevation.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-9/images/blk_9e54c5e5fb6b4b28ae2304bd06c49949_6471b342ae3c.png",
+      "expected_sha256": "7c0a8e5108aa242ca8c536aae3b01cfc23665a215679946a88bce82c5751626b",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM9_LK5_landing_elevation.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-003/images/blk_f8b3c96af858494c946ff4f1ceaa1fb5_6471b342ae3c.png",
+      "expected_sha256": "dfc7e4eba5f352591af8f759c85841c0b94767ee2210147d20c4dc6762e8c54e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F006_profile_mass_recalculation.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-002/images/blk_767432a366864283851be4a9092d0909_6471b342ae3c.png",
+      "expected_sha256": "4fb9c47afdf47120264ca3956044460eff356d30cb4b272eac444cff4fdc94ff",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F011_dimension_reference_points.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-002/images/blk_9dbddaba8e334be3ab857afe48df76ec_6471b342ae3c.png",
+      "expected_sha256": "66fce804ca861b009046f12788ad9653037ac7383722533d981fae9bfbc39f47",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F012_level_list_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-003/images/blk_262b1bd1d76146e7a8e45b529a38ac2e_6471b342ae3c.png",
+      "expected_sha256": "45b37935f466bd85b88dcb8654534923868f7d287b45fb6fe2141815eaeaa1ad",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F014_adjacent_flights_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-003/images/blk_f0a5333974ac4088b7778f525922b014_6471b342ae3c.png",
+      "expected_sha256": "f4b775c81e40ebd47fb71e30d5d3047e812955d4dfa6175671d14679b5f55102",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-003/images/blk_09df648d1b4d4cc097ea6f0e25ceef52_6471b342ae3c.png",
+      "expected_sha256": "b9521ecea6341630ad6d29914d314116e93d0cde7d0beacc011ee88da721d164",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F016_label_count_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-004/images/blk_7315b3a722f946d48c34d31d1eac62ad_6471b342ae3c.png",
+      "expected_sha256": "4aa69f867199a68ea20a32266e77c7f024dbc90c5305ec4a62805dde0dd8d759",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F019_OGM11_end_component_boundaries.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-004/images/blk_6d3a9c479ffe4b57b3cd3e5310d5abfd_6471b342ae3c.png",
+      "expected_sha256": "8bf0cd6bed4dfbbe0f9941ae208264a227ead7e9d2ce7abfcdd87cf37aa39cba",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F020_conditional_diagonal.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/mechanism_checks/norm_hint_replay.json",
+      "expected_sha256": "ae90edb3c6a269a63193ca57aa0c6c8b3aff233d4ae67710e67dcd5e324e6bcf",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F023_unsubstantiated_norm_status.json/mechanism_evidence"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+      "expected_sha256": "301857b35ba09999cba3e4f58d9a61e4157365c0a686c7385947f96e0d836274",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F023_unsubstantiated_norm_status.json/mechanism_evidence/source_sha256"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/norms/norms_db.json",
+      "expected_sha256": "e046f92fbc35db637e856e4e6711117e0f4a78b26d18056a2d644defa3106c0a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F023_unsubstantiated_norm_status.json/mechanism_evidence/database_sha256"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/VK14_primary_TEXT.json",
+      "expected_sha256": "ff5811ba4af99665e6e5c3c5c4947e6e90029d64b40e85e2f5e400cf91f534f2",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK14.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-20/images/blk_ece9516e802e47a8baa35590355f2526_6471b342ae3c.png",
+      "expected_sha256": "3114196a95b72f49f75a7102c07280f7144875e9d835037d50326e8473124679",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-20/images/blk_c5143b0e4651468d97318ae7d877d087_6471b342ae3c.png",
+      "expected_sha256": "9bcb4ded7a846cc8e11a0bbab2a5c231fd161eb1414ec619b8aace9e54c86991",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-20/images/blk_dfae064f26494949a92afe3b0f6f9158_6471b342ae3c.png",
+      "expected_sha256": "86af6e93e40e91a07ff48dcf8115624fd396018db26fae7cc5ecb9dc1e6dfd69",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-20/images/blk_bf9e42b43a6a45a8bab27fd03948ed37_6471b342ae3c.png",
+      "expected_sha256": "5a6677736d9943ba050f21404255986312563a36c6e35896464d8787073c612a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json/graphic_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-20/images/blk_11ab29134110467ba6ce9b0991b6ea82_6471b342ae3c.png",
+      "expected_sha256": "b2d3e62fcbb7afa548ab02d49991201266666e810b97ca9af0d552bf50882c97",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json/graphic_evidence/4"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-001/images/blk_bf4a62ad15554778a7859e339ff538cc_6471b342ae3c.png",
+      "expected_sha256": "a481893115616279d2a6429f4beeeb700f858dd5cd6639f47d4c99dde2303065",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK32_drain_count_identity.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-34/images/blk_2707c7b12fb2453aaf9a67b91f2b185f_6471b342ae3c.png",
+      "expected_sha256": "466918ad22b94097ef6909d2a785f1dce0b98aedb1d6bdb819149b5a79615ab0",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK32_drain_count_identity.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-32/images/blk_8406a049b70d4dbeb1611ed0a11840b3_6471b342ae3c.png",
+      "expected_sha256": "33f00f00d2cbe750eb5fae29c46a0db40bf2cc074e180c2a7cd9ff971982cea5",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK32_drain_count_identity.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-32/images/blk_d2571e41e76d4f328298d074001845db_6471b342ae3c.png",
+      "expected_sha256": "73509c43cad7fcb4f3142d442deefee50c84512dab1c3aa45c86b433b008d68c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK32_drain_count_identity.json/graphic_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-002/images/blk_d2571e41e76d4f328298d074001845db_6471b342ae3c.png",
+      "expected_sha256": "73509c43cad7fcb4f3142d442deefee50c84512dab1c3aa45c86b433b008d68c",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK34_transition_assembly.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-51/images/blk_031b175aaf7342caa3a386681757e156_6471b342ae3c.png",
+      "expected_sha256": "23b2f88657442e14d830281ec73245f5cf2fe069c8319e64ffa76e3052488512",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK51_apartment_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-51/images/blk_203c2d6a7a2447668e4319982d979a4c_6471b342ae3c.png",
+      "expected_sha256": "1dab4528dce52e0de735d095b326384bf1cd721a254637114627a2e9bb523e4e",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK51_apartment_scope.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-51/images/blk_8a665cd0cc9d46978c6292bac14702b8_6471b342ae3c.png",
+      "expected_sha256": "16da59c2a4cd8e8d560d7e96a864e98524307fdc5c964c21fc8823985b2ca96b",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK51_apartment_scope.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-006/images/blk_bf9e42b43a6a45a8bab27fd03948ed37_6471b342ae3c.png",
+      "expected_sha256": "5a6677736d9943ba050f21404255986312563a36c6e35896464d8787073c612a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F001_revision_interval.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-002/images/blk_5c59e6512a18487d9748e1766d2233b2_6471b342ae3c.png",
+      "expected_sha256": "8a9869331e6a903c60798f749aeccc4a0c3faffa0e7d85ba4a37f4438674668a",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F011_technical_space_level.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-33/images/blk_646b9b78524b469f982f5ec9f3b85138_41469dfba220.png",
+      "expected_sha256": "1459fe603639173184027453a017f3c62c11f018eac95c2febdcb0014a9c1da8",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F013_drain_assembly_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-33/images/blk_646b9b78524b469f982f5ec9f3b85138_6471b342ae3c.png",
+      "expected_sha256": "8b63b11b6ee5d113833fa2acc594d4c66272163fceb76a8eb3f409eb38640d6d",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F013_drain_assembly_scope.json/graphic_evidence/1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-003/images/blk_646b9b78524b469f982f5ec9f3b85138_6471b342ae3c.png",
+      "expected_sha256": "8b63b11b6ee5d113833fa2acc594d4c66272163fceb76a8eb3f409eb38640d6d",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F015_roof_title_level.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-003/images/blk_c5143b0e4651468d97318ae7d877d087_6471b342ae3c.png",
+      "expected_sha256": "9bcb4ded7a846cc8e11a0bbab2a5c231fd161eb1414ec619b8aace9e54c86991",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F016_incomplete_riser_label.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-006/images/blk_dfae064f26494949a92afe3b0f6f9158_6471b342ae3c.png",
+      "expected_sha256": "86af6e93e40e91a07ff48dcf8115624fd396018db26fae7cc5ecb9dc1e6dfd69",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-006/images/blk_11ab29134110467ba6ce9b0991b6ea82_6471b342ae3c.png",
+      "expected_sha256": "b2d3e62fcbb7afa548ab02d49991201266666e810b97ca9af0d552bf50882c97",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json/graphic_evidence/2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-006/images/blk_ece9516e802e47a8baa35590355f2526_6471b342ae3c.png",
+      "expected_sha256": "3114196a95b72f49f75a7102c07280f7144875e9d835037d50326e8473124679",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json/graphic_evidence/3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-006/images/blk_b5c6b2d82a0c49eeab068093582b6e3e_6471b342ae3c.png",
+      "expected_sha256": "0f158c617f3942f3279da09be234cfb4f44355f61b8e869312b8c63987a14930",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json/graphic_evidence/4"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-006/images/blk_7f11769cf1164f53aec644339cd35e97_6471b342ae3c.png",
+      "expected_sha256": "4b1175abde8c264a31c25dfc55b983aa9547b00646b6888c4bb36a6618e2bdb2",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F024_riser_labels.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-006/images/blk_2707c7b12fb2453aaf9a67b91f2b185f_6471b342ae3c.png",
+      "expected_sha256": "466918ad22b94097ef6909d2a785f1dce0b98aedb1d6bdb819149b5a79615ab0",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F026_sheet_title_scope.json/graphic_evidence/0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-006/images/blk_2707c7b12fb2453aaf9a67b91f2b185f_7033c743fa0f.png",
+      "expected_sha256": "0cb20f61733935ecf0f6d51d38494179923a4a6016caa74e8a9fa80e84130b12",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F026_sheet_title_scope.json/graphic_evidence/1"
+    }
+  ]
+}
