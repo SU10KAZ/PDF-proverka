@@ -465,6 +465,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-042"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F042_SPZ_legend_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Просмотреть условные знаки и конкретные участки планов, связать каждый кабель с системой и лотком; до этого совместную прокладку и соблюдение разделения оставить неоцениваемыми."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-ITP-58"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
