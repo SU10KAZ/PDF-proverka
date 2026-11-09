@@ -840,6 +840,18 @@
     },
     {
       "candidate_ids": [
+        "H-KM-6",
+        "B-KM-F-018"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "СопоставитьF-020/F-026 старого аудита для решения о дубле без подмены оценки технической верности.",
+        "Уточнить согласованные границы заготовок/концевых деталей поКМД или ответу автора; не включать утверждение о монтажном браке в эталон до подтверждения."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-002"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
