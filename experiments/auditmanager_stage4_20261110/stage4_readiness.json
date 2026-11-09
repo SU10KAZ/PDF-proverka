@@ -45,9 +45,9 @@
     },
     {
       "id": "H03",
-      "status": "incomplete",
-      "verified_or_implemented_scope": "Optional quantity/set operations exist.",
-      "remaining": "Build source-addressed object registry and account for all applicable operations; analyze-block flags are insufficient.",
+      "status": "partial",
+      "verified_or_implemented_scope": "Object registry and five-operation ledger implemented; source-only known-fragment pilot extracted eight objects and reported the cabinet conflict.",
+      "remaining": "Whole-project extraction completeness, independent discovery and expanded-source operation controls remain unverified.",
       "evidence": []
     },
     {
@@ -66,16 +66,16 @@
     },
     {
       "id": "H06",
-      "status": "incomplete",
-      "verified_or_implemented_scope": "Missing external grounds remain unresolved rather than automatically refuted.",
-      "remaining": "Implement applicability records for project requirements and exact catalogue execution, with source retrieval.",
+      "status": "partial",
+      "verified_or_implemented_scope": "Requirement scope/edition/quotation checks implemented. ITP source scope and four row quantities reviewed locally.",
+      "remaining": "Astra ITP applicability pilot awaits payload-specific approval after automatic rejection. Exact catalogue execution and external applicability retrieval remain incomplete.",
       "evidence": []
     },
     {
       "id": "H07",
       "status": "partial",
-      "verified_or_implemented_scope": "Metadata-quote false trigger narrowed; curtain prescan moved to review requests.",
-      "remaining": "Finish separate questions output and check filter controls and automatic prescan review route.",
+      "verified_or_implemented_scope": "Explicit question routing added to classic Excel and protected across deduplication; narrow metadata/prescan changes retained.",
+      "remaining": "Portal display, full output/import compatibility and real filter controls still need acceptance checks.",
       "evidence": [
         {
           "path": "experiments/auditmanager_stage4_20261110/metadata_gate_candidate_replay.json",
@@ -87,5 +87,28 @@
         }
       ]
     }
-  ]
+  ],
+  "latest_local_validation": {
+    "source_commit": "69019a69132b1de6006b22f14bbd0b967d699e87",
+    "tests_passed": 189,
+    "duration_seconds": 2.07,
+    "scope": "Selected stage4 unit/integration suites and classic dedup tests; no new model calls.",
+    "boundary": "Passing tests do not establish six-project quality improvement, completeness or production readiness."
+  },
+  "external_permission_pending": {
+    "pilot": "ITP requirement scope",
+    "provider": "Codex CLI",
+    "model": "gpt-6-astra",
+    "payload_chars": 27170,
+    "pdf_pages": [
+      1,
+      29,
+      30,
+      31,
+      150,
+      151,
+      152
+    ],
+    "sent": false
+  }
 }
