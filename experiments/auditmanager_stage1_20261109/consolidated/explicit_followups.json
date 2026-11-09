@@ -59,6 +59,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-007"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Согласовать перечни; для пустого количества ТС2 уточнить заводскую комплектность электронагревателя. До ответа не включать отсутствие защиты или недопоставку в положительные метрики."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-008"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
