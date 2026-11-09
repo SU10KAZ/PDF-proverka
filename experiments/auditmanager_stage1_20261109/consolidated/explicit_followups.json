@@ -171,6 +171,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-001"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F001_cable_description.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить конструкцию принятого изделия по данным изготовителя и согласованной закупочной позиции, затем уточнить описание; не менять марку кабеля автоматически."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-007"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json",
