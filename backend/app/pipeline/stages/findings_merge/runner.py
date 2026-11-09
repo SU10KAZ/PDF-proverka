@@ -27,6 +27,7 @@ from typing import Optional
 
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
     resolve_existing,
 )
 import backend.app.services.llm.claude_runner as claude_runner
@@ -44,6 +45,7 @@ from backend.app.pipeline.stages.prepare.graph_builder import (
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.common import audit_scope
+from .source_lineage import text_candidate_lineage
 
 
 def _error_detail(exit_code: int, output: str, max_len: int = 200) -> str:
@@ -131,7 +133,18 @@ def backfill_text_evidence_in_findings(project_id: str, output_dir: Path | None 
         except OSError:
             pass
 
-    modified = 0
+    # Preserve explicit text-candidate provenance separately from verified
+    # evidence: a merge may retain a T-ID while changing its claim.
+    text_path = resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME)
+    try:
+        text_data = json.loads(text_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        text_data = {}
+    if not isinstance(text_data, dict):
+        text_data = {}
+    modified = text_candidate_lineage(
+        fd.get("findings", []), text_data, set(bc_index) | set(bpi),
+    )
     for finding in fd.get("findings", []):
         # ── Text-evidence backfill ──
         if not finding.get("selected_text_block_ids"):
