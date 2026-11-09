@@ -1,0 +1,70 @@
+{
+  "status": "executor_read_isolation_not_established",
+  "source_package": "six_project_input_package.json",
+  "code_sources": [
+    {
+      "path": "backend/app/services/llm/codex_runner.py",
+      "sha256": "4b1d9e35d7f4ae989159e2bc2539a2e10d87eb30144cacd0aa2c91dffb411625"
+    },
+    {
+      "path": "backend/app/core/config.py",
+      "sha256": "fb6c9008e0eccc935c8824346e45cfa310d74c52c61d2e9efd05a128cd281204"
+    },
+    {
+      "path": "experiments/classic_investigator/investigate.py",
+      "sha256": "cd7eeefb15f4bdddb4536c7affb0ed59f31e0542d8034de6db88662186792334"
+    }
+  ],
+  "findings": [
+    {
+      "location": "codex_runner.py:_build_json_prompt",
+      "kind": "prompt_instruction",
+      "behavior": "Requests no filesystem/shell/web usage; model compliance not independently proven."
+    },
+    {
+      "location": "codex_runner.py:_json_tool_args",
+      "kind": "implemented_command_configuration",
+      "behavior": "Default argument disables web_search, does not explicitly disable filesystem/shell tools."
+    },
+    {
+      "location": "codex_runner.py:run_codex_json_messages",
+      "kind": "implemented_command_configuration",
+      "behavior": "Ephemeral execution, ignores user config/rules, defaults read-only sandbox; no source-only read root set here."
+    },
+    {
+      "location": "config.py:codex_workdir; investigate.py:configure",
+      "kind": "implemented_working_directory",
+      "behavior": "Empty model cwd separates working files; does not prove denial of absolute-path reads."
+    }
+  ],
+  "local_isolation_probe": {
+    "program": "bwrap",
+    "payload": "/usr/bin/true",
+    "network_requests": 0,
+    "model_calls": 0,
+    "exit_code": 1,
+    "stderr": "bwrap: Creating new namespace failed: Permission denied",
+    "interpretation": "This host cannot execute the tested user-namespace isolation. No filesystem isolation claim follows."
+  },
+  "conclusions": [
+    "No evidence of actual historical-answer access is established by this inspection.",
+    "Do not label prior known-project runs newly blind.",
+    "Separate source package preparation is complete; access isolation is not."
+  ],
+  "next_options": [
+    {
+      "option": "Tool-less model invocation",
+      "requirement": "Verify actual supported tool disabling and audit emitted tool events; preserve inline MD/image retrieval supplied by orchestrator."
+    },
+    {
+      "option": "Dedicated restricted worker/container",
+      "requirement": "Only source inputs and necessary runtime visible; verify allowed source read succeeds and evaluator/history canary reads fail before model execution."
+    }
+  ],
+  "unaccepted_shortcuts": [
+    "Empty cwd as proof of read isolation",
+    "read-only as proof that historical answers cannot be read",
+    "Prompt prohibition as enforced access control"
+  ],
+  "external_payload_approval": "Still pending; this inspection neither sends data nor authorizes a request."
+}
