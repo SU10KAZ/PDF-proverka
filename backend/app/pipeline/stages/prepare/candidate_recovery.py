@@ -45,14 +45,22 @@ def build_recovery_passes(output_dir, md_path):
                 md_text_ids.add(bid)
     block_pages.update(md_block_pages)
     text_ids = md_text_ids
+    # Review candidates from the same graphic together so the model can
+    # distinguish duplicate claims from independent defects before publication.
+    groups = {}
+    for c in candidates:
+        key = ('graphic', c['block_id']) if c['origin'] == 'graphic' and c.get('block_id') else (c['origin'], c['pointer'])
+        groups.setdefault(key, []).append(c)
     passes, manifest = [], []
-    for candidate in candidates:
+    for group in groups.values():
+        candidate = group[0]
         item = candidate['candidate']
         refs = [candidate.get('block_id')]
-        for field in ('related_block_ids', 'source_block_ids'):
-            values = item.get(field)
-            if isinstance(values, list):
-                refs.extend(values)
+        for member in group:
+            for field in ('related_block_ids', 'source_block_ids'):
+                values = member['candidate'].get(field)
+                if isinstance(values, list):
+                    refs.extend(values)
         refs = list(dict.fromkeys(r for r in refs if isinstance(r, str) and r))
         pages = sorted({block_pages[r] for r in refs if r in block_pages})
         selected_pages, skipped_pages, chunks = [], [], []
@@ -79,12 +87,15 @@ def build_recovery_passes(output_dir, md_path):
             else:
                 unavailable.append(ref)
         key = hashlib.sha256((candidate['origin'] + candidate['pointer']).encode()).hexdigest()[:16]
-        packet = {'candidate': candidate, 'existing_findings': payloads[2].get('findings', []),
+        packet = {'candidate': candidate, 'candidate_group': group, 'existing_findings': payloads[2].get('findings', []),
                   'selected_md_pages': selected_pages, 'missing_or_budgeted_md_pages': skipped_pages,
                   'attached_image_block_ids_in_order': image_refs, 'unavailable_image_block_ids': unavailable,
                   'authoritative_md': '\n'.join(chunks), 'context_complete': False,
                   'allowed_source_refs': sorted(set(image_refs) | {r for r, page in block_pages.items() if page in selected_pages and r in text_ids})}
-        instructions = '''Review one unlinked candidate against the supplied original sources.
+        instructions = '''Review the unlinked candidate_group against the supplied original sources.
+Candidates sharing a graphic are reviewed together: emit one finding per distinct
+problem, preserving every supporting source_finding_id. Different defects in one
+graphic must remain distinct. Return one decision for each candidate in the group.
 Earlier detector claims, summaries and ID links are not independent evidence.
 MD TEXT is authoritative: never correct its recognition from images. Inspect attached
 images for GRAPHIC claims. The context is bounded; missing context means needs_data,
@@ -113,14 +124,14 @@ def validate_recovery_payload(targeted_pass, payload):
     """Require addressed evidence before admitting recovery output to ordinary review."""
     packet = json.loads(targeted_pass.messages[-1]['content'])
     candidate = packet['candidate']
-    sid = candidate['source_id']
+    source_ids = {c['source_id'] for c in packet.get('candidate_group', [candidate])}
     accepted, pending = [], []
     items = payload.get('findings', [])
     for item in items if isinstance(items, list) else []:
         reason = None
         if not isinstance(item, dict):
             reason = 'invalid_finding'
-        elif not isinstance(item.get('source_finding_ids'), list) or sid not in item['source_finding_ids']:
+        elif not isinstance(item.get('source_finding_ids'), list) or not any(sid in source_ids for sid in item['source_finding_ids'] if isinstance(sid, str)):
             reason = 'missing_candidate_link'
         elif candidate['origin'] == 'graphic' and not packet['attached_image_block_ids_in_order']:
             reason = 'graphic_source_unavailable'

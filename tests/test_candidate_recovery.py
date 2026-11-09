@@ -8,7 +8,7 @@ def test_recovery_selects_unlinked_and_requires_graphic_evidence(tmp_path, monke
     blocks.mkdir()
     monkeypatch.setattr(recovery, 'resolve_blocks_dir', lambda _: blocks)
     data = {'02_text_analysis.json': {'text_findings': [{'id': 'T-1'}]},
-            '01_blocks_analysis.json': {'block_analyses': [{'block_id': 'g', 'findings': [{'id': 'G-1'}]}]},
+            '01_blocks_analysis.json': {'block_analyses': [{'block_id': 'g', 'findings': [{'id': 'G-1'}, {'id': 'G-2'}]}]},
             '03_findings.json': {'findings': [{'id': 'F-1', 'source_finding_ids': ['T-1']}]},
             'document_graph.json': {'pages': [{'page': 2, 'image_blocks': [{'id': 'g'}]}]}}
     for name, payload in data.items():
@@ -20,6 +20,7 @@ def test_recovery_selects_unlinked_and_requires_graphic_evidence(tmp_path, monke
     packet = json.loads(passes[0].messages[-1]['content'])
     assert 'unrelated' not in packet['authoritative_md']
     assert packet['selected_md_pages'] == [2]
+    assert [c['source_id'] for c in packet['candidate_group']] == ['G-1', 'G-2']
     proposed = {'source_finding_ids': ['G-1'], 'evidence': [{'block_id': 'g'}]}
     result = validate_recovery_payload(passes[0], {'findings': [proposed]})
     assert result['findings'] == []

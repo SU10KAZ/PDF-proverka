@@ -10,7 +10,7 @@ from backend.app.services.llm.codex_model_substitution import substitute_codex_m
 from backend.app.services.llm.codex_runner import run_codex_json_messages
 
 BASE = Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs')
-RESULTS = Path('/tmp/auditmanager_recovery_astra_20261110')
+RESULTS = Path('/tmp/auditmanager_recovery_astra_20261110_grouped')
 
 async def main():
     assert substitute_codex_model('gpt-6-astra') == 'gpt-6-astra', 'Astra substitution forbidden for this pilot'
