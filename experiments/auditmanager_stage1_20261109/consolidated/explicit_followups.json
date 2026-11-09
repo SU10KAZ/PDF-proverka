@@ -27,6 +27,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-005"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Перед изменением количества сверить комплектацию и дополнительное назначение второго накладного датчика. Пока учитывать только доказанное расхождение документов."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-006"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
