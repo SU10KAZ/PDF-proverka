@@ -236,6 +236,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-027"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F027_sensor_interface_scope.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Проверить согласованное исполнение всех соответствующих систем, паспорт датчика, тип входа и логику шкафа смежного ЭМ. До этого совместимость и фактическую неработоспособность оставить неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-028"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
