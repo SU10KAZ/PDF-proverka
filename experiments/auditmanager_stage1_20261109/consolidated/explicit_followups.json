@@ -187,6 +187,16 @@
     },
     {
       "candidate_ids": [
+        "B-VK-F-002"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Составить поштучную ведомость мест ревизий и компенсационных патрубков по каждому основному/дополнительному стояку и этажу; сопоставить материал, диаметр, границы поставки. До этого не включать условные90 мест и разность90−7 как подтверждённое количество дефектов."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-VK-F-005"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F005_fitting_pressure.json",
