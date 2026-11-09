@@ -260,7 +260,7 @@ B-EOM-F-016,EOM,classic_usefulness,Первичная проверка не за
 B-EOM-F-017,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-018,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-019,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-020,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-020,EOM,classic_usefulness,Подтверждено различие минимальных требований; сохранить вопрос о согласовании заказа без утверждения о фактической недостаточности защиты.,Вопросы и уточнения,"В примечаниях к схемам щитов ЗЩРОВ2, 2ЩРОВ1 и 2ЩРОВ2 на листах 12–14 указан минимум IP54, а в спецификации на листах 2–3 — минимум IP31. Уточните единое требование к оболочкам в документах заказа с учётом более строгого требования примечаний.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F020_enclosure_minimums.json
 B-EOM-F-021,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-022,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-023,EOM,classic_usefulness,Первичная проверка не завершена,,,

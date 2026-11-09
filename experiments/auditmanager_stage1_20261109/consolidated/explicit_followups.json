@@ -192,6 +192,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-020"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F020_enclosure_minimums.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "До включения утверждения о недостаточной защите в положительный эталон установить исполнение оболочки и требования по условиям установки; иначе заморозить этот тезис как неоцениваемый."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-024"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F024_room_number_collision.json",
