@@ -1,0 +1,1098 @@
+{
+  "discipline": "ITP",
+  "decisions": [
+    {
+      "id": "ITP-001",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03"
+      ],
+      "behavior": "Карточка каждого экземпляра и каждой стороны аппарата с режимами и локаторами; после аномалии проверять весь класс.",
+      "control_and_nontransfer_boundary": "Не объединять параметры разных сторон и исполнений в одну карточку.",
+      "historical_cases": "Прямых/общих привязок cases.json нет. Основание: rerun_lessons.json и история локальных проходов; историческая эффективность не измерена.",
+      "runtime_targets": [],
+      "implementation_status": "отсутствует",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Не объединять параметры разных сторон и исполнений в одну карточку.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-002",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Восстановить точки давления, насосы и редукторы; привести единицы до проверки допустимости.",
+      "control_and_nontransfer_boundary": "PNфланца не давление аппарата; напор повторно не прибавлять; обратное давление может быть выше подающего.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-001 — Отклонено; PN16 в первичном греющем контуре\nПД-00542664-ИТП.ТМ_V3::UNI-002 — Отклонено; Давление оборудования ГВС 3\nПД-00542664-ИТП.ТМ_V3::UNI-020 — Принято; Давление отопления третьей зоны и допустимое давление К3/К11\nПД-00542664-ИТП.ТМ_V3::UNI-025 — Принято; Давление греющей стороны теплообменников\nПД-00542664-ИТП.ТМ_V3::UNI-026 — Принято; Давление насосов К14\nПД-00542664-ИТП.ТМ_V3::UNI-028 — Принято; Допустимое давление оборудования ГВС 3\nПД-00542664-ИТП.ТМ_V3::UNI-031 — Отклонено; Соотношение давлений подачи и обратки\nПД-00542664-ИТП.ТМ_V3::UNI-035 — Отклонено; Исполнение оборудования ГВС 2",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "PNфланца не давление аппарата; напор повторно не прибавлять; обратное давление может быть выше подающего.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-003",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H06"
+      ],
+      "behavior": "Применить требованиеPN к адресным позициям и зоне, сохранив исключения.",
+      "control_and_nontransfer_boundary": "Конфликт требуемого исполнения иСО не равен доказанному превышению рабочего давления.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-006 — Принято; PN16 вместо PN25: арматура ГВС 2\nПД-00542664-ИТП.ТМ_V3::UNI-027 — Принято; Арматура PN16 при требовании PN25",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Конфликт требуемого исполнения иСО не равен доказанному превышению рабочего давления.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-004",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05",
+        "H06"
+      ],
+      "behavior": "Связать уставку защиты с местом,границей отключения и слабейшим элементом по режиму.",
+      "control_and_nontransfer_boundary": "Не вводить универсальный процент запаса; разные уставки сначала согласовать как конфликт документов.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-029 — Принято; Уставка клапана 37 греющего контура\nПД-00542664-ИТП.ТМ_V3::UNI-030 — Принято; Уставка клапана 45: 16/20 бар\nПД-00542664-ИТП.ТМ_V3::UNI-053 — Отклонено; Запас уставки клапана ГВС 1\nПД-00542664-ИТП.ТМ_V3::UNI-054 — Отклонено; Проход клапана 41: DN60×65 / Ду40×65",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "B",
+          "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+          "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "unchanged_since_report": true,
+          "symbol": "SYSTEM_PROMPT_BASE",
+          "historical_line": 372
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Не вводить универсальный процент запаса; разные уставки сначала согласовать как конфликт документов.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-005",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03",
+        "H04"
+      ],
+      "behavior": "Сопоставить защиты и вспомогательные элементы по каждому аппарату и комплекту поставки.",
+      "control_and_nontransfer_boundary": "Число пар не число изделий; заводской комплект подтверждается, не предполагается.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-016 — Принято; Количество предохранительных клапанов ГВС: 6 против 3",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Число пар не число изделий; заводской комплект подтверждается, не предполагается.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-006",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03",
+        "H04"
+      ],
+      "behavior": "Построить карту точек установки приборов и требуемых диапазонов, затем сравнить количества.",
+      "control_and_nontransfer_boundary": "Наличие четырёх приборов повышенного диапазона не доказывает их распределение по нужным точкам.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-042 — Принято; Давление воздухоотводчиков Airvent-R\nПД-00542664-ИТП.ТМ_V3::UNI-043 — Принято; Диапазоны и количество манометров",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "B",
+          "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+          "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "unchanged_since_report": true,
+          "symbol": "SYSTEM_PROMPT_BASE",
+          "historical_line": 372
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Наличие четырёх приборов повышенного диапазона не доказывает их распределение по нужным точкам.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-007",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Сверять тепловые величины по стороне,режиму,числу работающих аппаратов и назначению подписи; пройти все виды.",
+      "control_and_nontransfer_boundary": "Запас аппарата не ошибка нагрузки сам по себе; половинная и полная мощности не сравниваются напрямую.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-039 — Принято; Нагрузки и расходы ГВС на разрезах\nПД-00542664-ИТП.ТМ_V3::UNI-040 — Отклонено; Нагрузка и расход отопления 3\nПД-00542664-ИТП.ТМ_V3::UNI-055 — Отклонено; Расходы ХВС и КЗР на планах\nПД-00542664-ИТП.ТМ_V3::UNI-056 — Отклонено; Нагрузка и расход на вводе ИТП\nПД-00542664-ИТП.ТМ_V3::UNI-060 — Отклонено; Нагрузки отопления 1 и 2 на разрезах\nПД-00542664-ИТП.ТМ_V3::UNI-073 — Отклонено; Формула среднего расхода ГВС\nПД-00542664-ИТП.ТМ_V3::UNI-074 — Отклонено; Расход циркуляции ГВС 2\nПД-00542664-ИТП.ТМ_V3::UNI-077 — Отклонено; Мощности в расчётах АУПД и ПЗ",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Запас аппарата не ошибка нагрузки сам по себе; половинная и полная мощности не сравниваются напрямую.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-008",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Построить баланс ветвей и смешения в согласованном режиме с единицами и одновременностью.",
+      "control_and_nontransfer_boundary": "ITP58: сохранить расхождение подписанных расходов; не объявлятьК15 непригодным без режима.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-044 — Отклонено; Обоснование общей нагрузки ГВС\nПД-00542664-ИТП.ТМ_V3::UNI-046 — Отклонено; Температура и расход входа ТО ГВС\nПД-00542664-ИТП.ТМ_V3::UNI-058 — Принято; Расходы ветвей ГВС первой зоны",
+      "runtime_targets": [
+        {
+          "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_ITP_matching.json",
+            "sha256": "04e285e6322ac16852295c5d85579c79aa1a9adfd8117c78e923787283aad8bd"
+          },
+          "pointer": "/results/1",
+          "rule_ids": [
+            "C-09",
+            "ITP-008",
+            "ITP-009"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "ITP58: сохранить расхождение подписанных расходов; не объявлятьК15 непригодным без режима.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-009",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Сопоставить требуемый перепад, подключённые потери, кривую и фактическую рабочую точку насоса.",
+      "control_and_nontransfer_boundary": "Требуемый и фактический напоры различаются; неизвестный запас не считать доказанным.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-003 — Принято; Напор насоса вентиляции К13\nПД-00542664-ИТП.ТМ_V3::UNI-063 — Отклонено; Напор насоса К10: 21,29/21,91 м",
+      "runtime_targets": [
+        {
+          "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_ITP_matching.json",
+            "sha256": "04e285e6322ac16852295c5d85579c79aa1a9adfd8117c78e923787283aad8bd"
+          },
+          "pointer": "/results/1",
+          "rule_ids": [
+            "C-09",
+            "ITP-008",
+            "ITP-009"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Требуемый и фактический напоры различаются; неизвестный запас не считать доказанным.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-010",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03",
+        "H05"
+      ],
+      "behavior": "Суммировать водовместимость реально подключённых ветвей иИТП; сверить анкеты и расчёты.",
+      "control_and_nontransfer_boundary": "Конфликт объёмов не автоматически недостаточность бака; мощность несвязанной системы не база объёма.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-005 — Принято; Водовместимость АУПД первой зоны\nПД-00542664-ИТП.ТМ_V3::UNI-019 — Принято; Водовместимость и бак АУПД отопления второй зоны\nПД-00542664-ИТП.ТМ_V3::UNI-047 — Отклонено; Несогласованные объёмы систем\nПД-00542664-ИТП.ТМ_V3::UNI-078 — Отклонено; LVF 600 при требуемых 606,9 л",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Конфликт объёмов не автоматически недостаточность бака; мощность несвязанной системы не база объёма.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-011",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Воспроизвести полезный объём поp0/pmin/pmax, температуре,расширению и настройке.",
+      "control_and_nontransfer_boundary": "Различать абсолютные и избыточные давления; не менять настройку и не объявлять дефицит по округлённой формуле.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-011 — Принято; Предзаряд и расчёт бака ДОО\nПД-00542664-ИТП.ТМ_V3::UNI-012 — Принято; Предзаряд и расчёт баков вентиляции\nПД-00542664-ИТП.ТМ_V3::UNI-079 — Отклонено; Температуры и давления в расчётах баков",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Различать абсолютные и избыточные давления; не менять настройку и не объявлять дефицит по округлённой формуле.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-012",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03",
+        "H04"
+      ],
+      "behavior": "Связать полный код,тип,объём,PN,количество и роль каждого бака по плану,разрезу,СО и подбору.",
+      "control_and_nontransfer_boundary": "Не братьPN соседней модели; подпись объёма не доказывает число изображённых баков.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-007 — Принято; Объём бака К23: 100/200 л\nПД-00542664-ИТП.ТМ_V3::UNI-008 — Принято; Объём бака К22: 1000/1500 л\nПД-00542664-ИТП.ТМ_V3::UNI-038 — Отклонено; Разные объёмы баков К22 и К23\nПД-00542664-ИТП.ТМ_V3::UNI-065 — Принято; Обозначения баков LVF 400 и RM 580",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Не братьPN соседней модели; подпись объёма не доказывает число изображённых баков.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-013",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05",
+        "H06"
+      ],
+      "behavior": "Сверить электрические параметры и требованияТЗ с паспортом,СО и заданиемЭОМ.",
+      "control_and_nontransfer_boundary": "Номинал двигателя неP2рабочейточки; категория и резерв относятся к конкретной системе.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-018 — Принято; Категория электроснабжения ИТП: II вместо I по ТЗ\nПД-00542664-ИТП.ТМ_V3::UNI-033 — Принято; Мощность насоса К12: 0,55/1,5 кВт",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Номинал двигателя неP2рабочейточки; категория и резерв относятся к конкретной системе.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-014",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Сверить массы с видом нагрузки,комплектацией и строительным заданием.",
+      "control_and_nontransfer_boundary": "Сухая масса и масса с обвязкой не один параметр; совпадение артикула не объясняет вид массы.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-034 — Принято; Расхождения масс оборудования\nПД-00542664-ИТП.ТМ_V3::UNI-062 — Отклонено; Незаполненные массы ХВП",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Сухая масса и масса с обвязкой не один параметр; совпадение артикула не объясняет вид массы.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-015",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H06"
+      ],
+      "behavior": "Привязать сопрягаемые детали к узлу и типу трубы; сверитьDN,наружный диаметр,стенку,паз и паспорт.",
+      "control_and_nontransfer_boundary": "ITP17: ВГП65×4 и электросварная76×3.5 раздельно; коды073/076 не доказанный универсальный допуск.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-010 — Принято; Диаметры концов переходов и труб\nПД-00542664-ИТП.ТМ_V3::UNI-017 — Принято; Посадочные диаметры муфт FC073E и фитингов 076\nПД-00542664-ИТП.ТМ_V3::UNI-032 — Отклонено; Сортамент оцинкованных труб",
+      "runtime_targets": [
+        {
+          "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+          "route": "question",
+          "final_match": "partial_same_question_missing_pipe_type_disambiguation",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_ITP_matching.json",
+            "sha256": "04e285e6322ac16852295c5d85579c79aa1a9adfd8117c78e923787283aad8bd"
+          },
+          "pointer": "/results/0",
+          "rule_ids": [
+            "C-11",
+            "C-14",
+            "ITP-015",
+            "ITP-022"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "NORM",
+          "path": "backend/app/pipeline/stages/norms/runner.py",
+          "sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "historical_sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "unchanged_since_report": true,
+          "symbol": "async def run_norm_verification",
+          "historical_line": 327
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "ITP17: ВГП65×4 и электросварная76×3.5 раздельно; коды073/076 не доказанный универсальный допуск.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-016",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H04"
+      ],
+      "behavior": "Сверить каждый маркоразмер трубы с изоляцией и узлами крепления, учитывая условия и состав комплекта.",
+      "control_and_nontransfer_boundary": "Рулонный материал не закрывает пропуск цилиндра без распределения; количество опор не выводить из метража без шага.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-022 — Принято; Не задано количество креплений трубопровода Ø325\nПД-00542664-ИТП.ТМ_V3::UNI-023 — Принято; Изоляция Ø273/Ø325 не согласована с трубами",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Рулонный материал не закрывает пропуск цилиндра без распределения; количество опор не выводить из метража без шага.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-017",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "По тому же участку сопоставить наружный диаметр и стенку; вычислить проход и скорость, затем влияние на рабочую точку.",
+      "control_and_nontransfer_boundary": "ITP72: большая стенка не гидравлический запас; не требовать замену насоса без доказанного влияния.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-072 — Отклонено; Толщины труб и расчёт скоростей/потерь",
+      "runtime_targets": [
+        {
+          "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_ITP_matching.json",
+            "sha256": "04e285e6322ac16852295c5d85579c79aa1a9adfd8117c78e923787283aad8bd"
+          },
+          "pointer": "/results/3",
+          "rule_ids": [
+            "C-07",
+            "ITP-017"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "ITP72: большая стенка не гидравлический запас; не требовать замену насоса без доказанного влияния.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-018",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05",
+        "H06"
+      ],
+      "behavior": "Привязать монтажное указание и испытание к контуру,единицам,режиму и границе отключения.",
+      "control_and_nontransfer_boundary": "Общее пробное давление не применять ко всем контурам автоматически; время и критерий брать из применимого источника.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-015 — Принято; Пробное давление не согласовано с рабочими режимами\nПД-00542664-ИТП.ТМ_V3::UNI-021 — Принято; Разные уклоны общего сливного трубопровода",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Общее пробное давление не применять ко всем контурам автоматически; время и критерий брать из применимого источника.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-019",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03",
+        "H06"
+      ],
+      "behavior": "Сопоставить полную модель и исполнение на всех видах с действующим выпуском.",
+      "control_and_nontransfer_boundary": "Совпадение массы не доказывает одинаковую модель; отличие подписи не разрешать выбором документа по большинству.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-037 — Принято; Марки теплообменников на планах",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Совпадение массы не доказывает одинаковую модель; отличие подписи не разрешать выбором документа по большинству.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-020",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03",
+        "H06"
+      ],
+      "behavior": "Проследить пометку до адресного задания с параметрами,ответственным и статусом согласования.",
+      "control_and_nontransfer_boundary": "Передача смежнику не устраняет интерфейс; коллизия требует координат и габаритов.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-036 — Принято; Незавершённые пометки и деформационный шов\nПД-00542664-ИТП.ТМ_V3::UNI-041 — Отклонено; Приёмник дренажных стоков ИТП\nПД-00542664-ИТП.ТМ_V3::UNI-075 — Отклонено; ХВП и параметры подпитки в ПЗ\nПД-00542664-ИТП.ТМ_V3::UNI-076 — Отклонено; Приточная и вытяжная вентиляция ИТП\nПД-00542664-ИТП.ТМ_V3::UNI-080 — Отклонено; Приборы отопления автостоянки",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Передача смежнику не устраняет интерфейс; коллизия требует координат и габаритов.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-021",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H06"
+      ],
+      "behavior": "Каждое требованиеТЗ довести до списка применимых объектов с условиями,стадией и исключениями.",
+      "control_and_nontransfer_boundary": "ITP68:819муфт — сумма строк, не число доказанных нарушений требования жилойчасти.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-048 — Отклонено; Подогрев мощения в нагрузках ИТП\nПД-00542664-ИТП.ТМ_V3::UNI-068 — Принято; Грувлочные соединения Ø25–Ø50 и ТЗ\nПД-00542664-ИТП.ТМ_V3::UNI-081 — Отклонено; Обоснование шумо- и виброизоляции",
+      "runtime_targets": [
+        {
+          "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_ITP_matching.json",
+            "sha256": "04e285e6322ac16852295c5d85579c79aa1a9adfd8117c78e923787283aad8bd"
+          },
+          "pointer": "/results/2",
+          "rule_ids": [
+            "C-13",
+            "ITP-021"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "NORM",
+          "path": "backend/app/pipeline/stages/norms/runner.py",
+          "sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "historical_sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "unchanged_since_report": true,
+          "symbol": "async def run_norm_verification",
+          "historical_line": 327
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "ITP68:819муфт — сумма строк, не число доказанных нарушений требования жилойчасти.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-022",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H06"
+      ],
+      "behavior": "Подтвердить применимость каталога/нормы к конкретной серии,редакции и условиям; сохранить точную цитату.",
+      "control_and_nontransfer_boundary": "Свойства похожей модели не доказательство; отдельно внутренний конфликт и неподтверждённая применимость паспорта.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-009 — Отклонено; Kvs и заказные артикулы клапанов\nПД-00542664-ИТП.ТМ_V3::UNI-070 — Отклонено; Актуальность перечней нормативов\nПД-00542664-ИТП.ТМ_V3::UNI-071 — Отклонено; Наименование СП 510.1325800.2022",
+      "runtime_targets": [
+        {
+          "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+          "route": "question",
+          "final_match": "partial_same_question_missing_pipe_type_disambiguation",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_ITP_matching.json",
+            "sha256": "04e285e6322ac16852295c5d85579c79aa1a9adfd8117c78e923787283aad8bd"
+          },
+          "pointer": "/results/0",
+          "rule_ids": [
+            "C-11",
+            "C-14",
+            "ITP-015",
+            "ITP-022"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "NORM",
+          "path": "backend/app/pipeline/stages/norms/runner.py",
+          "sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "historical_sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "unchanged_since_report": true,
+          "symbol": "async def run_norm_verification",
+          "historical_line": 327
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Свойства похожей модели не доказательство; отдельно внутренний конфликт и неподтверждённая применимость паспорта.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-023",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H07"
+      ],
+      "behavior": "Определять значимость по идентификации,заказу,монтажу и функции позиции; профильТЗ хранить отдельно.",
+      "control_and_nontransfer_boundary": "Малое количество или процент не универсальное основание снятия; достоверное малозначимое — вопрос.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-013 — Отклонено; Неопределённый дренажный участок 0,4 м\nПД-00542664-ИТП.ТМ_V3::UNI-014 — Отклонено; Деталь «Нет в каталоге» без типоразмера\nПД-00542664-ИТП.ТМ_V3::UNI-024 — Отклонено; Разные отметки пола ИТП\nПД-00542664-ИТП.ТМ_V3::UNI-045 — Отклонено; Напор ХВС первой зоны: 95,59/91,59 м\nПД-00542664-ИТП.ТМ_V3::UNI-049 — Отклонено; Разные титулы и идентификация раздела\nПД-00542664-ИТП.ТМ_V3::UNI-050 — Отклонено; Этап строительства в названии объекта\nПД-00542664-ИТП.ТМ_V3::UNI-051 — Отклонено; Ведомость и фактические чертежи\nПД-00542664-ИТП.ТМ_V3::UNI-052 — Отклонено; Количество листов прилагаемых документов\nПД-00542664-ИТП.ТМ_V3::UNI-057 — Отклонено; Даты и актуальность разрезов\nПД-00542664-ИТП.ТМ_V3::UNI-059 — Отклонено; Служебный текст в поле формата\nПД-00542664-ИТП.ТМ_V3::UNI-061 — Отклонено; Опечатка в подписи аксонометрии\nПД-00542664-ИТП.ТМ_V3::UNI-064 — Отклонено; Отсутствующая графа «Код работ»\nПД-00542664-ИТП.ТМ_V3::UNI-066 — Принято; Повторная и пропущенная нумерация СО\nПД-00542664-ИТП.ТМ_V3::UNI-067 — Отклонено; Неопределённые позиции спецификации\nПД-00542664-ИТП.ТМ_V3::UNI-069 — Отклонено; Содержание и нумерация ПЗ",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "QUALITY",
+          "path": "backend/app/services/findings/finding_quality.py",
+          "sha256": "c10856b72066fd8d304583112641713bee953523abe39efcd367a36b91c5b52d",
+          "historical_sha256": "c10856b72066fd8d304583112641713bee953523abe39efcd367a36b91c5b52d",
+          "unchanged_since_report": true,
+          "symbol": "def evaluate_finding_practicality",
+          "historical_line": 192
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Малое количество или процент не универсальное основание снятия; достоверное малозначимое — вопрос.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-024",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H06",
+        "H07"
+      ],
+      "behavior": "Проверить точный текст эксплуатационного указания,состояние питания/нагрузки и допустимые условия изготовителя.",
+      "control_and_nontransfer_boundary": "Безусловное указание менять предохранитель под напряжением не оправдывается гипотетическим специальным исключением.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-004 — Принято; Замена предохранителей при включённом питании",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "ITP",
+          "path": "prompts/disciplines/ITP/checklist.md",
+          "sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "Безусловное указание менять предохранитель под напряжением не оправдывается гипотетическим специальным исключением.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "ITP-025",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H01"
+      ],
+      "behavior": "Дедуплицировать по объекту,режиму и самостоятельному тезису; сохранять оба числа и родительскиеID.",
+      "control_and_nontransfer_boundary": "T016→F016/F017: две проблемы одной позиции не один дефект; общая задача правки не основание потери тезиса.",
+      "historical_cases": "ПД-00542664-ИТП.ТМ_V3::UNI-001 — Отклонено; PN16 в первичном греющем контуре\nПД-00542664-ИТП.ТМ_V3::UNI-002 — Отклонено; Давление оборудования ГВС 3\nПД-00542664-ИТП.ТМ_V3::UNI-038 — Отклонено; Разные объёмы баков К22 и К23\nПД-00542664-ИТП.ТМ_V3::UNI-040 — Отклонено; Нагрузка и расход отопления 3\nПД-00542664-ИТП.ТМ_V3::UNI-047 — Отклонено; Несогласованные объёмы систем\nПД-00542664-ИТП.ТМ_V3::UNI-056 — Отклонено; Нагрузка и расход на вводе ИТП\nПД-00542664-ИТП.ТМ_V3::UNI-060 — Отклонено; Нагрузки отопления 1 и 2 на разрезах\nПД-00542664-ИТП.ТМ_V3::UNI-078 — Отклонено; LVF 600 при требуемых 606,9 л\nПД-00542664-ИТП.ТМ_V3::UNI-079 — Отклонено; Температуры и давления в расчётах баков",
+      "runtime_targets": [],
+      "implementation_status": "конфликтует",
+      "implementation_evidence": [
+        {
+          "source_id": "G",
+          "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+          "sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "historical_sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "unchanged_since_report": true,
+          "symbol": "def gate_findings",
+          "historical_line": 748
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая реализация и написанное в промпте не доказывают выполнение. Runtime вывод ограничен связанными адресными случаями.",
+      "verification": "Локально проверить соответствующие атомарные решения эталонаИТП и границы отрицательных тезисов; затем независимый полный поиск с теми же источниками. Отдельно оценить технические замечания, вопросы, потери, нагрузку и затраты.",
+      "regression_risk": "T016→F016/F017: две проблемы одной позиции не один дефект; общая задача правки не основание потери тезиса.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    }
+  ],
+  "strong_classic_features_to_preserve": [
+    "Текстовый поиск противоречий в расчётах и экспликациях: сохранены кандидатыT001–T043.",
+    "Независимые графические проверки мощностей,объёмов,рабочихточек и масс с происхождением.",
+    "Разделение составного кандидата на несколько самостоятельных полезных тезисов, какT016."
+  ],
+  "no_blanket_filters": "Сначала проверять атомарные отрицательные случаи; историческоеОтклонено не равно ложности. Новые широкие фильтры без подтверждённой пары не считать испытанными.",
+  "stage3_complete": false,
+  "production_changed": false
+}
