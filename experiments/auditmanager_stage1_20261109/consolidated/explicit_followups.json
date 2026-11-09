@@ -202,6 +202,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-011"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F011_meter_internal_symbols.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Идентифицировать применимый счётчик и сравнить паспортную схему с изображёнными элементами и общей точкой. До этого не оценивать прямое замыкание или правильность всей схемы как установленные факты."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-013"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F013_small_load_currents.json",
