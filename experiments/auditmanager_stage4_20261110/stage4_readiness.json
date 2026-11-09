@@ -198,5 +198,16 @@
       "id": "H07",
       "remaining": "Rendered browser acceptance and end-to-end filter pairs; local Excel/merge/verifier preservation passed."
     }
-  ]
+  ],
+  "browser_acceptance": {
+    "status": "not_executed_environment_failure",
+    "executable": "/usr/bin/google-chrome",
+    "mode": "headless with fresh temporary profile, default sandbox, about:blank",
+    "exit_code": 134,
+    "error": "sandbox/linux/services/credentials.cc:131 Permission denied (13)",
+    "production_accessed": false,
+    "project_data_sent": false,
+    "sandbox_disabled": false,
+    "next_action": "Use a supported browser environment to render the actual portal question section; do not count the existing Node computed-list tests as visual acceptance."
+  }
 }
