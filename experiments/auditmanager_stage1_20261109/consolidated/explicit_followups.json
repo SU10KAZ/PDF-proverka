@@ -211,6 +211,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-036"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F036_damper_signal_direction.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Сверить назначение сигналов11/13 с заводской схемой и паспортом привода. До этого неверное физическое подключение, отсутствие обратной связи и необходимость смены типа канала исключены из положительных метрик."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-038"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F038_temperature_graphic_connection.json",
