@@ -87,7 +87,7 @@
     {
       "id": "H07",
       "status": "partial",
-      "verified_or_implemented_scope": "Explicit question routing added to classic Excel and protected across deduplication; narrow metadata/prescan changes retained. Actual Excel export/import roundtrip preserves IDs, decisions and comments in both sections; accepted comments no longer discarded. Portal table groups explicit questions under a separate heading and API grouping preserves section boundaries.",
+      "verified_or_implemented_scope": "Explicit question routing added to classic Excel and protected across deduplication; narrow metadata/prescan changes retained. Actual Excel export/import roundtrip preserves IDs, decisions and comments in both sections; accepted comments no longer discarded. Portal table groups explicit questions under a separate heading and API grouping preserves section boundaries. Known VK20 source-backed question survives merge, deterministic verifier and saved Excel, preserving baseline 29 outputs; model discovery not tested.",
       "remaining": "Browser-level rendered portal acceptance and real filter control pairs remain; whole six-project acceptance not established.",
       "evidence": [
         {
@@ -97,6 +97,10 @@
         {
           "path": "experiments/auditmanager_stage4_20261110/prescan_curtain_candidate_replay.json",
           "sha256": "e7d4c095f28b5536fa40179265139820060d4874dc7c51937c01f4b699f8bd69"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/VK20_output_preservation_replay.json",
+          "sha256": "445b1d5d4f6e4fefef2b3d3c12a44db0f7f3cf08bf87ae6286a9f3a804cbf1fa"
         }
       ]
     }

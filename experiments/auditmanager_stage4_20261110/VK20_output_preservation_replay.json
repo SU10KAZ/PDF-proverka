@@ -1,0 +1,70 @@
+{
+  "scope": "Known manually supplied VK20 question through merge, real deterministic verifier/corrector and saved Excel",
+  "original_count": 29,
+  "candidate_count": 30,
+  "baseline_outputs_preserved": true,
+  "question_text_and_route_preserved": true,
+  "question_exported_under_question_heading": true,
+  "retained_question": {
+    "report_section": "questions",
+    "problem": "Согласовать 25 датчиков GS-Blockage D110 в СО с местами установки и выносками ДЗ на схемах К1.",
+    "recommendation": "Составить поименную связь стояк–место установки–датчик; проверить исключение для опусков от приборов первого этажа, продолжения ВК0-2 и подключение по АК.",
+    "id": "F-030",
+    "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+    "category": "sewerage",
+    "description": "Согласовать 25 датчиков GS-Blockage D110 в СО с местами установки и выносками ДЗ на схемах К1.",
+    "solution": "Составить поименную связь стояк–место установки–датчик; проверить исключение для опусков от приборов первого этажа, продолжения ВК0-2 и подключение по АК.",
+    "source_block_ids": [
+      "blk_686c23c287f1430199897dff70be0878",
+      "blk_1d17a25462884606ae486c345090fe20"
+    ],
+    "related_block_ids": [
+      "blk_686c23c287f1430199897dff70be0878",
+      "blk_1d17a25462884606ae486c345090fe20"
+    ],
+    "evidence": [
+      {
+        "type": "text",
+        "block_id": "blk_686c23c287f1430199897dff70be0878",
+        "quote": "Согласно требованиям ТЗ, предусмотрено устройство датчиков контроля засоров на каждом канализационном стояке в тех. пространстве на отм. +5,320. Датчики засора на опусках от сантехнических приборов 1-го этажа не устанавливать. Для установки датчика на вертикальном трубопроводе предусматривается установка канализационного тройника 45° Ду100х100 с заглушкой. Датчики устанавливаются против потока сточных вод непосредственно в канализационные заглушки (для трубопроводов из полимерных труб есть готовые датчики в виде пластиковой заглушки). Датчики подключаются к контроллерам. К одному контроллеру возможно подключить не более 10-ти датчиков с максимальным удалением от контроллера не более 100м, интерфейс подключения RS-485. Подключение датчиков см. раздел АК."
+      },
+      {
+        "type": "text",
+        "block_id": "blk_1d17a25462884606ae486c345090fe20",
+        "quote": "| 1 | Датчик засора канализации DN110 |  | GS-Blockage D110 | Производство РФ | шт. | 25 |  |  |"
+      }
+    ],
+    "source_finding_ids": [],
+    "norm": "",
+    "provenance": {
+      "origin": "manual_known_control_for_downstream_replay"
+    },
+    "source_stage": "known_control"
+  },
+  "verifier_stats": [
+    {
+      "findings_total": 29,
+      "deterministic_issues": 0,
+      "critic_error": null,
+      "phantom_cleaned": 0,
+      "page_fixed": 0,
+      "downgraded": 0,
+      "flagged_human": 0,
+      "corrector_error": null
+    },
+    {
+      "findings_total": 30,
+      "deterministic_issues": 0,
+      "critic_error": null,
+      "phantom_cleaned": 0,
+      "page_fixed": 0,
+      "downgraded": 0,
+      "flagged_human": 0,
+      "corrector_error": null
+    }
+  ],
+  "control_sha256": "b83b6c37dbff8df584770b4f004f752e0b980af3627da7a801cd852a85022085",
+  "new_model_calls": 0,
+  "independent_discovery": false,
+  "boundary": "Does not test model finding generation, semantic verification, absence-model pass, or complete six-project acceptance."
+}
