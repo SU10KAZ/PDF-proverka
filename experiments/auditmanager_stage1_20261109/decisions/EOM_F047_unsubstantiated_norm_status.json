@@ -94,7 +94,7 @@
   ],
   "prior_evidence": {
     "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F052_unsubstantiated_norm_status.json",
-    "sha256": "a5ecfe3e524454366f9e96b4ee356d5a2840b34b3349b20a25b70bf3df884886",
+    "sha256": "2f8a002cdcb34f772d26f0e861355cba8ae759942434a6b2b0a0089235183584",
     "scope": "Проверка локальной базы и официальной карточки того же обозначения; проектный TEXT ЭОМ проверен отдельно."
   },
   "mechanism_evidence": {
