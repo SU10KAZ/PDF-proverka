@@ -1313,7 +1313,7 @@
     },
     {
       "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
-      "expected_sha256": "a2d5749fa0d002959e990f973cf794cc4aaba74af15b100c0ff0c072e2ab0822",
+      "expected_sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08",
       "status": "ok",
       "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/signal_count_control_pair.json/positive/evidence"
     }
