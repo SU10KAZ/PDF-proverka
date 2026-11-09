@@ -1,11 +1,11 @@
 {
   "summary": {
     "candidate_records": 291,
-    "records_with_narrow_primary_decision": 263,
-    "remaining_records": 28,
-    "decision_themes": 221,
+    "records_with_narrow_primary_decision": 264,
+    "remaining_records": 27,
+    "decision_themes": 222,
     "technical_themes": 46,
-    "question_themes": 146,
+    "question_themes": 147,
     "omitted_themes": 29,
     "scope": "Only listed narrow claims; not blanket acceptance of entire source rows.",
     "stage_complete": false,
@@ -2423,6 +2423,71 @@
       ],
       "production_changed": false,
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F038_temperature_graphic_connection.json"
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-042"
+      ],
+      "decision": "pressure_switch_legend_editorial_scope",
+      "output_section": "Вопросы и уточнения",
+      "review_date": "2026-11-09",
+      "project": "Лётная, 13АВ-РД-АК2-ПА, П4.1.1/Пм4.1, ШАУВ-4-К4ПЧ",
+      "source_md": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AK/document.md",
+        "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+      },
+      "evidence": [
+        {
+          "block_id": "blk_a9caa3c34942481eae31c9b7df688157",
+          "start": 79705,
+          "end": 80601,
+          "authoritative_TEXT": "### BLOCK #39 [TEXT]: blk_a9caa3c34942481eae31c9b7df688157\n\n> **Created:** 2026-09-28 07:28:45 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/m3lC2C28O2tqJQ7UHaf5)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 11 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Па3.1, вытяжная система Ва3.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Условные обозначения:\n\nП - Приточная система\n\nВ - Вытяжная система\n\nТЕ - Датчик температуры\n\nТС - Термостат защиты от замораживания\n\nУ - Электропривод воздушной заслонки\n\nPDS - Дифференциальное реле давления на вентиляторе\n\nМ - Двигатель вентилятора\n\nSC UZ - Частотный преобразователь\n\n"
+        }
+      ],
+      "graphic_evidence": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-003/images/blk_2aeda93ede5444ebb33f638cd45586f2_6471b342ae3c.png",
+          "sha256": "608481451e0fb498958af3b837212314bbe389a6d03cda2386065c936ae229b4",
+          "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "directly_viewed": true,
+          "observation": "На ранее непосредственно просмотренной схеме листа11 PDS1 имеет отборы с обеих сторон фильтра Па3.1, подписьΔP=200Па, сигнал4 — перепад давления на фильтре50–500Па. PDS2 отдельно охватывает вентилятор, ΔP=100Па, сигнал10 — перепад на вентиляторе20–200Па. НазначениеPDS1 однозначно задано связями и подписью сигнала."
+        }
+      ],
+      "engineer_decision": null,
+      "wording": "Уточнить расшифровку PDS в легенде листа11: она ограничена вентилятором, хотя PDS1 контролирует фильтр. Графические отборы и подпись сигнала4 определяют назначениеPDS1; замечание относится к полноте легенды.",
+      "limits": [
+        "Подтверждена редакционная неточность, а не ошибочный выбор, настройка или монтаж реле. Нельзя запрещать применениеPDS на фильтре по узкому тексту легенды.",
+        "200Па — отметка данного проекта,50–500Па — диапазон сигнала; ни одно число не переносится в универсальный допуск или обязательную уставку. Фактическая настройка при ПНР не проверена.",
+        "Не доказано, что читатель или монтажник ошибся в назначении. Нормативная обязательность исправления и решение инженера не установлены.",
+        "Проверка только этой легенды не опровергает самостоятельные расхождения диапазонов приборов в перечнях и схемах."
+      ],
+      "atomic_dispositions": [
+        {
+          "claim": "PDS1 контролирует фильтр, отметка200Па",
+          "verdict": "confirmed_graphic"
+        },
+        {
+          "claim": "Легенда определяет PDS только на вентиляторе",
+          "verdict": "confirmed_TEXT_editorial"
+        },
+        {
+          "claim": "НазначениеPDS1 нельзя определить или прибор выбран неправильно",
+          "verdict": "unsupported_graphic_and_signal_define_function"
+        },
+        {
+          "claim": "Неточность уже вызвала ошибку интерпретации или подключения",
+          "verdict": "not_established"
+        }
+      ],
+      "control_pair": {
+        "negative": "Не выдавать технический запрет PDS1 на фильтре: схема и подпись сигнала согласованы, неточность только в общей легенде.",
+        "positive": "Сохранить F045: PDS5/PDS45 — разные обозначения конечного прибора одной кабельной линии, подтверждённые схемами и КЖ.",
+        "evidence_limit": "Пара различает редакционное обобщение и идентификацию конкретного прибора. Оба проверены по первичным документам, исторического решения инженера для этих blind-кандидатов нет."
+      },
+      "proposed_behavior": "Сверять общую легенду с конкретной графической привязкой и подписью сигнала. При однозначной функции локализовать неточность легенды в вопросах и уточнениях. Не подавлять этим правилом расхождения адресов и характеристик конкретного прибора.",
+      "followup_requirements": [],
+      "production_changed": false,
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F042_pressure_legend_scope.json"
     },
     {
       "candidate_ids": [

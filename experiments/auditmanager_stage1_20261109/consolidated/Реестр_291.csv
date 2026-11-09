@@ -87,7 +87,7 @@ B-AK-F-038,AK,classic_usefulness,refuted_air_duct_location_by_traced_water_conne
 B-AK-F-039,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-040,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-041,AK,classic_usefulness,Первичная проверка не завершена,,,
-B-AK-F-042,AK,classic_usefulness,Первичная проверка не завершена,,,
+B-AK-F-042,AK,classic_usefulness,pressure_switch_legend_editorial_scope,Вопросы и уточнения,"Уточнить расшифровку PDS в легенде листа11: она ограничена вентилятором, хотя PDS1 контролирует фильтр. Графические отборы и подпись сигнала4 определяют назначениеPDS1; замечание относится к полноте легенды.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F042_pressure_legend_scope.json
 B-AK-F-043,AK,classic_usefulness,confirmed_device_identity_mismatch_between_diagram_and_list,Технические замечания,"Лист15, Пн5.1/Вн5.1: согласовать идентификацию четырёх ПЧ между функциональной схемой (UZ2,UZ3,UZ2,UZ3) и перечнем (UZ1–UZ4). Если применяется локальная нумерация отдельных щитов, показать её соответствие позициям общего перечня.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json
 B-AK-F-044,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-045,AK,classic_usefulness,confirmed_pressure_switch_endpoint_label_conflict,Технические замечания,"Согласовать конечный прибор линии Вос5.1-1 шкафа ШАУВ-6-К5ПЧ: КЖ лист19 указывает PDS45, тогда как функциональная и внешняя схемы показывают PDS5; внешняя схема задаёт клеммы14/15.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json
