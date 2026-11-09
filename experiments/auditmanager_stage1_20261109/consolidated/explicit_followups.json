@@ -145,6 +145,16 @@
     },
     {
       "candidate_ids": [
+        "B-AR-F-022"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F022_stone_standard_replacement.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для обязательного технического замечания установить применимую к проекту редакцию и конкретное изменение требований, проверить согласование плитки. До этого не учитывать несоответствие изделия как подтверждённый дефект."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-003"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
