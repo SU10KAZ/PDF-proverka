@@ -124,6 +124,29 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-003"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить неокруглённые значения и состав режимов РП5 совместно с историческим UNI-028; совпадение разности с C2518 не доказывает пропуск этой строки."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-004",
+        "H-EOM-28"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Получить неокруглённый расчёт РП5, правило округления и перечень включённых в каждый режим строк; позднее утверждение о снятии по неокруглённым значениям проверить по его исходному расчёту.",
+        "Сверить задание ОВ и мощность оборудования ПД2.1; определить единицу табличного Ip, не исправляя авторитетный TEXT по растру.",
+        "Сверить первичное решение V1 F-002 и условия его переноса в текущую версию; отметку Принято не считать новой независимой оценкой."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-ITP-58"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
