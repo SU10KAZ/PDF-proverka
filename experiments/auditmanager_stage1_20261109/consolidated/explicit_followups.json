@@ -211,6 +211,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-032"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для вывода о различиях конструкции и назначения правильной марки нужны технические условия изготовителя и согласованная закупочная спецификация. До этого учитывать только конфликт обозначений, последствия оставить неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-034"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F034_sheet_title_scope.json",
