@@ -21,7 +21,7 @@ H-VK-51,VK,historical_control,apartment_installation_boundary_requires_coordinat
 H-EOM-5,EOM,historical_control,Первичная проверка не завершена,,,
 H-EOM-8,EOM,historical_control,refuted,,Снять утверждение об отсутствии ЯУ-ДУ2.1 на плане: обозначение связано с показанным ящиком.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM8.json
 H-EOM-28,EOM,historical_control,power_source_and_precision_require_coordination,Вопросы и уточнения,"Согласовать исходные данные и точность представления C2520 / ПД2.1: в таблице указаны Py=Pp=6 кВт, cosφ=0,80 и S=6,88 кВА, на схеме — две мощности по 5,5 кВт. Если 6 кВт являются точным расчётным значением, S должно быть 7,50 кВА; если это округлённое представление 5,5 кВт, пояснить точность. Итоги РП5 проверять по неокруглённым исходным данным и составу режима.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json
-H-EOM-70,EOM,historical_control,Первичная проверка не завершена,,,
+H-EOM-70,EOM,historical_control,same_consumer_power_requires_coordination,Вопросы и уточнения,"Согласовать мощность К21 / ЩМ7 помещения 7Н: на схеме Py=Pp=20,0 кВт, в таблице — 23,2 кВт. Итог РП2 83,2 кВт соответствует табличным строкам; четыре подписанные линии на схеме дают 80,0 кВт. Указать действующее значение и режим, затем согласовать подписи и связанные расчёты.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json
 H-AK-7,AK,historical_control,refuted,,Снять утверждение о трёх отмеченных AO при итоге2 на листе14: подтверждены две отметки.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK7.json
 H-AK-100,AK,historical_control,Первичная проверка не завершена,,,
 H-AK-65,AK,historical_control,Первичная проверка не завершена,,,
@@ -248,7 +248,7 @@ B-EOM-F-004,EOM,classic_usefulness,power_source_and_precision_require_coordinati
 B-EOM-F-005,EOM,classic_usefulness,confirmed_internal_calculation_discrepancy,Вопросы и уточнения,"Увязать полную мощность ввода2 ВРУ-3 в режиме с компенсацией: Pp121,6/cosφ0,97=125,36кВА, в таблице123,2; расчёт ТТ использует125,4.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json
 B-EOM-F-006,EOM,classic_usefulness,confirmed_internal_calculation_discrepancy,Вопросы и уточнения,"Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json
 B-EOM-F-007,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-008,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-008,EOM,classic_usefulness,same_consumer_power_requires_coordination,Вопросы и уточнения,"Согласовать мощность К21 / ЩМ7 помещения 7Н: на схеме Py=Pp=20,0 кВт, в таблице — 23,2 кВт. Итог РП2 83,2 кВт соответствует табличным строкам; четыре подписанные линии на схеме дают 80,0 кВт. Указать действующее значение и режим, затем согласовать подписи и связанные расчёты.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json
 B-EOM-F-009,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-010,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-011,EOM,classic_usefulness,Первичная проверка не завершена,,,
