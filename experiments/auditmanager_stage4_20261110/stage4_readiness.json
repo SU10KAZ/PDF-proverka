@@ -1,0 +1,91 @@
+{
+  "current_stage": 4,
+  "stage4_complete": false,
+  "full_six_project_candidate_run_started": false,
+  "hypotheses": [
+    {
+      "id": "H01",
+      "status": "partial",
+      "verified_or_implemented_scope": "One AK defect recovered and survives deterministic verifier; eight duplicate links restored.",
+      "remaining": "Source-evidence semantic review for EOM and coverage of every unresolved candidate remain incomplete.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_graphic_recovery_pilot.json",
+          "sha256": "141c6017703db71dafb248620dac11bca9c5cd3c2ad08c93b916333a74fa2b3a"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_recovered_verifier_replay.json",
+          "sha256": "34ba81dfa0a431ec0929da5627f09db4a302dde6198cfccacedc99c490ed6282"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/duplicate_link_repair_pilot.json",
+          "sha256": "02c18f7b5f817dc5858041d4462eebfe31774995a5c6e1ddfda20f64e70d8b02"
+        }
+      ]
+    },
+    {
+      "id": "H02",
+      "status": "partial",
+      "verified_or_implemented_scope": "Bounded MD retrieval and one follow-up tested; four deferred graphic requests now scheduled.",
+      "remaining": "Retrieval of additional graphics, linked documents and AR/KM positive controls still require end-to-end tests.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/context_recovery_pilot.json",
+          "sha256": "f77647d09a037d014a0691c98d492db1fa8d9d8cf99168033594f5f319d4310e"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/AK_balanced_context_pilot.json",
+          "sha256": "d8a23d09b1acc6189af95764acfa6d863a6a2d94764c3ab2da67d07d934faf8f"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/recovery_source_replay.json",
+          "sha256": "68950cfb07d757f88d58fa8f160d6d9c2f8537223cd573c4094850e7ff4eb477"
+        }
+      ]
+    },
+    {
+      "id": "H03",
+      "status": "incomplete",
+      "verified_or_implemented_scope": "Optional quantity/set operations exist.",
+      "remaining": "Build source-addressed object registry and account for all applicable operations; analyze-block flags are insufficient.",
+      "evidence": []
+    },
+    {
+      "id": "H04",
+      "status": "partial",
+      "verified_or_implemented_scope": "Source-addressed set difference execution implemented.",
+      "remaining": "Prove extraction and completeness of compared sets on real positive/negative cases; new discovery not measured.",
+      "evidence": []
+    },
+    {
+      "id": "H05",
+      "status": "partial",
+      "verified_or_implemented_scope": "Exact decimal comparison and basis checks implemented and unit-tested.",
+      "remaining": "Verify physical interpretation, conversions, regimes and real control cases; arithmetic is not semantic proof.",
+      "evidence": []
+    },
+    {
+      "id": "H06",
+      "status": "incomplete",
+      "verified_or_implemented_scope": "Missing external grounds remain unresolved rather than automatically refuted.",
+      "remaining": "Implement applicability records for project requirements and exact catalogue execution, with source retrieval.",
+      "evidence": []
+    },
+    {
+      "id": "H07",
+      "status": "partial",
+      "verified_or_implemented_scope": "Metadata-quote false trigger narrowed; curtain prescan moved to review requests.",
+      "remaining": "Finish separate questions output and check filter controls and automatic prescan review route.",
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/metadata_gate_candidate_replay.json",
+          "sha256": "3ce1063beaac5f7c58aa9e06eab91a9bcac6f9b1b0957c94af927f30ea02832c"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/prescan_curtain_candidate_replay.json",
+          "sha256": "e7d4c095f28b5536fa40179265139820060d4874dc7c51937c01f4b699f8bd69"
+        }
+      ]
+    }
+  ]
+}
