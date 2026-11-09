@@ -57,6 +57,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-018"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F018_drive_system_assignment.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для назначения замены ПЧ проверить двигатели и заводскую комплектацию. До этого оценивать только документальную принадлежность, а ошибку подбора и поставки оставить неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-022"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",

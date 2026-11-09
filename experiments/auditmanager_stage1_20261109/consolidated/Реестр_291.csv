@@ -63,7 +63,7 @@ B-AK-F-014,AK,classic_usefulness,Первичная проверка не зав
 B-AK-F-015,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-016,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-017,AK,classic_usefulness,Первичная проверка не завершена,,,
-B-AK-F-018,AK,classic_usefulness,Первичная проверка не завершена,,,
+B-AK-F-018,AK,classic_usefulness,confirmed_system_assignment_mismatch_in_drive_schedule,Технические замечания,"Согласовать назначение ПЧ в разделе16 СО шкафа ШАУВ-1-К6АС: позиции16.2 и16.3 ссылаются на Ва4.1 и Па4.1, тогда как схема подключений этого шкафа показывает Ва5.1 и Па5.1. Проверить принадлежность изделий и исправить несогласованные обозначения систем.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F018_drive_system_assignment.json
 B-AK-F-019,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-020,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-021,AK,classic_usefulness,Первичная проверка не завершена,,,
