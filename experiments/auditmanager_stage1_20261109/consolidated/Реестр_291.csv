@@ -147,7 +147,7 @@ B-ITP-F-033,ITP,classic_usefulness,Первичная проверка не за
 B-ITP-F-034,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-035,ITP,classic_usefulness,confirmed_editorial_ambiguity_not_drainage_failure,Вопросы и уточнения,"Уточнить примечания по дренажу: диапазоны «до Ду125» и «свыше Ду150» не охватывают Ду150; в ПЗ уклоны пола и общего сливного трубопровода записаны «0,01 мм». Для пола в соседнем пункте уже дано безразмерное 0,01; согласовать размерность записи и отдельно подтвердить значение уклона сливной трубы.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json
 B-ITP-F-036,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-037,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-037,ITP,classic_usefulness,confirmed_inlet_head_document_conflict,Технические замечания,"Согласовать исходный напор ХВС на вводе в ИТП для первой зоны: ПЗ задаёт95,59м, анкета абонента —91,59м. В анкете требуемый выходной напор ГВС86,59м. После согласования режима и высотной базы проверить баланс потерь.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-037.json
 B-ITP-F-038,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-039,ITP,classic_usefulness,confirmed_document_identification_discrepancy,Вопросы и уточнения,"Актуализировать ведомость прилагаемых документов: спецификация обозначена .С на12листах, но представлена с обозначением .СО и нумерацией до15; ПЗ указана на15листах, но в комплекте есть лист20.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-039.json
 B-ITP-F-040,ITP,classic_usefulness,confirmed_document_identification_discrepancy,Вопросы и уточнения,"Уточнить обозначение этапа: титулы ИТП.ТМ указывают этап1, а п.1.1 приложенного ТЗ — этап2; адрес, название Событие6.2 и кадастровый номер77:07:0013002:4706 совпадают. Подтвердить применимость приложенного ТЗ и согласовать наименование.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-040.json
@@ -161,7 +161,7 @@ B-ITP-F-047,ITP,classic_usefulness,Первичная проверка не за
 B-ITP-F-048,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-049,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-050,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-051,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-051,ITP,classic_usefulness,refuted_specification_attribution_and_unproven_system_conflict,,"Не выпускать требование исправить назначение насоса К13: спецификация поз.13 прямо указывает систему вентиляции, как и лист подбора; совпадают артикул2786102, расход63,56, напор15,27 и номинальная мощность4кВт.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-051.json
 B-ITP-F-052,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-053,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-001,AR,classic_usefulness,Первичная проверка не завершена,,,
