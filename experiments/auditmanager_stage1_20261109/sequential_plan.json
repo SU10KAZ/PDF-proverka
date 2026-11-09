@@ -1,7 +1,7 @@
 {
   "objective": "Последовательно завершить все восемь этапов улучшения классического AuditManager",
   "execution": "Активная непрерывная цель текущего потока; это план выполнения агентом, не самостоятельный фоновый сервис.",
-  "current_stage": 3,
+  "current_stage": 4,
   "policy": {
     "new_model_runs": "gpt-6-astra only",
     "claude": "disabled",
@@ -37,16 +37,17 @@
     {
       "id": 3,
       "name": "Методы исследования проекта",
-      "status": "in_progress",
+      "status": "complete",
       "completion_requirements": [
         "Выделить подтверждённые методы Codex/Claude из истории шести дисциплин",
         "Завершить сопоставление145правил с текущей реализацией и выбрать проверяемые гипотезы"
-      ]
+      ],
+      "evidence": "experiments/auditmanager_stage3_20261110/stage3_completion_audit.json"
     },
     {
       "id": 4,
       "name": "Исполняемые проверки",
-      "status": "pending_completion",
+      "status": "in_progress",
       "completion_requirements": [
         "Реализовать выбранные гипотезы в изолированных коммитах main",
         "Проверить реальные контрольные пары и отсутствие необоснованных универсальных допусков"
