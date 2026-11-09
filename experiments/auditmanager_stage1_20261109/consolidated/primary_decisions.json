@@ -4,8 +4,8 @@
     "records_with_narrow_primary_decision": 291,
     "remaining_records": 0,
     "decision_themes": 247,
-    "technical_themes": 59,
-    "question_themes": 154,
+    "technical_themes": 58,
+    "question_themes": 155,
     "omitted_themes": 34,
     "scope": "Only listed narrow claims; not blanket acceptance of entire source rows.",
     "stage_complete": false,
@@ -11700,6 +11700,35 @@
       "previous_proposed_output_section": "Вопросы и уточнения",
       "adjudicator_disposition": "Не выпускать отдельное замечание или обязательный вопрос только на основании разности округлённых чисел. Факт разности сохранить в исследовательском реестре. При доказанном влиянии на подбор/количество или невозможности объяснения точностью исходных чисел рассмотреть заново.",
       "not_equivalent_to": "Не означает, что исходный расчёт проверен и признан правильным; это недостаточность основания для замечания.",
+      "atomic_dispositions": [
+        {
+          "claim": "Суммы опубликованных ячеек5,793, итогов проката5,796 и лестниц5,798т различаются",
+          "verdict": "confirmed_decimal_totals"
+        },
+        {
+          "claim": "Различие доказывает ошибку неокруглённого расчёта",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Анкеры и коэффициент1,0403 входят в сравниваемую суммуС245",
+          "verdict": "not_supported_different_scope"
+        },
+        {
+          "claim": "Доказана недопоставка",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов и первичных решений; суммы и контрпример округления проверены локально.",
+        "scorable_narrow_claim": "Сохранить численные факты в исследовательском реестре; по действующему решению не выпускать обязательный вопрос только из-за разности округлённых сумм.",
+        "unscored_claims": [
+          "Неокруглённые массы и правила агрегации",
+          "Влияние на подбор и закупку"
+        ],
+        "control_pair_readiness": "Это не доказательство правильности исходного расчёта. Пара, подтверждающая влияние на количество металла, отсутствует.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-KM-F-021.json"
     },
     {
@@ -11725,6 +11754,31 @@
         "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
       },
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "СНиП2.01.07-85* находится внутри названияСП20.13330.2011 в данной строке",
+          "verdict": "confirmed_TEXT_syntactic_context"
+        },
+        {
+          "claim": "В этой строке это отдельная самостоятельная нормативная ссылка",
+          "verdict": "refuted_reference_segmentation"
+        },
+        {
+          "claim": "Редакция самогоСП актуальна и применима",
+          "verdict": "not_checked"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов и первичных решений; суммы и контрпример округления проверены локально.",
+        "scorable_narrow_claim": "Отрицательный контроль разбиения нормативной ссылки: не создавать второй дефект из части названияСП.",
+        "unscored_claims": [
+          "Актуальность и применимость самогоСП",
+          "Все иные упоминанияСНиП вне данной строки"
+        ],
+        "control_pair_readiness": "Самостоятельная исторически принятая положительная пара пока не подтверждена; фильтр должен учитывать контекст конкретного вхождения.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-KM-F-024.json"
     },
     {
@@ -11732,7 +11786,7 @@
         "B-VK-F-008"
       ],
       "decision": "confirmed_fractional_piece_quantity",
-      "output_section": "Технические замечания",
+      "output_section": "Вопросы и уточнения",
       "review_date": "2026-11-09",
       "source_md": {
         "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/VK/document.md",
@@ -11749,6 +11803,38 @@
       "wording": "Уточнить количество соединителей-хомутов RapidDN100, код310100: в графе количества указано4,70шт.",
       "limits": "Правильное целое количество не определено; нельзя автоматически округлить до5 или заменить на470. Фактическая недопоставка не доказана.",
       "production_changed": false,
+      "previous_proposed_output_section": "Технические замечания",
+      "routing_review": "Согласовано с профилем пользователя и аналогичной записьюB-AR-F-004: подтверждённая дробная запись без проверенной комплектовочной потребности сохраняется как вопрос. Это изменение маршрутизации, не опровержение факта4,70 и не доказательство улучшения модели.",
+      "atomic_dispositions": [
+        {
+          "claim": "Поз.30 RapidDN100 код310100 содержит4,70 в графеКоличество, единицашт.",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "Правильное количество5 либо470",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Физически поставлена часть соединителя или возник дефицит",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Происхождение дробного количества установлено",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов и первичных решений; суммы и контрпример округления проверены локально.",
+        "scorable_narrow_claim": "Вопрос об уточнении комплектовочного количества конкретной позиции. Подтверждённое число сохранить; не оценивать как доказанный физический дефект.",
+        "unscored_claims": [
+          "Правильное целое количество по схеме",
+          "Происхождение дробной записи",
+          "Заказ и фактическая поставка"
+        ],
+        "control_pair_readiness": "Сопоставлен сB-AR-F-004: дробное число требует проверки назначения ведомости. Подтверждённой пары допустимого расхода и неправильного заказа нет.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-008.json"
     },
     {
@@ -11793,6 +11879,35 @@
       "previous_proposed_output_section": "Вопросы и уточнения",
       "adjudicator_disposition": "Не выпускать отдельное замечание или обязательный вопрос только на основании разности округлённых чисел. Факт разности сохранить в исследовательском реестре. При доказанном влиянии на подбор/количество или невозможности объяснения точностью исходных чисел рассмотреть заново.",
       "not_equivalent_to": "Не означает, что исходный расчёт проверен и признан правильным; это недостаточность основания для замечания.",
+      "atomic_dispositions": [
+        {
+          "claim": "Четыре опубликованные строки суммируются в260,29 против итога260,28",
+          "verdict": "confirmed_decimal_sum"
+        },
+        {
+          "claim": "Округление не может объяснить расхождение",
+          "verdict": "refuted_synthetic_counterexample"
+        },
+        {
+          "claim": "Синтетические неокруглённые числа являются реальными проектными данными",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Необходимость исправить итог доказана",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов и первичных решений; суммы и контрпример округления проверены локально.",
+        "scorable_narrow_claim": "Сохранить факт разности в исследовательском реестре, без отдельного обязательного вопроса или технического дефекта.",
+        "unscored_claims": [
+          "Реальные неокруглённые исходные числа",
+          "Влияние на расчёт и оборудование"
+        ],
+        "control_pair_readiness": "Существующий синтетический пример проверен повторно; это контрпример категоричному выводу об ошибке, не историческая пара верного/неверного расчёта.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-012.json"
     },
     {

@@ -12,10 +12,10 @@
     "candidate_records": 291,
     "decision_themes": 247,
     "themes_with_explicit_followups": 165,
-    "themes_with_direct_atomic_dispositions": 232,
+    "themes_with_direct_atomic_dispositions": 236,
     "themes_with_linked_claim_disposition": 1,
     "themes_with_direct_control_pair": 150,
-    "themes_with_scope_review": 32,
+    "themes_with_scope_review": 36,
     "stage_complete": false
   },
   "items": [
@@ -7053,7 +7053,7 @@
         "B-KM-F-021"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-KM-F-021.json",
-      "decision_sha256": "85bcda70304494c3e6e998565c1a0846673e260949f7cb94ff3c73b97e24503d",
+      "decision_sha256": "0ec652c53eec2935443671b2130971e404095ccb25d169db74954cd6adc9d6ae",
       "original_claims": [
         {
           "candidate_id": "B-KM-F-021",
@@ -7063,7 +7063,24 @@
       ],
       "narrow_output": "При сверке сметного итога пояснить расхождения опубликованных масс С245: ячейки5,793т, итоги видов проката5,796т, итоги лестниц5,798т.",
       "output_section": null,
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Суммы опубликованных ячеек5,793, итогов проката5,796 и лестниц5,798т различаются",
+          "verdict": "confirmed_decimal_totals"
+        },
+        {
+          "claim": "Различие доказывает ошибку неокруглённого расчёта",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Анкеры и коэффициент1,0403 входят в сравниваемую суммуС245",
+          "verdict": "not_supported_different_scope"
+        },
+        {
+          "claim": "Доказана недопоставка",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Массы опубликованы с точностью0,001т. Различие сумм не доказывает ошибку исходных неокруглённых масс. Строка анкеров и коэффициент1,0403 не включены в сумму С245; недопоставка не установлена.",
@@ -7073,8 +7090,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов и первичных решений; суммы и контрпример округления проверены локально.",
+        "scorable_narrow_claim": "Сохранить численные факты в исследовательском реестре; по действующему решению не выпускать обязательный вопрос только из-за разности округлённых сумм.",
+        "unscored_claims": [
+          "Неокруглённые массы и правила агрегации",
+          "Влияние на подбор и закупку"
+        ],
+        "control_pair_readiness": "Это не доказательство правильности исходного расчёта. Пара, подтверждающая влияние на количество металла, отсутствует.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -7082,7 +7109,7 @@
         "B-KM-F-024"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-KM-F-024.json",
-      "decision_sha256": "3ea57f403bc0dc5178d105d5582fe0f871161602e7cdc32a5fdcfa79782c9673",
+      "decision_sha256": "ee417134781cb32eb990c6a47841e5348b34eebf7a42363cbf4a004733035123",
       "original_claims": [
         {
           "candidate_id": "B-KM-F-024",
@@ -7092,7 +7119,20 @@
       ],
       "narrow_output": "Снять отдельную претензию на СНиП2.01.07-85*, извлечённый из названия СП20.13330.2011: в данной строке он не является самостоятельной ссылкой.",
       "output_section": null,
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "СНиП2.01.07-85* находится внутри названияСП20.13330.2011 в данной строке",
+          "verdict": "confirmed_TEXT_syntactic_context"
+        },
+        {
+          "claim": "В этой строке это отдельная самостоятельная нормативная ссылка",
+          "verdict": "refuted_reference_segmentation"
+        },
+        {
+          "claim": "Редакция самогоСП актуальна и применима",
+          "verdict": "not_checked"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Актуальность редакции самого СП и его обязательность здесь не устанавливались. Их следует оценивать отдельно, не создавать дубль на часть названия.",
@@ -7102,8 +7142,18 @@
       "followup_requirements": [],
       "control_pair": "Отдельная исторически принятая пара ошибочного/полезного замечания по этому фильтру ещё не подтверждена.",
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов и первичных решений; суммы и контрпример округления проверены локально.",
+        "scorable_narrow_claim": "Отрицательный контроль разбиения нормативной ссылки: не создавать второй дефект из части названияСП.",
+        "unscored_claims": [
+          "Актуальность и применимость самогоСП",
+          "Все иные упоминанияСНиП вне данной строки"
+        ],
+        "control_pair_readiness": "Самостоятельная исторически принятая положительная пара пока не подтверждена; фильтр должен учитывать контекст конкретного вхождения.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -7111,7 +7161,7 @@
         "B-VK-F-008"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-008.json",
-      "decision_sha256": "ffaa3d6ba1cb65b8f9de0ca2080cbcfad703fce6cc6fb2bd0df9b9d57d4f6d64",
+      "decision_sha256": "04017a8927d6b2f0a646bbcb162274eb2227858c8917d70c4a68455e32d8adc3",
       "original_claims": [
         {
           "candidate_id": "B-VK-F-008",
@@ -7120,8 +7170,25 @@
         }
       ],
       "narrow_output": "Уточнить количество соединителей-хомутов RapidDN100, код310100: в графе количества указано4,70шт.",
-      "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "output_section": "Вопросы и уточнения",
+      "atomic_dispositions": [
+        {
+          "claim": "Поз.30 RapidDN100 код310100 содержит4,70 в графеКоличество, единицашт.",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "Правильное количество5 либо470",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Физически поставлена часть соединителя или возник дефицит",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Происхождение дробного количества установлено",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Правильное целое количество не определено; нельзя автоматически округлить до5 или заменить на470. Фактическая недопоставка не доказана.",
@@ -7131,8 +7198,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов и первичных решений; суммы и контрпример округления проверены локально.",
+        "scorable_narrow_claim": "Вопрос об уточнении комплектовочного количества конкретной позиции. Подтверждённое число сохранить; не оценивать как доказанный физический дефект.",
+        "unscored_claims": [
+          "Правильное целое количество по схеме",
+          "Происхождение дробной записи",
+          "Заказ и фактическая поставка"
+        ],
+        "control_pair_readiness": "Сопоставлен сB-AR-F-004: дробное число требует проверки назначения ведомости. Подтверждённой пары допустимого расхода и неправильного заказа нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -7140,7 +7218,7 @@
         "B-VK-F-012"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-012.json",
-      "decision_sha256": "7dde04296a42487e6fbd402a28c2a8396bf59f5863d2eb35529962a71c0a2714",
+      "decision_sha256": "b647e50a0cbbc0c7df6e837f512c04193d3662f8ab59ef977989bd0f1176734e",
       "original_claims": [
         {
           "candidate_id": "B-VK-F-012",
@@ -7150,7 +7228,24 @@
       ],
       "narrow_output": "При необходимости сверки опубликованных итогов пояснить разницу0,01м³/сут: четыре строки дают260,29, итог260,28.",
       "output_section": null,
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Четыре опубликованные строки суммируются в260,29 против итога260,28",
+          "verdict": "confirmed_decimal_sum"
+        },
+        {
+          "claim": "Округление не может объяснить расхождение",
+          "verdict": "refuted_synthetic_counterexample"
+        },
+        {
+          "claim": "Синтетические неокруглённые числа являются реальными проектными данными",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Необходимость исправить итог доказана",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Округление исходных данных может объяснить разницу; ошибка исходного расчёта и необходимость исправить итог не доказаны. Низкая значимость; не включать в полноту технических дефектов.",
@@ -7160,8 +7255,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов и первичных решений; суммы и контрпример округления проверены локально.",
+        "scorable_narrow_claim": "Сохранить факт разности в исследовательском реестре, без отдельного обязательного вопроса или технического дефекта.",
+        "unscored_claims": [
+          "Реальные неокруглённые исходные числа",
+          "Влияние на расчёт и оборудование"
+        ],
+        "control_pair_readiness": "Существующий синтетический пример проверен повторно; это контрпример категоричному выводу об ошибке, не историческая пара верного/неверного расчёта.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {

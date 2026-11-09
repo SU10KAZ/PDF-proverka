@@ -20,5 +20,30 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
     "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
   },
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "СНиП2.01.07-85* находится внутри названияСП20.13330.2011 в данной строке",
+      "verdict": "confirmed_TEXT_syntactic_context"
+    },
+    {
+      "claim": "В этой строке это отдельная самостоятельная нормативная ссылка",
+      "verdict": "refuted_reference_segmentation"
+    },
+    {
+      "claim": "Редакция самогоСП актуальна и применима",
+      "verdict": "not_checked"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных тезисов и первичных решений; суммы и контрпример округления проверены локально.",
+    "scorable_narrow_claim": "Отрицательный контроль разбиения нормативной ссылки: не создавать второй дефект из части названияСП.",
+    "unscored_claims": [
+      "Актуальность и применимость самогоСП",
+      "Все иные упоминанияСНиП вне данной строки"
+    ],
+    "control_pair_readiness": "Самостоятельная исторически принятая положительная пара пока не подтверждена; фильтр должен учитывать контекст конкретного вхождения.",
+    "automatic_filter_authorized": false
+  }
 }
