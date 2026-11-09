@@ -1,12 +1,12 @@
 {
   "summary": {
     "candidate_records": 291,
-    "records_with_narrow_primary_decision": 268,
-    "remaining_records": 23,
-    "decision_themes": 226,
+    "records_with_narrow_primary_decision": 269,
+    "remaining_records": 22,
+    "decision_themes": 227,
     "technical_themes": 48,
     "question_themes": 148,
-    "omitted_themes": 30,
+    "omitted_themes": 31,
     "scope": "Only listed narrow claims; not blanket acceptance of entire source rows.",
     "stage_complete": false,
     "production_promotion_allowed": false
@@ -1838,6 +1838,90 @@
       ],
       "production_changed": false,
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json"
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-021"
+      ],
+      "decision": "refuted_cable_reading_and_absence_with_local_balance",
+      "output_section": null,
+      "review_date": "2026-11-09",
+      "project": "Лётная, 13АВ-РД-АК2-ПА, П4.1.1/Пм4.1, ШАУВ-4-К4ПЧ",
+      "source_md": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AK/document.md",
+        "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+      },
+      "evidence": [
+        {
+          "block_id": "blk_61196f6075564ba4bd4091b481cae12c",
+          "start": 221429,
+          "end": 222332,
+          "authoritative_TEXT": "### BLOCK #136 [TEXT]: blk_61196f6075564ba4bd4091b481cae12c\n\n> **Created:** 2026-09-28 07:29:14 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/R9G6RKZRfT2RB_14xICX)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 39 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Шкаф автоматики и управления ШАУВ-З-К6ПЧ. Схема внешних подключений | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. обозн. | Наименование | Кол. | Примечание |\n|---|---|---|---|\n|  | Кабель КСПВПГнг(A)-HF 1x2x0,75 мм² | 165 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 1x2x0,75 мм² | 50 | м |\n|  | Кабель КСПЭВПГнг(A)-HF 2x2x0,75 мм² | 15 | м |\n|  | Кабель ППГнг(A)-HF 3x1,5мм² | 75 | м |\n|  | Кабель ППГнг(A)-HF 4x2,5мм² | 75 | м |\n\n"
+        }
+      ],
+      "graphic_evidence": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-005/images/blk_0c71a5773a2348d0822a526b8c88b16a_6471b342ae3c.png",
+          "sha256": "4c44695ee5bef2e4f151df0040e977809c72c9174ec44de39da5d71ed0d35f4c",
+          "block_id": "blk_0c71a5773a2348d0822a526b8c88b16a",
+          "directly_viewed": true,
+          "observation": "Схема ШАУВ-3-К6ПЧ: линия Пкр6.1-13 к насосуM4 подписана ППГнг(А)-HF3×1,5мм²,L=15м, оборудованиеL/N/PE, шкаф41/42/PE. Другие линии того же типа3×1,5: Пкр6.1-11 кXT2,L=15м; Вм6.1-3 кXT3,L=45м. На просмотренной полной схеме других линий3×1,5 не обнаружено. Трёхфазные M1/M2/M3 имеют4×2,5 и в этот баланс не включены."
+        }
+      ],
+      "calculations": {
+        "cable": "ППГнг(А)-HF3×1,5",
+        "operands": [
+          {
+            "line": "Пкр6.1-11",
+            "length_m": 15
+          },
+          {
+            "line": "Вм6.1-3",
+            "length_m": 45
+          },
+          {
+            "line": "Пкр6.1-13",
+            "length_m": 15
+          }
+        ],
+        "sum_m": 75,
+        "local_schedule_m": 75
+      },
+      "engineer_decision": null,
+      "wording": "Снять замечание о неучтённом кабеле5×4,15м: линия Пкр6.1-13 кM4 на схеме обозначена3×1,5,15м. Ведомость листа39 содержит75м3×1,5, что совпадает с суммой трёх линий схемы15+45+15м, включая насос.",
+      "limits": [
+        "Опровергнута конкретная графическая трактовка5×4 и отсутствие кабеля насоса в локальном балансе. Это не подтверждение общей спецификации, заказа или фактической поставки.",
+        "Наличие суммарной строки само по себе не доказывало включение насоса; здесь дополнительно прослежены все три линии соответствующего типа на этой схеме.",
+        "Электрическая достаточность3×1,5, защитные аппараты, условия прокладки и фактический монтаж не проверены.",
+        "Кабели ввода питания отнесены на схеме к ЭМ и не добавлены в сумму полевых линий. Решение инженера по кандидату не установлено."
+      ],
+      "atomic_dispositions": [
+        {
+          "claim": "КM4 указан5×4,15м",
+          "verdict": "refuted_graphic_label3x1.5"
+        },
+        {
+          "claim": "Длина линииM4 равна15м",
+          "verdict": "confirmed"
+        },
+        {
+          "claim": "КабельM4 отсутствует в локальной ведомости",
+          "verdict": "refuted_by_type_and_complete_local_balance"
+        },
+        {
+          "claim": "Общая поставка и электрическая пригодность полностью подтверждены",
+          "verdict": "not_checked"
+        }
+      ],
+      "control_pair": {
+        "negative": "F021: снять несуществующее5×4 и отсутствие в локальной ведомости при совпадении75м.",
+        "positive": "F020: сохранить3×2,5 против4×4,0 для По5.1-9, где разные подписи непосредственно подтверждены схемой и КЖ.",
+        "evidence_limit": "Пара проверяет чтение кабельной подписи и сохранение реального документального конфликта. Она не подтверждает фактическую поставку или инженерное решение."
+      },
+      "proposed_behavior": "Перед замечанием об отсутствующем типе кабеля непосредственно прочитать графическую подпись, связать её с линией и пересчитать локальный баланс по всем линиям того же типа. Не создавать новую позицию закупки из ошибочно прочитанного сечения.",
+      "followup_requirements": [],
+      "production_changed": false,
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json"
     },
     {
       "candidate_ids": [
