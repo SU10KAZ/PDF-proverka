@@ -51,6 +51,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-003"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "По согласованной модели контроллера и перечню кондиционеров определить заводскую комплектность, тип адаптера и единицу локального перечня. До этого не оценивать техническую несовместимость, недопоставку и окончательное количество комплектов как подтверждённые дефекты."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-005"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
