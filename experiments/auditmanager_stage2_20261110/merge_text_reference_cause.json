@@ -1,0 +1,349 @@
+{
+  "finding": "EOM text evidence references already absent in saved merge-model output for all19changed candidates.",
+  "evidence_level": "observed_saved_model_output_and_stage_transitions_plus_current_code_inspection",
+  "sources": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/audit_trail/03_findings_merge_2026-11-07T02-03-11.json",
+      "sha256": "9436c1e85bed13b1e6ef5adcf4926ef7bd1f632564adf58572fb5a70c427812f"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+      "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage2_20261110/verifier_change_traces.json",
+      "sha256": "f93bbcdc917fc1908c57746e5d0c6fe94e63f6ef36de0db8c2f657c7561bef5b"
+    }
+  ],
+  "code_evidence": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/findings_merge/runner.py",
+      "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+      "line": 77,
+      "symbol": "backfill_text_evidence_in_findings",
+      "observed_behavior": "Uses existing source_block_ids or related_block_ids to lookup block analysis; no direct T-candidate index in this function."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/block_analysis/provenance.py",
+      "sha256": "80e8da3faad9f33deea368c6f3f080a5d0e246b61b1eb54f36925d7b12a771f1",
+      "line": 273,
+      "symbol": "backfill_final_findings_provenance",
+      "observed_behavior": "Indexes Stage01 block findings for detector attribution; not recovery of text candidate block references."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/prompts/pipeline/en/findings_merge_task.md",
+      "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+      "line": 102,
+      "symbol": "Block linkage",
+      "observed_behavior": "For T-NNN asks for blocks confirming text findings from verification array; source tracing separately requires exact T/G IDs."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/findings_review/deterministic_critic.py",
+      "sha256": "c68aa35cf37b938e410b84919c26cfc4bdb814510be03f029f808951eb2823a9",
+      "line": 337,
+      "symbol": "deterministic_verdict",
+      "observed_behavior": "No referenced image/text IDs yields no_evidence."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/findings_review/deterministic_corrector.py",
+      "sha256": "248cff65548e55c2cb47a59fc6a96b6f31e8e32d6970abf109ebdc4943c481b5",
+      "line": 173,
+      "symbol": "_downgrade_or_flag",
+      "observed_behavior": "Protected severities flagged; others downgraded."
+    }
+  ],
+  "cases": [
+    {
+      "candidate_id": "B-EOM-F-001",
+      "raw_model_source_finding_ids": [
+        "T-001"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_67c8cc82d7e24f738797d9b75ce14e97",
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-003",
+      "raw_model_source_finding_ids": [
+        "T-003"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_c5f0556f94c14503bfe178ef5941c077"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-030",
+      "raw_model_source_finding_ids": [
+        "T-007"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2",
+        "blk_7d22e811017e4e969b2d732e9e30c50d"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-031",
+      "raw_model_source_finding_ids": [
+        "T-008"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_5b30188592764230a7cd894838a60430",
+        "blk_7ca68a936c85428dbd4b60b2893398a2",
+        "blk_7d22e811017e4e969b2d732e9e30c50d",
+        "blk_c5f0556f94c14503bfe178ef5941c077"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-032",
+      "raw_model_source_finding_ids": [
+        "T-009"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_29be4ff018f040daaa2000c0a3ebde08",
+        "blk_f2b273baee994702906a6e5d94a43063",
+        "blk_fb5f780dae7a475ca6c249f62b64771e"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-033",
+      "raw_model_source_finding_ids": [
+        "T-012"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_16237a8ebd10423194e4a2b0f4b82c26",
+        "blk_17ebeac60c9b497cb8c124a8e3b66068",
+        "blk_7170586af51c43f79c96734a40269d7d",
+        "blk_73536f4c222b401e8da714ed88d23fce",
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-034",
+      "raw_model_source_finding_ids": [
+        "T-013"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_1da24da5ad594599aa59defe9fde265b"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-035",
+      "raw_model_source_finding_ids": [
+        "T-014"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_0779457166304b91a87d7b7902f8359f"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-036",
+      "raw_model_source_finding_ids": [
+        "T-015"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_448a82ffb63145aa96b55305485c4ee5",
+        "blk_79370c7a344c44559b2d828291b6a1b6",
+        "blk_7d46590ad5b64af08f435cadad0053cd",
+        "blk_e106d0b41bf9480aaf187ef2259994db",
+        "blk_f3f718605a024394b9026b08fa4c9b20"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-037",
+      "raw_model_source_finding_ids": [
+        "T-016"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_79370c7a344c44559b2d828291b6a1b6",
+        "blk_f3f718605a024394b9026b08fa4c9b20"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-038",
+      "raw_model_source_finding_ids": [
+        "T-018"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_1da24da5ad594599aa59defe9fde265b"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-039",
+      "raw_model_source_finding_ids": [
+        "T-019"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_99cc8bf95861437186be76b36e9d446b"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-040",
+      "raw_model_source_finding_ids": [
+        "T-020"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_53e5d0ecb2fe4e9480416db361afefda",
+        "blk_99098cf6f63347aca6b7e76e43ab3336"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": null
+    },
+    {
+      "candidate_id": "B-EOM-F-041",
+      "raw_model_source_finding_ids": [
+        "T-021"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": null
+    },
+    {
+      "candidate_id": "B-EOM-F-042",
+      "raw_model_source_finding_ids": [
+        "T-022"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+        "blk_628818db493e46e7bdccc75b01afbd16",
+        "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-043",
+      "raw_model_source_finding_ids": [
+        "T-023"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_82bd0b6201d04037beca3195d87933ce",
+        "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+        "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-044",
+      "raw_model_source_finding_ids": [
+        "T-021"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-045",
+      "raw_model_source_finding_ids": [
+        "T-021"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    },
+    {
+      "candidate_id": "B-EOM-F-046",
+      "raw_model_source_finding_ids": [
+        "T-021"
+      ],
+      "raw_model_related_block_ids": [],
+      "raw_model_evidence": [],
+      "upstream_related_block_ids": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "raw_model_already_missing_refs": true,
+      "adjudicated_route": "Вопросы и уточнения"
+    }
+  ],
+  "prompt_hypothesis": {
+    "status": "plausible_not_proven_model_reason",
+    "observation": "items_verified_from_blocks is empty; prompt directs T-NNN block linkage to verification array although text_findings contain related_block_ids.",
+    "limitation": "The raw answer establishes omission, not the internal reason the model chose empty arrays."
+  },
+  "proposed_change_for_stage4": {
+    "behavior": "Build explicit source_finding_ids → text candidate references mapping; preserve origin links as provenance and validate block existence/type. Do not treat existence as semantic proof, invent IDs, silently attach all page blocks, or automatically restore severity.",
+    "positive_controls": [
+      "B-EOM-F-001",
+      "B-EOM-F-030",
+      "B-EOM-F-032"
+    ],
+    "positive_scope": "Preserve useful adjudicated questions and their actual source links, not every original consequence.",
+    "negative_requirements": [
+      "Unknown source ID must not attach unrelated evidence.",
+      "Referenced ID absent from input must remain unresolved.",
+      "Conflicting/irrelevant source references must not establish a true defect.",
+      "Existing explicit references and multi-source provenance must be retained without duplicating findings."
+    ],
+    "acceptance": "Offline replay over saved data, then comparable full runs; no runtime change made by this analysis."
+  },
+  "stage_2_complete": false,
+  "production_changed": false
+}
