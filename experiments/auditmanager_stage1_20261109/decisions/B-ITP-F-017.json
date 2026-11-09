@@ -25,5 +25,34 @@
   "production_changed": false,
   "arithmetic": {
     "difference_m": "0.34"
+  },
+  "atomic_dispositions": [
+    {
+      "claim": "Технический лист содержит рабочий напор16,98м и максимальный16,64м",
+      "verdict": "confirmed_same_document_numeric_difference"
+    },
+    {
+      "claim": "Разность составляет0,34м",
+      "verdict": "confirmed_arithmetic"
+    },
+    {
+      "claim": "Название Фактическая рабочая точка означает натурное испытание",
+      "verdict": "not_supported_field_name_only"
+    },
+    {
+      "claim": "Различие доказывает физическую непригодность насоса",
+      "verdict": "not_established_without_curve_and_mode"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставлены исходные тезисы, сохранённые авторитетныеTEXT и границы первичных решений. Нового независимого аудита не проводилось.",
+    "scorable_narrow_claim": "Вопрос об увязке полей технического листаК12 с указанием страницы76; не вывод о натурной работе.",
+    "unscored_claims": [
+      "Характеристика насоса, режим и частота",
+      "Пригодность для требуемой рабочей точки"
+    ],
+    "control_pair_readiness": "Подтверждённой пары допустимого и недопустимого превышения максимального напора нет; общий допуск0,34м не вводить.",
+    "automatic_filter_authorized": false
   }
 }

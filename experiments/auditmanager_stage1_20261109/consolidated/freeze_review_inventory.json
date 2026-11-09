@@ -12,10 +12,10 @@
     "candidate_records": 291,
     "decision_themes": 247,
     "themes_with_explicit_followups": 165,
-    "themes_with_direct_atomic_dispositions": 214,
+    "themes_with_direct_atomic_dispositions": 220,
     "themes_with_linked_claim_disposition": 1,
     "themes_with_direct_control_pair": 150,
-    "themes_with_scope_review": 14,
+    "themes_with_scope_review": 20,
     "stage_complete": false
   },
   "items": [
@@ -5499,7 +5499,7 @@
         "B-ITP-F-007"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json",
-      "decision_sha256": "66a2e36573295fd45908712eb74cd6e545fd6066399cdd309d1d7ba1ab56cb73",
+      "decision_sha256": "4c3b660258ca004ec995130e51449101075b82e73745bd1f2782fa6d6f833760",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-007",
@@ -5509,7 +5509,24 @@
       ],
       "narrow_output": "Согласовать задание на электроснабжение ИТП: ПЗ, лист 19, задаёт категорию II, а ТЗ, п. 5.2.6.1, — первую категорию с технологическим резервированием. Отразить согласованное решение в смежном электротехническом разделе.",
       "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "ПЗ назначает категориюII, ТЗ5.2.6.1 —I с технологическим резервированием",
+          "verdict": "confirmed_document_requirements_conflict"
+        },
+        {
+          "claim": "ТЗ требует отдельноеВРУ и учёт",
+          "verdict": "confirmed_TEXT_requirement"
+        },
+        {
+          "claim": "ОтдельноеВРУ и учёт отсутствуют в проекте",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Фактическая надёжность питания недостаточна",
+          "verdict": "not_established_without_power_scheme"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Подтверждено противоречие требований. Фактическая недостаточная надёжность не доказана без схем питания и резервирования. Требование отдельного ВРУ и учёта приведено в ТЗ, но их отсутствие не установлено; отдельное замечание об отсутствии не выпускать.",
@@ -5519,8 +5536,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы, сохранённые авторитетныеTEXT и границы первичных решений. Нового независимого аудита не проводилось.",
+        "scorable_narrow_claim": "Согласование двух противоречащих заданий по категории электроснабжения; не расширять до отсутствияВРУ.",
+        "unscored_claims": [
+          "Фактическая схема питания и технологического резервирования",
+          "НаличиеВРУ и учёта в смежном разделе"
+        ],
+        "control_pair_readiness": "Составной случай разделён на подтверждённое противоречие и неподтверждённое отсутствие. Отдельной исторической пары нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5528,7 +5555,7 @@
         "B-ITP-F-011"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-011.json",
-      "decision_sha256": "f6526121d89fbd909f21ba265b11e18efea2a452d6c2f29407d00fc51d3d6ced",
+      "decision_sha256": "8a084a320ad746b20cbd7831a159cca9581237cd62b98235ce6b11553998e0de",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-011",
@@ -5538,7 +5565,36 @@
       ],
       "narrow_output": "Согласовать расчёт циркуляции ГВС: во второй зоне результат 2,21 соответствует Qцирк=0,017 из предыдущей строки, но в подстановке стоит 0,016, что даёт 2,08. Уточнить запись Gцирк макс=1,5×Qцирк, где Qцирк определена как тепловая мощность, и используемую точность промежуточных вычислений.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Во второй зоне напечатано1,3×0,016×1000/10=2,21",
+          "verdict": "confirmed_TEXT_but_arithmetic_inconsistent"
+        },
+        {
+          "claim": "Подстановка0,016 даёт2,08; предыдущая строка0,017 даёт2,21",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "4,29/0,78 не следуют из напечатанных0,033/0,006",
+          "verdict": "refuted_arithmetic"
+        },
+        {
+          "claim": "Без промежуточного округления получаются4,376666…/2,275/0,845",
+          "verdict": "confirmed_conditional_recalculation"
+        },
+        {
+          "claim": "Gцирк макс=1,5×Qцирк требует пояснения размерности",
+          "verdict": "confirmed_notation_question_with_Q_as_heat_power"
+        },
+        {
+          "claim": "Эти пересчитанные расходы обязательны как новые уставки",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Насосы должны быть заменены",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Без промежуточного округления получаются 4,376666…; 2,275; 0,845 м³/ч. Это расчёт по опубликованным исходным данным, не утверждение об обязательных новых уставках. 4,29 и 0,78 правильно получены из уже округлённых 0,033 и 0,006. Допустимая точность и влияние на систему не установлены; неправильная настройка и необходимость замены насосов не доказаны. Нормативное нарушение не заявляется.",
@@ -5548,8 +5604,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы, сохранённые авторитетныеTEXT и границы первичных решений. Нового независимого аудита не проводилось.",
+        "scorable_narrow_claim": "Сохранить точную ошибку подстановки второй зоны и вопрос о размерности/точности. Не объявлять все три опубликованных расхода арифметически неверными.",
+        "unscored_claims": [
+          "Допустимая точность расчёта и согласованные уставки",
+          "Рабочие режимы и необходимость смены насосов"
+        ],
+        "control_pair_readiness": "Локальная пара: сохранить несходящуюся подстановку второй зоны, снять утверждение о неверном умножении округлённых данных первой/третьей зон. Нормативная точность этой парой не установлена.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5557,7 +5623,7 @@
         "B-ITP-F-014"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-014.json",
-      "decision_sha256": "121361b714467b002168a48062fca173c469d8a4e997c7928c7e36d98593e91a",
+      "decision_sha256": "817028329da55c5233d5125a6095de379052f53a421de663b5fe777d4110921d",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-014",
@@ -5567,7 +5633,28 @@
       ],
       "narrow_output": "Согласовать характеристику клапана ГВС второй зоны, поз. 33: экспликация и расчёт задают VF-3R-50-40, Kvs/Kv 40 м³/ч; спецификация содержит VFM-3R-50-40, Kvs 4,0. Уточнить марку и пропускную способность в заказной строке.",
       "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Позиция33:VF-3R-50-40 и40м³/ч в экспликации/расчёте противVFM-3R-50-40 и4,0 вСО",
+          "verdict": "confirmed_document_identity_and_capacity_conflict"
+        },
+        {
+          "claim": "По формуле проекта при18,85/40 потеря0,2220765625бар, при18,85/4 —22,20765625бар",
+          "verdict": "confirmed_conditional_arithmetic"
+        },
+        {
+          "claim": "Фактически поставлен клапанKvs4 и система неработоспособна",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Правильность каталожного артикула установлена",
+          "verdict": "not_checked"
+        },
+        {
+          "claim": "РазличиеPN25/PN16 покрыто этим решением",
+          "verdict": "separate_case_B_ITP_F_015"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Расхождение в десять раз подтверждено по TEXT. Числа потерь ниже — условная проверка по формуле самого проекта, не доказательство фактически установленного клапана с Kvs 4,0 или неработоспособности системы. Правильность артикула по каталогу не проверена. PN25/PN16 относится к отдельному составному случаю B-ITP-F-015.",
@@ -5577,8 +5664,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы, сохранённые авторитетныеTEXT и границы первичных решений. Нового независимого аудита не проводилось.",
+        "scorable_narrow_claim": "Сохранить конфликт марки и пропускной способности позиции33. Потери использовать только как условное пояснение значимости, не как измерение.",
+        "unscored_claims": [
+          "Каталожная идентичность модели и артикула",
+          "Фактическая поставка и работоспособность"
+        ],
+        "control_pair_readiness": "Подтверждённой пары исправного/неисправного клапана нет. Нельзя снимать конфликт40/4 как опечатку без согласованной заказной строки.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5644,7 +5741,7 @@
         "B-ITP-F-016"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-016.json",
-      "decision_sha256": "8a115c468ebefb522facb5ab17ec6a2355439373a55757262197906359b739f8",
+      "decision_sha256": "08e2ee802e6a8be9e9f5a16dc884d01f4b962cc6bc6dbbf87a6d41f850988661",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-016",
@@ -5654,7 +5751,24 @@
       ],
       "narrow_output": "Согласовать мощность насоса К12 отопления ДОО IL 40/220-1,5/4-R: в экспликации N=0,55 кВт, в ПЗ и спецификации N=1,5 кВт, а технический лист артикула 2786053 подтверждает номинальную мощность двигателя 1,5 кВт. Исправить экспликацию и сверить переданное задание электрикам.",
       "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "К12 в экспликацииN0,55кВт против1,5кВт вПЗ иСО",
+          "verdict": "confirmed_document_nominal_power_conflict"
+        },
+        {
+          "claim": "Технический лист артикула2786053 даёт номинал1,5кВт",
+          "verdict": "confirmed_project_technical_sheet_TEXT"
+        },
+        {
+          "claim": "P2 рабочей точки0,74кВт является тем же параметром, что номинальная мощность",
+          "verdict": "refuted_parameter_identity"
+        },
+        {
+          "claim": "Из конфликта следует неправильная защита и отказ насоса",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Насос сопоставлен по назначению, модели, артикулу и рабочей точке 4,42 м³/ч / 16,98 м. Мощность P2 в рабочей точке 0,74 кВт не смешивать с номинальной. Неверный выбор аппаратов защиты, фактическая комплектация и отказ насоса не установлены.",
@@ -5664,8 +5778,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы, сохранённые авторитетныеTEXT и границы первичных решений. Нового независимого аудита не проводилось.",
+        "scorable_narrow_claim": "Сохранить несогласованную номинальную мощность идентифицированногоК12;0,74кВт рабочей точки не добавлять как третий конфликт номинала.",
+        "unscored_claims": [
+          "Переданное электротехническое задание и защита",
+          "Фактическая комплектация"
+        ],
+        "control_pair_readiness": "Локальная пара различает конфликт одинакового параметра0,55/1,5 и допустимо разные параметры0,74/1,5; полной проверки рабочих характеристик нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5673,7 +5797,7 @@
         "B-ITP-F-017"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-017.json",
-      "decision_sha256": "483c2806d7fb874d3416b3db69f9dc6d358a3062e47a7051ad55b34c2584df9e",
+      "decision_sha256": "74771a0b6daae9eabd6757acee99d68e3f5ee7bb36d07325f9e22017d22bfc27",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-017",
@@ -5683,7 +5807,24 @@
       ],
       "narrow_output": "Уточнить технический лист насоса К12: в разделе «Фактическая рабочая точка» напор 16,98 м, в «Данных продукта» максимальный напор 16,64 м. Получить согласованную характеристику и объяснение этих двух значений.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Технический лист содержит рабочий напор16,98м и максимальный16,64м",
+          "verdict": "confirmed_same_document_numeric_difference"
+        },
+        {
+          "claim": "Разность составляет0,34м",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Название Фактическая рабочая точка означает натурное испытание",
+          "verdict": "not_supported_field_name_only"
+        },
+        {
+          "claim": "Различие доказывает физическую непригодность насоса",
+          "verdict": "not_established_without_curve_and_mode"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Первичное основание — TEXT страницы 76, а не ошибочная ссылка исходного замечания на страницу 78. «Фактическая» — название поля подбора, не натурное испытание. Режимы, частота и кривая не сверены; непригодность насоса и неверная электрическая защита не доказаны.",
@@ -5693,8 +5834,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы, сохранённые авторитетныеTEXT и границы первичных решений. Нового независимого аудита не проводилось.",
+        "scorable_narrow_claim": "Вопрос об увязке полей технического листаК12 с указанием страницы76; не вывод о натурной работе.",
+        "unscored_claims": [
+          "Характеристика насоса, режим и частота",
+          "Пригодность для требуемой рабочей точки"
+        ],
+        "control_pair_readiness": "Подтверждённой пары допустимого и недопустимого превышения максимального напора нет; общий допуск0,34м не вводить.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5702,7 +5853,7 @@
         "B-ITP-F-019"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
-      "decision_sha256": "baaabf9da547b82978c471701740c96dd665a415df394b290ea1623a8f1b5c21",
+      "decision_sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-019",
@@ -5712,7 +5863,28 @@
       ],
       "narrow_output": "Согласовать массы единиц оборудования в экспликации, спецификации и листах подбора: К9 —98/94/90кг; К10 —87/67/67; К11 —48/57/57; К12 —29/60/64; К14 —284/181/203; теплообменник К1 —650,88/458,01/458,01. Уточнить исполнение и состав каждой массы, не смешивая изделие, обвязку и заполнение.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "ДляК9/К10/К11/К12/К14/К1 расходятся массы в трёх источниках",
+          "verdict": "confirmed_six_item_existing_register"
+        },
+        {
+          "claim": "Примечания различают массу без теплоносителя и массу с обвязкой/теплоносителем",
+          "verdict": "confirmed_TEXT_context"
+        },
+        {
+          "claim": "Масса теплообменника в листе подбора окончательна для конструкторских чертежей",
+          "verdict": "refuted_explicit_document_caveat"
+        },
+        {
+          "claim": "Различия доказывают неверные фундаменты или монтажные средства",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Проверка одногоК11 автоматически подтверждает остальные пять позиций",
+          "verdict": "not_supported_all_six_require_addressed_evidence"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Подтверждены различия записей, а не правильность одной массы или ошибка расчёта фундаментов. В примечаниях к планам уже разделены паспортная масса без теплоносителя и масса с обвязкой с учётом теплоносителя. Численные нагрузки графических планов и задания конструкторам здесь не проверены. Масса теплообменника в расчёте названа ориентировочной, уточняемой при поставке; документ запрещает использовать её в конструкторских чертежах. Ошибка монтажных средств и нормативное нарушение не доказаны.",
@@ -5722,8 +5894,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы, сохранённые авторитетныеTEXT и границы первичных решений. Нового независимого аудита не проводилось.",
+        "scorable_narrow_claim": "Один адресный вопрос о согласовании шести масс и состава каждой величины; сохранять предупреждение об ориентировочности подбораК1.",
+        "unscored_claims": [
+          "Нагрузки на графических планах и задания конструкторам",
+          "Окончательное исполнение и комплектация",
+          "Правильная масса каждого поставляемого изделия"
+        ],
+        "control_pair_readiness": "Контекст разных составов массы препятствует универсальному фильтру по неравенству. Доказанной пары неверной и корректной нагрузки на фундамент нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
