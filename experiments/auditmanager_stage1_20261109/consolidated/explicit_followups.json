@@ -973,6 +973,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-026"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F026_reference_scope_insufficient.json",
+      "output_section": null,
+      "required_checks": [
+        "При заморозке эталона оставить применимостьСТОнеоцениваемой, если не появится первичный текст и связь с конкретным решением; не считать исключение этого кандидата доказанным устранением технически ложного замечания."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-VK-20"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
