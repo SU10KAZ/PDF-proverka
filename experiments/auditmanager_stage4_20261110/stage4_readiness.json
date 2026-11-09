@@ -60,9 +60,14 @@
     {
       "id": "H05",
       "status": "partial",
-      "verified_or_implemented_scope": "Exact decimal comparison and basis checks implemented and unit-tested.",
+      "verified_or_implemented_scope": "Exact decimal comparison and basis checks implemented and unit-tested. ITP source replay verifies four exact MD rows and derived sum 819; no project-stated aggregate or violation count is claimed.",
       "remaining": "Verify physical interpretation, conversions, regimes and real control cases; arithmetic is not semantic proof.",
-      "evidence": []
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/ITP_quantity_source_replay.json",
+          "sha256": "172c3630b62d9d66dbd83184dbc8f31a25df7287bf9bebae607b6163a9afecab"
+        }
+      ]
     },
     {
       "id": "H06",
