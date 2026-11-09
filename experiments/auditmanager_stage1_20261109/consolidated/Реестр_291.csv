@@ -194,7 +194,7 @@ B-KM-F-005,KM,classic_usefulness,Первичная проверка не зав
 B-KM-F-006,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-007,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-008,KM,classic_usefulness,Первичная проверка не завершена,,,
-B-KM-F-009,KM,classic_usefulness,Первичная проверка не завершена,,,
+B-KM-F-009,KM,classic_usefulness,incorrect_sheet_cross_reference_with_available_correct_index,Вопросы и уточнения,"Уточнить ссылку в примечании5 листа4: схема расположения ограждений секцииС2 зарегистрирована в ведомости на листе3, тогда как примечание отсылает на лист4 — «ОгражденияОГМ1…6,8».",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F009_sheet_cross_reference.json
 B-KM-F-010,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-011,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-012,KM,classic_usefulness,Первичная проверка не завершена,,,
