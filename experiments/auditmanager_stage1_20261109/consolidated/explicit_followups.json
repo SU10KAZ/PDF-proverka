@@ -211,6 +211,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-038"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F038_temperature_graphic_connection.json",
+      "output_section": null,
+      "required_checks": [
+        "Для самостоятельного допуска фильтра графической привязки дополнить контроль подтверждённым случаем действительно неверной точки присоединения. Работоспособность защиты вне данного узкого решения и не включается в подтверждённые результаты."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-045"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
