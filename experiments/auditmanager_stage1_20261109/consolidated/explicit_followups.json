@@ -14,6 +14,16 @@
     },
     {
       "candidate_ids": [
+        "H-AR-59"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить КМ8 и рабочие детали именно этого объекта: нагрузки от каната, соединения фиксирующего элемента, сечения, материалы и анкеровку; до этого не считать недостаточную прочность доказанным дефектом."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AR-F-007"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
