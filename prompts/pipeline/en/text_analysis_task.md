@@ -31,7 +31,8 @@ alone cannot resolve a request that needs graphic inspection.
 
 Return a top-level `context_request_results` array, one receipt per included request:
 `request_id`, `status` (`resolved`, `needs_data`, `not_checked`), `source_refs`,
-`finding_ids`, and `reason`. `resolved` requires an addressed source and an explanation
+`finding_ids`, and `reason`. `source_refs` must be an array of exact block ID strings
+from the provided document; `finding_ids` must refer to this response’s T-IDs. `resolved` requires an addressed source and an explanation
 of whether the original claim is supported, contradicted, or already covered by an
 existing finding. Link that finding rather than duplicating it. Missing context or
 budget exhaustion is not refutation. Never turn every deferred candidate into a

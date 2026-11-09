@@ -283,6 +283,29 @@ async def run_text_analysis(
     except Exception as exc:
         await ctx.log(f"Text pre-scan skipped: {exc}", "warn")
 
+    # Account for every deferred request even when the model omits receipts.
+    compact_path = output_dir / "01_blocks_for_text.json"
+    if compact_path.exists():
+        from .context_receipts import reconcile_context_requests
+        from backend.app.pipeline.stages.prepare.graph_builder import build_block_page_index
+        try:
+            compact = json.loads(compact_path.read_text(encoding="utf-8"))
+            current = json.loads(output_path.read_text(encoding="utf-8"))
+            graph_path = output_dir / "document_graph.json"
+            graph = json.loads(graph_path.read_text(encoding="utf-8")) if graph_path.exists() else {}
+            known = set(build_block_page_index(graph))
+            known.update(b["block_id"] for b in compact.get("blocks", []) if isinstance(b.get("block_id"), str))
+            receipt = reconcile_context_requests(compact, current, known)
+            (output_dir / "02_context_request_coverage.json").write_text(
+                json.dumps(receipt, ensure_ascii=False, indent=2), encoding="utf-8",
+            )
+            if receipt["unresolved"]:
+                await ctx.log(f"Context requests: {receipt['unresolved']}/{receipt['total']} unresolved", "warn")
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            error = f"Context request accounting failed: {exc}"
+            ctx.update_pipeline_log(log_stage, "error", error=error)
+            return StageResult.fail(error)
+
     # Страж отсутствия вынесен в ОТДЕЛЬНЫЙ этап «Верификатор» (findings_verify),
     # работающий на слитом 03_findings.json (один прогон на финальном списке вместо
     # хвостов Stage 01/02). Здесь остаётся только ПРАВИЛО в промпте ({ABSENCE_GUARD}) —
