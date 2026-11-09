@@ -1,0 +1,16 @@
+{
+  "review_date": "2026-11-09",
+  "route": "authoritative_TEXT",
+  "source_md": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/VK/document.md",
+  "source_md_sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+  "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+  "exact_quote": "| 1 | Труба канализационная полипропиленовая бесшумная д50x0 | ГОСТ 32414-2013 |  | Pro Aqua | м | 5,2 |  |  |",
+  "quote_offset": 213066,
+  "fresh_model_calls": 0,
+  "control_id": "VK:14",
+  "technical_status": "confirmed_ambiguous_product_designation",
+  "confirmed": "В СО буквально задано д50x0, количество 5,2 м, изготовитель Pro Aqua; код изделия отсутствует.",
+  "required_semantics": "Уточнить типоразмер и толщину стенки именно этой позиции СО.",
+  "limits": "Не утверждать изготовление физической трубы с нулевой стенкой, отсутствие труб или соответствие всем обозначениям на плане. Графическая часть исторического тезиса здесь не проверена.",
+  "engineer_decision": null
+}

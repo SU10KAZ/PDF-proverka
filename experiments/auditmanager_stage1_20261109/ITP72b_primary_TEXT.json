@@ -1,0 +1,26 @@
+{
+  "review_date": "2026-11-09",
+  "route": "authoritative_TEXT",
+  "source_md": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/ITP/document.md",
+  "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+  "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+  "exact_quote": "Нагреваемая сторона, трубопровод вентиляции.\n\nGвен макс = (Qвен макс × 1000)/(τ₁ - τ₂) = (1,527 × 1000)/(85 - 60) = 61,12 м³ / ч;\n\nВыбираем трубопровод: Ø219 × 6,0 мм. Δh=2,49 кгс/м² м, v=0,66 м/сек.",
+  "quote_offset": 212064,
+  "fresh_model_calls": 0,
+  "control_id": "ITP:72b",
+  "technical_status": "confirmed_internal_arithmetic_difference",
+  "inputs": {
+    "flow_m3h": 61.12,
+    "outer_diameter_mm": 219,
+    "wall_mm": 6,
+    "stated_velocity_ms": 0.66
+  },
+  "calculation": {
+    "formula": "(Q/3600)/(pi*((D-2*t)/1000)^2/4)",
+    "internal_diameter_mm": 207,
+    "velocity_ms": 0.5044873403905
+  },
+  "limits": "Проверка согласованности указанного объёмного расхода и диаметра. Не доказывает реальный режим, нарушение допустимой скорости или непригодность системы.",
+  "engineer_decision": null,
+  "historical_parent": "ITP:72; решение по производному тезису отдельно не зафиксировано"
+}

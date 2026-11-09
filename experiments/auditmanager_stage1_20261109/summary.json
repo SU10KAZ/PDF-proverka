@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-09",
+  "stage": 1,
+  "status": "in_progress_not_frozen",
+  "registry_coverage": "47/47 tracked records accounted for; not 47 verified defects",
+  "controls_with_explicit_assertions": 24,
+  "controls_awaiting_primary_adjudication": 23,
+  "explicit_assertions": 28,
+  "baseline_records_preserved": 244,
+  "baseline_useful_atom_set_frozen": false,
+  "evidence_integrity_checks": 39,
+  "stage_complete": false,
+  "production_promotion_allowed": false,
+  "next_stage_allowed": false,
+  "blocking_work": [
+    "Завершить первичную оценку контролей без конкретных тезисов.",
+    "Разобрать остаток составных исторических строк.",
+    "Определить полезные тезисы классического результата, не потеряв ни одну из 244 строк.",
+    "Зафиксировать правила профиля и инженерной полезности спорных вопросов."
+  ]
+}

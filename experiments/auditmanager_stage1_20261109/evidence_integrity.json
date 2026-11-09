@@ -1,0 +1,275 @@
+[
+  {
+    "atom_id": "AK:AO_false_third_point",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK7_primary_check.json",
+    "sha256": "03559d66b582f6bfe450b0acebc1134162473b95714ffa16f5eef58a44cd77d6",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "AK:DI12_DO6",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK_DI_DO_conflict_primary_check.json",
+    "sha256": "1b921821f177d691b4697c4ac2a042c4c671b647c1145121c0f075caa6517736",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "AK:four_inverter_labels",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK65_primary_check.json",
+    "sha256": "46652fc15afdcd39ed1fce8a02e38fa175c24e30fd3136f6368e6893a71814ea",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "KM:landing_elevation",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/KM_classic_completed_review.json",
+    "sha256": "b7dcb7956c9596077cde2b11b2fc123e3e48e20c61f5fde2a65fd81cb914646f",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "KM:OGM4_length",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/KM5_source_check.json",
+    "sha256": "75fb20190449ddebe18ab2b1e663cb8eae7c0d4ff4d8c70209dc4f333ef6d02f",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "VK:sensor_count",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/VK20_primary_scope_check.json",
+    "sha256": "21055a09e428487051df40307367f20522de849051f5620d21b3ffca6fdf070b",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "VK:blank_K11_quantity",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/VK_classic_completed_review.json",
+    "sha256": "18732e9c2187b6a0aad9c2f0ec6f2acf0c099feb1b65b1442884cbd28cba947f",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "AR:calculation_reference",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AR39_AR59_primary_boundary_check.json",
+    "sha256": "07f8d7c14d9a9bef7329a5e2919693e5b8c20df8abf163e659c2967a03f51bec",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "AR:rope_assembly",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AR39_AR59_primary_boundary_check.json",
+    "sha256": "07f8d7c14d9a9bef7329a5e2919693e5b8c20df8abf163e659c2967a03f51bec",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "AR:six_niches",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AR35_primary_boundary_check.json",
+    "sha256": "d03c1b6726aff424ad7d73f3c3cca2f0448e065378a23df40a556dd365bab5e4",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "ITP:GVS_maxima",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/primary_checks.json",
+    "sha256": "2748404a857bcb6113e1ff12472f7b9ab87a334121f4fb3937f36e9e929c44d5",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "ITP:first_zone_flow",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/primary_checks.json",
+    "sha256": "2748404a857bcb6113e1ff12472f7b9ab87a334121f4fb3937f36e9e929c44d5",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "EOM:outdoor_duplicate",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM111_source_check.json",
+    "sha256": "319b6136e63a0fbbf64705751933788bf3218f5712de195ab49411ea5ae4465f",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "EOM:RP2_formula",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/primary_checks.json",
+    "sha256": "2748404a857bcb6113e1ff12472f7b9ab87a334121f4fb3937f36e9e929c44d5",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "EOM:C2520_apparent_power",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/primary_checks.json",
+    "sha256": "2748404a857bcb6113e1ff12472f7b9ab87a334121f4fb3937f36e9e929c44d5",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "AK:100:motor_segments",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK100_journal_primary_check.json",
+    "sha256": "692471f5e67d41e0a2c551fec90db0a9fe209798a0917e67064f01055661461f",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "AK:137:local20m",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK137_primary_atom_split.json",
+    "sha256": "fac2e373880e53bd10124a26ede9f491b9b87227ce2c6c34fbbf21469bc4325e",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "AK:137:additional10m",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK137_primary_atom_split.json",
+    "sha256": "fac2e373880e53bd10124a26ede9f491b9b87227ce2c6c34fbbf21469bc4325e",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "ITP:63:head_roles",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/ITP63_primary_semantic_check.json",
+    "sha256": "1276b4523747c934b4f837a76918ddf331bf1336b3a24e7ba60a97aa01901715",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "ITP:64:work_code",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/ITP64_primary_profile_check.json",
+    "sha256": "da364f6232cb24a6a1d0429a08e3554bcaebd24491bc555d21b8c1a653aaedf0",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "ITP:68:scope",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/ITP68_primary_scope_check.json",
+    "sha256": "e54823ca6825ab0c5c7d99ce96bf0ddd7cc8c2636da05b30cb050a197bfbb2f4",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "AR:14:support_chain",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AR14_source_check.json",
+    "sha256": "dbbd1df0d09767128d0fc9c471dc2b1695756f044448d2a74ceeaac0330321a5",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "EOM:11:FRHF_position",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json",
+    "sha256": "e3ec650ec4a4018cbb7a98b37de89d710f45f3bf069a81682a7631f96b49dcd5",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "EOM:27:active_circuits",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM27_source_check.json",
+    "sha256": "b0fc052f038ed71647c4cefc13a2dc2470c7684e470fdc9cb5d05d22082ac511",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "ITP:72b:velocity",
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/ITP72b_primary_TEXT.json",
+    "sha256": "c8023442394ed2250416f2dab16df23a9a0683f86e3485cf50664aca3dccb4e7",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "VK:14:specification_size",
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/VK14_primary_TEXT.json",
+    "sha256": "ff5811ba4af99665e6e5c3c5c4947e6e90029d64b40e85e2f5e400cf91f534f2",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "EOM:76:panel_sum",
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/EOM76_primary_GRAPHIC.json",
+    "sha256": "11c73e4e0438d3409202aeeed9cf626195826a3b9f0053c0cf4ba0c9a7fb16af",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "atom_id": "KM:3:plan_mark",
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/KM3_primary_GRAPHIC.json",
+    "sha256": "255952d3bff75f41a8d0825baed7dd1988efa895a514d5835c6238a2dde45255",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+    "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+    "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+    "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/source_images/blk_4b5016856cc94ec088efe86a8ec2a925_6471b342ae3c.png",
+    "sha256": "cefe19c6c17af46686cf6b6d0f2d911fa16d3a393473f3200b3c9ba9bfd63184",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/source_images/blk_4b5016856cc94ec088efe86a8ec2a925_809b092782ad.png",
+    "sha256": "27e7d29e25153e4cbb665ac594a6f483f4a549edf061404fe95b6e14f05dc57b",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/source_images/blk_4b5016856cc94ec088efe86a8ec2a925_efc9d415b261.png",
+    "sha256": "691050dd2204854daefb1bb8d13eb61065e0ef06806d3bc8b5e69cefc841b8d7",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_dfae064f26494949a92afe3b0f6f9158.png",
+    "sha256": "69e3cecdabaadd863bd889864419423a11c0742197f05f323b6aa66aac59ac40",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_bf9e42b43a6a45a8bab27fd03948ed37.png",
+    "sha256": "5e6ae04d4ef30c48a89315f16da25cdfc5cbf2b1fa3e2413cf713bc66622f279",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_11ab29134110467ba6ce9b0991b6ea82.png",
+    "sha256": "140140cbe9eec89dc6adde4374611d4e385529cac4235259836811ed0d1bcd7f",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_fe7bfb2c1c0b469ca1c3e2cb30686758.png",
+    "sha256": "dacc03a022080c2ab7c14f78e90ade3c013510bfc9a995fc847d5a17aadfccd2",
+    "exists": true,
+    "hash_matches": true
+  },
+  {
+    "kind": "previous_primary_image",
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.png",
+    "sha256": "337026cb8604094fb374e3e777ccdac9d2e3013652099b49d2829dac397309a6",
+    "exists": true,
+    "hash_matches": true
+  }
+]

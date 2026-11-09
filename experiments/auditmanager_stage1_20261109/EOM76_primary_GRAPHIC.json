@@ -1,0 +1,42 @@
+{
+  "control_id": "EOM:76",
+  "observations": {
+    "panel": "2ЩСС1",
+    "group_power_kW": {
+      "1": 0.4,
+      "2": 0.4,
+      "3": 0.4,
+      "4": 0.4,
+      "5": 0.2,
+      "6": 0.4,
+      "7": 0.4,
+      "8": 0.4,
+      "9": 0.4
+    },
+    "reserve_groups": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "reserve_power_cells": "blank",
+    "panel_total_kW": 5.4
+  },
+  "arithmetic": {
+    "formula": "8*0.40+0.20",
+    "sum_kW": 3.4,
+    "difference_kW": 2
+  },
+  "technical_status": "confirmed_internal_arithmetic_difference",
+  "required_semantics": "Согласовать сумму девяти указанных нагрузок 3,4 кВт с итогом 5,4 кВт.",
+  "limits": "Не приписывать резервным группам отсутствующие в схеме 2 кВт. Не доказаны фактическая нагрузка и недостаточность оборудования.",
+  "pair_boundary": "Контрпример про резерв следует из того же источника; это не отдельная инженерно принятая пара замечаний.",
+  "review_date": "2026-11-09",
+  "reviewer": "primary agent direct saved GRAPHIC inspection",
+  "image": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_36068a499bde44769a64017e35fba41d.png",
+  "image_sha256": "7bb9bf894564e1053930e9ce2f3dd488ec4b845d6ffe376b61cf22d82a6b29a6",
+  "graphic_block_id": "blk_36068a499bde44769a64017e35fba41d",
+  "source_md": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.md",
+  "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "engineer_decision": null
+}

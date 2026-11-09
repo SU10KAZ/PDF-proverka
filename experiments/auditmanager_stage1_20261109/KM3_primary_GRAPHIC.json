@@ -1,0 +1,25 @@
+{
+  "control_id": "KM:3",
+  "observations": {
+    "place": "ЛК6, схема на отм. −0.700",
+    "mark": "ОГМ26",
+    "location": "верхний горизонтальный участок, выноска справа"
+  },
+  "technical_status": "confirmed_plan_mark_specification_followup",
+  "required_semantics": "Марка ОГМ26 действительно присутствует на плане ЛК6; требуется установить её связь со спецификацией и деталировкой.",
+  "limits": "Отсутствие марки в TEXT само по себе не доказывает отсутствие деталировки среди всех GRAPHIC. Опечатка ОГМ26→ОГМ25 не установлена.",
+  "review_date": "2026-11-09",
+  "reviewer": "primary agent direct saved GRAPHIC inspection",
+  "image": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_441423dd5fb448c89a33b610c54783ba.png",
+  "image_sha256": "e483f14964b885d339bef19552b34da013314ab6decdb262dc166ee44048f08e",
+  "graphic_block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+  "source_md": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
+  "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "engineer_decision": null,
+  "TEXT_search": {
+    "blocks_checked": 57,
+    "pattern": "ОГМ\\s*26",
+    "matches": [],
+    "scope": "Only authoritative TEXT; not proof all graphics lack details"
+  }
+}
