@@ -14,6 +14,16 @@
     },
     {
       "candidate_ids": [
+        "H-AR-35"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR35_unlabelled_areas.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "По смежным планам этажей, фасадам и разрезам установить назначение шести адресных участков; проверить графическую легенду до утверждения об отсутствии условного обозначения."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AR-39"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json",
