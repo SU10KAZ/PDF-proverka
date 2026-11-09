@@ -64,6 +64,17 @@
     },
     {
       "candidate_ids": [
+        "B-AR-F-002"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить применимость58766-2019 к предусмотренным стяжкам и параметры согласованной смеси; до этого не оценивать непригодность материала как дефект.",
+        "При проверке рулонных материалов учитывать частичную замену30547 иСТО конкретных изделий. Не переносить ограниченный вывод об ошибке полной замены на правильность всей нормативной базы кровли."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AR-F-007"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
