@@ -1,0 +1,645 @@
+{
+  "discipline": "KM",
+  "decisions": [
+    {
+      "id": "KM-001",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03"
+      ],
+      "behavior": "Связать изделие по секции/лестнице,листу,марке и позиции со всеми видами и колонкойСО.",
+      "control_and_nontransfer_boundary": "ОГМ4 разных лестниц не одно изделие; совпадение марки недостаточно.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-003 — Отклонено; ОГМ26 без спецификации и деталировки\nПД-00580716-КМ1.2_V1::UA-008 — Отклонено; Привязка ОГМ6/7 к отметкам С3\nПД-00580716-КМ1.2_V1::UA-017 — Отклонено; Повторяющиеся марки разных ограждений",
+      "runtime_targets": [
+        {
+          "target_id": "KM5_S3_bent_handrail_developed_length:f55d97014c925f15f7ac",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_KM_matching.json",
+            "sha256": "95572b53ae1f1e2c45332e312f3cdd8f249d9ede2f994078b64612bbbf6c1f8f"
+          },
+          "pointer": "/results/1",
+          "rule_ids": [
+            "C-07",
+            "KM-001",
+            "KM-002",
+            "KM-003"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "GRAPH",
+          "path": "backend/app/pipeline/stages/block_grounding/block_source_router.py",
+          "sha256": "bcf439093d0dabe83b5f8d8acdd187aff61d32d12f8722ece0a05e8879f81a84",
+          "historical_sha256": "bcf439093d0dabe83b5f8d8acdd187aff61d32d12f8722ece0a05e8879f81a84",
+          "unchanged_since_report": true,
+          "symbol": "def resolve_block_package",
+          "historical_line": 742
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "ОГМ4 разных лестниц не одно изделие; совпадение марки недостаточно.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-002",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Установить границы каждой детали,стыки и пространственную трассу перед суммированием размеров.",
+      "control_and_nontransfer_boundary": "KM5:3640/3240 остаётся вопросом до полной развёртки;3100/2900 не безусловная ошибка.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-005 — Принято; Длина поручня ОГМ4 секции С3\nПД-00580716-КМ1.2_V1::UA-006 — Отклонено; Длины прямых поручней ОГМ4/9/10\nПД-00580716-КМ1.2_V1::UA-025 — Отклонено; Длины поручней подземных лестниц",
+      "runtime_targets": [
+        {
+          "target_id": "KM5_S3_bent_handrail_developed_length:f55d97014c925f15f7ac",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_KM_matching.json",
+            "sha256": "95572b53ae1f1e2c45332e312f3cdd8f249d9ede2f994078b64612bbbf6c1f8f"
+          },
+          "pointer": "/results/1",
+          "rule_ids": [
+            "C-07",
+            "KM-001",
+            "KM-002",
+            "KM-003"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "B",
+          "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+          "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "unchanged_since_report": true,
+          "symbol": "SYSTEM_PROMPT_BASE",
+          "historical_line": 372
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "KM5:3640/3240 остаётся вопросом до полной развёртки;3100/2900 не безусловная ошибка.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-003",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Подрезку и припуск принимать только при подтверждённой технологии и конечной геометрии.",
+      "control_and_nontransfer_boundary": "Соседнее изделие не доказательство припуска; универсальные100/200мм не вводить.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-005 — Принято; Длина поручня ОГМ4 секции С3\nПД-00580716-КМ1.2_V1::UA-007 — Отклонено; Длины заполнения ОГМ2/4 ЛК1.1\nПД-00580716-КМ1.2_V1::UA-011 — Отклонено; Длина нижней стойки ОГМ19",
+      "runtime_targets": [
+        {
+          "target_id": "KM5_S3_bent_handrail_developed_length:f55d97014c925f15f7ac",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_KM_matching.json",
+            "sha256": "95572b53ae1f1e2c45332e312f3cdd8f249d9ede2f994078b64612bbbf6c1f8f"
+          },
+          "pointer": "/results/1",
+          "rule_ids": [
+            "C-07",
+            "KM-001",
+            "KM-002",
+            "KM-003"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "Соседнее изделие не доказательство припуска; универсальные100/200мм не вводить.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-004",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05",
+        "H06"
+      ],
+      "behavior": "Установить грань бетона,ось анкера,состояние основания и базу расстояния до сверки паспорта.",
+      "control_and_nontransfer_boundary": "Край пластины не край бетона; параметры похожего анкера не доказательство применимости.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-002 — Отклонено; Краевое расстояние анкеров — 25 мм",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "B",
+          "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+          "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "unchanged_since_report": true,
+          "symbol": "SYSTEM_PROMPT_BASE",
+          "historical_line": 372
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "Край пластины не край бетона; параметры похожего анкера не доказательство применимости.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-005",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H04"
+      ],
+      "behavior": "Считать экземпляры и состав по каждой группе с кратностями, отдельно анкеры,пластины и профили.",
+      "control_and_nontransfer_boundary": "KM14:57пластин и повторы22/25 сохранить,228анкеров условны из-за неопределённых столбцовTEXT.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-013 — Принято; Недоучёт анкеров и пластин С2\nПД-00580716-КМ1.2_V1::UA-014 — Принято; Неучтённые повторения ОГМ22/25 в ЛК6",
+      "runtime_targets": [
+        {
+          "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+          "route": "question",
+          "final_match": "partial_with_overstatement",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_KM_matching.json",
+            "sha256": "95572b53ae1f1e2c45332e312f3cdd8f249d9ede2f994078b64612bbbf6c1f8f"
+          },
+          "pointer": "/results/0",
+          "rule_ids": [
+            "C-08",
+            "C-10",
+            "C-18",
+            "KM-005",
+            "KM-006"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "KM14:57пластин и повторы22/25 сохранить,228анкеров условны из-за неопределённых столбцовTEXT.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-006",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H04",
+        "H05"
+      ],
+      "behavior": "Разрешить форму и сечение профиля до длины и массы; хранить удельную массу,кратность и округление.",
+      "control_and_nontransfer_boundary": "Не смешивать круглый и квадратный40×3; отход требует раскладки, не удобного процента.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-004 — Отклонено; Сечение поворотной вставки поручня\nПД-00580716-КМ1.2_V1::UA-014 — Принято; Неучтённые повторения ОГМ22/25 в ЛК6\nПД-00580716-КМ1.2_V1::UA-016 — Отклонено; Масса □40×3 для секций С2/С3",
+      "runtime_targets": [
+        {
+          "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+          "route": "question",
+          "final_match": "partial_with_overstatement",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_KM_matching.json",
+            "sha256": "95572b53ae1f1e2c45332e312f3cdd8f249d9ede2f994078b64612bbbf6c1f8f"
+          },
+          "pointer": "/results/0",
+          "rule_ids": [
+            "C-08",
+            "C-10",
+            "C-18",
+            "KM-005",
+            "KM-006"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "Не смешивать круглый и квадратный40×3; отход требует раскладки, не удобного процента.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-007",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H04",
+        "H07"
+      ],
+      "behavior": "Установить место учёта мелких деталей в изготовлении и заказе, считать округление по единицам.",
+      "control_and_nontransfer_boundary": "Малая масса не малое функциональное значение; заглушка может быть в комплекте лишь при доказательстве.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-013 — Принято; Недоучёт анкеров и пластин С2\nПД-00580716-КМ1.2_V1::UA-015 — Отклонено; Лист 3 мм для заглушек не учтён\nПД-00580716-КМ1.2_V1::UA-023 — Отклонено; Ссылка на отсутствующий пункт о заглушках\nПД-00580716-КМ1.2_V1::UA-024 — Отклонено; Не заполнена масса единицы ограждения",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "Малая масса не малое функциональное значение; заглушка может быть в комплекте лишь при доказательстве.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-008",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Сопоставить одну площадку и базу отметки, проверить перепад и зависимую геометрию.",
+      "control_and_nontransfer_boundary": "ОГМ20−2.350/−2.500 сохранить;150мм отделки не придумывать; разные марши не сравнивать как один.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-008 — Отклонено; Привязка ОГМ6/7 к отметкам С3\nПД-00580716-КМ1.2_V1::UA-009 — Принято; Отметка площадки ОГМ20 ЛК5\nПД-00580716-КМ1.2_V1::UA-010 — Принято; Неопределённые базы отметок ЛК6",
+      "runtime_targets": [
+        {
+          "target_id": "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+          "route": "technical",
+          "final_match": "not_found_in_reviewed_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_KM_matching.json",
+            "sha256": "95572b53ae1f1e2c45332e312f3cdd8f249d9ede2f994078b64612bbbf6c1f8f"
+          },
+          "pointer": "/results/2",
+          "rule_ids": [
+            "C-07",
+            "KM-008"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "B",
+          "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+          "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "unchanged_since_report": true,
+          "symbol": "SYSTEM_PROMPT_BASE",
+          "historical_line": 372
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "ОГМ20−2.350/−2.500 сохранить;150мм отделки не придумывать; разные марши не сравнивать как один.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-009",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H06"
+      ],
+      "behavior": "Проверить применимость требования к классу,стадии и условиям; просвет и высоту считать от правильной базы.",
+      "control_and_nontransfer_boundary": "Осевой размер не чистый просвет; свойства стали не свойства ограждения в сборе.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-001 — Принято; Высота ограждений при межмаршевом просвете\nПД-00580716-КМ1.2_V1::UA-019 — Отклонено; Разные редакции ГОСТ 8732\nПД-00580716-КМ1.2_V1::UA-020 — Отклонено; Марка стали и технические требования к трубам\nПД-00580716-КМ1.2_V1::UA-026 — Отклонено; Разные редакции СП 16.13330\nПД-00580716-КМ1.2_V1::UA-027 — Отклонено; Состав и актуальность нормативной базы\nПД-00580716-КМ1.2_V1::UA-029 — Отклонено; Неопределённость огнезащиты",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "NORM",
+          "path": "backend/app/pipeline/stages/norms/runner.py",
+          "sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "historical_sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "unchanged_since_report": true,
+          "symbol": "async def run_norm_verification",
+          "historical_line": 327
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "Осевой размер не чистый просвет; свойства стали не свойства ограждения в сборе.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-010",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H06"
+      ],
+      "behavior": "Адресно применить общие указания,альтернативы и процедуру согласованияКМД; проверить среду и защиту.",
+      "control_and_nontransfer_boundary": "Срок здания не срок покрытия; наличие допуска замены не разрешает любое исполнение без пересчёта.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-018 — Отклонено; Описание стремянок в общих указаниях\nПД-00580716-КМ1.2_V1::UA-021 — Отклонено; Стандарт и критерии эквивалентности анкеров\nПД-00580716-КМ1.2_V1::UA-028 — Отклонено; Несогласованные требования к сварке\nПД-00580716-КМ1.2_V1::UA-029 — Отклонено; Неопределённость огнезащиты\nПД-00580716-КМ1.2_V1::UA-030 — Отклонено; Параметры антикоррозионной защиты",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "Срок здания не срок покрытия; наличие допуска замены не разрешает любое исполнение без пересчёта.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-011",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H02",
+        "H06"
+      ],
+      "behavior": "Разделить упомянутый расчёт,переданный файл,прочтение и выполненную проверку; сохранить видимые конфликты.",
+      "control_and_nontransfer_boundary": "Непереданный расчёт не доказательство отсутствия и не причина снять документный конфликт.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-012 — Отклонено; Исходные данные для расчёта анкеров",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "KM",
+          "path": "prompts/disciplines/KM/checklist.md",
+          "sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "G",
+          "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+          "sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "historical_sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "unchanged_since_report": true,
+          "symbol": "def gate_findings",
+          "historical_line": 748
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "Непереданный расчёт не доказательство отсутствия и не причина снять документный конфликт.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "KM-012",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H01",
+        "H07"
+      ],
+      "behavior": "Записывать основание снятия точного тезиса и происхождение подтверждения.",
+      "control_and_nontransfer_boundary": "Согласие двух моделей с одной предпосылкой не независимое доказательство; инженерское пояснение не первичная проверка.",
+      "historical_cases": "ПД-00580716-КМ1.2_V1::UA-022 — Отклонено; Ссылка на схему в примечании листа 4\nПД-00580716-КМ1.2_V1::UA-023 — Отклонено; Ссылка на отсутствующий пункт о заглушках",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "G",
+          "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+          "sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "historical_sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "unchanged_since_report": true,
+          "symbol": "def gate_findings",
+          "historical_line": 748
+        },
+        {
+          "source_id": "VERDICT",
+          "path": "backend/app/services/findings/verdict_preservation.py",
+          "sha256": "837d9a697f3d52fdc7827aecee7a69013755e46768d087283c83c06ad1c33e90",
+          "historical_sha256": "837d9a697f3d52fdc7827aecee7a69013755e46768d087283c83c06ad1c33e90",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение операции; runtime evidence ограничено связанными случаями.",
+      "verification": "Локальные проверки атомарного эталона по объекту и границам доказательства, затем полный независимый поиск. Измерять сохранение полезных тезисов и адресов, ложные выводы, вопросы, время и затраты.",
+      "regression_risk": "Согласие двух моделей с одной предпосылкой не независимое доказательство; инженерское пояснение не первичная проверка.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    }
+  ],
+  "strong_classic_features_to_preserve": [
+    "Независимое графическое обнаружение с происхождением и локаторами.",
+    "Сопоставление чертежей с ведомостями и арифметические проверки.",
+    "Сохранение адресного вопроса при неустановленных границах детали или принадлежности изображения."
+  ],
+  "filter_pair_limit": "Конкретные пары брать из первичных решений эталона; ограничения здесь не выдаются за новые подтверждённые исторические пары.",
+  "stage3_complete": false,
+  "production_changed": false
+}
