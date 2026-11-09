@@ -4,6 +4,16 @@
   "items": [
     {
       "candidate_ids": [
+        "H-AR-14"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить разрез К-3, поверхность опирания и раскладку опор для окончательной высоты изделий; не распространять понижения у воронок на каждую опору."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AR-39"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json",
