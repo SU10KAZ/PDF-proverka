@@ -177,6 +177,16 @@
     },
     {
       "candidate_ids": [
+        "H-VK-32"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK32_drain_count_identity.json",
+      "output_section": null,
+      "required_checks": [
+        "До полного отрицательного эталона проверить оба плана кровли и восстановить соответствие12 воронок расчётным водосборам, включая выноску37,10 м² без отдельного символа; пересчитать опуски при сохранении этого атома."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-VK-34"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK34_transition_assembly.json",
