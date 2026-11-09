@@ -132,10 +132,10 @@ B-ITP-F-018,ITP,classic_usefulness,confirmed_difference_not_equipment_failure,В
 B-ITP-F-019,ITP,classic_usefulness,confirmed_mass_records_differ_scope_unresolved,Вопросы и уточнения,"Согласовать массы единиц оборудования в экспликации, спецификации и листах подбора: К9 —98/94/90кг; К10 —87/67/67; К11 —48/57/57; К12 —29/60/64; К14 —284/181/203; теплообменник К1 —650,88/458,01/458,01. Уточнить исполнение и состав каждой массы, не смешивая изделие, обвязку и заполнение.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json
 B-ITP-F-020,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-021,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-022,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-022,ITP,classic_usefulness,confirmed_internal_calculation_selection_discrepancy,Вопросы и уточнения,"Согласовать подбор основного бака отопления первой зоны: лист вычисляет606,9л и требует объём не меньше расчётного, но выбирает LVF600; спецификация прямо указывает600л. Разница6,9л требует пояснения принятого решения.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-022.json
 B-ITP-F-023,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-024,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-025,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-025,ITP,classic_usefulness,confirmed_internal_calculation_selection_discrepancy,Вопросы и уточнения,"Согласовать скорости с указанными расходами и размерами труб:325×7 при261,5м³/ч —0,956 вместо1,01м/с;159×4,5 при74,15 —1,166 вместо1,25;219×6 при76,40 и61,12 —0,631 и0,504 вместо одинаковых0,66;76×3 при0,90 —0,065 вместо0,12. Проверить применённые проходные сечения и исходный гидравлический расчёт.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-025.json
 B-ITP-F-026,ITP,classic_usefulness,confirmed_ambiguous_totals,Вопросы и уточнения,"Уточнить назначение итогов2546/977,0 и199/158,8 в ведомости труб. Суммы опубликованных длин составляют976,9м и159,0м соответственно.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-026.json
 B-ITP-F-027,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-028,ITP,classic_usefulness,Первичная проверка не завершена,,,
