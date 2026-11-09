@@ -475,7 +475,8 @@ def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> d
             # duplicate. Keep each disputed candidate until verification.
             key = f"__disputed__||{f.get('id') or index}"
         else:
-            key = f"{severity}||{category}||{pattern}"
+            from backend.app.services.findings.report_routing import report_section_key
+            key = f"{report_section_key(f)}||{severity}||{category}||{pattern}"
         if key not in groups:
             groups[key] = []
         groups[key].append(f)

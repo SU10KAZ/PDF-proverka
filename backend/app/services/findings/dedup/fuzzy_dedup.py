@@ -166,6 +166,9 @@ def fuzzy_dedup(
         best_idx = -1
         best_sim = 0.0
         for i, prev_sig in enumerate(kept_sigs):
+            from backend.app.services.findings.report_routing import report_section_key
+            if report_section_key(f) != report_section_key(kept[i]):
+                continue
             s = _similarity(sig, prev_sig)
             if s > best_sim:
                 best_sim = s

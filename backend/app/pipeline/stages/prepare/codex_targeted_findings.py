@@ -50,7 +50,11 @@ def _finding_evidence_observer_enabled() -> bool:
 def _canonical_finding_key(item: dict[str, Any]) -> str:
     text = item.get("problem") or item.get("finding") or item.get("description") or ""
     text = str(text).lower().replace("ё", "е")
-    return re.sub(r"\s+", " ", text).strip()
+    normalized = re.sub(r"\s+", " ", text).strip()
+    if not normalized:
+        return ""
+    from backend.app.services.findings.report_routing import report_section_key
+    return report_section_key(item) + "||" + normalized
 
 
 TARGETED_KEYWORDS = (

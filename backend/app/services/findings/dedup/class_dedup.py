@@ -179,6 +179,10 @@ def derive_class_key(f: dict) -> ClassKey:
     elif isinstance(dp, str):
         dp = _normalise(dp)
 
+    from backend.app.services.findings.report_routing import report_section_key
+    section = report_section_key(raw)
+    if section != "unclassified":
+        problem_class = section + "||" + str(problem_class)
     return ClassKey(
         problem_class=str(problem_class),
         affected_system=str(affected_system),
