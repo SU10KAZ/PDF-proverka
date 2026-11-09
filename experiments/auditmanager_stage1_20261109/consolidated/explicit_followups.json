@@ -943,6 +943,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-019"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F019_OGM11_end_component_boundaries.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Установить границыпоз.2 и вкладпоз.6/узлаБ по деталировке илиКМД; иначе заморозить тезис об ошибке длины200мм как неоцениваемый."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-020"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F020_conditional_diagonal.json",
