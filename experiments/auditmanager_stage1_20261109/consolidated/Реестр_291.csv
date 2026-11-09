@@ -279,7 +279,7 @@ B-EOM-F-035,EOM,classic_usefulness,specification_quantity_requires_scope_check,�
 B-EOM-F-036,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-037,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-038,EOM,classic_usefulness,specification_quantity_requires_scope_check,Вопросы и уточнения,"Уточнить единицы и количество клипс Ø25/Ø32 на листе 6 СО: указаны 2345 и 190 м, что не задаёт количество отдельных держателей. Представить количество креплений с основанием расчёта.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json
-B-EOM-F-039,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-039,EOM,classic_usefulness,frame_capacity_requires_layout_scope,Вопросы и уточнения,"Уточнить раскладку карбоновых электроустановочных изделий по АИ и MAF: для 56 одноместных розеток указаны 51 однопостовая и 5 двухпостовых рамок, всего 61 пост. Указать назначение остальных постов или запас перед изменением количества рамок.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F039_frame_capacity.json
 B-EOM-F-040,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-041,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-042,EOM,classic_usefulness,Первичная проверка не завершена,,,
