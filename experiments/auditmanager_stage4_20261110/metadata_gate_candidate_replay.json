@@ -1,0 +1,76 @@
+{
+  "cases": [
+    {
+      "discipline": "AR",
+      "source_pointer": "/block_analyses/1/deferred_findings/0",
+      "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+      "before_published": 0,
+      "after_published": 0,
+      "before_reasons": [
+        "non_publishable_claim_type",
+        "insufficient_context",
+        "speculative_wording"
+      ],
+      "after_reasons": [
+        "non_publishable_claim_type",
+        "insufficient_context",
+        "speculative_wording"
+      ]
+    },
+    {
+      "discipline": "AR",
+      "source_pointer": "/block_analyses/19/deferred_findings/0",
+      "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+      "before_published": 0,
+      "after_published": 0,
+      "before_reasons": [
+        "non_publishable_claim_type",
+        "insufficient_context"
+      ],
+      "after_reasons": [
+        "non_publishable_claim_type",
+        "insufficient_context"
+      ]
+    },
+    {
+      "discipline": "KM",
+      "source_pointer": "/block_analyses/39/deferred_findings/0",
+      "block_id": "blk_7315b3a722f946d48c34d31d1eac62ad",
+      "before_published": 0,
+      "after_published": 0,
+      "before_reasons": [
+        "non_publishable_claim_type",
+        "insufficient_context"
+      ],
+      "after_reasons": [
+        "non_publishable_claim_type",
+        "insufficient_context"
+      ]
+    },
+    {
+      "discipline": "EOM",
+      "source_pointer": "/block_analyses/18/deferred_findings/0",
+      "block_id": "blk_bd26d730d0a84c57900a87e3f5a47cce",
+      "before_published": 0,
+      "after_published": 1,
+      "before_reasons": [
+        "internal_metadata_comparison"
+      ],
+      "after_reasons": []
+    }
+  ],
+  "input": {
+    "path": "experiments/auditmanager_stage2_20261110/merge_coverage_inventory.json",
+    "sha256": "d1c7a02538ab042c69879a94dd52c8f1fc01032af415dc824152f499ba9ebcd3"
+  },
+  "old_gate_commit": "9076439437baf19aa5bb3c1e2ba55ff2642a7c78",
+  "candidate_gate_sha256": "cea617cb89944cbec5a11ca8363d01816aa49121d68c5d7a1f183b8c1f61f189",
+  "tests": "12 passed: test_stage01_evidence_context.py",
+  "limits": [
+    "Four historical deferred candidates replayed; this is not full six-project inference.",
+    "EOM meaning was already preserved via another detector. This fixes the gate cause, not a proven increase in unique findings.",
+    "Negative metadata examples are synthetic, not an independent engineer-confirmed historical pair.",
+    "Mentions in finding/recommendation still use the existing heuristic; full semantic subject classification remains unimplemented."
+  ],
+  "production_changed": false
+}

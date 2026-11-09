@@ -807,7 +807,13 @@ def gate_findings(
             str(item.get(key) or "")
             for key in ("finding", "evidence_quote", "recommendation")
         )
-        if _INTERNAL_METADATA_RE.search(combined_text):
+        # A source quote may mention supplied context while the actual claim
+        # concerns the project (e.g. duplicate room numbers). Inspect the claim
+        # and requested correction, not incidental wording in its evidence.
+        metadata_subject = " ".join(
+            str(item.get(key) or "") for key in ("finding", "recommendation")
+        )
+        if _INTERNAL_METADATA_RE.search(metadata_subject):
             reasons.append("internal_metadata_comparison")
         if _VAGUE_COUNT_RE.search(combined_text):
             reasons.append("unquantified_visual_count")

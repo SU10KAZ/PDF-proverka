@@ -189,3 +189,30 @@ def test_evidence_gate_defers_internal_metadata_comparison_and_vague_count():
     assert "internal_metadata_comparison" in reasons
     assert "unquantified_visual_count" in reasons
     assert report["deferred"] == 2
+
+
+def test_metadata_source_quote_does_not_suppress_project_discrepancy():
+    finding = _finding(
+        finding="Номер 0.0.2.2 присвоен венткамере и помещению РУ.",
+        recommendation="Указать уникальные номера помещений.",
+        evidence_quote="Оба обозначения повторяются в переданном контексте другого листа.",
+    )
+    published, deferred, _ = gate_findings([finding])
+    assert len(published) == 1 and deferred == []
+    # A correction to internal representation still stays out of project output,
+    # even if the evidence quote contains no metadata vocabulary.
+    finding["recommendation"] = "Исправить тип фрагмента в разметке."
+    finding["evidence_quote"] = "Номер 0.0.2.2."
+    published, deferred, _ = gate_findings([finding])
+    assert published == []
+    assert "internal_metadata_comparison" in deferred[0]["_evidence_gate"]["reasons"]
+
+
+def test_metadata_quote_exception_does_not_bypass_context_gate():
+    finding = _finding(evidence_quote="В переданном контексте другого листа.",
+                       context_status="needs_retrieval", required_context=["Второй лист"])
+    published, deferred, _ = gate_findings([finding])
+    assert published == []
+    reasons = deferred[0]["_evidence_gate"]["reasons"]
+    assert "insufficient_context" in reasons
+    assert "internal_metadata_comparison" not in reasons
