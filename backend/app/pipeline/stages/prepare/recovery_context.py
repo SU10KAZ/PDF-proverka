@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 
-def search_md_context(md, queries, *, max_chars=60000, max_blocks=12):
+def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_block_ids=()):
     valid, rejected = [], []
     for query in queries if isinstance(queries, list) else []:
         if isinstance(query, str) and 2 <= len(query.strip()) <= 160:
@@ -18,6 +18,7 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12):
     headers = list(re.finditer(r'^###[ \t]+BLOCK[^\n]*?\[([^]]+)\]:[ \t]*(\S+)[^\n]*$', md, re.M | re.I))
     pages = list(re.finditer(r'^##[ \t]+(?:Page|СТРАНИЦА)[ \t]+(\d+)\b[^\n]*$', md, re.M | re.I))
     hits, backlog, used = [], [], 0
+    matches_all, already_supplied = [], []
     query_hits = {q: 0 for q in valid}
     for i, h in enumerate(headers):
         end = headers[i+1].start() if i+1 < len(headers) else len(md)
@@ -34,14 +35,30 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12):
         row = {'block_id': h.group(2), 'kind': h.group(1).upper(),
                'page': int(preceding[-1].group(1)) if preceding else None,
                'queries': matches, 'start_line': md.count('\n', 0, h.start())+1}
-        if used + len(content) > max_chars or len(hits) >= max_blocks:
-            backlog.append({**row, 'reason': 'context_budget'})
+        if row['block_id'] in exclude_block_ids:
+            already_supplied.append(row)
             continue
-        hits.append({**row, 'content': content})
-        used += len(content)
+        matches_all.append({**row, 'content': content})
+    # Round-robin across queries prevents common phrases from starving exact
+    # marks that occur later in the document. Source order remains stable within
+    # each query; no text is truncated or synthesized.
+    queues = [[i for i, hit in enumerate(matches_all) if q in hit['queries']] for q in valid]
+    order, seen = [], set()
+    for depth in range(max((len(q) for q in queues), default=0)):
+        for queue in queues:
+            if depth < len(queue) and queue[depth] not in seen:
+                seen.add(queue[depth])
+                order.append(queue[depth])
+    for i in order:
+        row = matches_all[i]
+        if used + len(row['content']) > max_chars or len(hits) >= max_blocks:
+            backlog.append({k: v for k, v in row.items() if k != 'content'} | {'reason': 'context_budget'})
+            continue
+        hits.append(row)
+        used += len(row['content'])
     return {'hits': hits, 'backlog': backlog, 'query_hit_counts': query_hits,
             'rejected_queries': rejected, 'deferred_queries': deferred_queries,
-            'absence_proven': False, 'boundary': 'Literal MD search only; zero matches do not establish absence.'}
+            'already_supplied': already_supplied, 'absence_proven': False, 'boundary': 'Literal MD search only; zero matches do not establish absence.'}
 
 
 def build_context_followup(request, payload):
@@ -74,7 +91,9 @@ def build_context_followup(request, payload):
     raw = path.read_bytes()
     if hashlib.sha256(raw).hexdigest() != source.get('sha256'):
         return None, {'status': 'md_version_changed'}
-    report = search_md_context(raw.decode('utf-8'), queries)
+    existing_ids = set(re.findall(r'^###[ \t]+BLOCK[^\n]*?\[[^]]+\]:[ \t]*(\S+)',
+                                  packet['authoritative_md'], re.M | re.I))
+    report = search_md_context(raw.decode('utf-8'), queries, exclude_block_ids=existing_ids)
     new = [h for h in report['hits'] if h['content'] not in packet['authoritative_md']]
     if not new:
         return None, {'status': 'no_new_context', 'search': report}
