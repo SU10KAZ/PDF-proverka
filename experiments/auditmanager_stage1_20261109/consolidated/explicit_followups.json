@@ -209,6 +209,18 @@
     },
     {
       "candidate_ids": [
+        "H-VK-51"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK51_apartment_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Сверить разделы АИ-ФО, легенды и границы поставки/монтажа; установить, обозначены ли будущие работы собственников и требуется ли изменение примечаний.",
+        "Если точные числа 15/17 и сравнение с этажами 4–11 будут использоваться в метриках, отдельно выполнить полный графический пересчёт; до этого эти атомы не оценивать как доказанные.",
+        "Найти первичный артефакт J011 и цепочку решения о выпуске: историческое поле failure_stage не является доказательством причины в текущем AuditManager."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-VK-F-001"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F001_revision_interval.json",
