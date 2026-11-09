@@ -28,6 +28,7 @@ class CodexTargetedPass:
     stage: str
     output_filename: str
     messages: list[dict[str, str]]
+    image_paths: tuple[str | Path, ...] = ()
 
 
 def _finding_evidence_observer_enabled() -> bool:

@@ -823,13 +823,15 @@ async def test_codex_retry_releases_budget_slots_between_attempts(
 
 
 @pytest.mark.asyncio
-async def test_run_findings_merge_codex_applies_targeted_passes(monkeypatch, tmp_path):
+@pytest.mark.parametrize("with_images", [False, True])
+async def test_run_findings_merge_codex_applies_targeted_passes(monkeypatch, tmp_path, with_images):
     import backend.app.pipeline.stages.prepare.codex_targeted_findings as targeted
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.claude_runner as claude_runner
     from backend.app.models.usage import LLMResult
 
     calls = []
+    attachments = (tmp_path / "graphic.png",) if with_images else ()
 
     def fake_build_findings_merge_messages(project_info, project_id):
         assert project_info == {"section": "SS"}
@@ -844,6 +846,7 @@ async def test_run_findings_merge_codex_applies_targeted_passes(monkeypatch, tmp
                 stage="alia_ss_lowcurrent_audit",
                 output_filename="03_findings_targeted_alia_ss_lowcurrent_audit.json",
                 messages=[{"role": "user", "content": "targeted"}],
+                image_paths=attachments,
             )
         ]
 
@@ -858,10 +861,12 @@ async def test_run_findings_merge_codex_applies_targeted_passes(monkeypatch, tmp
         output_filename,
         audit_stage,
         output_dir=None,
+        image_paths=(),
     ):
         calls.append(
             {
                 "stage": stage,
+                "image_paths": image_paths,
                 "messages": messages,
                 "model": model,
                 "output_filename": output_filename,
@@ -925,6 +930,9 @@ async def test_run_findings_merge_codex_applies_targeted_passes(monkeypatch, tmp
     assert final_data["meta"]["total_findings"] == 2
     assert final_data["meta"]["codex_targeted_added"] == 1
     assert final_data["meta"]["codex_targeted_stages"] == ["alia_ss_lowcurrent_audit"]
+
+    assert calls[0]["image_paths"] == ()
+    assert calls[1]["image_paths"] == attachments
 
 
 @pytest.mark.asyncio

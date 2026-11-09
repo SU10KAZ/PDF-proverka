@@ -577,6 +577,7 @@ async def _run_codex_json_stage(
     output_dir: str | Path | None = None,
     allowed_tools: str | None = None,
     output_schema: dict | None = None,
+    image_paths: tuple[str | Path, ...] = (),
 ) -> tuple[int, str, LLMResult]:
     """Run the model in JSON-only mode and let backend write the artifact.
 
@@ -603,6 +604,7 @@ async def _run_codex_json_stage(
             allowed_tools=allowed_tools,
             model=model,
             output_schema=output_schema,
+            **({"image_paths": image_paths} if image_paths else {}),
         )
         if not _codex_json_broken(result):
             break
@@ -724,6 +726,7 @@ async def _run_codex_targeted_findings_merge(
             output_filename=targeted_pass.output_filename,
             audit_stage=f"03_findings_targeted_{targeted_pass.stage}",
             output_dir=output_dir,
+            **({"image_paths": targeted_pass.image_paths} if targeted_pass.image_paths else {}),
         )
         total_duration_ms += targeted_result.duration_ms
         total_output_tokens += targeted_result.output_tokens
