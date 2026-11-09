@@ -739,6 +739,18 @@
     },
     {
       "candidate_ids": [
+        "B-ITP-F-028"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить действующую для проекта редакциюГОСТ17378 и таблицы с изменениями, полное условное обозначение и исполнение переходов.",
+        "Проследить каждое из четырёх обозначений переходов до конкретных присоединяемых элементов; до этого не оценивать невозможность монтажа как доказанную.",
+        "По грувлочной части выполнить остающиеся проверкиH-ITP-17; объединение не означает подтверждение всех исходных тезисов."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-ITP-F-032"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F032_channel_standard_scope.json",
