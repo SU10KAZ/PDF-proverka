@@ -285,6 +285,7 @@ async def run_text_analysis(
 
     # Execute source-addressed comparisons; missing inventories are not a pass.
     from .object_balance import evaluate_object_balances
+    from .quantity_checks import evaluate_quantity_checks
     from backend.app.pipeline.stages.prepare.graph_builder import build_block_page_index
     try:
         current = json.loads(output_path.read_text(encoding="utf-8"))
@@ -292,6 +293,9 @@ async def run_text_analysis(
         graph = json.loads(graph_path.read_text(encoding="utf-8")) if graph_path.exists() else {}
         current["object_balance_results"] = evaluate_object_balances(
             current.get("object_balance_operations"), set(build_block_page_index(graph)),
+        )
+        current["quantity_check_results"] = evaluate_quantity_checks(
+            current.get("quantity_check_operations"), set(build_block_page_index(graph)),
         )
         output_path.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
     except (OSError, ValueError, TypeError, KeyError) as exc:

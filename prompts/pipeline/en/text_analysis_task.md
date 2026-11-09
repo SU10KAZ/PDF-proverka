@@ -116,6 +116,19 @@ If the required graphic scope cannot be inspected, do not claim a complete inven
 The runner computes both set differences; these are review candidates, not automatic
 proof of a shortage. Empty operations do not mean the document passed this check.
 
+## Reproducible quantity checks
+
+Include `quantity_check_operations` for applicable same-basis comparisons and sums.
+Each has unique `id`, `kind` (`compare` or `sum`), `terms` (one for compare), and
+`target`. Every operand has `object`, `parameter`, `unit`, `basis`, `regime`,
+`value` (decimal string with a dot), and `source_refs` (exact block IDs).
+All operands must describe the SAME object/aggregate and physical basis. Preserve
+original quantities in source evidence; never relabel incompatible values simply
+to make the computation run. Convert units explicitly before comparison and retain
+the source conversion reasoning. Unknown columns, modes, geometry or membership
+remain questions, not invented operands. Numerical differences do not alone prove
+a defect: assess documented rounding, scope and the actual design consequence.
+
 ## Output JSON Schema
 
 ```json

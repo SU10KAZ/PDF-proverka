@@ -11,6 +11,10 @@
 
 1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/02_text_analysis.json`
    - `text_findings` (T-001...), `normative_refs_found`, `project_params`
+   - `quantity_check_operations` and runner-computed `quantity_check_results`:
+     review source identity, physical basis, regime, rounding and completeness of
+     terms. A computed difference is not a verified defect; a rejected comparison
+     is unresolved and must not be silently recast as agreement.
    - `object_balance_operations` and runner-computed `object_balance_results`: inspect
      both unmatched sides against the original source scope, exact execution,
      reserve status, aggregation and supply boundaries. Retain a supported conflict
