@@ -244,6 +244,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-058"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Согласовать обозначение и назначение линии с заводской схемой. Фактическое подключение контроллера считать непроверенным; его ошибку не включать в подтверждённые последствия."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-059"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F059_thermostat_supply_routes.json",
