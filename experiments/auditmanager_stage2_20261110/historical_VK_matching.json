@@ -1,0 +1,294 @@
+{
+  "discipline": "VK",
+  "benchmark": "AM-SIX-BENCHMARK-1",
+  "sources": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+      "sha256": "a614ce7a5242fbe9acdc592d2bc61f3fed990e5aa39efbffd47b9133af3fd99a"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/01_blocks_analysis.json",
+      "sha256": "c3a05a56646e0a79391445b39a6fc95c674feefc57de755a9fe67ba7b014ed85"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/03_findings.json",
+      "sha256": "99e5efc8da399c1fe136fd900bc3c5ef666bbe82621c086cd16888f61d538569"
+    }
+  ],
+  "review_scope": {
+    "final_findings": 29,
+    "text_candidates": 14,
+    "published_graphic_candidates": 22,
+    "deferred_candidates": 0
+  },
+  "results": [
+    {
+      "target_id": "VK50_specification_duplicates:f2c9bd72860a821601dd",
+      "route": "question",
+      "target_context": [
+        {
+          "theme": "VK50_specification_duplicates",
+          "candidate_ids": [
+            "H-VK-50"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/VK50_specification_duplicates.json",
+            "sha256": "319f054bb25806e96933d833737ffc90db90db21a0e38a15f5a24160037f59ae"
+          },
+          "wording": "Уточнить спецификацию: вК2.1 номер4 повторён у опорной трубы и отвода; вК2 поз.11 запись «8¹ из двух колен по44¹» не согласуется с суммой углов44+44=88. Отдельно проверить перечисленные пары похожих позицийК1,К2 иК2.3 и объединить только после подтверждения одного изделия и раздельности/повтора учтённой потребности, сохранив обоснованное суммарное количество.",
+          "primary_adjudication": null,
+          "limits": "Инженер принялU-050 без пояснения; это не подтверждает автоматически техническую ложность всех дублей или двойную закупку. АвторитетнаяTEXT-запись угла сохранена буквально:8¹/44¹, а не исправлена по растру. Код11215088 поддерживает необходимость сверки, но без каталога не декодируется как доказательство правильной марки. Отсутствие изготовителя и кода не доказывает тождество изделия; одинаковые изделия могут обоснованно учитываться для разных участков. Количество не следует уменьшать простым удалением одной строки. Историческое утверждение о найденномJ006, не выпущенном в итог, сохранено как поздний вывод; первичные журналы этого события здесь не проверены.",
+          "followup_boundaries": [
+            {
+              "requirement": "Для технического вывода о дублях установить артикулы/аналоги и распределение потребности по участкам; до этого не считать количества излишней закупкой.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Все семь пар являются повторными заказами и требуют удаления строк с уменьшением количества.",
+              "retained_evidence_boundary": "Сходство характеристик — кандидат на объединение; артикулы и распределение потребности неизвестны. Повтор номера4 и буквальное8¹ при44+44 подтверждены отдельно.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            },
+            {
+              "requirement": "Для этапа причин потерь проверить первичный артефактJ006 и итоговую выдачу той же версии; поздняя историческая пометка сама по себе не доказывает этап подавления.",
+              "status": "deferred_runtime_verification",
+              "unscored_claims": "ПодавлениеJ006 именно на этапе итоговой выдачи.",
+              "retained_evidence_boundary": "Поздняя историческая пометка требует проверки первичного артефакта и выдачи той же версии.",
+              "target_stage": 2,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            }
+          ]
+        }
+      ],
+      "required_meaning": {
+        "claim": "ВК2.1 два разных изделия имеют номер4",
+        "verdict": "supported"
+      },
+      "final_match": "not_found_in_reviewed_full_output",
+      "upstream_match": "not_found_in_14_text_and_22_published_graphic_candidates",
+      "deferred_match": "no_deferred_candidates_in_this_run",
+      "matching_basis": "Повтор номера4 у опорной трубы и отводаК2.1 не представлен.",
+      "earliest_observed_gap": "candidate_generation_or_earlier",
+      "root_cause": "unknown: saved outputs do not establish which source was ignored or which operation was not performed",
+      "proposed_method_to_test": "Проверка уникальности позиции по системе и таблице; одинаковый номер не равен повторной закупке.",
+      "not_a_technical_defect": "This is a confirmed useful question target, not a confirmed physical shortage or mandatory procurement action."
+    },
+    {
+      "target_id": "VK50_specification_duplicates:f59ff2a504ccf24245d9",
+      "route": "question",
+      "target_context": [
+        {
+          "theme": "VK50_specification_duplicates",
+          "candidate_ids": [
+            "H-VK-50"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/VK50_specification_duplicates.json",
+            "sha256": "319f054bb25806e96933d833737ffc90db90db21a0e38a15f5a24160037f59ae"
+          },
+          "wording": "Уточнить спецификацию: вК2.1 номер4 повторён у опорной трубы и отвода; вК2 поз.11 запись «8¹ из двух колен по44¹» не согласуется с суммой углов44+44=88. Отдельно проверить перечисленные пары похожих позицийК1,К2 иК2.3 и объединить только после подтверждения одного изделия и раздельности/повтора учтённой потребности, сохранив обоснованное суммарное количество.",
+          "primary_adjudication": null,
+          "limits": "Инженер принялU-050 без пояснения; это не подтверждает автоматически техническую ложность всех дублей или двойную закупку. АвторитетнаяTEXT-запись угла сохранена буквально:8¹/44¹, а не исправлена по растру. Код11215088 поддерживает необходимость сверки, но без каталога не декодируется как доказательство правильной марки. Отсутствие изготовителя и кода не доказывает тождество изделия; одинаковые изделия могут обоснованно учитываться для разных участков. Количество не следует уменьшать простым удалением одной строки. Историческое утверждение о найденномJ006, не выпущенном в итог, сохранено как поздний вывод; первичные журналы этого события здесь не проверены.",
+          "followup_boundaries": [
+            {
+              "requirement": "Для технического вывода о дублях установить артикулы/аналоги и распределение потребности по участкам; до этого не считать количества излишней закупкой.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Все семь пар являются повторными заказами и требуют удаления строк с уменьшением количества.",
+              "retained_evidence_boundary": "Сходство характеристик — кандидат на объединение; артикулы и распределение потребности неизвестны. Повтор номера4 и буквальное8¹ при44+44 подтверждены отдельно.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            },
+            {
+              "requirement": "Для этапа причин потерь проверить первичный артефактJ006 и итоговую выдачу той же версии; поздняя историческая пометка сама по себе не доказывает этап подавления.",
+              "status": "deferred_runtime_verification",
+              "unscored_claims": "ПодавлениеJ006 именно на этапе итоговой выдачи.",
+              "retained_evidence_boundary": "Поздняя историческая пометка требует проверки первичного артефакта и выдачи той же версии.",
+              "target_stage": 2,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            }
+          ]
+        }
+      ],
+      "required_meaning": {
+        "claim": "ВК2 поз.11 написано8¹ при двух коленах по44¹",
+        "verdict": "supported_literal_TEXT",
+        "note": "44+44=88; требуется согласовать описание, конкретный артикул не заменять автоматически."
+      },
+      "final_match": "not_found_in_reviewed_full_output",
+      "upstream_match": "not_found_in_14_text_and_22_published_graphic_candidates",
+      "deferred_match": "no_deferred_candidates_in_this_run",
+      "matching_basis": "Литеральное8¹при двухколенах44¹ не представлено.",
+      "earliest_observed_gap": "candidate_generation_or_earlier",
+      "root_cause": "unknown: saved outputs do not establish which source was ignored or which operation was not performed",
+      "proposed_method_to_test": "Сверка составного описания и арифметики44+44, без исправления авторитетногоTEXT и без угадывания артикула.",
+      "not_a_technical_defect": "This is a confirmed useful question target, not a confirmed physical shortage or mandatory procurement action."
+    },
+    {
+      "target_id": "VK20_sensor_count_identity:composite:1",
+      "route": "question",
+      "target_context": [
+        {
+          "theme": "VK20_sensor_count_identity",
+          "candidate_ids": [
+            "H-VK-20"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
+            "sha256": "3578c3e05b80511d0099d88947437916b5e5a6ebf51ecb954e5a6a3864d79ea7"
+          },
+          "wording": "Согласовать ведомость датчиков засора К1 с местами установки: в СО указано 25 GS-Blockage D110, на двух аксонометриях техпространства отмечены 22 выноски ДЗ (8 + 14), а схемы основных стояков содержат 30 обозначений. Общие указания требуют датчик на каждом канализационном стояке в техпространстве, исключая опуски от приборов 1-го этажа. Нужна поименная увязка стояков, датчиков, продолжений и исключений, после которой уточняется СО и/или графика.",
+          "primary_adjudication": null,
+          "limits": "Подтверждены числа разных сущностей: 30 основных стояков, 22 подписи на двух изображениях и 25 приборов в СО. Не доказано, что каждая подпись однозначно соответствует отдельному устройству, что эти аксонометрии содержат все места установки и что каждому из 30 стояков требуется отдельный датчик после учёта нижних продолжений. На изображениях есть ссылки на смежный ВК0-2. Раздел АК не сверен. Недостача пяти датчиков, три лишних прибора и точное количество для закупки не установлены. Заголовок исходного замечания о датчиках затопления неточен: источник называет датчики засора.",
+          "followup_boundaries": [
+            {
+              "requirement": "Связать каждый основной стояк с нижним продолжением, местом датчика и исключением для опусков 1-го этажа; проверить ВК0-2 и АК. До этой увязки не оценивать 30 как доказанную потребность в приборах.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Ровно30отдельных датчиков и недостача5.",
+              "retained_evidence_boundary": "СО25, выноскиДЗ8+14=22, основные стояки30 подтверждены разными реестрами. Продолжения, исключения опусков1этажа, ВК0-2 иАК требуют поименной увязки.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            },
+            {
+              "requirement": "Проверить первичные результаты и журналы AuditManager для определения этапа потери; исторический failure_stage не является доказательством причины реализации.",
+              "status": "deferred_runtime_verification",
+              "unscored_claims": "Потеря находки именно на подсчёте экземпляров.",
+              "retained_evidence_boundary": "Историческое failure_stage не является трассой работы текущей реализации; необходимо проверить первичные результаты.",
+              "target_stage": 2,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            }
+          ]
+        }
+      ],
+      "required_meaning": "Поименно увязать25датчиковСО,22выноскиДЗ и30марокстояков с продолжениями и исключениями; не считать доказанным дефицит пяти и не называть датчики засора датчиками затопления.",
+      "final_match": "not_found_in_reviewed_full_output",
+      "upstream_match": "not_found_in_14_text_and_22_published_graphic_candidates",
+      "deferred_match": "no_deferred_candidates_in_this_run",
+      "matching_basis": "Нет поименной увязки25датчиков,22выносок и30стояков. F002/T002 считают ревизии и компенсаторы, а не датчики.",
+      "earliest_observed_gap": "candidate_generation_or_earlier",
+      "root_cause": "unknown: saved outputs do not establish which source was ignored or which operation was not performed",
+      "proposed_method_to_test": "Реестр объектов разных типов и исключений; не заменять датчики ревизиями и не утверждать дефицит пяти.",
+      "not_a_technical_defect": "This is a confirmed useful question target, not a confirmed physical shortage or mandatory procurement action."
+    },
+    {
+      "target_id": "VK34_transition_assembly:composite:1",
+      "route": "question",
+      "target_context": [
+        {
+          "theme": "VK34_transition_assembly",
+          "candidate_ids": [
+            "H-VK-34"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/VK34_transition_assembly.json",
+            "sha256": "95a1cebf034d549a43414aaae64ae4958235c1ee0422b79a34774442233349d2"
+          },
+          "wording": "Уточнить состав переходовК2-3.1/3.2 отНПВХø160×6,2 кSML DN200: на схеме назван фланцевый переходникDN150, вСО предусмотрены переходникиDN100/DN150, а отдельных позицийDN200 и переходаDN150–DN200 нет. Дать привязку применяемых деталей к узлу и согласовать их учёт вСО либо в комплектной поставке.",
+          "primary_adjudication": null,
+          "limits": "DN150 в расчётной схеме иø160×6,2 на монтажной схеме не объявлены противоречием: обозначения имеют разный смысл. Подтверждены подписи перехода и отсутствие отдельных позиций в провереннойСО, а не отсутствие всех возможных решений или невозможность монтажа. Не доказано, что нужны одновременно именно переходникDN200 и отдельный редуктор: допустимую последовательность деталей и заводские комплекты не проверяли. 10 элементовНПВХ,4 переходникаSML и14 глухих фланцев имеют разные функции; без ведомости сопряжений равенство10=4+14 не является обязательным балансом. ИзделияК2.3 не переносятся вК2. Точное давление, прочность, смежныйВК0-2 и поставка не проверены.",
+          "followup_boundaries": [
+            {
+              "requirement": "Проверить деталировку переходов и ведомость сопряжений, включая комплектную поставку и границуВК0-2; до этого не оценивать конкретные отсутствующие детали как доказанный дефицит.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Доказанный дефицит конкретных переходов и необходимость добавить именноDN200 иDN150–DN200.",
+              "retained_evidence_boundary": "Схема160×6,2→DN150→DN200 и отсутствие отдельных позиций в просмотреннойСО подтверждены. Сопряжения, комплекты и границаВК0-2 не проверены.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            },
+            {
+              "requirement": "Разрешить конфликт обратной связи поU-034: найти первичный источник изменения на8 ревизий/2 тройника, сохранить его дату и версию. Нынешнее принятие исходной строки не подтверждает изменённый тезис.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Подтверждение изменённого тезиса8ревизий/2тройника текущим принятием исходной строки.",
+              "retained_evidence_boundary": "Текущая обратная связь не доказывает заменённую формулировку; первичный источник её изменения, дата и версия неизвестны.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            }
+          ]
+        }
+      ],
+      "required_meaning": "Увязать переходыК2-3.1/3.2НПВХ160×6.2–SMLDN200, фланцевыйDN150 и границы комплектной поставки; отсутствие отдельных строкDN200/150–200 не доказывает необходимость закупки конкретных деталей.",
+      "final_match": "not_found_in_reviewed_full_output",
+      "upstream_match": "not_found_in_14_text_and_22_published_graphic_candidates",
+      "deferred_match": "no_deferred_candidates_in_this_run",
+      "matching_basis": "ПереходНПВХ160–DN150–SMLDN200 не представлен. F009/T009 относятся кDN125К2.1, F013/T013 ккомплектамворонок; это другие объекты.",
+      "earliest_observed_gap": "candidate_generation_or_earlier",
+      "root_cause": "unknown: saved outputs do not establish which source was ignored or which operation was not performed",
+      "proposed_method_to_test": "Адресная связь узел–детали–комплектная поставка, без автоматического добавления двух артикулов.",
+      "not_a_technical_defect": "This is a confirmed useful question target, not a confirmed physical shortage or mandatory procurement action."
+    },
+    {
+      "target_id": "VK51_apartment_scope:composite:1",
+      "route": "question",
+      "target_context": [
+        {
+          "theme": "VK51_apartment_scope",
+          "candidate_ids": [
+            "H-VK-51"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/VK51_apartment_scope.json",
+            "sha256": "344b267b8859af5d55248419f377c165905514effb084a96b5c4921560ab6dcb"
+          },
+          "wording": "Уточнить границу работ по квартирной разводке на 2–3 этажах: общие указания относят разводку и установку приборов к работам собственников после сдачи объекта, однако на планах и схеме К1 показаны подключения внутри квартир, а примечание плана предписывает выполнять разводку по разделам АИ-ФО. Указать, какие элементы показаны для координации будущих работ и какие входят в объём данного комплекта.",
+          "primary_adjudication": null,
+          "limits": "Наличие квартирных подключений подтверждено непосредственно по графике. Изображение не устанавливает исполнителя и срок монтажа. Ссылка на АИ существует и не должна исчезать из формулировки; сами разделы АИ и договорные границы не проверены. Ровно 15/17 подписей Ø50 не пересчитаны, отсутствие разводки на всех этажах 4–11 не проверено. Эти утверждения исключены из подтверждённой части. Незаконный объём монтажа, перерасход материалов и техническая неработоспособность не установлены.",
+          "followup_boundaries": [
+            {
+              "requirement": "Сверить разделы АИ-ФО, легенды и границы поставки/монтажа; установить, обозначены ли будущие работы собственников и требуется ли изменение примечаний.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Безусловное включение показанной квартирной разводки в монтаж до сдачи и необходимость изменения примечаний.",
+              "retained_evidence_boundary": "Общие указания относят квартиры собственникам, МОП выполняются полностью; примеры подключений и ссылкаАИ-ФО подтверждены, границы работ требуют сверки.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            },
+            {
+              "requirement": "Если точные числа 15/17 и сравнение с этажами 4–11 будут использоваться в метриках, отдельно выполнить полный графический пересчёт; до этого эти атомы не оценивать как доказанные.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Ровно15/17подписейØ50 и отсутствие разводки на всех этажах4–11.",
+              "retained_evidence_boundary": "Проверены графические примеры, полный пересчёт и охват этажей не выполнены.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            },
+            {
+              "requirement": "Найти первичный артефакт J011 и цепочку решения о выпуске: историческое поле failure_stage не является доказательством причины в текущем AuditManager.",
+              "status": "deferred_runtime_verification",
+              "unscored_claims": "ПодавлениеJ011 конкретной гипотезой на определённом этапе.",
+              "retained_evidence_boundary": "Историческое failure_stage не заменяет первичный артефакт и цепочку выпуска той же версии.",
+              "target_stage": 2,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            }
+          ]
+        }
+      ],
+      "required_meaning": "Согласовать границу будущей квартирной разводки собственников с подключениями2–3этажей и примечаниемАИ-ФО;МОП отдельный объём. Не включать все показанные подключения в текущий монтаж автоматически.",
+      "final_match": "not_found_in_reviewed_full_output",
+      "upstream_match": "not_found_in_14_text_and_22_published_graphic_candidates",
+      "deferred_match": "no_deferred_candidates_in_this_run",
+      "matching_basis": "F006/T006 упоминают квартиры без приборов в контексте испытания, но не согласуют будущие работы собственников с подключениями2–3этажей иАИ-ФО. Совпадение слова «квартиры» не покрытие цели.",
+      "earliest_observed_gap": "candidate_generation_or_earlier",
+      "root_cause": "unknown: saved outputs do not establish which source was ignored or which operation was not performed",
+      "proposed_method_to_test": "Сверка границ работ между общими данными, планами и примечаниями; вопрос отдельно от дефекта монтажа.",
+      "not_a_technical_defect": "This is a confirmed useful question target, not a confirmed physical shortage or mandatory procurement action."
+    }
+  ],
+  "summary": {
+    "reviewed_historical_targets": 5,
+    "questions_not_found": 5,
+    "confirmed_technical_losses": 0
+  },
+  "limits": [
+    "This is semantic comparison against saved artifacts, not a new independent audit.",
+    "Candidate-level absence locates the gap before merge but does not prove a particular extraction failure.",
+    "Five question targets must not inflate technical-defect recall.",
+    "Full source documents were available, but availability does not prove the model performed each check."
+  ],
+  "stage_2_complete": false
+}
