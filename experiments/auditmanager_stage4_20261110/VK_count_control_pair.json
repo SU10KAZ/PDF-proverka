@@ -1,0 +1,11 @@
+{
+  "negative_case": "VK32_quantity_identity_control.json",
+  "positive_question": "VK20_sensor_identity_control.json",
+  "proposed_behavior": "Compare quantities only after confirming object identity, scope and counting basis. Keep unresolved source-backed mapping issues in questions; do not infer procurement changes.",
+  "evidence_pair_prepared": true,
+  "end_to_end_acceptance": false,
+  "remaining": [
+    "Run the frozen candidate without history and verify it retains the sensor question and suppresses the surplus-funnel claim.",
+    "Check useful confirmed technical count findings as an additional positive control."
+  ]
+}

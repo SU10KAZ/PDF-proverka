@@ -60,7 +60,7 @@
     {
       "id": "H05",
       "status": "partial",
-      "verified_or_implemented_scope": "Exact decimal comparison and basis checks implemented and unit-tested. ITP source replay verifies four exact MD rows and derived sum 819; no project-stated aggregate or violation count is claimed. VK32 manually reinspected graphic inventory 2+10 matches authoritative specification 12 kits; real negative control recorded, paired positive control incomplete.",
+      "verified_or_implemented_scope": "Exact decimal comparison and basis checks implemented and unit-tested. ITP source replay verifies four exact MD rows and derived sum 819; no project-stated aggregate or violation count is claimed. VK32 manually reinspected graphic inventory 2+10 matches authoritative specification 12 kits; real negative control recorded, paired positive control incomplete. VK20 source-backed sensor mapping question paired with VK32 negative; direct callout/device arithmetic rejected as incomparable, end-to-end retention still unverified.",
       "remaining": "Verify physical interpretation, conversions, regimes and real control cases; arithmetic is not semantic proof.",
       "evidence": [
         {
@@ -70,6 +70,10 @@
         {
           "path": "experiments/auditmanager_stage4_20261110/VK32_quantity_identity_control.json",
           "sha256": "56e96f596663f790267563c25cf6e492172988928fe9abdef0a3fc3d9e8d3847"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/VK20_sensor_identity_control.json",
+          "sha256": "b83b6c37dbff8df584770b4f004f752e0b980af3627da7a801cd852a85022085"
         }
       ]
     },
