@@ -1,0 +1,35 @@
+{
+  "scope": "21 historical-only positive targets selected in stage2 cause map; not all benchmark targets or all defects",
+  "review_artifacts": [
+    {
+      "path": "experiments/auditmanager_stage2_20261110/historical_AK_matching.json",
+      "sha256": "b9abf8b5ee38f728edf0f5cb7f22f53ba4784fe28a3f8ed4b1bedd62fae9478e"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/historical_AR_matching.json",
+      "sha256": "e6f81f32165e365e83278f7ff90e269ef93306dbd0f53bf6ac1ba3f9e62bb762"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/historical_EOM_matching.json",
+      "sha256": "0439c5afedefa23b230350ddba5af1e4868606562ee4b13be81ee65dce7943a7"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/historical_ITP_matching.json",
+      "sha256": "04e285e6322ac16852295c5d85579c79aa1a9adfd8117c78e923787283aad8bd"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/historical_KM_matching.json",
+      "sha256": "95572b53ae1f1e2c45332e312f3cdd8f249d9ede2f994078b64612bbbf6c1f8f"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+      "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+    }
+  ],
+  "reviewed_targets": 21,
+  "absent_in_saved_candidates_and_final": 18,
+  "partial_matches": 3,
+  "remaining_selected_targets": 0,
+  "stage2_completion": "requires final requirement audit; this coverage check alone does not close stage2",
+  "production_changed": false
+}

@@ -1,0 +1,162 @@
+{
+  "discipline": "AK",
+  "benchmark": "AM-SIX-BENCHMARK-1",
+  "sources": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/02_text_analysis.json",
+      "sha256": "e80bfb2112c7f1f2c8a76f2db4a81416c585bcf9f551c132bfafe9ecd8eaa41f"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/01_blocks_analysis.json",
+      "sha256": "e03e93fd5cd91f60ae1e4a06c0f6c5308f8b25093f1f540d7f86346cfaf9beb7"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+      "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+    }
+  ],
+  "primary_adjudication": {
+    "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+    "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a"
+  },
+  "review_scope": {
+    "method": "targeted terminal/address search across all candidate and final JSON fields, plus inspection of all five exact source block results",
+    "candidate_count": 109,
+    "final_count": 65,
+    "addressed_blocks": 5
+  },
+  "results": [
+    {
+      "target_id": "AK14:65ea2c2649999f640c83",
+      "route": "technical",
+      "target_context": [
+        {
+          "theme": "AK14",
+          "candidate_ids": [
+            "H-AK-14"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/AK14.json",
+            "sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a"
+          },
+          "wording": "Сохранить одну системную тему неоднозначных клеммных адресов с адресами шкафов.",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+            "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a"
+          },
+          "limits": "Примечание об уточнении у изготовителя не доказывает устранение неоднозначности; фактическое ошибочное подключение не установлено.",
+          "followup_boundaries": []
+        }
+      ],
+      "required_meaning": {
+        "claim": "Повтор клемм разных независимых цепей без различающего полного адреса",
+        "verdict": "confirmed_for_five_listed_drawings"
+      },
+      "final_match": "partial_two_of_five_addresses",
+      "upstream_match": "G-050 and G-053; other three addressed blocks have no terminal collision candidate",
+      "addresses": [
+        {
+          "pdf_page": 32,
+          "cabinet": "ШАУВ-4-К4ПЧ",
+          "example": "M1:29,30,PE; M2:29,30,31,PE",
+          "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+          "runtime_pointer": "/block_analyses/23",
+          "analysis_status": "analyzed",
+          "detectors_ok": [
+            "codex/gpt-6-astra",
+            "codex/gpt-6-sol"
+          ],
+          "published_ids": [
+            "G-050"
+          ],
+          "deferred_count": 0,
+          "match": "preserved_address_ambiguity",
+          "upstream_id": "G-050",
+          "final_id": "F-054"
+        },
+        {
+          "pdf_page": 33,
+          "cabinet": "ШАУВ-1-К4АС",
+          "example": "PDS3 и PDS4:17,18; группы приводов повторяют29,30 и31,32",
+          "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+          "runtime_pointer": "/block_analyses/24",
+          "analysis_status": "analyzed",
+          "detectors_ok": [
+            "codex/gpt-6-astra",
+            "codex/gpt-6-sol"
+          ],
+          "published_ids": [],
+          "deferred_count": 0,
+          "match": "not_found_in_block_candidates_or_terminal_findings",
+          "earliest_observed_gap": "candidate_generation_or_earlier",
+          "root_cause": "unknown; analyzed status and successful detectors do not prove the terminal collision check was performed"
+        },
+        {
+          "pdf_page": 36,
+          "cabinet": "ШАУВ-3-К5ПЧ",
+          "example": "PDS4 и PDS5:23,24; M1 и M2:29,30,31,PE",
+          "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+          "runtime_pointer": "/block_analyses/27",
+          "analysis_status": "analyzed",
+          "detectors_ok": [
+            "codex/gpt-6-astra",
+            "codex/gpt-6-sol"
+          ],
+          "published_ids": [
+            "G-053"
+          ],
+          "deferred_count": 0,
+          "match": "preserved_address_ambiguity",
+          "upstream_id": "G-053",
+          "final_id": "F-055"
+        },
+        {
+          "pdf_page": 37,
+          "cabinet": "ШАУВ-4-К5ПЧ",
+          "example": "M1–M4:23,24,25,PE",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "runtime_pointer": "/block_analyses/28",
+          "analysis_status": "analyzed",
+          "detectors_ok": [
+            "codex/gpt-6-astra",
+            "codex/gpt-6-sol"
+          ],
+          "published_ids": [
+            "G-054",
+            "G-055",
+            "G-056"
+          ],
+          "deferred_count": 0,
+          "match": "not_found_in_block_candidates_or_terminal_findings",
+          "earliest_observed_gap": "candidate_generation_or_earlier",
+          "root_cause": "unknown; analyzed status and successful detectors do not prove the terminal collision check was performed"
+        },
+        {
+          "pdf_page": 44,
+          "cabinet": "ШАУВ-1-К6АС",
+          "example": "M1,M2,M3,M5:23,24,25,PE; СКЗ и пожарный вход:47,48",
+          "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+          "runtime_pointer": "/block_analyses/35",
+          "analysis_status": "analyzed",
+          "detectors_ok": [
+            "codex/gpt-6-astra",
+            "codex/gpt-6-sol"
+          ],
+          "published_ids": [
+            "G-067",
+            "G-068"
+          ],
+          "deferred_count": 0,
+          "match": "not_found_in_block_candidates_or_terminal_findings",
+          "earliest_observed_gap": "candidate_generation_or_earlier",
+          "root_cause": "unknown; analyzed status and successful detectors do not prove the terminal collision check was performed"
+        }
+      ],
+      "matching_basis": "F-054 и F-055 сохраняют неоднозначность адресов двух шкафов в разделе проверки по смежным. На странице37 G-054/055/056 относятся к позиционным обозначениямM2/Y7, а не адресам клемм; на44 G-067/068 — к принадлежности систем. На33 нет кандидатов. Не считать всю тему ни потерянной, ни полностью сохранённой.",
+      "proposed_method_to_test": "Проверять коллизии по шкафу, клеммнику и номеру, сопоставляя независимые цепи. Не включать цепь в ключ уникальности. ОбщиеPE/N и перемычки проверять отдельно. Объединять системную тему с сохранением всех подтверждённых адресов; примечание об уточнении у изготовителя не считать опровержением.",
+      "root_cause": "unknown internal reason; three omissions observed before merge",
+      "limits": "Не доказаны короткое замыкание и ошибочный монтаж. Отдельной исторической отрицательной пары для общего фильтра повторов нет."
+    }
+  ],
+  "production_changed": false
+}

@@ -145,8 +145,8 @@
       "proposed_method_to_test": "Сверять множество рабочих цепей схемы и строк таблицы по щиту и идентификатору, отдельно отмечать резерв и агрегирование. Пропуск двух строк сохранять; автоматически добавлять4кВт ко всем режимам нельзя."
     },
     {
-      "target_id": "EOM5_shunt_trip_identity:946dc28da1dfa089e8c3",
-      "route": "negative",
+      "target_id": "EOM5_shunt_trip_identity:877b6fefac02ba992ea1",
+      "route": "question",
       "target_context": [
         {
           "theme": "EOM5_shunt_trip_identity",
@@ -192,8 +192,8 @@
         }
       ],
       "required_meaning": {
-        "claim": "Оба QF3.20 и QF3.17 подписаны ВА-301",
-        "status": "частично опровергнуто графикой: QF3.17 ВА-303; QF3.20 ВА-301"
+        "claim": "РН-300-2Р только для2P",
+        "status": "подтверждено руководством конкретного изготовителя и серии"
       },
       "final_match": "not_found_in_reviewed_output",
       "upstream_match": "not_found_in_24_text_56_graphic_and_1_deferred_candidates",
@@ -209,5 +209,6 @@
     "Эти четыре пропуска не объясняются ранее найденной потерей ссылок при объединении: соответствующих кандидатов в сохранённом входе объединения нет.",
     "Эталонv1 не изменён; инженерные решения и границы первичных доказательств доступны по target_context."
   ],
-  "production_changed": false
+  "production_changed": false,
+  "correction_note": "Exact target-ID audit corrected selection of EOM5: the question about accessory compatibility, not the negative atom about QF3.17. Matching narrative unchanged; no model run or benchmark change."
 }
