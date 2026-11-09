@@ -1014,6 +1014,17 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-023"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F023_unsubstantiated_norm_status.json",
+      "output_section": null,
+      "required_checks": [
+        "Получить первичное основание статусаСНиП и проверить область/дату применимости либо заморозить нормативный тезис как неоцениваемый.",
+        "На этапе причин пропусков сопоставить исторический входКМ с текущим механизмом; не выводить историю генерации только из локальногоreplay."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-026"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F026_reference_scope_insufficient.json",
