@@ -448,6 +448,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-062"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F062_rs485_termination_scope.json",
+      "output_section": null,
+      "required_checks": [
+        "Для завершения технической проверки получить руководство применённых исполнений БПС-3-И/СТГ-3-И, проверить схемы СУ-К32/31, смежные линии и настройки оконечивания. До этого при фиксации эталона исключить тезис об отсутствии резисторов из положительных и технически опровергнутых случаев."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-063"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F063_ethernet_evidence_scope.json",
