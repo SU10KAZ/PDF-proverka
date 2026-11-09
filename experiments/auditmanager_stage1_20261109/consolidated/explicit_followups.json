@@ -177,6 +177,17 @@
     },
     {
       "candidate_ids": [
+        "H-VK-34"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK34_transition_assembly.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить деталировку переходов и ведомость сопряжений, включая комплектную поставку и границуВК0-2; до этого не оценивать конкретные отсутствующие детали как доказанный дефицит.",
+        "Разрешить конфликт обратной связи поU-034: найти первичный источник изменения на8 ревизий/2 тройника, сохранить его дату и версию. Нынешнее принятие исходной строки не подтверждает изменённый тезис."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-VK-50"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK50_specification_duplicates.json",
