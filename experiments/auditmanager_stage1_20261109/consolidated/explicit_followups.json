@@ -24,6 +24,16 @@
     },
     {
       "candidate_ids": [
+        "B-AR-F-010"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F010_glass_formula.json",
+      "output_section": null,
+      "required_checks": [
+        "Если проверка формулы потребуется для технического вердикта, получить первичное правило обозначения выбранного производителя; до этого не включать этот случай в подтверждённые технически ложные или положительные дефекты."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-ITP-58"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
