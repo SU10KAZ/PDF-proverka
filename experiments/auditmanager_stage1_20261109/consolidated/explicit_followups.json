@@ -4,6 +4,17 @@
   "items": [
     {
       "candidate_ids": [
+        "B-AK-F-001",
+        "B-AK-F-002"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить спецификацию и кабельные данные книги1 АК1-ПА для группы5 и границы участка до СУ-К33. При недоступности зафиксировать полноту смежного комплекта как неоценённую; не считать вопрос техническим дефектом или доказанным отсутствием дефекта."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AR-14"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
