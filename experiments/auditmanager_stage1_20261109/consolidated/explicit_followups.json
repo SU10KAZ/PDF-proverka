@@ -181,6 +181,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-026"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F026_protection_boolean_condition.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Согласовать алгоритм с проектировщиком и заводской программой, включая выход из защитного прогрева. До испытания фактические ложные остановы, замерзание и неэффективность не включать в подтверждённые результаты."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-028"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
