@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 import unittest
 from run_source_review import validate
+from review import update_assessment_cache
 
 class EvidenceTests(unittest.TestCase):
     def setUp(self):
@@ -27,4 +28,21 @@ class EvidenceTests(unittest.TestCase):
         x=self.item();x['atoms'][0].update(verdict='refuted',evidence_refs=[])
         self.assertFalse(validate([x],self.job,self.c,set())[0])
 
+class CompletionTests(unittest.TestCase):
+    def test_rejected_final_revision_cannot_use_stale_result(self):
+        old={'candidate_id':'x','atoms':[{'verdict':'needs_data'}]}
+        cache={'x':old, 'y':{'candidate_id':'y'}}
+        update_assessment_cache(cache, [], [{'assessment':{'candidate_id':'x'},'error':'quote mismatch'}])
+        self.assertNotIn('x', cache)
+        self.assertIn('y', cache)
+        revised={'candidate_id':'x','atoms':[{'verdict':'supported'}]}
+        update_assessment_cache(cache, [revised], [])
+        self.assertEqual(cache['x'], revised)
+
+    def test_rejected_duplicate_wins_over_valid_in_same_response(self):
+        cache={}
+        update_assessment_cache(cache,[{'candidate_id':'x'}],[{'assessment':{'candidate_id':'x'},'error':'invalid'}])
+        self.assertFalse(cache)
+
 if __name__=='__main__':unittest.main()
+

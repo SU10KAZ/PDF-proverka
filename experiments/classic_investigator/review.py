@@ -77,6 +77,20 @@ def validate_assessments(items,job,corpus,current_images):
     return valid,errors
 
 
+def update_assessment_cache(assessments, valid, errors):
+    """A rejected revision invalidates an earlier provisional candidate result.
+
+    Raw responses retain the older result for inspection; it cannot satisfy the
+    completion gate until a later revision passes validation.
+    """
+    for item in valid:
+        assessments[item['candidate_id']] = item
+    for error in errors:
+        item = error.get('assessment')
+        if isinstance(item, dict):
+            assessments.pop(item.get('candidate_id'), None)
+
+
 async def review_job(work,job):
     from backend.app.services.llm import codex_runner,claude_json_runner
     out=work/'review/jobs'/job['id'];out.mkdir(parents=True,exist_ok=False)
@@ -115,7 +129,7 @@ async def review_job(work,job):
             if not isinstance(data,dict):raise ValueError('Expected object')
             messages.append({'role':'assistant','content':json.dumps(data,ensure_ascii=False)})
             valid,feedback=validate_assessments(data.get('assessments',[]),job,corpus,current_ids)
-            for a in valid:assessments[a['candidate_id']]=a
+            update_assessment_cache(assessments, valid, feedback)
             actions=data.get('actions',[])
             if not isinstance(actions,list) or len(actions)>6:raise ValueError('At most six actions')
             attached=[]
