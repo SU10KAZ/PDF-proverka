@@ -2,8 +2,8 @@
   "candidate_ids": [
     "B-KM-F-021"
   ],
-  "decision": "confirmed_published_totals_difference_rounding_unresolved",
-  "output_section": "Вопросы и уточнения",
+  "decision": "published_difference_confirmed_actionable_error_not_established",
+  "output_section": null,
   "evidence": [
     {
       "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
@@ -83,5 +83,8 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
     "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
   },
-  "production_changed": false
+  "production_changed": false,
+  "previous_proposed_output_section": "Вопросы и уточнения",
+  "adjudicator_disposition": "Не выпускать отдельное замечание или обязательный вопрос только на основании разности округлённых чисел. Факт разности сохранить в исследовательском реестре. При доказанном влиянии на подбор/количество или невозможности объяснения точностью исходных чисел рассмотреть заново.",
+  "not_equivalent_to": "Не означает, что исходный расчёт проверен и признан правильным; это недостаточность основания для замечания."
 }

@@ -42,10 +42,10 @@ def main():
     esc=lambda x:html.escape(str(x))
     body=['<!doctype html><html lang="ru"><meta charset="utf-8"><title>Проверенные выводы и остаток работ</title><style>body{font:16px sans-serif;max-width:1200px;margin:32px auto}td,th{border:1px solid #ccc;padding:9px;text-align:left;vertical-align:top}table{border-collapse:collapse;width:100%}pre{white-space:pre-wrap}</style><h1>Проверенные выводы после двух прогонов</h1>',f'<p>Сохранены291 исходная запись и история25 повторов. Предметные решения вынесены по {len(covered)} записям, объединённым в {len(decisions)} тем. Ещё {len(pending)} записей требуют первичной проверки. Этап1 не закрыт.</p><p>Решение относится только к сформулированному узкому тезису. Это не автоматическое принятие всех рисков и рекомендаций исходной строки.</p>']
     for section in ['Технические замечания','Вопросы и уточнения',None]:
-        body.append('<h2>'+esc(section or 'Снять опровергнутые претензии')+'</h2><table><tr><th>Записи</th><th>Решение</th><th>Границы доказательств</th></tr>')
+        body.append('<h2>'+esc(section or 'Не выпускать как замечание (основание указано отдельно)')+'</h2><table><tr><th>Записи</th><th>Решение</th><th>Границы доказательств</th></tr>')
         for d in decisions:
             if d['output_section']!=section:continue
-            body.append('<tr><td>'+esc(', '.join(d['candidate_ids']))+'</td><td>'+esc(d.get('wording',d.get('required_behavior','')) )+'</td><td>'+esc(d.get('limits',d.get('unsupported_extensions',d.get('claim_refuted',''))))+'</td></tr>')
+            body.append('<tr><td>'+esc(', '.join(d['candidate_ids']))+'</td><td>'+esc(d.get('adjudicator_disposition',d.get('wording',d.get('required_behavior',''))) )+'</td><td>'+esc(d.get('limits',d.get('unsupported_extensions',d.get('claim_refuted',''))))+'</td></tr>')
         body.append('</table>')
     body.append('<h2>Остаток работы</h2><p>Сверить оставшиеся записи по источникам, сохранить полезные классические находки и проверить контрольные пары фильтров. Независимые испытания новой версии ещё не проведены.</p>')
     (OUT/'Проверенные_выводы.html').write_text('\n'.join(body)+'</html>')

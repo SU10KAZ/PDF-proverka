@@ -1,0 +1,16 @@
+{
+  "candidate_ids": [
+    "H-EOM-11"
+  ],
+  "decision": "confirmed_missing_execution_section_in_supplied_specification",
+  "output_section": "Технические замечания",
+  "review_date": "2026-11-09",
+  "primary_adjudication": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json",
+    "sha256": "e3ec650ec4a4018cbb7a98b37de89d710f45f3bf069a81682a7631f96b49dcd5"
+  },
+  "wording": "Согласовать с СО линии С2513(65м) иС3510(95м): на схемах FRHF5×35, в предоставленном кабельном подразделе такой позиции нет. СтрокаHF5×35 относится к другому исполнению.",
+  "limits": "Сумма160м относится к двум линиям, а не полному объёму проекта. Поставка в смежном комплекте не проверена; фактическая нехватка160м не доказана.",
+  "engineer_decision": "Принято (историческая запись EOM:11, не новая приёмка).",
+  "production_changed": false
+}

@@ -8,7 +8,7 @@ H-AR-17,AR,historical_control,confirmed_numeric_difference_question,Вопрос
 H-KM-14,KM,historical_control,Первичная проверка не завершена,,,
 H-EOM-2,EOM,historical_control,refuted_in_claimed_volume_scope,,Снять тезис о нехватке200м в данном комплекте. Наличие этих200м в смежном комплекте не установлено; не объявлять дефицит без его проверки.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-EOM-2.json
 H-AR-3,AR,historical_control,Первичная проверка не завершена,,,
-H-AR-36,AR,historical_control,Первичная проверка не завершена,,,
+H-AR-36,AR,historical_control,confirmed_quantity_reconciliation_required,Вопросы и уточнения,"Проверить расчёт количеств К-3: покрытие10,8м², гидроизоляция/геотекстиль10,84м², плитка18,96м², утеплитель1,24м³ при указанном слое130мм. Раскрыть границы площадей, вычеты и запас.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json
 H-KM-6,KM,historical_control,Первичная проверка не завершена,,,
 H-KM-12,KM,historical_control,Первичная проверка не завершена,,,
 H-KM-13,KM,historical_control,Первичная проверка не завершена,,,
@@ -34,7 +34,7 @@ H-ITP-68,ITP,historical_control,Первичная проверка не зав�
 H-ITP-72b,ITP,historical_control,Первичная проверка не завершена,,,
 H-VK-35,VK,historical_control,confirmed_missing_quantity_in_named_row,Технические замечания,"Указать количество комплектов крепления трубопровода К1.1Ø100: строка предусмотрена в таблице креплений, графа количества пуста.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json
 H-EOM-76,EOM,historical_control,confirmed_document_arithmetic_discrepancy,Вопросы и уточнения,"Согласовать итоговую мощность2ЩСС1 5,4кВт с суммой девяти заполненных групп3,4кВт; если разница2кВт является перспективной нагрузкой, показать её основание.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json
-H-EOM-11,EOM,historical_control,Первичная проверка не завершена,,,
+H-EOM-11,EOM,historical_control,confirmed_missing_execution_section_in_supplied_specification,Технические замечания,"Согласовать с СО линии С2513(65м) иС3510(95м): на схемах FRHF5×35, в предоставленном кабельном подразделе такой позиции нет. СтрокаHF5×35 относится к другому исполнению.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM11.json
 H-AR-14,AR,historical_control,Первичная проверка не завершена,,,
 H-AR-35,AR,historical_control,Первичная проверка не завершена,,,
 H-AR-39,AR,historical_control,Первичная проверка не завершена,,,
@@ -166,10 +166,10 @@ B-ITP-F-052,ITP,classic_usefulness,Первичная проверка не за
 B-ITP-F-053,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-001,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-002,AR,classic_usefulness,Первичная проверка не завершена,,,
-B-AR-F-003,AR,classic_usefulness,confirmed_rounded_value_difference,Вопросы и уточнения,"При сверке ведомости пояснить разность0,01м между суммой опубликованных длин259,47 и итогом259,48.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-003.json
+B-AR-F-003,AR,classic_usefulness,published_difference_confirmed_actionable_error_not_established,,"При сверке ведомости пояснить разность0,01м между суммой опубликованных длин259,47 и итогом259,48.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-003.json
 B-AR-F-004,AR,classic_usefulness,confirmed_fractional_material_schedule_question,Вопросы и уточнения,"Уточнить комплектовочное число опор HILST для К-3/К-4: ведомость материалов содержит75,82 и2144,84шт.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json
-B-AR-F-005,AR,classic_usefulness,Первичная проверка не завершена,,,
-B-AR-F-006,AR,classic_usefulness,Первичная проверка не завершена,,,
+B-AR-F-005,AR,classic_usefulness,confirmed_quantity_reconciliation_required,Вопросы и уточнения,"Проверить расчёт количеств К-3: покрытие10,8м², гидроизоляция/геотекстиль10,84м², плитка18,96м², утеплитель1,24м³ при указанном слое130мм. Раскрыть границы площадей, вычеты и запас.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json
+B-AR-F-006,AR,classic_usefulness,mixed_wrong_reference_correct_local_layer_conflict,Технические замечания,Согласовать состав К-4: ведомость покрытий и ведомость материалов указывают противопожарную мембрану АЛЬФА ПРОФ НГ; адресный узел размещения молниеотвода с маркойК-4 и его перечень указывают геотекстиль300г/м² без отдельной мембраны.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json
 B-AR-F-007,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-008,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-009,AR,classic_usefulness,Первичная проверка не завершена,,,
@@ -206,7 +206,7 @@ B-KM-F-017,KM,classic_usefulness,confirmed_mark_requires_detail_link,Вопро�
 B-KM-F-018,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-019,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-020,KM,classic_usefulness,Первичная проверка не завершена,,,
-B-KM-F-021,KM,classic_usefulness,confirmed_published_totals_difference_rounding_unresolved,Вопросы и уточнения,"При сверке сметного итога пояснить расхождения опубликованных масс С245: ячейки5,793т, итоги видов проката5,796т, итоги лестниц5,798т.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-KM-F-021.json
+B-KM-F-021,KM,classic_usefulness,published_difference_confirmed_actionable_error_not_established,,"При сверке сметного итога пояснить расхождения опубликованных масс С245: ячейки5,793т, итоги видов проката5,796т, итоги лестниц5,798т.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-KM-F-021.json
 B-KM-F-022,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-023,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-024,KM,classic_usefulness,refuted_as_separate_norm_reference,,"Снять отдельную претензию на СНиП2.01.07-85*, извлечённый из названия СП20.13330.2011: в данной строке он не является самостоятельной ссылкой.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-KM-F-024.json
@@ -223,7 +223,7 @@ B-VK-F-008,VK,classic_usefulness,confirmed_fractional_piece_quantity,Техни�
 B-VK-F-009,VK,classic_usefulness,Первичная проверка не завершена,,,
 B-VK-F-010,VK,classic_usefulness,confirmed_missing_quantity_in_named_row,Технические замечания,"Указать количество комплектов крепления трубопровода К1.1Ø100: строка предусмотрена в таблице креплений, графа количества пуста.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json
 B-VK-F-011,VK,classic_usefulness,Первичная проверка не завершена,,,
-B-VK-F-012,VK,classic_usefulness,confirmed_rounded_value_difference,Вопросы и уточнения,"При необходимости сверки опубликованных итогов пояснить разницу0,01м³/сут: четыре строки дают260,29, итог260,28.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-012.json
+B-VK-F-012,VK,classic_usefulness,published_difference_confirmed_actionable_error_not_established,,"При необходимости сверки опубликованных итогов пояснить разницу0,01м³/сут: четыре строки дают260,29, итог260,28.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-012.json
 B-VK-F-013,VK,classic_usefulness,Первичная проверка не завершена,,,
 B-VK-F-014,VK,classic_usefulness,confirmed_reference_suffix_difference,Вопросы и уточнения,"Уточнить обозначение ТУ№22825: в основаниях проекта ДП-В от19.10.2023, в нагрузке подключения ДП-К.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-014.json
 B-VK-F-015,VK,classic_usefulness,Первичная проверка не завершена,,,

@@ -2,8 +2,8 @@
   "candidate_ids": [
     "B-VK-F-012"
   ],
-  "decision": "confirmed_rounded_value_difference",
-  "output_section": "Вопросы и уточнения",
+  "decision": "published_difference_confirmed_actionable_error_not_established",
+  "output_section": null,
   "review_date": "2026-11-09",
   "source_md": {
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/VK/document.md",
@@ -36,5 +36,8 @@
       "10.799"
     ],
     "example_sum": "260.280"
-  }
+  },
+  "previous_proposed_output_section": "Вопросы и уточнения",
+  "adjudicator_disposition": "Не выпускать отдельное замечание или обязательный вопрос только на основании разности округлённых чисел. Факт разности сохранить в исследовательском реестре. При доказанном влиянии на подбор/количество или невозможности объяснения точностью исходных чисел рассмотреть заново.",
+  "not_equivalent_to": "Не означает, что исходный расчёт проверен и признан правильным; это недостаточность основания для замечания."
 }

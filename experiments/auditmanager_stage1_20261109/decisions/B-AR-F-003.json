@@ -2,8 +2,8 @@
   "candidate_ids": [
     "B-AR-F-003"
   ],
-  "decision": "confirmed_rounded_value_difference",
-  "output_section": "Вопросы и уточнения",
+  "decision": "published_difference_confirmed_actionable_error_not_established",
+  "output_section": null,
   "evidence": [
     {
       "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
@@ -30,5 +30,8 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
     "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
   },
-  "production_changed": false
+  "production_changed": false,
+  "previous_proposed_output_section": "Вопросы и уточнения",
+  "adjudicator_disposition": "Не выпускать отдельное замечание или обязательный вопрос только на основании разности округлённых чисел. Факт разности сохранить в исследовательском реестре. При доказанном влиянии на подбор/количество или невозможности объяснения точностью исходных чисел рассмотреть заново.",
+  "not_equivalent_to": "Не означает, что исходный расчёт проверен и признан правильным; это недостаточность основания для замечания."
 }
