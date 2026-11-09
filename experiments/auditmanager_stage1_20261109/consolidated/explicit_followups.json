@@ -201,6 +201,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-034"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F034_sheet_title_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Согласовать название листа по проектному реестру. Для заявления о непосредственно просмотренном физическом штампе нужна отдельная допустимая первичная проверка; до этого ограничить вывод записанным полем MD."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-035"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
