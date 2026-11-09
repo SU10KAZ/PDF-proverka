@@ -1,7 +1,7 @@
 ﻿ID,Дисциплина,Происхождение,Статус узкого тезиса,Раздел,Формулировка,Доказательства
 H-AK-14,AK,historical_control,confirmed_terminal_address_ambiguity,Технические замечания,Сохранить одну системную тему неоднозначных клеммных адресов с адресами шкафов.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK14.json
 H-AK-57,AK,historical_control,confirmed_document_range_conflict,Технические замечания,Согласовать диапазоны вентиляторных PDS в таблицах сигналов и перечнях. Для Пкр4.1/Пкр5.1 и других адресов сохранить доказанные связи из первичной проверки; непригодность приборов и отказ без паспорта не утверждать.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json
-H-ITP-40,ITP,historical_control,confirmed_document_load_conflict,Технические замечания,"Согласовать подпись0,246Гкал/ч на разрезах отопленияIIIзоны с ПЗ0,191 и подбором0,21965 с запасом15%; выяснить назначение подписи.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json
+H-ITP-40,ITP,historical_control,confirmed_document_load_conflict,Технические замечания,"Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json
 H-ITP-72,ITP,historical_control,Первичная проверка не завершена,,,
 H-ITP-17,ITP,historical_control,Первичная проверка не завершена,,,
 H-AR-17,AR,historical_control,confirmed_numeric_difference_question,Вопросы и уточнения,"Увязать высоты экранов ОГШ-1/2/3 между ведомостью и видами, указав базу измерения.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR17.json
@@ -117,17 +117,17 @@ B-ITP-F-003,ITP,classic_usefulness,Первичная проверка не за
 B-ITP-F-004,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-005,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-006,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-007,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-007,ITP,classic_usefulness,confirmed_document_conflict_with_limited_consequences,Технические замечания,"Согласовать задание на электроснабжение ИТП: ПЗ, лист 19, задаёт категорию II, а ТЗ, п. 5.2.6.1, — первую категорию с технологическим резервированием. Отразить согласованное решение в смежном электротехническом разделе.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json
 B-ITP-F-008,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-009,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-010,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-011,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-012,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-011,ITP,classic_usefulness,confirmed_document_conflict_with_limited_consequences,Вопросы и уточнения,"Согласовать расчёт циркуляции ГВС: во второй зоне результат 2,21 соответствует Qцирк=0,017 из предыдущей строки, но в подстановке стоит 0,016, что даёт 2,08. Уточнить запись Gцирк макс=1,5×Qцирк, где Qцирк определена как тепловая мощность, и используемую точность промежуточных вычислений.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-011.json
+B-ITP-F-012,ITP,classic_usefulness,confirmed_document_load_conflict,Технические замечания,"Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json
 B-ITP-F-013,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-014,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-014,ITP,classic_usefulness,confirmed_document_conflict_with_limited_consequences,Технические замечания,"Согласовать характеристику клапана ГВС второй зоны, поз. 33: экспликация и расчёт задают VF-3R-50-40, Kvs/Kv 40 м³/ч; спецификация содержит VFM-3R-50-40, Kvs 4,0. Уточнить марку и пропускную способность в заказной строке.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-014.json
 B-ITP-F-015,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-016,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-017,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-016,ITP,classic_usefulness,confirmed_document_conflict_with_limited_consequences,Технические замечания,"Согласовать мощность насоса К12 отопления ДОО IL 40/220-1,5/4-R: в экспликации N=0,55 кВт, в ПЗ и спецификации N=1,5 кВт, а технический лист артикула 2786053 подтверждает номинальную мощность двигателя 1,5 кВт. Исправить экспликацию и сверить переданное задание электрикам.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-016.json
+B-ITP-F-017,ITP,classic_usefulness,confirmed_document_conflict_with_limited_consequences,Вопросы и уточнения,"Уточнить технический лист насоса К12: в разделе «Фактическая рабочая точка» напор 16,98 м, в «Данных продукта» максимальный напор 16,64 м. Получить согласованную характеристику и объяснение этих двух значений.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-017.json
 B-ITP-F-018,ITP,classic_usefulness,confirmed_difference_not_equipment_failure,Вопросы и уточнения,"Уточнить напор выбранного насоса отопления2-й зоны IL50/140-4/2-R, артикул2786092: при расходе47,08м³/ч ПЗ указывает21,29м, технический лист21,91м.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json
 B-ITP-F-019,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-020,ITP,classic_usefulness,Первичная проверка не завершена,,,
@@ -153,7 +153,7 @@ B-ITP-F-039,ITP,classic_usefulness,Первичная проверка не за
 B-ITP-F-040,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-041,ITP,classic_usefulness,confirmed_TZ_documentation_requirement,Вопросы и уточнения,Уточнить выполнение п.5.18.3.1 ТЗ: в шапках СО PDF24–38 нет требуемой колонки «Код работ». «Код изделия» является другой графой.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-ITP-64.json
 B-ITP-F-042,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-043,ITP,classic_usefulness,confirmed_document_load_conflict,Технические замечания,"Согласовать подпись0,246Гкал/ч на разрезах отопленияIIIзоны с ПЗ0,191 и подбором0,21965 с запасом15%; выяснить назначение подписи.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json
+B-ITP-F-043,ITP,classic_usefulness,confirmed_document_load_conflict,Технические замечания,"Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json
 B-ITP-F-044,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-045,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-046,ITP,classic_usefulness,Первичная проверка не завершена,,,
