@@ -873,12 +873,32 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-012"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F012_level_list_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Уточнить применимость типовой схемы к двум отсутствующим в списке отметкам; до ответа не предписывать изменение количества изделий."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-015"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
       "output_section": "Технические замечания",
       "required_checks": [
         "Подтвердить правильную высотную привязку поАР/КЖ или ответу автора до безусловной рекомендации заменить37.510 на34.150."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-016"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F016_label_count_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Выполнить однозначное соответствие всех выносок трёх плановЛК4.1 изделиям разреза3-3 либо заморозить тезис о дополнительном количестве как неоцениваемый."
       ]
     },
     {
