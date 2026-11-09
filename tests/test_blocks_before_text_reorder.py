@@ -158,3 +158,31 @@ def test_text_task_substitutes_blocks_path():
     )
     assert "{BLOCKS_ANALYSIS_PATH}" not in prompt
     assert "01_blocks_for_text.json" in prompt
+
+
+def test_deferred_context_survives_clean_block_without_becoming_finding():
+    data = {"block_analyses": [{"block_id": "roof", "coverage_status": "ok", "findings": [],
+            "deferred_findings": [{"finding": "Two shown versus three specified",
+                                   "required_context": ["Upper roof plan"],
+                                   "_evidence_gate": {"reasons": ["insufficient_context"]}}]}]}
+    view = build_compact_view(data)
+    assert view["blocks"] == []
+    request = view["context_requests"][0]
+    assert request["required_context"] == ["Upper roof plan"]
+    assert request["status"] == "not_checked" and request["publishable"] is False
+    assert request["source_pointer"] == "/block_analyses/0/deferred_findings/0"
+    assert build_compact_view(data)["context_requests"] == view["context_requests"]
+
+
+def test_deferred_budget_retains_explicit_unchecked_backlog(monkeypatch):
+    from backend.app.pipeline.stages.block_analysis import blocks_for_text as compact
+    monkeypatch.setattr(compact, "_MAX_DEFERRED_REQUESTS", 1)
+    data = {"block_analyses": [{"block_id": "b", "deferred_findings": [
+        {"finding": "first"}, {"finding": "second"}]}]}
+    view = compact.build_compact_view(data)
+    assert len(view["context_requests"]) == 1
+    assert view["meta"]["context_requests_omitted"] == 1
+    backlog = view["context_request_backlog"][0]
+    assert backlog["status"] == "not_checked"
+    assert backlog["source_pointer"].endswith("/1")
+    assert backlog["request_id"] != view["context_requests"][0]["request_id"]

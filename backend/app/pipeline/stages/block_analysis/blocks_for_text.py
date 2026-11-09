@@ -15,6 +15,7 @@ value_found/block_evidence/highlight_regions).
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any, Optional
@@ -34,6 +35,7 @@ _MAX_VALUE_CHARS = 300
 _MAX_EVIDENCE_CHARS = 300
 # Мягкий потолок на общее число включённых findings (страховка от гигантских листов).
 _MAX_TOTAL_FINDINGS = 600
+_MAX_DEFERRED_REQUESTS = 200
 
 _OK_COVERAGE = "ok"
 
@@ -74,11 +76,46 @@ def build_compact_view(data: dict) -> dict:
     findings_budget = _MAX_TOTAL_FINDINGS
     truncated_findings = False
     compact_blocks: list[dict] = []
+    context_requests: list[dict] = []
+    omitted_requests: list[dict] = []
 
-    for block in block_analyses:
+    for block_index, block in enumerate(block_analyses):
         if not isinstance(block, dict):
             continue
         findings = [f for f in (block.get("findings") or []) if isinstance(f, dict)]
+        # Keep unresolved work separate from publishable findings. Collect it
+        # before the clean-block shortcut, which must not erase open requests.
+        deferred = block.get("deferred_findings", [])
+        for item_index, item in enumerate(deferred if isinstance(deferred, list) else []):
+            if not isinstance(item, dict):
+                continue
+            identity = json.dumps([block.get("block_id"), item], ensure_ascii=False,
+                                  sort_keys=True, separators=(",", ":"))
+            request_id = "D-" + hashlib.sha256(identity.encode()).hexdigest()[:24]
+            locator = {
+                "request_id": request_id,
+                "block_id": block.get("block_id"),
+                "source_pointer": f"/block_analyses/{block_index}/deferred_findings/{item_index}",
+            }
+            if len(context_requests) >= _MAX_DEFERRED_REQUESTS:
+                omitted_requests.append({**locator, "status": "not_checked", "reason": "compact_budget"})
+                continue
+            requests = item.get("required_context", [])
+            requests = [x for x in requests if isinstance(x, str)] if isinstance(requests, list) else []
+            gate = item.get("_evidence_gate") or {}
+            context_requests.append({
+                **locator,
+                "status": "not_checked",
+                "page": block.get("page"),
+                "sheet": block.get("sheet"),
+                "claim": item.get("finding"),
+                "affected_entity": item.get("affected_entity"),
+                "evidence_quote": item.get("evidence_quote"),
+                "required_context": requests,
+                "gate_reasons": gate.get("reasons", []) if isinstance(gate, dict) else [],
+                "detector_model": item.get("_detector_model"),
+                "publishable": False,
+            })
         coverage = block.get("coverage_status")
         # «Чистый» блок: нет findings и покрытие ok — для сверки бесполезен.
         if not findings and coverage == _OK_COVERAGE:
@@ -112,8 +149,13 @@ def build_compact_view(data: dict) -> dict:
             "blocks_omitted_clean": omitted_clean,
             "findings_truncated": truncated_findings,
             "max_total_findings": _MAX_TOTAL_FINDINGS,
+            "context_requests_included": len(context_requests),
+            "context_requests_omitted": len(omitted_requests),
+            "max_context_requests": _MAX_DEFERRED_REQUESTS,
         },
         "blocks": compact_blocks,
+        "context_requests": context_requests,
+        "context_request_backlog": omitted_requests,
     }
 
 

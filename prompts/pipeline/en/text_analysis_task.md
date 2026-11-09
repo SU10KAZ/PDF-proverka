@@ -21,6 +21,23 @@
    - **If the file does not exist — work without block context** (normal for the text→block
      order; in that case leave `items_verified_from_blocks` empty `[]`).
 
+## Unresolved graphic candidates
+
+If the compact input contains `context_requests`, these are requests to investigate,
+NOT confirmed findings. For each request, use its `request_id`, original block and
+`required_context` to locate the needed source in the provided document. Prepared
+TEXT is authoritative; do not re-OCR or correct it from a raster. A drawing description
+alone cannot resolve a request that needs graphic inspection.
+
+Return a top-level `context_request_results` array, one receipt per included request:
+`request_id`, `status` (`resolved`, `needs_data`, `not_checked`), `source_refs`,
+`finding_ids`, and `reason`. `resolved` requires an addressed source and an explanation
+of whether the original claim is supported, contradicted, or already covered by an
+existing finding. Link that finding rather than duplicating it. Missing context or
+budget exhaustion is not refutation. Never turn every deferred candidate into a
+technical defect. Keep `context_request_backlog` unresolved; its source pointers
+identify work omitted from the compact input budget.
+
 ## Task
 
 ### Stage 1: Text Data Analysis

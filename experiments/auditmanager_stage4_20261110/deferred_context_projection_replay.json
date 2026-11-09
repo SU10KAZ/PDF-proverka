@@ -1,0 +1,126 @@
+{
+  "projects": [
+    {
+      "discipline": "AK",
+      "requests": [],
+      "backlog": [],
+      "published_projection_unchanged": true
+    },
+    {
+      "discipline": "ITP",
+      "requests": [],
+      "backlog": [],
+      "published_projection_unchanged": true
+    },
+    {
+      "discipline": "AR",
+      "requests": [
+        {
+          "request_id": "D-0137bcb0d75d03a0f7291883",
+          "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+          "source_pointer": "/block_analyses/1/deferred_findings/0",
+          "status": "not_checked",
+          "page": 4,
+          "sheet": "Лист 2",
+          "claim": "На плане кровли 2, 3 секций на отм. +41.280 показаны два аэратора АК-1, а в спецификации кровельных аэраторов указано три. Для установления расхождения нужен план кровли на отм. +44.870: третий аэратор может относиться к нему.",
+          "affected_entity": "кровельные аэраторы АК-1",
+          "evidence_quote": "На плане два обозначения «Кровельный аэратор АК-1»; в спецификации: «АК-1 | Аэратор кровельный ТЕХНОниколь 110x470 | 3».",
+          "required_context": [
+            "План кровли 2, 3 секций на отм. +44.870 (лист 4)"
+          ],
+          "gate_reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context",
+            "speculative_wording"
+          ],
+          "detector_model": "codex/gpt-6-sol",
+          "publishable": false
+        },
+        {
+          "request_id": "D-35eb0d06acaecd696c43d8b3",
+          "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+          "source_pointer": "/block_analyses/19/deferred_findings/0",
+          "status": "not_checked",
+          "page": 10,
+          "sheet": "Лист 8",
+          "claim": "На аксонометрическом виде заполнение шумозащитного экрана указано стальными ламелями, а в ведомости для ОГШ-1, ОГШ-2 и ОГШ-3 — акустическими сэндвич-панелями с минераловатным утеплителем толщиной 30 мм. Вид не привязан к конкретной марке экрана, поэтому применимость этих описаний к одному изделию не установлена.",
+          "affected_entity": "Заполнение шумозащитного экрана на аксонометрическом виде, лист 8",
+          "evidence_quote": "«Заполнение стальными ламелями»; в ведомости для ОГШ-1, ОГШ-2 и ОГШ-3: «заполнение акустическими сэндвич-панелями с минераловатным утеплителем толщ. 30 мм».",
+          "required_context": [
+            "Привязка аксонометрического вида к марке шумозащитного экрана",
+            "Рабочий проект конструкций шумозащитных элементов кровли, раздел КМ 10.2"
+          ],
+          "gate_reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context"
+          ],
+          "detector_model": "codex/gpt-6-sol",
+          "publishable": false
+        }
+      ],
+      "backlog": [],
+      "published_projection_unchanged": true
+    },
+    {
+      "discipline": "KM",
+      "requests": [
+        {
+          "request_id": "D-42a95d8546f6f9f987b8d261",
+          "block_id": "blk_7315b3a722f946d48c34d31d1eac62ad",
+          "source_pointer": "/block_analyses/39/deferred_findings/0",
+          "status": "not_checked",
+          "page": 11,
+          "sheet": "Лист 9",
+          "claim": "Для поручня ОГМ11 показан продольный размер 3100 мм, а в ведомости для позиции 2 указана длина 2900 мм. Для установления противоречия необходимо определить границы детали с учётом концевых узлов.",
+          "affected_entity": "ОГМ11, поручень позиции 2",
+          "evidence_quote": "На изображении ОГМ11 вдоль поручня указан размер 3100; в ведомости ОГМ11 для позиции 2 — L=2,900м. У соседнего ОГМ14 размер 3430 также отличается от ведомостной длины 3,330 м, поэтому габаритный размер нельзя автоматически приравнять к длине заготовки.",
+          "required_context": [
+            "Узлы Б(4) и Д(4) с границами и размерами концевых деталей поручня ОГМ11",
+            "Деталировка позиции 2 ОГМ11 с указанием длины заготовки"
+          ],
+          "gate_reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context"
+          ],
+          "detector_model": "codex/gpt-6-astra",
+          "publishable": false
+        }
+      ],
+      "backlog": [],
+      "published_projection_unchanged": true
+    },
+    {
+      "discipline": "VK",
+      "requests": [],
+      "backlog": [],
+      "published_projection_unchanged": true
+    },
+    {
+      "discipline": "EOM",
+      "requests": [
+        {
+          "request_id": "D-7befe0b9b6abeed20de6352d",
+          "block_id": "blk_bd26d730d0a84c57900a87e3f5a47cce",
+          "source_pointer": "/block_analyses/18/deferred_findings/0",
+          "status": "not_checked",
+          "page": 18,
+          "sheet": "Лист 15",
+          "claim": "В экспликации помещений −1 этажа номер 0.0.2.2 присвоен и венткамере площадью 43,9 м², и помещению РУ площадью 11,1 м². По этому номеру нельзя однозначно определить помещение для привязки электрических решений.",
+          "affected_entity": "помещения 0.0.2.2 в экспликации −1 этажа",
+          "evidence_quote": "В одной экспликации −1 этажа указаны «0.0.2.2 | Венткамера | 43,9 | B2» и «0.0.2.2 | РУ | 11,1 | B3»; оба обозначения также повторяются в переданном контексте другого листа.",
+          "required_context": [],
+          "gate_reasons": [
+            "internal_metadata_comparison"
+          ],
+          "detector_model": "codex/gpt-6-sol",
+          "publishable": false
+        }
+      ],
+      "backlog": [],
+      "published_projection_unchanged": true
+    }
+  ],
+  "tests": "12 passed in test_blocks_before_text_reorder.py",
+  "limit": "Projection and prompt contract only. Completion receipts are not yet enforced by runtime, and no model retrieval was executed.",
+  "production_changed": false
+}
