@@ -354,6 +354,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-031"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F031_CT_emergency_assumptions.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить применимый аварийный режим, единицы Ip, работу компенсации и паспортные пределы выбранных ТТ. До этого ни пригодность, ни непригодность аппаратов не включать в подтверждённый технический эталон."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-032"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
