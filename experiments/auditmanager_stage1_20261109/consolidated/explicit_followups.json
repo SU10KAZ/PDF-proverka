@@ -229,6 +229,18 @@
     },
     {
       "candidate_ids": [
+        "B-VK-F-013",
+        "H-VK-33"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F013_drain_assembly_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для вывода о технической непригодности проверить режим и участок установкиПП REHAU, согласованные замены и требования к соединениям.",
+        "Для вывода о недопоставке установить состав комплектов воронки и крепления, распределение поК-1/К-4 и владельцев поставки; отсутствие марки вСО не доказывает отсутствие детали."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-VK-F-015"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F015_roof_title_level.json",
