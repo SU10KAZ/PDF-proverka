@@ -283,6 +283,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-053"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F053_local_cable_balance.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Согласовать проектные длины и итог; до проверки заказа не учитывать фактическую недопоставку как подтверждённый дефект."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-054",
         "B-AK-F-055"
       ],
