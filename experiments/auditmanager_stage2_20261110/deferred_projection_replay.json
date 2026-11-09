@@ -1,0 +1,218 @@
+{
+  "finding": "Compact block→text projection does not carry deferred candidates or their required_context; reproduced exactly for all six saved views.",
+  "code": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/block_analysis/blocks_for_text.py",
+      "sha256": "e7b448ec6687c25a0cf275692a74aa429305bf09d4fca5c83154075cd932bf93",
+      "symbol": "build_compact_view",
+      "line": 67
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+      "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+      "symbol": "publication gate and analysis assembly",
+      "lines": [
+        3912,
+        3944,
+        4136
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "discipline": "AR",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "799b8aab94e84524b647b97aad62762afec8bfe32b40f66cb31980e82c520c9c"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/01_blocks_for_text.json",
+          "sha256": "f11572fc2a85928f2e7e261094412f6c9a53c4f604883df1344e8fddf89690df"
+        }
+      ],
+      "source_pointer": "/block_analyses/1/deferred_findings/0",
+      "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+      "deferred_claim": "На плане кровли 2, 3 секций на отм. +41.280 показаны два аэратора АК-1, а в спецификации кровельных аэраторов указано три. Для установления расхождения нужен план кровли на отм. +44.870: третий аэратор может относиться к нему.",
+      "required_context": [
+        "План кровли 2, 3 секций на отм. +44.870 (лист 4)"
+      ],
+      "gate_reasons": [
+        "non_publishable_claim_type",
+        "insufficient_context",
+        "speculative_wording"
+      ],
+      "compact_block_present": true,
+      "compact_block": {
+        "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+        "page": 4,
+        "sheet": "Лист 2",
+        "coverage_status": "ready",
+        "findings": []
+      },
+      "deferred_field_forwarded": false,
+      "required_context_field_forwarded": false,
+      "replay_equals_saved_view": true
+    },
+    {
+      "discipline": "AR",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "799b8aab94e84524b647b97aad62762afec8bfe32b40f66cb31980e82c520c9c"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/01_blocks_for_text.json",
+          "sha256": "f11572fc2a85928f2e7e261094412f6c9a53c4f604883df1344e8fddf89690df"
+        }
+      ],
+      "source_pointer": "/block_analyses/19/deferred_findings/0",
+      "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+      "deferred_claim": "На аксонометрическом виде заполнение шумозащитного экрана указано стальными ламелями, а в ведомости для ОГШ-1, ОГШ-2 и ОГШ-3 — акустическими сэндвич-панелями с минераловатным утеплителем толщиной 30 мм. Вид не привязан к конкретной марке экрана, поэтому применимость этих описаний к одному изделию не установлена.",
+      "required_context": [
+        "Привязка аксонометрического вида к марке шумозащитного экрана",
+        "Рабочий проект конструкций шумозащитных элементов кровли, раздел КМ 10.2"
+      ],
+      "gate_reasons": [
+        "non_publishable_claim_type",
+        "insufficient_context"
+      ],
+      "compact_block_present": true,
+      "compact_block": {
+        "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+        "page": 10,
+        "sheet": "Лист 8",
+        "coverage_status": "ready",
+        "findings": [
+          {
+            "id": "G-009",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "На листе 8 заполнение шумозащитного экрана задано неоднозначно: на аксонометрическом виде указаны стальные ламели, а в ведомости для ОГШ-1, ОГШ-2 и ОГШ-3 — акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм. Это разные конструктивные решения заполнения.\n\nРекомендация: Согласовать заполнение шумозащитных экранов в аксонометрии и ведомости с рабочими решениями раздела КМ 10.2.",
+            "value_found": "Заполнение стальными ламелями",
+            "block_evidence": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex"
+            }
+          }
+        ]
+      },
+      "deferred_field_forwarded": false,
+      "required_context_field_forwarded": false,
+      "replay_equals_saved_view": true
+    },
+    {
+      "discipline": "KM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "e3bcbaa316e94905c5f50e5d6d997d64e8daeb05dbdd7de2e7e52e73128bc41d"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/01_blocks_for_text.json",
+          "sha256": "a34cc8b0d146474c27fa001e0082b70027c0aa7f51684b0f97800d53494f1593"
+        }
+      ],
+      "source_pointer": "/block_analyses/39/deferred_findings/0",
+      "block_id": "blk_7315b3a722f946d48c34d31d1eac62ad",
+      "deferred_claim": "Для поручня ОГМ11 показан продольный размер 3100 мм, а в ведомости для позиции 2 указана длина 2900 мм. Для установления противоречия необходимо определить границы детали с учётом концевых узлов.",
+      "required_context": [
+        "Узлы Б(4) и Д(4) с границами и размерами концевых деталей поручня ОГМ11",
+        "Деталировка позиции 2 ОГМ11 с указанием длины заготовки"
+      ],
+      "gate_reasons": [
+        "non_publishable_claim_type",
+        "insufficient_context"
+      ],
+      "compact_block_present": true,
+      "compact_block": {
+        "block_id": "blk_7315b3a722f946d48c34d31d1eac62ad",
+        "page": 11,
+        "sheet": "Лист 9",
+        "coverage_status": "ready",
+        "findings": [
+          {
+            "id": "G-023",
+            "severity": "ЭКОНОМИЧЕСКОЕ",
+            "category": "documentation",
+            "finding": "На виде ограждения ОГМ11 (стр. PDF 11) длина верхнего поручня позиции 2 указана как 3100 мм, а в ведомости элементов для этой позиции — 2900 мм. Расхождение составляет 200 мм.\n\nРекомендация: Согласовать длину поручня позиции 2 на виде и в ведомости элементов ОГМ11.",
+            "value_found": "3100; ОГМ11, поз. 2 — L=2,900м",
+            "block_evidence": "blk_7315b3a722f946d48c34d31d1eac62ad",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex"
+            }
+          }
+        ]
+      },
+      "deferred_field_forwarded": false,
+      "required_context_field_forwarded": false,
+      "replay_equals_saved_view": true
+    },
+    {
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "6c8fd1997a0242e4de3e4d8514a61f6e2086f68a71be19c4b908347ac9a0997c"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/01_blocks_for_text.json",
+          "sha256": "c67d894249a5ddbddc1483b23a57a0bf5db4178ca5727f7a8c674d22ddd3fa8b"
+        }
+      ],
+      "source_pointer": "/block_analyses/18/deferred_findings/0",
+      "block_id": "blk_bd26d730d0a84c57900a87e3f5a47cce",
+      "deferred_claim": "В экспликации помещений −1 этажа номер 0.0.2.2 присвоен и венткамере площадью 43,9 м², и помещению РУ площадью 11,1 м². По этому номеру нельзя однозначно определить помещение для привязки электрических решений.",
+      "required_context": [],
+      "gate_reasons": [
+        "internal_metadata_comparison"
+      ],
+      "compact_block_present": true,
+      "compact_block": {
+        "block_id": "blk_bd26d730d0a84c57900a87e3f5a47cce",
+        "page": 18,
+        "sheet": "Лист 15",
+        "coverage_status": "ready_image_only",
+        "findings": [
+          {
+            "id": "G-031",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "documentation",
+            "finding": "В экспликации помещений −1 этажа номер 0.0.2.2 присвоен двум разным техническим помещениям: венткамере площадью 43,9 м² и РУ площадью 11,1 м². Это делает идентификацию помещения по номеру неоднозначной.\n\nРекомендация: Согласовать уникальные номера венткамеры и РУ и привести обозначения на плане и в экспликации к единому соответствию.",
+            "value_found": "0.0.2.2 | Венткамера | 43,9 | B2; 0.0.2.2 | РУ | 11,1 | B3",
+            "block_evidence": "blk_bd26d730d0a84c57900a87e3f5a47cce",
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex"
+            }
+          }
+        ]
+      },
+      "deferred_field_forwarded": false,
+      "required_context_field_forwarded": false,
+      "replay_equals_saved_view": true
+    }
+  ],
+  "verified_projects": 6,
+  "boundary": "This proves loss from the compact projection, not deletion from raw01_blocks_analysis. The merge prompt can read the raw file, and three deferred meanings were independently preserved. No blanket claim that all downstream agents never saw them.",
+  "queue_inspection": "References to required_context/deferred_findings in backend/app/pipeline locate schema/prompt/gate/storage, not an explicit deferred-candidate retrieval runner. This is bounded code-search evidence, not proof about external services.",
+  "recommendation": "Carry unresolved candidates in a separate compact queue, with source IDs, requested documents and a resolution receipt. Schedule address-based retrieval only for useful specific questions; never publish all deferred candidates as defects.",
+  "acceptance_controls": [
+    "AR aerator: available upper plan must be addressed, but no automatic deficit claim.",
+    "KM OGM11: retain question on component boundaries, not unconditional 200mm error.",
+    "EOM room numbers: do not lose a project issue due to wording about context."
+  ],
+  "production_changed": false,
+  "stage_2_complete": false
+}
