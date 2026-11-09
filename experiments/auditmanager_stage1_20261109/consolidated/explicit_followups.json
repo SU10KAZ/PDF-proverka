@@ -44,6 +44,16 @@
     },
     {
       "candidate_ids": [
+        "B-AR-F-018"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F018_screen_identity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить марку аксонометрии и рабочее сечение заполнения в КМ10.2 именно этого объекта; только затем оценивать противоречие материалов и акустические последствия."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AR-F-019"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F019_drain_dimension_identity.json",
