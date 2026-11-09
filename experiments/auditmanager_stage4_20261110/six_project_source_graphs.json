@@ -1,0 +1,62 @@
+{
+  "graphs": [
+    {
+      "discipline": "AK",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/AK/03_analysis/runs/candidate/document_graph.json",
+      "sha256": "7203dabd193766a007ba5652c6a04b5c7fc28c3498777e57f1397c048cf5bee5",
+      "pages": 105,
+      "text_blocks": 184,
+      "image_blocks": 70,
+      "sheet_metadata_complete": false
+    },
+    {
+      "discipline": "ITP",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/ITP/03_analysis/runs/candidate/document_graph.json",
+      "sha256": "60034893161dfc2fa370344c77e070f360deae462cc9471a2efda4618aa90bb7",
+      "pages": 166,
+      "text_blocks": 162,
+      "image_blocks": 48,
+      "sheet_metadata_complete": false
+    },
+    {
+      "discipline": "AR",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/AR/03_analysis/runs/candidate/document_graph.json",
+      "sha256": "95930c0c5a78b5871764d089dec77b75afe41f6be3836f970f12c0578774472c",
+      "pages": 17,
+      "text_blocks": 34,
+      "image_blocks": 42,
+      "sheet_metadata_complete": false
+    },
+    {
+      "discipline": "KM",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/KM/03_analysis/runs/candidate/document_graph.json",
+      "sha256": "61d99681d3cdd6141d99d8e87e8aff645ed86f910164b080a0554a51ef468bd8",
+      "pages": 12,
+      "text_blocks": 57,
+      "image_blocks": 54,
+      "sheet_metadata_complete": false
+    },
+    {
+      "discipline": "VK",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/VK/03_analysis/runs/candidate/document_graph.json",
+      "sha256": "6b4fe8add7f5d54563dd9820c84a162c9163ed5d96143db6a051b97c027a4a49",
+      "pages": 38,
+      "text_blocks": 67,
+      "image_blocks": 35,
+      "sheet_metadata_complete": false
+    },
+    {
+      "discipline": "EOM",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/EOM/03_analysis/runs/candidate/document_graph.json",
+      "sha256": "671debc7fd99c7e79a2ca113304e21ec44618668b5bb5d297fc9790af6a98868",
+      "pages": 56,
+      "text_blocks": 123,
+      "image_blocks": 85,
+      "sheet_metadata_complete": false
+    }
+  ],
+  "new_model_calls": 0,
+  "runtime_acceptance": false,
+  "exact_authoritative_text_blocks_verified": 627,
+  "validation": "Every graph TEXT/TABLE body equals the authoritative MD parser output; every indexed graphic has matching MD identity and source page. Sheet metadata remains incomplete."
+}
