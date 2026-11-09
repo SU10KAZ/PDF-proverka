@@ -171,6 +171,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-024"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F024_room_number_collision.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Сверить согласованную архитектурную экспликацию и пространственные обозначения обоих помещений; установить правильные номера и проверить затронутые ссылки оборудования."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-029"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",

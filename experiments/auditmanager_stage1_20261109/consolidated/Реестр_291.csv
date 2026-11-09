@@ -264,7 +264,7 @@ B-EOM-F-020,EOM,classic_usefulness,Первичная проверка не за
 B-EOM-F-021,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-022,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-023,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-024,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-024,EOM,classic_usefulness,room_number_collision_requires_architectural_coordination,Вопросы и уточнения,"Уточнить номер 0.0.2.2 в экспликации −1 этажа: он присвоен венткамере 43,9 м² категории B2 и РУ 11,1 м² категории B3. Такое сочетание повторено на листах 15 и 25. Согласовать номера с архитектурной экспликацией и обозначениями плана.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F024_room_number_collision.json
 B-EOM-F-025,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-026,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-027,EOM,classic_usefulness,Первичная проверка не завершена,,,
