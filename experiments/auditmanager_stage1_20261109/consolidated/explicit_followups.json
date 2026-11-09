@@ -37,6 +37,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-008"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для изменения спецификации проверить дополнительное или резервное назначение второго датчика по комплектации. До этого фактическую избыточную поставку оставить неоценённой."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-035"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
