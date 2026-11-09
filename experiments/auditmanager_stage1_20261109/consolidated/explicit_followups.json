@@ -816,6 +816,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-002"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Установить, относится ли описанная стремянка кКМ1.2,КМ2 илиКМ6.2, и указать конкретную марку/лист. До этого не считать отсутствующие вКМ1.2 профили подтверждённым дефицитом поставки."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-VK-20"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
