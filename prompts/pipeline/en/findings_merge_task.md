@@ -23,6 +23,11 @@
      review source identity, physical basis, regime, rounding and completeness of
      terms. A computed difference is not a verified defect; a rejected comparison
      is unresolved and must not be silently recast as agreement.
+     Distinguish physical objects from callouts, supply kits, risers and calculation
+     nodes. Reject an unsupported numerical shortage/surplus claim without deleting
+     a useful source-backed question about their mapping. Keep any independently
+     confirmed technical conflict in the technical section. Equal aggregate counts
+     do not establish complete identity, kit contents, installation or hydraulics.
    - `object_balance_operations` and runner-computed `object_balance_results`: inspect
      both unmatched sides against the original source scope, exact execution,
      reserve status, aggregation and supply boundaries. Retain a supported conflict

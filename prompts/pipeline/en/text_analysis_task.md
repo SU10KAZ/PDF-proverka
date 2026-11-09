@@ -150,6 +150,19 @@ the source conversion reasoning. Unknown columns, modes, geometry or membership
 remain questions, not invented operands. Numerical differences do not alone prove
 a defect: assess documented rounding, scope and the actual design consequence.
 
+Before counting, identify what each source represents: a physical installed item,
+a drawing callout, a repeated view, a supply kit, a riser/branch, or a calculation
+node/catchment. Do not assume these have one-to-one correspondence. Establish the
+mapping from source evidence, including exceptions and continuation documents.
+An aggregate specification quantity does not provide individual object marks;
+never invent those marks to populate an inventory. A sum you derive is not an
+independent project-stated target: do not attach its source block to a fabricated
+target operand. If no comparable target exists, retain the calculation as derived
+context and request the missing mapping instead of claiming a verified balance.
+When the mapping remains unresolved, preserve a specific source-backed question
+with object, competing source statements and the exact missing relation. Do not
+claim a shortage, surplus, purchase change or compliance from unmatched counts.
+
 ## Output JSON Schema
 
 ```json
