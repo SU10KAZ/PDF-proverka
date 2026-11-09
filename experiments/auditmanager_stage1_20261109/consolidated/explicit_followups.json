@@ -344,6 +344,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-028"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Сопоставить архитектурный план соответствующей версии, диапазон типового листа и квартирные цепи. До этого ошибочную привязку электрических сетей и выбор стороны исправления оставить неоцениваемыми."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-029"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
