@@ -39,7 +39,7 @@ H-AR-14,AR,historical_control,Первичная проверка не заве�
 H-AR-35,AR,historical_control,Первичная проверка не завершена,,,
 H-AR-39,AR,historical_control,Первичная проверка не завершена,,,
 H-AR-59,AR,historical_control,Первичная проверка не завершена,,,
-H-KM-3,KM,historical_control,Первичная проверка не завершена,,,
+H-KM-3,KM,historical_control,confirmed_mark_requires_detail_link,Вопросы и уточнения,"Увязать марку ОГМ26 на плане ЛК6 −0,700 со спецификацией и деталировкой.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM3.json
 H-KM-5,KM,historical_control,Первичная проверка не завершена,,,
 H-KM-9,KM,historical_control,Первичная проверка не завершена,,,
 H-VK-14,VK,historical_control,confirmed_ambiguous_product_size,Вопросы и уточнения,"Уточнить типоразмер строки полипропиленовой трубы д50x0, 5,2м, ProAqua: отсутствует однозначное обозначение стенки/изделия.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK14.json
@@ -166,8 +166,8 @@ B-ITP-F-052,ITP,classic_usefulness,Первичная проверка не за
 B-ITP-F-053,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-001,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-002,AR,classic_usefulness,Первичная проверка не завершена,,,
-B-AR-F-003,AR,classic_usefulness,Первичная проверка не завершена,,,
-B-AR-F-004,AR,classic_usefulness,Первичная проверка не завершена,,,
+B-AR-F-003,AR,classic_usefulness,confirmed_rounded_value_difference,Вопросы и уточнения,"При сверке ведомости пояснить разность0,01м между суммой опубликованных длин259,47 и итогом259,48.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-003.json
+B-AR-F-004,AR,classic_usefulness,confirmed_fractional_material_schedule_question,Вопросы и уточнения,"Уточнить комплектовочное число опор HILST для К-3/К-4: ведомость материалов содержит75,82 и2144,84шт.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json
 B-AR-F-005,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-006,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-007,AR,classic_usefulness,Первичная проверка не завершена,,,
@@ -176,10 +176,10 @@ B-AR-F-009,AR,classic_usefulness,Первичная проверка не зав
 B-AR-F-010,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-011,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-012,AR,classic_usefulness,Первичная проверка не завершена,,,
-B-AR-F-013,AR,classic_usefulness,Первичная проверка не завершена,,,
+B-AR-F-013,AR,classic_usefulness,confirmed_alternative_material_descriptions,Вопросы и уточнения,Увязать материал финишной плитки К-3/К-4: бетонная40мм в ведомости покрытий против натурального камня600×600×40мм «по согласованию» в ведомости материалов; дляК-4 проверить решениеЛД.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json
 B-AR-F-014,AR,classic_usefulness,Первичная проверка не завершена,,,
-B-AR-F-015,AR,classic_usefulness,Первичная проверка не завершена,,,
-B-AR-F-016,AR,classic_usefulness,Первичная проверка не завершена,,,
+B-AR-F-015,AR,classic_usefulness,confirmed_alternative_material_descriptions,Вопросы и уточнения,Увязать материал финишной плитки К-3/К-4: бетонная40мм в ведомости покрытий против натурального камня600×600×40мм «по согласованию» в ведомости материалов; дляК-4 проверить решениеЛД.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json
+B-AR-F-016,AR,classic_usefulness,confirmed_dimension_area_reconciliation,Вопросы и уточнения,"Уточнить площадь Оп-1:145,44м×0,690м=100,3536м² уже по горизонтальному габариту против78,5м² в ведомости. Проверить длину, развёртку и смысл столбца площади.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json
 B-AR-F-017,AR,classic_usefulness,confirmed_numeric_difference_question,Вопросы и уточнения,"Увязать высоты экранов ОГШ-1/2/3 между ведомостью и видами, указав базу измерения.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR17.json
 B-AR-F-018,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-019,AR,classic_usefulness,Первичная проверка не завершена,,,
@@ -202,14 +202,14 @@ B-KM-F-013,KM,classic_usefulness,Первичная проверка не зав
 B-KM-F-014,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-015,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-016,KM,classic_usefulness,Первичная проверка не завершена,,,
-B-KM-F-017,KM,classic_usefulness,Первичная проверка не завершена,,,
+B-KM-F-017,KM,classic_usefulness,confirmed_mark_requires_detail_link,Вопросы и уточнения,"Увязать марку ОГМ26 на плане ЛК6 −0,700 со спецификацией и деталировкой.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM3.json
 B-KM-F-018,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-019,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-020,KM,classic_usefulness,Первичная проверка не завершена,,,
-B-KM-F-021,KM,classic_usefulness,Первичная проверка не завершена,,,
+B-KM-F-021,KM,classic_usefulness,confirmed_published_totals_difference_rounding_unresolved,Вопросы и уточнения,"При сверке сметного итога пояснить расхождения опубликованных масс С245: ячейки5,793т, итоги видов проката5,796т, итоги лестниц5,798т.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-KM-F-021.json
 B-KM-F-022,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-023,KM,classic_usefulness,Первичная проверка не завершена,,,
-B-KM-F-024,KM,classic_usefulness,Первичная проверка не завершена,,,
+B-KM-F-024,KM,classic_usefulness,refuted_as_separate_norm_reference,,"Снять отдельную претензию на СНиП2.01.07-85*, извлечённый из названия СП20.13330.2011: в данной строке он не является самостоятельной ссылкой.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-KM-F-024.json
 B-KM-F-025,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-026,KM,classic_usefulness,Первичная проверка не завершена,,,
 B-VK-F-001,VK,classic_usefulness,Первичная проверка не завершена,,,
@@ -218,14 +218,14 @@ B-VK-F-003,VK,classic_usefulness,Первичная проверка не зав
 B-VK-F-004,VK,classic_usefulness,Первичная проверка не завершена,,,
 B-VK-F-005,VK,classic_usefulness,Первичная проверка не завершена,,,
 B-VK-F-006,VK,classic_usefulness,Первичная проверка не завершена,,,
-B-VK-F-007,VK,classic_usefulness,Первичная проверка не завершена,,,
-B-VK-F-008,VK,classic_usefulness,Первичная проверка не завершена,,,
+B-VK-F-007,VK,classic_usefulness,confirmed_ambiguous_product_size,Вопросы и уточнения,"Уточнить типоразмер строки полипропиленовой трубы д50x0, 5,2м, ProAqua: отсутствует однозначное обозначение стенки/изделия.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK14.json
+B-VK-F-008,VK,classic_usefulness,confirmed_fractional_piece_quantity,Технические замечания,"Уточнить количество соединителей-хомутов RapidDN100, код310100: в графе количества указано4,70шт.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-008.json
 B-VK-F-009,VK,classic_usefulness,Первичная проверка не завершена,,,
 B-VK-F-010,VK,classic_usefulness,confirmed_missing_quantity_in_named_row,Технические замечания,"Указать количество комплектов крепления трубопровода К1.1Ø100: строка предусмотрена в таблице креплений, графа количества пуста.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json
 B-VK-F-011,VK,classic_usefulness,Первичная проверка не завершена,,,
-B-VK-F-012,VK,classic_usefulness,Первичная проверка не завершена,,,
+B-VK-F-012,VK,classic_usefulness,confirmed_rounded_value_difference,Вопросы и уточнения,"При необходимости сверки опубликованных итогов пояснить разницу0,01м³/сут: четыре строки дают260,29, итог260,28.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-012.json
 B-VK-F-013,VK,classic_usefulness,Первичная проверка не завершена,,,
-B-VK-F-014,VK,classic_usefulness,Первичная проверка не завершена,,,
+B-VK-F-014,VK,classic_usefulness,confirmed_reference_suffix_difference,Вопросы и уточнения,"Уточнить обозначение ТУ№22825: в основаниях проекта ДП-В от19.10.2023, в нагрузке подключения ДП-К.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-014.json
 B-VK-F-015,VK,classic_usefulness,Первичная проверка не завершена,,,
 B-VK-F-016,VK,classic_usefulness,Первичная проверка не завершена,,,
 B-VK-F-017,VK,classic_usefulness,Первичная проверка не завершена,,,
@@ -242,11 +242,11 @@ B-VK-F-027,VK,classic_usefulness,Первичная проверка не зав
 B-VK-F-028,VK,classic_usefulness,Первичная проверка не завершена,,,
 B-VK-F-029,VK,classic_usefulness,refuted,,Не выпускать претензию о несоответствии материала на этом основании и не переносить её автоматически в вопросы. Локальная отметка verified без проверяемого первичного источника не подтверждает область применения.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-VK-F-029.json
 B-EOM-F-001,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-002,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-003,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-004,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-005,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-006,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-002,EOM,classic_usefulness,confirmed_internal_calculation_discrepancy,Вопросы и уточнения,"Увязать формулу РП2 180×0,32=57,6кВт с табличными240кВт и69,6кВт.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json
+B-EOM-F-003,EOM,classic_usefulness,confirmed_internal_calculation_discrepancy,Вопросы и уточнения,"Проверить итоги РП5: сумма перечисленных Py94,5кВт против94,1; сумма перечисленных Pp89,9кВт против89,5 в строке «Pp.лож». Расхождения по0,4кВт совпадают с мощностью C2518.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json
+B-EOM-F-004,EOM,classic_usefulness,confirmed_internal_calculation_discrepancy,Вопросы и уточнения,"Согласовать C2520 ПД.2.1: при Pp6кВт и cosφ0,80 полная мощность7,5кВА, в таблице6,88. При трёхфазном380В расчётный ток около11,4А вместо10,5А.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json
+B-EOM-F-005,EOM,classic_usefulness,confirmed_internal_calculation_discrepancy,Вопросы и уточнения,"Увязать полную мощность ввода2 ВРУ-3 в режиме с компенсацией: Pp121,6/cosφ0,97=125,36кВА, в таблице123,2; расчёт ТТ использует125,4.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json
+B-EOM-F-006,EOM,classic_usefulness,confirmed_internal_calculation_discrepancy,Вопросы и уточнения,"Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json
 B-EOM-F-007,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-008,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-009,EOM,classic_usefulness,Первичная проверка не завершена,,,

@@ -1,0 +1,28 @@
+{
+  "candidate_ids": [
+    "B-AR-F-016"
+  ],
+  "decision": "confirmed_dimension_area_reconciliation",
+  "output_section": "Вопросы и уточнения",
+  "graphic_evidence": [
+    {
+      "block_id": "blk_82cbe376e70f4cc3833a1203b0d0a0ee",
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AR-003/images/blk_82cbe376e70f4cc3833a1203b0d0a0ee_6471b342ae3c.png",
+      "sha256": "a2a5d1340162584e023efe8cf56439d5373e20ec0e17565c10f5e571bae9aeea",
+      "directly_viewed": true,
+      "observation": "Оп-1: отлив690×1мм; горизонтальный габарит690, длина145,44п.м., площадь78,5м²; на профиле показаны загибы."
+    }
+  ],
+  "arithmetic": {
+    "projection_area_m2": "100.35360",
+    "difference_from_78_5": "21.85360"
+  },
+  "wording": "Уточнить площадь Оп-1:145,44м×0,690м=100,3536м² уже по горизонтальному габариту против78,5м² в ведомости. Проверить длину, развёртку и смысл столбца площади.",
+  "limits": "Не считать100,3536м² окончательной площадью заготовки: загибы, нахлёсты, раскрой и область суммарной длины не установлены. Недостаточная закупка не доказана.",
+  "review_date": "2026-11-09",
+  "source_md": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
+    "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+  },
+  "production_changed": false
+}

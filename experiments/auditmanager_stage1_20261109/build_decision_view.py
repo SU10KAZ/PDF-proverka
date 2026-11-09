@@ -13,6 +13,8 @@ def main():
         for cid in d['candidate_ids']:
             assert cid in known and cid not in covered
             covered[cid]=d
+        for image in d.get('graphic_evidence', []):
+            assert image.get('directly_viewed') and sha(Path(image['path']))==image['sha256']
         ref=d.get('primary_adjudication')
         if ref:assert sha(Path(ref['path']))==ref['sha256']
         source=d.get('source_md') or d.get('project_TEXT')

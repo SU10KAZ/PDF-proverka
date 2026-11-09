@@ -1,0 +1,21 @@
+{
+  "candidate_ids": [
+    "H-KM-3",
+    "B-KM-F-017"
+  ],
+  "decision": "confirmed_mark_requires_detail_link",
+  "output_section": "Вопросы и уточнения",
+  "primary_adjudication": {
+    "path": "experiments/auditmanager_stage1_20261109/KM3_primary_GRAPHIC.json",
+    "sha256": "255952d3bff75f41a8d0825baed7dd1988efa895a514d5835c6238a2dde45255"
+  },
+  "wording": "Увязать марку ОГМ26 на плане ЛК6 −0,700 со спецификацией и деталировкой.",
+  "limits": "Подтверждена выноска на плане. Полное отсутствие деталировки не доказано одним поиском в TEXT; заменять на ОГМ25 без проверки нельзя.",
+  "preservation": "Сохранить общий подтверждённый атом классической строкиF-017; исходный более сильный вывод не принимать целиком.",
+  "review_date": "2026-11-09",
+  "source_md": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
+    "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+  },
+  "production_changed": false
+}
