@@ -527,6 +527,17 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-041",
+        "B-EOM-F-048"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F041_F048_contradictory_norm_status.json",
+      "output_section": null,
+      "required_checks": [
+        "При исправлении базы устранить противоречие active/отменён и проверить первичный акт, на который могло опираться примечание. Не менять справочник молча и не переносить неподтверждённую отмену в оценочный эталон."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-042"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F042_SPZ_legend_scope.json",
