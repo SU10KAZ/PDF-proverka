@@ -42,6 +42,13 @@ def main():
         w=csv.writer(f);w.writerow(['ID','Дисциплина','Происхождение','Статус узкого тезиса','Раздел','Формулировка','Доказательства'])
         for r in records:
             d=covered.get(r['candidate_id'],{});w.writerow([r['candidate_id'],r['discipline'],r['phase'],d.get('decision','Первичная проверка не завершена'),d.get('output_section',''),d.get('wording',d.get('required_behavior','')),d.get('decision_file','')])
+    followups=[{'candidate_ids':d['candidate_ids'],'decision_file':d['decision_file'],
+                'output_section':d['output_section'],'required_checks':d['followup_requirements']}
+               for d in decisions if d.get('followup_requirements')]
+    (OUT/'explicit_followups.json').write_text(json.dumps({
+        'scope':'Explicit followup_requirements only; not an exhaustive inventory of uncertainties in limits or atomic_dispositions.',
+        'completion_rule':'A narrow decision and removal from remaining_primary_queue do not close these checks. Resolve them or explicitly freeze the affected claims as unscored before stage 1 closure.',
+        'items':followups},ensure_ascii=False,indent=2)+'\n')
     esc=lambda x:html.escape(str(x))
     body=['<!doctype html><html lang="ru"><meta charset="utf-8"><title>Проверенные выводы и остаток работ</title><style>body{font:16px sans-serif;max-width:1200px;margin:32px auto}td,th{border:1px solid #ccc;padding:9px;text-align:left;vertical-align:top}table{border-collapse:collapse;width:100%}pre{white-space:pre-wrap}</style><h1>Проверенные выводы после двух прогонов</h1>',f'<p>Сохранены291 исходная запись и история25 повторов. Предметные решения вынесены по {len(covered)} записям, объединённым в {len(decisions)} тем. Ещё {len(pending)} записей требуют первичной проверки. Этап1 не закрыт.</p><p>Решение относится только к сформулированному узкому тезису. Это не автоматическое принятие всех рисков и рекомендаций исходной строки.</p>']
     for section in ['Технические замечания','Вопросы и уточнения',None]:
@@ -50,6 +57,10 @@ def main():
             if d['output_section']!=section:continue
             body.append('<tr><td>'+esc(', '.join(d['candidate_ids']))+'</td><td>'+esc(d.get('adjudicator_disposition',d.get('wording',d.get('required_behavior',''))) )+'</td><td>'+esc(d.get('limits',d.get('unsupported_extensions',d.get('claim_refuted',''))))+'</td></tr>')
         body.append('</table>')
+    body.append('<h2>Явно отложенные проверки по разобранным записям</h2><p>Эти задачи сохраняются сверх очереди первичного разбора. Список включает только явно записанные followup_requirements; остальные ограничения доказательств остаются в решениях выше. Наличие узкого решения не означает завершения проверки всей записи.</p><ul>')
+    for f in followups:
+        body.append('<li>'+esc(', '.join(f['candidate_ids']))+': '+esc(' '.join(f['required_checks']))+'</li>')
+    body.append('</ul>')
     body.append('<h2>Остаток работы</h2><p>Сверить оставшиеся записи по источникам, сохранить полезные классические находки и проверить контрольные пары фильтров. Независимые испытания новой версии ещё не проведены.</p>')
     (OUT/'Проверенные_выводы.html').write_text('\n'.join(body)+'</html>')
     print(json.dumps(summary,ensure_ascii=False,indent=2))

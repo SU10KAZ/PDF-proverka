@@ -1,0 +1,28 @@
+{
+  "scope": "Explicit followup_requirements only; not an exhaustive inventory of uncertainties in limits or atomic_dispositions.",
+  "completion_rule": "A narrow decision and removal from remaining_primary_queue do not close these checks. Resolve them or explicitly freeze the affected claims as unscored before stage 1 closure.",
+  "items": [
+    {
+      "candidate_ids": [
+        "B-ITP-F-006"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Установить конкретные блоки питания и инструкции изготовителя; до этого не присваивать доказанное нормативное нарушение и критичность."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-013"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F013_valve_pressure_basis.json",
+      "output_section": null,
+      "required_checks": [
+        "До технического вердикта восстановить регулируемые ветви и общий располагаемый перепад по схеме и смежному АТМ.",
+        "Не переносить сопротивление вторичного контура через теплообменник в баланс первичной ветви.",
+        "Проверить режимы двух клапанов вентиляции по 50% и трёхходовых ГВС; отсутствие этих проверок не считать доказанной ошибкой проекта."
+      ]
+    }
+  ]
+}

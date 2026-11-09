@@ -1,6 +1,7 @@
 {
   "candidate_ids": [
-    "B-ITP-F-025"
+    "B-ITP-F-025",
+    "H-ITP-72b"
   ],
   "decision": "confirmed_internal_calculation_selection_discrepancy",
   "output_section": "Вопросы и уточнения",
@@ -84,5 +85,54 @@
       }
     ]
   },
-  "review_pipeline_gap": "В сохранённой модельной оценке отдельно подтверждён только случай159×4,5. Первично проверены все пять сочетаний исходного тезиса."
+  "review_pipeline_gap": "В сохранённой модельной оценке отдельно подтверждён только случай159×4,5. Первично проверены все пять сочетаний исходного тезиса.",
+  "primary_adjudication": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/ITP72b_primary_TEXT.json",
+    "sha256": "c8023442394ed2250416f2dab16df23a9a0683f86e3485cf50664aca3dccb4e7"
+  },
+  "historical_link": {
+    "control_id": "ITP:72b",
+    "parent": "ITP:72",
+    "engineer_decision_on_derived_atom": null,
+    "deduplication": "Производный тезис H-ITP-72b совпадает с уже проверенной частью классического F-025; не новая независимая находка и не дополнительное восстановление полноты. Остальной состав H-ITP-72 остаётся в очереди.",
+    "register_control": {
+      "control_id": "ITP:72b",
+      "discipline": "ITP",
+      "historical_record": null,
+      "historical_readiness_snapshot": {
+        "control_id": "ITP:72b",
+        "target_wording": "Скорость вторичной вентиляции по собственным исходным данным ПЗ: G=61,12 м³/ч, труба 219×6 мм, v указано 0,66 м/с.",
+        "historical_source_level": "new_authoritative_md_arithmetic_check",
+        "evidence_boundary": "Это проверка внутренней арифметической согласованности документа. Непригодность системы, фактический расход и допустимые потери заново не установлены.",
+        "scoring_status": "requires_exact_atom_and_truth_label_freeze",
+        "whole_row_is_independent_defect": false,
+        "current_variant_result": "not_yet_adjudicated",
+        "historical_AB_assessment": "Подтверждена потеря арифметического атома: A выдаёт проверку, B не выдаёт. По указанным в авторитетном MD данным Dвн=207 мм и v=0,504487 м/с, а не 0,66.",
+        "latest_verified_state": {
+          "recorded_at": 1794011254.7741385,
+          "assessment": "FreshclassicF025 alreadycontains arithmeticcheck; no incrementalrecoverycredit.",
+          "evidence": [
+            "evaluation/ITP_operation_arm_comparison.json"
+          ]
+        },
+        "prior_fields_are_historical_snapshot": true
+      },
+      "current_assertion_ids": [
+        "ITP:72b:velocity"
+      ],
+      "current_wording": [
+        "По указанным в ПЗ 61,12 м³/ч и трубе 219×6 мм: Dвн=207 мм, v=0,504487 м/с против напечатанных 0,66 м/с."
+      ],
+      "accounting_status": "explicit_assertions_recorded",
+      "whole_historical_row_confirmed": false,
+      "open_work": [
+        {
+          "kind": "whole_row_remainder",
+          "required_action": "Проверить, покрывают ли выделенные тезисы весь исходный состав; остаток исторической строки не считать подтверждённым или снятым автоматически.",
+          "status": "not_checked"
+        }
+      ],
+      "result": null
+    }
+  }
 }

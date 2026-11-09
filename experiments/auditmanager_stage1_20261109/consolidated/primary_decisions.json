@@ -1,11 +1,11 @@
 {
   "summary": {
     "candidate_records": 291,
-    "records_with_narrow_primary_decision": 79,
-    "remaining_records": 212,
-    "decision_themes": 63,
+    "records_with_narrow_primary_decision": 81,
+    "remaining_records": 210,
+    "decision_themes": 64,
     "technical_themes": 14,
-    "question_themes": 38,
+    "question_themes": 39,
     "omitted_themes": 11,
     "scope": "Only listed narrow claims; not blanket acceptance of entire source rows.",
     "stage_complete": false,
@@ -1440,7 +1440,8 @@
     },
     {
       "candidate_ids": [
-        "B-ITP-F-025"
+        "B-ITP-F-025",
+        "H-ITP-72b"
       ],
       "decision": "confirmed_internal_calculation_selection_discrepancy",
       "output_section": "Вопросы и уточнения",
@@ -1525,6 +1526,55 @@
         ]
       },
       "review_pipeline_gap": "В сохранённой модельной оценке отдельно подтверждён только случай159×4,5. Первично проверены все пять сочетаний исходного тезиса.",
+      "primary_adjudication": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/ITP72b_primary_TEXT.json",
+        "sha256": "c8023442394ed2250416f2dab16df23a9a0683f86e3485cf50664aca3dccb4e7"
+      },
+      "historical_link": {
+        "control_id": "ITP:72b",
+        "parent": "ITP:72",
+        "engineer_decision_on_derived_atom": null,
+        "deduplication": "Производный тезис H-ITP-72b совпадает с уже проверенной частью классического F-025; не новая независимая находка и не дополнительное восстановление полноты. Остальной состав H-ITP-72 остаётся в очереди.",
+        "register_control": {
+          "control_id": "ITP:72b",
+          "discipline": "ITP",
+          "historical_record": null,
+          "historical_readiness_snapshot": {
+            "control_id": "ITP:72b",
+            "target_wording": "Скорость вторичной вентиляции по собственным исходным данным ПЗ: G=61,12 м³/ч, труба 219×6 мм, v указано 0,66 м/с.",
+            "historical_source_level": "new_authoritative_md_arithmetic_check",
+            "evidence_boundary": "Это проверка внутренней арифметической согласованности документа. Непригодность системы, фактический расход и допустимые потери заново не установлены.",
+            "scoring_status": "requires_exact_atom_and_truth_label_freeze",
+            "whole_row_is_independent_defect": false,
+            "current_variant_result": "not_yet_adjudicated",
+            "historical_AB_assessment": "Подтверждена потеря арифметического атома: A выдаёт проверку, B не выдаёт. По указанным в авторитетном MD данным Dвн=207 мм и v=0,504487 м/с, а не 0,66.",
+            "latest_verified_state": {
+              "recorded_at": 1794011254.7741385,
+              "assessment": "FreshclassicF025 alreadycontains arithmeticcheck; no incrementalrecoverycredit.",
+              "evidence": [
+                "evaluation/ITP_operation_arm_comparison.json"
+              ]
+            },
+            "prior_fields_are_historical_snapshot": true
+          },
+          "current_assertion_ids": [
+            "ITP:72b:velocity"
+          ],
+          "current_wording": [
+            "По указанным в ПЗ 61,12 м³/ч и трубе 219×6 мм: Dвн=207 мм, v=0,504487 м/с против напечатанных 0,66 м/с."
+          ],
+          "accounting_status": "explicit_assertions_recorded",
+          "whole_historical_row_confirmed": false,
+          "open_work": [
+            {
+              "kind": "whole_row_remainder",
+              "required_action": "Проверить, покрывают ли выделенные тезисы весь исходный состав; остаток исторической строки не считать подтверждённым или снятым автоматически.",
+              "status": "not_checked"
+            }
+          ],
+          "result": null
+        }
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-025.json"
     },
     {
@@ -3261,6 +3311,53 @@
       },
       "production_changed": false,
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP44_GVS_maxima.json"
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-006"
+      ],
+      "decision": "unqualified_live_power_instruction_confirmed_severity_and_equipment_conditions_unresolved",
+      "output_section": "Вопросы и уточнения",
+      "review_date": "2026-11-09",
+      "project": "ЖК Событие 6.2, ПД-00542664-ИТП.ТМ",
+      "source_md": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/ITP/document.md",
+        "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+      },
+      "evidence": [
+        {
+          "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+          "start": 227240,
+          "end": 229408,
+          "authoritative_TEXT": "### BLOCK #93 [TEXT]: blk_67b9571de5e74033b6c491043f8c87d1\n\n> **Created:** 2026-10-20 11:49:29 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/PJZxSc2GQsAmXlsS9t1w)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 17 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nKν кзр = 38,20/√0,5 = 53,80 (м³ / ч);\n\nВыбираем клапан «РИДАН» **VFM-2R-80-88**, Kv=88 м³/ч, Ду=80 мм с электроприводом (см. раздел АТМ)\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (38,20/88)² = 0,188 бар;\n\n##### 5. АУПД и расширительные баки\n\nСм. расчетные листы подбора фирмы «SPL».\n\n##### 6. Учёт тепла.\n\n###### Учёт тепловых и массовых потоков.\n\nУчёт тепловых и массовых потоков осуществляется:\n\n- учёт подачи и обратной сетевой воды на вводе – теплосчётчиком ВИС.Т\n\n- учёт подпиточной воды – расходометром ВСХн\n\n- учёт подачи холодной воды для подпитки системы ГВС:\nводосчетчиком тахометрическим ВСХн\n\n(Проект узла учёта на установку теплосчётчика ВИС.Т выполнен отдельным альбомом марки УУТЭ).\n\n##### 7. Указание мер безопасности.\n\n8.1 При выполнении работ, связанных с установкой, профилактикой и ремонтом оборудования должны соблюдаться действующие правила техники безопасности при эксплуатации электроустановок.\n\n8.2 Перед началом работ при монтаже оборудования в щите необходимо изучить расположение в изделии элементов и кабелей, находящихся под высоким напряжением.\n\n8.3 Прокладку и разделение кабелей, а также присоединение их к колодкам необходимо производить только при отключенном напряжении питания.\n\n8.4 Замена предохранителей в блоках питания выполнять при включенном питании.\n\n8.5 К работам по установке, профилактике и ремонту оборудования допускаются лица, прошедшие специальный инструктаж и сдавшие экзамен по технике безопасности.\n\n8.6 Для защиты человека от поражения электрическим током выполнено защитное заземление насосов и всех щитов.\n\n"
+        }
+      ],
+      "wording": "Уточнить пункт 8.4 ПЗ, лист 17: «Замена предохранителей в блоках питания выполнять при включенном питании». Согласовать порядок обслуживания с конкретными блоками питания и инструкциями изготовителя; в текущем пункте условия применимости этого предписания не раскрыты.",
+      "limits": "Прямое предписание подтверждено, но конструкция предохранителей, напряжение, доступность токоведущих частей и режим нагрузки не установлены. Критичность и нарушение конкретного пункта ПУЭ не доказаны. Нельзя утверждать, что раздел не содержит никаких защитных мер: пункты 8.1, 8.5, 8.6 описывают общие правила, подготовку персонала и заземление. Пункт 8.3 касается кабельных работ и не является прямым запретом любой другой операции под напряжением.",
+      "atomic_dispositions": [
+        {
+          "claim": "Пункт 8.4 прямо требует включённое питание",
+          "verdict": "supported"
+        },
+        {
+          "claim": "В самом пункте нет условий по конструкции и нагрузке",
+          "verdict": "supported"
+        },
+        {
+          "claim": "Во всём разделе отсутствуют меры защиты",
+          "verdict": "refuted"
+        },
+        {
+          "claim": "Доказан критический риск и нарушение ПУЭ",
+          "verdict": "not_verified"
+        }
+      ],
+      "engineer_decision": "Отдельное решение инженера для этой классической записи не установлено.",
+      "followup_requirements": [
+        "Установить конкретные блоки питания и инструкции изготовителя; до этого не присваивать доказанное нормативное нарушение и критичность."
+      ],
+      "production_changed": false,
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json"
     },
     {
       "candidate_ids": [
