@@ -852,6 +852,17 @@
     },
     {
       "candidate_ids": [
+        "H-KM-9"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM9_LK5_landing_elevation.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Подтвердить согласованную отметку и базу поАР/КЖ или авторскому уточнению; до этого не предписывать конкретное новое значение.",
+        "Проверить журналы классического поиска поUA-009 перед утверждением этапа, на котором замечание было пропущено."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-002"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
