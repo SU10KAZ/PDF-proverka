@@ -274,11 +274,11 @@ B-EOM-F-030,EOM,classic_usefulness,Первичная проверка не за
 B-EOM-F-031,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-032,EOM,classic_usefulness,commercial_area_inputs_require_coordination,Вопросы и уточнения,"Согласовать площади коммерческих помещений в расчёте ВРУ-К с экспликациями листов 16 и 26: для 7Н указаны 105,4 в расчёте и 108,1 м² в экспликациях, для 8Н — 68,6 и 63,0 м². Уточнить границы расчётной площади и методику принятия мощности перед корректировкой нагрузок.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json
 B-EOM-F-033,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-034,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-035,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-034,EOM,classic_usefulness,specification_quantity_requires_scope_check,Вопросы и уточнения,"Уточнить назначение двух одинаковых строк гофрированной безгалогенной трубы Ø32 по 190 м в СО, лист 6: являются ли они объёмами разных участков или повтором одной потребности. Формальная сумма строк — 380 м.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json
+B-EOM-F-035,EOM,classic_usefulness,specification_quantity_requires_scope_check,Вопросы и уточнения,"Уточнить повтор пары LG1000 по 96 шт. и СМ010620 по 768 шт. в разделе ВРУ-2, СО лист 8. Две пары дают 192 соединителя и 1536 винтов. Указать участки их применения или подтвердить ошибочное повторение.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json
 B-EOM-F-036,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-037,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-038,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-038,EOM,classic_usefulness,specification_quantity_requires_scope_check,Вопросы и уточнения,"Уточнить единицы и количество клипс Ø25/Ø32 на листе 6 СО: указаны 2345 и 190 м, что не задаёт количество отдельных держателей. Представить количество креплений с основанием расчёта.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json
 B-EOM-F-039,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-040,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-041,EOM,classic_usefulness,Первичная проверка не завершена,,,

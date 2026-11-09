@@ -182,6 +182,36 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-034"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Привязать обе строки к трассам и ведомости объёмов до удаления или объединения количества."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-035"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Сверить монтажные узлы, количество стыков и комплектность углов с отдельными соединителями и винтами до изменения количества."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-038"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Установить способ учёта клипс, число держателей по участкам и шагам крепления; проверить, относится ли строка к изделиям или комплекту работ."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-ITP-58"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
