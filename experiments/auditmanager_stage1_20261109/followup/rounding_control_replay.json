@@ -1,0 +1,41 @@
+{
+  "control_id": "PAIR-EOM-ROUNDING-001",
+  "negative_evidence": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+    "sha256": "67b992ccd683b920ed318511bb017858fcb4b875dc661e9988f8a810eb578343"
+  },
+  "positive_evidence": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json",
+    "sha256": "9b98c505b2fdb2cbc3f9bff2b6489f30e19884381c8eec62cf2515fbd5ae81d8"
+  },
+  "source_md": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "rounding_counterexample": {
+    "Py": {
+      "published_sum": "94.5",
+      "synthetic_sum": "94.0996",
+      "rounded_sum": "94.1"
+    },
+    "Pp": {
+      "published_sum": "89.9",
+      "synthetic_sum": "89.4996",
+      "rounded_sum": "89.5"
+    }
+  },
+  "power_bound": {
+    "minimum_possible_S_kVA": "124.6666666666666666666666667",
+    "maximum_reported_S_kVA": "123.25",
+    "intervals_disjoint": true
+  },
+  "assumption": "Nearest rounding at the displayed precision, not an engineering tolerance.",
+  "limits": [
+    "Synthetic loads are not actual project values.",
+    "F003 calculation correctness remains unknown.",
+    "F005 equipment adequacy is not established.",
+    "No model, filter, pipeline or production execution is tested."
+  ],
+  "mathematical_checks_passed": true,
+  "auditmanager_test_executed": false
+}

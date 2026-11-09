@@ -1,0 +1,61 @@
+{
+  "control_id": "PAIR-EOM-ROUNDING-001",
+  "visibility": "Evaluator-only; expected answers and synthetic witness must not be shown to independent discovery before sealed outputs.",
+  "negative": {
+    "candidate_id": "B-EOM-F-003",
+    "evidence": {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+      "sha256": "67b992ccd683b920ed318511bb017858fcb4b875dc661e9988f8a810eb578343"
+    },
+    "expected": "Не объявлять пропускC2518 или техническую ошибку итогов доказанными; сохранить вопрос о точности и составе режима."
+  },
+  "positive": {
+    "candidate_id": "B-EOM-F-005",
+    "evidence": {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json",
+      "sha256": "9b98c505b2fdb2cbc3f9bff2b6489f30e19884381c8eec62cf2515fbd5ae81d8"
+    },
+    "expected": "Сохранить вопрос о несогласованностиP/cosφ/S одного режима; обычное округление опубликованных чисел не объясняетS123,2."
+  },
+  "replay": {
+    "path": "experiments/auditmanager_stage1_20261109/followup/rounding_control_replay.json",
+    "sha256": "5e786e65047933902505c260ccfe5c04d0821a7dc9eef0f937580d0cc1bda687"
+  },
+  "required_assertions": [
+    {
+      "id": "N1",
+      "expected": "Различать сумму опубликованных строк и итог из неокруглённых данных; совпадение разности сC2518 не считать доказанной причиной."
+    },
+    {
+      "id": "N2",
+      "expected": "Возможность округления не объявлять фактом правильности проекта; синтетические0,0636кВт не выдавать за реальные нагрузки."
+    },
+    {
+      "id": "P1",
+      "expected": "Для121,6кВт/cosφ0,97 сохранить расхождение с123,2кВА; при проверке округления использовать точность каждой величины."
+    },
+    {
+      "id": "P2",
+      "expected": "Сохранить независимое указание125,4кВА в расчётеТТ того же ввода."
+    },
+    {
+      "id": "N3",
+      "expected": "Не предписывать замену оборудования по одной арифметической проверке."
+    }
+  ],
+  "failure_conditions": [
+    "Общий порог процента/абсолютной разности снимаетF005",
+    "Любая возможность округления считается доказательством правильностиF003",
+    "Из0,4кВт автоматически выводится пропуск клапанов",
+    "Смешаны режимы до и после компенсации",
+    "Вопросы посчитаны как подтверждённые физические дефекты"
+  ],
+  "evidence_limits": [
+    "Пара проверяет обоснованность выводов по опубликованным числам, не физическую исправность систем.",
+    "Обе записи принадлежат одному известному проекту; независимая инженерная оценка пары отсутствует.",
+    "Исходные неокруглённые нагрузки и иной исторический перерасчётUNI-028 не проверены."
+  ],
+  "readiness": "ready_for_regression_design_with_explicit_engineer_pair_gap",
+  "implementation_test_status": "not_executed",
+  "production_promotion_allowed": false
+}
