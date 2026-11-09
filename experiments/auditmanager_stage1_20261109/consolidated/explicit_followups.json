@@ -963,6 +963,17 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-013"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F013_pipe_standard_designations.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить перечисленные в кандидате узлы листа6 либо оставить эту часть неоцениваемой.",
+        "Установить нормативную базу проекта и содержание релевантных изменений/поправок перед указанием обязательной технической корректировки."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-015"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
