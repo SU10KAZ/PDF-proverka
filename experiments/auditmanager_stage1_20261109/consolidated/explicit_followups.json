@@ -24,6 +24,16 @@
     },
     {
       "candidate_ids": [
+        "H-AR-3"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json",
+      "output_section": null,
+      "required_checks": [
+        "Для окончательной классификации привязать обе отметки+41.270 к конкретной поверхности и проверить деталь порога АР3.2; до этого не использовать как подтверждённую физическую коллизию или доказанный запас80 мм."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AR-59"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json",
