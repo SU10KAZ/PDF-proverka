@@ -858,6 +858,7 @@ def combine_findings_with_targeted(
             link_report = apply_duplicate_links(findings, payload.get("recovery_link_updates", []))
             combined.setdefault("candidate_recovery_reports", []).append({
                 "link_repairs": link_report,
+                "context_retrieval": payload.get("context_retrieval"),
                 "stage": stage, "candidate_decisions": payload.get("candidate_decisions", []),
                 "pending": payload.get("recovery_pending", []), "semantic_verified": False,
             })

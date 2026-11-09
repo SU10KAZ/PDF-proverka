@@ -91,6 +91,7 @@ def build_recovery_passes(output_dir, md_path):
                   'selected_md_pages': selected_pages, 'missing_or_budgeted_md_pages': skipped_pages,
                   'attached_image_block_ids_in_order': image_refs, 'unavailable_image_block_ids': unavailable,
                   'authoritative_md': '\n'.join(chunks), 'context_complete': False,
+                  'md_source': {'path': str(md_path.resolve()), 'sha256': hashlib.sha256(md_path.read_bytes()).hexdigest()},
                   'allowed_source_refs': sorted(set(image_refs) | {r for r, page in block_pages.items() if page in selected_pages and r in text_ids})}
         instructions = '''Review the unlinked candidate_group against the supplied original sources.
 Candidates sharing a graphic are reviewed together: emit one finding per distinct
@@ -107,6 +108,10 @@ reason in Russian, source_refs exact inspected block IDs). For graphic claims wi
 adequate attached images return needs_data, not a confirmed finding. Include evidence
 and exact locations in any finding. Do not invent norms. Preserve useful questions
 as questions; do not convert them into technical defects. Do not omit a decision.
+For needs_data, include context_queries: up to six literal object marks or short
+phrases to search in this project's prepared MD. No regex or historical answer IDs.
+Search may return TEXT/TABLE evidence or GRAPHIC navigation summaries; summaries
+cannot replace an image. If the retrieved text remains insufficient, keep needs_data.
 For duplicate decisions, provide target_finding_ids: the exact IDs of ALL existing
 findings preserving the candidate atoms, and explain the mapping in reason. Never
 add a duplicate finding. Do not infer a target ID from its numbering.

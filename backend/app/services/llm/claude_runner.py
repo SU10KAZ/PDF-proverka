@@ -738,6 +738,11 @@ async def _run_codex_targeted_findings_merge(
             if targeted_pass.stage.startswith("candidate_recovery_"):
                 from backend.app.pipeline.stages.prepare.candidate_recovery import validate_recovery_payload
                 payload = validate_recovery_payload(targeted_pass, payload)
+                from backend.app.pipeline.stages.prepare.recovery_context import build_context_followup
+                followup, search_receipt = build_context_followup(targeted_pass, payload)
+                payload["context_retrieval"] = search_receipt
+                if followup is not None:
+                    passes.append(followup)
             targeted_payloads.append((targeted_pass.stage, payload))
         else:
             logger.warning(
