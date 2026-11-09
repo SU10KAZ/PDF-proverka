@@ -192,6 +192,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-009"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для тезиса о недостаче определить пообъектный состав строки ЩМ в СО и договорную ответственность за ЩМ2/ЩМ3. До этого оставить закупочную ошибку неоцениваемой."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-018"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json",
