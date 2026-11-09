@@ -212,6 +212,36 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-014"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F014_phase_A_current.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для вывода о перегрузке проверить режимы и фазный расчёт, паспорт нагрузки, QF3.21 и допустимый ток кабеля в фактических условиях; пока такой вывод не оценивать как подтверждённый."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-016"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Совместно с B-EOM-F-017 установить фазность наружного блока и подключение; затем проверить фазные токи, QF3.22 и допустимый ток кабеля. До этого перегрузку и8,6А как точный результат оставить неоцениваемыми."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-017"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F017_poles_and_PE_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить паспорт наружного блока и монтажное назначение жил перед выводом об отсутствии PE; до этого критический тезис не включать в положительный эталон."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-018"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json",
