@@ -256,6 +256,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-030"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для автоматического исправления ссылки ПУЭ установить применимый пункт по первоисточнику. До этого конкретную замену и монтажные последствия оставить неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-031"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
