@@ -188,6 +188,16 @@
     },
     {
       "candidate_ids": [
+        "B-VK-F-015"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F015_roof_title_level.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить основную надпись листа15 для оставшейся части исходного тезиса; не считать её содержимое подтверждённым по аналогии с ведомостью."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-VK-F-021"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F021_revision_height.json",
