@@ -4,6 +4,17 @@
   "items": [
     {
       "candidate_ids": [
+        "H-ITP-68"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP68_grooved_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Связать строки FC033E/042E/048E/060E с конкретными оцинкованными участками водоснабжения жилой части и проверить согласованные отступления от ТЗ.",
+        "До подтверждения применимости считать исторический положительный контроль условным; не присваивать 819 подтверждённых нарушений и не снимать принятую инженером находку как ложную."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-ITP-72"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP72_wall_and_velocity.json",
