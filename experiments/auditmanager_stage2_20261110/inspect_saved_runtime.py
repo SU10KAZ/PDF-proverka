@@ -48,7 +48,20 @@ def main():
                 changes.append({'finding_id': key, 'changed_fields': fields,
                                 'before': {k: b[key].get(k) for k in fields},
                                 'after': {k: a[key].get(k) for k in fields}})
-        runs.append({'discipline': discipline, 'saved_status': status.get('status'),
+        final_paths = list((CONTROL / 'inputs' / discipline / 'versions').glob('*/03_analysis/runs/control/03_findings.json'))
+        assert len(final_paths) == 1, (discipline, final_paths)
+        final_path = final_paths[0]
+        final_data = read(final_path)
+        snapshot_data = read(after_path)
+        final_check = {
+            'source': ref(final_path),
+            'version': final_path.parents[3].name,
+            'matches_saved_final_sha': ref(final_path)['sha256'] == status.get('final_sha256'),
+            'parsed_JSON_equals_verify_snapshot': final_data == snapshot_data,
+            'snapshot_bytes_equal_reserialized_final': after_path.read_bytes() == (
+                json.dumps(final_data, ensure_ascii=False, indent=2) + '\n').encode(),
+        }
+        runs.append({'discipline': discipline, 'final_check': final_check, 'saved_status': status.get('status'),
                      'sources': [ref(status_path), ref(before_path), ref(after_path)],
                      'usage_records': status.get('usage', []),
                      'block_progress': status.get('block_progress'),
@@ -70,7 +83,8 @@ def main():
     print(json.dumps({'code_files': len(code), 'changed_since_snapshot': sum(x.get('same_as_historical_snapshot') is False for x in code),
                       'runs': [{'discipline': r['discipline'], 'before': r['before_count'], 'after': r['after_count'],
                                 'removed_ids': r['removed_ids'], 'changed_findings': len(r['changed_findings']),
-                                'final_hash_match': r['saved_final_sha_matches_verify_snapshot']} for r in runs]}, ensure_ascii=False))
+                                'final_hash_match': r['final_check']['matches_saved_final_sha'],
+                                'final_semantic_match': r['final_check']['parsed_JSON_equals_verify_snapshot']} for r in runs]}, ensure_ascii=False))
 
 
 if __name__ == '__main__':
