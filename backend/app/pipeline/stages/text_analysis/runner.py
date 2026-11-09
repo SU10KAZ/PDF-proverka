@@ -301,6 +301,19 @@ async def run_text_analysis(
         current["object_registry_coverage"] = reconcile_object_registry(
             current, set(build_block_page_index(graph)),
         )
+        from .requirement_checks import authoritative_text_blocks, reconcile_requirement_checks
+        from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+        requirement_md = resolve_document_markdown(output_dir)
+        requirement_bytes = requirement_md.read_bytes() if requirement_md else b""
+        requirement_text = requirement_bytes.decode("utf-8")
+        current["requirement_applicability_results"] = reconcile_requirement_checks(
+            current, authoritative_text_blocks(requirement_text),
+        )
+        import hashlib
+        current["requirement_applicability_results"]["source_md"] = (
+            {"path": str(requirement_md), "sha256": hashlib.sha256(requirement_bytes).hexdigest()}
+            if requirement_md else None
+        )
         output_path.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
     except (OSError, ValueError, TypeError, KeyError) as exc:
         error = f"Object balance execution failed: {exc}"

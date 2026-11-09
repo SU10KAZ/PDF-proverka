@@ -247,3 +247,18 @@ technical conflicts in `technical_findings` regardless of whether the consequenc
 is fully quantified. Preserve original claim, uncertainty, severity and evidence;
 section routing is not refutation and must not delete a useful finding. Never mark
 an unsupported technical assertion as confirmed merely by moving it to questions.
+
+## Requirement applicability records
+
+Return `requirement_registry` for project requirements and catalogues used in
+comparisons. Each record has id, source_kind (project_requirement/catalogue/
+normative_candidate), document, revision, requirement_text, scope, stage, execution,
+exceptions, and source_evidence [{block_id, quote}]. Preserve exact primary TEXT
+quotations; mark unknown identity/scope explicitly rather than inventing values.
+Return `requirement_applicability_checks`: requirement_id, object_id from registry,
+applicability (applies/does_not_apply/unknown), reason, scope_evidence [{block_id,
+quote}], and comparison (complies/violates/unknown). Check the actual system,
+phase, execution and exclusions before applying a requirement. A catalogue for a
+different execution does not settle the issue. Missing requirements/calculations
+remain needs-data questions. Normative candidates still require the Norm Resolver;
+this record does not independently verify regulatory content or its edition.

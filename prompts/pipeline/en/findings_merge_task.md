@@ -11,6 +11,10 @@
 
 1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/02_text_analysis.json`
    - `text_findings` (T-001...), `normative_refs_found`, `project_params`
+   - `requirement_applicability_results`: retain the requirement's document,
+     revision, system scope, execution and exclusions. Reported applicability is
+     not independently verified; unresolved scope must not become a blanket
+     violation or a reason to suppress a useful question.
    - `object_registry_coverage`: inspect unresolved objects, source inventory and
      operations. Model-reported completion is not independent proof. Do not infer
      a clean project from empty arrays or analyzed-block flags. Use the exact
