@@ -4,6 +4,16 @@
   "items": [
     {
       "candidate_ids": [
+        "H-AR-39"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Получить деталировку нижнего профиля и привязку к узлу каната; проверить геометрическую совместимость и крепление до подтверждения последствий, предложенных инженером."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AR-F-007"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",

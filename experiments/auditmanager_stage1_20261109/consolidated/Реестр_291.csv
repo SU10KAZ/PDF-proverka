@@ -37,7 +37,7 @@ H-EOM-76,EOM,historical_control,confirmed_document_arithmetic_discrepancy,Воп
 H-EOM-11,EOM,historical_control,confirmed_missing_execution_section_in_supplied_specification,Технические замечания,"Согласовать с СО линии С2513(65м) иС3510(95м): на схемах FRHF5×35, в предоставленном кабельном подразделе такой позиции нет. СтрокаHF5×35 относится к другому исполнению.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM11.json
 H-AR-14,AR,historical_control,Первичная проверка не завершена,,,
 H-AR-35,AR,historical_control,Первичная проверка не завершена,,,
-H-AR-39,AR,historical_control,Первичная проверка не завершена,,,
+H-AR-39,AR,historical_control,engineer_reframed_claim_lower_profile_coordination_retained_spider_conflict_rejected,Вопросы и уточнения,"Уточнить сохранение и конструкцию металлического профиля по нижней грани ОГН-4, указанного в ведомости: узлы показывают спайдеры, зазор min60 и путь каната альпинистов через протектор у парапета. Если профиль сохраняется, показать его сечение, крепление и совместимость с проходом каната; иначе согласовать ведомость с принятым решением.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json
 H-AR-59,AR,historical_control,Первичная проверка не завершена,,,
 H-KM-3,KM,historical_control,confirmed_mark_requires_detail_link,Вопросы и уточнения,"Увязать марку ОГМ26 на плане ЛК6 −0,700 со спецификацией и деталировкой.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM3.json
 H-KM-5,KM,historical_control,Первичная проверка не завершена,,,
