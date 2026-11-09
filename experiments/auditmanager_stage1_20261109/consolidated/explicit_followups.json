@@ -273,6 +273,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-051"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F051_cabinet_label_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Подтвердить единую марку шкафа по ЭМ. До этого физическую неоднозначность и ошибку подключения не включать в подтверждённые технические дефекты."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-054",
         "B-AK-F-055"
       ],
