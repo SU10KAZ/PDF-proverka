@@ -112,5 +112,41 @@
   "arithmetic": "850м по12линиям − (45+45+55+55)м четырёх линий смежного комплекта =650м, как в СО.",
   "required_behavior": "Снять тезис о нехватке200м в данном комплекте. Наличие этих200м в смежном комплекте не установлено; не объявлять дефицит без его проверки.",
   "pair_reference": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json",
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "12линийFRHF5×6 суммарно850м, СО650м",
+      "verdict": "confirmed_linked_primary_inventory"
+    },
+    {
+      "claim": "Четыре линии45+45+55+55м сноской относятся кЭОМ0-1",
+      "verdict": "confirmed_addressed_scope_reference"
+    },
+    {
+      "claim": "В текущем объёме850−200=650м",
+      "verdict": "confirmed_scope_adjusted_arithmetic"
+    },
+    {
+      "claim": "В текущем томе доказан дефицит200м",
+      "verdict": "refuted_specific_shortage"
+    },
+    {
+      "claim": "Эти200м действительно учтены в смежномЭОМ0-1",
+      "verdict": "not_checked"
+    },
+    {
+      "claim": "Любую линию со звёздочкой можно вычитать",
+      "verdict": "not_supported_requires_specific_footnote"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+    "scorable_narrow_claim": "Снять конкретный дефицит200м вЭОМ2-1, сохранив открытый вопрос учёта четырёх адресных линий в смежном томе.",
+    "unscored_claims": [
+      "Фактический учёт и поставка четырёх линийЭОМ0-1"
+    ],
+    "control_pair_readiness": "Адресная отрицательная проверка с инженерным отклонением. Сопоставлять сEOM11: там другого исполнения в проверенном подразделе нет, но граница поставки также ограничивает вывод.",
+    "automatic_filter_authorized": false
+  }
 }

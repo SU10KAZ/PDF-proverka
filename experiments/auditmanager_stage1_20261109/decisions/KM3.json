@@ -17,5 +17,34 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
     "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
   },
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "ОГМ26 присутствует на планеЛК6−0,700",
+      "verdict": "confirmed_linked_graphic_check"
+    },
+    {
+      "claim": "ПоискОГМ26 в57TEXTблоках не дал совпадений",
+      "verdict": "confirmed_bounded_TEXT_search"
+    },
+    {
+      "claim": "Отсутствие деталировки во всехGRAPHIC доказано",
+      "verdict": "not_established"
+    },
+    {
+      "claim": "ОГМ26 следует заменить наОГМ25",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+    "scorable_narrow_claim": "Вопрос об увязке подтверждённой плановой марки со спецификацией и деталировкой.",
+    "unscored_claims": [
+      "Полный графический реестр деталировки",
+      "Правильная марка изделия"
+    ],
+    "control_pair_readiness": "Отрицательный поискTEXT не заменяет проверку графических ведомостей. Историческая пара отсутствующей и найденной деталировки не подтверждена.",
+    "automatic_filter_authorized": false
+  }
 }

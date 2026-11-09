@@ -12862,6 +12862,31 @@
       "limits": "Остальные характеристики подключения этой проверкой не подтверждены.",
       "preservation": "Принимается только изложенный узкий смысл; исходные составные строки и версии модели сохранены.",
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "ЯУ-ДУ2.1 не обозначен на конструкции щитовС2",
+          "verdict": "refuted_direct_graphic_leader_to_cabinet"
+        },
+        {
+          "claim": "Подпись является только кабельной, а не обозначением шкафа",
+          "verdict": "refuted_linked_primary_graphic_check"
+        },
+        {
+          "claim": "Все подключения шкафа проверены и правильны",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Отрицательный контроль точного утверждения об отсутствии местаЯУ-ДУ2.1.",
+        "unscored_claims": [
+          "Прочие характеристики и подключения шкафа",
+          "Все сравнительные детали кровлиС3"
+        ],
+        "control_pair_readiness": "Отдельная положительная пара реально отсутствующего шкафа не установлена; нельзя снимать все замечания о размещении по наличию текста марки.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM8.json"
     },
     {
@@ -16606,6 +16631,42 @@
       "required_behavior": "Снять тезис о нехватке200м в данном комплекте. Наличие этих200м в смежном комплекте не установлено; не объявлять дефицит без его проверки.",
       "pair_reference": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json",
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "12линийFRHF5×6 суммарно850м, СО650м",
+          "verdict": "confirmed_linked_primary_inventory"
+        },
+        {
+          "claim": "Четыре линии45+45+55+55м сноской относятся кЭОМ0-1",
+          "verdict": "confirmed_addressed_scope_reference"
+        },
+        {
+          "claim": "В текущем объёме850−200=650м",
+          "verdict": "confirmed_scope_adjusted_arithmetic"
+        },
+        {
+          "claim": "В текущем томе доказан дефицит200м",
+          "verdict": "refuted_specific_shortage"
+        },
+        {
+          "claim": "Эти200м действительно учтены в смежномЭОМ0-1",
+          "verdict": "not_checked"
+        },
+        {
+          "claim": "Любую линию со звёздочкой можно вычитать",
+          "verdict": "not_supported_requires_specific_footnote"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Снять конкретный дефицит200м вЭОМ2-1, сохранив открытый вопрос учёта четырёх адресных линий в смежном томе.",
+        "unscored_claims": [
+          "Фактический учёт и поставка четырёх линийЭОМ0-1"
+        ],
+        "control_pair_readiness": "Адресная отрицательная проверка с инженерным отклонением. Сопоставлять сEOM11: там другого исполнения в проверенном подразделе нет, но граница поставки также ограничивает вывод.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-EOM-2.json"
     },
     {
@@ -16672,6 +16733,44 @@
       },
       "production_changed": false,
       "preservation": "Сохранить узкий проверенный смысл классического замечания; совпадение с исторической строкой не считать новым независимым дефектом.",
+      "atomic_dispositions": [
+        {
+          "claim": "К10 при47,08м³/ч:ПЗ21,29м против техлиста21,91м",
+          "verdict": "confirmed_saved_document_comparison"
+        },
+        {
+          "claim": "Разница0,62м",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Принципиальная схема проверена в этом решении",
+          "verdict": "not_checked"
+        },
+        {
+          "claim": "Насос не обеспечивает требуемый напор",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Инженерное отклонение опровергает сами числа",
+          "verdict": "not_supported_rejection_concerns_utility"
+        },
+        {
+          "claim": "0,62м —универсальный допуск",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Один вопрос об увязке параметров выбранногоК10; не удваиватьH-ITP-63/F018.",
+        "unscored_claims": [
+          "Подпись на принципиальной схеме",
+          "Фактический режим и кривая сети",
+          "Пригодность оборудования"
+        ],
+        "control_pair_readiness": "Различие расчётной потребности и рабочей точки сохранять как контекст; доказанной пары пригодного/непригодного насоса нет.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json"
     },
     {
@@ -16894,6 +16993,42 @@
       },
       "production_changed": false,
       "preservation": "Сохранить узкий проверенный смысл классического замечания; совпадение с исторической строкой не считать новым независимым дефектом.",
+      "atomic_dispositions": [
+        {
+          "claim": "ТЗ5.18.3.1 требует Код работ, в проверенных шапкахСОPDF24–38 его нет",
+          "verdict": "confirmed_bounded_document_comparison"
+        },
+        {
+          "claim": "Код изделия заменяет Код работ",
+          "verdict": "not_supported_distinct_fields"
+        },
+        {
+          "claim": "Код отсутствует во всех переданных файлах включаяExcel",
+          "verdict": "not_checked"
+        },
+        {
+          "claim": "Монтаж невозможен",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Требование обязательно для всех проектов",
+          "verdict": "not_supported_project_specific_TZ"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Вопрос о выполнении требования приложенногоТЗ в предоставленнойСО; не технический дефект оборудования.",
+        "unscored_claims": [
+          "ОтдельныеExcel и сметные файлы",
+          "ПрименимостьТЗ к этапу проекта: см.B-ITP-F-040"
+        ],
+        "control_pair_readiness": "Инженерное отклонение вне технического профиля не опровергает отсутствие поля. Подтверждённой пары отсутствующего/достаточного сметного комплекта нет.",
+        "automatic_filter_authorized": false
+      },
+      "related_decisions": [
+        "B-ITP-F-040.json"
+      ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-ITP-64.json"
     },
     {
@@ -19902,6 +20037,35 @@
         "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
       },
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "ОГМ26 присутствует на планеЛК6−0,700",
+          "verdict": "confirmed_linked_graphic_check"
+        },
+        {
+          "claim": "ПоискОГМ26 в57TEXTблоках не дал совпадений",
+          "verdict": "confirmed_bounded_TEXT_search"
+        },
+        {
+          "claim": "Отсутствие деталировки во всехGRAPHIC доказано",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "ОГМ26 следует заменить наОГМ25",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Вопрос об увязке подтверждённой плановой марки со спецификацией и деталировкой.",
+        "unscored_claims": [
+          "Полный графический реестр деталировки",
+          "Правильная марка изделия"
+        ],
+        "control_pair_readiness": "Отрицательный поискTEXT не заменяет проверку графических ведомостей. Историческая пара отсутствующей и найденной деталировки не подтверждена.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM3.json"
     },
     {
@@ -22509,6 +22673,35 @@
       "limits": "Буквальная запись x0 не доказывает закупку физической трубы с нулевой стенкой. Привязка к конкретной плановой линии не подтверждена.",
       "production_changed": false,
       "preservation": "Сохранить уточнение типоразмера, исключить утверждение о физически нулевой стенке фактически поставленной трубы.",
+      "atomic_dispositions": [
+        {
+          "claim": "В строкеСО д50x0,5,2м,ProAqua, код отсутствует",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "Неоднозначно задано изделие в данной строке",
+          "verdict": "confirmed_product_designation_question"
+        },
+        {
+          "claim": "Физически закуплена труба с нулевой стенкой",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Связь этой строки с указанными плановыми линиями проверена",
+          "verdict": "not_checked"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Сохранить уточнение типоразмера конкретной строкиСО; H-VK-14/F007 один предмет проверки.",
+        "unscored_claims": [
+          "Графическая часть исторического тезиса",
+          "Правильное изделие и фактическая поставка"
+        ],
+        "control_pair_readiness": "Нет отдельной исторической пары правильного/неправильного изделия. Буквальную записьx0 не превращать в доказательство физически невозможной поставки.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK14.json"
     },
     {
@@ -23059,6 +23252,36 @@
       "limits": "Не вычислять количество креплений по общей длине без шага и схемы крепления. Фактическая недопоставка не установлена.",
       "preservation": "Полезная классическая находка F-010 уже есть в базовом прогоне. Сохранение не считать новым приростом.",
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "СтрокаК1.1Ø100 присутствует, количество креплений пусто",
+          "verdict": "confirmed_existing_table_evidence"
+        },
+        {
+          "claim": "Количество можно вывести из63,2м без шага и схемы",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Фактически крепления недопоставлены",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Историческая и классическая записи означают две новые находки",
+          "verdict": "refuted_same_row_baseline_preservation"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Сохранить одну находку о незаполненном количестве конкретной строки; это сохранение базового результата, не новый прирост.",
+        "unscored_claims": [
+          "Необходимое количество по схеме и шагу",
+          "Полная проверка вторичного аргумента63,2м",
+          "Фактическая поставка"
+        ],
+        "control_pair_readiness": "Пустая предусмотренная строка не равнозначна отсутствию изделия на объекте. Отдельная пара по комплектности поставки отсутствует.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json"
     },
     {

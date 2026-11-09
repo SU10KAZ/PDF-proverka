@@ -12,10 +12,10 @@
     "candidate_records": 291,
     "decision_themes": 247,
     "themes_with_explicit_followups": 165,
-    "themes_with_direct_atomic_dispositions": 240,
+    "themes_with_direct_atomic_dispositions": 247,
     "themes_with_linked_claim_disposition": 1,
     "themes_with_direct_control_pair": 150,
-    "themes_with_scope_review": 40,
+    "themes_with_scope_review": 47,
     "stage_complete": false
   },
   "items": [
@@ -7792,7 +7792,7 @@
         "H-EOM-8"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM8.json",
-      "decision_sha256": "b13d4fdd8488e37a1f0230b789c3f6f046b45011542fc50071090d57f5148302",
+      "decision_sha256": "cd3198220c028d4cb8d6bd25723a7249f7515defaad806528f8b4543fb000f5f",
       "original_claims": [
         {
           "candidate_id": "H-EOM-8",
@@ -7802,7 +7802,20 @@
       ],
       "narrow_output": "Снять утверждение об отсутствии ЯУ-ДУ2.1 на плане: обозначение связано с показанным ящиком.",
       "output_section": null,
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "ЯУ-ДУ2.1 не обозначен на конструкции щитовС2",
+          "verdict": "refuted_direct_graphic_leader_to_cabinet"
+        },
+        {
+          "claim": "Подпись является только кабельной, а не обозначением шкафа",
+          "verdict": "refuted_linked_primary_graphic_check"
+        },
+        {
+          "claim": "Все подключения шкафа проверены и правильны",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": {
         "path": "experiments/auditmanager_stage1_20261109/followup/EOM8_primary_refutation.json",
@@ -7815,8 +7828,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Отрицательный контроль точного утверждения об отсутствии местаЯУ-ДУ2.1.",
+        "unscored_claims": [
+          "Прочие характеристики и подключения шкафа",
+          "Все сравнительные детали кровлиС3"
+        ],
+        "control_pair_readiness": "Отдельная положительная пара реально отсутствующего шкафа не установлена; нельзя снимать все замечания о размещении по наличию текста марки.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -9965,7 +9988,7 @@
         "H-EOM-2"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/H-EOM-2.json",
-      "decision_sha256": "c80f17c2fd3b390d90beb6f53f4aaac809e7d50f686b1e924bf2b6f2dc24557e",
+      "decision_sha256": "f7823980b4e029cabf07d5c2c6cc23c351a9370b6b4c1d2c21be2e4d40ad7237",
       "original_claims": [
         {
           "candidate_id": "H-EOM-2",
@@ -9975,7 +9998,32 @@
       ],
       "narrow_output": "Снять тезис о нехватке200м в данном комплекте. Наличие этих200м в смежном комплекте не установлено; не объявлять дефицит без его проверки.",
       "output_section": null,
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "12линийFRHF5×6 суммарно850м, СО650м",
+          "verdict": "confirmed_linked_primary_inventory"
+        },
+        {
+          "claim": "Четыре линии45+45+55+55м сноской относятся кЭОМ0-1",
+          "verdict": "confirmed_addressed_scope_reference"
+        },
+        {
+          "claim": "В текущем объёме850−200=650м",
+          "verdict": "confirmed_scope_adjusted_arithmetic"
+        },
+        {
+          "claim": "В текущем томе доказан дефицит200м",
+          "verdict": "refuted_specific_shortage"
+        },
+        {
+          "claim": "Эти200м действительно учтены в смежномЭОМ0-1",
+          "verdict": "not_checked"
+        },
+        {
+          "claim": "Любую линию со звёздочкой можно вычитать",
+          "verdict": "not_supported_requires_specific_footnote"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": {
         "path": "experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json",
@@ -9990,8 +10038,17 @@
       "other_pair_evidence": {
         "pair_reference": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json"
       },
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Снять конкретный дефицит200м вЭОМ2-1, сохранив открытый вопрос учёта четырёх адресных линий в смежном томе.",
+        "unscored_claims": [
+          "Фактический учёт и поставка четырёх линийЭОМ0-1"
+        ],
+        "control_pair_readiness": "Адресная отрицательная проверка с инженерным отклонением. Сопоставлять сEOM11: там другого исполнения в проверенном подразделе нет, но граница поставки также ограничивает вывод.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -10000,7 +10057,7 @@
         "B-ITP-F-018"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json",
-      "decision_sha256": "24e6f0f53c9ee8a8d34a6ed773cf5ad6bffa72fcca9a489c004ea4289dd5f2ab",
+      "decision_sha256": "ec886ea171d16f2c81f3c31963104eeae8dd14400b7a53af1c76b644ff88c610",
       "original_claims": [
         {
           "candidate_id": "H-ITP-63",
@@ -10015,7 +10072,32 @@
       ],
       "narrow_output": "Уточнить напор выбранного насоса отопления2-й зоны IL50/140-4/2-R, артикул2786092: при расходе47,08м³/ч ПЗ указывает21,29м, технический лист21,91м.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "К10 при47,08м³/ч:ПЗ21,29м против техлиста21,91м",
+          "verdict": "confirmed_saved_document_comparison"
+        },
+        {
+          "claim": "Разница0,62м",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Принципиальная схема проверена в этом решении",
+          "verdict": "not_checked"
+        },
+        {
+          "claim": "Насос не обеспечивает требуемый напор",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Инженерное отклонение опровергает сами числа",
+          "verdict": "not_supported_rejection_concerns_utility"
+        },
+        {
+          "claim": "0,62м —универсальный допуск",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": null,
@@ -10028,8 +10110,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Один вопрос об увязке параметров выбранногоК10; не удваиватьH-ITP-63/F018.",
+        "unscored_claims": [
+          "Подпись на принципиальной схеме",
+          "Фактический режим и кривая сети",
+          "Пригодность оборудования"
+        ],
+        "control_pair_readiness": "Различие расчётной потребности и рабочей точки сохранять как контекст; доказанной пары пригодного/непригодного насоса нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -10038,7 +10131,7 @@
         "B-ITP-F-041"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-64.json",
-      "decision_sha256": "d2e11da002404613df2534ee46b7bc74e7f592477ba2275686a51ceb9f42b317",
+      "decision_sha256": "a19c036e2038bc59c340d9147430c370a05bc48bbdcb8c2de0e60d8f2d5f245b",
       "original_claims": [
         {
           "candidate_id": "H-ITP-64",
@@ -10053,7 +10146,28 @@
       ],
       "narrow_output": "Уточнить выполнение п.5.18.3.1 ТЗ: в шапках СО PDF24–38 нет требуемой колонки «Код работ». «Код изделия» является другой графой.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "ТЗ5.18.3.1 требует Код работ, в проверенных шапкахСОPDF24–38 его нет",
+          "verdict": "confirmed_bounded_document_comparison"
+        },
+        {
+          "claim": "Код изделия заменяет Код работ",
+          "verdict": "not_supported_distinct_fields"
+        },
+        {
+          "claim": "Код отсутствует во всех переданных файлах включаяExcel",
+          "verdict": "not_checked"
+        },
+        {
+          "claim": "Монтаж невозможен",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Требование обязательно для всех проектов",
+          "verdict": "not_supported_project_specific_TZ"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Сметные файлы и отдельно переданные Excel не проверены; непоставка оборудования не доказана.",
@@ -10066,8 +10180,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Вопрос о выполнении требования приложенногоТЗ в предоставленнойСО; не технический дефект оборудования.",
+        "unscored_claims": [
+          "ОтдельныеExcel и сметные файлы",
+          "ПрименимостьТЗ к этапу проекта: см.B-ITP-F-040"
+        ],
+        "control_pair_readiness": "Инженерное отклонение вне технического профиля не опровергает отсутствие поля. Подтверждённой пары отсутствующего/достаточного сметного комплекта нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -11689,7 +11813,7 @@
         "B-KM-F-017"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM3.json",
-      "decision_sha256": "4c349d7fefcaf4d4e12d3d3fbc20a60299d1424881d989363fcf30c3f0947fff",
+      "decision_sha256": "b453c43a58d1054330e0ac62fc71b0488ebbfcc1bca7aabe16011cd7d124e215",
       "original_claims": [
         {
           "candidate_id": "H-KM-3",
@@ -11704,7 +11828,24 @@
       ],
       "narrow_output": "Увязать марку ОГМ26 на плане ЛК6 −0,700 со спецификацией и деталировкой.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "ОГМ26 присутствует на планеЛК6−0,700",
+          "verdict": "confirmed_linked_graphic_check"
+        },
+        {
+          "claim": "ПоискОГМ26 в57TEXTблоках не дал совпадений",
+          "verdict": "confirmed_bounded_TEXT_search"
+        },
+        {
+          "claim": "Отсутствие деталировки во всехGRAPHIC доказано",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "ОГМ26 следует заменить наОГМ25",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": {
         "path": "experiments/auditmanager_stage1_20261109/KM3_primary_GRAPHIC.json",
@@ -11717,8 +11858,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Вопрос об увязке подтверждённой плановой марки со спецификацией и деталировкой.",
+        "unscored_claims": [
+          "Полный графический реестр деталировки",
+          "Правильная марка изделия"
+        ],
+        "control_pair_readiness": "Отрицательный поискTEXT не заменяет проверку графических ведомостей. Историческая пара отсутствующей и найденной деталировки не подтверждена.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -13078,7 +13229,7 @@
         "B-VK-F-007"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK14.json",
-      "decision_sha256": "2a7e5b295d113d1634d6a77e0dd46ccc9f24e0846cf551c7e452ffe0c09d4fc9",
+      "decision_sha256": "570852e44331a5bb4b36806002728b354e19f8b7079a17ab6c5abf7f6d7d1619",
       "original_claims": [
         {
           "candidate_id": "H-VK-14",
@@ -13093,7 +13244,24 @@
       ],
       "narrow_output": "Уточнить типоразмер строки полипропиленовой трубы д50x0, 5,2м, ProAqua: отсутствует однозначное обозначение стенки/изделия.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "В строкеСО д50x0,5,2м,ProAqua, код отсутствует",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "Неоднозначно задано изделие в данной строке",
+          "verdict": "confirmed_product_designation_question"
+        },
+        {
+          "claim": "Физически закуплена труба с нулевой стенкой",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Связь этой строки с указанными плановыми линиями проверена",
+          "verdict": "not_checked"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": {
         "path": "experiments/auditmanager_stage1_20261109/VK14_primary_TEXT.json",
@@ -13106,8 +13274,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Сохранить уточнение типоразмера конкретной строкиСО; H-VK-14/F007 один предмет проверки.",
+        "unscored_claims": [
+          "Графическая часть исторического тезиса",
+          "Правильное изделие и фактическая поставка"
+        ],
+        "control_pair_readiness": "Нет отдельной исторической пары правильного/неправильного изделия. Буквальную записьx0 не превращать в доказательство физически невозможной поставки.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -13302,7 +13480,7 @@
         "B-VK-F-010"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json",
-      "decision_sha256": "2f4a9b9b1f7d3b720f80c7cece934df8a2d4a11bfea6aceb20488dacbc1c2eef",
+      "decision_sha256": "b175eeb75cd23a55a2ea601623e65898bc8dd4756c4fe16cf2e8aa8ad3e83f72",
       "original_claims": [
         {
           "candidate_id": "H-VK-35",
@@ -13317,7 +13495,24 @@
       ],
       "narrow_output": "Указать количество комплектов крепления трубопровода К1.1Ø100: строка предусмотрена в таблице креплений, графа количества пуста.",
       "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "СтрокаК1.1Ø100 присутствует, количество креплений пусто",
+          "verdict": "confirmed_existing_table_evidence"
+        },
+        {
+          "claim": "Количество можно вывести из63,2м без шага и схемы",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Фактически крепления недопоставлены",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Историческая и классическая записи означают две новые находки",
+          "verdict": "refuted_same_row_baseline_preservation"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Не вычислять количество креплений по общей длине без шага и схемы крепления. Фактическая недопоставка не установлена.",
@@ -13327,8 +13522,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных тезисов с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Сохранить одну находку о незаполненном количестве конкретной строки; это сохранение базового результата, не новый прирост.",
+        "unscored_claims": [
+          "Необходимое количество по схеме и шагу",
+          "Полная проверка вторичного аргумента63,2м",
+          "Фактическая поставка"
+        ],
+        "control_pair_readiness": "Пустая предусмотренная строка не равнозначна отсутствию изделия на объекте. Отдельная пара по комплектности поставки отсутствует.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
