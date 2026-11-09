@@ -31,7 +31,10 @@ def main():
              'scope':'Only listed narrow claims; not blanket acceptance of entire source rows.','stage_complete':False,'production_promotion_allowed':False}
     (OUT/'primary_decisions.json').write_text(json.dumps({'summary':summary,'decisions':decisions},ensure_ascii=False,indent=2)+'\n')
     pending=[{'candidate_id':r['candidate_id'],'discipline':r['discipline'],'phase':r['phase'],'flags':r['current_flags'],
+              'original_claim':r['original_candidate']['claim'],
+              'model_atoms_to_verify':r['effective_provisional_assessment']['atoms'],
               'remaining_claims':[a for a in r['effective_provisional_assessment']['atoms'] if a['verdict']=='needs_data'],
+              'coverage_warning':'Все исходные тезисы требуют сверки; список needs_data не отражает пропущенные моделью тезисы и не подтверждает остальные.',
               'next_action':'Проверить первичные факты и контрпример; неопределённые последствия не превращать в обязательный вопрос инженеру.'}
              for r in records if r['candidate_id'] not in covered]
     (OUT/'remaining_primary_queue.json').write_text(json.dumps(pending,ensure_ascii=False,indent=2)+'\n')
