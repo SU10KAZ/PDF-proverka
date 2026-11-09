@@ -67,7 +67,7 @@ B-AK-F-018,AK,classic_usefulness,Первичная проверка не зав
 B-AK-F-019,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-020,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-021,AK,classic_usefulness,Первичная проверка не завершена,,,
-B-AK-F-022,AK,classic_usefulness,Первичная проверка не завершена,,,
+B-AK-F-022,AK,classic_usefulness,confirmed_control_cable_schedule_balance_mismatch,Технические замечания,"Для шкафа ШАУВ-2-К4ПЧ согласовать количества контрольного кабеля1×2×0,75 в перечне листа26 и КЖ листов5–6: по журналу КСПВПГнг(А)-HF —120м, КСПЭВПГнг(А)-HF —50м; в перечне соответственно50 и105м. Сверить назначения и длины линий, затем исправить соответствующий документ.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json
 B-AK-F-023,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-024,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-025,AK,classic_usefulness,Первичная проверка не завершена,,,

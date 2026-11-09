@@ -57,6 +57,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-022"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Перед назначением исправляемого количества проверить требуемое исполнение и длину каждой линии. Если требуется вывод о закупке, отдельно сверить сводную спецификацию и источник заказа. До этого последствия поставки оставить неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-035"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
