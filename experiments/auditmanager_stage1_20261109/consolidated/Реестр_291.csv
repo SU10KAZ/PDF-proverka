@@ -43,7 +43,7 @@ H-KM-3,KM,historical_control,confirmed_mark_requires_detail_link,Вопросы 
 H-KM-5,KM,historical_control,Первичная проверка не завершена,,,
 H-KM-9,KM,historical_control,Первичная проверка не завершена,,,
 H-VK-14,VK,historical_control,confirmed_ambiguous_product_size,Вопросы и уточнения,"Уточнить типоразмер строки полипропиленовой трубы д50x0, 5,2м, ProAqua: отсутствует однозначное обозначение стенки/изделия.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK14.json
-H-VK-20,VK,historical_control,Первичная проверка не завершена,,,
+H-VK-20,VK,historical_control,sensor_counts_require_object_mapping,Вопросы и уточнения,"Согласовать ведомость датчиков засора К1 с местами установки: в СО указано 25 GS-Blockage D110, на двух аксонометриях техпространства отмечены 22 выноски ДЗ (8 + 14), а схемы основных стояков содержат 30 обозначений. Общие указания требуют датчик на каждом канализационном стояке в техпространстве, исключая опуски от приборов 1-го этажа. Нужна поименная увязка стояков, датчиков, продолжений и исключений, после которой уточняется СО и/или графика.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json
 H-EOM-27,EOM,historical_control,Первичная проверка не завершена,,,
 H-EOM-111,EOM,historical_control,Первичная проверка не завершена,,,
 B-AK-F-001,AK,classic_usefulness,Первичная проверка не завершена,,,

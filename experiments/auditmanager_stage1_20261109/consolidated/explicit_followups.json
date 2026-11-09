@@ -177,6 +177,17 @@
     },
     {
       "candidate_ids": [
+        "H-VK-20"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Связать каждый основной стояк с нижним продолжением, местом датчика и исключением для опусков 1-го этажа; проверить ВК0-2 и АК. До этой увязки не оценивать 30 как доказанную потребность в приборах.",
+        "Проверить первичные результаты и журналы AuditManager для определения этапа потери; исторический failure_stage не является доказательством причины реализации."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-VK-32"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK32_drain_count_identity.json",
