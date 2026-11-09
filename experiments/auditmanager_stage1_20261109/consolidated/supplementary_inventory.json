@@ -1,0 +1,1447 @@
+{
+  "purpose": "Evaluator-only inventory of saved supplementary references, not a new verification of their truth or current availability.",
+  "summary": {
+    "archived_references": 51,
+    "themes_with_explicit_references": 29,
+    "targets_with_referenced_context": 44,
+    "verified_local_copies": 0
+  },
+  "rules": [
+    "Retain original access dates, failed access, quotation limits and uncertainty verbatim.",
+    "A URL or a recorded SHA without a local path is not a verified available file; this does not prove no copy exists elsewhere.",
+    "Absence of these explicit fields does not establish that a theme needs no supplementary evidence.",
+    "Do not exclude all targets of a theme because one supplementary source is absent; local document conflicts can have independent support.",
+    "Discovery must receive the same general source-access capabilities in both variants, not this answer-bearing list of targeted URLs.",
+    "If a required external source fails during a run, record availability separately from search failure; do not silently remove the target after seeing results."
+  ],
+  "entries": [
+    {
+      "reference_id": "AK_F029_CO_reference_and_parameter_scope:external_sources:0:AK_F029_CO_reference_and_parameter_scope",
+      "theme": "AK_F029_CO_reference_and_parameter_scope",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+        "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0",
+        "json_pointer": "/external_sources/0"
+      },
+      "archived_reference": {
+        "url": "https://www.analitpribor-smolensk.ru/files/rek_listovki_2017/stg-3.pdf",
+        "access_date": "2026-11-09",
+        "verified_fact": "Лист изготовителя, страница1: пороги20/100мг/м³ и высота1,5–1,8м для исполненияCO.",
+        "limits": "Рекламно-технический лист не заменяет руководство конкретной поставки и нормативную проверку всей системы; нормативный документ для высоты не назван."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AK_F029_CO_reference_and_parameter_scope:external_sources:1:AK_F029_CO_reference_and_parameter_scope",
+      "theme": "AK_F029_CO_reference_and_parameter_scope",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+        "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0",
+        "json_pointer": "/external_sources/1"
+      },
+      "archived_reference": {
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_296440/92d969e26a4326c5d02fa79b8f9cf4994ee5633b/",
+        "access_date": "2026-11-09",
+        "verified_fact": "Воспроизведённый текст постановления13.02.2018№25, пункт3, отменяет постановление30.04.2003№76 о введенииГН2.2.5.1313-03.",
+        "limits": "Прочитан первичный нормативный текст в правовой системе, не официальная публикация. Сам акт2018года на странице также отмечен утратившим силу; применять его как действующий заменяющий норматив нельзя."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AK_F030_norm_reference_precision:external_sources:0:AK_F030_norm_reference_precision",
+      "theme": "AK_F030_norm_reference_precision",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+        "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66",
+        "json_pointer": "/external_sources/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/ad7aee01-bcb3-495e-a46f-6393783f864c",
+        "access_date": "2026-11-09",
+        "verified_fact": "Официальная карточка подтверждает обозначение ГОСТ 21.408-2013 и соответствующую тему рабочей документации автоматизации."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AK_F030_norm_reference_precision:external_sources:1:AK_F030_norm_reference_precision",
+      "theme": "AK_F030_norm_reference_precision",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+        "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66",
+        "json_pointer": "/external_sources/1"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/78247e24-7498-426f-991f-83d320a7c0bc",
+        "access_date": "2026-11-09",
+        "verified_fact": "Полное название СП 7.13130.2013 дополнительно содержит слова «Требования пожарной безопасности»."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AK_F031_schedule_identifiers:external_evidence:0:AK_F031_schedule_identifiers",
+      "theme": "AK_F031_schedule_identifiers",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+        "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://www.dkc.ru/ru/catalog/189/35341/",
+        "checked": "2026-11-09",
+        "facts": "Карточка производителя DKC:35341 — перфорированный лоток100×100 L3000. Подтверждает соответствие строки22.4 и несоответствие назначению треугольных бирок22.9.",
+        "scope": "Идентичность изделия, не наличие на дату проекта или условия поставки."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AK_F064_reference_register_scope:external_evidence:0:AK_F064_reference_register_scope",
+      "theme": "AK_F064_reference_register_scope",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F064_reference_register_scope.json",
+        "sha256": "5d142f45af5de6a7c5002d60bedc3b7517fad1dc38ff05f0d8616263c90ca6ee",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://meganorm.ru/Data2/1/4293720/4293720404.pdf",
+        "source": "Копия официального издания ГОСТ Р21.101-2020, Стандартинформ2020, на стороннем хостинге",
+        "checked": "2026-11-09",
+        "pages_pdf_zero_based": [
+          11,
+          12,
+          28
+        ],
+        "clauses": [
+          "4.2.8",
+          "4.3.3",
+          "4.3.5",
+          "ПриложениеА:комментарий к4.3.5"
+        ],
+        "facts": "Раздел ведомости определяется через категорию4.2.8: стандарты/ТУ на строительные изделия и типовые чертежи конструкций,изделий,узлов. Общие указания отдельно содержат нормативный перечень; рекомендуемый комментарий исключает из него уже внесённые в ведомость документы.",
+        "scope": "Прочитано содержание указанной проектом редакции2020,не установлена её применимость на дату утверждения и не выполнена проверка редакции2026."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AK_F065_norm_replacement_applicability:external_sources:0:AK_F065_norm_replacement_applicability",
+      "theme": "AK_F065_norm_replacement_applicability",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F065_norm_replacement_applicability.json",
+        "sha256": "ee0e2ec0de3444283d4ddfdf2bd26ef2a9bd08ac871d666d8989d6842015220b",
+        "json_pointer": "/external_sources/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/17bc12e8-6579-4145-b141-56855e772e7f",
+        "access_date": "2026-11-09",
+        "verified_fact": "Карточка Росстандарта: ГОСТ Р 21.101-2026 действует; заменяемый стандарт ГОСТ Р 21.101-2020; приказ 129-ст от 12.02.2026; введён 01.04.2026.",
+        "scope": "Проверены реквизиты и связь замены в карточке. Полный стандарт, поправка ИУС11-2026 и условия применения к конкретному проекту не проверены."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F001_sp_editions:external_evidence:0:AR_F001_sp_editions",
+      "theme": "AR_F001_sp_editions",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+        "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/ce11282f-fcd7-4159-ae52-c52b93eb8ab8",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "СП48.13330.2011 имеет статус Заменен; заменяющийСП48.13330.2019; дата ограничения25.06.2020."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F001_sp_editions:external_evidence:1:AR_F001_sp_editions",
+      "theme": "AR_F001_sp_editions",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+        "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/278f4ffa-b29b-4733-b8ac-d9a5ff3775cc",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "СП48.13330.2019 введён25.06.2020, приказ861/пр от24.12.2019; заменяетСП48.13330.2011."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F001_sp_editions:external_evidence:2:AR_F001_sp_editions",
+      "theme": "AR_F001_sp_editions",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+        "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+        "json_pointer": "/external_evidence/2"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/cc37e08e-41ea-43bb-b675-3ddac4f4bc63",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "СП45.13330.2012 имеет статус Заменен, заменяющийСП45.13330.2017. Поле даты ограничения содержит17.04.2019; оно сохранено как значение карточки, не подменено датой введения редакции2017."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F002_partial_and_territorial_norm_status:external_evidence:0:AR_F002_partial_and_territorial_norm_status",
+      "theme": "AR_F002_partial_and_territorial_norm_status",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+        "sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/2c391324-de10-4c36-9bfa-89a61d1ce505",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "30547-97: статус Действует, полная замена не указана; замена в части на32805-2014 ограничена требованиями к кровельным битумосодержащим основным материалам."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F002_partial_and_territorial_norm_status:external_evidence:1:AR_F002_partial_and_territorial_norm_status",
+      "theme": "AR_F002_partial_and_territorial_norm_status",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+        "sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/3d4caa14-1369-4bc4-96b1-6177ead7525d",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "28013-98: в поле На территории РФ пользоваться указанГОСТ Р58766-2019. Поле заменяющего документа содержит прочерк: территориальную связь не подменять полной межгосударственной заменой."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F002_partial_and_territorial_norm_status:external_evidence:2:AR_F002_partial_and_territorial_norm_status",
+      "theme": "AR_F002_partial_and_territorial_norm_status",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+        "sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338",
+        "json_pointer": "/external_evidence/2"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/changesdetails/e9852211-149b-42e3-aff3-13804540789a",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "Карточка изменения28013-98 сообщает утрату силы на территорииРФ с01.07.2022 и действиеГОСТ Р58766-2019; дата регистрации13.12.2019, номер1397-ст."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F014_insulation_identity:external_evidence:0:AR_F014_insulation_identity",
+      "theme": "AR_F014_insulation_identity",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F014_insulation_identity.json",
+        "sha256": "c99e19d272729607a77cc1d3873ca5be57009c2c5bd329ffa7cca5d64fc4b181",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://www.tn.ru/catalogue/teploizolyatsionnye-plity-pir/plity-teploizolyatsionnye-logicpir-prof-f-f/",
+        "title": "ТЕХНОНИКОЛЬ: LOGICPIR PROF Ф/Ф",
+        "accessed": "2026-11-09",
+        "quote": "Плиты сделаны из полиизоцианурата и кашированы с двух сторон фольгой.",
+        "scope": "Идентификация материала PIR по первичному описанию производителя; текущая карточка, не архив поставки. Свойства всей кровельной системы и применимость конкретного аналога не проверялись."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F021_unsubstantiated_norm_status:external_evidence:0:AR_F021_unsubstantiated_norm_status",
+      "theme": "AR_F021_unsubstantiated_norm_status",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F021_unsubstantiated_norm_status.json",
+        "sha256": "f6f409e343eb3ef75475098e5b271ef13e019b2bc4fb85541ffb4fc52e7190da",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/7ddd6a16-19a0-4b85-84eb-aa13390e8cc8",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "СП49.13330.2010 имеет название Безопасность труда в строительстве. Часть1. Общие требования и статус Действует. В полях заменяемых и заменяющих документов стоят прочерки.",
+        "limits": "Карточка не устанавливает сама по себе действительность СНиП12-03-2001 и не является актом его отмены/замены. Прочерк не доказывает отсутствие преемственности."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F022_stone_standard_replacement:external_evidence:0:AR_F022_stone_standard_replacement",
+      "theme": "AR_F022_stone_standard_replacement",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F022_stone_standard_replacement.json",
+        "sha256": "1dd7e7ba2bce83c8f4f7697c001d4116d7cd5d9c00d611f8014b2ffacd2d67b2",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/96193d57-19c5-4501-9490-76f7b43afe8b",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "Карточка ГОСТ9480-2024 указывает заменяемый9480-2012, дату введения01.06.2025 и приказ1887-ст от12.12.2024. Область включает облицовку, полы и лестницы; по одному слову тротуарная в проекте нельзя автоматически объявить стандарт неприменимым."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "AR_F022_stone_standard_replacement:external_evidence:1:AR_F022_stone_standard_replacement",
+      "theme": "AR_F022_stone_standard_replacement",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F022_stone_standard_replacement.json",
+        "sha256": "1dd7e7ba2bce83c8f4f7697c001d4116d7cd5d9c00d611f8014b2ffacd2d67b2",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/68c08136-0a6f-41a9-bf81-a7d63c3b2ae5",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "Карточка9480-2012 имеет статус Заменен и указывает9480-2024 как заменяющий."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "B-VK-F-029:primary_source:0:B-VK-F-029",
+      "theme": "B-VK-F-029",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-029.json",
+        "sha256": "61c33a57b18b840b9ea0afde4e0c119000cb7e6afeec5dda123f622efcff2e94",
+        "json_pointer": "/primary_source"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/af5fc85b-5026-47e0-bbb7-55540922f67c",
+        "access_date": "2026-11-09",
+        "quote": "Трубы и фасонные части из полипропилена для систем внутренней канализации. Технические условия",
+        "scope": "Официальная карточка стандарта; полный нормативный текст и пригодность конкретных изделий не проверялись."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM5_shunt_trip_identity:external_evidence:0:EOM5_shunt_trip_identity",
+      "theme": "EOM5_shunt_trip_identity",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM5_shunt_trip_identity.json",
+        "sha256": "d8d84614d752aab554ea481335da63b34bd3a39419682483c124627b5df5b1b4",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://api.systeme.ru/product/media/download/990886",
+        "accessed": "2026-11-09",
+        "document": "Руководство DEKraft2025, артикулы28000DEK–28021DEK и28022DEK",
+        "location": "раздел10 PDF12; таблица5 PDF13",
+        "observation": "РН-300-2Р применим только к двухполюсным ВА-300. Таблица различает ВА-30116А:28002DEK1P и28003DEK2P. Это ограничение конкретного аксессуара, не всей серии и не любых аналогов.",
+        "verification": "Прочитан текст официального PDF. Сервис screenshots вернул Cache miss; визуальная проверка страниц не заявляется."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM5_shunt_trip_identity:external_evidence:1:EOM5_shunt_trip_identity",
+      "theme": "EOM5_shunt_trip_identity",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM5_shunt_trip_identity.json",
+        "sha256": "d8d84614d752aab554ea481335da63b34bd3a39419682483c124627b5df5b1b4",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://www.dek.ru/tovar/28002DEK",
+        "accessed": "2026-11-09",
+        "observation": "Официальная карточка идентифицирует28002DEK как ВА-3011P16А20кА. Артикул в проекте не установлен."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM_F041_F048_contradictory_norm_status:external_evidence:0:EOM_F041_F048_contradictory_norm_status",
+      "theme": "EOM_F041_F048_contradictory_norm_status",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F041_F048_contradictory_norm_status.json",
+        "sha256": "777df2fb3800db17423feed421e17427a9394ad86256c34011b7650b31fdc47f",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/974cc100-ffdd-460a-9865-f35d4f55ea80",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "ГОСТ Р50462-2009 имеет статус Действует. В полях замены/отмены и На территории РФ пользоваться нет указания33542-2015.",
+        "limits": "Статус карточки относится к моменту проверки; юридическая история возможных актов отдельно не восстановлена."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM_F041_F048_contradictory_norm_status:external_evidence:1:EOM_F041_F048_contradictory_norm_status",
+      "theme": "EOM_F041_F048_contradictory_norm_status",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F041_F048_contradictory_norm_status.json",
+        "sha256": "777df2fb3800db17423feed421e17427a9394ad86256c34011b7650b31fdc47f",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/ea6fcbd7-13d2-4fdd-a653-858a784e4a96",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "ГОСТ33542-2015 введён01.10.2016, приказ1515-ст от09.10.2015; поле заменяемого документа пустое. Дата введения нового документа не доказывает отмену50462-2009."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM_F046_new_reference_identity:external_evidence:0:EOM_F046_new_reference_identity",
+      "theme": "EOM_F046_new_reference_identity",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+        "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/17bc12e8-6579-4145-b141-56855e772e7f",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "ОбозначениеГОСТ Р21.101-2026, введён01.04.2026 приказом129-ст от12.02.2026; статусДействует."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM_F046_new_reference_identity:external_evidence:1:EOM_F046_new_reference_identity",
+      "theme": "EOM_F046_new_reference_identity",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+        "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/45fc74f0-6fce-4163-8982-f2a89c8d1792",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "ГОСТ Р50571.5.54-2024 введён01.08.2024 приказом898-ст от04.07.2024. Название: Электроустановки низковольтные. Часть5-54. Выбор и монтаж электрического оборудования. Заземляющие устройства и защитные проводники."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM_F046_new_reference_identity:external_evidence:2:EOM_F046_new_reference_identity",
+      "theme": "EOM_F046_new_reference_identity",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+        "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315",
+        "json_pointer": "/external_evidence/2"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/40528e45-0061-4e4f-816d-8789a254389f",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "СП6.13130.2025 имеет статусДействует, дата введения29.06.2026, приказМЧС1263 от29.12.2025. Название соответствует проектному без учёта регистра и пунктуации.",
+        "limits": "Карточка использована для обозначения, названия и даты; её поле заменяемого документа не использовано для выводов о преемственности других редакций."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM_F047_unsubstantiated_norm_status:external_evidence:0:EOM_F047_unsubstantiated_norm_status",
+      "theme": "EOM_F047_unsubstantiated_norm_status",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F047_unsubstantiated_norm_status.json",
+        "sha256": "f04e2b4063049458130984b879e82b2425d856e3a0c06759420be45498de9757",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/7ddd6a16-19a0-4b85-84eb-aa13390e8cc8",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "СП49.13330.2010 имеет название Безопасность труда в строительстве. Часть1. Общие требования и статус Действует. В полях заменяемых и заменяющих документов стоят прочерки.",
+        "limits": "Карточка не устанавливает сама по себе действительность СНиП12-03-2001 и не является актом его отмены/замены. Прочерк не доказывает отсутствие преемственности."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM_F049_lightning_reference_title:external_evidence:0:EOM_F049_lightning_reference_title",
+      "theme": "EOM_F049_lightning_reference_title",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+        "sha256": "4584797c55ba058a83a66f9c599d6383a81c40397467675ecfb4e337504858db",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://files.stroyinf.ru/Data2/1/4294853/4294853905.pdf",
+        "source_type": "Копия издания первичного документа в сборнике НТЦ ПБ2017, сторонний хостинг",
+        "accessed": "2026-11-09",
+        "pdf_page_1_based": 7,
+        "printed_page": 68,
+        "observation": "Заголовок РД34.21.122-87: Инструкция по устройству молниезащиты зданий и сооружений. На странице указано утверждение Главтехуправлением Минэнерго СССР12.10.87. Название всего сборника на обложке длиннее и не использовано вместо заголовка РД."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "EOM_F049_lightning_reference_title:external_evidence:1:EOM_F049_lightning_reference_title",
+      "theme": "EOM_F049_lightning_reference_title",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+        "sha256": "4584797c55ba058a83a66f9c599d6383a81c40397467675ecfb4e337504858db",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://krovlirussia.ru/wp-content/uploads/2019/02/SO-153-34.21.122-2003-Instrukcija-po-ustrojstvu-molniezashhity-zdanij-sooruzhenij-i-promyshlennyh-kommunikacij.pdf",
+        "source_type": "Копия издания МЭИ2004 первичного документа, сторонний хостинг",
+        "accessed": "2026-11-09",
+        "pdf_pages_1_based": [
+          1,
+          2
+        ],
+        "observation": "Титул и колонтитул связываютСО153-34.21.122-2003 с названием Инструкция по устройству молниезащиты зданий, сооружений и промышленных коммуникаций; утверждение приказом Минэнерго30.06.2003 №280."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP17_grooved_connection_identity:external_evidence:0:ITP17_grooved_connection_identity",
+      "theme": "ITP17_grooved_connection_identity",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP17_grooved_connection_identity.json",
+        "sha256": "86d4789b355603010fb36e5634f9f707854e9747a4637168699bba57a468ab33",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://www.ogneborets.com/catalog/product/mufta_gibkaya_gruvlok_dinarm_fc/",
+        "accessed": "2026-11-09",
+        "observation": "Первичная карточка указанного проектом поставщика содержит варианты73,0 и76,1 и требует подбора по наружному размеру трубы. Назначение включает стальные и оцинкованные трубы. Это не таблица соответствия артикулам и не подтверждение конкретного сопряжения."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP17_grooved_connection_identity:external_evidence:1:ITP17_grooved_connection_identity",
+      "theme": "ITP17_grooved_connection_identity",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP17_grooved_connection_identity.json",
+        "sha256": "86d4789b355603010fb36e5634f9f707854e9747a4637168699bba57a468ab33",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://www.ogneborets.com/upload/iblock/95f/0v7v4gjmwoylnngkuku2blww3cl4k8ez/fc_fm_dinarm_no.pdf",
+        "accessed": "2026-11-09",
+        "status": "unavailable",
+        "observation": "Историческая ссылка совпадает с документом92 текущей карточки. Повторный web-запрос и переход по ссылке не открыли PDF; прямое скачивание завершилось SSL handshake failure. Отсутствие доступа не является опровержением содержания."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F028_reducer_designations:external_evidence:0:ITP_F028_reducer_designations",
+      "theme": "ITP_F028_reducer_designations",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+        "sha256": "948c401ded92dc7baf8da111f58e08619ee6485d56c8a1167192c2fd338a3e81",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://www.zaar.ru/gosty/gost-17378-2001.pdf",
+        "accessed": "2026-11-09",
+        "document": "Копия ГОСТ17378-2001, исходное издание2002 на стороннем домене",
+        "pdf_sha256": "e946ae36767b69c38f6f6803f9200d24ae891bfcb0956591f338fadb908a30f0",
+        "location": "PDF7, печатная5, таблица2",
+        "observation": "Непосредственно просмотрена таблица:DN40,D45 имеетD1=25/32/38; началоDN50,D57 имеетD1=25. СтолбцыDN,D,D1 разделены. Это проверка текста стандарта, не торгового пересказа; актуальная редакция со всеми изменениями не установлена.",
+        "visual_verification": "Скачан PDF и просмотрен растр страницы7 после ошибки screenshot веб-инструмента."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F032_channel_standard_scope:external_evidence:0:ITP_F032_channel_standard_scope",
+      "theme": "ITP_F032_channel_standard_scope",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F032_channel_standard_scope.json",
+        "sha256": "2a2861ef488cb53b24ae648891bf66e9912e56d0c64403e708afb229da0649d4",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/0fc80304-935d-46d2-9b0a-4f4716dfdbd0",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "title": "ГОСТ 8278-83 Швеллеры стальные гнутые равнополочные. Сортамент",
+        "checked_sections": [
+          "Заглавие на русском языке",
+          "Область применения"
+        ],
+        "observation": "Официальная карточка относит стандарт к гнутому равнополочному профилю. Изготовление выполняется профилегибочным оборудованием; исходная рулонная сталь может быть как холоднокатаной, так и горячекатаной. Это различает тип профиля и тип заготовки.",
+        "limits": "Таблицы сортамента и характеристики конкретной стали по карточке не проверены. Текущий статус стандарта не использован как доказательство применимости к историческому проекту."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F033_replaced_product_standards:external_evidence:0:ITP_F033_replaced_product_standards",
+      "theme": "ITP_F033_replaced_product_standards",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+        "sha256": "d8b8c313183679e564f305522d3a0c60a3ac6011a65f0e86b54d4d0a7278e6ff",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/66ebf93e-1d81-4202-b092-e10a05ad5c1d",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "Карточка ГОСТ33259-2015 включает12820-80 в список заменяемых; дата введения01.04.2016, приказ443-ст от26.05.2015.",
+        "checked_sections": [
+          "Регистрация в фонде",
+          "Ссылочные данные"
+        ]
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F033_replaced_product_standards:external_evidence:1:ITP_F033_replaced_product_standards",
+      "theme": "ITP_F033_replaced_product_standards",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+        "sha256": "d8b8c313183679e564f305522d3a0c60a3ac6011a65f0e86b54d4d0a7278e6ff",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/fb93ae06-e51e-4319-a768-ddb23cc46f4a",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "Карточка14918-80 имеет статус Заменен и указывает14918-2020 как заменяющий.",
+        "checked_sections": [
+          "Статус",
+          "Ссылочные данные"
+        ]
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F033_replaced_product_standards:external_evidence:2:ITP_F033_replaced_product_standards",
+      "theme": "ITP_F033_replaced_product_standards",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+        "sha256": "d8b8c313183679e564f305522d3a0c60a3ac6011a65f0e86b54d4d0a7278e6ff",
+        "json_pointer": "/external_evidence/2"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/176e3435-29c7-4891-9217-afcf4ae3f16d",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "Карточка14918-2020 указывает дату введения01.12.2020, приказ332-ст от30.06.2020 и заменяемый14918-80.",
+        "checked_sections": [
+          "Регистрация в фонде",
+          "Ссылочные данные"
+        ]
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F034_mixed_norm_references:external_evidence:0:ITP_F034_mixed_norm_references",
+      "theme": "ITP_F034_mixed_norm_references",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+        "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://www.mos.ru/upload/documents/files/4171/Prikazot14_05_2025N511ObytverjdeniiPraviltehnicheskoieksplyataciiobektovteplosnabjeniyai_Tekst.pdf",
+        "accessed": "2026-11-09",
+        "location": "PDF1, пункты2–3 приказа; PDF2,п2(5)Правил",
+        "observation": "Текст приказа511 на государственном портале: отмена115 с01.09.2025, вступление511 той же датой; область включает тепловые пункты. Служебная шапка выгрузки «Документ в силу не вступил» отражает состояние выгрузки и не заменяет календарные положения акта."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F034_mixed_norm_references:external_evidence:1:ITP_F034_mixed_norm_references",
+      "theme": "ITP_F034_mixed_norm_references",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+        "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://publication.pravo.gov.ru/document/0001202506020074",
+        "accessed": "2026-11-09",
+        "status": "timeout",
+        "observation": "Карточка официального опубликования не открылась; чтение оригинального скана не заявляется. Использован текст акта наmos.ru."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F034_mixed_norm_references:external_evidence:2:ITP_F034_mixed_norm_references",
+      "theme": "ITP_F034_mixed_norm_references",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+        "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+        "json_pointer": "/external_evidence/2"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/TrList/85",
+        "accessed": "2026-11-09",
+        "observation": "ПереченьРосстандарта содержитСП74.13330.2023 сСНиП3.05.03-85 в наименовании; сосуществование этих обозначений не доказывает несовместимости требований."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F034_mixed_norm_references:external_evidence:3:ITP_F034_mixed_norm_references",
+      "theme": "ITP_F034_mixed_norm_references",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+        "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+        "json_pointer": "/external_evidence/3"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/f993f3a4-3988-459e-9a8f-e3de5db96e5d",
+        "accessed": "2026-11-09",
+        "observation": "КарточкаСП74.13330.2023:Тепловые сети, введение20.01.2024. Не используется для вывода об отмене каждого отдельного положенияСНиП."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F052_unsubstantiated_norm_status:external_evidence:0:ITP_F052_unsubstantiated_norm_status",
+      "theme": "ITP_F052_unsubstantiated_norm_status",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F052_unsubstantiated_norm_status.json",
+        "sha256": "2f8a002cdcb34f772d26f0e861355cba8ae759942434a6b2b0a0089235183584",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/7ddd6a16-19a0-4b85-84eb-aa13390e8cc8",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "observation": "СП49.13330.2010 имеет название Безопасность труда в строительстве. Часть1. Общие требования и статус Действует. В полях заменяемых и заменяющих документов стоят прочерки.",
+        "limits": "Карточка не устанавливает сама по себе действительность СНиП12-03-2001 и не является актом его отмены/замены. Прочерк не доказывает отсутствие преемственности."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "ITP_F053_standard_title:external_evidence:0:ITP_F053_standard_title",
+      "theme": "ITP_F053_standard_title",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F053_standard_title.json",
+        "sha256": "48b25ee12d05eb09a1826215610c1a59dfe0f759cbf315a2d0f57949a5950513",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/e6b363b3-4682-45dc-9258-c165ca7943a3",
+        "publisher": "Росстандарт",
+        "accessed": "2026-11-09",
+        "checked_sections": [
+          "Заглавие на русском языке",
+          "Обозначение"
+        ],
+        "title": "СП510.1325800.2022 — Тепловые пункты и системы внутреннего теплоснабжения",
+        "limits": "Проверено название; содержание пункта7.2 и применимость изменений к проекту не оценивались."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "KM12_F022_anchor_installation_identity:external_evidence:0:KM12_F022_anchor_installation_identity",
+      "theme": "KM12_F022_anchor_installation_identity",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json",
+        "sha256": "b9d5cb7748465536b642a9edc3df0d3d5d897d8df415e46fe603482443a9aaa5",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://files-ask.hilti.com/original/nx/nx46agjzzw.pdf",
+        "source": "DIBt ETA-11/0374 от03.11.2022, размещеноHilti",
+        "sha256": "b1ca63d30d142df5b0b2a967b78f2123ffd1670e10b047da7e00af4cf56f7ed7",
+        "checked": "2026-11-09",
+        "visual_pages": [
+          6,
+          11,
+          12
+        ],
+        "facts": "Титул:применение вбетоне без трещин. ТаблицаB6,стр12:три установкиM10;hnom50/60/90,hef40/50/80,hmin100/120/160мм. При стандартном моменте25Нм smin50мм,cmin50/40/40мм. При максимальном моменте35Нм отдельныеусловия:smin40,cmin150мм.",
+        "scope": "Проверена конкретная редакцияETA,не тождество поставляемого изделия,не самая новая редакция и не расчёт конкретного узла."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "KM_F001_norm_editions_scope:external_evidence:0:KM_F001_norm_editions_scope",
+      "theme": "KM_F001_norm_editions_scope",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F001_norm_editions_scope.json",
+        "sha256": "33b3aa3bc7d3e7470afa0640da907a872316eb10bda4279b180e36cca8f558de",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/sp/details/43076552-945c-4733-81c2-cfbe454e1d6d",
+        "checked": "2026-11-09",
+        "facts": "Карточка Росстандарта: СП16.13330.2017 действует, введён28.08.2017, заменяет СП16.13330.2011. Это статус документа, не вывод о применимости всех положений к данному проекту."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "KM_F001_norm_editions_scope:external_evidence:1:KM_F001_norm_editions_scope",
+      "theme": "KM_F001_norm_editions_scope",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F001_norm_editions_scope.json",
+        "sha256": "33b3aa3bc7d3e7470afa0640da907a872316eb10bda4279b180e36cca8f558de",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/0dc9d007-7d8c-446a-9efc-0f651f36dd9a",
+        "checked": "2026-11-09",
+        "facts": "Карточка Росстандарта: ГОСТ23118-2012 заменён ГОСТ23118-2019. Конкретные требования изготовления и приёмки не сопоставлены."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "KM_F013_pipe_standard_designations:external_evidence:0:KM_F013_pipe_standard_designations",
+      "theme": "KM_F013_pipe_standard_designations",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F013_pipe_standard_designations.json",
+        "sha256": "a15f78ba84e466ec6c47f29ec3e77b047613bf2a079f141e886a4882d67ab649",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://uvedns.gostinfo.ru/uveddetails?id=189902",
+        "source": "Уведомление об утверждении стандарта, gostinfo.ru",
+        "checked": "2026-11-09",
+        "facts": "ГОСТ8732-2025 введён01.03.2026 взаменГОСТ8732-78; регистрация1681-ст от10.12.2025.",
+        "scope": "Метаданные утверждения и замены; не проверка конкретных требований к трубе проекта."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "KM_F013_pipe_standard_designations:external_evidence:1:KM_F013_pipe_standard_designations",
+      "theme": "KM_F013_pipe_standard_designations",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F013_pipe_standard_designations.json",
+        "sha256": "a15f78ba84e466ec6c47f29ec3e77b047613bf2a079f141e886a4882d67ab649",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost?month=0&page=330&search=&year=0",
+        "source": "КаталогРосстандарта",
+        "checked": "2026-11-09",
+        "facts": "8732-2025 отмечен действующим,8732-78 заменённым."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "KM_F013_pipe_standard_designations:external_evidence:2:KM_F013_pipe_standard_designations",
+      "theme": "KM_F013_pipe_standard_designations",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F013_pipe_standard_designations.json",
+        "sha256": "a15f78ba84e466ec6c47f29ec3e77b047613bf2a079f141e886a4882d67ab649",
+        "json_pointer": "/external_evidence/2"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/changes?month=6&page=5&search=&year=2026",
+        "source": "КаталогизмененийРосстандарта",
+        "checked": "2026-11-09",
+        "facts": "Указана поправка к8732-2025,ИУС6-2026; содержание поправки не проверено."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "KM_F025_standard_title_editorial:external_evidence:0:KM_F025_standard_title_editorial",
+      "theme": "KM_F025_standard_title_editorial",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F025_standard_title_editorial.json",
+        "sha256": "3f8d7c7073427759289a2b6f7d9c0bfa350602d05a9aca89b1e6a7dd04534045",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://protect.gost.ru/gost/details/4c481bc9-0ed8-4b4e-8c10-b1faf216d295",
+        "source": "Официальная карточкаРосстандарта",
+        "checked": "2026-11-09",
+        "facts": "Наименование:Прокат листовой горячекатаный.Сортамент; статусДействует; введение01.09.2016; указана поправкаИУС1-2022.",
+        "scope": "Проверены карточка,наименование и текущий статус,не весь нормативный текст."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "VK_F005_fitting_pressure:external_evidence:0:VK_F005_fitting_pressure",
+      "theme": "VK_F005_fitting_pressure",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F005_fitting_pressure.json",
+        "sha256": "d664c9be4e8783c858f95081a7bdd835b22159b57c485a4df5adae1a0408346b",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://www.proaqua.pro/catalog/fitingi/fitingi-dlya-vnutrenney-besshumnoy-kanalizatsii/otvod-45-pro-aqua-stilte-plus/",
+        "title": "PRO AQUA: Отвод45° Stilte Plus",
+        "accessed": "2026-11-09",
+        "scope": "Карточка производителя связывает STPL1011045 с отводом110×45°, материал — минералонаполненный полипропилен. Подтверждение идентичности марки, не архив конкретной поставки."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "VK_F005_fitting_pressure:external_evidence:1:VK_F005_fitting_pressure",
+      "theme": "VK_F005_fitting_pressure",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F005_fitting_pressure.json",
+        "sha256": "d664c9be4e8783c858f95081a7bdd835b22159b57c485a4df5adae1a0408346b",
+        "json_pointer": "/external_evidence/1"
+      },
+      "archived_reference": {
+        "url": "https://www.proaqua.pro/upload/exchange/files/024446.pdf",
+        "title": "PRO AQUA STILTE PLUS — паспорт, техническое описание и инструкция",
+        "accessed": "2026-11-09",
+        "pages_pdf_zero_based": [
+          1,
+          3
+        ],
+        "quote": "Герметичность раструбного соединения при внутреннем давлении воды, не менее",
+        "scope": "Текст паспорта указывает0,05 МПа для этого показателя, описывает внутреннюю канализацию и безнапорные технологические трубопроводы; в номенклатуре присутствует STPL1011045. Не трактовать минимальное испытательное значение как максимальное рабочее давление. Использован текст PDF; получение снимка страницы3 через веб-инструмент завершилось Cache miss, визуальная проверка таблицы паспорта не заявляется."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    },
+    {
+      "reference_id": "VK_F006_test_criterion:external_evidence:0:VK_F006_test_criterion",
+      "theme": "VK_F006_test_criterion",
+      "source": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F006_test_criterion.json",
+        "sha256": "8de36f9d965c639b3b294ae1a2230ff52558f1750c107d647263ae1d8bb996f5",
+        "json_pointer": "/external_evidence/0"
+      },
+      "archived_reference": {
+        "url": "https://api.faufcc.ru/api/assets/b99368ec-ff75-458c-b1ba-654a6b67c585",
+        "title": "ФАУ ФЦС: СП 73.13330.2016, официальное издание Москва 2016",
+        "accessed": "2026-11-09",
+        "pdf_page_index": 34,
+        "clause": "7.5.1",
+        "quote": "путем одновременного открытия 75 % санитарных приборов, подключенных к проверяемому участку",
+        "scope": "Подтверждает формулировку базового официального издания. Изменения и редакция, применимые к дате проекта, пока не проверены; юридическое нарушение не установлено."
+      },
+      "verified_local_copy": null,
+      "availability": "no_verified_local_path_in_record",
+      "current_network_access": "not_requested"
+    }
+  ],
+  "target_context_links": [
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+      "route": "question",
+      "context_reference_ids": [
+        "AK_F029_CO_reference_and_parameter_scope:external_sources:0:AK_F029_CO_reference_and_parameter_scope",
+        "AK_F029_CO_reference_and_parameter_scope:external_sources:1:AK_F029_CO_reference_and_parameter_scope"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7752ed01f36756fff7f3",
+      "route": "negative",
+      "context_reference_ids": [
+        "AK_F029_CO_reference_and_parameter_scope:external_sources:0:AK_F029_CO_reference_and_parameter_scope",
+        "AK_F029_CO_reference_and_parameter_scope:external_sources:1:AK_F029_CO_reference_and_parameter_scope"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
+      "route": "question",
+      "context_reference_ids": [
+        "AK_F029_CO_reference_and_parameter_scope:external_sources:0:AK_F029_CO_reference_and_parameter_scope",
+        "AK_F029_CO_reference_and_parameter_scope:external_sources:1:AK_F029_CO_reference_and_parameter_scope"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:9a595b6986b86b78f7cb",
+      "route": "negative",
+      "context_reference_ids": [
+        "AK_F029_CO_reference_and_parameter_scope:external_sources:0:AK_F029_CO_reference_and_parameter_scope",
+        "AK_F029_CO_reference_and_parameter_scope:external_sources:1:AK_F029_CO_reference_and_parameter_scope"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+      "route": "question",
+      "context_reference_ids": [
+        "AK_F030_norm_reference_precision:external_sources:0:AK_F030_norm_reference_precision",
+        "AK_F030_norm_reference_precision:external_sources:1:AK_F030_norm_reference_precision"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+      "route": "question",
+      "context_reference_ids": [
+        "AK_F030_norm_reference_precision:external_sources:0:AK_F030_norm_reference_precision",
+        "AK_F030_norm_reference_precision:external_sources:1:AK_F030_norm_reference_precision"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+      "route": "technical",
+      "context_reference_ids": [
+        "AK_F031_schedule_identifiers:external_evidence:0:AK_F031_schedule_identifiers"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+      "route": "technical",
+      "context_reference_ids": [
+        "AK_F031_schedule_identifiers:external_evidence:0:AK_F031_schedule_identifiers"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+      "route": "technical",
+      "context_reference_ids": [
+        "AK_F031_schedule_identifiers:external_evidence:0:AK_F031_schedule_identifiers"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
+      "route": "negative",
+      "context_reference_ids": [
+        "AK_F064_reference_register_scope:external_evidence:0:AK_F064_reference_register_scope"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AK_F065_norm_replacement_applicability:d53a7df3ef467306402d",
+      "route": "question",
+      "context_reference_ids": [
+        "AK_F065_norm_replacement_applicability:external_sources:0:AK_F065_norm_replacement_applicability"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AR_F001_sp_editions:0fa6c5d50247757e829d",
+      "route": "question",
+      "context_reference_ids": [
+        "AR_F001_sp_editions:external_evidence:0:AR_F001_sp_editions",
+        "AR_F001_sp_editions:external_evidence:1:AR_F001_sp_editions",
+        "AR_F001_sp_editions:external_evidence:2:AR_F001_sp_editions"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AR_F001_sp_editions:8f90690c3dc52ad03760",
+      "route": "question",
+      "context_reference_ids": [
+        "AR_F001_sp_editions:external_evidence:0:AR_F001_sp_editions",
+        "AR_F001_sp_editions:external_evidence:1:AR_F001_sp_editions",
+        "AR_F001_sp_editions:external_evidence:2:AR_F001_sp_editions"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AR_F002_partial_and_territorial_norm_status:a1b917235764b9e63b56",
+      "route": "question",
+      "context_reference_ids": [
+        "AR_F002_partial_and_territorial_norm_status:external_evidence:0:AR_F002_partial_and_territorial_norm_status",
+        "AR_F002_partial_and_territorial_norm_status:external_evidence:1:AR_F002_partial_and_territorial_norm_status",
+        "AR_F002_partial_and_territorial_norm_status:external_evidence:2:AR_F002_partial_and_territorial_norm_status"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AR_F002_partial_and_territorial_norm_status:06e66d3f9cf1ce259b54",
+      "route": "negative",
+      "context_reference_ids": [
+        "AR_F002_partial_and_territorial_norm_status:external_evidence:0:AR_F002_partial_and_territorial_norm_status",
+        "AR_F002_partial_and_territorial_norm_status:external_evidence:1:AR_F002_partial_and_territorial_norm_status",
+        "AR_F002_partial_and_territorial_norm_status:external_evidence:2:AR_F002_partial_and_territorial_norm_status"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AR_F014_insulation_identity:20063319c847e004daca",
+      "route": "technical",
+      "context_reference_ids": [
+        "AR_F014_insulation_identity:external_evidence:0:AR_F014_insulation_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "AR_F022_stone_standard_replacement:7774ac535ffb20fdcbdb",
+      "route": "question",
+      "context_reference_ids": [
+        "AR_F022_stone_standard_replacement:external_evidence:0:AR_F022_stone_standard_replacement",
+        "AR_F022_stone_standard_replacement:external_evidence:1:AR_F022_stone_standard_replacement"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "B-VK-F-029:d083cf366c333ad81c4a",
+      "route": "negative",
+      "context_reference_ids": [
+        "B-VK-F-029:primary_source:0:B-VK-F-029"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM5_shunt_trip_identity:946dc28da1dfa089e8c3",
+      "route": "negative",
+      "context_reference_ids": [
+        "EOM5_shunt_trip_identity:external_evidence:0:EOM5_shunt_trip_identity",
+        "EOM5_shunt_trip_identity:external_evidence:1:EOM5_shunt_trip_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM5_shunt_trip_identity:877b6fefac02ba992ea1",
+      "route": "question",
+      "context_reference_ids": [
+        "EOM5_shunt_trip_identity:external_evidence:0:EOM5_shunt_trip_identity",
+        "EOM5_shunt_trip_identity:external_evidence:1:EOM5_shunt_trip_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM_F041_F048_contradictory_norm_status:35536aa9bdef77ffbaf1",
+      "route": "negative",
+      "context_reference_ids": [
+        "EOM_F041_F048_contradictory_norm_status:external_evidence:0:EOM_F041_F048_contradictory_norm_status",
+        "EOM_F041_F048_contradictory_norm_status:external_evidence:1:EOM_F041_F048_contradictory_norm_status"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:49e98cd23b9141b479ed",
+      "route": "negative",
+      "context_reference_ids": [
+        "EOM_F046_new_reference_identity:external_evidence:0:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:1:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:2:EOM_F046_new_reference_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:07b64d2a81e03ae2bf52",
+      "route": "negative",
+      "context_reference_ids": [
+        "EOM_F046_new_reference_identity:external_evidence:0:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:1:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:2:EOM_F046_new_reference_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:2adc54b2dd1facb5698e",
+      "route": "negative",
+      "context_reference_ids": [
+        "EOM_F046_new_reference_identity:external_evidence:0:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:1:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:2:EOM_F046_new_reference_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM_F047_unsubstantiated_norm_status:d6a04d7c3701131cd97f",
+      "route": "negative",
+      "context_reference_ids": [
+        "EOM_F047_unsubstantiated_norm_status:external_evidence:0:EOM_F047_unsubstantiated_norm_status"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM_F049_lightning_reference_title:106f839cb3a98ca97f29",
+      "route": "question",
+      "context_reference_ids": [
+        "EOM_F049_lightning_reference_title:external_evidence:0:EOM_F049_lightning_reference_title",
+        "EOM_F049_lightning_reference_title:external_evidence:1:EOM_F049_lightning_reference_title"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+      "route": "question",
+      "context_reference_ids": [
+        "ITP17_grooved_connection_identity:external_evidence:0:ITP17_grooved_connection_identity",
+        "ITP17_grooved_connection_identity:external_evidence:1:ITP17_grooved_connection_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "ITP_F028_reducer_designations:2f16d360921aab6e9949",
+      "route": "question",
+      "context_reference_ids": [
+        "ITP_F028_reducer_designations:external_evidence:0:ITP_F028_reducer_designations"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "ITP_F028_reducer_designations:fab751f2686c38838e0b",
+      "route": "question",
+      "context_reference_ids": [
+        "ITP_F028_reducer_designations:external_evidence:0:ITP_F028_reducer_designations"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
+      "route": "question",
+      "context_reference_ids": [
+        "ITP_F032_channel_standard_scope:external_evidence:0:ITP_F032_channel_standard_scope"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "ITP_F033_replaced_product_standards:3f903a601969ba823079",
+      "route": "question",
+      "context_reference_ids": [
+        "ITP_F033_replaced_product_standards:external_evidence:0:ITP_F033_replaced_product_standards",
+        "ITP_F033_replaced_product_standards:external_evidence:1:ITP_F033_replaced_product_standards",
+        "ITP_F033_replaced_product_standards:external_evidence:2:ITP_F033_replaced_product_standards"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
+      "route": "question",
+      "context_reference_ids": [
+        "ITP_F034_mixed_norm_references:external_evidence:0:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:1:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:2:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:3:ITP_F034_mixed_norm_references"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443",
+      "route": "question",
+      "context_reference_ids": [
+        "ITP_F034_mixed_norm_references:external_evidence:0:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:1:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:2:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:3:ITP_F034_mixed_norm_references"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
+      "route": "question",
+      "context_reference_ids": [
+        "ITP_F034_mixed_norm_references:external_evidence:0:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:1:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:2:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:3:ITP_F034_mixed_norm_references"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
+      "route": "question",
+      "context_reference_ids": [
+        "ITP_F034_mixed_norm_references:external_evidence:0:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:1:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:2:ITP_F034_mixed_norm_references",
+        "ITP_F034_mixed_norm_references:external_evidence:3:ITP_F034_mixed_norm_references",
+        "ITP_F053_standard_title:external_evidence:0:ITP_F053_standard_title"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "KM_F001_norm_editions_scope:cc6d088a37f8ea14e2fe",
+      "route": "question",
+      "context_reference_ids": [
+        "KM_F001_norm_editions_scope:external_evidence:0:KM_F001_norm_editions_scope",
+        "KM_F001_norm_editions_scope:external_evidence:1:KM_F001_norm_editions_scope"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "KM_F013_pipe_standard_designations:72e396e785f77c8d64b3",
+      "route": "question",
+      "context_reference_ids": [
+        "KM_F013_pipe_standard_designations:external_evidence:0:KM_F013_pipe_standard_designations",
+        "KM_F013_pipe_standard_designations:external_evidence:1:KM_F013_pipe_standard_designations",
+        "KM_F013_pipe_standard_designations:external_evidence:2:KM_F013_pipe_standard_designations"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "KM_F025_standard_title_editorial:81d65a25e69a6b09ca37",
+      "route": "question",
+      "context_reference_ids": [
+        "KM_F025_standard_title_editorial:external_evidence:0:KM_F025_standard_title_editorial"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "VK_F006_test_criterion:cdce20857528642ffcee",
+      "route": "negative",
+      "context_reference_ids": [
+        "VK_F006_test_criterion:external_evidence:0:VK_F006_test_criterion"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:composite:1",
+      "route": "question",
+      "context_reference_ids": [
+        "EOM_F046_new_reference_identity:external_evidence:0:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:1:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:2:EOM_F046_new_reference_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:composite:2",
+      "route": "question",
+      "context_reference_ids": [
+        "EOM_F046_new_reference_identity:external_evidence:0:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:1:EOM_F046_new_reference_identity",
+        "EOM_F046_new_reference_identity:external_evidence:2:EOM_F046_new_reference_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "KM12_F022_anchor_installation_identity:composite:1",
+      "route": "question",
+      "context_reference_ids": [
+        "KM12_F022_anchor_installation_identity:external_evidence:0:KM12_F022_anchor_installation_identity"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "VK_F005_fitting_pressure:composite:1",
+      "route": "question",
+      "context_reference_ids": [
+        "VK_F005_fitting_pressure:external_evidence:0:VK_F005_fitting_pressure",
+        "VK_F005_fitting_pressure:external_evidence:1:VK_F005_fitting_pressure"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    },
+    {
+      "target_id": "VK_F006_test_criterion:composite:1",
+      "route": "question",
+      "context_reference_ids": [
+        "VK_F006_test_criterion:external_evidence:0:VK_F006_test_criterion"
+      ],
+      "dependency_status": "theme_context_not_proven_required_for_every_subclaim",
+      "automatic_exclusion_from_denominator": false
+    }
+  ],
+  "benchmark_frozen": false,
+  "production_promotion_allowed": false
+}
