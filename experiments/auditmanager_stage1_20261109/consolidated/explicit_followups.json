@@ -47,6 +47,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-012"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для исправления строки подтвердить принятое сечение; при заявлении влияния на закупку выполнить полный баланс сводной спецификации. До этого последствия закупки и электрическую достаточность оставить неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-035"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
