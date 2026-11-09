@@ -25,5 +25,30 @@
   ],
   "wording": "Уточнить обозначение ТУ№22825: в основаниях проекта ДП-В от19.10.2023, в нагрузке подключения ДП-К.",
   "limits": "Оригинал ТУ не проверен; неверная нагрузка или применение чужих ТУ не установлены.",
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "В основанияхТУ22825ДП-В, в нагрузке подключения22825ДП-К",
+      "verdict": "confirmed_authoritative_TEXT"
+    },
+    {
+      "claim": "Один из документов является чужимТУ",
+      "verdict": "not_established"
+    },
+    {
+      "claim": "Указанная нагрузка неверна",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных составных строк с сохранёнными решениями и связанными первичными проверками.",
+    "scorable_narrow_claim": "Вопрос о согласовании обозначенияТУ; не выбирать правильный суффикс без оригинала.",
+    "unscored_claims": [
+      "ОригиналТУ и применимость",
+      "Правильная нагрузка подключения"
+    ],
+    "control_pair_readiness": "Положительная/отрицательная историческая пара принадлежностиТУ не подтверждена.",
+    "automatic_filter_authorized": false
+  }
 }

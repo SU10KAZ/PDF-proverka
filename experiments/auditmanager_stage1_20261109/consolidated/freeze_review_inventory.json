@@ -12,10 +12,10 @@
     "candidate_records": 291,
     "decision_themes": 247,
     "themes_with_explicit_followups": 165,
-    "themes_with_direct_atomic_dispositions": 236,
+    "themes_with_direct_atomic_dispositions": 240,
     "themes_with_linked_claim_disposition": 1,
     "themes_with_direct_control_pair": 150,
-    "themes_with_scope_review": 36,
+    "themes_with_scope_review": 40,
     "stage_complete": false
   },
   "items": [
@@ -7274,7 +7274,7 @@
         "B-VK-F-014"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-014.json",
-      "decision_sha256": "24947a1b6624033eb17c3f0771717c9f408987b5f416a9f9abcf000288ed6640",
+      "decision_sha256": "a9974e014f896ed662677424d1ee50e93b654ebb9878fe140dfb4315b895ff3e",
       "original_claims": [
         {
           "candidate_id": "B-VK-F-014",
@@ -7284,7 +7284,20 @@
       ],
       "narrow_output": "Уточнить обозначение ТУ№22825: в основаниях проекта ДП-В от19.10.2023, в нагрузке подключения ДП-К.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "В основанияхТУ22825ДП-В, в нагрузке подключения22825ДП-К",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "Один из документов является чужимТУ",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Указанная нагрузка неверна",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Оригинал ТУ не проверен; неверная нагрузка или применение чужих ТУ не установлены.",
@@ -7294,8 +7307,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных строк с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Вопрос о согласовании обозначенияТУ; не выбирать правильный суффикс без оригинала.",
+        "unscored_claims": [
+          "ОригиналТУ и применимость",
+          "Правильная нагрузка подключения"
+        ],
+        "control_pair_readiness": "Положительная/отрицательная историческая пара принадлежностиТУ не подтверждена.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -7303,7 +7326,7 @@
         "B-VK-F-029"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-029.json",
-      "decision_sha256": "4ee0620ed0b93b7fead15efdb455a6f5cd4b0ea15edf5c30f29fab28cb4ea0b3",
+      "decision_sha256": "61c33a57b18b840b9ea0afde4e0c119000cb7e6afeec5dda123f622efcff2e94",
       "original_claims": [
         {
           "candidate_id": "B-VK-F-029",
@@ -7313,7 +7336,28 @@
       ],
       "narrow_output": "Не выпускать претензию о несоответствии материала на этом основании и не переносить её автоматически в вопросы. Локальная отметка verified без проверяемого первичного источника не подтверждает область применения.",
       "output_section": null,
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Проект ссылается наГОСТ32414-2013 для полипропиленовых труб",
+          "verdict": "confirmed_saved_TEXT"
+        },
+        {
+          "claim": "ОбластьГОСТ32414-2013 относится кНПВХ",
+          "verdict": "refuted_by_saved_official_catalog_check"
+        },
+        {
+          "claim": "Неверная локальная подсказка воспроизведена в историческом замечании",
+          "verdict": "confirmed_matching_content_not_exact_request_provenance"
+        },
+        {
+          "claim": "Точная копия нормативного контекста отправленного запроса установлена",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Снятие этой претензии подтверждает допустимость0,5/1,0бар и всех труб проекта",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": null,
@@ -7326,8 +7370,19 @@
       "followup_requirements": [],
       "control_pair": "Положительный пример неверной нормативной ссылки для этого нового фильтра ещё не подтверждён.",
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных строк с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Отрицательный контроль ложного нормативного основания о материале; не переносить опровергнутый тезис в обязательные вопросы.",
+        "unscored_claims": [
+          "Полный нормативный текст и пригодность конкретных изделий",
+          "Точная история контекста запроса",
+          "Допустимые давления и другие вопросыК1/К2.1"
+        ],
+        "control_pair_readiness": "Положительный пример неверной нормативной ссылки для универсального фильтра отсутствует; локальную записьverified нельзя считать первоисточником.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -7335,7 +7390,7 @@
         "H-EOM-11"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM11.json",
-      "decision_sha256": "cb237c25cf0a0fede45dacddb3d9065c846384fdd16b298861fa3e170d6e4600",
+      "decision_sha256": "0bfb2d9ee22740a02c53902ffba56079e36491a2d3e4a2a2963c8fd6da28d334",
       "original_claims": [
         {
           "candidate_id": "H-EOM-11",
@@ -7345,7 +7400,36 @@
       ],
       "narrow_output": "Согласовать с СО линии С2513(65м) иС3510(95м): на схемах FRHF5×35, в предоставленном кабельном подразделе такой позиции нет. СтрокаHF5×35 относится к другому исполнению.",
       "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "С2513 требуетFRHF5×35 длиной65м, С3510 —95м",
+          "verdict": "confirmed_linked_two_line_source_check"
+        },
+        {
+          "claim": "В проверенном кабельном подразделе отсутствует позицияFRHF5×35",
+          "verdict": "confirmed_bounded_absence"
+        },
+        {
+          "claim": "Все кабели5×35 отсутствуют",
+          "verdict": "refuted_HF_172m_present"
+        },
+        {
+          "claim": "65+95=160м",
+          "verdict": "confirmed_two_line_sum_not_project_inventory"
+        },
+        {
+          "claim": "160м фактически недопоставлены",
+          "verdict": "not_established_other_supply_scope"
+        },
+        {
+          "claim": "Данные23кВт/53,6А и стабилизаторы40кВА подтверждены этой связанной проверкой",
+          "verdict": "not_established_in_current_evidence_register"
+        },
+        {
+          "claim": "Поздняя проверка второй линии доказывает обнаружение обеих пилотом",
+          "verdict": "refuted_pilot_record_only_C2513"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": {
         "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json",
@@ -7358,8 +7442,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных строк с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Сохранить одну тему отсутствия конкретного исполнения кабеля для двух адресных линий. Покрытие пилота считать по реально выданным адресам.",
+        "unscored_claims": [
+          "Поставка в иных комплектах и фактический дефицит",
+          "Исторические дополнительные параметры нагрузки и стабилизаторов вне текущего подтверждённого реестра",
+          "Итоговое сравнение свежего классического прогона"
+        ],
+        "control_pair_readiness": "Локальная пара: сохранить отсутствиеFRHF5×35, снять общее отсутствие5×35 приHF172м. Это два тезиса одних источников, не независимая инженерная пара.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -7620,7 +7715,7 @@
         "B-EOM-F-012"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json",
-      "decision_sha256": "f27b1683bff9a7b819f193368e81af3e520bf44dfd69244df1255d1cb4ee928a",
+      "decision_sha256": "b34a2943aefce4b68eb1a8ee496d4ef4c7645c11d945a2c2768827a8fd1c7f80",
       "original_claims": [
         {
           "candidate_id": "H-EOM-76",
@@ -7635,7 +7730,32 @@
       ],
       "narrow_output": "Согласовать итоговую мощность2ЩСС1 5,4кВт с суммой девяти заполненных групп3,4кВт; если разница2кВт является перспективной нагрузкой, показать её основание.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Девять заполненных групп дают8×0,40+0,20=3,40кВт при итоге5,4",
+          "verdict": "confirmed_linked_graphic_count_and_arithmetic"
+        },
+        {
+          "claim": "Четыре резервные группыQF10–13 не имеют записанной мощности",
+          "verdict": "confirmed_linked_graphic_blank_cells"
+        },
+        {
+          "claim": "Резерв содержит ровно2кВт и объясняет итог",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Вводное оборудование ошибочно подобрано",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Два происхожденияH-EOM-76/F012 означают два независимых дефекта",
+          "verdict": "refuted_same_panel_and_atom"
+        },
+        {
+          "claim": "Дополнительные токи иcosφ исторического тезиса проверены этим решением",
+          "verdict": "not_established_current_register_covers_power_only"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": {
         "path": "experiments/auditmanager_stage1_20261109/EOM76_primary_GRAPHIC.json",
@@ -7652,8 +7772,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных составных строк с сохранёнными решениями и связанными первичными проверками.",
+        "scorable_narrow_claim": "Один вопрос о согласовании суммы групп и итога2ЩСС1; сохранить оба происхождения, без удвоения результата.",
+        "unscored_claims": [
+          "Основание перспективной нагрузки",
+          "Фактическая нагрузка и достаточность оборудования",
+          "Дополнительные токи иcosφ вне текущего подтверждённого реестра"
+        ],
+        "control_pair_readiness": "Резерв без мощности не является доказанным объяснением2кВт. Самостоятельной исторической пары нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {

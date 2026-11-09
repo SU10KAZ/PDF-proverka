@@ -18,5 +18,43 @@
     "Доказано нарушение конкретного пункта СП."
   ],
   "engineer_decision": "Не устанавливается этой сверкой; исходные инженерные записи сохраняются отдельно.",
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "Девять заполненных групп дают8×0,40+0,20=3,40кВт при итоге5,4",
+      "verdict": "confirmed_linked_graphic_count_and_arithmetic"
+    },
+    {
+      "claim": "Четыре резервные группыQF10–13 не имеют записанной мощности",
+      "verdict": "confirmed_linked_graphic_blank_cells"
+    },
+    {
+      "claim": "Резерв содержит ровно2кВт и объясняет итог",
+      "verdict": "not_established"
+    },
+    {
+      "claim": "Вводное оборудование ошибочно подобрано",
+      "verdict": "not_established"
+    },
+    {
+      "claim": "Два происхожденияH-EOM-76/F012 означают два независимых дефекта",
+      "verdict": "refuted_same_panel_and_atom"
+    },
+    {
+      "claim": "Дополнительные токи иcosφ исторического тезиса проверены этим решением",
+      "verdict": "not_established_current_register_covers_power_only"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных составных строк с сохранёнными решениями и связанными первичными проверками.",
+    "scorable_narrow_claim": "Один вопрос о согласовании суммы групп и итога2ЩСС1; сохранить оба происхождения, без удвоения результата.",
+    "unscored_claims": [
+      "Основание перспективной нагрузки",
+      "Фактическая нагрузка и достаточность оборудования",
+      "Дополнительные токи иcosφ вне текущего подтверждённого реестра"
+    ],
+    "control_pair_readiness": "Резерв без мощности не является доказанным объяснением2кВт. Самостоятельной исторической пары нет.",
+    "automatic_filter_authorized": false
+  }
 }
