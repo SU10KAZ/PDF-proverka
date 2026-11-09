@@ -74,8 +74,8 @@
     {
       "id": "H07",
       "status": "partial",
-      "verified_or_implemented_scope": "Explicit question routing added to classic Excel and protected across deduplication; narrow metadata/prescan changes retained.",
-      "remaining": "Portal display, full output/import compatibility and real filter controls still need acceptance checks.",
+      "verified_or_implemented_scope": "Explicit question routing added to classic Excel and protected across deduplication; narrow metadata/prescan changes retained. Actual Excel export/import roundtrip preserves IDs, decisions and comments in both sections; accepted comments no longer discarded.",
+      "remaining": "Portal display and real filter controls still need acceptance checks; Excel roundtrip verified locally on a synthetic project, not full six-project production acceptance.",
       "evidence": [
         {
           "path": "experiments/auditmanager_stage4_20261110/metadata_gate_candidate_replay.json",
@@ -110,5 +110,13 @@
       152
     ],
     "sent": false
+  },
+  "excel_roundtrip_validation": {
+    "tests": [
+      "tests/test_import_decisions_excel.py",
+      "tests/test_report_question_section.py"
+    ],
+    "passed": 9,
+    "scope": "Actual generated XLSX imported into isolated temporary project; reordered finding IDs, section headers, accepted clarification and rejected duplicate reason checked. No model calls."
   }
 }

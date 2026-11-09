@@ -9,9 +9,56 @@ not resolved for project_id='KM/1232-ЧМ-КМ-1 V1'». В скрытую яче
 """
 import openpyxl
 import pytest
+import json
 
 import backend.app.services.common.project_service as project_service
 import backend.app.services.knowledge_base.knowledge_base_service as kb
+
+
+def test_sectioned_report_roundtrip_preserves_decisions_and_clarifications(fake_projects, tmp_path):
+    from backend.app.pipeline.stages.report.generate_excel_report import (
+        build_project_sheet, PROJ_COLUMNS,
+    )
+
+    findings = [
+        {"id": "F-001", "problem": "Уточнить исполнение", "report_section": "questions"},
+        {"id": "F-002", "problem": "Несовпадение размеров", "report_section": "technical_findings"},
+    ]
+    (fake_projects / "_output" / "03_findings.json").write_text(
+        json.dumps({"findings": findings}), encoding="utf-8",
+    )
+    wb = openpyxl.Workbook()
+    build_project_sheet(wb, {
+        "project_id": "1232-ЧМ-КМ-1", "sheet_name": "KM",
+        "findings_json": {"findings": findings},
+    })
+    ws = wb["KM"]
+    cols = {key: i for i, (key, *_) in enumerate(PROJ_COLUMNS, 1)}
+    expected = {
+        "F-001": ("Принято", "Уточнить только исполнение узла"),
+        "F-002": ("Отклонено", "Дубль ранее принятого замечания"),
+    }
+    exported_ids = []
+    for row in range(3, ws.max_row + 1):
+        fid = ws.cell(row, cols["finding_id"]).value
+        if fid in expected:
+            exported_ids.append(fid)
+            decision, reason = expected[fid]
+            ws.cell(row, cols["expert_decision"], decision)
+            ws.cell(row, cols["rejection_reason"], reason)
+    assert exported_ids == ["F-002", "F-001"]
+    path = tmp_path / "sectioned.xlsx"
+    wb.save(path)
+    result = kb.import_decisions_from_excel(str(path), reviewer="Инженер")
+    assert result["1232-ЧМ-КМ-1"]["saved"] == 2
+    review = json.loads((fake_projects / "_output" / "expert_review.json").read_text())
+    decisions = {item["item_id"]: item for item in review["decisions"]}
+    assert set(decisions) == set(expected)
+    assert decisions["F-001"]["decision"] == "accepted"
+    assert decisions["F-002"]["decision"] == "rejected"
+    for fid, (_, reason) in expected.items():
+        assert decisions[fid]["rejection_reason"] == reason
+        assert decisions[fid]["reviewer"] == "Инженер"
 
 
 @pytest.fixture

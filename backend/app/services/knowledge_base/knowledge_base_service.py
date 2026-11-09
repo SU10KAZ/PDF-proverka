@@ -1310,7 +1310,9 @@ def import_decisions_from_excel(
                 item_id=item_id,
                 item_type=item_type,
                 decision=decision,
-                rejection_reason=reason if decision == "rejected" else None,
+                # This legacy field also stores clarifications on accepted
+                # findings; preserve the engineer's wording on Excel import.
+                rejection_reason=reason or None,
                 timestamp=_now_iso(),
             ))
 
