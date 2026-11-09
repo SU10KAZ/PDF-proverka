@@ -1,7 +1,7 @@
 {
   "objective": "Последовательно завершить все восемь этапов улучшения классического AuditManager",
   "execution": "Активная непрерывная цель текущего потока; это план выполнения агентом, не самостоятельный фоновый сервис.",
-  "current_stage": 1,
+  "current_stage": 2,
   "policy": {
     "new_model_runs": "gpt-6-astra only",
     "claude": "disabled",
@@ -14,19 +14,20 @@
     {
       "id": 1,
       "name": "Проверенный эталон",
-      "status": "in_progress",
-      "evidence": "consolidated/primary_decisions.json",
+      "status": "complete",
+      "evidence": "benchmark_release_v1.json",
       "completion_requirements": [
         "Поштучно разобрать все291запись, включая все самостоятельные тезисы исходных составных строк",
         "Разделить техническую верность, решение инженера, полезность и неопределённость",
         "Для новых фильтров доказать контрольные пары или явно зафиксировать недостаток данных",
         "Зафиксировать версию эталона; неподтверждённые случаи не включать в положительные метрики"
-      ]
+      ],
+      "verification": "verify_benchmark_release.py: 268 sealed files, 291 records, 359 targets, 18 primary file hashes; no runtime acceptance"
     },
     {
       "id": 2,
       "name": "Причины потерь по этапам AuditManager",
-      "status": "pending_completion",
+      "status": "in_progress",
       "completion_requirements": [
         "Связать подтверждённые пропуски с журналами извлечения, проверки, объединения и выпуска",
         "Каждый вывод о реализации подкрепить кодом и проверкой; неизвестные причины оставить неизвестными"

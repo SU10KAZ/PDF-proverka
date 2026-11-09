@@ -1,21 +1,24 @@
 {
-  "date": "2026-11-09",
   "stage": 1,
-  "status": "in_progress_not_frozen",
-  "registry_coverage": "47/47 tracked records accounted for; not 47 verified defects",
-  "controls_with_explicit_assertions": 24,
-  "controls_awaiting_primary_adjudication": 23,
-  "explicit_assertions": 28,
-  "baseline_records_preserved": 244,
-  "baseline_useful_atom_set_frozen": false,
-  "evidence_integrity_checks": 39,
-  "stage_complete": false,
+  "status": "complete_frozen_evaluator_dataset",
+  "release": "AM-SIX-BENCHMARK-1",
+  "release_file": "benchmark_release_v1.json",
+  "candidate_records": 291,
+  "themes": 247,
+  "explicitly_reviewed_atoms": 1193,
+  "canonical_targets": {
+    "technical": 84,
+    "questions": 198,
+    "negative_controls": 77
+  },
+  "unscored_themes": 14,
+  "stage_complete": true,
+  "next_stage_allowed": true,
+  "current_stage": 2,
   "production_promotion_allowed": false,
-  "next_stage_allowed": false,
-  "blocking_work": [
-    "Завершить первичную оценку контролей без конкретных тезисов.",
-    "Разобрать остаток составных исторических строк.",
-    "Определить полезные тезисы классического результата, не потеряв ни одну из 244 строк.",
-    "Зафиксировать правила профиля и инженерной полезности спорных вопросов."
+  "limits": [
+    "Completion is preparation of the evaluator dataset, not proof of model improvement or acceptance of filters.",
+    "External source availability and discovery isolation must be verified at run setup; failures remain visible.",
+    "Original preparation inventories retain their historical pending flags; current dataset authority is benchmark_release_v1.json."
   ]
 }

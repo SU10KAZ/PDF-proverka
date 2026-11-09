@@ -1,0 +1,1581 @@
+{
+  "version": "AM-SIX-BENCHMARK-1",
+  "status": "frozen_evaluator_dataset",
+  "source_revision": "8fa8a461f5e7ce161b6a42cc1f39f42b2eb7fb60",
+  "stage_1_complete": true,
+  "production_promotion_allowed": false,
+  "files": [
+    {
+      "path": "experiments/auditmanager_stage1_20261109/atom_scoring_reviews.json",
+      "sha256": "08ff948e956712568932987039ac490c62eceb3a4eb065a269036297b4d974e1"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/composite_target_reviews.json",
+      "sha256": "3e394a7ba881c138ea31ee38bd2c41bdbcf69bab17c43e23223e86d5f8d61439"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/consolidated/atom_ledger.json",
+      "sha256": "9d2c1e356c0195f6f419a3a93e6cd16f79ce34011f1c4d1158f42c3657db2a41"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/consolidated/evaluation_targets.json",
+      "sha256": "65e8eff0a114a129b29683ef6d71e6685eaf50074178e109877ce83b41685a31"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/consolidated/freeze_readiness_audit.json",
+      "sha256": "1b0ed9815c6168b7e49820e319c0b24cb9eeee25a604b9816720446caf770048"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/consolidated/input_inventory.json",
+      "sha256": "bc1bd4dd73761dccdc455a161a0fd1723d07b5b674ea4dc7d83661a24d81d955"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/consolidated/records.json",
+      "sha256": "719c824fddcf06368e8248800e9d5de9071e2705b3e2719975115c538dfb3ee4"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/consolidated/supplementary_inventory.json",
+      "sha256": "f6558baab868e3219a796e944c63483b83146481149f4c20807b04b8a5d48668"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+      "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+      "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK14.json",
+      "sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+      "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+      "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK7.json",
+      "sha256": "244524861dafa21ed85aa490e087c7ea10a654b59f18184b137f99eade018260"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+      "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+      "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+      "sha256": "48b97c42cfa0b0277fb9cf701da41869de070db06fd4ec75fb99b0a388d1e722"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+      "sha256": "7dfe111f83f7d778b22f32158e23e25225b08f4f4ec3226926ddce63dfb1ef6a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+      "sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+      "sha256": "c9bf31b3153a37963b0821177ba1398e145ddd70d03bda5a6432545628397940"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+      "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+      "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
+      "sha256": "adda5976fdc931fee477376e4e53dc398de605c62cba05511adc92776b58090d"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+      "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+      "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+      "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F018_drive_system_assignment.json",
+      "sha256": "62cb406cdf423f7781c27e355c359c2d507189af8b12a26d34f7380119ed6eeb"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+      "sha256": "f6dbf031fc8ba16fd61cd5ebad1825e32f84c0bd4cd39527accb1a6230d293f2"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json",
+      "sha256": "e1221c563cfdf13442cf7197a43f4a81a8ce262ec4f68a3bbd2c69a5afa1d6fc"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+      "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+      "sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+      "sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F025_area_arithmetic.json",
+      "sha256": "07e3ecfae124a6d164abe6ca32408a492672da6b4e93242bf06e1c5b16464480"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F026_protection_boolean_condition.json",
+      "sha256": "cc1fd6840fb366f09e8f1ccbee1d9fef95dc5cbd40222981dbc35909b749eea3"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F027_sensor_interface_scope.json",
+      "sha256": "ce13d144b26733768053137e7f68d5b9cc1e428ea30e05cf60a79d73d40a2756"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
+      "sha256": "4d6c40af5a9db18ddf520f1f06842a8cc958439af0f690fd5cf2020d5b19fc05"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+      "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+      "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+      "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+      "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F033_power_reference_scope.json",
+      "sha256": "9c240dda69a02709b23452f71dd767d98d4719b50a184253a9911e6ab23eb836"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F034_sheet_title_scope.json",
+      "sha256": "6585e034e65b924f17e740e1048b28a2d32e06e1ef4f41226e46f88f3bc4292a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
+      "sha256": "17877ee974090aeee8c5f2406c725cff99f585b7f47a60d464c265ca844e90ec"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F036_damper_signal_direction.json",
+      "sha256": "679a411c9e04b0c8c1987471b621d8fdc5d6935a1db687f71aefcf1cec7b07eb"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F038_temperature_graphic_connection.json",
+      "sha256": "67c1995d61ab5adda8800a0f465a1c6eb0deb791c8eab1570f2650bc9999e2a1"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F039_served_rooms_conflict.json",
+      "sha256": "c5a07b351f4355a0bceeca4d625d01832f64782fd1432801547cbdf40ed24840"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+      "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+      "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F042_pressure_legend_scope.json",
+      "sha256": "4ce2a068ccb529525bd5ef450e448e30bdfd57fbbc4aa15339d719306e8e54e0"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+      "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+      "sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F046_position_range_editorial.json",
+      "sha256": "912b8afed5b7dd638a2fb92ba907a9cda2ab531204e7f17dabe88ee0f2c2c81b"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+      "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F050_heater_legend_identity.json",
+      "sha256": "f316e24040e8fd1ffc2a9d7fa9bcf2e56cc64e483684d014745f7f825ce3e5fe"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F051_cabinet_label_scope.json",
+      "sha256": "a66c212be8c1dde3bd5132cf55aa4a8b92153efad0e9b2b3ce89f39fa3f5b853"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F052_local_cable_balance.json",
+      "sha256": "269fbd7df09fb79b766b4bbed801b044d88de0bba6e8555945cb4280f992cf2e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F053_local_cable_balance.json",
+      "sha256": "f0fe30025610ce7f3d413dec02072e1dd1a2937afe5cd720b3a8737b91bde092"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+      "sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+      "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+      "sha256": "7f391d6a377940f60763577625de4cf7ec7cdf80d28ddb2317108f1965f7d1f3"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F059_thermostat_supply_routes.json",
+      "sha256": "a7be6977f7aa7550425ba748f034d799915371cf2c66d7f896ac9303d180026b"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+      "sha256": "4ae7511ca6056afa1ff0f85c52539b4154b6ba45c99f75bac26d841da23f0d38"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F061_penetration_detail_scope.json",
+      "sha256": "fd69d890fb13cea2f5adfa44fc272a31dc5e66368917c5c7159597065583df04"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F062_rs485_termination_scope.json",
+      "sha256": "dac89ca44e9f34cac80e09ed47110833c50c5b6a1230d8fd7eab7e626221ee49"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F063_ethernet_evidence_scope.json",
+      "sha256": "8b7fd4e404aceea2c7c4ae623bbf6b1fffed1b72c954cbf730c014a28f3e2352"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F064_reference_register_scope.json",
+      "sha256": "5d142f45af5de6a7c5002d60bedc3b7517fad1dc38ff05f0d8616263c90ca6ee"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F065_norm_replacement_applicability.json",
+      "sha256": "ee0e2ec0de3444283d4ddfdf2bd26ef2a9bd08ac871d666d8989d6842015220b"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
+      "sha256": "05111c82d10d6fb78c3da1b8772f8fd53762fe7ba14e599d4e65dd4e9c9b0696"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR17.json",
+      "sha256": "2c7bce2f3456b9bebdf7059d5b3ee79a40c72b29a994684d937747fdce46a7fd"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR35_unlabelled_areas.json",
+      "sha256": "7274cc7e622df36e93d23f17add55aa23bfc3c85446d0eda662dae68c24a265e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+      "sha256": "c0e65e558fcbde7f84022893578b1c64f1bf53f716100b3106a804db4280d657"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json",
+      "sha256": "fab3cfc34776601f09f252dd037bc85315ede337f0fe1ffc5158c73957e3ae90"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json",
+      "sha256": "65c2e351bb163c7c021872d4a4d92d6cc76da5a8084e72ab755f2e1a692dc2a3"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json",
+      "sha256": "4b6aa9839c0eacf44e35943d5a025230990997de3f5f0ff9cafab922635db986"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+      "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+      "sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
+      "sha256": "ce707aee07ee4cfe839a3ab5f6c83717d449ac8da6a8d1e7fbab4b49feb44bde"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F008_sheet_register.json",
+      "sha256": "b35cb86bcd0ba6f11196bc1af9696e6dc5296f7cbe34ae124a24876558cdb29f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F009_club_classification_scope.json",
+      "sha256": "61976229e7eab9c4d96c6917b2954409fdafba9d960a76a0583702a0b3396796"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F010_glass_formula.json",
+      "sha256": "af4c9d286eda3a59c8c19a99796fe1a7f7f8d4332f8b28ee7d225e1e2e004690"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F011_access_register.json",
+      "sha256": "16b8030466ed9894b7dab677ae14f1e4a922012725ffc0c400ef12def3a6f0bc"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F012_parapet_drain_slope.json",
+      "sha256": "f7d7c74d3ac3763d7cc2f1ecedbfd36dba37ca7e17a0a61866fc104e4107a628"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F014_insulation_identity.json",
+      "sha256": "c99e19d272729607a77cc1d3873ca5be57009c2c5bd329ffa7cca5d64fc4b181"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F018_screen_identity.json",
+      "sha256": "4697afa158d947df5c5673d1292bbf9c16d10cff73cc1d5ea894d98a7d4d9580"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F019_drain_dimension_identity.json",
+      "sha256": "e79744f4cdcd92555300ebf906102336e2f387e3346959f1863c410fd596c537"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F020_OGN4_height.json",
+      "sha256": "7801c49ea3c7172f8c0487ab722a493b90e3c08973e31e151dc0d953d1fcfd19"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F021_unsubstantiated_norm_status.json",
+      "sha256": "f6f409e343eb3ef75475098e5b271ef13e019b2bc4fb85541ffb4fc52e7190da"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F022_stone_standard_replacement.json",
+      "sha256": "1dd7e7ba2bce83c8f4f7697c001d4116d7cd5d9c00d611f8014b2ffacd2d67b2"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json",
+      "sha256": "1b5bec9fd487811b2b78e77d12d54eae2ef20a5a9f8770de2a94673ffb5aa51f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-003.json",
+      "sha256": "7cc5787488c15dd0d0ae9b8a8ee51b367e6a366de095d2824bcc245073b96899"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json",
+      "sha256": "537a01df4ce22327d818b38016a5a600bc295ff1a19845640465f4f4af74e6d2"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json",
+      "sha256": "1147ad2d578ff19db335f86765998d19952dfea3e32ff9ac3da027a390ff84a8"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
+      "sha256": "6de616cbb7c5cca66864facc621709f0f7ac35569d40b16b8fded829cd5b3436"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json",
+      "sha256": "2851662c79803e5a4e8d362f3c73fee55915522fab48395fe380e426b4dd512d"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+      "sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+      "sha256": "6ec81943e3282643c6afdba57f11970e973a2a86b2afb5d28ca09687c5194b16"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json",
+      "sha256": "9b98c505b2fdb2cbc3f9bff2b6489f30e19884381c8eec62cf2515fbd5ae81d8"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+      "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json",
+      "sha256": "80725162dc61ad03bf5e1c5301f9349e232eb695808ce2d524e94a2fb8b35d9c"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-011.json",
+      "sha256": "8a084a320ad746b20cbd7831a159cca9581237cd62b98235ce6b11553998e0de"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-014.json",
+      "sha256": "817028329da55c5233d5125a6095de379052f53a421de663b5fe777d4110921d"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-015.json",
+      "sha256": "3d68c70b29aa5dde6b5c09383bfd180c5304a2b38484cedb3cef205a780f25af"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-016.json",
+      "sha256": "08e2ee802e6a8be9e9f5a16dc884d01f4b962cc6bc6dbbf87a6d41f850988661"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-017.json",
+      "sha256": "74771a0b6daae9eabd6757acee99d68e3f5ee7bb36d07325f9e22017d22bfc27"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+      "sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+      "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+      "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-022.json",
+      "sha256": "bdc1b9b8e17f8d4f6431e10bb694e9032588c6833ee872e935de193bf6ee30bb"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-023.json",
+      "sha256": "595fa7304d48f38c01f2be3368151416604df6f002b42913c5977d4e25f2c5fd"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-024.json",
+      "sha256": "3337cb4eb8166e1d8b866ec77e1b8640adf4f659cec8c3b764d511ddc6bf7fa6"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-025.json",
+      "sha256": "d4942202ecc3470ab136bd00705df8420c3161499013567a2ff122a7c3c8a603"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-026.json",
+      "sha256": "6d986df9fb3f9b2e8f000a6f33b2a535301725f63d5bc258b1d913cf3169be82"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+      "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json",
+      "sha256": "92f98a8b73d3db1a60c32f0d100a2dfd0e5688ea5295792e06a212154edd7ef0"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+      "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json",
+      "sha256": "1e77b4c1af3d96d38544e8d299129f7e02e867812d6138b2c8ecb99817db0e26"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json",
+      "sha256": "cf7c89bf0fa2b42a1a69c07ec109e87ea4a7822255d1751f4a866ec5179c52af"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-037.json",
+      "sha256": "77e4dc763659487421731725cbfec2d7e8f78380090db6e5edb06498a7707ac7"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-038.json",
+      "sha256": "35c602bbbe1e1dd36f6aa55f734b93813654cc257bc170858a9006bc799f891f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-039.json",
+      "sha256": "1db31635b83a1f4cbde483f5346662bb1f05664b507abc635a861ae5535b3a4a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-040.json",
+      "sha256": "749b9a919d92ecdcb6ece7c7fcb5744d01a593cea646ae56fbe7d9d0973f2566"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+      "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json",
+      "sha256": "2a46b122ca2c41e1aeff054be481066700a8c8499669287a08bb9f5a89b23a10"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json",
+      "sha256": "693016921491b5dd0c2c10b23f03b22e9269d9a9ba37245e1ccb25d73e2b7d14"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-051.json",
+      "sha256": "48acd1c90479c0e5404f0712745a913c194d59c4f253660ae2a1eec826c66e9e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-KM-F-021.json",
+      "sha256": "0ec652c53eec2935443671b2130971e404095ccb25d169db74954cd6adc9d6ae"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-KM-F-024.json",
+      "sha256": "ee417134781cb32eb990c6a47841e5348b34eebf7a42363cbf4a004733035123"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-008.json",
+      "sha256": "04017a8927d6b2f0a646bbcb162274eb2227858c8917d70c4a68455e32d8adc3"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-012.json",
+      "sha256": "b647e50a0cbbc0c7df6e837f512c04193d3662f8ab59ef977989bd0f1176734e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-014.json",
+      "sha256": "a9974e014f896ed662677424d1ee50e93b654ebb9878fe140dfb4315b895ff3e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-029.json",
+      "sha256": "61c33a57b18b840b9ea0afde4e0c119000cb7e6afeec5dda123f622efcff2e94"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM11.json",
+      "sha256": "1d38db92b11e8fcde7159b7685795f19804600fc29102e6fed2bb5a1f76630a1"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+      "sha256": "8c56324a1cdd435e58e33992a1133a3b6069ba04fab79a7dff7986472a091e25"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM27_active_socket_circuits.json",
+      "sha256": "539cb99a7e98600cef013c0847d9dc68ea77774c009848fae45ae4d535d828a1"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM5_shunt_trip_identity.json",
+      "sha256": "d8d84614d752aab554ea481335da63b34bd3a39419682483c124627b5df5b1b4"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json",
+      "sha256": "4f491caf2dcbd75d1512da43f998abe388b1f23f0362d570367c25c0c8a59887"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json",
+      "sha256": "b34a2943aefce4b68eb1a8ee496d4ef4c7645c11d945a2c2768827a8fd1c7f80"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM8.json",
+      "sha256": "cd3198220c028d4cb8d6bd25723a7249f7515defaad806528f8b4543fb000f5f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F001_cable_description.json",
+      "sha256": "905f1f26daecb1841c99b8c7c2a70103cf60d545a0bb95358d82e9267004b5e5"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json",
+      "sha256": "1c27b242ec894d3038ec6afb0afb4a727801b04675928076ed2d19c28944fed1"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json",
+      "sha256": "ce3785a0efeda80ba7dd010d463cb406632919a791bb99394e43c8cd472609c0"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F010_meter_CT_identity.json",
+      "sha256": "a703160135a73507c68370fde3502cd18805f7170e1f697e52463ef0a0d5794a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F011_meter_internal_symbols.json",
+      "sha256": "846fefca5751cb80b828934db27ad8c1a4654799dc592ca6b77352ea93e0e4c9"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F013_small_load_currents.json",
+      "sha256": "91ce3dbd9625bde7420f0793438f84470d7631517c4677e3d72c2623203a6cb6"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F014_phase_A_current.json",
+      "sha256": "658e2faf7e777cc659e49710a787ab6dfbae0ae51a050597f960008447f3eaa9"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json",
+      "sha256": "b4c38d74f02f8e2978cabce4ea20aa5f68dec66f0c1afeebb72e0fec1a03b824"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+      "sha256": "fd397c9b88821ec58404f09b5ee75556f169bd87b1258e15617e5ee42ff06997"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F017_poles_and_PE_scope.json",
+      "sha256": "19e3acff85440a85eb46002f0f9f7f6563081deff719e91d8b476c8e861a22eb"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json",
+      "sha256": "58493afcb1d36bea9496f9f5d00c72ef3c74624d28c411e5913af9ba3174b22e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F019_typical_floor_scope.json",
+      "sha256": "683b019ef27fdb28bf2963996eb113c81f014344286e744930005b9c075e8b80"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F020_enclosure_minimums.json",
+      "sha256": "bf585abffce6c388509728cf559c7128600172b2a0e177b5b859c20235fb3d07"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F021_F023_controller_voltage_scope.json",
+      "sha256": "da0ea92659220b1cded0204453c0e08ae0435cd61d0525346e3b97a3a908d47e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F022_ventilation_power_rounding.json",
+      "sha256": "a61e8bb81c63cacd0ee0e6e3ce075dbe8455c1bba1dfa4fe172b8cfd034336f2"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F024_room_number_collision.json",
+      "sha256": "5f37d81095b90f1c769eaa87ed868673fea3491c2d83db7d2d23cfb63b3d61e5"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F025_repeated_note_numbers.json",
+      "sha256": "78365e20d4bc3174de421622aba55969f5ac8fa86617b555fc7ed94f2bee6484"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json",
+      "sha256": "534e82c9adb2dbcd334fd051e503f06a2a98d77822fcd5164d1370eb54b3fb56"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F027_penetration_material_scope.json",
+      "sha256": "f57f007725816118bf933a0276615dbac5cebbcec1c404dfbca5023f8b26092a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json",
+      "sha256": "d3b57fbf21e0f9bdc4d803134c2255b9a4b4d5f6ff34b7610023e084aa0eb2bf"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
+      "sha256": "77e362cc528f68c54dffd966b254eb69b718ae3b96f59718c2a8d61bd6aeb2a7"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F030_CT_minimum_substitutions.json",
+      "sha256": "537dee4a137c78461c807d74d1def9412b209d680414692bc6b0dbd638082946"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F031_CT_emergency_assumptions.json",
+      "sha256": "170491373e1f56f3edabfeeba46b1bd400c09a887065f8bcc05472f567d8e71a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
+      "sha256": "5162f21dcede7066fb3d1512cd551bef5cf76a3746d6360ac9d9959a69283c99"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F033_apartment_board_scope.json",
+      "sha256": "733ea2ad8e0939b80ecb45e225de97885ae4879d5e2d56470b01ce7441c11a83"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+      "sha256": "a63aa0206c93f1d384029fc98b7d1b4c335e25505edd3672d091df494b1d711a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+      "sha256": "d2fdf2b0a62b954bc12f46539bcc5944fc1413db62c61166ff991b5d317f8177"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+      "sha256": "4e9118267e89143c1c088e4a42e68b3b72d0bd1650e9b643f6bc1993fcf2eb85"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+      "sha256": "15432598db63ee87b27c7deece7cbcede488860c1944a00c2f5ef1fa513caa1f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+      "sha256": "96f4c1648640eb1c94ca979a73869993ab04a7359a183655ca07a3807fe43e64"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F039_frame_capacity.json",
+      "sha256": "a1d31ff9ed8eb3319579cf81a42e523bb9007502dc39096902d226b85774ebda"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F040_parking_sum_refuted.json",
+      "sha256": "80f9efbe1165cbf69cd274cf70c536c6fdc4ca0a31b3493bdadd03be31b8057c"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F041_F048_contradictory_norm_status.json",
+      "sha256": "777df2fb3800db17423feed421e17427a9394ad86256c34011b7650b31fdc47f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F042_SPZ_legend_scope.json",
+      "sha256": "8c770016e591be6e1ee95b9176a5d5aba5cbfd37c147f904cd2563a9209e4b3d"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F043_hanger_fireproofing_supply.json",
+      "sha256": "c635932a8d19138d1870cc16af9486c5aeab7f54456fa941f43692eb5b52e434"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F044_F045_incomplete_reference_identity.json",
+      "sha256": "ea77298204f5f47fec14183ada91f47f7de67218bd30c44c9a3164e9ef567fc9"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+      "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F047_unsubstantiated_norm_status.json",
+      "sha256": "f04e2b4063049458130984b879e82b2425d856e3a0c06759420be45498de9757"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+      "sha256": "4584797c55ba058a83a66f9c599d6383a81c40397467675ecfb4e337504858db"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/H-EOM-2.json",
+      "sha256": "d9d8e62b62288e57895d5524e6411535980bd8d807ebdaa39f0e8134f54d50b0"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json",
+      "sha256": "ec886ea171d16f2c81f3c31963104eeae8dd14400b7a53af1c76b644ff88c610"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-64.json",
+      "sha256": "a19c036e2038bc59c340d9147430c370a05bc48bbdcb8c2de0e60d8f2d5f245b"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP17_grooved_connection_identity.json",
+      "sha256": "86d4789b355603010fb36e5634f9f707854e9747a4637168699bba57a468ab33"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+      "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP44_GVS_maxima.json",
+      "sha256": "44c276625c7e8a17cde89f7d22fabb997b8e89f85b6f6ec3145ef251f5ef1584"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
+      "sha256": "18f4757f2b96969381e5504499213117983b5aaf771b02e5eb0207a647b01ad4"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP68_grooved_scope.json",
+      "sha256": "99115cd8d26c814d789321933bae0f8e25a5bb13ded0fd458ae71bd361177c69"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP72_wall_and_velocity.json",
+      "sha256": "475f5d890f33898ddc718d97ca9a785222529966ef0a5f87a312705ee21bd388"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+      "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F002_pump_pressure_selection.json",
+      "sha256": "285f145dedcc2e37880b8f9aff5f28843c48abf036fe352239e5ef2e1d3f9eab"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F003_main_circuit_components.json",
+      "sha256": "496838d6085febe6249ffc96981a652f3aff44dde82bc08fbb5d5f657a6a527c"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+      "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F005_test_pressure_scope.json",
+      "sha256": "a7d32222f7f10b1f04ca6b13c42a7ababe200a411e6d0b42cce5ff47abb8648d"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+      "sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F009_GVS_inlet_temperature.json",
+      "sha256": "3105d42ff9d51573ed429301e98e68c83ef5967b37dd3d7f64806bb506c6d000"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F010_GVS_formula.json",
+      "sha256": "370abff31e496cbfad890ab79c2379f01d1dbb05fa320d5f3f64af72a9eac867"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F013_valve_pressure_basis.json",
+      "sha256": "80055a293163ac5e68ab2d10372b3ec944b67fe8ed6788cd668b4c0d61cfefd7"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+      "sha256": "948c401ded92dc7baf8da111f58e08619ee6485d56c8a1167192c2fd338a3e81"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F032_channel_standard_scope.json",
+      "sha256": "2a2861ef488cb53b24ae648891bf66e9912e56d0c64403e708afb229da0649d4"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+      "sha256": "d8b8c313183679e564f305522d3a0c60a3ac6011a65f0e86b54d4d0a7278e6ff"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+      "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F036_gauge_range_allocation.json",
+      "sha256": "414eb7b03e2e13826337c12f9b097562f2a8efcf45dbcb35da7ab6ce225e9a83"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F045_door_joint_context.json",
+      "sha256": "4685d6c2de3fb99d05716d987776edf0a4656a78acf868e8cd1de3bb701f9b6f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F052_unsubstantiated_norm_status.json",
+      "sha256": "2f8a002cdcb34f772d26f0e861355cba8ae759942434a6b2b0a0089235183584"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F053_standard_title.json",
+      "sha256": "48b25ee12d05eb09a1826215610c1a59dfe0f759cbf315a2d0f57949a5950513"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+      "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json",
+      "sha256": "b9d5cb7748465536b642a9edc3df0d3d5d897d8df415e46fe603482443a9aaa5"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM13_F004_S2_anchor_multiplicity.json",
+      "sha256": "b039e259c55746828a55fdad1fbb9afe04bc99d2498ae858403e14b33bf19631"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json",
+      "sha256": "ef42022ce9ccb4895b2cc4bb11aacc050a7d72636e26bd45375b95a0c663a3b4"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM3.json",
+      "sha256": "b453c43a58d1054330e0ac62fc71b0488ebbfcc1bca7aabe16011cd7d124e215"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM5_S3_bent_handrail_developed_length.json",
+      "sha256": "0d30fb366a7e5dc1cbcaf40ea55979118c8c44e929912483c5b539a27e5f69c9"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json",
+      "sha256": "332c6b03682d0728dc030587f7934bbd6c930302eda3c3c261bee60353061ea3"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM9_LK5_landing_elevation.json",
+      "sha256": "258baafbac8c43c86e9a48ba228505f40cb9bd22ad945c8c03aa587ff06eb35b"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F001_norm_editions_scope.json",
+      "sha256": "33b3aa3bc7d3e7470afa0640da907a872316eb10bda4279b180e36cca8f558de"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
+      "sha256": "151514dfc81300d49bb4d1a639ed4f1aa4c315ae354ce07ec93e89f6a653d70a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F003_loads_document_link.json",
+      "sha256": "c6dc587ee5359dc549bda0a342845dbff0d8941417085f9949b3e6e5f8eb6691"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F005_total_plate_balance.json",
+      "sha256": "c0650dd58ee0c6cf3ec04847956f7b9534183f7169c5f65f167fba59080061cf"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F006_profile_mass_recalculation.json",
+      "sha256": "50baec1746488e3179ac2bd45e64ef3493a81ef06326deb30af36fc3a165e822"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F007_round_pipe_unreproduced_total.json",
+      "sha256": "6b38efc1f6e92ce5dc08ce3b43ed619504013063160fdb52d3bd13e62f931a88"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F008_weld_calculation_requirement.json",
+      "sha256": "76a198553e6e2fd04bef42ef3c57894d433c24e7a4c6943a44fafc3d6ccda164"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F009_sheet_cross_reference.json",
+      "sha256": "7fbdfa43cd59998b7eba82f63bed364033f257914b0db60f482280b24d7def1e"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F010_end_caps_material_accounting.json",
+      "sha256": "b32312f6cad2d814ffc5e487eaa8e55ef5b42e961a8126469f22ee529d1cf693"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F011_dimension_reference_points.json",
+      "sha256": "b47d5331d28fc2d1a12dc1c4f52e732d33cedfa68ff068827a9e9481165cc324"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F012_level_list_scope.json",
+      "sha256": "f2c0052c8e3217c2fc0115deb2f4d7a426e4127d17ce0a4ca37e36645858abcd"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F013_pipe_standard_designations.json",
+      "sha256": "a15f78ba84e466ec6c47f29ec3e77b047613bf2a079f141e886a4882d67ab649"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F014_adjacent_flights_identity.json",
+      "sha256": "857bb51fbcda52cbe45356bedd45240cc052c6a5c9a0b10d0dbe639c0492ebfc"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+      "sha256": "86849d4e464c5efa654fd2e5aa1e08127b5859ee7c63a2ec2eddd62ecda17ea5"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F016_label_count_scope.json",
+      "sha256": "38f37126a25f3a6b37eaba9d42387f4084f2b39e40f54f08e6d103f71ed0c1d6"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F019_OGM11_end_component_boundaries.json",
+      "sha256": "fc992c096f95e4d0d40316e308fe0f78b6970c3f1e7fccfbdb82d8883a88cf98"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F020_conditional_diagonal.json",
+      "sha256": "8f35494d8dc6ed5ce840b1d43c8f126ebd9d4369ce0a661397afc4e434fa538c"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F023_unsubstantiated_norm_status.json",
+      "sha256": "1feee037a29dea4b4d84ffe7b1f9efc173698c585ac0a27a0b83ad03b09f6928"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F025_standard_title_editorial.json",
+      "sha256": "3f8d7c7073427759289a2b6f7d9c0bfa350602d05a9aca89b1e6a7dd04534045"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F026_reference_scope_insufficient.json",
+      "sha256": "976e489296aefdfb5c8a92b0b3c410c83fdd2346637207c0c607a932094fc38f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK14.json",
+      "sha256": "570852e44331a5bb4b36806002728b354e19f8b7079a17ab6c5abf7f6d7d1619"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
+      "sha256": "3578c3e05b80511d0099d88947437916b5e5a6ebf51ecb954e5a6a3864d79ea7"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK32_drain_count_identity.json",
+      "sha256": "80d35cd06b41bb419ff6f993241724454b9d071d9bfed11eb0fc70076c193eff"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK34_transition_assembly.json",
+      "sha256": "95a1cebf034d549a43414aaae64ae4958235c1ee0422b79a34774442233349d2"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json",
+      "sha256": "b175eeb75cd23a55a2ea601623e65898bc8dd4756c4fe16cf2e8aa8ad3e83f72"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK50_specification_duplicates.json",
+      "sha256": "319f054bb25806e96933d833737ffc90db90db21a0e38a15f5a24160037f59ae"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK51_apartment_scope.json",
+      "sha256": "344b267b8859af5d55248419f377c165905514effb084a96b5c4921560ab6dcb"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F001_revision_interval.json",
+      "sha256": "79bc3fdfe1e64b0c5c7a6f7cb2b6343303ffa8549cb671f94ae6c06e33872e03"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+      "sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F003_reinforcement_counts.json",
+      "sha256": "e9e6f6cdb5f27558c3a138869ea0665a50d8d8baa273e180a4a9b9fcd9542f53"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F004_insulation_scope.json",
+      "sha256": "1aee463c39c642ce1ee9ae8c8f9995e6a86275fba0dbfc86edd2668bb7cc0d39"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F005_fitting_pressure.json",
+      "sha256": "d664c9be4e8783c858f95081a7bdd835b22159b57c485a4df5adae1a0408346b"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F006_test_criterion.json",
+      "sha256": "8de36f9d965c639b3b294ae1a2230ff52558f1750c107d647263ae1d8bb996f5"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F009_pipe_125_inventory.json",
+      "sha256": "841874d6b0fce166bb0a0222ebc8cfe4a015cd33e59413d62f02186a20fbede9"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F011_technical_space_level.json",
+      "sha256": "9ce8af0902e7e64d2af46e6fe4a4b62030dd6ff186c03c5bfd021ee870e5aeac"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F013_drain_assembly_scope.json",
+      "sha256": "51f2e39a7857fc364ed2dc076d1601c1f1d3e881aa3ee0968085461f31447dea"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F015_roof_title_level.json",
+      "sha256": "0c536b77f695dcdbc9642bc8b64731cbcd50a0012262a72bea4510cbb30e6eb0"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F016_incomplete_riser_label.json",
+      "sha256": "8447bc2b8cb74289c3e594d5791f2c7ef25745a6002c29d68927c47cdc83e006"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json",
+      "sha256": "3b9bdd5ae305bfa08f477c45706ea5b839ced2270c0aa0fa4477f7e919f84dbf"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F021_revision_height.json",
+      "sha256": "f634d5f6dcd488ebfedd3ca87aace2adb92dd0d2f7b5366e19409b3f55b53ef8"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F024_riser_labels.json",
+      "sha256": "c521ebd56bdcd601648f2bba29be378bdf57734b9251f3f7e1bbbd5dcc43c1f5"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F025_continuation_elevation.json",
+      "sha256": "2a1beda87cf3322201fb6e53330711d1f999fca43503b885c39fcab6f4edb118"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F026_sheet_title_scope.json",
+      "sha256": "86ba3ae54be03ffe2187c024a1f9a4ec164f82c56050c0794ff33f0955c39239"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/decisions/VK_F027_calculation_level_labels.json",
+      "sha256": "49dda7205363350c951c84c3700e8d9ee08324e23f0236f50dfa885bece5e924"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/evaluation_protocol.json",
+      "sha256": "cdbfb5284fe3fbd435c2351c694d9cf3b32ada632e1e5b27f5e1258b12e23e36"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+      "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
+      "sha256": "e17f51a2707e2c2f015087a9e1ed6b76d6f9c9bbd7814161b7081a167118de78"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
+      "sha256": "df73701f0cbb7275908c4ab51a94c3a5987c248b5e16d2dd3fc34968997bb98a"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json",
+      "sha256": "b0245ce36dbb9f5dc795807eacea4e2fcb4ca55d00a30f5af6ec276862a2d436"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/EOM8_primary_refutation.json",
+      "sha256": "70382fc940e66ef269ab8b012014bee051d23554e0c71d03c35a171d42d05217"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+      "sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json",
+      "sha256": "b7830b59eb82f7c9e168e16808ea16fb378fafd8b779e637a7f9adb219c6a8d6"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/question_profile.json",
+      "sha256": "a4e027bd53fcbd774814be6bc71ea403c5e1847dd3b5623fe39c3252aabd19cc"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/rounding_control_pair.json",
+      "sha256": "694184daeac68eee26de623332d5332a9a0c1cf6b67d0c986fa6d1919b490acf"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/rounding_control_replay.json",
+      "sha256": "48e034873450c9e385fb7a38b37e7a2d908f257702ed72ea3745e23fab6fefe7"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/signal_count_control_pair.json",
+      "sha256": "dbecc6e94f266dceadd214fd1374191aaab6c5fa981fa086f2ff87d1f17f0a3f"
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/target_overlap_reviews.json",
+      "sha256": "dab92fcab427a054d484122ca815eb0556a1dabb172734b1394164aa5d29ed67"
+    }
+  ],
+  "denominators": {
+    "technical": [
+      "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+      "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
+      "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+      "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+      "AK14:65ea2c2649999f640c83",
+      "AK57:9851f2c4946bad03af44",
+      "AK57:a998dcf058f81b7ac194",
+      "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+      "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+      "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+      "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+      "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+      "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+      "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+      "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+      "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+      "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+      "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+      "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+      "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+      "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+      "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
+      "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+      "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+      "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+      "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+      "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+      "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+      "AK_F022_control_cable_balance:d4470ce9730307aed184",
+      "AK_F022_control_cable_balance:872ea17b985add42621f",
+      "AK_F023_support_type:58cbd95ce44a50b86573",
+      "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
+      "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
+      "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+      "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+      "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+      "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+      "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+      "AK_F035_UZ_identity:f588470dec49e00c838c",
+      "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
+      "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+      "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+      "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+      "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+      "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+      "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+      "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+      "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+      "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+      "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+      "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+      "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+      "AR_F014_insulation_identity:20063319c847e004daca",
+      "B-AR-F-006:76e7568bcfeededeb028",
+      "B-ITP-F-007:0725100843103b391be5",
+      "B-ITP-F-014:38dacc087d3a36a03c14",
+      "B-ITP-F-015:4a6a012e7c150e2d7f45",
+      "B-ITP-F-015:ebc5f59f87e18c7525b5",
+      "B-ITP-F-015:68e759d0e8be658b6916",
+      "B-ITP-F-015:5713c213c4eafe2032fb",
+      "B-ITP-F-016:6f0370becae84fed440d",
+      "B-ITP-F-027:4828a324071dacb9ae3d",
+      "B-ITP-F-027:fe51c088072cbcf15ec9",
+      "B-ITP-F-030:a4e56855f9942b943bff",
+      "B-ITP-F-037:8139bf7df3bbe04da245",
+      "EOM11:7985c84eea058c206240",
+      "EOM27_active_socket_circuits:46bf196510e24cc289cf",
+      "ITP40:e4eaac37781fedf2ad41",
+      "ITP40:bbd2b9236034c12aec3c",
+      "ITP_F002_pump_pressure_selection:63286b8abd3e157f4c25",
+      "ITP_F003_main_circuit_components:52cbecb1ef185b3847ce",
+      "KM13_F004_S2_anchor_multiplicity:59a9339a0f210f950692",
+      "KM6_F018_straight_handrail_rejection_review:41b349266f7d7fa6803b",
+      "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+      "KM_F015_typical_level_list:bce51ca28ffba3fa98c3",
+      "VK_F003_reinforcement_counts:7ad222ee93fc76cab7bc",
+      "VK_F004_insulation_scope:02bb3aef959f1c658194",
+      "ITP_F001_heat_exchanger_pressure:composite:1",
+      "ITP_F001_heat_exchanger_pressure:composite:2",
+      "ITP_F001_heat_exchanger_pressure:composite:3",
+      "ITP_F004_safety_valve_setpoints:composite:1"
+    ],
+    "question": [
+      "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+      "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+      "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+      "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+      "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+      "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+      "AK_F028_change_register_scope:da80e943594aac429110",
+      "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+      "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
+      "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+      "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+      "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+      "AK_F033_power_reference_scope:2ec9d727804fc985242e",
+      "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+      "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+      "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
+      "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+      "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+      "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+      "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+      "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+      "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+      "AK_F065_norm_replacement_applicability:d53a7df3ef467306402d",
+      "AR14_K3_support_levels:11d2c61818f07c8b5a71",
+      "AR17:b3834745b8377f227bbc",
+      "AR35_unlabelled_areas:8b080f37f0ffc62859e0",
+      "AR36_B-AR-F-005:d576dd306cbd1e602f34",
+      "AR39_lower_profile_and_rope:82b33aee103e9ee382ee",
+      "AR59_rope_load_path:63ef9a4878fe506c4a1f",
+      "AR_F001_sp_editions:0fa6c5d50247757e829d",
+      "AR_F001_sp_editions:8f90690c3dc52ad03760",
+      "AR_F002_partial_and_territorial_norm_status:a1b917235764b9e63b56",
+      "AR_F007_KM_references:b89d5f235921cd9de65b",
+      "AR_F007_KM_references:b06b284a61699380958a",
+      "AR_F008_sheet_register:3b6bd4f3bacbcd4e30ae",
+      "AR_F009_club_classification_scope:4e28ba265a83e035660e",
+      "AR_F011_access_register:16a9d1d9252402ce3968",
+      "AR_F012_parapet_drain_slope:84894dbc1889e54a106a",
+      "AR_F018_screen_identity:2fc8c1d03f237cb052ba",
+      "AR_F020_OGN4_height:45b7c32dafd201c30a67",
+      "AR_F022_stone_standard_replacement:7774ac535ffb20fdcbdb",
+      "AR_K3_K4_material:2c8cea013dfa60768080",
+      "B-AR-F-004:5ba89cb25036827448d4",
+      "B-AR-F-016:fff2912112e6c79e3b46",
+      "B-EOM-F-002:589046b033f782342a04",
+      "B-EOM-F-003:26a778e20220ace19772",
+      "B-EOM-F-004:90fc50f60a8f39d5e2cb",
+      "B-EOM-F-005:a26fcc71b65fb1e5cfa1",
+      "B-EOM-F-006:70a5bb3630cd86d67bdf",
+      "B-EOM-F-006:9b2481431ea0814f9774",
+      "B-EOM-F-006:50e2ed9a377d8e0af479",
+      "B-ITP-F-011:f633e04640a9e4e3c71a",
+      "B-ITP-F-011:13234a067319a117c786",
+      "B-ITP-F-017:05e18fdb07cf5bb1bc8b",
+      "B-ITP-F-019:d8c39b3556e4068751dd",
+      "B-ITP-F-020:e9f7120697b89e6da747",
+      "B-ITP-F-020:2052d4e286115c641e7f",
+      "B-ITP-F-020:ddebb96399a114f724d6",
+      "B-ITP-F-020:c729cc29afbee39e2ed0",
+      "B-ITP-F-021:61e590ad93c41a790803",
+      "B-ITP-F-021:6dbe9315b20445709a44",
+      "B-ITP-F-021:21e573255419bee97d92",
+      "B-ITP-F-021:19069482aa6e7267f73b",
+      "B-ITP-F-022:8cd785f32b0f2581717f",
+      "B-ITP-F-023:4c138c58b906579e3ebd",
+      "B-ITP-F-024:f36bd082707154691153",
+      "B-ITP-F-025:c98f6c16f19022b52eb6",
+      "B-ITP-F-026:97276f557b9fbedb0bef",
+      "B-ITP-F-027:0bd4729bc0b05b923141",
+      "B-ITP-F-027:7853566af8288ba9432d",
+      "B-ITP-F-029:268aafac2624c208753e",
+      "B-ITP-F-030:15e7e0c93d727b6902f9",
+      "B-ITP-F-031:20e0a2fe6cdbb065f78a",
+      "B-ITP-F-031:d7fa75e76f824fe5d722",
+      "B-ITP-F-035:4868f82f52227408ecc1",
+      "B-ITP-F-035:6e663d7b02b8e032a0c2",
+      "B-ITP-F-038:705f2262875c31478443",
+      "B-ITP-F-039:20e8e64d70bd0535ad4d",
+      "B-ITP-F-040:7f53850450a0df3ef46e",
+      "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+      "B-ITP-F-042:ecfe1ebab48bd184691d",
+      "B-ITP-F-044:de24b888831313c4d337",
+      "B-ITP-F-050:5cd9d3d1be70ff9681c3",
+      "B-VK-F-008:91aa2581cf81197e6fe8",
+      "B-VK-F-014:e9e5e1b148f844eb7d6d",
+      "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
+      "EOM5_shunt_trip_identity:877b6fefac02ba992ea1",
+      "EOM70_F008_consumer_power:d74160d19f75fda36950",
+      "EOM76_B-EOM-F-012:8e69883d4dc84cb69b01",
+      "EOM_F001_cable_description:e57af65ca85f5ab8075c",
+      "EOM_F007_phase_and_temporary_load:9e004a2c0153a24dc3ce",
+      "EOM_F009_commercial_identity_supply:2c0ad71382f4e28b3853",
+      "EOM_F009_commercial_identity_supply:ceddc2904fb7fa5d39e4",
+      "EOM_F011_meter_internal_symbols:d1766d1077f31422494f",
+      "EOM_F013_small_load_currents:4191d1c0f009a85947f9",
+      "EOM_F014_phase_A_current:d972a6b9f556089a8923",
+      "EOM_F016_management_phase_current:fdef783b69877a39920c",
+      "EOM_F017_poles_and_PE_scope:5a5257d09b828c10e8ca",
+      "EOM_F018_temporary_outgoing_parameters:51ab0814a9c617d18dcc",
+      "EOM_F019_typical_floor_scope:35bac9306e2bcbc588c5",
+      "EOM_F020_enclosure_minimums:b34c225d7cc1d2d234e8",
+      "EOM_F021_F023_controller_voltage_scope:b197a84551461f1efaca",
+      "EOM_F021_F023_controller_voltage_scope:04253642dc34f231614b",
+      "EOM_F022_ventilation_power_rounding:2dcc867069010078edd3",
+      "EOM_F024_room_number_collision:a27bd6546c4ff55c4e59",
+      "EOM_F025_repeated_note_numbers:c0bda0b5718912600dc3",
+      "EOM_F026_emergency_tray_legend:2474510e8b112f4c5cb1",
+      "EOM_F027_penetration_material_scope:d3fca7220bbe9d48857c",
+      "EOM_F028_apartment_plan_identity:bbc814c9d763c8f736f7",
+      "EOM_F029_shared_product_code:9059426853483f0c34cf",
+      "EOM_F030_CT_minimum_substitutions:e48399b0ddd41647bc4a",
+      "EOM_F030_CT_minimum_substitutions:82bb92f6ba02b2b7c780",
+      "EOM_F031_CT_emergency_assumptions:d8fbf0545ffcdbb28172",
+      "EOM_F032_commercial_area_inputs:16faed04bf572c1876a5",
+      "EOM_F032_commercial_area_inputs:147160644f952ff76e59",
+      "EOM_F033_apartment_board_scope:dbb1bab29b165bc0b8ca",
+      "EOM_F034_specification_quantity:cc93bff16c691fce3df8",
+      "EOM_F035_specification_quantity:0498a98c0a043fe1e66d",
+      "EOM_F036_tray_code_description:da6b33367ef613f75477",
+      "EOM_F037_tray_cover_scope:5eaa42d72fba7e53d76e",
+      "EOM_F038_specification_quantity:2bf971bcf81224ba57b8",
+      "EOM_F039_frame_capacity:289e229897613e2cc690",
+      "EOM_F042_SPZ_legend_scope:1b019c967f9372026bd1",
+      "EOM_F043_hanger_fireproofing_supply:2828cd141e6335bf59ca",
+      "EOM_F044_F045_incomplete_reference_identity:922b40879439f8fa0153",
+      "EOM_F044_F045_incomplete_reference_identity:43be2c9d093d757ce864",
+      "EOM_F049_lightning_reference_title:106f839cb3a98ca97f29",
+      "H-ITP-63:7ba4e763f9b6758d0f09",
+      "H-ITP-64:0a12321728e29d5b1832",
+      "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+      "ITP40:24bca8b6c47714314059",
+      "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
+      "ITP68_grooved_scope:98fe6084bffb8305b8ed",
+      "ITP72_wall_and_velocity:42140cc8a623c96428fe",
+      "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
+      "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
+      "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
+      "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
+      "ITP_F028_reducer_designations:2f16d360921aab6e9949",
+      "ITP_F028_reducer_designations:fab751f2686c38838e0b",
+      "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
+      "ITP_F033_replaced_product_standards:3f903a601969ba823079",
+      "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
+      "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443",
+      "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
+      "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
+      "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
+      "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+      "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
+      "ITP_heat_exchanger_labels:cae0fec45b0437f86c1a",
+      "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+      "KM3:23f9be653d9b57c84d4c",
+      "KM5_S3_bent_handrail_developed_length:f55d97014c925f15f7ac",
+      "KM_F001_norm_editions_scope:cc6d088a37f8ea14e2fe",
+      "KM_F003_loads_document_link:978d350d6e39eb1fcf5a",
+      "KM_F009_sheet_cross_reference:01c2e819a95b8ab792a2",
+      "KM_F010_end_caps_material_accounting:f1072b185954c64a3f41",
+      "KM_F012_level_list_scope:caf42e6feef6a3355c54",
+      "KM_F013_pipe_standard_designations:72e396e785f77c8d64b3",
+      "KM_F025_standard_title_editorial:81d65a25e69a6b09ca37",
+      "VK14:f8b1abbe9f89c7203c04",
+      "VK35_B-VK-F-010:3dfbbec7f05abd4276e4",
+      "VK50_specification_duplicates:f2c9bd72860a821601dd",
+      "VK50_specification_duplicates:f59ff2a504ccf24245d9",
+      "VK_F011_technical_space_level:c654fd4efb33b8840ce7",
+      "VK_F015_roof_title_level:2bb76a02a4eaf106a275",
+      "VK_F016_incomplete_riser_label:dc77e2144b6ac1213962",
+      "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
+      "VK_F024_riser_labels:f44954b8bdd41b2ea649",
+      "VK_F026_sheet_title_scope:66eff95c8c4f43ea81ac",
+      "VK_F027_calculation_level_labels:7479fd101bd142ad9eec",
+      "EOM_F015_neutral_PE_unresolved_topology:composite:1",
+      "EOM_F046_new_reference_identity:composite:1",
+      "EOM_F046_new_reference_identity:composite:2",
+      "ITP_F004_safety_valve_setpoints:composite:2",
+      "KM12_F022_anchor_installation_identity:composite:1",
+      "KM_F002_ladder_description_scope:composite:1",
+      "KM_F005_total_plate_balance:composite:1",
+      "KM_F006_profile_mass_recalculation:composite:1",
+      "KM_F007_round_pipe_unreproduced_total:composite:1",
+      "KM_F008_weld_calculation_requirement:composite:1",
+      "KM_F011_dimension_reference_points:composite:1",
+      "KM_F016_label_count_scope:composite:1",
+      "KM_F019_OGM11_end_component_boundaries:composite:1",
+      "KM_F020_conditional_diagonal:composite:1",
+      "VK20_sensor_count_identity:composite:1",
+      "VK34_transition_assembly:composite:1",
+      "VK51_apartment_scope:composite:1",
+      "VK_F001_revision_interval:composite:1",
+      "VK_F002_revision_compensator_inventory:composite:1",
+      "VK_F002_revision_compensator_inventory:composite:2",
+      "VK_F005_fitting_pressure:composite:1",
+      "VK_F006_test_criterion:composite:1",
+      "VK_F009_pipe_125_inventory:composite:1",
+      "VK_F009_pipe_125_inventory:composite:2",
+      "VK_F013_drain_assembly_scope:composite:1",
+      "VK_F013_drain_assembly_scope:composite:2",
+      "VK_F021_revision_height:composite:1"
+    ],
+    "negative": [
+      "AK57:d6f8484b24bc88adcab5",
+      "AK65_F043_UZ_identity:ab637698bce5025cb6df",
+      "AK7:4c7010afca7e2923c94b",
+      "AK_F001_F002_CO_package_boundary:f0a1212b87b41e035c75",
+      "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
+      "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
+      "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
+      "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
+      "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
+      "AK_F021_cable_reading_balance:c6f3ad54ccd603f4f796",
+      "AK_F025_area_arithmetic:eaa42cc0bf57fa49a886",
+      "AK_F025_area_arithmetic:5ba1a83908ceb33758ab",
+      "AK_F025_area_arithmetic:88b00bcefd42161838b4",
+      "AK_F026_protection_boolean_condition:b69337bb34f8d41b6d57",
+      "AK_F027_sensor_interface_scope:eb93f9ee7771db58e73f",
+      "AK_F029_CO_reference_and_parameter_scope:7752ed01f36756fff7f3",
+      "AK_F029_CO_reference_and_parameter_scope:9a595b6986b86b78f7cb",
+      "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
+      "AK_F041_fan_role_labels:8239404083a86b949049",
+      "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
+      "AK_F052_local_cable_balance:61ee4b031d84d67a9995",
+      "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
+      "AR39_lower_profile_and_rope:fef549df72bcc7f43cc2",
+      "AR3_exit_elevation_identity:35d17b08445c321782dd",
+      "AR59_rope_load_path:e562ad115416cc435f9c",
+      "AR_F002_partial_and_territorial_norm_status:06e66d3f9cf1ce259b54",
+      "AR_F010_glass_formula:7e2ea3f3157c5ca6b52e",
+      "AR_F011_access_register:54cfcd7a1f3122411bfa",
+      "AR_F011_access_register:ba638ed1239e051c8690",
+      "AR_F012_parapet_drain_slope:c4281865a83886e086b0",
+      "AR_F018_screen_identity:bdab0ef4a9f418abece7",
+      "B-AR-F-006:1a35362f3dabf4e35f77",
+      "B-ITP-F-011:cddfdb106afa191e3b80",
+      "B-ITP-F-016:364c279f5f1b89fa2aee",
+      "B-ITP-F-019:7e4bf6b3afd2b736df6c",
+      "B-ITP-F-024:97a3c95e2b1698d996d0",
+      "B-ITP-F-051:6c86cc6a433d4ce0abd6",
+      "B-KM-F-024:e542b18bca55db64dadc",
+      "B-VK-F-029:d083cf366c333ad81c4a",
+      "EOM11:3cea91fda96c41ad80dc",
+      "EOM27_active_socket_circuits:d00dddfff15bbd7767ab",
+      "EOM5_shunt_trip_identity:946dc28da1dfa089e8c3",
+      "EOM8:93d4f22f3881c3b6f642",
+      "EOM8:e341364ee0bc7bae8147",
+      "EOM_F010_meter_CT_identity:3db2ab4cd251ab7a20a8",
+      "EOM_F010_meter_CT_identity:428615994b8f295c4f7f",
+      "EOM_F018_temporary_outgoing_parameters:5a289d06ebe35181566c",
+      "EOM_F019_typical_floor_scope:784b0d5832e912d7f9d7",
+      "EOM_F024_room_number_collision:425a9b88c69b00e6214e",
+      "EOM_F040_parking_sum_refuted:d962213a7fbe53a371a7",
+      "EOM_F040_parking_sum_refuted:6aaa8a3dc96fadec242b",
+      "EOM_F041_F048_contradictory_norm_status:35536aa9bdef77ffbaf1",
+      "EOM_F046_new_reference_identity:49e98cd23b9141b479ed",
+      "EOM_F046_new_reference_identity:07b64d2a81e03ae2bf52",
+      "EOM_F046_new_reference_identity:2adc54b2dd1facb5698e",
+      "EOM_F047_unsubstantiated_norm_status:d6a04d7c3701131cd97f",
+      "H-EOM-2:c728f93740c455471c9e",
+      "ITP44_GVS_maxima:2ad6745f21c33bf142fc",
+      "ITP58_GVS_branch_flows:998f8c69c4c89da05aa9",
+      "ITP58_GVS_branch_flows:092234a89fe9515c377c",
+      "ITP72_wall_and_velocity:5acf5de70b5d5444dfb8",
+      "ITP_F004_safety_valve_setpoints:d5f708be41c1a1f2266c",
+      "ITP_F006_fuse_instruction:427e462f69e3375e880c",
+      "ITP_heat_exchanger_labels:d9eb099d20a94bca22e2",
+      "KM_F003_loads_document_link:51c645f6877fe417223f",
+      "KM_F008_weld_calculation_requirement:17d3c36c737f3734f145",
+      "KM_F014_adjacent_flights_identity:b731dff3b4f369ab5f8b",
+      "VK32_drain_count_identity:7925cb948b0881a20c11",
+      "VK_F003_reinforcement_counts:e513233db1a750cd7427",
+      "VK_F006_test_criterion:cdce20857528642ffcee",
+      "VK_F013_drain_assembly_scope:f37578f6de4df40d140e",
+      "VK_F013_drain_assembly_scope:9bace4bde2d823655edc",
+      "VK_F013_drain_assembly_scope:45990c01587ab3d1a583",
+      "VK_F013_drain_assembly_scope:990e18216eaec4a3bf2d",
+      "VK_F015_roof_title_level:e6b91efad363f833fe38",
+      "VK_F026_sheet_title_scope:3066aa83db3239a42924",
+      "VK_F026_sheet_title_scope:462e37ddc2cb56579949"
+    ]
+  },
+  "unscored_themes": [
+    {
+      "theme": "AK_F059_thermostat_supply_routes",
+      "candidate_ids": [
+        "B-AK-F-059"
+      ],
+      "retained_wording": "Не выпускать замечание о недостатке одного реле по поз.14.8 только на основании двух обозначений TS1/TS2. Перечень разделяет капиллярное реле ТС1 количеством1 и ТС2, комплектный с электронагревателем; функциональная схема различает защиту от замораживания и перегрева.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "AK_F062_rs485_termination_scope",
+      "candidate_ids": [
+        "B-AK-F-062"
+      ],
+      "retained_wording": "Не выпускать утверждение об отсутствующих резисторах120Ом и неизбежных ошибках связи по одному отсутствию их символов на структурной схеме. Наличие и способ оконечивания конкретных линий БПС-3-И/СТГ-3-И остаются непроверенными.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "AK_F063_ethernet_evidence_scope",
+      "candidate_ids": [
+        "B-AK-F-063"
+      ],
+      "retained_wording": "Не выпускать замечание о превышении длины Ethernet или неполноте всего проекта на основании отсутствия длин в легенде листа5. Легенда прямо относит линию F/UTP Cat5e к книге2; проверка длин конкретных участков остаётся не выполненной.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "AR_F019_drain_dimension_identity",
+      "candidate_ids": [
+        "B-AR-F-019"
+      ],
+      "retained_wording": "Не выпускать утверждение, что радиус повышенного уклона ошибочно принят 300 вместо 500 мм: размеры 300+300 на узле подтверждены, но их связь именно с границей зоны 5% не установлена. Примечание прямо требует радиус не менее 500 мм.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "AR_F021_unsubstantiated_norm_status",
+      "candidate_ids": [
+        "B-AR-F-021"
+      ],
+      "retained_wording": "Не выпускать B-AR-F-021 как доказанное замечание о заменённой норме. В АР6.2, лист1, ссылка на СНиП12-03-2001 имеется в п.15 о зимних работах и в ведомости. Нормативное основание обязательного исправления этих ссылок не подтверждено.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "B-AR-F-003",
+      "candidate_ids": [
+        "B-AR-F-003"
+      ],
+      "retained_wording": "При сверке ведомости пояснить разность0,01м между суммой опубликованных длин259,47 и итогом259,48.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "B-KM-F-021",
+      "candidate_ids": [
+        "B-KM-F-021"
+      ],
+      "retained_wording": "При сверке сметного итога пояснить расхождения опубликованных масс С245: ячейки5,793т, итоги видов проката5,796т, итоги лестниц5,798т.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "B-VK-F-012",
+      "candidate_ids": [
+        "B-VK-F-012"
+      ],
+      "retained_wording": "При необходимости сверки опубликованных итогов пояснить разницу0,01м³/сут: четыре строки дают260,29, итог260,28.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "ITP_F013_valve_pressure_basis",
+      "candidate_ids": [
+        "B-ITP-F-013"
+      ],
+      "retained_wording": "Не выпускать утверждение об отсутствии гидравлической увязки во всём комплекте или о неустойчивой работе автоматики на основании отличия потерь полностью открытых клапанов от 0,5 бар. На листах 14–17 показаны исходные 0,5 бар, выбранные Kv и отдельный расчёт потерь после выбора. Полный баланс и авторитет остаются непроверенными.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "ITP_F045_door_joint_context",
+      "candidate_ids": [
+        "B-ITP-F-045"
+      ],
+      "retained_wording": "Не выпускать B-ITP-F-045 как ошибочную нормативную ссылку: два указания на плане существуют, но их несовместимость не доказана. Сохранить случай для проверки архитектурного решения и основания ссылки.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "ITP_F052_unsubstantiated_norm_status",
+      "candidate_ids": [
+        "B-ITP-F-052"
+      ],
+      "retained_wording": "Не выпускать B-ITP-F-052 как подтверждённое требование заменить СНиП12-03-2001: наличие двух ссылок установлено, но основание replaced не подтверждено надёжной цепочкой первоисточников. Случай оставить для проверки нормативного статуса и происхождения подсказки.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "KM_F023_unsubstantiated_norm_status",
+      "candidate_ids": [
+        "B-KM-F-023"
+      ],
+      "retained_wording": "Не выпускать требование заменитьСНиП12-03-2001 только по локальной меткеreplaced. Наличие ссылки подтверждено; первичное основание замены и применимость корректировки к проекту не установлены.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "KM_F026_reference_scope_insufficient",
+      "candidate_ids": [
+        "B-KM-F-026"
+      ],
+      "retained_wording": "Не выпускать самостоятельное замечание о неприменимостиСТО36554501-006-2006 только по названию комплекта металлических ограждений. Применимость конкретногоСТО не установлена; ошибочность ссылки, лишние работы и влияние на решения не доказаны.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    },
+    {
+      "theme": "VK_F025_continuation_elevation",
+      "candidate_ids": [
+        "B-VK-F-025"
+      ],
+      "retained_wording": "Не выпускать самостоятельное техническое замечание о разрыве трубы или неверной монтажной высоте только из разности +5,3220 в ссылке продолжения и +5,320 у труб. Числовое различие подтверждено, равенство геометрических точек не установлено.",
+      "handling": "Retained for unsupported-assertion/method review; not automatically a technical positive or negative. See exact atomic labels."
+    }
+  ],
+  "evaluation_contract": {
+    "authority": "This release fixes target IDs and source bytes. Preparation artifacts keep their historical pending/freezing flags; those flags do not authorize runtime scoring independently of this contract.",
+    "unit": "One canonical narrow target with all mandatory object/relationship/location context. Supporting numbers alone do not match. Score technical, question and negative routes separately.",
+    "full_input_profile": "All six declared primary MD/PDF/block inventories, graphic viewing, calculation capability, and equal access to primary manufacturer/normative sources for both variants. TEXT authority remains mandatory.",
+    "availability": "The fixed full-input denominators are84technical,198questions,77negative. If necessary evidence is inaccessible, record target-level availability and report incomplete comparability. Do not silently drop targets after seeing outputs or call unavailable evidence a model miss. Any alternative denominator is preregistered as a new profile, with the full-set result retained.",
+    "external_evidence": "Archived external observations retain access dates and limits. No claim that URLs remain accessible or that all snapshots are local. General equal source access is required; answer-bearing targeted URLs are evaluator-only.",
+    "positive_matching": "Match meaning and source identity, allowing different wording; keep partial coverage and unsupported additions separate. No extra credit for duplicate outputs or aliases.",
+    "negative_matching": "For filter acceptance, prove candidate reached the filter and was removed for the correct reason; silence alone proves neither filter operation nor improvement.",
+    "retention": "Baseline source IDs remain attached. Confirmed useful findings must survive with mandatory details; questions remain separate. New valid findings outside the frozen dataset require separate adjudication, not automatic rejection.",
+    "isolation": "Independent discovery has no access to this package, history or engineer answers. Seal outputs before evaluation; known six projects remain exposed regression cases.",
+    "versioning": "Never rewrite this release in place after running comparisons. A changed verdict or target requires a new release and explicit result version."
+  },
+  "remaining_later_stage_work": [
+    "Trace actual classic runtime causes and code; this dataset is not evidence of a pipeline cause.",
+    "Implement and execute control-pair tests; descriptions and local arithmetic checks do not authorize a filter.",
+    "Freeze candidate code/prompts/input capabilities and numeric time/cost/engineer-load acceptance budgets before comparison.",
+    "Verify discovery isolation and supplementary-source availability during run setup.",
+    "Run six-project regression and new-project portability; no production acceptance from this release alone."
+  ]
+}
