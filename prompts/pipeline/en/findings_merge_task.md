@@ -11,6 +11,11 @@
 
 1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/02_text_analysis.json`
    - `text_findings` (T-001...), `normative_refs_found`, `project_params`
+   - `object_balance_operations` and runner-computed `object_balance_results`: inspect
+     both unmatched sides against the original source scope, exact execution,
+     reserve status, aggregation and supply boundaries. Retain a supported conflict
+     or an addressed question; never automatically turn a set difference into a
+     physical shortage. A `not_checked` operation is unresolved, not refuted.
    - `items_verified_from_blocks` (optional) — present if text ran AFTER blocks: its cross-check
      of its own T-findings against Stage 01 blocks.
 

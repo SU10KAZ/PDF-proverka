@@ -283,6 +283,22 @@ async def run_text_analysis(
     except Exception as exc:
         await ctx.log(f"Text pre-scan skipped: {exc}", "warn")
 
+    # Execute source-addressed comparisons; missing inventories are not a pass.
+    from .object_balance import evaluate_object_balances
+    from backend.app.pipeline.stages.prepare.graph_builder import build_block_page_index
+    try:
+        current = json.loads(output_path.read_text(encoding="utf-8"))
+        graph_path = output_dir / "document_graph.json"
+        graph = json.loads(graph_path.read_text(encoding="utf-8")) if graph_path.exists() else {}
+        current["object_balance_results"] = evaluate_object_balances(
+            current.get("object_balance_operations"), set(build_block_page_index(graph)),
+        )
+        output_path.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        error = f"Object balance execution failed: {exc}"
+        ctx.update_pipeline_log(log_stage, "error", error=error)
+        return StageResult.fail(error)
+
     # Account for every deferred request even when the model omits receipts.
     compact_path = output_dir / "01_blocks_for_text.json"
     if compact_path.exists():

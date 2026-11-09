@@ -99,6 +99,23 @@ Analyze the MD content COMPLETELY. Extract:
 
 {DISCIPLINE_FINDING_CATEGORIES}
 
+## Source-addressed object balances
+
+Include `object_balance_operations` for applicable comparisons of a scheme's active
+objects with calculation rows or specification items. Use generic project data, not
+historical answers. Each operation has a unique `id`, `kind` equal to `set_balance`,
+a precise `scope`, and `left` / `right` inventories. Each inventory contains
+`scope_refs` (exact block IDs delimiting the inspected source) and `items`.
+Each item contains `key` (an array of full identity components, including technical
+execution where applicable), `role` (`active` or `reserve`) and `source_refs`
+(exact block IDs). Use the same identity definition on both sides. Do not merge
+HF with FRHF, distinct physical instances, or different supply scopes. Repeated
+views must be resolved before adding an item. Unknown identity, aggregation or
+supply ownership must remain an explicit question, not a fabricated match.
+If the required graphic scope cannot be inspected, do not claim a complete inventory.
+The runner computes both set differences; these are review candidates, not automatic
+proof of a shortage. Empty operations do not mean the document passed this check.
+
 ## Output JSON Schema
 
 ```json
