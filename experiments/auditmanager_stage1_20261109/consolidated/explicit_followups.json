@@ -192,6 +192,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-018"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "До утверждения глобального отсутствия данных проверить документацию временной сети и границы проектирования; до этого такой тезис оставить неоцениваемым."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-019"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F019_typical_floor_scope.json",
