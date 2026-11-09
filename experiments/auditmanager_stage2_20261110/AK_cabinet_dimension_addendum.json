@@ -1,0 +1,158 @@
+{
+  "case_id": "ADD-AK-CABINET-DIMENSION-001",
+  "status": "new_adjudicated_addendum_not_in_benchmark_v1",
+  "project": "AK / 13АВ-РД-АК2-ПА",
+  "source_candidate_ids": [
+    "G-075",
+    "G-076"
+  ],
+  "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+  "source_candidates": [
+    {
+      "source_id": "G-075",
+      "origin": "graphic",
+      "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+      "pointer": "/block_analyses/63/findings/0",
+      "finding": {
+        "id": "G-075",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "На узле «Установка шкафов автоматики и управления» листа 53 противоречат друг другу вертикальные размеры: высота шкафа 1400 мм и расстояние от пола до его низа 1000 мм дают высоту верха 2400 мм, тогда как общий размер указан 1800 мм. Расхождение составляет 600 мм.\n\nРекомендация: Согласовать высоту установки и габарит шкафа, исправив вертикальную размерную цепь.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_d52bf811660e42b59acdce0038f9fbf0",
+        "value_found": "1400; 1000; 1800",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-075",
+              "mode": "independent",
+              "detected_at": "2026-11-06T23:04:11.145816+00:00",
+              "context_source": "structured_alia_scheme"
+            }
+          ],
+          "context_source": "structured_alia_scheme"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одну размерную ошибку узла установки шкафа на листе 53: 1400 + 1000 = 2400 мм при указанном общем размере 1800 мм. Детализация эквивалентна.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        }
+      },
+      "linked_final_ids": [],
+      "identity_ambiguous": false,
+      "status": "unlinked_requires_semantic_trace"
+    },
+    {
+      "source_id": "G-076",
+      "origin": "graphic",
+      "block_id": "blk_d52bf811660e42b59acdce0038f9fbf0",
+      "pointer": "/block_analyses/63/findings/1",
+      "finding": {
+        "id": "G-076",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "На узле установки шкафа автоматики и управления, лист 53, размерная цепь по высоте противоречива: высота шкафа 1400 мм и расстояние от его низа до пола 1000 мм дают 2400 мм, тогда как общий размер от верха шкафа до пола указан 1800 мм.\n\nРекомендация: Согласовать общий и составляющие размеры установки шкафа.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_d52bf811660e42b59acdce0038f9fbf0",
+        "value_found": "1800; 1400; 1000",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-sol",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-076",
+              "mode": "independent",
+              "detected_at": "2026-11-06T23:04:11.145816+00:00",
+              "context_source": "structured_alia_scheme"
+            }
+          ],
+          "context_source": "structured_alia_scheme"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одну размерную ошибку узла установки шкафа на листе 53: 1400 + 1000 = 2400 мм при указанном общем размере 1800 мм. Детализация эквивалентна.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        }
+      },
+      "linked_final_ids": [],
+      "identity_ambiguous": false,
+      "status": "unlinked_requires_semantic_trace"
+    }
+  ],
+  "graphic_evidence": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/render_cache/AK/blk_d52bf811660e42b59acdce0038f9fbf0_6471b342ae3c.png",
+    "sha256": "88dd701f806dde956e13c013bd2bdd62042f872dd0f19110be8696d1dccc06e2",
+    "directly_viewed": true,
+    "title": "Установка шкафов автоматики и управления",
+    "observation": "Размер1400 соединяет верх и низ корпуса;1000 соединяет низ корпуса с верхней линией пола;1800 соединяет тот же верх корпуса с той же линией пола. Выносные линии показывают общую цепь.800 — горизонтальная ширина и в расчёт высоты не входит."
+  },
+  "calculation": {
+    "component_sum_mm": 2400,
+    "overall_label_mm": 1800,
+    "difference_mm": 600
+  },
+  "confirmed_claim": "Подписи вертикальной размерной цепи1400+1000 не согласованы с общим1800 для того же корпуса и пола.",
+  "recommended_wording": "Согласовать вертикальные размеры узла установки шкафа на листе53:1400мм высоты корпуса и1000мм от пола до низа дают2400мм, тогда как общий размер указан1800мм. Уточнить правильные значения до изменения привязок.",
+  "unscored_claims": [
+    "Фактическая высота монтажа",
+    "Какое именно число следует исправить",
+    "Нарушение нормативной высоты или доступности",
+    "Фактические дополнительные затраты"
+  ],
+  "engineer_decision": "Отдельное решение инженера для этого кандидата не найдено; новое графическое подтверждение не выдаётся за инженерное принятие.",
+  "loss_trace": {
+    "stage01": {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/01_blocks_analysis.json",
+      "sha256": "e03e93fd5cd91f60ae1e4a06c0f6c5308f8b25093f1f540d7f86346cfaf9beb7"
+    },
+    "raw_merge": {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/audit_trail/03_findings_merge_2026-11-07T02-30-32.json",
+      "sha256": "b495ca50a55e534840c053b97d5e42779513b26c02fb56900db595fe670f3353"
+    },
+    "final": {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+      "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+    },
+    "observed": "Два совпадающих опубликованных графических кандидата присутствуют в01_blocks_analysis; ни ихID, ни размерная цепь не представлены в сохранённом ответе объединения и конечных замечаниях.",
+    "stage": "merge model output",
+    "internal_model_reason": "unknown; no explicit disposition found",
+    "not_two_losses": "G075/G076 — два детектора одного противоречия, одна полезная находка."
+  },
+  "regression_use": "Positive preservation case for candidate accounting through merge. Require explicit retained finding or evidence-backed disposition; do not blindly restore every unmatched candidate.",
+  "benchmark_handling": "Do not rewrite AM-SIX-BENCHMARK-1 or its denominator. Register in the next explicitly versioned supplement before comparative runs.",
+  "production_changed": false
+}
