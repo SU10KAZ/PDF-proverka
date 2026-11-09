@@ -14,7 +14,7 @@ def test_recovery_selects_unlinked_and_requires_graphic_evidence(tmp_path, monke
     for name, payload in data.items():
         (tmp_path / name).write_text(json.dumps(payload))
     md = tmp_path / 'document.md'
-    md.write_text('## Page 1\nunrelated\n## Page 2\n### BLOCK [GRAPHIC]: g\nmodel summary\n')
+    md.write_text('## Page 1\nunrelated\n## Page 2 — Sheet 53 — Cabinet\n### BLOCK [GRAPHIC]: g\nmodel summary\n')
     passes = build_recovery_passes(tmp_path, md)
     assert len(passes) == 1
     packet = json.loads(passes[0].messages[-1]['content'])

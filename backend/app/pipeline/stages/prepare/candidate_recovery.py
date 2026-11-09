@@ -30,9 +30,21 @@ def build_recovery_passes(output_dir, md_path):
     index = json.loads(index_path.read_text()) if index_path.exists() else {}
     files = {b.get('block_id'): b.get('file') for b in index.get('blocks', []) if isinstance(b, dict)}
     md = md_path.read_text(encoding='utf-8')
-    headers = list(re.finditer(r'^##\s+(?:Page|СТРАНИЦА)\s+(\d+)\s*$', md, re.M | re.I))
+    headers = list(re.finditer(r'^##[ \t]+(?:Page|СТРАНИЦА)[ \t]+(\d+)\b[^\n]*$', md, re.M | re.I))
     page_text = {int(h.group(1)): md[h.start():headers[i+1].start() if i+1 < len(headers) else len(md)]
                  for i, h in enumerate(headers)}
+    # The prepared MD owns TEXT and its block addresses. Historical graph
+    # snapshots can contain a different subset of IDs; never silently discard
+    # existing MD blocks merely because that graph does not contain them.
+    md_block_pages, md_text_ids = {}, set()
+    for page, content in page_text.items():
+        for match in re.finditer(r'^###\s+BLOCK[^\n]*?\[([^]]+)\]:\s*(\S+)', content, re.M | re.I):
+            kind, bid = match.groups()
+            md_block_pages[bid] = page
+            if kind.upper() in {'TEXT', 'TABLE'}:
+                md_text_ids.add(bid)
+    block_pages.update(md_block_pages)
+    text_ids = md_text_ids
     passes, manifest = [], []
     for candidate in candidates:
         item = candidate['candidate']
