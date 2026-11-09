@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-09",
+  "authority": "explicit user reply in this conversation",
+  "user_answer": "Отдельный раздел вопросов и уточнений",
+  "required_behavior": "Достоверные малозначимые замечания об оформлении и вопросы вне технического профиля показывать в отдельном разделе «Вопросы и уточнения».",
+  "metrics": {
+    "confirmed_technical_defects": "separate",
+    "questions_and_clarifications": "separate",
+    "out_of_profile_questions": "separate subtype",
+    "engineer_workload": "count both sections"
+  },
+  "boundaries": [
+    "Не превращать недостаток данных в доказанный дефект.",
+    "Не скрывать вопрос из-за отсутствия доказанного дефекта.",
+    "Опровергнутый тезис не превращать автоматически в вопрос; вопрос требует собственного неразрешённого основания."
+  ],
+  "production_changed": false
+}

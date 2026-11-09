@@ -1,0 +1,26 @@
+{
+  "control_id": "EOM:8",
+  "review_date": "2026-11-09",
+  "source_md": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "source_pdf": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.pdf",
+    "sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4"
+  },
+  "image": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/images/blk_f1dabf6d0ec34f599959c0f4c002fc1d_d87d62534de9.png",
+    "sha256": "07f13a3d0dd260c8062714bd5209fdac266937b4ae17c93fdd3893bed931e105"
+  },
+  "crop_receipt": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/EOM8_crop_receipt.json",
+    "sha256": "caac5e2cd7812bc7af302675260618eac4fbf215cc147c2228d1f1ca5d7d1b1e"
+  },
+  "observed": "На конструкции щитов С2 семь красных шкафов. Выноска ЯУ-ДУ2.1 снизу ведёт к нижнему шкафу; это не только подпись питающего кабеля.",
+  "technical_status": "refuted_exact_absence_claim",
+  "historical_engineer_decision": "Отклонено",
+  "original_claim": "Не определено место установки ЯУ-ДУ2.1, от которого на верхнем уровне показано питание вентилятора ДУ2.1.\n\nДоказательства из отчёта: На листе 23 на конструкции щитов С2 подписаны ЯУ-ПД2.1, ЯУ-ПД2.2, ЯУ-ПД2.3.1, ЯУ-ПД2.3.2, ЯУ-ПД2.4.1, ЯУ-ПД2.4.2. ЯУ-ДУ2.1 упоминается в перечнях кабелей и у подъёма линии, но самостоятельная позиция или место шкафа на этой конструкции не обозначены. На листе 24, PDF 26, вентилятор ДУ2.1 на верхней площадке С2 имеет выноску «от ЯУ-ДУ2.1». На кровле С3 шкаф ЯУ-ДУ3.1, напротив, явно подписан на конструкции. Проверка ограничена переданным разделом ЭОМ; шкаф может быть размещён в отсутствующем смежном разделе автоматики.",
+  "required_output": "Снять тезис об отсутствии обозначенного места ЯУ-ДУ2.1 на конструкции щитов листа 23/PDF25.",
+  "limits": "Не подтверждает прочие характеристики шкафа и не доказывает отсутствие любых других ошибок схемы."
+}

@@ -1,0 +1,92 @@
+{
+  "control_id": "EOM:2",
+  "review_date": "2026-11-09",
+  "reviewer": "primary agent direct GRAPHIC inspection + authoritative TEXT + Python arithmetic",
+  "source_md": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "source_pdf": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.pdf",
+    "sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4"
+  },
+  "images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/images/blk_bd26d730d0a84c57900a87e3f5a47cce_f72e17367c47.png",
+      "sha256": "6c88974da58c901d3c28b6d41a70396f760b27887b79c40b4e13bc20cbe79669"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/images/blk_8fac348a820c41aeb2d941339987da14_14602e9c3b23.png",
+      "sha256": "b6e6fd3b339889cdf9c75c3f87d12d9d30b61a5d1dd44a7f96e5c6040fc15f59"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/images/blk_513e35c4f8a7432986e9a498d4573996_7a34ab99f936.png",
+      "sha256": "77fd9d0836dd53a21510f3637bff8adf43bc2e873559bdad444d352f35e47394"
+    }
+  ],
+  "crop_receipts": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/EOM2_crop_receipt.json",
+      "sha256": "927c061ac847b323bd77b03f212c314e0a3cd003590313f627941640c88a7d65"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/EOM2_p5_receipt.json",
+      "sha256": "d5256bebbf7da66e3651a99228308cce7505f9a66b9b07def29e6edcb87d98e1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/manual/EOM2_p6_receipt.json",
+      "sha256": "ebdecd732d4e3e48720b1ab8d89a7f4196d251005aec2058ab8e66b4f0dfc79c"
+    }
+  ],
+  "graphic_observations": {
+    "execution_for_all_listed_lines": "ППГнг-FRHF 5×6,0",
+    "line_lengths_m": {
+      "C2524": 95,
+      "C2525": 95,
+      "C2526": 45,
+      "C2527": 45,
+      "C3514": 90,
+      "C3515": 80,
+      "C3516": 80,
+      "C3517": 80,
+      "C3519": 65,
+      "C3520": 65,
+      "C3521": 55,
+      "C3522": 55
+    },
+    "starred_lines_on_basement_plan": [
+      "C2526",
+      "C2527",
+      "C3521",
+      "C3522"
+    ],
+    "panel_scope": "ВРУ-2 / ВРУ-3; планы и схемы одного выданного комплекта"
+  },
+  "TEXT_evidence": [
+    {
+      "block_id": "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+      "pdf_page": 18,
+      "quote": "* от ВРУ-2 смотри проект № ПД-00580716-ЭОМ 0-1; * от ВРУ-3 смотри проект № ПД-00580716-ЭОМ 0-1"
+    },
+    {
+      "block_id": "blk_67c8cc82d7e24f738797d9b75ce14e97",
+      "pdf_page": 41,
+      "quote": "|  | 5x6 |  |  | АО «Завод «Энергокабель» | м | 650 |  |  |",
+      "context": "Подраздел ППГнг(A)-FRHF; не HF"
+    }
+  ],
+  "arithmetic": {
+    "raw_total_m": 850,
+    "explicit_adjacent_volume_m": 200,
+    "same_volume_m": 650,
+    "specification_m": 650,
+    "difference_m": 0
+  },
+  "technical_status": "refuted_exact_200m_shortage_claim_with_scope_evidence",
+  "refuted_claim": "Количество FRHF 5×6 в спецификации меньше суммарной длины указанных на схемах линий на 200 м.\n\nДоказательства из отчёта: СО 5: FRHF 5×6 —650 м. ВРУ-2, лист 2.2: С2524=95 м, С2525=95 м, С2526=45 м, С2527=45 м, всего280 м. ВРУ-3, лист 3: С3514=90 м, С3515=80 м, С3516=80 м, С3517=80 м, С3519=65 м, С3520=65 м, С3521=55 м, С3522=55 м, всего570 м. Все12линий визуально имеют именно FRHF 5×6. Итог280+570=850 м;850−650=200 м без монтажного запаса. Входящие и отходящие обозначения одной и той же линии повторно не суммировались.",
+  "historical_engineer_decision": "Отклонено",
+  "historical_engineer_reason": "Решение: отклонить.\nОснование: неверный фактический вывод — опровергается тезис «Количество FRHF 5×6 в спецификации меньше суммарной длины указанных на схемах линий на 200 м».\nПодтверждение: ПД-00580716-ЭОМ_2-1 V2, Лист 15 (стр. 18 PDF, страница повёрнута), план −1 этажа: подписи у вентиляторов ПД2.4.3, ПД2.4.4 и у вентиляторов ВРУ-3, примечания со сносками; СО Лист 5 (стр. 41), строка FRHF «5х6».\nФакт: на плане подписи «С2526*», «С2527*», «С3522*», «С3521*». Сноски: «* от ВРУ-2 смотри проект № ПД-00580716-ЭОМ 0-1», «* от ВРУ-3 смотри проект № ПД-00580716-ЭОМ 0-1». В замечании недостаёт 200 м; в источнике эти 200 м и есть четыре линии к вентиляторам подземного этажа, которые сноской отнесены к тому ЭОМ 0-1. Оставшиеся 650 м совпадают с позицией СО.\nВывод: Правка проекта не требуется — СО тома правильно учитывает только линии своего объёма; количество FRHF 5×6 «650» м не меняется. При разборе ЭОМ 0-1 проверить, что 200 м есть там: локально том не найден, find_volume «ПД-00580716-ЭОМ 0-1» дал «не найдено» во всех OSA/*/; учтены ли «*»-линии в ЭОМ 0-1 — открытый вопрос UNI-107.\nДоказательство: рендер — UNI-002_стр18_С2526_С2527.png, UNI-002_стр18_С3521_С3522.png, UNI-002_стр18_легенда_звёздочки.png, UNI-002_стр5_С2524-С2527.png, UNI-002_стр6_С3514-С3522.png, UNI-002_стр41.png.\nПочему ошибся аудит: сверял СО только со схемами ВРУ и не открыл план −1 этажа, где 4 из 12 линий помечены «*» с отсылкой к ЭОМ 0-1. Не проверил, что разница точно равна сумме этих линий.",
+  "remaining_question": "Проверить учёт четырёх линий в ЭОМ 0-1; смежный комплект в этом проходе не предоставлен.",
+  "required_output": "Не публиковать дефицит 200 м в ЭОМ 2-1. Непроверенный учёт ЭОМ 0-1 сохранять адресным вопросом.",
+  "limits": "Не утверждать, что поставка 200 м в смежном комплекте проверена. Это не разрешение вычитать все линии со звёздочкой без проверки конкретной сноски."
+}

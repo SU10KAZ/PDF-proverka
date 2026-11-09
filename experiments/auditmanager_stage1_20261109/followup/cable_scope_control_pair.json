@@ -1,0 +1,28 @@
+{
+  "filter_behavior": "Перед выводом об отсутствии кабеля в СО сопоставить исполнение и сечение, перечень линий, адресные сноски и границы комплектов.",
+  "negative": {
+    "control_id": "EOM:2",
+    "evidence": {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json",
+      "sha256": "b0245ce36dbb9f5dc795807eacea4e2fcb4ca55d00a30f5af6ec276862a2d436"
+    },
+    "expected": "Дефицит 200 м снят; смежный комплект явно не проверен."
+  },
+  "positive": {
+    "control_id": "EOM:11",
+    "evidence": {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json",
+      "sha256": "e3ec650ec4a4018cbb7a98b37de89d710f45f3bf069a81682a7631f96b49dcd5"
+    },
+    "historical_engineer_decision": "Принято",
+    "expected": "Сохранить отсутствие позиции FRHF 5×35 для С2513/С3510 в выданной СО; HF 5×35 172 м не является заменой. Границу поставки оставить вопросом."
+  },
+  "same_source_version": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.pdf",
+    "sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4"
+  },
+  "acceptance": "Проверять семантику обеих итоговых формулировок, источник границы поставки и отсутствие преувеличения. Не засчитывать молчаливое исчезновение обеих строк как улучшение.",
+  "implementation_test_status": "not_executed",
+  "new_engineer_review": false,
+  "production_promotion_allowed": false
+}

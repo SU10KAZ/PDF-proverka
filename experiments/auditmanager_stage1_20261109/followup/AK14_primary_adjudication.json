@@ -1,0 +1,168 @@
+{
+  "control_id": "AK:14",
+  "review_date": "2026-11-09",
+  "reviewer": "primary agent direct inspection of all five GRAPHIC images and exact TEXT quote binding",
+  "model_review": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/status.json",
+    "sha256": "fd6a5186d490e2b1c4168eae3f54ecdd2885c009762bf9240b16ad50c1c278e2",
+    "model": "gpt-6-astra",
+    "is_independent_discovery": false
+  },
+  "source_md": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AK/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "source_pdf": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AK/document.pdf",
+    "sha256": "993d3f278d7b2b816c68a6e600b5ae58b6a33b9ec19a91c0678905c6a636d24a"
+  },
+  "images": [
+    {
+      "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_96ed7d88fb23414bb14d93191a89365a_6471b342ae3c.png",
+      "sha256": "abb6073822fe994025366f14b31891457235f22301052507c98ace3ba3cdf2f4",
+      "region": [
+        0,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_cd9d763d198246859c3df42c18b5c3d8_6471b342ae3c.png",
+      "sha256": "548f857e64cd1a6cce1ca57a89008c062ee86487926da1c6d43059a150041c46",
+      "region": [
+        0,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_f784be4786274e8c84f32d874ed99969_6471b342ae3c.png",
+      "sha256": "22c233210d0654acfaa4b0230963edbf8d6a273d01e12954376194a1a9c46b1a",
+      "region": [
+        0,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_127bea47b93f4214ac6430c54b21517a_6471b342ae3c.png",
+      "sha256": "941f8cee84deb119dd83c1d850638aa541c167b07cdabc535281eac4a4c8c384",
+      "region": [
+        0,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-14/images/blk_47163e69651c48528b3e054d5a5db095_6471b342ae3c.png",
+      "sha256": "496b078921517d8d9ece12de3b370e6c4d53a8d0205098995bcd3d5c437327c8",
+      "region": [
+        0,
+        0,
+        1,
+        1
+      ]
+    }
+  ],
+  "confirmed_addresses": [
+    {
+      "pdf_page": 32,
+      "cabinet": "ШАУВ-4-К4ПЧ",
+      "example": "M1:29,30,PE; M2:29,30,31,PE"
+    },
+    {
+      "pdf_page": 33,
+      "cabinet": "ШАУВ-1-К4АС",
+      "example": "PDS3 и PDS4:17,18; группы приводов повторяют29,30 и31,32"
+    },
+    {
+      "pdf_page": 36,
+      "cabinet": "ШАУВ-3-К5ПЧ",
+      "example": "PDS4 и PDS5:23,24; M1 и M2:29,30,31,PE"
+    },
+    {
+      "pdf_page": 37,
+      "cabinet": "ШАУВ-4-К5ПЧ",
+      "example": "M1–M4:23,24,25,PE"
+    },
+    {
+      "pdf_page": 44,
+      "cabinet": "ШАУВ-1-К6АС",
+      "example": "M1,M2,M3,M5:23,24,25,PE; СКЗ и пожарный вход:47,48"
+    }
+  ],
+  "TEXT_countercontext": [
+    {
+      "block_id": "blk_5dea9af6d2bd4d0ea0674db8bd79f38c",
+      "kind": "TEXT",
+      "quote": "2. Нумерацию клемм уточнить у завода-изготовителя."
+    },
+    {
+      "block_id": "blk_6115e4a00d7047f19aac0d850755b3a8",
+      "kind": "TEXT",
+      "quote": "2. Нумерацию клемм уточнить у завода-изготовителя."
+    },
+    {
+      "block_id": "blk_053f940839a3432681679d67d2fdadda",
+      "kind": "TEXT",
+      "quote": "2. Нумерацию клемм уточнить у завода-изготовителя."
+    },
+    {
+      "block_id": "blk_5f225d064b374b92ae7ca74da9a29218",
+      "kind": "TEXT",
+      "quote": "2. Нумерацию клемм уточнить у завода-изготовителя."
+    },
+    {
+      "block_id": "blk_3ea28c84abc04dc48451032462103373",
+      "kind": "TEXT",
+      "quote": "2. Нумерацию клемм уточнить у завода-изготовителя."
+    }
+  ],
+  "original_record": {
+    "control_id": "AK:14",
+    "case_key": "13АВ-РД-АК2-ПА_V1::UNI-014",
+    "project": "13АВ-РД-АК2-ПА_V1",
+    "finding_id": "UNI-014",
+    "source": "Codex",
+    "original_claim": "Одинаковые номера клемм присвоены разным силовым и управляющим цепям без указания различающих клеммников.",
+    "original_title": "Повторение номеров клемм разных цепей",
+    "engineer_decision": "Принято",
+    "engineer_reason": null,
+    "engineer_comment": "Принято (решение инженера 30.10.2026; тот же класс дефекта, что принятый экспертом 22.10.2026 F-067 — разбор 13АВ-РД-АК2-ПА V1 — «повтор номеров клемм разных цепей, объединять как системную ошибку»). Факт: повтор клемм подтверждён на л. 28 (К4ПЧ-4), л. 29 (К4АС), л. 33 (К5ПЧ-4) и л. 40 (ШАУВ-1-К6АС, стр. 44: М1, М2, М3, М5 — клеммы 23, 24, 25, PE); л. 32 (К5ПЧ-3) входит в F-067. Почему принято: системная ошибка нумерации клемм по нескольким шкафам, цепи разных двигателей не различимы; принимается в части подтверждённых шкафов. Урок для аудита: повтор номера клеммы у разных цепей в одном шкафу — дефект, даже если на листе есть примечание «Нумерацию клемм уточнить у завода-изготовителя»: эксперт не считает его оправданием; находки одного класса по разным шкафам объединять.",
+    "later_learning": "Группировать по шкафу, клеммнику и номеру, затем искать разные независимые цепи. Не включать цепь в ключ поиска. Проверить шины PE/N, допустимые общие точки, перемычки и ссылку между листами.",
+    "later_label": "accepted",
+    "control_type": "положительный исторический",
+    "verification_status": "не перепроверено полностью",
+    "evidence_assessment": "Повтор клемм независимых цепей: принятая тема; точные цепи требуют сверки PDF32,33,36,37,44. Не закрывать ссылкой на завод без адресного чертежа.",
+    "evidence_ids": [],
+    "failure_stage": "Связь цепь→полный адрес клеммника",
+    "workbook": "workspace/13АВ-РД-АК2-ПА_V1/13АВ-РД-АК2-ПА_V1 аудит/Unified_Engineering_Audit.xlsx",
+    "workbook_row": 15,
+    "location": "АК2-ПА; лист 28; 29; 32; 33; 40; стр. PDF 32; 33; 36; 37; 44.\nКлеммы шкафов ШАУВ-4-К4ПЧ, ШАУВ-1-К4АС, ШАУВ-3-К5ПЧ, ШАУВ-4-К5ПЧ, ШАУВ-1-К6АС",
+    "rule_ids": [
+      "AK-002"
+    ]
+  },
+  "technical_status": "confirmed_document_address_ambiguity",
+  "engineering_utility": "historically_accepted_for_confirmed_cabinets",
+  "required_output": "Сохранить одну системную тему неоднозначности шкафных адресов с перечислением подтверждённых шкафов и цепей. Примечание об уточнении изготовителем не устраняет исходный адресный конфликт.",
+  "do_not_publish": "Не объявлять доказанное короткое замыкание, фактическое объединение независимых цепей или неизбежный отказ. Повтор PE/N сам по себе не дефект.",
+  "claim_disposition": {
+    "original_address_ambiguity": "supported",
+    "manufacturer_note": "confirmed_context_not_refutation",
+    "physical_misconnection": "not_established"
+  },
+  "scope": "Пять указанных схем; не весь комплект заводской документации. Полезность новых расширений отдельно не принята инженером.",
+  "baseline_result": "not_scored_here",
+  "candidate_result": "not_scored_here",
+  "production_changed": false
+}
