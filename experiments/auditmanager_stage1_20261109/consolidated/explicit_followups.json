@@ -27,6 +27,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-006"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для исправления закупочной позиции установить назначение второго датчика по комплектации шкафа. До этого считать подтверждённой только несогласованность документов, а избыточную поставку оставить неоценённой."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-035"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",

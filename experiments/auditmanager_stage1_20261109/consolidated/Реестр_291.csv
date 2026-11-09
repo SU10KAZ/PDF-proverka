@@ -51,7 +51,7 @@ B-AK-F-002,AK,classic_usefulness,cross_package_scope_prevents_claim_of_missing_s
 B-AK-F-003,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-004,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-005,AK,classic_usefulness,Первичная проверка не завершена,,,
-B-AK-F-006,AK,classic_usefulness,Первичная проверка не завершена,,,
+B-AK-F-006,AK,classic_usefulness,confirmed_outdoor_sensor_quantity_mismatch,Технические замечания,"Для ШАУВ-2-К4ПЧ согласовать количество датчиков наружного воздуха: перечень листа8 и функциональная схема предусматривают один TE1, а позиции2.5 и2.7 СО — по одному датчику с одинаковым наименованием и без разных назначений. Кабельный журнал содержит одну соответствующую линию П4.1.3-1. Уточнить назначение второй позиции либо исправить количество.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json
 B-AK-F-007,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-008,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-009,AK,classic_usefulness,Первичная проверка не завершена,,,
