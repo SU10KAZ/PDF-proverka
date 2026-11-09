@@ -344,6 +344,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-030"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F030_CT_minimum_substitutions.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Если оценивать нормативную пригодность узла, отдельно установить применимый порог по паспорту счётчика и нормативному источнику, режим минимальной нагрузки и условия работы ТТ. До этого не включать нормативную пригодность/непригодность в подтверждённые выводы."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-032"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
