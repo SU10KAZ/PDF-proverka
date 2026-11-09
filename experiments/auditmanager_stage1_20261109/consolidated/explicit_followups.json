@@ -747,6 +747,18 @@
     },
     {
       "candidate_ids": [
+        "B-ITP-F-036"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F036_gauge_range_allocation.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Найти назначение позиций111/112 конкретным точкамP в полном комплекте, включаяАТМ и ведомости комплектных установок; не считать непросмотренные документы пустыми.",
+        "Определить максимальные давления именно в точках измерения, затем проверить диапазон и требования к рабочей части шкалы по применимым документам.",
+        "До установления точек не учитывать этот случай как подтверждённый выход за шкалу или обязательную замену приборов."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-ITP-F-045"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F045_door_joint_context.json",
