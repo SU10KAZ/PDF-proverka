@@ -69,6 +69,27 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-009",
+        "B-AK-F-010"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Перед исправлением количества согласовать схему и перечень с ОВ и заводской комплектацией. До этого последствия для поставки и стоимости исключены из положительных метрик."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-011"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "У проектировщика уточнить соответствие двух групп обозначений и границы учёта межприборных участков. До ответа не оценивать дефицит кабеля или отказ управления как подтверждённые дефекты."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-012"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
