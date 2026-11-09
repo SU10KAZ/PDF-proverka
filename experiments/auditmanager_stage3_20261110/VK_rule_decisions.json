@@ -1,0 +1,938 @@
+{
+  "discipline": "VK",
+  "decisions": [
+    {
+      "id": "VK-001",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03"
+      ],
+      "behavior": "Устанавливать систему и функцию узла по легенде,связям,месту иСО; сохранять значимые суффиксы.",
+      "control_and_nontransfer_boundary": "Тип узла не система; разные функции датчиков не объединять по похожей марке.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-003 — Принято; Материал и напорное исполнение узла К1 на кровле\nПД-00580716-ВК_2-2_V2::U-016 — Отклонено; Отметки кровли и высоты вытяжек ВВ3.1/ВВ3.2\nПД-00580716-ВК_2-2_V2::U-020 — Принято; Количество датчиков затопления\nПД-00580716-ВК_2-2_V2::U-023 — Отклонено; Высота вытяжек над кровлей +44,870\nПД-00580716-ВК_2-2_V2::U-032 — Отклонено; Количество и комплектация воронок К2\nПД-00580716-ВК_2-2_V2::U-037 — Отклонено; Дополнительные стояки DN100 по ТЗ\nПД-00580716-ВК_2-2_V2::U-038 — Отклонено; Размещение водосточных воронок на кровле\nПД-00580716-ВК_2-2_V2::U-047 — Отклонено; Маркировка узла К1-2.8 на листе секции 3\nПД-00580716-ВК_2-2_V2::U-048 — Отклонено; Неполная маркировка стояков секции 3\nПД-00580716-ВК_2-2_V2::U-049 — Отклонено; Различия перечней стояков в планах и схемах",
+      "runtime_targets": [
+        {
+          "target_id": "VK34_transition_assembly:composite:1",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_full_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+            "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+          },
+          "pointer": "/results/3",
+          "rule_ids": [
+            "C-11",
+            "VK-001",
+            "VK-006",
+            "VK-016"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "GRAPH",
+          "path": "backend/app/pipeline/stages/block_grounding/block_source_router.py",
+          "sha256": "bcf439093d0dabe83b5f8d8acdd187aff61d32d12f8722ece0a05e8879f81a84",
+          "historical_sha256": "bcf439093d0dabe83b5f8d8acdd187aff61d32d12f8722ece0a05e8879f81a84",
+          "unchanged_since_report": true,
+          "symbol": "def resolve_block_package",
+          "historical_line": 742
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Тип узла не система; разные функции датчиков не объединять по похожей марке.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-002",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03",
+        "H05"
+      ],
+      "behavior": "Восстановить рабочие и вентиляционные связи по уровням,направлениям,выпускам и продолжениям.",
+      "control_and_nontransfer_boundary": "Раздельные выпуски не запрещают любые связи; пересечение линий не подтверждает соединение.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-004 — Отклонено; Соединение К1.1 с рабочим стояком К1",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "B",
+          "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+          "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "unchanged_since_report": true,
+          "symbol": "SYSTEM_PROMPT_BASE",
+          "historical_line": 372
+        },
+        {
+          "source_id": "GRAPH",
+          "path": "backend/app/pipeline/stages/block_grounding/block_source_router.py",
+          "sha256": "bcf439093d0dabe83b5f8d8acdd187aff61d32d12f8722ece0a05e8879f81a84",
+          "historical_sha256": "bcf439093d0dabe83b5f8d8acdd187aff61d32d12f8722ece0a05e8879f81a84",
+          "unchanged_since_report": true,
+          "symbol": "def resolve_block_package",
+          "historical_line": 742
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Раздельные выпуски не запрещают любые связи; пересечение линий не подтверждает соединение.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-003",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Проверять параметры одного участка с обоими концами,режимом,материалом и единицами.",
+      "control_and_nontransfer_boundary": "DN не внутренний диаметр; предельный расходТУ не расчётный; вероятностные максимумы не складывать без основания.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-001 — Отклонено; Уклоны и диаметры К2 С3 в расчёте и схеме\nПД-00580716-ВК_2-2_V2::U-024 — Отклонено; Расходы присоединения и таблицы показателей\nПД-00580716-ВК_2-2_V2::U-036 — Отклонено; Уклоны горизонтальных участков К1.1/К2.1\nПД-00580716-ВК_2-2_V2::U-039 — Отклонено; Пропускная способность участков 3.5–3.7 К2\nПД-00580716-ВК_2-2_V2::U-042 — Отклонено; Состав и итоги таблицы показателей\nПД-00580716-ВК_2-2_V2::U-052 — Отклонено; Одинаковые отметки разных расчётных уровней",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "DN не внутренний диаметр; предельный расходТУ не расчётный; вероятностные максимумы не складывать без основания.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-004",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05"
+      ],
+      "behavior": "Фиксировать обе физические точки высоты и учитывать конструкцию пола,кровли и местный узел.",
+      "control_and_nontransfer_boundary": "Ось,крышка,лоток и верхворонки не одна база; гипотеза отделки не опровержение.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-009 — Отклонено; Разные отметки кровли в заголовке и штампе\nПД-00580716-ВК_2-2_V2::U-015 — Отклонено; Несогласованные высоты ревизий К1\nПД-00580716-ВК_2-2_V2::U-016 — Отклонено; Отметки кровли и высоты вытяжек ВВ3.1/ВВ3.2\nПД-00580716-ВК_2-2_V2::U-022 — Отклонено; Отметки техпространства +38,690/+38,640\nПД-00580716-ВК_2-2_V2::U-023 — Отклонено; Высота вытяжек над кровлей +44,870\nПД-00580716-ВК_2-2_V2::U-052 — Отклонено; Одинаковые отметки разных расчётных уровней",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "B",
+          "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+          "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "unchanged_since_report": true,
+          "symbol": "SYSTEM_PROMPT_BASE",
+          "historical_line": 372
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Ось,крышка,лоток и верхворонки не одна база; гипотеза отделки не опровержение.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-005",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03",
+        "H04"
+      ],
+      "behavior": "Из требования получить множество физических экземпляров и исключений; связать каждый со схемой иСО.",
+      "control_and_nontransfer_boundary": "VK20:25датчиков,22подписи и30стояков требуют адреснойкарты; легенду и повторный вид не считать экземпляром.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-002 — Принято; Недостаток усиливающих хомутов Kralle К2\nПД-00580716-ВК_2-2_V2::U-006 — Принято; Недостаточное количество ПП-ревизий К1\nПД-00580716-ВК_2-2_V2::U-008 — Принято; Отсутствие изоляции 9 мм Г1 в СО К2\nПД-00580716-ВК_2-2_V2::U-010 — Принято; Недостаточное количество противопожарных муфт К1\nПД-00580716-ВК_2-2_V2::U-011 — Принято; Недостаточное количество компенсационных патрубков К1\nПД-00580716-ВК_2-2_V2::U-018 — Принято; Количество ПП-ревизий К1 в СО и схемах\nПД-00580716-ВК_2-2_V2::U-020 — Принято; Количество датчиков затопления\nПД-00580716-ВК_2-2_V2::U-031 — Принято; Изоляция К2 и позиции К1/К2.1\nПД-00580716-ВК_2-2_V2::U-037 — Отклонено; Дополнительные стояки DN100 по ТЗ",
+      "runtime_targets": [
+        {
+          "target_id": "VK20_sensor_count_identity:composite:1",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_full_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+            "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+          },
+          "pointer": "/results/2",
+          "rule_ids": [
+            "C-10",
+            "VK-005"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "VK20:25датчиков,22подписи и30стояков требуют адреснойкарты; легенду и повторный вид не считать экземпляром.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-006",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H04",
+        "H06"
+      ],
+      "behavior": "Разложить каждый узел на функциональные детали и сверить локальную/общуюСО с комплектностью и числом установок.",
+      "control_and_nontransfer_boundary": "VK34: переход160/DN150/DN200 требует модели узла; не считать фланцы общей суммой без назначения.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-032 — Отклонено; Количество и комплектация воронок К2\nПД-00580716-ВК_2-2_V2::U-033 — Принято; Комплектность и материал узла К1/К4\nПД-00580716-ВК_2-2_V2::U-034 — Принято; Переходы НПВХ DN160 — SML DN200\nПД-00580716-ВК_2-2_V2::U-038 — Отклонено; Размещение водосточных воронок на кровле",
+      "runtime_targets": [
+        {
+          "target_id": "VK34_transition_assembly:composite:1",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_full_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+            "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+          },
+          "pointer": "/results/3",
+          "rule_ids": [
+            "C-11",
+            "VK-001",
+            "VK-006",
+            "VK-016"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "B",
+          "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+          "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "unchanged_since_report": true,
+          "symbol": "SYSTEM_PROMPT_BASE",
+          "historical_line": 372
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "VK34: переход160/DN150/DN200 требует модели узла; не считать фланцы общей суммой без назначения.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-007",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H04"
+      ],
+      "behavior": "Проверить обязательные поля каждой строкиСО,единицы и продолжения; графику ячейки читать только дляGRAPHIC.",
+      "control_and_nontransfer_boundary": "АвторитетныйTEXT не исправлятьрастром, даже при подозрении на сдвигстолбца. Пустое поле с подтверждённой ссылкой накомплект не автоматический дефект.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-014 — Принято; Нулевая толщина стенки в обозначении ПП-трубы Ø50\nПД-00580716-ВК_2-2_V2::U-035 — Принято; Количество опор Ø100 К1.1 не задано",
+      "runtime_targets": [
+        {
+          "target_id": "VK50_specification_duplicates:f2c9bd72860a821601dd",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_full_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+            "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+          },
+          "pointer": "/results/0",
+          "rule_ids": [
+            "C-03",
+            "C-08",
+            "VK-007",
+            "VK-009"
+          ]
+        },
+        {
+          "target_id": "VK50_specification_duplicates:f59ff2a504ccf24245d9",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_full_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+            "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+          },
+          "pointer": "/results/1",
+          "rule_ids": [
+            "C-03",
+            "C-08",
+            "VK-007",
+            "VK-009"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "АвторитетныйTEXT не исправлятьрастром, даже при подозрении на сдвигстолбца. Пустое поле с подтверждённой ссылкой накомплект не автоматический дефект.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-008",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H04"
+      ],
+      "behavior": "Выполнить обе стороны баланса по системе,материалу,диаметру и исполнению; учитывать фасонныечасти.",
+      "control_and_nontransfer_boundary": "Одна найденная аномалия не доказывает такую же во всехсистемах; геометрическая длина не обязательно закупочная.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-005 — Принято; Необоснованный объём DN125 в К2.1\nПД-00580716-ВК_2-2_V2::U-006 — Принято; Недостаточное количество ПП-ревизий К1\nПД-00580716-ВК_2-2_V2::U-007 — Принято; Недостаточное количество фасонных деталей К1\nПД-00580716-ВК_2-2_V2::U-012 — Принято; Вероятное занижение длины ПП-трубы Ø110 К1\nПД-00580716-ВК_2-2_V2::U-018 — Принято; Количество ПП-ревизий К1 в СО и схемах\nПД-00580716-ВК_2-2_V2::U-019 — Принято; Количество тройников и крестовин К1\nПД-00580716-ВК_2-2_V2::U-021 — Принято; DN125 в спецификациях К2.1 и К1\nПД-00580716-ВК_2-2_V2::U-030 — Отклонено; Чугун DN150 К1: детали без трубы\nПД-00580716-ВК_2-2_V2::U-032 — Отклонено; Количество и комплектация воронок К2\nПД-00580716-ВК_2-2_V2::U-049 — Отклонено; Различия перечней стояков в планах и схемах",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Одна найденная аномалия не доказывает такую же во всехсистемах; геометрическая длина не обязательно закупочная.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-009",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H04"
+      ],
+      "behavior": "Сопоставлять номенклатуру по всем присоединениям,углу,материалу,давлению и единице; отдельно проверять артикул.",
+      "control_and_nontransfer_boundary": "VK50: повтор номера4 не двойная закупка;8¹/44¹ сохранить какTEXT, не исправлять по предполагаемому коду.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-007 — Принято; Недостаточное количество фасонных деталей К1\nПД-00580716-ВК_2-2_V2::U-019 — Принято; Количество тройников и крестовин К1\nПД-00580716-ВК_2-2_V2::U-050 — Принято; Дубли и опечатки спецификации",
+      "runtime_targets": [
+        {
+          "target_id": "VK50_specification_duplicates:f2c9bd72860a821601dd",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_full_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+            "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+          },
+          "pointer": "/results/0",
+          "rule_ids": [
+            "C-03",
+            "C-08",
+            "VK-007",
+            "VK-009"
+          ]
+        },
+        {
+          "target_id": "VK50_specification_duplicates:f59ff2a504ccf24245d9",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_full_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+            "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+          },
+          "pointer": "/results/1",
+          "rule_ids": [
+            "C-03",
+            "C-08",
+            "VK-007",
+            "VK-009"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "VK50: повтор номера4 не двойная закупка;8¹/44¹ сохранить какTEXT, не исправлять по предполагаемому коду.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-010",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H04",
+        "H06"
+      ],
+      "behavior": "Составить матрицу этажей/секций с решением,исполнителем,поставкой и основанием исключения.",
+      "control_and_nontransfer_boundary": "VK51: планы2/3этажей и будущие работы собственников требуют проверки областиАИ; не объявлять все квартирные сети лишними.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-025 — Отклонено; Задания ЭОМ/АК для воронок и датчиков\nПД-00580716-ВК_2-2_V2::U-042 — Отклонено; Состав и итоги таблицы показателей\nПД-00580716-ВК_2-2_V2::U-051 — Принято; Квартирная разводка и общие указания",
+      "runtime_targets": [
+        {
+          "target_id": "VK51_apartment_scope:composite:1",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_full_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+            "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+          },
+          "pointer": "/results/4",
+          "rule_ids": [
+            "C-04",
+            "VK-010"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "VK51: планы2/3этажей и будущие работы собственников требуют проверки областиАИ; не объявлять все квартирные сети лишними.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-011",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H06"
+      ],
+      "behavior": "Проверять редакцию,пункт,функцию и стадию; различать недоступный расчёт и отсутствие расчёта у проектировщика.",
+      "control_and_nontransfer_boundary": "Непереданный файл не доказательство нарушения; известное название нормы не подтверждённая применимость.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-026 — Отклонено; Принадлежность реестра отступлений проекту\nПД-00580716-ВК_2-2_V2::U-036 — Отклонено; Уклоны горизонтальных участков К1.1/К2.1\nПД-00580716-ВК_2-2_V2::U-039 — Отклонено; Пропускная способность участков 3.5–3.7 К2\nПД-00580716-ВК_2-2_V2::U-040 — Отклонено; Расчёты систем К1/К2.1/К1.1\nПД-00580716-ВК_2-2_V2::U-044 — Отклонено; Полнота ведомости ссылочных документов",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "NORM",
+          "path": "backend/app/pipeline/stages/norms/runner.py",
+          "sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "historical_sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "unchanged_since_report": true,
+          "symbol": "async def run_norm_verification",
+          "historical_line": 327
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Непереданный файл не доказательство нарушения; известное название нормы не подтверждённая применимость.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-012",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H07"
+      ],
+      "behavior": "Разделить факт,последствие,значимость и действие; проверять однозначность по связанным документам.",
+      "control_and_nontransfer_boundary": "Отклонено не техническая ложность; достоверное малозначимое направлять в вопросы без выдуманного ущерба.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-001 — Отклонено; Уклоны и диаметры К2 С3 в расчёте и схеме\nПД-00580716-ВК_2-2_V2::U-009 — Отклонено; Разные отметки кровли в заголовке и штампе\nПД-00580716-ВК_2-2_V2::U-013 — Отклонено; Количество и применимость воздушных клапанов К2\nПД-00580716-ВК_2-2_V2::U-022 — Отклонено; Отметки техпространства +38,690/+38,640\nПД-00580716-ВК_2-2_V2::U-026 — Отклонено; Принадлежность реестра отступлений проекту\nПД-00580716-ВК_2-2_V2::U-027 — Отклонено; Ссылки продолжения стояков на лист 22\nПД-00580716-ВК_2-2_V2::U-028 — Отклонено; Нижние ссылки схем стояков\nПД-00580716-ВК_2-2_V2::U-029 — Отклонено; Ссылки секции 3 на схемы секции 2\nПД-00580716-ВК_2-2_V2::U-030 — Отклонено; Чугун DN150 К1: детали без трубы\nПД-00580716-ВК_2-2_V2::U-041 — Отклонено; Разное обозначение технических условий\nПД-00580716-ВК_2-2_V2::U-043 — Отклонено; Нумерация и полнота текстовых разделов\nПД-00580716-ВК_2-2_V2::U-044 — Отклонено; Полнота ведомости ссылочных документов\nПД-00580716-ВК_2-2_V2::U-045 — Отклонено; Оформление штампов и нормоконтроля\nПД-00580716-ВК_2-2_V2::U-046 — Отклонено; Ссылки верхнего техпространства на схемы\nПД-00580716-ВК_2-2_V2::U-047 — Отклонено; Маркировка узла К1-2.8 на листе секции 3\nПД-00580716-ВК_2-2_V2::U-048 — Отклонено; Неполная маркировка стояков секции 3\nПД-00580716-ВК_2-2_V2::U-052 — Отклонено; Одинаковые отметки разных расчётных уровней",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "QUALITY",
+          "path": "backend/app/services/findings/finding_quality.py",
+          "sha256": "c10856b72066fd8d304583112641713bee953523abe39efcd367a36b91c5b52d",
+          "historical_sha256": "c10856b72066fd8d304583112641713bee953523abe39efcd367a36b91c5b52d",
+          "unchanged_since_report": true,
+          "symbol": "def evaluate_finding_practicality",
+          "historical_line": 192
+        },
+        {
+          "source_id": "G",
+          "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+          "sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "historical_sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "unchanged_since_report": true,
+          "symbol": "def gate_findings",
+          "historical_line": 748
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Отклонено не техническая ложность; достоверное малозначимое направлять в вопросы без выдуманного ущерба.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-013",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H01",
+        "H02"
+      ],
+      "behavior": "Проверить, что объяснение снимает тот же тезис; сохранять альтернативы,недостающие данные и охватоперации.",
+      "control_and_nontransfer_boundary": "Исчезновение строки не улучшение; поздняя пометка оJ006 не доказывает конкретный этаппотери без первичныхжурналов.",
+      "historical_cases": "Прямых/общих привязок cases.json нет. Основание: rerun_lessons.json и история локальных проходов; историческая эффективность не измерена.",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "G",
+          "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+          "sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "historical_sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+          "unchanged_since_report": true,
+          "symbol": "def gate_findings",
+          "historical_line": 748
+        },
+        {
+          "source_id": "M",
+          "path": "prompts/pipeline/en/findings_merge_task.md",
+          "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "PROV",
+          "path": "backend/app/pipeline/stages/block_analysis/provenance.py",
+          "sha256": "80e8da3faad9f33deea368c6f3f080a5d0e246b61b1eb54f36925d7b12a771f1",
+          "historical_sha256": "80e8da3faad9f33deea368c6f3f080a5d0e246b61b1eb54f36925d7b12a771f1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "MCODE",
+          "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+          "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+          "unchanged_since_report": true,
+          "symbol": "def merge_similar_findings",
+          "historical_line": 427
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Исчезновение строки не улучшение; поздняя пометка оJ006 не доказывает конкретный этаппотери без первичныхжурналов.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-014",
+      "recommendation": "уточнить",
+      "destination": "evaluation_and_feedback",
+      "hypotheses": [
+        "evaluation"
+      ],
+      "behavior": "В контуре оценки хранить исходный тезис,решение,причину и инженернуюредакцию раздельно; делить составныеутверждения.",
+      "control_and_nontransfer_boundary": "VK34: изменённый инженером смысл не подтверждает первоначальный; историю не передавать независимомупоиску.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-018 — Принято; Количество ПП-ревизий К1 в СО и схемах\nПД-00580716-ВК_2-2_V2::U-019 — Принято; Количество тройников и крестовин К1\nПД-00580716-ВК_2-2_V2::U-020 — Принято; Количество датчиков затопления\nПД-00580716-ВК_2-2_V2::U-031 — Принято; Изоляция К2 и позиции К1/К2.1\nПД-00580716-ВК_2-2_V2::U-033 — Принято; Комплектность и материал узла К1/К4\nПД-00580716-ВК_2-2_V2::U-034 — Принято; Переходы НПВХ DN160 — SML DN200\nПД-00580716-ВК_2-2_V2::U-050 — Принято; Дубли и опечатки спецификации",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VERDICT",
+          "path": "backend/app/services/findings/verdict_preservation.py",
+          "sha256": "837d9a697f3d52fdc7827aecee7a69013755e46768d087283c83c06ad1c33e90",
+          "historical_sha256": "837d9a697f3d52fdc7827aecee7a69013755e46768d087283c83c06ad1c33e90",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "EXPORT",
+          "path": "backend/app/services/export/excel_service.py",
+          "sha256": "24d9b1ec831c5839566ecae5f2be0afd17d864327d2aab15d13d42d5e05f47bd",
+          "historical_sha256": "24d9b1ec831c5839566ecae5f2be0afd17d864327d2aab15d13d42d5e05f47bd",
+          "unchanged_since_report": true,
+          "symbol": "async def generate_excel",
+          "historical_line": 14
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "VK34: изменённый инженером смысл не подтверждает первоначальный; историю не передавать независимомупоиску.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-015",
+      "recommendation": "добавить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H03"
+      ],
+      "behavior": "Отчёт покрытия должен различать открытие файла,чтениеграфики и выполненныеоперации по объектам; фиксировать проверки безнаходок.",
+      "control_and_nontransfer_boundary": "Обработанная страница не подтверждает проверкумалыхкомпонентов; незавершённое не равнонеприменимо.",
+      "historical_cases": "Прямых/общих привязок cases.json нет. Основание: rerun_lessons.json и история локальных проходов; историческая эффективность не измерена.",
+      "runtime_targets": [],
+      "implementation_status": "отсутствует",
+      "implementation_evidence": [
+        {
+          "source_id": "B",
+          "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+          "sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+          "unchanged_since_report": true,
+          "symbol": "SYSTEM_PROMPT_BASE",
+          "historical_line": 372
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "CFG",
+          "path": "backend/app/core/config.py",
+          "sha256": "fb6c9008e0eccc935c8824346e45cfa310d74c52c61d2e9efd05a128cd281204",
+          "historical_sha256": "fb6c9008e0eccc935c8824346e45cfa310d74c52c61d2e9efd05a128cd281204",
+          "unchanged_since_report": true,
+          "symbol": "_STAGE_MODEL_DEFAULTS",
+          "historical_line": 303
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Обработанная страница не подтверждает проверкумалыхкомпонентов; незавершённое не равнонеприменимо.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-016",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H06"
+      ],
+      "behavior": "Связать совместимость материалов,давлений и соединений с конкретным участком и границейперехода.",
+      "control_and_nontransfer_boundary": "Разные производители не доказательство несовместимости; совместимость подтверждать исполнением и документацией.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-002 — Принято; Недостаток усиливающих хомутов Kralle К2\nПД-00580716-ВК_2-2_V2::U-003 — Принято; Материал и напорное исполнение узла К1 на кровле\nПД-00580716-ВК_2-2_V2::U-013 — Отклонено; Количество и применимость воздушных клапанов К2\nПД-00580716-ВК_2-2_V2::U-033 — Принято; Комплектность и материал узла К1/К4",
+      "runtime_targets": [
+        {
+          "target_id": "VK34_transition_assembly:composite:1",
+          "route": "question",
+          "final_match": "not_found_in_reviewed_full_output",
+          "evidence": {
+            "path": "experiments/auditmanager_stage2_20261110/historical_VK_matching.json",
+            "sha256": "a88973c0b3f94ef0c117fe7c0886ab17cf443e5d03bbce0768a8da21abe809d9"
+          },
+          "pointer": "/results/3",
+          "rule_ids": [
+            "C-11",
+            "VK-001",
+            "VK-006",
+            "VK-016"
+          ]
+        }
+      ],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "NORM",
+          "path": "backend/app/pipeline/stages/norms/runner.py",
+          "sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "historical_sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+          "unchanged_since_report": true,
+          "symbol": "async def run_norm_verification",
+          "historical_line": 327
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Разные производители не доказательство несовместимости; совместимость подтверждать исполнением и документацией.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    },
+    {
+      "id": "VK-017",
+      "recommendation": "уточнить",
+      "destination": "runtime",
+      "hypotheses": [
+        "H05",
+        "H06"
+      ],
+      "behavior": "Применять интервал к реально обслуживаемым этажам и смыслу нормативного текста; считать промежуточныеэтажи явно.",
+      "control_and_nontransfer_boundary": "Разность номеров этажей не всегда интервал обслуживания; исключённые уровни проверять по схеме.",
+      "historical_cases": "ПД-00580716-ВК_2-2_V2::U-017 — Отклонено; Этажи установки ревизий К1",
+      "runtime_targets": [],
+      "implementation_status": "частично реализовано",
+      "implementation_evidence": [
+        {
+          "source_id": "VK",
+          "path": "prompts/disciplines/VK/checklist.md",
+          "sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        },
+        {
+          "source_id": "T",
+          "path": "prompts/pipeline/en/text_analysis_task.md",
+          "sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+          "unchanged_since_report": true,
+          "symbol": "файл целиком",
+          "historical_line": 1
+        }
+      ],
+      "behavior_evidence_limit": "Статическая поддержка не доказывает выполнение; связанные runtime цели проверяют только адресные тезисы.",
+      "verification": "Проверить соответствующие атомарные решения эталонаВК и границы отрицательных тезисов; затем независимый поиск. Не считать вопросы техническими дефектами, проверять сохранение,полноту,нагрузку и затраты.",
+      "regression_risk": "Разность номеров этажей не всегда интервал обслуживания; исключённые уровни проверять по схеме.",
+      "semantic_review_status": "reviewed_for_transfer_design_not_runtime_acceptance"
+    }
+  ],
+  "strong_classic_features_to_preserve": [
+    "Независимые графические обнаружения и междокументная проверка с происхождением.",
+    "Уже сохранённые полезные вопросы и конкретные технические расхождения; отсутствие пяти новых вопросов не обнуляет29итоговых строк."
+  ],
+  "filter_pair_limit": "Ограничения не заменяют подтверждённую историческую пару. При её отсутствии широкое автоматическое снятие не считать испытанным.",
+  "stage3_complete": false,
+  "production_changed": false
+}
