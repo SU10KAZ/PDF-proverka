@@ -1,11 +1,11 @@
 {
   "summary": {
     "candidate_records": 291,
-    "records_with_narrow_primary_decision": 115,
-    "remaining_records": 176,
-    "decision_themes": 92,
+    "records_with_narrow_primary_decision": 116,
+    "remaining_records": 175,
+    "decision_themes": 93,
     "technical_themes": 16,
-    "question_themes": 61,
+    "question_themes": 62,
     "omitted_themes": 15,
     "scope": "Only listed narrow claims; not blanket acceptance of entire source rows.",
     "stage_complete": false,
@@ -5764,6 +5764,56 @@
       "production_changed": false,
       "output_section": "Вопросы и уточнения",
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F015_roof_title_level.json"
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-016"
+      ],
+      "decision": "incomplete_riser_label_confirmed_not_whole_project_unidentifiability",
+      "output_section": "Вопросы и уточнения",
+      "review_date": "2026-11-09",
+      "project": "ЖК Событие 6.1, ПД-00580716-ВК2-2",
+      "source_md": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/VK/document.md",
+        "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+      },
+      "graphic_evidence": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-003/images/blk_c5143b0e4651468d97318ae7d877d087_6471b342ae3c.png",
+          "sha256": "9bcb4ded7a846cc8e11a0bbab2a5c231fd161eb1414ec619b8aace9e54c86991",
+          "block_id": "blk_c5143b0e4651468d97318ae7d877d087",
+          "directly_viewed": true,
+          "observation": "На схеме S3_K1_тех.пр+5,320, в нижней центральной части рядом с +5.447, выноска содержит «Ст. К1-», ниже ø110×5.0. Индивидуальный номер после дефиса отсутствует. Рядом показана полная марка Ст.К1-3.13 и другие ветви, но они не дополняют текст незавершённой марки."
+        }
+      ],
+      "wording": "Дополнить индивидуальный номер в выноске «Ст. К1-» рядом с отметкой +5,447 на схеме К1 секции3 в техпространстве +5,320, после сверки соответствующего стояка с планом и схемой продолжения.",
+      "limits": "Подтверждена незавершённая надпись. Правильный номер не установлен: соседнее обозначение К1-3.13 нельзя автоматически перенести на эту выноску. Невозможность идентифицировать стояк по всему комплекту, ошибочное соединение, монтажный ущерб и нарушение конкретной нормы не доказаны. Изображение содержит трассу, соседние обозначения и ссылки на продолжения, которые могут помочь восстановить номер. Отсутствие номера не означает отсутствие самого стояка.",
+      "atomic_dispositions": [
+        {
+          "claim": "Рядом с +5,447 имеется выноска Ст.К1- без индивидуального номера",
+          "verdict": "supported_by_direct_graphic_review"
+        },
+        {
+          "claim": "Эта надпись сама по себе не задаёт номер стояка",
+          "verdict": "supported"
+        },
+        {
+          "claim": "По всему комплекту стояк невозможно идентифицировать",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Следует автоматически вписать соседний номерК1-3.13",
+          "verdict": "not_supported"
+        },
+        {
+          "claim": "Ошибка монтажа или эксплуатационный отказ доказаны",
+          "verdict": "not_established"
+        }
+      ],
+      "recommended_check_behavior": "При проверке маркировки отделять отсутствие индивидуального номера от отсутствия самого объекта; соседнюю марку принимать только после прослеживания её выноски и принадлежности объекту.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "production_changed": false,
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F016_incomplete_riser_label.json"
     },
     {
       "candidate_ids": [
