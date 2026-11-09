@@ -3,15 +3,15 @@
   "protocol": "evaluation_protocol.json",
   "summary": {
     "atoms": 1193,
-    "explicit_scoring_reviews": 958,
-    "remaining_scoring_normalizations": 235,
+    "explicit_scoring_reviews": 1005,
+    "remaining_scoring_normalizations": 188,
     "reviewed_metric_roles": {
-      "negative_control": 64,
-      "supporting_fact": 214,
+      "negative_control": 66,
+      "supporting_fact": 228,
       "method_control": 52,
-      "technical_positive": 77,
-      "unscored": 397,
-      "question_positive": 154
+      "technical_positive": 78,
+      "unscored": 423,
+      "question_positive": 158
     },
     "benchmark_frozen": false
   },
@@ -40014,8 +40014,18 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Тождество площадки плана и разреза",
+          "verdict": "confirmed",
+          "evidence": "ЛК5,ОГМ20,линия6-6,общая−1.800 и обратная цепочка1340/1345/665."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Расхождение150мм считать одним техническим замечанием только при установленном тождестве площадки; разные базы не опровергнуты глобально."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40057,8 +40067,18 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Численное расхождение",
+          "verdict": "confirmed",
+          "calculation": "−1.800−(−2.350)=0.550м;−1.800−(−2.500)=0.700м;разница0.150м."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "technical_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Расхождение150мм считать одним техническим замечанием только при установленном тождестве площадки; разные базы не опровергнуты глобально."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40099,8 +40119,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Разные базы уровней объясняют разницу",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Расхождение150мм считать одним техническим замечанием только при установленном тождестве площадки; разные базы не опровергнуты глобально."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40141,8 +40170,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Во всей документации нет пояснения",
+          "verdict": "not_proven_globally"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Расхождение150мм считать одним техническим замечанием только при установленном тождестве площадки; разные базы не опровергнуты глобально."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40183,8 +40221,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Восемь ссылок на указанные редакции присутствуют",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Разные редакции СП16 — вопрос согласования; каталожная замена двух документов не доказывает применимость новых требований и необходимость пересмотра решений."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40225,8 +40272,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "В общем перечне и указаниях сварки разные редакции СП16",
+          "verdict": "confirmed"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Разные редакции СП16 — вопрос согласования; каталожная замена двух документов не доказывает применимость новых требований и необходимость пересмотра решений."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40267,8 +40323,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "СП16.2011 и ГОСТ23118.2012 заменены",
+          "verdict": "confirmed_catalog_status_only"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Разные редакции СП16 — вопрос согласования; каталожная замена двух документов не доказывает применимость новых требований и необходимость пересмотра решений."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40309,8 +40374,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Статус остальных шести нормативов",
+          "verdict": "not_checked_in_this_decision"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Разные редакции СП16 — вопрос согласования; каталожная замена двух документов не доказывает применимость новых требований и необходимость пересмотра решений."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40351,8 +40425,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Нужно обязательно пересмотреть технические решения",
+          "verdict": "insufficient_applicability_and_requirement_evidence"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Разные редакции СП16 — вопрос согласования; каталожная замена двух документов не доказывает применимость новых требований и необходимость пересмотра решений."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40384,8 +40467,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Пункты2.1–2.2 описывают стремянку и перечисленные материалы",
+          "status": "подтвержденоTEXT"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждено описание стремянки и локальное отсутствие перечисленных профилей и болтов в СО; анкеры имеются. Вопрос принадлежности описания выделять составной целью, не считать доказанной нехваткой материалов."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40417,8 +40509,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Материалы и крепёж стремянки отсутствуют",
+          "status": "уточнено: вСОКМ1.2 нет перечисленных профилей иболтов; анкеры есть. Принадлежность стремянки комплекту не установлена"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждено описание стремянки и локальное отсутствие перечисленных профилей и болтов в СО; анкеры имеются. Вопрос принадлежности описания выделять составной целью, не считать доказанной нехваткой материалов."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40450,8 +40551,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Текст ошибочно скопирован",
+          "status": "недостаточно данных; возможное объяснение, не факт"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждено описание стремянки и локальное отсутствие перечисленных профилей и болтов в СО; анкеры имеются. Вопрос принадлежности описания выделять составной целью, не считать доказанной нехваткой материалов."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40483,8 +40593,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Нужно добавить материалы в текущуюСО",
+          "status": "не доказано до определения состава и границ комплекта"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждено описание стремянки и локальное отсутствие перечисленных профилей и болтов в СО; анкеры имеются. Вопрос принадлежности описания выделять составной целью, не считать доказанной нехваткой материалов."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40516,8 +40635,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "В семи ведомостях листа4 нет численныхQ/N/M",
+          "verdict": "confirmed_scoped"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Отсутствие численных усилий в семи ведомостях не означает отсутствия исходных ссылок: есть КЖ и КМ8. Вопрос — точный адрес применимого расчёта; 0.3кН/м и недостаточная прочность не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40550,8 +40678,18 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Нет ссылок на исходные нагрузки",
+          "verdict": "refuted_as_global_claim",
+          "evidence": "Пункт1.6:нагрузки и нормативные значения вКЖ; реестр содержитКМ8."
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Отсутствие численных усилий в семи ведомостях не означает отсутствия исходных ссылок: есть КЖ и КМ8. Вопрос — точный адрес применимого расчёта; 0.3кН/м и недостаточная прочность не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40583,8 +40721,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Не установлен точный адрес расчёта поручней",
+          "verdict": "confirmed_for_reviewed_material"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Отсутствие численных усилий в семи ведомостях не означает отсутствия исходных ссылок: есть КЖ и КМ8. Вопрос — точный адрес применимого расчёта; 0.3кН/м и недостаточная прочность не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40616,8 +40763,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Для всех рассматриваемых поручней применимо0.3кН/м",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Отсутствие численных усилий в семи ведомостях не означает отсутствия исходных ссылок: есть КЖ и КМ8. Вопрос — точный адрес применимого расчёта; 0.3кН/м и недостаточная прочность не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40649,8 +40805,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Несущая способность недостаточна",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Отсутствие численных усилий в семи ведомостях не означает отсутствия исходных ссылок: есть КЖ и КМ8. Вопрос — точный адрес применимого расчёта; 0.3кН/м и недостаточная прочность не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40682,8 +40847,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "437пластин по ведомостям",
+          "verdict": "confirmed_schedule_calculation"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "437 деталей — сумма ведомостей. Массы сплошных заготовок условны; вопрос методики учёта выделять составной целью.1748анкеров и закупка разности не подтверждены; связать с КМ13/КМ14 без удвоения."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40715,8 +40889,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Массы493.9848/64.4328кг",
+          "verdict": "confirmed_conditional_blank_arithmetic"
+        },
+        "truth_label": "conditional",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "437 деталей — сумма ведомостей. Массы сплошных заготовок условны; вопрос методики учёта выделять составной целью.1748анкеров и закупка разности не подтверждены; связать с КМ13/КМ14 без удвоения."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40748,8 +40931,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "1748анкеров — полный проверенный итог",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "437 деталей — сумма ведомостей. Массы сплошных заготовок условны; вопрос методики учёта выделять составной целью.1748анкеров и закупка разности не подтверждены; связать с КМ13/КМ14 без удвоения."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40781,8 +40973,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Необходима закупка на разность масс",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "437 деталей — сумма ведомостей. Массы сплошных заготовок условны; вопрос методики учёта выделять составной целью.1748анкеров и закупка разности не подтверждены; связать с КМ13/КМ14 без удвоения."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40815,8 +41016,18 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Арифметика длин выбранных позиций",
+          "verdict": "confirmed",
+          "evidence": "Поштучные слагаемые вcalculation.rows."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждены суммы длин выбранных позиций и опубликованные422/423кг; тип всех профилей и3.36кг/м требуют проверки. Составной вопрос расчёта, не положительная цель безусловного исправления масс."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40848,8 +41059,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все выбранные40×3 — квадратные",
+          "verdict": "partially_verified"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждены суммы длин выбранных позиций и опубликованные422/423кг; тип всех профилей и3.36кг/м требуют проверки. Составной вопрос расчёта, не положительная цель безусловного исправления масс."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40881,8 +41101,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Сводные422/423кг",
+          "verdict": "confirmed"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждены суммы длин выбранных позиций и опубликованные422/423кг; тип всех профилей и3.36кг/м требуют проверки. Составной вопрос расчёта, не положительная цель безусловного исправления масс."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40914,8 +41143,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Массы431.7768/433.0200кг",
+          "verdict": "confirmed_conditional"
+        },
+        "truth_label": "conditional",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждены суммы длин выбранных позиций и опубликованные422/423кг; тип всех профилей и3.36кг/м требуют проверки. Составной вопрос расчёта, не положительная цель безусловного исправления масс."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40947,8 +41185,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Нужно безусловно исправить сводную",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждены суммы длин выбранных позиций и опубликованные422/423кг; тип всех профилей и3.36кг/м требуют проверки. Составной вопрос расчёта, не положительная цель безусловного исправления масс."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -40980,8 +41227,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ЛК6имеет41.125м круглых поручней",
+          "verdict": "not_reproduced_from_checked_positions"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "41.125м не воспроизведены выбранной раскладкой, но не опровергнуты для любого состава.35.125м — арифметика выбранных позиций, не доказанная полная длина круглой трубы. Вопрос расчёта не требование закупки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41013,8 +41269,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Сумма выбранных позиций35.125м",
+          "verdict": "confirmed_arithmetic"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "41.125м не воспроизведены выбранной раскладкой, но не опровергнуты для любого состава.35.125м — арифметика выбранных позиций, не доказанная полная длина круглой трубы. Вопрос расчёта не требование закупки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41046,8 +41311,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все выбранные позиции круглые",
+          "verdict": "partially_verified"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "41.125м не воспроизведены выбранной раскладкой, но не опровергнуты для любого состава.35.125м — арифметика выбранных позиций, не доказанная полная длина круглой трубы. Вопрос расчёта не требование закупки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41079,8 +41353,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "80кг и287.1м в сводной",
+          "verdict": "confirmed"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "41.125м не воспроизведены выбранной раскладкой, но не опровергнуты для любого состава.35.125м — арифметика выбранных позиций, не доказанная полная длина круглой трубы. Вопрос расчёта не требование закупки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41112,8 +41395,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "112.57кг и298.970м — правильные исправления",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "41.125м не воспроизведены выбранной раскладкой, но не опровергнуты для любого состава.35.125м — арифметика выбранных позиций, не доказанная полная длина круглой трубы. Вопрос расчёта не требование закупки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41145,8 +41437,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Дополнительная закупка обязательна",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "41.125м не воспроизведены выбранной раскладкой, но не опровергнуты для любого состава.35.125м — арифметика выбранных позиций, не доказанная полная длина круглой трубы. Вопрос расчёта не требование закупки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41178,8 +41479,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Верхняя граница1.2t",
+          "verdict": "confirmed_project_instruction"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Проект предусматривает расчёт по3.1/3.5; это опровергает отсутствие требования, но не подтверждает выполнение.1.2t не расчёт прочности;3.6 приt3 условно. Вопрос адреса расчёта выделять отдельно."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41211,8 +41521,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Дляt3 получается3.6",
+          "verdict": "confirmed_conditional_arithmetic"
+        },
+        "truth_label": "conditional",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Проект предусматривает расчёт по3.1/3.5; это опровергает отсутствие требования, но не подтверждает выполнение.1.2t не расчёт прочности;3.6 приt3 условно. Вопрос адреса расчёта выделять отдельно."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41245,8 +41564,18 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Расчётная проверка не предусмотрена",
+          "verdict": "refuted",
+          "evidence": "Пункты3.1 и3.5."
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Проект предусматривает расчёт по3.1/3.5; это опровергает отсутствие требования, но не подтверждает выполнение.1.2t не расчёт прочности;3.6 приt3 условно. Вопрос адреса расчёта выделять отдельно."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41278,8 +41607,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Расчёт выполнен",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Проект предусматривает расчёт по3.1/3.5; это опровергает отсутствие требования, но не подтверждает выполнение.1.2t не расчёт прочности;3.6 приt3 условно. Вопрос адреса расчёта выделять отдельно."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41311,8 +41649,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все численные катеты отсутствуют",
+          "verdict": "not_proven_globally"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Проект предусматривает расчёт по3.1/3.5; это опровергает отсутствие требования, но не подтверждает выполнение.1.2t не расчёт прочности;3.6 приt3 условно. Вопрос адреса расчёта выделять отдельно."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41344,8 +41691,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Соединение недостаточно прочно",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Проект предусматривает расчёт по3.1/3.5; это опровергает отсутствие требования, но не подтверждает выполнение.1.2t не расчёт прочности;3.6 приt3 условно. Вопрос адреса расчёта выделять отдельно."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41367,8 +41723,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Примечание5 листа4 отсылает к листу4 вместо зарегистрированного листа3",
+          "status": "подтверждено авторитетнымTEXT"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждена неверная ссылка4 вместо3. Регистрация схемы не доказывает её графическое содержание; глобальное отсутствие не установлено. Производственные последствия не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41390,8 +41755,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Схема отсутствует",
+          "status": "не следует из неверной ссылки: схема зарегистрирована в ведомости"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждена неверная ссылка4 вместо3. Регистрация схемы не доказывает её графическое содержание; глобальное отсутствие не установлено. Производственные последствия не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41413,8 +41787,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Возникли производственные последствия",
+          "status": "не проверено; не включать в выдачу как факт"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Подтверждена неверная ссылка4 вместо3. Регистрация схемы не доказывает её графическое содержание; глобальное отсутствие не установлено. Производственные последствия не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41446,8 +41829,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Требование заглушек3мм",
+          "verdict": "confirmed"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос отдельного учёта листа3мм при наличии требования, узлаД и шести деталейОГМ1. Не утверждать отсутствие решения заглушки, всех количеств или доказанную неполную комплектацию."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41480,8 +41872,18 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Решение заглушки существует",
+          "verdict": "confirmed",
+          "evidence": "УзелД и ведомостьОГМ1."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос отдельного учёта листа3мм при наличии требования, узлаД и шести деталейОГМ1. Не утверждать отсутствие решения заглушки, всех количеств или доказанную неполную комплектацию."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41513,8 +41915,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Отдельная строка листа3мм отсутствует в сводной",
+          "verdict": "confirmed_scoped"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос отдельного учёта листа3мм при наличии требования, узлаД и шести деталейОГМ1. Не утверждать отсутствие решения заглушки, всех количеств или доказанную неполную комплектацию."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41546,8 +41957,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все открытые торцы и масса нигде не определены",
+          "verdict": "not_proven_globally"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос отдельного учёта листа3мм при наличии требования, узлаД и шести деталейОГМ1. Не утверждать отсутствие решения заглушки, всех количеств или доказанную неполную комплектацию."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -41579,8 +41999,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Неполная комплектация",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос отдельного учёта листа3мм при наличии требования, узлаД и шести деталейОГМ1. Не утверждать отсутствие решения заглушки, всех количеств или доказанную неполную комплектацию."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
