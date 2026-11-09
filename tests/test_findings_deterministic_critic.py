@@ -226,3 +226,23 @@ def test_unknown_text_reference_is_not_accepted_by_suffix():
         assert dc.deterministic_verdict(finding, idx)["verdict"] == "phantom_block"
     finding = {"id": "F-016", "page": 47, "evidence_text_refs": ["page_47_text"]}
     assert dc.deterministic_verdict(finding, idx) is None
+
+
+def test_recovered_source_is_pending_not_pass_or_absent():
+    finding = {"id": "F-1", "source_finding_ids": ["T-001"],
+               "source_candidate_lineage": [{"source_finding_id": "T-001",
+                   "status": "requires_semantic_review", "source_claim": "original",
+                   "existing_block_ids": ["REAL"]}]}
+    blocks = _blocks(("REAL", 1, None, "source"))
+    reviews, candidates, result, _ = dc.review_structural({"findings": [finding]}, blocks, {})
+    assert reviews[0]["verdict"] == "source_review_required"
+    assert reviews[0]["evidence_checked"] == []
+    assert reviews[0]["source_review_requests"][0]["block_ids"] == ["REAL"]
+    assert result.passed == 0 and candidates == []
+    result.reviews = reviews  # run_deterministic_critic assigns these after structural review
+    assert result.verdict_counts()["source_review_required"] == 1
+    # Stale receipts and non-existing source blocks do not rescue missing evidence.
+    finding["source_finding_ids"] = ["T-other"]
+    assert dc.review_structural({"findings": [finding]}, blocks, {})[0][0]["verdict"] == "no_evidence"
+    finding["source_finding_ids"] = ["T-001"]
+    assert dc.review_structural({"findings": [finding]}, {}, {})[0][0]["verdict"] == "no_evidence"

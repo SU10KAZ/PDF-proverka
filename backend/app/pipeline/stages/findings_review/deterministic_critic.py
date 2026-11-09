@@ -71,7 +71,7 @@ _BLOCK_ID_RE = re.compile(
 _SEMANTIC = {"weak_evidence", "contradicts_text"}
 _ALL_VERDICTS = {
     "pass", "no_evidence", "phantom_block",
-    "weak_evidence", "page_mismatch", "contradicts_text",
+    "weak_evidence", "page_mismatch", "contradicts_text", "source_review_required",
 }
 
 
@@ -341,6 +341,38 @@ def deterministic_verdict(finding: dict, idx: _Index):
 
     # ─── Проверка 1: evidence_presence ───
     if not image_refs and not text_refs:
+        # Recovered candidate references are provenance, not proof. Recheck
+        # existence in this run's index rather than trusting a saved receipt.
+        lineage = finding.get("source_candidate_lineage", [])
+        pending = []
+        source_ids = finding.get("source_finding_ids", [])
+        source_ids = source_ids if isinstance(source_ids, list) else []
+        for receipt in lineage if isinstance(lineage, list) else []:
+            if not isinstance(receipt, dict):
+                continue
+            if (receipt.get("status") != "requires_semantic_review"
+                    or receipt.get("source_finding_id") not in source_ids):
+                continue
+            refs = receipt.get("existing_block_ids", [])
+            if not isinstance(refs, list):
+                continue
+            existing = [b for b in refs if isinstance(b, str)
+                        and (b in idx.image_block_ids or b in idx.text_block_ids)]
+            if existing:
+                pending.append({
+                    "source_finding_id": receipt["source_finding_id"],
+                    "source_claim": receipt.get("source_claim"),
+                    "block_ids": list(dict.fromkeys(existing)),
+                })
+        if pending:
+            review = _mk_review(
+                fid, "source_review_required", ["source_evidence_relevance_unverified"],
+                "У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+                [],
+                "Проверить исходные блоки относительно итогового тезиса; не считать происхождение доказательством.",
+            )
+            review["source_review_requests"] = pending
+            return review
         return _mk_review(
             fid, "no_evidence", ["evidence_presence"],
             "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",

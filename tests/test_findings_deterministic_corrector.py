@@ -259,3 +259,21 @@ def test_text_reference_page_can_be_corrected():
     assert finding["page"] == 47
     assert finding["sheet"] == "9"
     assert result.page_fixed == 1
+
+
+def test_pending_source_review_preserves_claim_and_severity():
+    from backend.app.pipeline.stages.findings_review.deterministic_corrector import correct_findings
+    finding = {"id": "F-1", "severity": "ЭКСПЛУАТАЦИОННОЕ", "description": "bounded claim"}
+    request = {"source_finding_id": "T-001", "block_ids": ["source"]}
+    output, stats = correct_findings(
+        {"findings": [finding]},
+        {"reviews": [{"finding_id": "F-1", "verdict": "source_review_required",
+                      "reason": "check source relevance", "source_review_requests": [request]}]}, {}, {},
+    )
+    result = output["findings"][0]
+    assert result["severity"] == "ЭКСПЛУАТАЦИОННОЕ"
+    assert result["description"] == "bounded claim"
+    assert result["requires_human_review"] is True
+    assert result["source_evidence_review_status"] == "pending"
+    assert result["source_review_requests"] == [request]
+    assert stats.downgraded == 0 and stats.flagged_human == 1

@@ -229,6 +229,13 @@ def correct_findings(findings_data, review_data, blocks_analysis, doc_graph):
             else:
                 result.flagged_human += 1
             changed = True
+        elif verdict == "source_review_required":
+            # Neither refute the claim nor treat provenance as verified proof.
+            finding["requires_human_review"] = True
+            finding["source_evidence_review_status"] = "pending"
+            finding["source_review_requests"] = rev.get("source_review_requests", [])
+            result.flagged_human += 1
+            changed = True
         elif verdict == "weak_evidence":
             changed = True  # только пометка ниже
 
