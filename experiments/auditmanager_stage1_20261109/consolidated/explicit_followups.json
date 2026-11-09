@@ -243,6 +243,27 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-021",
+        "B-EOM-F-023"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F021_F023_controller_voltage_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить схемы ЯЧ, проект автоматики и паспортные напряжения двигателей; до этого не оценивать неправильное подключение или необходимость замены напряжений как подтверждённые дефекты."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-022"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F022_ventilation_power_rounding.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для технического вывода о занижении получить неокруглённые исходные мощности; пока оставить такой тезис неоцениваемым."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-024"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F024_room_number_collision.json",
