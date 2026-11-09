@@ -613,6 +613,19 @@
     },
     {
       "candidate_ids": [
+        "H-ITP-17"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP17_grooved_connection_identity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Получить первичную таблицуFC/EC/EL/GCR/GT с размерами и допусками канавки; проверить точные артикулы, не только цифровой суффикс.",
+        "Проверить строкуГОСТ3262 для ВГП65×4,0 отдельно от электросварной76×3,5.",
+        "Связать фактические пары муфта–фитинг–труба по узлам и количествам. До этого число289 не считать числом дефектных сопряжений.",
+        "Историческую потерю кандидата вv2 подтвердить журналом кандидатов и итоговой выдачей; инженерное сообщениеV2небыло/V3принято не определяет само по себе точный этап потери."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-ITP-58"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
