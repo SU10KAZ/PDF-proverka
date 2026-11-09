@@ -202,6 +202,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-013"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F013_small_load_currents.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для оценки влияния на защиту или обязательного исправления конкретного значения установить исходные нагрузки и принятые коэффициенты/запас; пока эти расширения не включать в положительный технический эталон."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-018"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json",

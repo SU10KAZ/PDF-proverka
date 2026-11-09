@@ -253,7 +253,7 @@ B-EOM-F-009,EOM,classic_usefulness,Подтверждены различие о�
 B-EOM-F-010,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-011,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-012,EOM,classic_usefulness,confirmed_document_arithmetic_discrepancy,Вопросы и уточнения,"Согласовать итоговую мощность2ЩСС1 5,4кВт с суммой девяти заполненных групп3,4кВт; если разница2кВт является перспективной нагрузкой, показать её основание.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json
-B-EOM-F-013,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-013,EOM,classic_usefulness,"Подтверждена несогласованность двух табличных токов с указанной мощностью, напряжением и cos φ; уточнить исходные данные без вывода о неправильной защите.",Вопросы и уточнения,"В схеме ЩМ(4–10) для резерва подключения пожарной сигнализации указаны Ру=0,20 кВт, Uн=0,22 кВ, cos φ=0,90 и Iр=2,0 А; для рекламной вывески — 0,10 кВт и Iр=1,0 А при тех же Uн и cos φ. При однофазном расчёте без дополнительных коэффициентов получаются соответственно 1,01 и 0,51 А. Уточните согласованность исходной мощности, принятого запаса и расчётного тока.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F013_small_load_currents.json
 B-EOM-F-014,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-015,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-016,EOM,classic_usefulness,Первичная проверка не завершена,,,
