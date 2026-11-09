@@ -109,6 +109,17 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-056",
+        "B-AK-F-057"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Перед исправлением заводских и монтажных документов сверить фактическую маркировку. До этого считать подтверждённым документальное расхождение, последствия монтажа оставить неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AR-14"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
