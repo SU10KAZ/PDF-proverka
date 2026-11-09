@@ -396,6 +396,17 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-026"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Просмотреть графику листов25,29,31 для проверки семикратности либо заморозить этот количественный тезис как неоцениваемый.",
+        "Для вывода о правильном исполнении проверить код3506212 по первичному каталогу и связь с рассматриваемыми трассами. До этого не предписывать замену и не учитывать риск закупки как установленный дефект."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-027"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F027_penetration_material_scope.json",
