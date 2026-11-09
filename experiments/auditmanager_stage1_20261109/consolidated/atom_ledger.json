@@ -3,15 +3,15 @@
   "protocol": "evaluation_protocol.json",
   "summary": {
     "atoms": 1193,
-    "explicit_scoring_reviews": 1072,
-    "remaining_scoring_normalizations": 121,
+    "explicit_scoring_reviews": 1193,
+    "remaining_scoring_normalizations": 0,
     "reviewed_metric_roles": {
-      "negative_control": 69,
-      "supporting_fact": 254,
-      "method_control": 53,
-      "technical_positive": 79,
-      "unscored": 455,
-      "question_positive": 162
+      "negative_control": 78,
+      "supporting_fact": 295,
+      "method_control": 58,
+      "technical_positive": 81,
+      "unscored": 509,
+      "question_positive": 172
     },
     "benchmark_frozen": false
   },
@@ -44946,8 +44946,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "СтрокаК1.1Ø100 присутствует, количество креплений пусто",
+          "verdict": "confirmed_existing_table_evidence"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Пустая графа количества существующей строки — вопрос комплектности; не вычислять крепления только по63.2м. Историческая и базовая находки об одной строке не две независимые цели."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -44970,8 +44979,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Количество можно вывести из63,2м без шага и схемы",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Пустая графа количества существующей строки — вопрос комплектности; не вычислять крепления только по63.2м. Историческая и базовая находки об одной строке не две независимые цели."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -44994,8 +45012,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Фактически крепления недопоставлены",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Пустая графа количества существующей строки — вопрос комплектности; не вычислять крепления только по63.2м. Историческая и базовая находки об одной строке не две независимые цели."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45018,8 +45045,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Историческая и классическая записи означают две новые находки",
+          "verdict": "refuted_same_row_baseline_preservation"
+        },
+        "truth_label": "refuted",
+        "metric_role": "method_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Пустая графа количества существующей строки — вопрос комплектности; не вычислять крепления только по63.2м. Историческая и базовая находки об одной строке не две независимые цели."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45060,8 +45096,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ВК2.1 два разных изделия имеют номер4",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Повтор номера4 и буквальная запись8¹ вместо суммы44+44 — два редакционных тезиса. Семь похожих пар не доказанные повторные заказы; не уменьшать количество автоматически. ПотеряJ006 не прослежена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45103,8 +45148,18 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ВК2 поз.11 написано8¹ при двух коленах по44¹",
+          "verdict": "supported_literal_TEXT",
+          "note": "44+44=88; требуется согласовать описание, конкретный артикул не заменять автоматически."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Повтор номера4 и буквальная запись8¹ вместо суммы44+44 — два редакционных тезиса. Семь похожих пар не доказанные повторные заказы; не уменьшать количество автоматически. ПотеряJ006 не прослежена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45145,8 +45200,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Семь перечисленных пар имеют сходные характеристики и разную полноту идентификации",
+          "verdict": "supported_candidate_pairs"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Повтор номера4 и буквальная запись8¹ вместо суммы44+44 — два редакционных тезиса. Семь похожих пар не доказанные повторные заказы; не уменьшать количество автоматически. ПотеряJ006 не прослежена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45187,8 +45251,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все пары — доказанные повторные заказы одних физических изделий",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Повтор номера4 и буквальная запись8¹ вместо суммы44+44 — два редакционных тезиса. Семь похожих пар не доказанные повторные заказы; не уменьшать количество автоматически. ПотеряJ006 не прослежена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45229,8 +45302,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Одну строку каждой пары можно удалить с уменьшением количества",
+          "verdict": "not_supported"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Повтор номера4 и буквальная запись8¹ вместо суммы44+44 — два редакционных тезиса. Семь похожих пар не доказанные повторные заказы; не уменьшать количество автоматически. ПотеряJ006 не прослежена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45271,8 +45353,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Исторический кандидатJ006 потерян именно на этапе итоговой выдачи",
+          "verdict": "not_independently_verified_here"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Повтор номера4 и буквальная запись8¹ вместо суммы44+44 — два редакционных тезиса. Семь похожих пар не доказанные повторные заказы; не уменьшать количество автоматически. ПотеряJ006 не прослежена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45322,8 +45413,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Общие указания поручают квартирную разводку собственникам после сдачи",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — согласовать границы текущих и будущих квартирных работ сАИ-ФО. МОП отдельное исключение. Графические примеры не доказывают весь объём монтажа, точные15/17подписей и отсутствие на4–11не проверены; причина потери неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45373,8 +45473,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "МОП имеют отдельное требование полного выполнения разводки",
+          "verdict": "supported_scope_exception"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — согласовать границы текущих и будущих квартирных работ сАИ-ФО. МОП отдельное исключение. Графические примеры не доказывают весь объём монтажа, точные15/17подписей и отсутствие на4–11не проверены; причина потери неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45424,8 +45533,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "На планах 2–3 этажей показаны внутриквартирные подключения Ø50",
+          "verdict": "supported_graphic_examples"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — согласовать границы текущих и будущих квартирных работ сАИ-ФО. МОП отдельное исключение. Графические примеры не доказывают весь объём монтажа, точные15/17подписей и отсутствие на4–11не проверены; причина потери неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45475,8 +45593,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Схема К1 содержит подключения приборов на двух уровнях",
+          "verdict": "supported_graphic"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — согласовать границы текущих и будущих квартирных работ сАИ-ФО. МОП отдельное исключение. Графические примеры не доказывают весь объём монтажа, точные15/17подписей и отсутствие на4–11не проверены; причина потери неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45526,8 +45653,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Примечание плана 3-го этажа ссылается на АИ-ФО для выполнения квартирной разводки",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — согласовать границы текущих и будущих квартирных работ сАИ-ФО. МОП отдельное исключение. Графические примеры не доказывают весь объём монтажа, точные15/17подписей и отсутствие на4–11не проверены; причина потери неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45577,8 +45713,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Ровно 15/17 подписей Ø50",
+          "verdict": "not_checked_excluded_from_confirmed_wording"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — согласовать границы текущих и будущих квартирных работ сАИ-ФО. МОП отдельное исключение. Графические примеры не доказывают весь объём монтажа, точные15/17подписей и отсутствие на4–11не проверены; причина потери неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45628,8 +45773,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "На всех этажах 4–11 разводка отсутствует",
+          "verdict": "not_checked_excluded_from_confirmed_wording"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — согласовать границы текущих и будущих квартирных работ сАИ-ФО. МОП отдельное исключение. Графические примеры не доказывают весь объём монтажа, точные15/17подписей и отсутствие на4–11не проверены; причина потери неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45679,8 +45833,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Показанная разводка безусловно входит в монтаж до сдачи",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — согласовать границы текущих и будущих квартирных работ сАИ-ФО. МОП отдельное исключение. Графические примеры не доказывают весь объём монтажа, точные15/17подписей и отсутствие на4–11не проверены; причина потери неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45730,8 +45893,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Кандидат J011 был подавлен именно необоснованной гипотезой на конкретном этапе реализации",
+          "verdict": "not_established_without_primary_trace"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — согласовать границы текущих и будущих квартирных работ сАИ-ФО. МОП отдельное исключение. Графические примеры не доказывают весь объём монтажа, точные15/17подписей и отсутствие на4–11не проверены; причина потери неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45763,8 +45935,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Примечания листов19 и20 назначают2,6,10-й этажи",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Между2/6/10по3промежуточных этажа, разностьномеров4. Вопрос смысла интервала, не установленное нормативное нарушение. Крайние жилые этажи всех стояков не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45796,8 +45977,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Общие указания содержат формулировку через каждые три этажа и крайние жилые этажи",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Между2/6/10по3промежуточных этажа, разностьномеров4. Вопрос смысла интервала, не установленное нормативное нарушение. Крайние жилые этажи всех стояков не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45829,8 +46019,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "6−2=4 и10−6=4; между соседними уровнями3 промежуточных этажа",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Между2/6/10по3промежуточных этажа, разностьномеров4. Вопрос смысла интервала, не установленное нормативное нарушение. Крайние жилые этажи всех стояков не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45862,8 +46061,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Одной арифметики достаточно для доказательства нормативного нарушения",
+          "verdict": "not_supported"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Между2/6/10по3промежуточных этажа, разностьномеров4. Вопрос смысла интервала, не установленное нормативное нарушение. Крайние жилые этажи всех стояков не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45895,8 +46103,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Первый и последний жилые этажи соблюдены на всех стояках",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Между2/6/10по3промежуточных этажа, разностьномеров4. Вопрос смысла интервала, не установленное нормативное нарушение. Крайние жилые этажи всех стояков не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45928,8 +46145,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ВК1 указаны7 ревизийSTPL60110 и17 патрубковSTPL900110",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "7ревизий и17патрубков требуют поименной увязки30стояков.90мест условны;83дефицита не доказаны. Не умножать17на4 и не переносить изделия соседних систем без основания;8чугунных не признаны взаимозаменяемыми."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45961,8 +46187,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "По ведомости30 основных стояковК1",
+          "verdict": "supported_by_named_ranges"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "7ревизий и17патрубков требуют поименной увязки30стояков.90мест условны;83дефицита не доказаны. Не умножать17на4 и не переносить изделия соседних систем без основания;8чугунных не признаны взаимозаменяемыми."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -45994,8 +46229,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "При трёх местах на каждом из30 стояков получается90",
+          "verdict": "supported_conditional_arithmetic"
+        },
+        "truth_label": "conditional",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "7ревизий и17патрубков требуют поименной увязки30стояков.90мест условны;83дефицита не доказаны. Не умножать17на4 и не переносить изделия соседних систем без основания;8чугунных не признаны взаимозаменяемыми."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46027,8 +46271,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все90 места на фактических схемах проверены поштучно",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "7ревизий и17патрубков требуют поименной увязки30стояков.90мест условны;83дефицита не доказаны. Не умножать17на4 и не переносить изделия соседних систем без основания;8чугунных не признаны взаимозаменяемыми."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46060,8 +46313,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Чугунные ревизииК1 составляют8шт. разных диаметров",
+          "verdict": "supported_not_assumed_interchangeable"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "7ревизий и17патрубков требуют поименной увязки30стояков.90мест условны;83дефицита не доказаны. Не умножать17на4 и не переносить изделия соседних систем без основания;8чугунных не признаны взаимозаменяемыми."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46093,8 +46355,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "17 учетверенных патрубков следует считать68 изделиями",
+          "verdict": "not_supported_by_unit_and_quantity"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "7ревизий и17патрубков требуют поименной увязки30стояков.90мест условны;83дефицита не доказаны. Не умножать17на4 и не переносить изделия соседних систем без основания;8чугунных не признаны взаимозаменяемыми."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46126,8 +46397,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "РевизииК1.1 иК2.1 автоматически покрывают потребностьК1",
+          "verdict": "not_supported_by_system_scope"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "7ревизий и17патрубков требуют поименной увязки30стояков.90мест условны;83дефицита не доказаны. Не умножать17на4 и не переносить изделия соседних систем без основания;8чугунных не признаны взаимозаменяемыми."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46159,8 +46439,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Окончательный дефицит равен83 ревизиям и определённому числу патрубков",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "7ревизий и17патрубков требуют поименной увязки30стояков.90мест условны;83дефицита не доказаны. Не умножать17на4 и не переносить изделия соседних систем без основания;8чугунных не признаны взаимозаменяемыми."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46182,8 +46471,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Проект требует усиление всех соединений SML системыК2",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "РазностьRapid/Kralle — техническая цель совместно с требованием усиления всех соединенийК2 и проверкой комплектования.3/15при соответствииодинк одному;DN200равны. СоседняяК2.1не автоматическая компенсация, фактический монтаж и отказ не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46205,8 +46503,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "КоличестваRapid иKralle различаются дляDN100 иDN150",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "technical_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "РазностьRapid/Kralle — техническая цель совместно с требованием усиления всех соединенийК2 и проверкой комплектования.3/15при соответствииодинк одному;DN200равны. СоседняяК2.1не автоматическая компенсация, фактический монтаж и отказ не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46228,8 +46535,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ДляDN200 имеется такая же количественная нехватка",
+          "verdict": "refuted_by_equal_quantities"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "РазностьRapid/Kralle — техническая цель совместно с требованием усиления всех соединенийК2 и проверкой комплектования.3/15при соответствииодинк одному;DN200равны. СоседняяК2.1не автоматическая компенсация, фактический монтаж и отказ не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46251,8 +46567,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "6 UNIVERSAL KRALLE изК2.1 автоматически компенсируют разницуК2",
+          "verdict": "not_supported_by_scope"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "РазностьRapid/Kralle — техническая цель совместно с требованием усиления всех соединенийК2 и проверкой комплектования.3/15при соответствииодинк одному;DN200равны. СоседняяК2.1не автоматическая компенсация, фактический монтаж и отказ не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46274,8 +46599,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Монтаж выполнен без требуемого усиления или отказ неизбежен",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "РазностьRapid/Kralle — техническая цель совместно с требованием усиления всех соединенийК2 и проверкой комплектования.3/15при соответствииодинк одному;DN200равны. СоседняяК2.1не автоматическая компенсация, фактический монтаж и отказ не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46297,8 +46631,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "К2 по всей длине требуется изолировать трубками9 ммГ1",
+          "verdict": "supported_by_project_instruction"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Техническая цель — отсутствие предусмотренной9ммГ1изоляцииК2 в ограниченной полностью прочитанной шестилистовойСО.258.7мтруб не один типоразмер изоляции;100×40К1/К2.1не доказательство учётаК2. Отдельная поставка и фактический конденсат не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46320,8 +46663,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Соответствующая позиция отсутствует в шестилистовой спецификации",
+          "verdict": "supported_with_bounded_complete_search"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "technical_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Техническая цель — отсутствие предусмотренной9ммГ1изоляцииК2 в ограниченной полностью прочитанной шестилистовойСО.258.7мтруб не один типоразмер изоляции;100×40К1/К2.1не доказательство учётаК2. Отдельная поставка и фактический конденсат не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46343,8 +46695,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Изоляция100×40 мм учтена дляК1 иК2.1",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Техническая цель — отсутствие предусмотренной9ммГ1изоляцииК2 в ограниченной полностью прочитанной шестилистовойСО.258.7мтруб не один типоразмер изоляции;100×40К1/К2.1не доказательство учётаК2. Отдельная поставка и фактический конденсат не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46366,8 +46727,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Суммарная длина трубК2 равна258,7 м",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Техническая цель — отсутствие предусмотренной9ммГ1изоляцииК2 в ограниченной полностью прочитанной шестилистовойСО.258.7мтруб не один типоразмер изоляции;100×40К1/К2.1не доказательство учётаК2. Отдельная поставка и фактический конденсат не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46389,8 +46759,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Следует автоматически добавить258,7 м одного типоразмера изоляции",
+          "verdict": "not_supported"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Техническая цель — отсутствие предусмотренной9ммГ1изоляцииК2 в ограниченной полностью прочитанной шестилистовойСО.258.7мтруб не один типоразмер изоляции;100×40К1/К2.1не доказательство учётаК2. Отдельная поставка и фактический конденсат не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46412,8 +46791,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Фактическая недопоставка или конденсат неизбежны",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Техническая цель — отсутствие предусмотренной9ммГ1изоляцииК2 в ограниченной полностью прочитанной шестилистовойСО.258.7мтруб не один типоразмер изоляции;100×40К1/К2.1не доказательство учётаК2. Отдельная поставка и фактический конденсат не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46445,8 +46833,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ВК2 указаны4 отвода STPL1011045, вК1 тот же артикул161 шт.",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос применимости четырёхППотводов к требованиюК2НПВХPN10.0.05МПа названо иным параметром, не максимумом рабочего давления. Места, фактическое превышение и разгерметизация не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46478,8 +46875,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Общие указанияК2 задают НПВХ SDR26PN10 и рабочее давление не менее1,0 МПа",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос применимости четырёхППотводов к требованиюК2НПВХPN10.0.05МПа названо иным параметром, не максимумом рабочего давления. Места, фактическое превышение и разгерметизация не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46511,8 +46917,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "STPL1011045 — полипропиленовый отвод110×45° Stilte Plus",
+          "verdict": "supported_by_primary_manufacturer"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос применимости четырёхППотводов к требованиюК2НПВХPN10.0.05МПа названо иным параметром, не максимумом рабочего давления. Места, фактическое превышение и разгерметизация не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46544,8 +46959,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "0,05 МПа из паспорта — максимальное рабочее давление",
+          "verdict": "refuted_by_parameter_name"
+        },
+        "truth_label": "refuted",
+        "metric_role": "method_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос применимости четырёхППотводов к требованиюК2НПВХPN10.0.05МПа названо иным параметром, не максимумом рабочего давления. Места, фактическое превышение и разгерметизация не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46577,8 +47001,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Соответствие четырёх деталей проектному требованиюPN10 доказано",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос применимости четырёхППотводов к требованиюК2НПВХPN10.0.05МПа названо иным параметром, не максимумом рабочего давления. Места, фактическое превышение и разгерметизация не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46610,8 +47043,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Разгерметизация или превышение фактического допустимого давления на местах установки доказаны",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос применимости четырёхППотводов к требованиюК2НПВХPN10.0.05МПа названо иным параметром, не максимумом рабочего давления. Места, фактическое превышение и разгерметизация не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46652,8 +47094,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Проект задаёт расход не менее 75% расчётного",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос различия75%расхода и75%приборов, с ограничением базовым изданиемСП. ПриборыМОП есть. Отсутствие порядка подачи в двух блоках не глобальное отсутствие методики; применимая редакция и невозможность испытания не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46694,8 +47145,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Базовый п. 7.5.1 СП задаёт 75% подключённых приборов",
+          "verdict": "supported_in_base_official_edition"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос различия75%расхода и75%приборов, с ограничением базовым изданиемСП. ПриборыМОП есть. Отсутствие порядка подачи в двух блоках не глобальное отсутствие методики; применимая редакция и невозможность испытания не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46737,8 +47197,18 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "На всём объекте отсутствуют приборы",
+          "verdict": "refuted_by_scope",
+          "note": "Отложена квартирная разводка; МОП выполняются полностью."
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос различия75%расхода и75%приборов, с ограничением базовым изданиемСП. ПриборыМОП есть. Отсутствие порядка подачи в двух блоках не глобальное отсутствие методики; применимая редакция и невозможность испытания не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46779,8 +47249,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Порядок подачи воды для заглушенных квартир отдельно не описан в общих указаниях",
+          "verdict": "supported_limited_to_two_read_blocks"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос различия75%расхода и75%приборов, с ограничением базовым изданиемСП. ПриборыМОП есть. Отсутствие порядка подачи в двух блоках не глобальное отсутствие методики; применимая редакция и невозможность испытания не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46822,8 +47301,18 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Методики нет во всей документации",
+          "verdict": "not_verified",
+          "note": "Отдельный монтажный проект не проверен."
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос различия75%расхода и75%приборов, с ограничением базовым изданиемСП. ПриборыМОП есть. Отсутствие порядка подачи в двух блоках не глобальное отсутствие методики; применимая редакция и невозможность испытания не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46864,8 +47353,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Испытание невозможно или герметичность фактически проверена неполно",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос различия75%расхода и75%приборов, с ограничением базовым изданиемСП. ПриборыМОП есть. Отсутствие порядка подачи в двух блоках не глобальное отсутствие методики; применимая редакция и невозможность испытания не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46906,8 +47404,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Установлено нарушение применимой редакции СП",
+          "verdict": "needs_applicable_revision"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос различия75%расхода и75%приборов, с ограничением базовым изданиемСП. ПриборыМОП есть. Отсутствие порядка подачи в двух блоках не глобальное отсутствие методики; применимая редакция и невозможность испытания не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -46958,8 +47465,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ВК2.1 указаны495,5 мϕ125×5,250 крепленийØ125 иодин отводDN125",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47010,8 +47526,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ВК2.1 отдельные соединители и переходыDN125 отсутствуют",
+          "verdict": "supported_bounded_specification_search"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47062,8 +47587,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Доля трубыϕ125×5 в общей длинеК2.1 около65%",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47114,8 +47648,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Отсутствие переходов означает обязательную необходимость добавить переходы",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47166,8 +47709,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "КрепленияØ125 компенсируют отсутствие соединителей",
+          "verdict": "refuted_by_item_function"
+        },
+        "truth_label": "refuted",
+        "metric_role": "method_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47218,8 +47770,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "495,5 м трубы безусловно нуждаются в закупке новых соединителей определённого количества",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47270,8 +47831,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Недокомплектация поставки, дополнительные затраты и нарушениеГОСТ подтверждены",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47322,8 +47892,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "К1 содержит 0,2 м трубы д125×5, два отвода DN125 и 32 крепления Ø125",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47374,8 +47953,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "495,5 м К2.1 примерно в 4,56 раза больше 108,6 м трубы д100×5",
+          "verdict": "supported_arithmetic_not_defect"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47426,8 +48014,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "На всех планах и схемах отсутствуют трубы Ø125/DN125",
+          "verdict": "not_checked_full_graphic_coverage_required"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47478,8 +48075,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "32 крепления К1 при 0,2 м трубы автоматически являются избыточными",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47530,8 +48136,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Полезный атом К1 потерян именно на определённом этапе классического AuditManager",
+          "verdict": "not_established_without_runtime_trace"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос включаетК2.1иК1: не потерять0.2м/32крепленияК1. Крепления не соединители.65%и4.56 — арифметика, не дефекты; количества закупки, переходы и нарушения не доказаны без трасс и комплектования. Глобальное отсутствиеDN125на графике и runtimeпричина не проверены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47553,8 +48168,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "В четырёх указанных источниках присутствуют разные уровни38,640/38,690",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "38.640/38.690 — вопрос согласования уровня при неизвестной поверхности отсчёта;50мм не доказанная ошибка положения трубы."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47576,8 +48200,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Разность50 мм",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "38.640/38.690 — вопрос согласования уровня при неизвестной поверхности отсчёта;50мм не доказанная ошибка положения трубы."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47599,8 +48232,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Поверхность отсчёта одинакова",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "38.640/38.690 — вопрос согласования уровня при неизвестной поверхности отсчёта;50мм не доказанная ошибка положения трубы."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47622,8 +48264,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Трубопровод смонтирован или запроектирован на неверной высоте",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "38.640/38.690 — вопрос согласования уровня при неизвестной поверхности отсчёта;50мм не доказанная ошибка положения трубы."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47665,8 +48316,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "В общей строкеК2 указаны12 комплектовф110 с электроподогревом без марки и расхода",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47708,8 +48368,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "УзелК-1 содержит HL62.1H/1,HL65H,116010",
+          "verdict": "supported_by_direct_graphic_review"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47751,8 +48420,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Модель воронки отсутствует во всём проекте",
+          "verdict": "refuted_by_node_specification"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47794,8 +48472,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Указанные детали точно не включены в12 комплектов",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47837,8 +48524,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Пропускная способность воронок недостаточна",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47880,8 +48576,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все подстроки узла нужно заказать дополнительно к комплекту",
+          "verdict": "not_supported"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47923,8 +48628,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Локальная спецификацияК-1 содержит изделияПП REHAU и крепёжBIS",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -47966,8 +48680,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Весь узелК-1 выполнен только изПП",
+          "verdict": "refuted_by_NPVC_position_11"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48009,8 +48732,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "В общей спецификации нет явной маркировки перечисленных REHAU/BIS/HL62/HL65/116010",
+          "verdict": "supported_in_read_specification"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48052,8 +48784,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Фасонные частиК2 представлены исключительноХэмкор/AVF",
+          "verdict": "refuted_by_Pro_Aqua_position"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48095,8 +48836,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Воронки и крепленияК2 совсем отсутствуют вСО",
+          "verdict": "refuted_by_equipment_and_fixing_rows"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48138,8 +48888,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все материалы узла недопустимы или точно не поставлены",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составной вопрос границ12комплектов и связи узлаК-1 с общейСО. Модель существует в узле, естьНПВХпозиция11,ProAqua,воронки и крепленияСО. Это отрицательные тезисы внутри одной темы, не четыре дефекта. Не требовать дополнительной закупки всех подстрок; гидравлическая достаточность не проверена."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48171,8 +48930,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Заголовок кровли41,280 и ведомость40,690 различаются",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос41.280/40.690 требует уточнить поверхности.41.290относится к12этажу, не конкурирующей отметке кровли. Основная надпись не проверена; монтажные ошибки не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48204,8 +48972,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Основная надпись содержит40,690",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос41.280/40.690 требует уточнить поверхности.41.290относится к12этажу, не конкурирующей отметке кровли. Основная надпись не проверена; монтажные ошибки не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48237,8 +49014,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "41,290 является конкурирующей отметкой этой же кровли",
+          "verdict": "refuted_by_title_scope"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос41.280/40.690 требует уточнить поверхности.41.290относится к12этажу, не конкурирующей отметке кровли. Основная надпись не проверена; монтажные ошибки не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48270,8 +49056,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Ошибочны монтажные привязки воронок",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос41.280/40.690 требует уточнить поверхности.41.290относится к12этажу, не конкурирующей отметке кровли. Основная надпись не проверена; монтажные ошибки не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48293,8 +49088,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Рядом с +5,447 имеется выноска Ст.К1- без индивидуального номера",
+          "verdict": "supported_by_direct_graphic_review"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Локально неполная выноскаСт.К1- подтверждена. Нельзя утверждать невозможность идентификации по всему комплекту, подставлять соседний3.13 или приписывать последствия."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48316,8 +49120,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Эта надпись сама по себе не задаёт номер стояка",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Локально неполная выноскаСт.К1- подтверждена. Нельзя утверждать невозможность идентификации по всему комплекту, подставлять соседний3.13 или приписывать последствия."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48339,8 +49152,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "По всему комплекту стояк невозможно идентифицировать",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Локально неполная выноскаСт.К1- подтверждена. Нельзя утверждать невозможность идентификации по всему комплекту, подставлять соседний3.13 или приписывать последствия."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48362,8 +49184,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Следует автоматически вписать соседний номерК1-3.13",
+          "verdict": "not_supported"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Локально неполная выноскаСт.К1- подтверждена. Нельзя утверждать невозможность идентификации по всему комплекту, подставлять соседний3.13 или приписывать последствия."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48385,8 +49216,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Ошибка монтажа или эксплуатационный отказ доказаны",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Локально неполная выноскаСт.К1- подтверждена. Нельзя утверждать невозможность идентификации по всему комплекту, подставлять соседний3.13 или приписывать последствия."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48440,8 +49280,43 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Шесть прямых ссылок на трёх схемах не согласованы с ведомостью",
+          "verdict": "supported",
+          "locations": [
+            {
+              "sheet_by_register": 19,
+              "risers": "К1-2.1–К1-2.10",
+              "below_reference": 16,
+              "below_target_by_register": 17,
+              "above_reference": 22,
+              "above_target_by_register": 23
+            },
+            {
+              "sheet_by_register": 20,
+              "risers": "К1-3.1–К1-3.10",
+              "below_reference": 17,
+              "below_target_by_register": 18,
+              "above_reference": 22,
+              "above_target_by_register": 23
+            },
+            {
+              "sheet_by_register": 21,
+              "risers": "К1-3.11–К1-3.20",
+              "below_reference": 17,
+              "below_target_by_register": 18,
+              "above_reference": 22,
+              "above_target_by_register": 23
+            }
+          ]
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Один вопрос с шестью адресными местами; сохранить каждую ссылку19/20/21 и её цель. Семь исторических записей не семь дефектов. Не применять глобальную22→23: ветвьК1.1имеет иной контекст. Последствия и нарушение пунктаГОСТ не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48469,8 +49344,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "F018 повторяет верхнюю ссылку F017; F020 нижнюю F019; F023 нижнюю F022; F028 сводит те же три схемы",
+          "verdict": "supported_duplicate_mapping"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Один вопрос с шестью адресными местами; сохранить каждую ссылку19/20/21 и её цель. Семь исторических записей не семь дефектов. Не применять глобальную22→23: ветвьК1.1имеет иной контекст. Последствия и нарушение пунктаГОСТ не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48498,8 +49382,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все семь записей являются независимыми дефектами",
+          "verdict": "refuted"
+        },
+        "truth_label": "refuted",
+        "metric_role": "method_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Один вопрос с шестью адресными местами; сохранить каждую ссылку19/20/21 и её цель. Семь исторических записей не семь дефектов. Не применять глобальную22→23: ветвьК1.1имеет иной контекст. Последствия и нарушение пунктаГОСТ не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48527,8 +49420,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Ошибки уже вызвали неправильный монтаж или затраты",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Один вопрос с шестью адресными местами; сохранить каждую ссылку19/20/21 и её цель. Семь исторических записей не семь дефектов. Не применять глобальную22→23: ветвьК1.1имеет иной контекст. Последствия и нарушение пунктаГОСТ не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48557,8 +49459,18 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Любая ссылка К1 на лист22 неверна независимо от системы и выноски",
+          "verdict": "not_supported",
+          "note": "На нижней схеме имеется ветвь К1.1 со ссылкой22; нельзя применять глобальную замену22→23."
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Один вопрос с шестью адресными местами; сохранить каждую ссылку19/20/21 и её цель. Семь исторических записей не семь дефектов. Не применять глобальную22→23: ветвьК1.1имеет иной контекст. Последствия и нарушение пунктаГОСТ не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48586,8 +49498,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Нарушение конкретного пункта ГОСТ Р21.101-2020",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Один вопрос с шестью адресными местами; сохранить каждую ссылку19/20/21 и её цель. Семь исторических записей не семь дефектов. Не применять глобальную22→23: ветвьК1.1имеет иной контекст. Последствия и нарушение пунктаГОСТ не доказаны."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48619,8 +49540,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Общие указания требуют 1,0 м от чистого пола",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос трёх высотных привязокК1-3.2.0.410м арифметически подтверждены, но поверхность чистого пола и точка привязки ревизии неизвестны; не утверждать доказанные неудобство и ошибку монтажа."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48652,8 +49582,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "На К1-3.2 присутствуют три заявленные отметки у ревизий",
+          "verdict": "supported_by_direct_graphic_review"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос трёх высотных привязокК1-3.2.0.410м арифметически подтверждены, но поверхность чистого пола и точка привязки ревизии неизвестны; не утверждать доказанные неудобство и ошибку монтажа."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48685,8 +49624,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Разность с отметками этажей составляет 0,410 м",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос трёх высотных привязокК1-3.2.0.410м арифметически подтверждены, но поверхность чистого пола и точка привязки ревизии неизвестны; не утверждать доказанные неудобство и ошибку монтажа."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48718,8 +49666,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Высота центра ревизии над чистым полом точно 0,410 м",
+          "verdict": "needs_floor_and_datum_identity"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос трёх высотных привязокК1-3.2.0.410м арифметически подтверждены, но поверхность чистого пола и точка привязки ревизии неизвестны; не утверждать доказанные неудобство и ошибку монтажа."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48751,8 +49708,17 @@
           "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
         }
       ],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Неудобство доступа или ошибка монтажа уже доказаны",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Составная цель — вопрос трёх высотных привязокК1-3.2.0.410м арифметически подтверждены, но поверхность чистого пола и точка привязки ревизии неизвестны; не утверждать доказанные неудобство и ошибку монтажа."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48774,8 +49740,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Разные обозначения первого и седьмого стояков относятся к одним и тем же трубам",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос соответствия двух систем маркировки одних труб. Геометрия выноски опровергает отнесениеК1.1-2.1к шестому стояку; это контроль причины снятия, не новый дефект. Конкретная замена и монтажные последствия не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48797,8 +49772,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Выноска К1.1-2.1 относится к соседнему шестому стояку",
+          "verdict": "refuted_by_leader_geometry"
+        },
+        "truth_label": "refuted",
+        "metric_role": "method_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос соответствия двух систем маркировки одних труб. Геометрия выноски опровергает отнесениеК1.1-2.1к шестому стояку; это контроль причины снятия, не новый дефект. Конкретная замена и монтажные последствия не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48820,8 +49804,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Непременно требуется заменить заголовки на марки выносок",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос соответствия двух систем маркировки одних труб. Геометрия выноски опровергает отнесениеК1.1-2.1к шестому стояку; это контроль причины снятия, не новый дефект. Конкретная замена и монтажные последствия не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48843,8 +49836,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Разные марки привели к неправильному монтажу",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос соответствия двух систем маркировки одних труб. Геометрия выноски опровергает отнесениеК1.1-2.1к шестому стояку; это контроль причины снятия, не новый дефект. Конкретная замена и монтажные последствия не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48866,8 +49868,17 @@
       },
       "output_section_context": null,
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "В графике присутствуют обе разные числовые записи",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "2мм разницы записей подтверждены, тождество геометрических точек нет. Не выпускать разрыв трубы; частный случай не универсальный допуск2мм и не доказанное отсутствие ошибки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48889,8 +49900,17 @@
       },
       "output_section_context": null,
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Разность составляет2 мм",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "2мм разницы записей подтверждены, тождество геометрических точек нет. Не выпускать разрыв трубы; частный случай не универсальный допуск2мм и не доказанное отсутствие ошибки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48912,8 +49932,17 @@
       },
       "output_section_context": null,
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Две записи обязаны описывать одну геометрическую точку",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "2мм разницы записей подтверждены, тождество геометрических точек нет. Не выпускать разрыв трубы; частный случай не универсальный допуск2мм и не доказанное отсутствие ошибки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48935,8 +49964,17 @@
       },
       "output_section_context": null,
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Есть ошибка монтажной высоты или разрыв трубопровода",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "2мм разницы записей подтверждены, тождество геометрических точек нет. Не выпускать разрыв трубы; частный случай не универсальный допуск2мм и не доказанное отсутствие ошибки."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48958,8 +49996,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Заголовок и схема включают два стояка",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос неполноты основной надписи и ведомости относительно двух стояков схемы. Между собой надпись и ведомость согласованы; второй стояк графически существует. Два опровергнутых тезиса внутри одной темы, не дополнительные дефекты."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -48981,8 +50028,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Основная надпись и ведомость называют только К2-3.1",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос неполноты основной надписи и ведомости относительно двух стояков схемы. Между собой надпись и ведомость согласованы; второй стояк графически существует. Два опровергнутых тезиса внутри одной темы, не дополнительные дефекты."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -49004,8 +50060,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Основная надпись противоречит ведомости",
+          "verdict": "refuted"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос неполноты основной надписи и ведомости относительно двух стояков схемы. Между собой надпись и ведомость согласованы; второй стояк графически существует. Два опровергнутых тезиса внутри одной темы, не дополнительные дефекты."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -49027,8 +50092,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Стояк К2-3.2 отсутствует в проекте",
+          "verdict": "refuted_by_graphic_presence"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос неполноты основной надписи и ведомости относительно двух стояков схемы. Между собой надпись и ведомость согласованы; второй стояк графически существует. Два опровергнутых тезиса внутри одной темы, не дополнительные дефекты."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -49050,8 +50124,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Нарушена конкретная норма или доказан ущерб",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Вопрос неполноты основной надписи и ведомости относительно двух стояков схемы. Между собой надпись и ведомость согласованы; второй стояк графически существует. Два опровергнутых тезиса внутри одной темы, не дополнительные дефекты."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -49073,8 +50156,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Три названных уровня подписаны38,640",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Одинаковые подписи трёх уровней — вопрос идентификации поверхностей с планами кровель. Не доказывают совпадение физических высот, неверные длины или результат расчёта."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -49096,8 +50188,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Ведомость содержит планы кровель40,690 и44,870",
+          "verdict": "supported"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Одинаковые подписи трёх уровней — вопрос идентификации поверхностей с планами кровель. Не доказывают совпадение физических высот, неверные длины или результат расчёта."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -49119,8 +50220,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Все элементы физически расположены на одной высоте",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Одинаковые подписи трёх уровней — вопрос идентификации поверхностей с планами кровель. Не доказывают совпадение физических высот, неверные длины или результат расчёта."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -49142,8 +50252,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "В расчёте использованы неверные длины и получен неверный результат",
+          "verdict": "not_verified"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Одинаковые подписи трёх уровней — вопрос идентификации поверхностей с планами кровель. Не доказывают совпадение физических высот, неверные длины или результат расчёта."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     }
   ]
