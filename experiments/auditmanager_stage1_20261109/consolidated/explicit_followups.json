@@ -334,6 +334,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-027"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F027_penetration_material_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Если оценивать совместимость и огнестойкость узла, установить применимое решение изготовителя, области материалов и характеристики полной системы. До этого не включать нарушение или корректность огнестойкости в подтверждённый эталон."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-029"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
