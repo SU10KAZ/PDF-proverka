@@ -883,6 +883,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-003"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F003_loads_document_link.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Получить/найти соответствующиеКЖ/КМ8/КМД и проверить адрес исходных нагрузок и усилий. Если материалы недоступны, заморозить тезисы о прочности и применимости0.3кН/м как неоцениваемые."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-008"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F008_weld_calculation_requirement.json",
