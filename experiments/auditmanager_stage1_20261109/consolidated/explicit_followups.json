@@ -69,6 +69,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-050"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F050_heater_legend_identity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Если заявляется техническая ошибка типа нагревателя, проверить ОВ и точное соответствие символа применимым условным обозначениям. До появления таких доказательств технический тезис оставить неоценённым, а не считать доказанным нарушением."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AR-14"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
