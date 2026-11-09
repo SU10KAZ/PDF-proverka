@@ -657,6 +657,19 @@
     },
     {
       "candidate_ids": [
+        "B-ITP-F-002"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F002_pump_pressure_selection.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Сопоставить режимы работы от теплосети и мобильной котельной, точки подключения АУПД и К14.",
+        "Рассчитать статическое и рабочее давление на всасывании/нагнетанииК11 иК17 с учётом размещения, потерь, автоматики и уставок защиты.",
+        "Согласовать16,0бар клапана45 с16,3бар расчётаАУПД; не считать наличие защиты доказательством достаточности подбора.",
+        "До закрытия этих проверок оценивать только обнаружение несогласованных подборов, не обнаружение доказанного отказа или обязательной замены."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-ITP-F-005"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F005_test_pressure_scope.json",
