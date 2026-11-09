@@ -12,7 +12,7 @@ from backend.app.services.llm.codex_runner import run_codex_json_messages
 BASE = Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs')
 RESULTS = Path('/tmp/auditmanager_text_recovery_astra_20261110')
 
-async def main(*, results_dir=RESULTS, source_ids=None):
+async def main(*, results_dir=RESULTS, source_ids=None, follow_context=False):
     assert substitute_codex_model('gpt-6-astra') == 'gpt-6-astra', 'Astra substitution forbidden for this pilot'
     results_dir.mkdir(exist_ok=True)
     for disc in ('AK', 'ITP', 'AR', 'KM', 'VK', 'EOM'):
@@ -30,11 +30,13 @@ async def main(*, results_dir=RESULTS, source_ids=None):
                 sid = packet['candidate']['source_id']
                 if packet['candidate']['origin'] != 'text' or (source_ids and sid not in source_ids):
                     continue
-                target = results_dir / f'{disc}_{sid}.json'
+                suffix = '_context' if request.stage.endswith('_context') else ''
+                name = f'{disc}_{sid}{suffix}'
+                target = results_dir / f'{name}.json'
                 if target.exists():
                     print(f'SKIP existing {sid}', flush=True)
                     continue
-                (results_dir / f'{disc}_{sid}_request.json').write_text(json.dumps({
+                (results_dir / f'{name}_request.json').write_text(json.dumps({
                     'messages': request.messages, 'image_paths': [str(p.resolve()) for p in request.image_paths],
                     'model': 'gpt-6-astra', 'scope': 'known-case recovery pilot, not blind evaluation'}, ensure_ascii=False, indent=2))
                 for attempt in range(1, 4):
@@ -44,9 +46,15 @@ async def main(*, results_dir=RESULTS, source_ids=None):
                         timeout=900, stage='candidate_recovery_pilot', project_id=f'{disc}-{sid}',
                         image_paths=request.image_paths)
                     receipt = asdict(result)
-                    (results_dir / f'{disc}_{sid}_attempt{attempt}.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2))
+                    (results_dir / f'{name}_attempt{attempt}.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2))
                     if not result.is_error and isinstance(result.json_data, dict):
                         receipt['validated_payload'] = validate_recovery_payload(request, result.json_data)
+                        if follow_context:
+                            from backend.app.pipeline.stages.prepare.recovery_context import build_context_followup
+                            followup, search = build_context_followup(request, receipt['validated_payload'])
+                            receipt['context_retrieval'] = search
+                            if followup is not None:
+                                passes.append(followup)
                         target.write_text(json.dumps(receipt, ensure_ascii=False, indent=2))
                         print(f'DONE {disc}/{sid} findings={len(receipt["validated_payload"]["findings"])} duration_ms={result.duration_ms}', flush=True)
                         break
@@ -62,5 +70,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--output-dir', type=Path, default=RESULTS)
     parser.add_argument('--source-ids', nargs='*')
+    parser.add_argument('--follow-context', action='store_true')
     args = parser.parse_args()
-    asyncio.run(main(results_dir=args.output_dir, source_ids=args.source_ids))
+    asyncio.run(main(results_dir=args.output_dir, source_ids=args.source_ids, follow_context=args.follow_context))
