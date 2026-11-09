@@ -475,6 +475,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-043"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F043_hanger_fireproofing_supply.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить всю область закупки по назначению материала и составам комплектов, установить количество МБОР и поставщика. До этого отсутствие в поставке и монтажный дефект не оценивать как подтверждённые."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-ITP-58"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
