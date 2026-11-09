@@ -771,6 +771,18 @@
     },
     {
       "candidate_ids": [
+        "B-ITP-F-034"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Установить нормативную базу и дату выпуска проекта; уточнить применимые эксплуатационные правила без автоматического вывода о неверных технических решениях.",
+        "Сверить ссылку на правила учёта сУУТЭ; не требовать повторить реквизиты во всех местах, если документ уже однозначно определён в комплекте.",
+        "Ссылкуп7.2СП510 по двери/деформационному шву проверять по самостоятельному предмету, не считать решённой исправлением названия."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-ITP-F-036"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F036_gauge_range_allocation.json",
