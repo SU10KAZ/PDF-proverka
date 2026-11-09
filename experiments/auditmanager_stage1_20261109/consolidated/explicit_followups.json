@@ -57,6 +57,18 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-047",
+        "B-AK-F-048",
+        "B-AK-F-049"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для вывода о нехватке каналов проверить состав контроллера, модулей и распределение сигналов по внутренним схемам. Пока оставить аппаратные последствия неоценёнными; не включать их в подтверждённые технические метрики."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AR-14"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
