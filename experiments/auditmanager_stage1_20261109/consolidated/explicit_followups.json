@@ -256,6 +256,17 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить точные реквизитыТУ-газ-86, руководство поставляемогоСТГ-3-И-СО и основание200м² с учётом размещения; до этого достаточность покрытия оставить неоценённой.",
+        "Установить применимые действующие нормативные положения и даты проекта до требования изменить уставки; техническую неправильность20/100мг/м³ в положительный эталон не включать."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-030"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
