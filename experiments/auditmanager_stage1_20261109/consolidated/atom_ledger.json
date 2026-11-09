@@ -3,15 +3,15 @@
   "protocol": "evaluation_protocol.json",
   "summary": {
     "atoms": 1193,
-    "explicit_scoring_reviews": 446,
-    "remaining_scoring_normalizations": 747,
+    "explicit_scoring_reviews": 492,
+    "remaining_scoring_normalizations": 701,
     "reviewed_metric_roles": {
-      "negative_control": 33,
-      "supporting_fact": 110,
-      "method_control": 12,
-      "technical_positive": 59,
-      "unscored": 179,
-      "question_positive": 53
+      "negative_control": 36,
+      "supporting_fact": 117,
+      "method_control": 14,
+      "technical_positive": 65,
+      "unscored": 194,
+      "question_positive": 66
     },
     "benchmark_frozen": false
   },
@@ -18580,8 +18580,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Позиция33:VF-3R-50-40 и40м³/ч в экспликации/расчёте противVFM-3R-50-40 и4,0 вСО",
+          "verdict": "confirmed_document_identity_and_capacity_conflict"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "technical_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Конфликт позиции33 по обозначению и40/4,0 подтверждён; потери условны. PN25/16 учтён отдельно вF015, не увеличивать результат этой темы."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18603,8 +18612,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "По формуле проекта при18,85/40 потеря0,2220765625бар, при18,85/4 —22,20765625бар",
+          "verdict": "confirmed_conditional_arithmetic"
+        },
+        "truth_label": "conditional",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Конфликт позиции33 по обозначению и40/4,0 подтверждён; потери условны. PN25/16 учтён отдельно вF015, не увеличивать результат этой темы."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18626,8 +18644,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Фактически поставлен клапанKvs4 и система неработоспособна",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Конфликт позиции33 по обозначению и40/4,0 подтверждён; потери условны. PN25/16 учтён отдельно вF015, не увеличивать результат этой темы."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18649,8 +18676,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Правильность каталожного артикула установлена",
+          "verdict": "not_checked"
+        },
+        "truth_label": "not_checked",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Конфликт позиции33 по обозначению и40/4,0 подтверждён; потери условны. PN25/16 учтён отдельно вF015, не увеличивать результат этой темы."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18672,8 +18708,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "РазличиеPN25/PN16 покрыто этим решением",
+          "verdict": "separate_case_B_ITP_F_015"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Конфликт позиции33 по обозначению и40/4,0 подтверждён; потери условны. PN25/16 учтён отдельно вF015, не увеличивать результат этой темы."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18696,8 +18741,18 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Клапан30 DN20 в расчёте/разрезе противDN25 в экспликации",
+          "verdict": "confirmed",
+          "matching_basis": "Одна маркаVFM-2R-20-6,3 иKv6,3; назначение отоплениеДОО."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "technical_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре документальных аспекта; обозначенияEV220не доказывают несовместимость, Kv/Kvs требуют паспорта. Для36оба4,0 — локальный согласованный контроль, не положительный дефект."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18720,8 +18775,18 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Клапаны32/33/34 PN25 противPN16",
+          "verdict": "confirmed",
+          "matching_basis": "Позиции и зоныГВС1/2/3; проверены все три строки."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "technical_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре документальных аспекта; обозначенияEV220не доказывают несовместимость, Kv/Kvs требуют паспорта. Для36оба4,0 — локальный согласованный контроль, не положительный дефект."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18743,8 +18808,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Соленоидные35/36 EV220WR противEV220В",
+          "verdict": "different_designations_confirmed_equivalence_unresolved"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "technical_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре документальных аспекта; обозначенияEV220не доказывают несовместимость, Kv/Kvs требуют паспорта. Для36оба4,0 — локальный согласованный контроль, не положительный дефект."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18767,8 +18841,18 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Соленоид35 DN20 Kv8,0 противKvs6,3",
+          "verdict": "confirmed_parameter_discrepancy",
+          "limits": "СмыслKv/Kvs и паспорт исполнения требуется согласовать."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "technical_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре документальных аспекта; обозначенияEV220не доказывают несовместимость, Kv/Kvs требуют паспорта. Для36оба4,0 — локальный согласованный контроль, не положительный дефект."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18791,8 +18875,18 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Соленоид36 DN15 имеет конфликт пропускной способности",
+          "verdict": "not_claimed",
+          "reason": "Оба текста4,0."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре документальных аспекта; обозначенияEV220не доказывают несовместимость, Kv/Kvs требуют паспорта. Для36оба4,0 — локальный согласованный контроль, не положительный дефект."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18814,8 +18908,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Конфликты доказывают непригодность оборудования",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре документальных аспекта; обозначенияEV220не доказывают несовместимость, Kv/Kvs требуют паспорта. Для36оба4,0 — локальный согласованный контроль, не положительный дефект."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18837,8 +18940,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "К12 в экспликацииN0,55кВт против1,5кВт вПЗ иСО",
+          "verdict": "confirmed_document_nominal_power_conflict"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "technical_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "НоминалК12расходится0,55/1,5; рабочаяP2=0,74не тот же параметр. Подтверждение листом не доказывает отказ или неверную защиту."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18860,8 +18972,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Технический лист артикула2786053 даёт номинал1,5кВт",
+          "verdict": "confirmed_project_technical_sheet_TEXT"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "НоминалК12расходится0,55/1,5; рабочаяP2=0,74не тот же параметр. Подтверждение листом не доказывает отказ или неверную защиту."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18883,8 +19004,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "P2 рабочей точки0,74кВт является тем же параметром, что номинальная мощность",
+          "verdict": "refuted_parameter_identity"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "НоминалК12расходится0,55/1,5; рабочаяP2=0,74не тот же параметр. Подтверждение листом не доказывает отказ или неверную защиту."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18906,8 +19036,17 @@
       },
       "output_section_context": "Технические замечания",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Из конфликта следует неправильная защита и отказ насоса",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "НоминалК12расходится0,55/1,5; рабочаяP2=0,74не тот же параметр. Подтверждение листом не доказывает отказ или неверную защиту."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18929,8 +19068,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Технический лист содержит рабочий напор16,98м и максимальный16,64м",
+          "verdict": "confirmed_same_document_numeric_difference"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "16,98/16,64в одном листе — вопрос кривой и режима. Название рабочей точки не свидетельство натурного испытания, физическая непригодность неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18952,8 +19100,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Разность составляет0,34м",
+          "verdict": "confirmed_arithmetic"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "16,98/16,64в одном листе — вопрос кривой и режима. Название рабочей точки не свидетельство натурного испытания, физическая непригодность неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18975,8 +19132,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Название Фактическая рабочая точка означает натурное испытание",
+          "verdict": "not_supported_field_name_only"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "16,98/16,64в одном листе — вопрос кривой и режима. Название рабочей точки не свидетельство натурного испытания, физическая непригодность неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -18998,8 +19164,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Различие доказывает физическую непригодность насоса",
+          "verdict": "not_established_without_curve_and_mode"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "16,98/16,64в одном листе — вопрос кривой и режима. Название рабочей точки не свидетельство натурного испытания, физическая непригодность неизвестна."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19021,8 +19196,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ДляК9/К10/К11/К12/К14/К1 расходятся массы в трёх источниках",
+          "verdict": "confirmed_six_item_existing_register"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Шесть адресных масс оцениваются с сухой/мокрой/комплектной областью. ПроверкаК11не доказывает остальные пять; оговорка теплообменника запрещает принимать массу для конструкторских чертежей как окончательную."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19044,8 +19228,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Примечания различают массу без теплоносителя и массу с обвязкой/теплоносителем",
+          "verdict": "confirmed_TEXT_context"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Шесть адресных масс оцениваются с сухой/мокрой/комплектной областью. ПроверкаК11не доказывает остальные пять; оговорка теплообменника запрещает принимать массу для конструкторских чертежей как окончательную."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19067,8 +19260,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Масса теплообменника в листе подбора окончательна для конструкторских чертежей",
+          "verdict": "refuted_explicit_document_caveat"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Шесть адресных масс оцениваются с сухой/мокрой/комплектной областью. ПроверкаК11не доказывает остальные пять; оговорка теплообменника запрещает принимать массу для конструкторских чертежей как окончательную."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19090,8 +19292,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Различия доказывают неверные фундаменты или монтажные средства",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Шесть адресных масс оцениваются с сухой/мокрой/комплектной областью. ПроверкаК11не доказывает остальные пять; оговорка теплообменника запрещает принимать массу для конструкторских чертежей как окончательную."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19113,8 +19324,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Проверка одногоК11 автоматически подтверждает остальные пять позиций",
+          "verdict": "not_supported_all_six_require_addressed_evidence"
+        },
+        "truth_label": "refuted",
+        "metric_role": "method_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Шесть адресных масс оцениваются с сухой/мокрой/комплектной областью. ПроверкаК11не доказывает остальные пять; оговорка теплообменника запрещает принимать массу для конструкторских чертежей как окончательную."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19141,8 +19361,22 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "system": "Отопление1",
+          "makeup_m3_h": "6.23",
+          "implied_volume_if_20_percent_per_hour_m3": "31.15",
+          "questionnaire_volume_m3": "24.9255",
+          "selection_volume_m3": "20.676",
+          "verdict": "different_published_inputs_confirmed",
+          "scope": "Объём потребителей, объём ИТП и полный объём контура ещё требуется разграничить."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре системы с опубликованными различиями входов. Поле implied_volume_if_20_percent_per_hour — только условная реконструкция, не подтверждённый объём системы; потребители/ИТП/полный контур ещё не разграничены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19169,8 +19403,22 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "system": "Отопление2",
+          "makeup_m3_h": "3.66",
+          "implied_volume_if_20_percent_per_hour_m3": "18.3",
+          "questionnaire_volume_m3": "15.2",
+          "selection_volume_m3": "13.016",
+          "verdict": "different_published_inputs_confirmed",
+          "scope": "Объём потребителей, объём ИТП и полный объём контура ещё требуется разграничить."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре системы с опубликованными различиями входов. Поле implied_volume_if_20_percent_per_hour — только условная реконструкция, не подтверждённый объём системы; потребители/ИТП/полный контур ещё не разграничены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19197,8 +19445,22 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "system": "Отопление3",
+          "makeup_m3_h": ".90",
+          "implied_volume_if_20_percent_per_hour_m3": "4.5",
+          "questionnaire_volume_m3": "3.7",
+          "selection_volume_m3": "1.883",
+          "verdict": "different_published_inputs_confirmed",
+          "scope": "Объём потребителей, объём ИТП и полный объём контура ещё требуется разграничить."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре системы с опубликованными различиями входов. Поле implied_volume_if_20_percent_per_hour — только условная реконструкция, не подтверждённый объём системы; потребители/ИТП/полный контур ещё не разграничены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19225,8 +19487,22 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "system": "Вентиляция",
+          "makeup_m3_h": "3.63",
+          "implied_volume_if_20_percent_per_hour_m3": "18.15",
+          "questionnaire_volume_m3": "14.3",
+          "selection_volume_m3": "27",
+          "verdict": "different_published_inputs_confirmed",
+          "scope": "Объём потребителей, объём ИТП и полный объём контура ещё требуется разграничить."
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре системы с опубликованными различиями входов. Поле implied_volume_if_20_percent_per_hour — только условная реконструкция, не подтверждённый объём системы; потребители/ИТП/полный контур ещё не разграничены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19251,8 +19527,20 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "system": "Греющий контур",
+          "selection_Gcal_h": "5.858",
+          "PZ_Gcal_h": "5.229",
+          "difference_Gcal_h": "0.629",
+          "verdict": "published_input_difference_confirmed"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре адресных различия тепловых нагрузокПЗ/подбора сохраняются вопросами исходных данных; численная разность не доказывает неправильный подбор оборудования."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19277,8 +19565,20 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "system": "Отопление1",
+          "selection_Gcal_h": "1.488",
+          "PZ_Gcal_h": "1.483",
+          "difference_Gcal_h": "0.005",
+          "verdict": "published_input_difference_confirmed"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре адресных различия тепловых нагрузокПЗ/подбора сохраняются вопросами исходных данных; численная разность не доказывает неправильный подбор оборудования."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19303,8 +19603,20 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "system": "Отопление2",
+          "selection_Gcal_h": ".958",
+          "PZ_Gcal_h": ".880",
+          "difference_Gcal_h": "0.078",
+          "verdict": "published_input_difference_confirmed"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре адресных различия тепловых нагрузокПЗ/подбора сохраняются вопросами исходных данных; численная разность не доказывает неправильный подбор оборудования."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19329,8 +19641,20 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "system": "Отопление3",
+          "selection_Gcal_h": ".214",
+          "PZ_Gcal_h": ".191",
+          "difference_Gcal_h": "0.023",
+          "verdict": "published_input_difference_confirmed"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Четыре адресных различия тепловых нагрузокПЗ/подбора сохраняются вопросами исходных данных; численная разность не доказывает неправильный подбор оборудования."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19352,8 +19676,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Лист требует объём не менее606,9л, выбранLVF600 иСО указывает600л",
+          "verdict": "confirmed_internal_selection_discrepancy"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Внутреннее требование606,9против600сохранено. RM80другой функции не складывается автоматически,1,3не универсальный коэффициент; эксплуатационный недостаток не доказан."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19375,8 +19708,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Разность6,9л",
+          "verdict": "confirmed_arithmetic"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Внутреннее требование606,9против600сохранено. RM80другой функции не складывается автоматически,1,3не универсальный коэффициент; эксплуатационный недостаток не доказан."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19398,8 +19740,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ОтдельныйRM80 автоматически компенсирует разность",
+          "verdict": "not_established_different_function"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Внутреннее требование606,9против600сохранено. RM80другой функции не складывается автоматически,1,3не универсальный коэффициент; эксплуатационный недостаток не доказан."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19421,8 +19772,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Доказана недостаточная компенсация при эксплуатации",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Внутреннее требование606,9против600сохранено. RM80другой функции не складывается автоматически,1,3не универсальный коэффициент; эксплуатационный недостаток не доказан."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19444,8 +19804,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Коэффициент1,3 обязателен для всех проектов",
+          "verdict": "not_established_project_specific"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "Внутреннее требование606,9против600сохранено. RM80другой функции не складывается автоматически,1,3не универсальный коэффициент; эксплуатационный недостаток не доказан."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19467,8 +19836,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Указания2,5бар и3,0бар присутствуют",
+          "verdict": "confirmed_text"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "2,5/3бар в указаниях — подтверждённый вопрос. Реконструкция и247/3810л условны, не обязательные новые размеры баков."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19490,8 +19868,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Расчёт использовал иное начальное давление",
+          "verdict": "conditional_reconstruction_consistent_with_published_results"
+        },
+        "truth_label": "conditional",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "2,5/3бар в указаниях — подтверждённый вопрос. Реконструкция и247/3810л условны, не обязательные новые размеры баков."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19513,8 +19900,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Оценка247/3810л при3бар",
+          "verdict": "conditional_arithmetic_confirmed"
+        },
+        "truth_label": "conditional",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "2,5/3бар в указаниях — подтверждённый вопрос. Реконструкция и247/3810л условны, не обязательные новые размеры баков."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19536,8 +19932,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Выбранные баки неизбежно недостаточны в эксплуатации",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "2,5/3бар в указаниях — подтверждённый вопрос. Реконструкция и247/3810л условны, не обязательные новые размеры баков."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19559,8 +19964,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "ДОО75/55 против80/60; вентиляция85/60 против80/60",
+          "verdict": "confirmed_project_input_conflicts"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "question_positive",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "ТемпературыДООи вентиляции имеют разные направления расхождений. РавныйΔTне устраняет различие абсолютных температур; неправильные окончательные размеры баков не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19582,8 +19996,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Средние температурыДОО65/70 и вентиляции72,5/70°C",
+          "verdict": "confirmed_arithmetic"
+        },
+        "truth_label": "confirmed",
+        "metric_role": "supporting_fact",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "ТемпературыДООи вентиляции имеют разные направления расхождений. РавныйΔTне устраняет различие абсолютных температур; неправильные окончательные размеры баков не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19605,8 +20028,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "В обоих случаях температура в подборе занижена",
+          "verdict": "refuted_DOO_direction"
+        },
+        "truth_label": "refuted",
+        "metric_role": "negative_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "ТемпературыДООи вентиляции имеют разные направления расхождений. РавныйΔTне устраняет различие абсолютных температур; неправильные окончательные размеры баков не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19628,8 +20060,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Равная разность температурДОО устраняет различие абсолютных температур",
+          "verdict": "not_supported"
+        },
+        "truth_label": "refuted",
+        "metric_role": "method_control",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "ТемпературыДООи вентиляции имеют разные направления расхождений. РавныйΔTне устраняет различие абсолютных температур; неправильные окончательные размеры баков не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
@@ -19651,8 +20092,17 @@
       },
       "output_section_context": "Вопросы и уточнения",
       "followup_boundaries": [],
-      "review": null,
-      "scoring_status": "normalization_pending_not_new_engineering_review",
+      "review": {
+        "source_atom": {
+          "claim": "Установлены неправильные окончательные размеры баков",
+          "verdict": "not_established"
+        },
+        "truth_label": "insufficient_data",
+        "metric_role": "unscored",
+        "basis": "Поштучная нормализация сохранённого решения с исходными ограничениями; не новый независимый аудит.",
+        "scope": "ТемпературыДООи вентиляции имеют разные направления расхождений. РавныйΔTне устраняет различие абсолютных температур; неправильные окончательные размеры баков не установлены."
+      },
+      "scoring_status": "explicitly_reviewed_pending_freeze",
       "eligible_for_run_scoring": false
     },
     {
