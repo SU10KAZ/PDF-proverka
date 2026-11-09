@@ -4,6 +4,18 @@
   "items": [
     {
       "candidate_ids": [
+        "H-AK-57",
+        "B-AK-F-037",
+        "B-AK-F-004"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для вывода о непригодности конкретногоPDS проверить точную модель и паспорт. Для исправленияСО определить требуемый диапазон каждого прибора. До этого сохранить только документальный конфликт."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AK-65",
         "B-AK-F-043"
       ],
