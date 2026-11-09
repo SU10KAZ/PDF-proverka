@@ -3973,22 +3973,6 @@
     "next_action": "Проверить первичные факты и контрпример; неопределённые последствия не превращать в обязательный вопрос инженеру."
   },
   {
-    "candidate_id": "B-ITP-F-039",
-    "discipline": "ITP",
-    "phase": "classic_usefulness",
-    "flags": [],
-    "remaining_claims": [],
-    "next_action": "Проверить первичные факты и контрпример; неопределённые последствия не превращать в обязательный вопрос инженеру."
-  },
-  {
-    "candidate_id": "B-ITP-F-040",
-    "discipline": "ITP",
-    "phase": "classic_usefulness",
-    "flags": [],
-    "remaining_claims": [],
-    "next_action": "Проверить первичные факты и контрпример; неопределённые последствия не превращать в обязательный вопрос инженеру."
-  },
-  {
     "candidate_id": "B-ITP-F-042",
     "discipline": "ITP",
     "phase": "classic_usefulness",
