@@ -828,6 +828,18 @@
     },
     {
       "candidate_ids": [
+        "H-KM-14"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Установить количество анкеров ОГМ21/24 по независимым графическим узлам или расчётной ведомости без переизвлечения и исправления TEXT; иначе заморозить228/1748 как неоцениваемые.",
+        "Связать позиции с типами профилей и пересчитать полные длины, массы и округления либо заморозить точные массовые поправки как неоцениваемые.",
+        "Проверить расчёт сводной спецификации и журналы AuditManager до утверждения причин пропуска."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-002"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
