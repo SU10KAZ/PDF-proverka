@@ -385,6 +385,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-063"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F063_ethernet_evidence_scope.json",
+      "output_section": null,
+      "required_checks": [
+        "До оценки полноты проверки Ethernet получить книгу2 и проверить конкретные участки с учётом оборудования и применимого требования. Если документ недоступен к фиксации эталона, явно оставить этот тезис неоценённым; не включать в число технически ложных замечаний или подтверждённых дефектов."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-064"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F064_reference_register_scope.json",
