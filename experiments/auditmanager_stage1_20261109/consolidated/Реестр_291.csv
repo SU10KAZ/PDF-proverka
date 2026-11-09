@@ -145,7 +145,7 @@ B-ITP-F-031,ITP,classic_usefulness,Первичная проверка не за
 B-ITP-F-032,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-033,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-034,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-035,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-035,ITP,classic_usefulness,confirmed_editorial_ambiguity_not_drainage_failure,Вопросы и уточнения,"Уточнить примечания по дренажу: диапазоны «до Ду125» и «свыше Ду150» не охватывают Ду150; в ПЗ уклоны пола и общего сливного трубопровода записаны «0,01 мм». Для пола в соседнем пункте уже дано безразмерное 0,01; согласовать размерность записи и отдельно подтвердить значение уклона сливной трубы.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json
 B-ITP-F-036,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-037,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-038,ITP,classic_usefulness,Первичная проверка не завершена,,,
