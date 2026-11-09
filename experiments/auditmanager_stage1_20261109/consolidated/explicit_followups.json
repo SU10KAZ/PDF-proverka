@@ -212,6 +212,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-036"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Сверить требуемое исполнение по планам участков и каталоговое описание изделия; затем выбрать исправление наименования либо кода."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-037"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
