@@ -873,6 +873,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-011"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F011_dimension_reference_points.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проследить точные концы размерных линий2030/2070 по деталировкеОГМ2 и связанным видам либо заморозить тезис об ошибке геометрии как неоцениваемый."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-012"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F012_level_list_scope.json",
@@ -899,6 +909,16 @@
       "output_section": "Вопросы и уточнения",
       "required_checks": [
         "Выполнить однозначное соответствие всех выносок трёх плановЛК4.1 изделиям разреза3-3 либо заморозить тезис о дополнительном количестве как неоцениваемый."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-020"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F020_conditional_diagonal.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить деталировку позиции6 и границы335мм; до этого заморозить утверждение о неверной длине заготовки как неоцениваемое."
       ]
     },
     {

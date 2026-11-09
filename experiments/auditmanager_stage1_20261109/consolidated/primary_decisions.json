@@ -1,11 +1,11 @@
 {
   "summary": {
     "candidate_records": 291,
-    "records_with_narrow_primary_decision": 207,
-    "remaining_records": 84,
-    "decision_themes": 175,
+    "records_with_narrow_primary_decision": 209,
+    "remaining_records": 82,
+    "decision_themes": 177,
     "technical_themes": 26,
-    "question_themes": 125,
+    "question_themes": 127,
     "omitted_themes": 24,
     "scope": "Only listed narrow claims; not blanket acceptance of entire source rows.",
     "stage_complete": false,
@@ -12122,6 +12122,68 @@
       },
       "engineer_decision": null,
       "production_changed": false,
+      "output_section": "Вопросы и уточнения",
+      "proposed_behavior": "До геометрического вычисления связывать каждую размерную линию с её выносными линиями, гранями или осями. Арифметическое несовпадение при предположенных точках не считать доказанной ошибкой изготовления.",
+      "candidate_ids": [
+        "B-KM-F-011"
+      ],
+      "decision": "S2_OGM2_dimension_labels_differ_endpoints_unresolved",
+      "graphic_evidence": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-002/images/blk_767432a366864283851be4a9092d0909_6471b342ae3c.png",
+          "sha256": "4fb9c47afdf47120264ca3956044460eff356d30cb4b272eac444cff4fdc94ff",
+          "block_id": "blk_767432a366864283851be4a9092d0909",
+          "directly_viewed": true,
+          "observation": "План+4.630: нижний продольный участок цепи2030 от линии у нижнего разворота ограждения до внутренней грани стены; ОГМ2 подписан у правой ветви. Соседние размеры2300 и1770; размер2030 — не поперечная ширина прохода."
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-13/images/blk_8e8d4c0218c6473ab7885f5aed70bafd_6471b342ae3c.png",
+          "sha256": "fcb61f5fe094ab11ecba7d7d3966b6a6557fee3012c7f2f2d9a53df9bf6160ed",
+          "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+          "directly_viewed": true,
+          "observation": "Разрез 1-1 С2: снизу ОГМ1, ОГМ2, ОГМ3, ОГМ2, ОГМ4; затем десять ОГМ5 и девять ОГМ6; верхний марш ОГМ8. Повторяемость совпадает с заголовками ведомостей листа4."
+        }
+      ],
+      "wording": "Уточнить базы привязкиОГМ2 у площадки+4.630 секцииС2: на плане указан2030мм, на разрезе1-1 —2070мм. Сопоставить выносные линии, ось/грань трубы и грань стены до выбора исправляемого значения.",
+      "limits": [
+        "Численная разница40мм подтверждена; тождество исходных точек двух размерных линий пока не установлено.",
+        "40мм совпадает с размером трубы в проекте, но это не доказательство объяснения разницы осью/гранью и не универсальный допуск.",
+        "Не установлены неверное изготовление, монтажный дефект или нарушение нормативной ширины прохода."
+      ],
+      "atomic_dispositions": [
+        {
+          "claim": "2070и2030",
+          "verdict": "confirmed",
+          "calculation": "2070−2030=40мм"
+        },
+        {
+          "claim": "Одинаковые базы размера",
+          "verdict": "insufficient_data"
+        },
+        {
+          "claim": "Следует заменить конкретное значение",
+          "verdict": "not_established"
+        }
+      ],
+      "control_pair": {
+        "negative": "Не выпускать40мм как доказанный дефект при неустановленных границах.",
+        "positive": "KM6_F018 сохраняет расхождения длин с проверенными ссылочными узлами.",
+        "evidence_limit": "Отрицательный случай не опровергнут технически; это неполная пара для фильтра."
+      },
+      "followup_requirements": [
+        "Проследить точные концы размерных линий2030/2070 по деталировкеОГМ2 и связанным видам либо заморозить тезис об ошибке геометрии как неоцениваемый."
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F011_dimension_reference_points.json"
+    },
+    {
+      "review_date": "2026-11-09",
+      "project": "ЖК Событие6.1, ПД-00580716-КМ1.2",
+      "source_md": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
+        "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+      },
+      "engineer_decision": null,
+      "production_changed": false,
       "candidate_ids": [
         "B-KM-F-012"
       ],
@@ -12374,6 +12436,66 @@
         "Выполнить однозначное соответствие всех выносок трёх плановЛК4.1 изделиям разреза3-3 либо заморозить тезис о дополнительном количестве как неоцениваемый."
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F016_label_count_scope.json"
+    },
+    {
+      "review_date": "2026-11-09",
+      "project": "ЖК Событие6.1, ПД-00580716-КМ1.2",
+      "source_md": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
+        "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+      },
+      "engineer_decision": null,
+      "production_changed": false,
+      "output_section": "Вопросы и уточнения",
+      "proposed_behavior": "До геометрического вычисления связывать каждую размерную линию с её выносными линиями, гранями или осями. Арифметическое несовпадение при предположенных точках не считать доказанной ошибкой изготовления.",
+      "candidate_ids": [
+        "B-KM-F-020"
+      ],
+      "decision": "conditional_Pythagorean_check_not_proof_of_wrong_dimension",
+      "graphic_evidence": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-004/images/blk_6d3a9c479ffe4b57b3cd3e5310d5abfd_6471b342ae3c.png",
+          "sha256": "8bf0cd6bed4dfbbe0f9941ae208264a227ead7e9d2ce7abfcdd87cf37aa39cba",
+          "block_id": "blk_6d3a9c479ffe4b57b3cd3e5310d5abfd",
+          "directly_viewed": true,
+          "observation": "Разрез3-3:245 по горизонтали и170 по вертикали показаны возле верхних круглых узлов;335 по наклонной вынесен наружу. Позиция6 указывает на верхний элемент. Из одного численного сравнения нельзя установить, задаёт335 расстояние центров или габарит концевых частей."
+        }
+      ],
+      "wording": "Уточнить границы размеров245,170 и335мм верхнего элемента поз.6 на разрезе3-3. Если245 и170 — проекции того же отрезка, его длина298.203мм; применимость этого расчёта к335мм требует подтверждения границ детали.",
+      "limits": [
+        "Условная арифметика проверена:√(245²+170²)=298.203мм;335−298.203=36.797мм.",
+        "Не доказано, что335 относится к центрам тех же узлов; автоматически исправлять его на298мм нельзя.",
+        "Разность нельзя объявлять допустимым округлением, диаметром трубы или припуском без подтверждения узлом.",
+        "Фактическое неправильное изготовление и монтажная несовместимость не установлены."
+      ],
+      "atomic_dispositions": [
+        {
+          "claim": "Размерные подписи245/170/335",
+          "verdict": "confirmed"
+        },
+        {
+          "claim": "Условная диагональ",
+          "verdict": "confirmed_conditional",
+          "value_mm": 298.2029510249689
+        },
+        {
+          "claim": "Геометрия узла ошибочна",
+          "verdict": "insufficient_data"
+        },
+        {
+          "claim": "Обязательна замена335на298",
+          "verdict": "not_established"
+        }
+      ],
+      "control_pair": {
+        "negative": "Не считать условную теоремуПифагора доказательством ошибки при неизвестных границах.",
+        "positive": "Независимый подтверждённый случай аналогичного треугольника с одинаковыми границами ещё не найден.",
+        "evidence_limit": "Полной контрольной пары нет; автоматическое подавление таких кандидатов не обосновано."
+      },
+      "followup_requirements": [
+        "Проверить деталировку позиции6 и границы335мм; до этого заморозить утверждение о неверной длине заготовки как неоцениваемое."
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F020_conditional_diagonal.json"
     },
     {
       "candidate_ids": [
