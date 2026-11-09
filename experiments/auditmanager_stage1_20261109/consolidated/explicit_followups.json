@@ -181,6 +181,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-025"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F025_repeated_note_numbers.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Перед перенумерацией проверить ссылки на пункты; отдельно не требовать от инженера подтверждать монтажную ошибку, которая не установлена."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-029"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
