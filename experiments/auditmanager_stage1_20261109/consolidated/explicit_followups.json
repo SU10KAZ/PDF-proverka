@@ -192,6 +192,17 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-019"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F019_typical_floor_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Если сохранять тезис об основной надписи, проверить её отдельный источник; до этого заморозить тезис как неоцениваемый.",
+        "Если оценивать правильность схемы для конкретных квартир 10-го этажа, сопоставить её с планами; не включать этот неподтверждённый вывод в положительный эталон."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-020"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F020_enclosure_minimums.json",
