@@ -1,0 +1,26 @@
+{
+  "scope": "Exact extracted local functions; not full pipeline or historical model replay.",
+  "source": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+  "source_sha256": "301857b35ba09999cba3e4f58d9a61e4157365c0a686c7385947f96e0d836274",
+  "database": "/home/coder/projects/PDF-proverka/norms/norms_db.json",
+  "database_sha256": "e046f92fbc35db637e856e4e6711117e0f4a78b26d18056a2d644defa3106c0a",
+  "input": "| СНиП 12-03-2001 | Безопасность труда в строительстве. Часть 1. Общие требования |",
+  "database_record": {
+    "status": "replaced",
+    "title": "Безопасность труда в строительстве. Часть 1. Общие требования",
+    "category": "снип",
+    "last_checked": "2026-04-06T15:02:00.095877",
+    "source": "local_pdf_library",
+    "verified_via": "manual_download",
+    "replaced_by": "СП 48.13330.2019"
+  },
+  "actual_hint": "- cited=СНиП 12-03; catalog=СНиП 12-03-2001; status=replaced; replacement=-; verified=2026-04-06T15:02:00.095877; note=-",
+  "observations": {
+    "replaced_emitted": true,
+    "replacement_missing": true,
+    "database_has_replaced_by": true,
+    "date_labeled_verified": true
+  },
+  "limits": "Reproduces serialization, not truth of norm status; no claim that historical input was identical.",
+  "network_or_model_calls": false
+}
