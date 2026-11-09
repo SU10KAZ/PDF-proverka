@@ -1,0 +1,51 @@
+{
+  "cases": [
+    {
+      "discipline": "AK",
+      "summary": {
+        "changed": true,
+        "review_requests": 1,
+        "added": 0,
+        "backfilled": 0,
+        "prescan_total": 1
+      },
+      "request": {
+        "rule_key": "air_curtain_u_designation",
+        "status": "not_checked",
+        "claim": "В документе встречаются обозначения вида У1 и упоминания тепловых завес. Установить, относятся ли они к одному объекту и есть ли конкретная неоднозначность идентификации. Совпадение слов не доказывает ошибку и не требует переименования в ВТЗ/ЗВТ без применимого основания.",
+        "source_hint": "MD стр. 5 / характеристика систем",
+        "source_block_hints": [
+          "blk_6e394962eb18407fb17b09f063c30a5c"
+        ],
+        "origin": "deterministic/md_prescan",
+        "semantic_verified": false
+      }
+    },
+    {
+      "discipline": "EOM",
+      "summary": {
+        "changed": true,
+        "review_requests": 1,
+        "added": 0,
+        "backfilled": 0,
+        "prescan_total": 1
+      },
+      "request": {
+        "rule_key": "air_curtain_u_designation",
+        "status": "not_checked",
+        "claim": "В документе встречаются обозначения вида У1 и упоминания тепловых завес. Установить, относятся ли они к одному объекту и есть ли конкретная неоднозначность идентификации. Совпадение слов не доказывает ошибку и не требует переименования в ВТЗ/ЗВТ без применимого основания.",
+        "source_hint": "MD стр. 1 / характеристика систем",
+        "source_block_hints": [
+          "blk_97dfd866170b49b5b153ad8e250776b3",
+          "blk_3620ab17f57a4d9596292b555c5abcc7"
+        ],
+        "origin": "deterministic/md_prescan",
+        "semantic_verified": false
+      }
+    }
+  ],
+  "scope": "Fresh empty model output plus same-version MD; tests only deterministic prescan behavior, not inference or final recall.",
+  "limitation": "Other prescan rules retain existing automatic behavior; semantic resolution of prescan requests remains pending. Existing model findings are not removed.",
+  "tests": "14 passed: md_prescan and rate_limit_retry",
+  "production_changed": false
+}

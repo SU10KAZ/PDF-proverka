@@ -252,3 +252,19 @@ def test_augment_text_analysis_file_adds_missing_and_backfills_existing(tmp_path
     assert "20 кПа" in data["text_findings"][1]["finding"]
     assert (tmp_path / "01_text_prescan.json").exists()
 
+
+
+def test_curtain_cooccurrence_stays_request_not_automatic_finding(tmp_path):
+    md = tmp_path / "document.md"
+    md.write_text("# Страница 1\nУ1.1\nТепловая завеса КЭВ-9П3011Е", encoding="utf-8")
+    output = tmp_path / "02_text_analysis.json"
+    output.write_text(json.dumps({"text_findings": []}))
+    summary = augment_text_analysis_file(output, md)
+    result = json.loads(output.read_text())
+    assert result["text_findings"] == []
+    assert summary["review_requests"] == 1
+    request = result["prescan_review_requests"][0]
+    assert request["rule_key"] == "air_curtain_u_designation"
+    assert request["semantic_verified"] is False
+    assert request["status"] == "not_checked"
+    assert augment_text_analysis_file(output, md)["changed"] is False

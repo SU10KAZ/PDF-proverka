@@ -57,6 +57,7 @@ class PrescanFinding:
     norm_quote: str | None = None
     related_block_ids: list[str] = field(default_factory=list)
     keywords: tuple[str, ...] = ()
+    auto_publish: bool = True
 
     def to_text_finding(self, finding_id: str) -> dict[str, Any]:
         severity = self.severity if self.severity in SEVERITIES else "РЕКОМЕНДАТЕЛЬНОЕ"
@@ -69,6 +70,7 @@ class PrescanFinding:
             "norm": self.norm,
             "norm_quote": self.norm_quote,
             "related_block_ids": sorted(set(self.related_block_ids)),
+            "origin": {"producer": "deterministic/md_prescan", "rule_key": self.key},
         }
 
 
@@ -394,15 +396,17 @@ def scan_md_text(md_text: str) -> list[PrescanFinding]:
             findings,
             PrescanFinding(
                 key="air_curtain_u_designation",
+                auto_publish=False,
                 severity="РЕКОМЕНДАТЕЛЬНОЕ",
                 category="documentation",
                 source=f"MD стр. {page.page} / характеристика систем",
                 finding=(
-                    "Воздушно-тепловые завесы обозначены индексами вида «У1.1», «У2.1» и т.п. "
-                    "Нужно проверить, не должен ли применяться более однозначный индекс "
-                    "«ВТЗ»/«ЗВТ», чтобы не смешивать завесы с установками."
+                    "В документе встречаются обозначения вида У1 и упоминания тепловых завес. "
+                    "Установить, относятся ли они к одному объекту и есть ли конкретная "
+                    "неоднозначность идентификации. Совпадение слов не доказывает ошибку "
+                    "и не требует переименования в ВТЗ/ЗВТ без применимого основания."
                 ),
-                norm="ГОСТ 21.602-2016",
+                norm="",
                 related_block_ids=_first_text_block(page, "тепловые завес"),
                 keywords=("тепловые завесы", "втз", "у1"),
             ),
@@ -513,7 +517,7 @@ def build_prescan_prompt_section(md_file_path: str | Path, *, max_items: int = 1
     lines = [
         "## Deterministic MD Pre-scan: обязательные точки перепроверки",
         "",
-        "Ниже перечислены высокоуверенные текстовые паттерны, найденные до LLM. "
+        "Ниже перечислены текстовые паттерны для проверки, найденные до LLM. "
         "Не копируй их слепо: проверь контекст в MD, но если подтверждается — включи "
         "как отдельные `text_findings[]` с `related_block_ids`.",
         "",
@@ -631,18 +635,29 @@ def augment_text_analysis_file(
     prescan = scan_md_text(md_text)
     findings: list[dict[str, Any]] = data["text_findings"]
 
-    backfilled = _backfill_related_blocks(findings, prescan, md_text)
+    publishable = [candidate for candidate in prescan if candidate.auto_publish]
+    pending = [candidate for candidate in prescan if not candidate.auto_publish]
+    backfilled = _backfill_related_blocks(findings, publishable, md_text)
+    requests = [
+        {"rule_key": c.key, "status": "not_checked", "claim": c.finding,
+         "source_hint": c.source, "source_block_hints": c.related_block_ids,
+         "origin": "deterministic/md_prescan", "semantic_verified": False}
+        for c in pending
+    ]
+    requests_changed = data.get("prescan_review_requests", []) != requests
+    if requests or "prescan_review_requests" in data:
+        data["prescan_review_requests"] = requests
 
     added = 0
     next_id = _next_text_id(findings)
-    for candidate in prescan:
+    for candidate in publishable:
         if _is_covered(candidate, findings):
             continue
         findings.append(candidate.to_text_finding(f"T-{next_id:03d}"))
         next_id += 1
         added += 1
 
-    if added or backfilled:
+    if added or backfilled or requests_changed:
         output.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
     if write_prescan_report:
@@ -655,6 +670,7 @@ def augment_text_analysis_file(
             "candidates": [
                 {
                     "key": item.key,
+                    "auto_publish": item.auto_publish,
                     "severity": item.severity,
                     "category": item.category,
                     "source": item.source,
@@ -667,7 +683,8 @@ def augment_text_analysis_file(
         report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
     return {
-        "changed": bool(added or backfilled),
+        "changed": bool(added or backfilled or requests_changed),
+        "review_requests": len(requests),
         "added": added,
         "backfilled": backfilled,
         "prescan_total": len(prescan),
