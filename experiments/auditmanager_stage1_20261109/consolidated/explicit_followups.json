@@ -579,6 +579,16 @@
     },
     {
       "candidate_ids": [
+        "B-ITP-F-032"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F032_channel_standard_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить строку сортамента100×50×5, группу стали/геометрию и6,97кг/м по первичному тексту; при необходимости технического вывода связать профиль с конкретным узлом и расчётом. До этого не учитывать ошибку массы или несущей способности как подтверждённый дефект."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-ITP-F-045"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F045_door_joint_context.json",
