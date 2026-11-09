@@ -243,6 +243,17 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-054",
+        "B-AK-F-055"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Получить заводскую схему с полными адресами спорных групп. До этого ошибки внутренних соединений и обязательную перенумерацию исключить из положительных метрик; вопрос допускается закрыть ссылкой на согласованную заводскую документацию."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-056",
         "B-AK-F-057"
       ],
