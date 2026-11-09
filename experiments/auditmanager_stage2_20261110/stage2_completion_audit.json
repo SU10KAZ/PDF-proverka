@@ -1,0 +1,94 @@
+{
+  "stage": 2,
+  "status": "complete",
+  "scope": "Диагностика сохранённого классического контрольного прогона шести проектов; не приёмка новой реализации и не полная оценка всех359 целей.",
+  "requirements": [
+    {
+      "requirement": "Связать подтверждённые пропуски с журналами извлечения, проверки, объединения и выпуска",
+      "assessment": "satisfied_with_explicit_unknown_root_causes",
+      "evidence": [
+        "merge_coverage_inventory.json",
+        "historical_matching_summary.json",
+        "merge_text_reference_cause.json",
+        "AK_cabinet_dimension_addendum.json"
+      ],
+      "reason": "478 кандидатов проиндексированы по входам/выдаче;8 безIDсвязи и4 отложенных разобраны отдельно;21 историческая цель сопоставлена. Подтверждена одна полезная потеря при объединенииАК,19 потерь ссылокЭОМ; для отсутствующих кандидатов установлен только наблюдаемый этап, не выдуманная внутренняя причина."
+    },
+    {
+      "requirement": "Каждый вывод о реализации подкрепить кодом и проверкой; неизвестные причины оставить неизвестными",
+      "assessment": "satisfied_for_reported_mechanisms",
+      "evidence": [
+        "cause_map.json",
+        "metadata_gate_replay.json",
+        "deferred_projection_replay.json",
+        "prescan_curtain_origin.json"
+      ],
+      "reason": "7 механизмов связаны с хешами реального прогона. Код фильтра и проекции воспроизведён локально; гипотеза о причине модельного решения отделена от наблюдаемого результата."
+    }
+  ],
+  "verification": {
+    "historical_target_set_exact_match": 21,
+    "historical_absent": 18,
+    "historical_partial": 3,
+    "run_bound_code_hashes_verified": 7,
+    "metadata_gate_replay": "passed: historical false trigger, neutral synthetic variant, true metadata complaint",
+    "compact_projection_replay": "passed: all six saved views exactly reproduced",
+    "frozen_benchmark_integrity": "passed:268files/291records/359targets/18primaryfiles"
+  },
+  "limits": [
+    "470 явныхIDсвязей не доказывают сохранение всех атомарных смыслов; это проверяется этапом6.",
+    "Отсутствие кандидата не доказывает, что объект не прочитан. Внутренние причины решений моделей неизвестны.",
+    "Поздние исторические сообщения о подавленииJ006 не доказаны журналами именно того исторического события; текущий контрольный прогон не подменяет его.",
+    "Этап3 обязан проверить все145правил с учётом нового эталона; эта диагностика не разрешает перенос всех правил.",
+    "Инженерное принятие новых добавлений, новые слепые проекты, стоимость и сравнительное улучшение ещё не проверены.",
+    "Флаги stage_2_complete:false в промежуточных материалах отражают дату их подготовки; итоговый статус задаёт этот акт и sequential_plan."
+  ],
+  "evidence": [
+    {
+      "path": "experiments/auditmanager_stage2_20261110/cause_map.json",
+      "sha256": "16f971ac9cce99311b68e97345f7fa2b7c5bc81ea48764217501340efdea7cdc"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/historical_matching_summary.json",
+      "sha256": "070583cd26539646ec565a4956103ce5827b53cb41c827398ed25e0b69a0af81"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/merge_coverage_inventory.json",
+      "sha256": "d1c7a02538ab042c69879a94dd52c8f1fc01032af415dc824152f499ba9ebcd3"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/unlinked_and_deferred_review.json",
+      "sha256": "3a41e7aa25e660fefe9673b590c4675578c99166a7f12234f56949c8df7bfc1a"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/verifier_change_traces.json",
+      "sha256": "f93bbcdc917fc1908c57746e5d0c6fe94e63f6ef36de0db8c2f657c7561bef5b"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/merge_text_reference_cause.json",
+      "sha256": "4d8c27309d91d85af0c5595e9e31b7144dd05dd4d8313c12decc5d2a4f023a26"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/metadata_gate_replay.json",
+      "sha256": "68de4b9b8208b1dabee54e93c834b5a076e0c4af2dc416b303b9c73e18104775"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/deferred_projection_replay.json",
+      "sha256": "4b599d63fe02f07974ba67ae226bbf75c59b2517b3fac0d7b8c6620e88e3ed4e"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/prescan_curtain_origin.json",
+      "sha256": "f6d127aa45ef3afffa95dfe00ba1a01a67a7b71388b3edac111416e0cb2db69a"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/AK_cabinet_dimension_addendum.json",
+      "sha256": "fa7b483b2d98302b625b11e1ac60c8b848e23b64c20c0518bc534be08e794e3a"
+    },
+    {
+      "path": "experiments/auditmanager_stage2_20261110/AR_aerator_context_review.json",
+      "sha256": "e13f9ccef01b8a7a0ca431c86415c1bf56b8797281f48a5a17ca1f74d52b1b08"
+    }
+  ],
+  "production_changed": false,
+  "new_model_runs": false
+}
