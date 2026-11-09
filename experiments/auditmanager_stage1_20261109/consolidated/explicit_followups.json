@@ -14,6 +14,16 @@
     },
     {
       "candidate_ids": [
+        "B-AR-F-008"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F008_sheet_register.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "До назначения номера исправления проверить первичные сведения основных надписей; не считать отсутствие строки 13 в ведомости доказательством недостающего чертежа."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-ITP-58"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
