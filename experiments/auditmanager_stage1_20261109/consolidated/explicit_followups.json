@@ -862,6 +862,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-015"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Подтвердить правильную высотную привязку поАР/КЖ или ответу автора до безусловной рекомендации заменить37.510 на34.150."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-VK-20"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",

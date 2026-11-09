@@ -1,12 +1,12 @@
 {
   "summary": {
     "candidate_records": 291,
-    "records_with_narrow_primary_decision": 202,
-    "remaining_records": 89,
-    "decision_themes": 170,
-    "technical_themes": 24,
+    "records_with_narrow_primary_decision": 204,
+    "remaining_records": 87,
+    "decision_themes": 172,
+    "technical_themes": 25,
     "question_themes": 123,
-    "omitted_themes": 23,
+    "omitted_themes": 24,
     "scope": "Only listed narrow claims; not blanket acceptance of entire source rows.",
     "stage_complete": false,
     "production_promotion_allowed": false
@@ -12005,6 +12005,125 @@
       "proposed_behavior": "Разрешать межлистовые ссылки по шифру комплекта, номеру листа и его назначению. Ошибку адреса отделять от отсутствия документа; подтверждённое малозначимое расхождение показывать в вопросах и уточнениях без вымышленных последствий.",
       "production_changed": false,
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F009_sheet_cross_reference.json"
+    },
+    {
+      "review_date": "2026-11-09",
+      "project": "ЖК Событие6.1, ПД-00580716-КМ1.2, секцияС3",
+      "source_md": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
+        "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+      },
+      "control_pair": {
+        "negative": "B-KM-F-014: не считатьОГМ4(+6.070→+7.270) иОГМ6(+7.270→+9.110) одним ограждением по соседству с отметкой+7.270.",
+        "positive": "B-KM-F-015: сохранить несовпадение последнего уровня типовогоОГМ6: список+37.510 против разреза+34.150 при верхней площадке+35.990.",
+        "evidence_limit": "Оба случая проверены по изображениям одного комплекта. Решение инженера по этим новым кандидатам в имеющихся записях не представлено; это контрольная пара аудиторской проверки, не пара инженерно утверждённых решений."
+      },
+      "engineer_decision": null,
+      "proposed_behavior": "Сопоставлять ограждения по секции, направлению марша, выноске и двум конечным отметкам. Для типовой схемы разворачивать каждый перечисленный уровень и проверять соответствие разрезу. Совпадение одной отметки не устанавливает тождество маршей.",
+      "production_changed": false,
+      "candidate_ids": [
+        "B-KM-F-014"
+      ],
+      "decision": "refuted_identity_of_adjacent_flights",
+      "output_section": null,
+      "graphic_evidence": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-003/images/blk_262b1bd1d76146e7a8e45b529a38ac2e_6471b342ae3c.png",
+          "sha256": "45b37935f466bd85b88dcb8654534923868f7d287b45fb6fe2141815eaeaa1ad",
+          "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "directly_viewed": true,
+          "observation": "Схема+9.110: левая плита+7.270, правая+9.110; выноскаОГМ6 указывает на верхнюю в плане ветвь. Отдельная фоновая отметка+6.070 и маркиОГМ5 не доказывают тождество этой ветви сОГМ4."
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-003/images/blk_f8b3c96af858494c946ff4f1ceaa1fb5_6471b342ae3c.png",
+          "sha256": "dfc7e4eba5f352591af8f759c85841c0b94767ee2210147d20c4dc6762e8c54e",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "directly_viewed": true,
+          "observation": "Разрез1-1: ОГМ4 между+6.070/+7.270; следующий ОГМ6 между+7.270/+9.110. Последний ОГМ6 между+34.150/+35.990, выше ОГМ7 между+35.990/+37.510."
+        }
+      ],
+      "wording": "Не выпускать заявленное противоречиеОГМ6/ОГМ4 у+7.270: сравниваются разные последовательные марши. На разрезеОГМ4 относится к+6.070→+7.270, аОГМ6 — к+7.270→+9.110.",
+      "limits": [
+        "Опровергнут конкретный тезис о тождествеОГМ4/ОГМ6; это не проверка правильности всех выносок схемы+9.110.",
+        "Фактическая комплектация и монтаж не проверены; приписанное последствие не имеет подтверждённого основания."
+      ],
+      "atomic_dispositions": [
+        {
+          "claim": "На плане присутствуетОГМ6 рядом с+7.270",
+          "verdict": "confirmed"
+        },
+        {
+          "claim": "Разрез обозначает это же ограждениеОГМ4",
+          "verdict": "refuted",
+          "reason": "ОГМ4 заканчивается на+7.270; ОГМ6 начинается там и идёт к+9.110."
+        },
+        {
+          "claim": "Нужна унификацияОГМ4/6 и исправление комплектации",
+          "verdict": "unsupported"
+        }
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F014_adjacent_flights_identity.json"
+    },
+    {
+      "review_date": "2026-11-09",
+      "project": "ЖК Событие6.1, ПД-00580716-КМ1.2, секцияС3",
+      "source_md": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
+        "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+      },
+      "control_pair": {
+        "negative": "B-KM-F-014: не считатьОГМ4(+6.070→+7.270) иОГМ6(+7.270→+9.110) одним ограждением по соседству с отметкой+7.270.",
+        "positive": "B-KM-F-015: сохранить несовпадение последнего уровня типовогоОГМ6: список+37.510 против разреза+34.150 при верхней площадке+35.990.",
+        "evidence_limit": "Оба случая проверены по изображениям одного комплекта. Решение инженера по этим новым кандидатам в имеющихся записях не представлено; это контрольная пара аудиторской проверки, не пара инженерно утверждённых решений."
+      },
+      "engineer_decision": null,
+      "proposed_behavior": "Сопоставлять ограждения по секции, направлению марша, выноске и двум конечным отметкам. Для типовой схемы разворачивать каждый перечисленный уровень и проверять соответствие разрезу. Совпадение одной отметки не устанавливает тождество маршей.",
+      "production_changed": false,
+      "candidate_ids": [
+        "B-KM-F-015"
+      ],
+      "decision": "confirmed_typical_level_list_section_mismatch",
+      "output_section": "Технические замечания",
+      "graphic_evidence": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-003/images/blk_f0a5333974ac4088b7778f525922b014_6471b342ae3c.png",
+          "sha256": "f4b775c81e40ebd47fb71e30d5d3047e812955d4dfa6175671d14679b5f55102",
+          "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+          "directly_viewed": true,
+          "observation": "Восемь уровней схемы+12.470,+15.830,+19.190,+22.550,+25.910,+29.270,+32.630,+35.990. Левый список:10.630,13.990,17.350,20.710,24.070,27.430,30.790,37.510. Последний элемент отличается от соответствующего уровня разреза34.150."
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-003/images/blk_f8b3c96af858494c946ff4f1ceaa1fb5_6471b342ae3c.png",
+          "sha256": "dfc7e4eba5f352591af8f759c85841c0b94767ee2210147d20c4dc6762e8c54e",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "directly_viewed": true,
+          "observation": "Разрез1-1: ОГМ4 между+6.070/+7.270; следующий ОГМ6 между+7.270/+9.110. Последний ОГМ6 между+34.150/+35.990, выше ОГМ7 между+35.990/+37.510."
+        }
+      ],
+      "wording": "Согласовать последнюю отметку левой плиты в типовой схемеС3 для уровней+12.470…+35.990: список заканчивается+37.510, тогда как соответствующий маршОГМ6 на разрезе1-1 соединяет+34.150 и+35.990. Отметка+37.510 показана выше, уОГМ7. После подтверждения проектной привязки исправить схему или разрез.",
+      "limits": [
+        "Подтверждено противоречие документов, но приоритет разреза перед схемой не устанавливался поАР/КЖ.",
+        "Нельзя автоматически заменять любое37.510 на34.150:37.510 является реальным уровнем следующего марша.",
+        "Не подтверждены фактическая ошибка комплектации/монтажа и эксплуатационные последствия."
+      ],
+      "atomic_dispositions": [
+        {
+          "claim": "Несогласованность последней отметки списка",
+          "verdict": "confirmed"
+        },
+        {
+          "claim": "Исправить на34.150",
+          "verdict": "conditional_on_author_confirmation"
+        },
+        {
+          "claim": "Установлен монтаж на неправильном уровне",
+          "verdict": "not_established"
+        }
+      ],
+      "followup_requirements": [
+        "Подтвердить правильную высотную привязку поАР/КЖ или ответу автора до безусловной рекомендации заменить37.510 на34.150."
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json"
     },
     {
       "candidate_ids": [
