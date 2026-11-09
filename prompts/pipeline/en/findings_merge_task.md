@@ -263,3 +263,13 @@ WRITE via Write tool: `{OUTPUT_PATH}/03_findings.json`
 3. Finding IDs: F-001, F-002... (sequential numbering)
 4. When referencing a norm — indicate status (действует/заменён/отменён)
 5. Respond with valid JSON matching the schema above
+
+## Publication section
+
+For each finding provide `report_section`: `technical_findings` or `questions`.
+Use `questions` for an addressed request for missing data, a conditional concern,
+or a factual but minor editorial/out-of-profile clarification. Keep confirmed
+technical conflicts in `technical_findings` regardless of whether the consequence
+is fully quantified. Preserve original claim, uncertainty, severity and evidence;
+section routing is not refutation and must not delete a useful finding. Never mark
+an unsupported technical assertion as confirmed merely by moving it to questions.

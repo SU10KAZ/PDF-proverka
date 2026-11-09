@@ -772,8 +772,22 @@ def build_project_sheet(wb, pd_entry: dict):
         ws.freeze_panes = "A3"
         return
 
+    # Keep explicit questions separate while preserving finding IDs and all
+    # expert-review fields. Legacy/unclassified findings retain their route.
+    questions = [f for f in findings if f.get("report_section") == "questions"]
+    main_findings = [f for f in findings if f.get("report_section") != "questions"]
+    ordered = main_findings + questions
+    previous_section = None
     # ── Строки замечаний ──────────────────────────────────────────────
-    for idx, finding in enumerate(findings, 1):
+    for idx, finding in enumerate(ordered, 1):
+        section = "questions" if finding.get("report_section") == "questions" else "findings"
+        if questions and section != previous_section:
+            row += 1
+            ws.merge_cells(f"A{row}:{last_col_letter}{row}")
+            title = "Вопросы и уточнения" if section == "questions" else "Замечания"
+            cell(ws, row, 1, title, bg=PROJ_HDR_BG, fg=PROJ_HDR_FG, bold=True)
+            ws.row_dimensions[row].height = 22
+        previous_section = section
         row += 1
         try:
             sev     = normalize_sev(finding.get("severity") or "ПРОВЕРИТЬ ПО СМЕЖНЫМ")
