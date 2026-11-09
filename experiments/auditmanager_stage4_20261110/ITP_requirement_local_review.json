@@ -1,0 +1,58 @@
+{
+  "kind": "local_primary_MD_scope_review_no_inference",
+  "source": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.md",
+    "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+  },
+  "component_rows": [
+    {
+      "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+      "code": "FC033E",
+      "source_row": "|  | Муфта гибкая для соединений грубллок Ø25 | Dinarm FC | FC033E* | ООО \"Огнеборец\" | шт. | 33 |  |  |",
+      "quantity": "33",
+      "unit": "шт."
+    },
+    {
+      "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+      "code": "FC042E",
+      "source_row": "|  | Муфта гибкая для соединений грубллок Ø32 | Dinarm FC | FC042E* | ООО \"Огнеборец\" | шт. | 137 |  |  |",
+      "quantity": "137",
+      "unit": "шт."
+    },
+    {
+      "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+      "code": "FC048E",
+      "source_row": "|  | Муфта гибкая для соединений грубллок Ø40 | Dinarm FC | FC048E* | ООО \"Огнеборец\" | шт. | 214 |  |  |",
+      "quantity": "214",
+      "unit": "шт."
+    },
+    {
+      "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+      "code": "FC060E",
+      "source_row": "|  | Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E* | ООО \"Огнеборец\" | шт. | 435 |  |  |",
+      "quantity": "435",
+      "unit": "шт."
+    }
+  ],
+  "quantity_sum": "819",
+  "requirement_source": [
+    {
+      "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+      "source_row": "|  | коммуникационных нишах межквартирных коридоров в помещениях для обслуживания коммуникаций. 5.3.1.3 Трубопроводы систем водоснабжения выполнить: *Принимается в соответствии с ПД.* *5.3.1.4 Соединение стальных оцинкованных труб предусмотреть на грувлочном соединении (при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах).* 5.3.1.5 Разводку водопровода от водосчетчиков, установленных в коллекторном шкафу, до квартир выполнить трубами из сшитого полиэтилена с применением латунных фитингов в теплоизоляции, в пространстве подвесного потолка. 5.3.1.6 Если предусматривается более одного строения или корпуса, предусмотреть разделный учет систем водоснабжения для каждого строения или корпуса (водосчётчики на ХВС, теплосчётчики на ГВС). Раздельный учет предусмотреть на вводе в специально выделенные в/под каждым корпусом помещениях узлов учета. В помещениях узлов учета должно предусматриваться разделение систем на жилую часть, коммерческие помещения и дополнительные системы (при наличии) с устройством дополнительного учета водопотребления на каждого потребителя. 5.3.1.7 Водоснабжение квартир предусмотреть от этажных коллекторов через водосчетчики. 5.3.1.8 На стадии проектирования «ПД» представить расчеты, подтверждающие достаточность принятых мероприятий по звукоизоляции и виброизоляции. |"
+    }
+  ],
+  "scope_heading_source": [
+    {
+      "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+      "source_row": "| 5.3.1; Общие требования. Жилая часть. | 5.3.1.1 Внутреннюю систему водоснабжения разработать от водомерного узла. 5.3.1.2 Магистральные трубопроводы водоснабжения проложить открыто по подземному паркингу и в вертикальных |"
+    }
+  ],
+  "supported_scope": "5.3.1 residential water supply; galvanized steel pipes; threaded galvanized fittings for diameter <=50 mm.",
+  "unresolved": [
+    "Assignment of each coupling row to requirement scope.",
+    "Nominal versus outside diameter interpretation.",
+    "Approved deviations and exact execution applicability."
+  ],
+  "boundary": "819 is the sum of four specification quantities, not a proven number of violations. Scope heading and continued requirement occupy different blocks; both are required.",
+  "external_pilot_status": "Not sent; automatic approval review requires explicit payload-specific user approval."
+}
