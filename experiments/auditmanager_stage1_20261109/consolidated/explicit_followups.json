@@ -202,6 +202,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-037"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить длины закрываемых участков, узлы, раскрой и нормы запаса по тем же отметкам; определить обоснованное количество до решения о закупке."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-038"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
