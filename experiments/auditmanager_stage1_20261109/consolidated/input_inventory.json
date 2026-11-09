@@ -1,0 +1,5808 @@
+{
+  "purpose": "Evaluator-only input inventory for the six known regression projects.",
+  "summary": {
+    "projects": 6,
+    "files_hashed": 18,
+    "direct_decision_MD_hash_matches": 230,
+    "targets_assigned": 359,
+    "targets_by_discipline": {
+      "AK": {
+        "technical": 55,
+        "negative": 22,
+        "question": 23
+      },
+      "ITP": {
+        "technical": 19,
+        "question": 56,
+        "negative": 12
+      },
+      "AR": {
+        "question": 21,
+        "negative": 10,
+        "technical": 2
+      },
+      "KM": {
+        "negative": 4,
+        "technical": 4,
+        "question": 20
+      },
+      "VK": {
+        "question": 26,
+        "negative": 11,
+        "technical": 2
+      },
+      "EOM": {
+        "question": 52,
+        "technical": 2,
+        "negative": 18
+      }
+    }
+  },
+  "projects": {
+    "AK": {
+      "document_id": "doc_d68679a4a00041e09462997ad0f4f6e4",
+      "document_name": "13АВ-РД-АК2-ПА_V1.pdf",
+      "document_path_metadata": "Рабочая документация / [ЭОМ] Электроснабжение / 13АВ-РД-АК2-ПА / 13АВ-РД-АК2-ПА_V1.pdf",
+      "page_count_from_block_registry": 105,
+      "files": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AK/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "bytes": 705932,
+          "role": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AK/document.pdf",
+          "sha256": "993d3f278d7b2b816c68a6e600b5ae58b6a33b9ec19a91c0678905c6a636d24a",
+          "bytes": 10745979,
+          "role": "GRAPHIC_source_not_TEXT_override"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AK/blocks.json",
+          "sha256": "aa2df02c109fd7b7a1268443a6553d43b3fc23fed1522c7583783aaf214b162c",
+          "bytes": 208441,
+          "role": "block_geometry_and_identity"
+        }
+      ]
+    },
+    "ITP": {
+      "document_id": "doc_b63de5a42ee54fa6ba5e7725fcd0df51",
+      "document_name": "ПД-00542664-ИТП.ТМ_V3.pdf",
+      "document_path_metadata": "ИТП / ИТП.ТМ / ПД-00542664-ИТП.ТМ_V3.pdf",
+      "page_count_from_block_registry": 167,
+      "files": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/ITP/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "bytes": 775136,
+          "role": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/ITP/document.pdf",
+          "sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+          "bytes": 50366083,
+          "role": "GRAPHIC_source_not_TEXT_override"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/ITP/blocks.json",
+          "sha256": "84d9257bccbf9ea1ea7fbb69fbff09f32fd2a04f3afe9a0d0c90d511ed8e183a",
+          "bytes": 156877,
+          "role": "block_geometry_and_identity"
+        }
+      ]
+    },
+    "AR": {
+      "document_id": "doc_760932cf507f49988e819613e75a9618",
+      "document_name": "ПД-00580716-АР6.2_V1.pdf",
+      "document_path_metadata": "[АР] Архитектурные решения / АР6.2 / ПД-00580716-АР6.2_V1.pdf",
+      "page_count_from_block_registry": 17,
+      "files": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "bytes": 275724,
+          "role": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.pdf",
+          "sha256": "43bfc527f13e9e5b91da23c66e321107a1ae5357caec900e1385ae9ecdf7c283",
+          "bytes": 35723412,
+          "role": "GRAPHIC_source_not_TEXT_override"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/blocks.json",
+          "sha256": "6d23c0be045e0d1d0ec456eae4248d2186a119c1c4723b159efb1c451a136322",
+          "bytes": 62293,
+          "role": "block_geometry_and_identity"
+        }
+      ]
+    },
+    "KM": {
+      "document_id": "doc_ff3caadcc08e4f0e8b8abd680112618a",
+      "document_name": "ПД-00580716-КМ1.2_V1.pdf",
+      "document_path_metadata": "[КМ] Конструкции металлические / КМ1.2 / ПД-00580716-КМ1.2_V1.pdf",
+      "page_count_from_block_registry": 12,
+      "files": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "bytes": 291925,
+          "role": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/document.pdf",
+          "sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+          "bytes": 2984862,
+          "role": "GRAPHIC_source_not_TEXT_override"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/KM/blocks.json",
+          "sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+          "bytes": 64285,
+          "role": "block_geometry_and_identity"
+        }
+      ]
+    },
+    "VK": {
+      "document_id": "doc_cff5343d9d1f40e8b31ed0a9b30b97fe",
+      "document_name": "ПД-00580716-ВК_2-2_V2.pdf",
+      "document_path_metadata": "[ВК] Водоснабжение и канализация / ВК2-2 / ПД-00580716-ВК_2-2_V2.pdf",
+      "page_count_from_block_registry": 38,
+      "files": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/VK/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "bytes": 351413,
+          "role": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/VK/document.pdf",
+          "sha256": "f09ce961100a59d1cde655bd62824011098746fe9bf0f3d664e4af0e17c27df6",
+          "bytes": 53748545,
+          "role": "GRAPHIC_source_not_TEXT_override"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/VK/blocks.json",
+          "sha256": "afb66a48c4f01db7acc47d2c23092b04b17b2e126f42fcb828489066b9854990",
+          "bytes": 81264,
+          "role": "block_geometry_and_identity"
+        }
+      ]
+    },
+    "EOM": {
+      "document_id": "doc_6638d8cce3794a559ac840e5fc118f9e",
+      "document_name": "ПД-00580716-ЭОМ_2-1_V2.pdf",
+      "document_path_metadata": "[ЭОМ] Электроснабжение / ЭОМ 2-1 / ПД-00580716-ЭОМ_2-1_V2.pdf",
+      "page_count_from_block_registry": 56,
+      "files": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "bytes": 734488,
+          "role": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.pdf",
+          "sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4",
+          "bytes": 115143296,
+          "role": "GRAPHIC_source_not_TEXT_override"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/blocks.json",
+          "sha256": "573b46f6bbe0f6e30f3e20f4138aae6ed5648d8f18ce7f7215cbdc2a7c1a9a2a",
+          "bytes": 167516,
+          "role": "block_geometry_and_identity"
+        }
+      ]
+    }
+  },
+  "targets": [
+    {
+      "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-015",
+        "H-AK-100"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-015"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-100"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-015",
+        "H-AK-100"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-015"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-100"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-015",
+        "H-AK-100"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-015"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-100"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-015",
+        "H-AK-100"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-015"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-100"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-019",
+        "H-AK-137"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-019"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-137"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK14:65ea2c2649999f640c83",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "H-AK-14"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-AK-14"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK57:9851f2c4946bad03af44",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-004",
+        "B-AK-F-037",
+        "H-AK-57"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-004",
+        "B-AK-F-037"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-57"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK57:a998dcf058f81b7ac194",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-004",
+        "B-AK-F-037",
+        "H-AK-57"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-004",
+        "B-AK-F-037"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-57"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK57:d6f8484b24bc88adcab5",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-004",
+        "B-AK-F-037",
+        "H-AK-57"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-004",
+        "B-AK-F-037"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-57"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-043",
+        "H-AK-65"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-043"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-65"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:ab637698bce5025cb6df",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-043",
+        "H-AK-65"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-043"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-65"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK7:4c7010afca7e2923c94b",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "H-AK-7"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-AK-7"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-001",
+        "B-AK-F-002"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-001",
+        "B-AK-F-002"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:f0a1212b87b41e035c75",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-001",
+        "B-AK-F-002"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-001",
+        "B-AK-F-002"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-003"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-003"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-003"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-003"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-003"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-003"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-005"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-005"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-007"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-007"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-007"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-007"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-007"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-007"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-008"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-008"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-009",
+        "B-AK-F-010"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-009",
+        "B-AK-F-010"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-009",
+        "B-AK-F-010"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-009",
+        "B-AK-F-010"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-012"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-012"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-013"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-013"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-013"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-013"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-013"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-013"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-016",
+        "B-AK-F-017"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-016",
+        "B-AK-F-017"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-016",
+        "B-AK-F-017"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-016",
+        "B-AK-F-017"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-016",
+        "B-AK-F-017"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-016",
+        "B-AK-F-017"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-018"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-018"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-019",
+        "B-AK-F-020",
+        "H-AK-137"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-019",
+        "B-AK-F-020"
+      ],
+      "historical_candidate_ids": [
+        "H-AK-137"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-021"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-021"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:c6f3ad54ccd603f4f796",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-021"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-021"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-022"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-022"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-022"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-022"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-023"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-023"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-024"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-024"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:eaa42cc0bf57fa49a886",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-025"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-025"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:5ba1a83908ceb33758ab",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-025"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-025"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:88b00bcefd42161838b4",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-025"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-025"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-026"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-026"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:b69337bb34f8d41b6d57",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-026"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-026"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-027"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-027"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:eb93f9ee7771db58e73f",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-027"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-027"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F028_change_register_scope:da80e943594aac429110",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-028"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-028"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7752ed01f36756fff7f3",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:9a595b6986b86b78f7cb",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-030"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-030"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-030"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-030"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-031"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-031"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-031"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-031"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-031"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-031"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-032"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-032"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-032"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-032"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-033"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-033"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:2ec9d727804fc985242e",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-033"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-033"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-034"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-034"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-035"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-035"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-036"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-036"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-038"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-038"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-039"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-039"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-040"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-040"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-041"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-041"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:8239404083a86b949049",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-041"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-041"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-041"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-041"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-042"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-042"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-044"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-044"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-044"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-044"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-045"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-045"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-046"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-046"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-047",
+        "B-AK-F-048",
+        "B-AK-F-049"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-047",
+        "B-AK-F-048",
+        "B-AK-F-049"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-047",
+        "B-AK-F-048",
+        "B-AK-F-049"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-047",
+        "B-AK-F-048",
+        "B-AK-F-049"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-047",
+        "B-AK-F-048",
+        "B-AK-F-049"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-047",
+        "B-AK-F-048",
+        "B-AK-F-049"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-050"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-050"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-051"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-051"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F052_local_cable_balance:61ee4b031d84d67a9995",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-052"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-052"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-053"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-053"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-054",
+        "B-AK-F-055"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-054",
+        "B-AK-F-055"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-054",
+        "B-AK-F-055"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-054",
+        "B-AK-F-055"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-054",
+        "B-AK-F-055"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-054",
+        "B-AK-F-055"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-056",
+        "B-AK-F-057"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-056",
+        "B-AK-F-057"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-056",
+        "B-AK-F-057"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-056",
+        "B-AK-F-057"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-058"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-058"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-060"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-060"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+      "discipline": "AK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AK-F-061"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-061"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
+      "discipline": "AK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AK-F-064"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-064"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AK_F065_norm_replacement_applicability:d53a7df3ef467306402d",
+      "discipline": "AK",
+      "route": "question",
+      "candidate_ids": [
+        "B-AK-F-065"
+      ],
+      "baseline_candidate_ids": [
+        "B-AK-F-065"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR14_K3_support_levels:11d2c61818f07c8b5a71",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "H-AR-14"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-AR-14"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR17:b3834745b8377f227bbc",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-017",
+        "H-AR-17"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-017"
+      ],
+      "historical_candidate_ids": [
+        "H-AR-17"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR35_unlabelled_areas:8b080f37f0ffc62859e0",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "H-AR-35"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-AR-35"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR36_B-AR-F-005:d576dd306cbd1e602f34",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-005",
+        "H-AR-36"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-005"
+      ],
+      "historical_candidate_ids": [
+        "H-AR-36"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR39_lower_profile_and_rope:82b33aee103e9ee382ee",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "H-AR-39"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-AR-39"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR39_lower_profile_and_rope:fef549df72bcc7f43cc2",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "H-AR-39"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-AR-39"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR3_exit_elevation_identity:35d17b08445c321782dd",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "H-AR-3"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-AR-3"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR59_rope_load_path:63ef9a4878fe506c4a1f",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "H-AR-59"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-AR-59"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR59_rope_load_path:e562ad115416cc435f9c",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "H-AR-59"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-AR-59"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F001_sp_editions:0fa6c5d50247757e829d",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-001"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-001"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F001_sp_editions:8f90690c3dc52ad03760",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-001"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-001"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F002_partial_and_territorial_norm_status:a1b917235764b9e63b56",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-002"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-002"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F002_partial_and_territorial_norm_status:06e66d3f9cf1ce259b54",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AR-F-002"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-002"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F007_KM_references:b89d5f235921cd9de65b",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-007"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-007"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F007_KM_references:b06b284a61699380958a",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-007"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-007"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F008_sheet_register:3b6bd4f3bacbcd4e30ae",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-008"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-008"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F009_club_classification_scope:4e28ba265a83e035660e",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-009"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-009"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F010_glass_formula:7e2ea3f3157c5ca6b52e",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AR-F-010"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-010"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F011_access_register:16a9d1d9252402ce3968",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F011_access_register:54cfcd7a1f3122411bfa",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AR-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F011_access_register:ba638ed1239e051c8690",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AR-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F012_parapet_drain_slope:84894dbc1889e54a106a",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-012"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-012"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F012_parapet_drain_slope:c4281865a83886e086b0",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AR-F-012"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-012"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F014_insulation_identity:20063319c847e004daca",
+      "discipline": "AR",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AR-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F018_screen_identity:2fc8c1d03f237cb052ba",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-018"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-018"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F018_screen_identity:bdab0ef4a9f418abece7",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AR-F-018"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-018"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F020_OGN4_height:45b7c32dafd201c30a67",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-020"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-020"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_F022_stone_standard_replacement:7774ac535ffb20fdcbdb",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-022"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-022"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "AR_K3_K4_material:2c8cea013dfa60768080",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-013",
+        "B-AR-F-015"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-013",
+        "B-AR-F-015"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-AR-F-004:5ba89cb25036827448d4",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-004"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-004"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-AR-F-006:1a35362f3dabf4e35f77",
+      "discipline": "AR",
+      "route": "negative",
+      "candidate_ids": [
+        "B-AR-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-AR-F-006:76e7568bcfeededeb028",
+      "discipline": "AR",
+      "route": "technical",
+      "candidate_ids": [
+        "B-AR-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-AR-F-016:fff2912112e6c79e3b46",
+      "discipline": "AR",
+      "route": "question",
+      "candidate_ids": [
+        "B-AR-F-016"
+      ],
+      "baseline_candidate_ids": [
+        "B-AR-F-016"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-EOM-F-002:589046b033f782342a04",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-002"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-002"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-EOM-F-003:26a778e20220ace19772",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-003"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-003"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-EOM-F-004:90fc50f60a8f39d5e2cb",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-004",
+        "H-EOM-28"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-004"
+      ],
+      "historical_candidate_ids": [
+        "H-EOM-28"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-EOM-F-005:a26fcc71b65fb1e5cfa1",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-005"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-005"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-EOM-F-006:70a5bb3630cd86d67bdf",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-EOM-F-006:9b2481431ea0814f9774",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-EOM-F-006:50e2ed9a377d8e0af479",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-007:0725100843103b391be5",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-007"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-007"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-011:f633e04640a9e4e3c71a",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-011:cddfdb106afa191e3b80",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "B-ITP-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-011:13234a067319a117c786",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-014:38dacc087d3a36a03c14",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-015:4a6a012e7c150e2d7f45",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-015"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-015"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-015:ebc5f59f87e18c7525b5",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-015"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-015"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-015:68e759d0e8be658b6916",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-015"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-015"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-015:5713c213c4eafe2032fb",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-015"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-015"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-016:6f0370becae84fed440d",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-016"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-016"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-016:364c279f5f1b89fa2aee",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "B-ITP-F-016"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-016"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-017:05e18fdb07cf5bb1bc8b",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-017"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-017"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-019:d8c39b3556e4068751dd",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-019"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-019"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-019:7e4bf6b3afd2b736df6c",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "B-ITP-F-019"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-019"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-020"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-020"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-020"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-020"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-020"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-020"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-020:c729cc29afbee39e2ed0",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-020"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-020"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-021:61e590ad93c41a790803",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-021"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-021"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-021:6dbe9315b20445709a44",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-021"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-021"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-021:21e573255419bee97d92",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-021"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-021"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-021:19069482aa6e7267f73b",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-021"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-021"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-022:8cd785f32b0f2581717f",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-022"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-022"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-023:4c138c58b906579e3ebd",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-023"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-023"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-024:f36bd082707154691153",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-024"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-024"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-024:97a3c95e2b1698d996d0",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "B-ITP-F-024"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-024"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-025:c98f6c16f19022b52eb6",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-025",
+        "H-ITP-72b"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-025"
+      ],
+      "historical_candidate_ids": [
+        "H-ITP-72b"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-026:97276f557b9fbedb0bef",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-026"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-026"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-027:4828a324071dacb9ae3d",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-027"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-027"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-027:fe51c088072cbcf15ec9",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-027"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-027"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-027:0bd4729bc0b05b923141",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-027"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-027"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-027:7853566af8288ba9432d",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-027"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-027"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-029:268aafac2624c208753e",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-029"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-029"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-030:a4e56855f9942b943bff",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-030"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-030"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-030"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-030"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-031:20e0a2fe6cdbb065f78a",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-031"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-031"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-031:d7fa75e76f824fe5d722",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-031"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-031"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-035"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-035"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-035:6e663d7b02b8e032a0c2",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-035"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-035"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-037:8139bf7df3bbe04da245",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-037"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-037"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-038:705f2262875c31478443",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-038"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-038"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-039:20e8e64d70bd0535ad4d",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-039"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-039"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-040:7f53850450a0df3ef46e",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-040"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-040"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-042"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-042"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-042:ecfe1ebab48bd184691d",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-042"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-042"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-044:de24b888831313c4d337",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-044"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-044"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-050"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-050"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-ITP-F-051:6c86cc6a433d4ce0abd6",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "B-ITP-F-051"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-051"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-KM-F-024:e542b18bca55db64dadc",
+      "discipline": "KM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-KM-F-024"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-024"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-VK-F-008:91aa2581cf81197e6fe8",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-008"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-008"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-VK-F-014:e9e5e1b148f844eb7d6d",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "B-VK-F-029:d083cf366c333ad81c4a",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-029"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-029"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM11:7985c84eea058c206240",
+      "discipline": "EOM",
+      "route": "technical",
+      "candidate_ids": [
+        "H-EOM-11"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-11"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM11:3cea91fda96c41ad80dc",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "H-EOM-11"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-11"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "H-EOM-111"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-111"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM27_active_socket_circuits:46bf196510e24cc289cf",
+      "discipline": "EOM",
+      "route": "technical",
+      "candidate_ids": [
+        "H-EOM-27"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-27"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM27_active_socket_circuits:d00dddfff15bbd7767ab",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "H-EOM-27"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-27"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM5_shunt_trip_identity:946dc28da1dfa089e8c3",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "H-EOM-5"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-5"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM5_shunt_trip_identity:877b6fefac02ba992ea1",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "H-EOM-5"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-5"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM70_F008_consumer_power:d74160d19f75fda36950",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-008",
+        "H-EOM-70"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-008"
+      ],
+      "historical_candidate_ids": [
+        "H-EOM-70"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM76_B-EOM-F-012:8e69883d4dc84cb69b01",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-012",
+        "H-EOM-76"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-012"
+      ],
+      "historical_candidate_ids": [
+        "H-EOM-76"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM8:93d4f22f3881c3b6f642",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "H-EOM-8"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-8"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM8:e341364ee0bc7bae8147",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "H-EOM-8"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-8"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F001_cable_description:e57af65ca85f5ab8075c",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-001"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-001"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F007_phase_and_temporary_load:9e004a2c0153a24dc3ce",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-007"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-007"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F009_commercial_identity_supply:2c0ad71382f4e28b3853",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-009"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-009"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F009_commercial_identity_supply:ceddc2904fb7fa5d39e4",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-009"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-009"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F010_meter_CT_identity:3db2ab4cd251ab7a20a8",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-010"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-010"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F010_meter_CT_identity:428615994b8f295c4f7f",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-010"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-010"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F011_meter_internal_symbols:d1766d1077f31422494f",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F013_small_load_currents:4191d1c0f009a85947f9",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-013"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-013"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F014_phase_A_current:d972a6b9f556089a8923",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F016_management_phase_current:fdef783b69877a39920c",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-016"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-016"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F017_poles_and_PE_scope:5a5257d09b828c10e8ca",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-017"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-017"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F018_temporary_outgoing_parameters:51ab0814a9c617d18dcc",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-018"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-018"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F018_temporary_outgoing_parameters:5a289d06ebe35181566c",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-018"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-018"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F019_typical_floor_scope:35bac9306e2bcbc588c5",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-019"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-019"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F019_typical_floor_scope:784b0d5832e912d7f9d7",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-019"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-019"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F020_enclosure_minimums:b34c225d7cc1d2d234e8",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-020"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-020"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F021_F023_controller_voltage_scope:b197a84551461f1efaca",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-021",
+        "B-EOM-F-023"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-021",
+        "B-EOM-F-023"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F021_F023_controller_voltage_scope:04253642dc34f231614b",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-021",
+        "B-EOM-F-023"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-021",
+        "B-EOM-F-023"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F022_ventilation_power_rounding:2dcc867069010078edd3",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-022"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-022"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F024_room_number_collision:a27bd6546c4ff55c4e59",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-024"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-024"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F024_room_number_collision:425a9b88c69b00e6214e",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-024"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-024"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F025_repeated_note_numbers:c0bda0b5718912600dc3",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-025"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-025"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F026_emergency_tray_legend:2474510e8b112f4c5cb1",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-026"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-026"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F027_penetration_material_scope:d3fca7220bbe9d48857c",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-027"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-027"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F028_apartment_plan_identity:bbc814c9d763c8f736f7",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-028"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-028"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F029_shared_product_code:9059426853483f0c34cf",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-029"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-029"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F030_CT_minimum_substitutions:e48399b0ddd41647bc4a",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-030"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-030"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F030_CT_minimum_substitutions:82bb92f6ba02b2b7c780",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-030"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-030"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F031_CT_emergency_assumptions:d8fbf0545ffcdbb28172",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-031"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-031"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F032_commercial_area_inputs:16faed04bf572c1876a5",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-032"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-032"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F032_commercial_area_inputs:147160644f952ff76e59",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-032"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-032"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F033_apartment_board_scope:dbb1bab29b165bc0b8ca",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-033"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-033"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F034_specification_quantity:cc93bff16c691fce3df8",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-034"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-034"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F035_specification_quantity:0498a98c0a043fe1e66d",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-035"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-035"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F036_tray_code_description:da6b33367ef613f75477",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-036"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-036"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F037_tray_cover_scope:5eaa42d72fba7e53d76e",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-037"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-037"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F038_specification_quantity:2bf971bcf81224ba57b8",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-038"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-038"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F039_frame_capacity:289e229897613e2cc690",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-039"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-039"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F040_parking_sum_refuted:d962213a7fbe53a371a7",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-040"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-040"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F040_parking_sum_refuted:6aaa8a3dc96fadec242b",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-040"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-040"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F041_F048_contradictory_norm_status:35536aa9bdef77ffbaf1",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-041",
+        "B-EOM-F-048"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-041",
+        "B-EOM-F-048"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F042_SPZ_legend_scope:1b019c967f9372026bd1",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-042"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-042"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F043_hanger_fireproofing_supply:2828cd141e6335bf59ca",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-043"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-043"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F044_F045_incomplete_reference_identity:922b40879439f8fa0153",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-044",
+        "B-EOM-F-045"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-044",
+        "B-EOM-F-045"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F044_F045_incomplete_reference_identity:43be2c9d093d757ce864",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-044",
+        "B-EOM-F-045"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-044",
+        "B-EOM-F-045"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:49e98cd23b9141b479ed",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:07b64d2a81e03ae2bf52",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:2adc54b2dd1facb5698e",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F047_unsubstantiated_norm_status:d6a04d7c3701131cd97f",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-EOM-F-047"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-047"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F049_lightning_reference_title:106f839cb3a98ca97f29",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-049"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-049"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "H-EOM-2:c728f93740c455471c9e",
+      "discipline": "EOM",
+      "route": "negative",
+      "candidate_ids": [
+        "H-EOM-2"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-EOM-2"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-018",
+        "H-ITP-63"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-018"
+      ],
+      "historical_candidate_ids": [
+        "H-ITP-63"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "H-ITP-64:0a12321728e29d5b1832",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-041",
+        "H-ITP-64"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-041"
+      ],
+      "historical_candidate_ids": [
+        "H-ITP-64"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "H-ITP-17"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-ITP-17"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP40:e4eaac37781fedf2ad41",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-012",
+        "B-ITP-F-043",
+        "B-ITP-F-049",
+        "H-ITP-40"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-012",
+        "B-ITP-F-043",
+        "B-ITP-F-049"
+      ],
+      "historical_candidate_ids": [
+        "H-ITP-40"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP40:24bca8b6c47714314059",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-012",
+        "B-ITP-F-043",
+        "B-ITP-F-049",
+        "H-ITP-40"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-012",
+        "B-ITP-F-043",
+        "B-ITP-F-049"
+      ],
+      "historical_candidate_ids": [
+        "H-ITP-40"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP40:bbd2b9236034c12aec3c",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-012",
+        "B-ITP-F-043",
+        "B-ITP-F-049",
+        "H-ITP-40"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-012",
+        "B-ITP-F-043",
+        "B-ITP-F-049"
+      ],
+      "historical_candidate_ids": [
+        "H-ITP-40"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP44_GVS_maxima:2ad6745f21c33bf142fc",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "B-ITP-F-008",
+        "H-ITP-44"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-008"
+      ],
+      "historical_candidate_ids": [
+        "H-ITP-44"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "H-ITP-58"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-ITP-58"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP58_GVS_branch_flows:998f8c69c4c89da05aa9",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "H-ITP-58"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-ITP-58"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP58_GVS_branch_flows:092234a89fe9515c377c",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "H-ITP-58"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-ITP-58"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "H-ITP-68"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-ITP-68"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "H-ITP-72"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-ITP-72"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP72_wall_and_velocity:5acf5de70b5d5444dfb8",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "H-ITP-72"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-ITP-72"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F002_pump_pressure_selection:63286b8abd3e157f4c25",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-002"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-002"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F003_main_circuit_components:52cbecb1ef185b3847ce",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-003"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-003"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F004_safety_valve_setpoints:d5f708be41c1a1f2266c",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "B-ITP-F-004"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-004"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-005"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-005"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F006_fuse_instruction:427e462f69e3375e880c",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "B-ITP-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-009"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-009"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-010"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-010"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F028_reducer_designations:2f16d360921aab6e9949",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-028"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-028"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F028_reducer_designations:fab751f2686c38838e0b",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-028"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-028"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-032"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-032"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F033_replaced_product_standards:3f903a601969ba823079",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-033"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-033"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-034"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-034"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-034"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-034"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-034"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-034"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-036"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-036"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-034",
+        "B-ITP-F-053"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-034",
+        "B-ITP-F-053"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:d9eb099d20a94bca22e2",
+      "discipline": "ITP",
+      "route": "negative",
+      "candidate_ids": [
+        "B-ITP-F-046",
+        "B-ITP-F-047",
+        "B-ITP-F-048"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-046",
+        "B-ITP-F-047",
+        "B-ITP-F-048"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-046",
+        "B-ITP-F-047",
+        "B-ITP-F-048"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-046",
+        "B-ITP-F-047",
+        "B-ITP-F-048"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-046",
+        "B-ITP-F-047",
+        "B-ITP-F-048"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-046",
+        "B-ITP-F-047",
+        "B-ITP-F-048"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_heat_exchanger_labels:cae0fec45b0437f86c1a",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-046",
+        "B-ITP-F-047",
+        "B-ITP-F-048"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-046",
+        "B-ITP-F-047",
+        "B-ITP-F-048"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM13_F004_S2_anchor_multiplicity:59a9339a0f210f950692",
+      "discipline": "KM",
+      "route": "technical",
+      "candidate_ids": [
+        "B-KM-F-004",
+        "H-KM-13"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-004"
+      ],
+      "historical_candidate_ids": [
+        "H-KM-13"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "H-KM-14"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-KM-14"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM3:23f9be653d9b57c84d4c",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-017",
+        "H-KM-3"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-017"
+      ],
+      "historical_candidate_ids": [
+        "H-KM-3"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM5_S3_bent_handrail_developed_length:f55d97014c925f15f7ac",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "H-KM-5"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-KM-5"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM6_F018_straight_handrail_rejection_review:41b349266f7d7fa6803b",
+      "discipline": "KM",
+      "route": "technical",
+      "candidate_ids": [
+        "B-KM-F-018",
+        "H-KM-6"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-018"
+      ],
+      "historical_candidate_ids": [
+        "H-KM-6"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+      "discipline": "KM",
+      "route": "technical",
+      "candidate_ids": [
+        "H-KM-9"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-KM-9"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F001_norm_editions_scope:cc6d088a37f8ea14e2fe",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-001"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-001"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F003_loads_document_link:51c645f6877fe417223f",
+      "discipline": "KM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-KM-F-003"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-003"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F003_loads_document_link:978d350d6e39eb1fcf5a",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-003"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-003"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F008_weld_calculation_requirement:17d3c36c737f3734f145",
+      "discipline": "KM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-KM-F-008"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-008"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F009_sheet_cross_reference:01c2e819a95b8ab792a2",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-009"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-009"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F010_end_caps_material_accounting:f1072b185954c64a3f41",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-010"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-010"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F012_level_list_scope:caf42e6feef6a3355c54",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-012"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-012"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F013_pipe_standard_designations:72e396e785f77c8d64b3",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-013"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-013"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F014_adjacent_flights_identity:b731dff3b4f369ab5f8b",
+      "discipline": "KM",
+      "route": "negative",
+      "candidate_ids": [
+        "B-KM-F-014"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-014"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F015_typical_level_list:bce51ca28ffba3fa98c3",
+      "discipline": "KM",
+      "route": "technical",
+      "candidate_ids": [
+        "B-KM-F-015"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-015"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F025_standard_title_editorial:81d65a25e69a6b09ca37",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-025"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-025"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK14:f8b1abbe9f89c7203c04",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-007",
+        "H-VK-14"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-007"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-14"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK32_drain_count_identity:7925cb948b0881a20c11",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "H-VK-32"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-VK-32"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK35_B-VK-F-010:3dfbbec7f05abd4276e4",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-010",
+        "H-VK-35"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-010"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-35"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK50_specification_duplicates:f2c9bd72860a821601dd",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "H-VK-50"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-VK-50"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK50_specification_duplicates:f59ff2a504ccf24245d9",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "H-VK-50"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-VK-50"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F003_reinforcement_counts:7ad222ee93fc76cab7bc",
+      "discipline": "VK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-VK-F-003"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-003"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F003_reinforcement_counts:e513233db1a750cd7427",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-003"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-003"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F004_insulation_scope:02bb3aef959f1c658194",
+      "discipline": "VK",
+      "route": "technical",
+      "candidate_ids": [
+        "B-VK-F-004"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-004"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F006_test_criterion:cdce20857528642ffcee",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F011_technical_space_level:c654fd4efb33b8840ce7",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:f37578f6de4df40d140e",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-013",
+        "H-VK-32",
+        "H-VK-33"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-013"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-32",
+        "H-VK-33"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:9bace4bde2d823655edc",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-013",
+        "H-VK-33"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-013"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-33"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:45990c01587ab3d1a583",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-013",
+        "H-VK-33"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-013"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-33"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:990e18216eaec4a3bf2d",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-013",
+        "H-VK-33"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-013"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-33"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F015_roof_title_level:2bb76a02a4eaf106a275",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-015"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-015"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F015_roof_title_level:e6b91efad363f833fe38",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-015"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-015"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F016_incomplete_riser_label:dc77e2144b6ac1213962",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-016"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-016"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F017_F028_cross_references:e41c019d214dddc2adbd",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-017",
+        "B-VK-F-018",
+        "B-VK-F-019",
+        "B-VK-F-020",
+        "B-VK-F-022",
+        "B-VK-F-023",
+        "B-VK-F-028"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-017",
+        "B-VK-F-018",
+        "B-VK-F-019",
+        "B-VK-F-020",
+        "B-VK-F-022",
+        "B-VK-F-023",
+        "B-VK-F-028"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F024_riser_labels:f44954b8bdd41b2ea649",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-024"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-024"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F026_sheet_title_scope:66eff95c8c4f43ea81ac",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-026"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-026"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F026_sheet_title_scope:3066aa83db3239a42924",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-026"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-026"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F026_sheet_title_scope:462e37ddc2cb56579949",
+      "discipline": "VK",
+      "route": "negative",
+      "candidate_ids": [
+        "B-VK-F-026"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-026"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F027_calculation_level_labels:7479fd101bd142ad9eec",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-027"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-027"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F015_neutral_PE_unresolved_topology:composite:1",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-015"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-015"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:composite:1",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:composite:2",
+      "discipline": "EOM",
+      "route": "question",
+      "candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "baseline_candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F001_heat_exchanger_pressure:composite:1",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-001"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-001"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F001_heat_exchanger_pressure:composite:2",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-001"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-001"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F001_heat_exchanger_pressure:composite:3",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-001"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-001"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F004_safety_valve_setpoints:composite:1",
+      "discipline": "ITP",
+      "route": "technical",
+      "candidate_ids": [
+        "B-ITP-F-004"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-004"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "ITP_F004_safety_valve_setpoints:composite:2",
+      "discipline": "ITP",
+      "route": "question",
+      "candidate_ids": [
+        "B-ITP-F-004"
+      ],
+      "baseline_candidate_ids": [
+        "B-ITP-F-004"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM12_F022_anchor_installation_identity:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-022",
+        "H-KM-12"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-022"
+      ],
+      "historical_candidate_ids": [
+        "H-KM-12"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F002_ladder_description_scope:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-002"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-002"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F005_total_plate_balance:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-005"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-005"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F006_profile_mass_recalculation:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F007_round_pipe_unreproduced_total:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-007"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-007"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F008_weld_calculation_requirement:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-008"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-008"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F011_dimension_reference_points:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-011"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-011"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F016_label_count_scope:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-016"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-016"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F019_OGM11_end_component_boundaries:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-019"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-019"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "KM_F020_conditional_diagonal:composite:1",
+      "discipline": "KM",
+      "route": "question",
+      "candidate_ids": [
+        "B-KM-F-020"
+      ],
+      "baseline_candidate_ids": [
+        "B-KM-F-020"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK20_sensor_count_identity:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "H-VK-20"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-VK-20"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK34_transition_assembly:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "H-VK-34"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-VK-34"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK51_apartment_scope:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "H-VK-51"
+      ],
+      "baseline_candidate_ids": [],
+      "historical_candidate_ids": [
+        "H-VK-51"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F001_revision_interval:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-001"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-001"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F002_revision_compensator_inventory:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-002"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-002"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F002_revision_compensator_inventory:composite:2",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-002"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-002"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F005_fitting_pressure:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-005"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-005"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F006_test_criterion:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-006"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-006"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F009_pipe_125_inventory:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-009",
+        "H-VK-21"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-009"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-21"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F009_pipe_125_inventory:composite:2",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-009",
+        "H-VK-21"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-009"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-21"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-013",
+        "H-VK-33"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-013"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-33"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F013_drain_assembly_scope:composite:2",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-013",
+        "H-VK-33"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-013"
+      ],
+      "historical_candidate_ids": [
+        "H-VK-33"
+      ],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    },
+    {
+      "target_id": "VK_F021_revision_height:composite:1",
+      "discipline": "VK",
+      "route": "question",
+      "candidate_ids": [
+        "B-VK-F-021"
+      ],
+      "baseline_candidate_ids": [
+        "B-VK-F-021"
+      ],
+      "historical_candidate_ids": [],
+      "primary_input_files_present": true,
+      "full_evidence_availability": "not_inferred_from_primary_files",
+      "eligible_for_run_scoring": false
+    }
+  ],
+  "policy": {
+    "TEXT": "Prepared MD is authoritative; never re-extract or override TEXT from PDF raster.",
+    "GRAPHIC": "PDF and block geometry support graphic review; file presence does not prove each required graphic has been read.",
+    "questions": "Separate questions and clarifications section, as explicitly chosen by the user.",
+    "external_sources": "Manufacturer and normative evidence are not proven available merely because primary MD/PDF exist. Declare permitted sources before scoring those targets.",
+    "blindness": "This inventory contains target IDs and is evaluator-only. Discovery receives only separately prepared source files and approved instructions.",
+    "same_input": "Use identical source hashes and permitted supplementary sources for baseline and candidate.",
+    "exposure": "All six projects are previously known regression cases, never new blind validation."
+  },
+  "benchmark_frozen": false,
+  "stage_1_complete": false
+}
