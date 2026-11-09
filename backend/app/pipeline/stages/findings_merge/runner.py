@@ -842,6 +842,20 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
         except Exception as exc:  # noqa: BLE001 — гуманизация не должна ронять merge
             await ctx.log(f"Гуманизация ссылок на блоки: пропущена ({exc})", "warn")
 
+    # Snapshot AFTER dedup and renumbering: no candidate may disappear from
+    # accounting merely because its final link was omitted by the model.
+    from .candidate_coverage import write_candidate_coverage
+    try:
+        candidate_report = write_candidate_coverage(ctx.output_dir)
+        unresolved = candidate_report['counts'].get('unlinked_requires_trace', 0)
+        await ctx.log(f"Учёт кандидатов: {candidate_report['candidate_count']}, "
+                      f"без явной связи с итогом: {unresolved}; сохранение смысла требует проверки",
+                      "warn" if unresolved or candidate_report['missing_inputs'] else "info")
+    except (OSError, ValueError, TypeError, KeyError, AttributeError) as exc:
+        error = f"Candidate coverage accounting failed: {exc}"
+        ctx.update_pipeline_log("findings_merge", "error", error=error)
+        return FindingsMergeResult(success=False, error=error)
+
     try:
         findings_count = len(
             json.loads(findings_path.read_text(encoding="utf-8")).get("findings", [])
