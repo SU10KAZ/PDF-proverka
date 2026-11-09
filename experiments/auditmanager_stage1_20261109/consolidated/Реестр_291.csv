@@ -24,7 +24,7 @@ H-EOM-28,EOM,historical_control,power_source_and_precision_require_coordination,
 H-EOM-70,EOM,historical_control,same_consumer_power_requires_coordination,Вопросы и уточнения,"Согласовать мощность К21 / ЩМ7 помещения 7Н: на схеме Py=Pp=20,0 кВт, в таблице — 23,2 кВт. Итог РП2 83,2 кВт соответствует табличным строкам; четыре подписанные линии на схеме дают 80,0 кВт. Указать действующее значение и режим, затем согласовать подписи и связанные расчёты.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json
 H-AK-7,AK,historical_control,refuted,,Снять утверждение о трёх отмеченных AO при итоге2 на листе14: подтверждены две отметки.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK7.json
 H-AK-100,AK,historical_control,Первичная проверка не завершена,,,
-H-AK-65,AK,historical_control,Первичная проверка не завершена,,,
+H-AK-65,AK,historical_control,confirmed_device_identity_mismatch_between_diagram_and_list,Технические замечания,"Лист15, Пн5.1/Вн5.1: согласовать идентификацию четырёх ПЧ между функциональной схемой (UZ2,UZ3,UZ2,UZ3) и перечнем (UZ1–UZ4). Если применяется локальная нумерация отдельных щитов, показать её соответствие позициям общего перечня.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json
 H-AK-137,AK,historical_control,Первичная проверка не завершена,,,
 H-ITP-44,ITP,historical_control,arithmetic_error_claim_refuted_total_load_derivation_not_verified,,"Не выпускать ошибку суммирования ГВС и не заменять общий максимум1,081 суммой зон1,286: общие данные прямо указывают учёт коэффициента неравномерности, анкета задаёт общий максимум1,081. Расход54,05 и сумма ввода261,50 арифметически соответствуют принятым исходным значениям.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP44_GVS_maxima.json
 H-ITP-58,ITP,historical_control,accepted_branch_flow_discrepancy_preserved_line_ambiguity_refuted_equipment_failure_unproven,Вопросы и уточнения,"Согласовать расчётные режимы ГВС 1-й зоны: на разрезе 6-6 сумма подающих ветвей Т311/Т312 равна 13,34 м³/ч против 12,13 м³/ч в ПЗ. Сумма циркуляционных ветвей Т411/Т412 равна 9,02 м³/ч, тогда как для К15 в ПЗ и на разрезе 4-4 указано 4,31 м³/ч. Уточнить согласованные расходы ветвей и режим подбора насоса.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json
@@ -80,7 +80,7 @@ B-AK-F-031,AK,classic_usefulness,Первичная проверка не зав
 B-AK-F-032,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-033,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-034,AK,classic_usefulness,Первичная проверка не завершена,,,
-B-AK-F-035,AK,classic_usefulness,Первичная проверка не завершена,,,
+B-AK-F-035,AK,classic_usefulness,confirmed_device_identity_mismatch_between_diagram_and_list,Технические замечания,"Лист8, П4.1.3/П4.1.4: согласовать обозначения ПЧ. В перечне указаны SC UZ1 и SC UZ2, а на функциональной схеме у двух разных двигателей в строке одного шкафа повторён SC UZ1.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json
 B-AK-F-036,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-037,AK,classic_usefulness,confirmed_document_range_conflict,Технические замечания,Согласовать диапазоны вентиляторных PDS в таблицах сигналов и перечнях. Для Пкр4.1/Пкр5.1 и других адресов сохранить доказанные связи из первичной проверки; непригодность приборов и отказ без паспорта не утверждать.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK57.json
 B-AK-F-038,AK,classic_usefulness,Первичная проверка не завершена,,,
@@ -88,7 +88,7 @@ B-AK-F-039,AK,classic_usefulness,Первичная проверка не зав
 B-AK-F-040,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-041,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-042,AK,classic_usefulness,Первичная проверка не завершена,,,
-B-AK-F-043,AK,classic_usefulness,Первичная проверка не завершена,,,
+B-AK-F-043,AK,classic_usefulness,confirmed_device_identity_mismatch_between_diagram_and_list,Технические замечания,"Лист15, Пн5.1/Вн5.1: согласовать идентификацию четырёх ПЧ между функциональной схемой (UZ2,UZ3,UZ2,UZ3) и перечнем (UZ1–UZ4). Если применяется локальная нумерация отдельных щитов, показать её соответствие позициям общего перечня.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json
 B-AK-F-044,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-045,AK,classic_usefulness,Первичная проверка не завершена,,,
 B-AK-F-046,AK,classic_usefulness,Первичная проверка не завершена,,,
