@@ -3,7 +3,7 @@
   "limits": "Does not verify unlabeled references, external URLs, engineering conclusions, or independent discovery. Passing does not freeze the benchmark.",
   "summary": {
     "documents_inspected": 259,
-    "unique_file_hash_checks": 213,
+    "unique_file_hash_checks": 214,
     "failures": 0,
     "engineering_acceptance": false
   },
@@ -614,6 +614,12 @@
       "expected_sha256": "e3ec650ec4a4018cbb7a98b37de89d710f45f3bf069a81682a7631f96b49dcd5",
       "status": "ok",
       "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM11.json/primary_adjudication"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json",
+      "expected_sha256": "b7830b59eb82f7c9e168e16808ea16fb378fafd8b779e637a7f9adb219c6a8d6",
+      "status": "ok",
+      "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM11.json/pair_reference"
     },
     {
       "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/runs/EOM_codex/images/blk_8fac348a820c41aeb2d941339987da14_b22fe10b8595.png",

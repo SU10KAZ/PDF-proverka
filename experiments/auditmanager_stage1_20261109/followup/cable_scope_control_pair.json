@@ -6,7 +6,25 @@
       "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/EOM2_primary_scope_refutation.json",
       "sha256": "b0245ce36dbb9f5dc795807eacea4e2fcb4ca55d00a30f5af6ec276862a2d436"
     },
-    "expected": "Дефицит 200 м снят; смежный комплект явно не проверен."
+    "expected": "Дефицит 200 м снят; смежный комплект явно не проверен.",
+    "historical_engineer_decision": "Отклонено",
+    "required_assertions": [
+      {
+        "id": "N1",
+        "expected": "Не выдавать дефицит200м FRHF5×6 вЭОМ2-1.",
+        "basis": "850м−200м четырёх адресно отнесённых кЭОМ0-1 линий=650мСО."
+      },
+      {
+        "id": "N2",
+        "expected": "При объяснении снятия назватьС2526/С2527/С3521/С3522 и конкретную сноскуЭОМ0-1.",
+        "basis": "Проверенные длины45/45/55/55м; одного символа звёздочки недостаточно."
+      },
+      {
+        "id": "N3",
+        "expected": "Учёт этих линий вЭОМ0-1 оставить непроверенным; не объявлять поставку подтверждённой.",
+        "basis": "Смежный комплект не проверен."
+      }
+    ]
   },
   "positive": {
     "control_id": "EOM:11",
@@ -15,7 +33,24 @@
       "sha256": "e3ec650ec4a4018cbb7a98b37de89d710f45f3bf069a81682a7631f96b49dcd5"
     },
     "historical_engineer_decision": "Принято",
-    "expected": "Сохранить отсутствие позиции FRHF 5×35 для С2513/С3510 в выданной СО; HF 5×35 172 м не является заменой. Границу поставки оставить вопросом."
+    "expected": "Сохранить отсутствие позиции FRHF 5×35 для С2513/С3510 в выданной СО; HF 5×35 172 м не является заменой. Границу поставки оставить вопросом.",
+    "required_assertions": [
+      {
+        "id": "P1",
+        "expected": "Сохранить несогласованностьFRHF5×35 в проверенном кабельном подразделеСО со схемами обеих линийС2513/С3510.",
+        "basis": "65/95м на схемах; отсутствие данного исполнения/сечения в проверенном подразделе."
+      },
+      {
+        "id": "P2",
+        "expected": "Не погашать160мFRHF строкой172мHF5×35.",
+        "basis": "Разные исполнения кабеля."
+      },
+      {
+        "id": "P3",
+        "expected": "Не утверждать фактическую недопоставку160м или отсутствие всех кабелей5×35.",
+        "basis": "Другие комплекты поставки не проверены;HF5×35 присутствует."
+      }
+    ]
   },
   "same_source_version": {
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.pdf",
@@ -24,5 +59,27 @@
   "acceptance": "Проверять семантику обеих итоговых формулировок, источник границы поставки и отсутствие преувеличения. Не засчитывать молчаливое исчезновение обеих строк как улучшение.",
   "implementation_test_status": "not_executed",
   "new_engineer_review": false,
-  "production_promotion_allowed": false
+  "production_promotion_allowed": false,
+  "control_id": "PAIR-EOM-CABLE-SCOPE-001",
+  "visibility": "Evaluator-only: do not send expected findings, engineering history or this pair to independent discovery agents before sealed results.",
+  "evidence_readiness": "ready_for_regression_design_not_runtime_validated",
+  "evaluation_rules": {
+    "unit": "Одна системная тема с адресами; не число строк отчёта.",
+    "preservation": "P1 считается полностью сохранённым только при наличии обеих линий; одна линия — частичное покрытие.",
+    "suppression": "ОтсутствиеN1 в итоговой выдаче не доказывает работу фильтра. Нужна трасса найденного кандидата и обоснование снятияN2/N3.",
+    "no_credit_for_late_review": "Поздняя ручная проверкаС3510 не засчитывается как находка первоначального пилота.",
+    "failure_conditions": [
+      "Сняты обе темы",
+      "Любая звёздочка автоматически исключает линию",
+      "HF принят заменойFRHF",
+      "Предположено наличие200м в непроверенном смежном томе",
+      "160м объявлены фактическим дефицитом закупки"
+    ],
+    "pass_condition": "ВсеN1–N3/P1–P3 соблюдены при проверке выходов и трассы; отсутствие данных оценивается отдельно от опровержения."
+  },
+  "outstanding_before_implementation_acceptance": [
+    "Прогнать обе проверки на замороженной версииAuditManager.",
+    "Сопоставить candidate→verification→merge→final для обоих случаев.",
+    "Измерить сохранение адресов и нагрузку вопросов на инженера."
+  ]
 }

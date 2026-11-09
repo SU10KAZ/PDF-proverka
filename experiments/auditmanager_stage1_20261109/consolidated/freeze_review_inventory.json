@@ -7390,7 +7390,7 @@
         "H-EOM-11"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM11.json",
-      "decision_sha256": "0bfb2d9ee22740a02c53902ffba56079e36491a2d3e4a2a2963c8fd6da28d334",
+      "decision_sha256": "1d38db92b11e8fcde7159b7685795f19804600fc29102e6fed2bb5a1f76630a1",
       "original_claims": [
         {
           "candidate_id": "H-EOM-11",
@@ -7441,7 +7441,12 @@
       "linked_do_not_publish": null,
       "followup_requirements": [],
       "control_pair": null,
-      "other_pair_evidence": {},
+      "other_pair_evidence": {
+        "pair_reference": {
+          "path": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json",
+          "sha256": "b7830b59eb82f7c9e168e16808ea16fb378fafd8b779e637a7f9adb219c6a8d6"
+        }
+      },
       "benchmark_scope_review": {
         "status": "reviewed_scope_pending_benchmark_freeze",
         "basis": "Сопоставление исходных составных строк с сохранёнными решениями и связанными первичными проверками.",
@@ -7451,7 +7456,7 @@
           "Исторические дополнительные параметры нагрузки и стабилизаторов вне текущего подтверждённого реестра",
           "Итоговое сравнение свежего классического прогона"
         ],
-        "control_pair_readiness": "Локальная пара: сохранить отсутствиеFRHF5×35, снять общее отсутствие5×35 приHF172м. Это два тезиса одних источников, не независимая инженерная пара.",
+        "control_pair_readiness": "PAIR-EOM-CABLE-SCOPE-001: сохранены исторические решения инженера и первичная проверка той же версии; шесть адресных критериевN1–N3/P1–P3 готовы для регрессионного испытания. Работа фильтра и новой версииAuditManager ещё не проверена.",
         "automatic_filter_authorized": false
       },
       "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
@@ -9988,7 +9993,7 @@
         "H-EOM-2"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/H-EOM-2.json",
-      "decision_sha256": "f7823980b4e029cabf07d5c2c6cc23c351a9370b6b4c1d2c21be2e4d40ad7237",
+      "decision_sha256": "d9d8e62b62288e57895d5524e6411535980bd8d807ebdaa39f0e8134f54d50b0",
       "original_claims": [
         {
           "candidate_id": "H-EOM-2",
@@ -10036,7 +10041,10 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {
-        "pair_reference": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json"
+        "pair_reference": {
+          "path": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json",
+          "sha256": "b7830b59eb82f7c9e168e16808ea16fb378fafd8b779e637a7f9adb219c6a8d6"
+        }
       },
       "benchmark_scope_review": {
         "status": "reviewed_scope_pending_benchmark_freeze",
@@ -10045,7 +10053,7 @@
         "unscored_claims": [
           "Фактический учёт и поставка четырёх линийЭОМ0-1"
         ],
-        "control_pair_readiness": "Адресная отрицательная проверка с инженерным отклонением. Сопоставлять сEOM11: там другого исполнения в проверенном подразделе нет, но граница поставки также ограничивает вывод.",
+        "control_pair_readiness": "PAIR-EOM-CABLE-SCOPE-001: сохранены исторические решения инженера и первичная проверка той же версии; шесть адресных критериевN1–N3/P1–P3 готовы для регрессионного испытания. Работа фильтра и новой версииAuditManager ещё не проверена.",
         "automatic_filter_authorized": false
       },
       "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",

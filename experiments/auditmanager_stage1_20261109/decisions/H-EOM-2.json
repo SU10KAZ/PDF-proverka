@@ -111,7 +111,10 @@
   "semantic_comparison": "Повтор закрыл формальную валидацию, но повторил ошибочный вывод о расхождении200м: границы комплектов не проверены по звёздочкам плана.",
   "arithmetic": "850м по12линиям − (45+45+55+55)м четырёх линий смежного комплекта =650м, как в СО.",
   "required_behavior": "Снять тезис о нехватке200м в данном комплекте. Наличие этих200м в смежном комплекте не установлено; не объявлять дефицит без его проверки.",
-  "pair_reference": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json",
+  "pair_reference": {
+    "path": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json",
+    "sha256": "b7830b59eb82f7c9e168e16808ea16fb378fafd8b779e637a7f9adb219c6a8d6"
+  },
   "production_changed": false,
   "atomic_dispositions": [
     {
@@ -146,7 +149,7 @@
     "unscored_claims": [
       "Фактический учёт и поставка четырёх линийЭОМ0-1"
     ],
-    "control_pair_readiness": "Адресная отрицательная проверка с инженерным отклонением. Сопоставлять сEOM11: там другого исполнения в проверенном подразделе нет, но граница поставки также ограничивает вывод.",
+    "control_pair_readiness": "PAIR-EOM-CABLE-SCOPE-001: сохранены исторические решения инженера и первичная проверка той же версии; шесть адресных критериевN1–N3/P1–P3 готовы для регрессионного испытания. Работа фильтра и новой версииAuditManager ещё не проверена.",
     "automatic_filter_authorized": false
   }
 }
