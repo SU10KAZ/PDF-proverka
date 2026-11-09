@@ -141,6 +141,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-020"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для выбора кабеля проверить паспорт нагревателя, схему питания и расчёт; до этого непригодность конкретного варианта и последствия исключены из положительных метрик."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-022"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
