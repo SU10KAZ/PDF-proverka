@@ -4,6 +4,16 @@
   "items": [
     {
       "candidate_ids": [
+        "B-AR-F-007"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Установить актуальные комплекты КМ именно объекта ПД-00580716 и проверить адресацию перед назначением правильного шифра."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-ITP-58"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
