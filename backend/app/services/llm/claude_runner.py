@@ -734,7 +734,11 @@ async def _run_codex_targeted_findings_merge(
         if targeted_text:
             combined_text_parts.append(targeted_text)
         if exit_code == 0 and isinstance(targeted_result.json_data, dict):
-            targeted_payloads.append((targeted_pass.stage, targeted_result.json_data))
+            payload = targeted_result.json_data
+            if targeted_pass.stage.startswith("candidate_recovery_"):
+                from backend.app.pipeline.stages.prepare.candidate_recovery import validate_recovery_payload
+                payload = validate_recovery_payload(targeted_pass, payload)
+            targeted_payloads.append((targeted_pass.stage, payload))
         else:
             logger.warning(
                 "Codex targeted findings pass failed for %s/%s: %s",

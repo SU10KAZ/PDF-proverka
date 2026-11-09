@@ -732,6 +732,8 @@ def build_targeted_findings_passes(project_info: dict[str, Any], project_id: str
                 ),
             )
         )
+    from .candidate_recovery import build_recovery_passes
+    passes.extend(build_recovery_passes(_version_output_dir(project_id), md_path))
     return passes
 
 
@@ -849,6 +851,11 @@ def combine_findings_with_targeted(
     observer_enabled = _finding_evidence_observer_enabled()
 
     for stage, payload in targeted_payloads:
+        if stage.startswith("candidate_recovery_") and isinstance(payload, dict):
+            combined.setdefault("candidate_recovery_reports", []).append({
+                "stage": stage, "candidate_decisions": payload.get("candidate_decisions", []),
+                "pending": payload.get("recovery_pending", []), "semantic_verified": False,
+            })
         targeted_findings = payload.get("findings") if isinstance(payload, dict) else []
         if not isinstance(targeted_findings, list):
             continue
