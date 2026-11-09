@@ -34,3 +34,24 @@ def test_recovery_selects_unlinked_and_requires_graphic_evidence(tmp_path, monke
     assert result['findings'][0]['recovery_semantic_verified'] is False
     proposed['evidence'] = [{'block_id': 'invented'}]
     assert not validate_recovery_payload(passes[0], {'findings': [proposed]})['findings']
+
+
+def test_deferred_graphic_request_is_scheduled_without_becoming_a_finding(tmp_path, monkeypatch):
+    import backend.app.pipeline.stages.prepare.candidate_recovery as recovery
+    monkeypatch.setattr(recovery, 'resolve_blocks_dir', lambda _:tmp_path/'missing_crops')
+    for name, data in {
+        '02_text_analysis.json': {'text_findings':[]},
+        '01_blocks_analysis.json': {'block_analyses':[{'block_id':'g', 'findings':[],
+            'deferred_findings':[{'finding':'aerator count','required_context':['upper roof']}]}]},
+        '03_findings.json': {'findings':[]},
+    }.items():
+        (tmp_path/name).write_text(json.dumps(data))
+    md = tmp_path/'document.md';md.write_text('## Page 2\n### BLOCK #1 [GRAPHIC]: g\nLower roof\n')
+    requests = build_recovery_passes(tmp_path,md)
+    assert len(requests) == 1
+    packet = json.loads(requests[0].messages[-1]['content'])
+    assert packet['candidate']['source_id'].startswith('D-')
+    assert packet['candidate']['candidate']['required_context'] == ['upper roof']
+    result = validate_recovery_payload(requests[0],{'findings': [{
+        'source_finding_ids':[packet['candidate']['source_id']], 'evidence':[{'block_id':'g'}]}]})
+    assert result['findings'] == []

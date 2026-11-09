@@ -17,7 +17,7 @@ def build_recovery_passes(output_dir, md_path):
         return []
     payloads = [json.loads((output_dir / name).read_text()) for name in names]
     coverage = build_candidate_coverage(*payloads)
-    candidates = [c for c in coverage['candidates'] if c['status'] == 'unlinked_requires_trace']
+    candidates = [c for c in coverage['candidates'] if c['status'] == 'unlinked_requires_trace' or c.get('deferred')]
     if not candidates:
         return []
     graph_path = output_dir / 'document_graph.json'
@@ -97,6 +97,10 @@ def build_recovery_passes(output_dir, md_path):
 Candidates sharing a graphic are reviewed together: emit one finding per distinct
 problem, preserving every supporting source_finding_id. Different defects in one
 graphic must remain distinct. Return one decision for each candidate in the group.
+Deferred candidates (deferred=true, stable D-ID) were withheld for insufficient
+context. Preserve their gate reasons and required_context; they are not confirmed
+findings. Inspect the requested scope before deciding; if unavailable, return
+needs_data with literal context_queries, not a defect or refutation.
 Earlier detector claims, summaries and ID links are not independent evidence.
 MD TEXT is authoritative: never correct its recognition from images. Inspect attached
 images for GRAPHIC claims. The context is bounded; missing context means needs_data,

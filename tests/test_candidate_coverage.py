@@ -37,3 +37,14 @@ def test_file_receipt_is_repeatable_and_does_not_modify_sources(tmp_path):
     assert before == {name: (tmp_path / name).read_bytes() for name in inputs}
     (tmp_path / '01_blocks_analysis.json').unlink()
     assert not write_candidate_coverage(tmp_path)['input_inventory_complete']
+
+
+def test_deferred_identity_matches_compact_context_queue():
+    from backend.app.pipeline.stages.block_analysis.blocks_for_text import build_compact_view
+    block = {'block_id':'g', 'page':2, 'findings':[], 'deferred_findings':[
+        {'finding':'check upper roof','required_context':['upper roof plan']}]}
+    data = {'block_analyses':[block]}
+    report = build_candidate_coverage({}, data, {'findings':[]})
+    compact = build_compact_view(data)
+    assert report['candidates'][0]['source_id'] == compact['context_requests'][0]['request_id']
+    assert report['candidates'][0]['status'] == 'deferred_requires_context_review'

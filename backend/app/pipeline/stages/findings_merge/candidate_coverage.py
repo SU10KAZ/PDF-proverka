@@ -9,6 +9,16 @@ from backend.app.services.storage.stage_artifacts import (
 )
 
 
+def candidate_source_id(row):
+    item = row['candidate']
+    if row.get('deferred') and isinstance(item, dict):
+        # Same identity contract as the Stage 01 compact context-request queue.
+        identity = json.dumps([row.get('block_id'), item], ensure_ascii=False,
+                              sort_keys=True, separators=(",", ":"))
+        return "D-" + hashlib.sha256(identity.encode()).hexdigest()[:24]
+    return item.get('id') if isinstance(item, dict) else None
+
+
 def build_candidate_coverage(text, blocks, final):
     candidates = []
     for i, item in enumerate(text.get('text_findings', [])):
@@ -19,8 +29,7 @@ def build_candidate_coverage(text, blocks, final):
                 candidates.append({'origin': 'graphic', 'block_id': block.get('block_id'),
                                    'pointer': f'/block_analyses/{i}/{field}/{j}',
                                    'deferred': field == 'deferred_findings', 'candidate': item})
-    counts = Counter(c['candidate'].get('id') for c in candidates
-                     if isinstance(c['candidate'], dict) and isinstance(c['candidate'].get('id'), str))
+    counts = Counter(candidate_source_id(c) for c in candidates if isinstance(candidate_source_id(c), str))
     links = defaultdict(list)
     for i, finding in enumerate(final.get('findings', [])):
         refs = finding.get('source_finding_ids', [])
@@ -28,7 +37,7 @@ def build_candidate_coverage(text, blocks, final):
             links[sid].append({'id': finding.get('id'), 'pointer': f'/findings/{i}'})
     for row in candidates:
         item = row['candidate']
-        sid = item.get('id') if isinstance(item, dict) else None
+        sid = candidate_source_id(row)
         valid = isinstance(sid, str) and bool(sid.strip())
         row['source_id'] = sid
         row['linked_findings'] = links.get(sid, []) if valid else []
