@@ -139,9 +139,9 @@ B-ITP-F-025,ITP,classic_usefulness,confirmed_internal_calculation_selection_disc
 B-ITP-F-026,ITP,classic_usefulness,confirmed_ambiguous_totals,Вопросы и уточнения,"Уточнить назначение итогов2546/977,0 и199/158,8 в ведомости труб. Суммы опубликованных длин составляют976,9м и159,0м соответственно.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-026.json
 B-ITP-F-027,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-028,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-029,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-030,ITP,classic_usefulness,Первичная проверка не завершена,,,
-B-ITP-F-031,ITP,classic_usefulness,Первичная проверка не завершена,,,
+B-ITP-F-029,ITP,classic_usefulness,confirmed_specification_inconsistency_limited_to_checked_rows,Вопросы и уточнения,"Уточнить соответствие труб и изоляции: предусмотрено85,1м трубы325×7, но в таблицах изоляции листов14–15 нет отдельной строки цилиндра для325мм; цилиндр273×40 записан дважды —2 и97м при1,7м трубы273×7. Подтвердить назначение строки97м и предусмотренных матов.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json
+B-ITP-F-030,ITP,classic_usefulness,confirmed_specification_inconsistency_limited_to_checked_rows,Технические замечания,"Заполнить единицу измерения и количество креплений Дн325 в спецификации: строка есть, обе ячейки пусты; труба325×7 предусмотрена длиной85,1м. Одновременно сверить распределение: дляДн273 указаны32комплекта при1,7м трубы273×7.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json
+B-ITP-F-031,ITP,classic_usefulness,confirmed_specification_inconsistency_limited_to_checked_rows,Вопросы и уточнения,"Уточнить обозначения спецификации: в поз.19.2 приV50л/PN16 записаноRM580PN16, тогда как экспликацияК19.3 и подбор указываютRM50/16бар. Также номер89 присвоен двум кранам BVR —Dn25(118шт.) иDn32(2шт.); обеспечить однозначную связь с чертежами.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json
 B-ITP-F-032,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-033,ITP,classic_usefulness,Первичная проверка не завершена,,,
 B-ITP-F-034,ITP,classic_usefulness,Первичная проверка не завершена,,,
