@@ -883,6 +883,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-010"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F010_end_caps_material_accounting.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить полный реестр свободных торцов с примыканиями и расчёт массы/K1.0403 либо заморозить тезисы о дефиците количества и массы как неоцениваемые."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-011"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F011_dimension_reference_points.json",
