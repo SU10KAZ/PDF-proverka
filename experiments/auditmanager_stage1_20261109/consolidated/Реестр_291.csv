@@ -272,7 +272,7 @@ B-EOM-F-028,EOM,classic_usefulness,Первичная проверка не за
 B-EOM-F-029,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-030,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-031,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-032,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-032,EOM,classic_usefulness,commercial_area_inputs_require_coordination,Вопросы и уточнения,"Согласовать площади коммерческих помещений в расчёте ВРУ-К с экспликациями листов 16 и 26: для 7Н указаны 105,4 в расчёте и 108,1 м² в экспликациях, для 8Н — 68,6 и 63,0 м². Уточнить границы расчётной площади и методику принятия мощности перед корректировкой нагрузок.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json
 B-EOM-F-033,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-034,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-035,EOM,classic_usefulness,Первичная проверка не завершена,,,
