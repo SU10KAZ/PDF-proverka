@@ -1,0 +1,135 @@
+{
+  "case_id": "AR-DEFERRED-AERATOR-CONTEXT",
+  "status": "bounded_review_insufficient_for_quantity_defect",
+  "sources": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/01_blocks_analysis.json",
+      "sha256": "799b8aab94e84524b647b97aad62762afec8bfe32b40f66cb31980e82c520c9c"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
+      "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+    }
+  ],
+  "graphic_evidence": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/render_cache/AR/blk_b6f2b57505d842e2bdc39369c3b5d93a_6471b342ae3c.png",
+      "sha256": "550828262ed5b6271d3c4e323ae0ad4f2e863cdad4e975f4cfdd139dacbb7a8d",
+      "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+      "directly_viewed": true
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/render_cache/AR/blk_d1465109f2c843cd8d4190cde8e9b75d_6471b342ae3c.png",
+      "sha256": "11d08a562814bdd36200e82dc9bb093422e093ca4e9c960ec839b5cbaeee6eae",
+      "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+      "directly_viewed": true
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/render_cache/AR/blk_092e358681fc45ada6058a3f894b2582_6471b342ae3c.png",
+      "sha256": "a7c0d027d37694df364affef8a03a9198112a2efedfe1ac9eeff419863a6d422",
+      "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+      "directly_viewed": true
+    }
+  ],
+  "input_availability": {
+    "requested_sheet": 4,
+    "requested_level": "+44.870",
+    "authoritative_MD_heading": "## Page 6 — Sheet 4 — План кровли 2, 3 секций на отм. +44.870",
+    "requested_plan_block": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+    "present_in_same_run_block_analysis": true
+  },
+  "observations": [
+    "На плане+41.280 непосредственно видны две выноски «Кровельный аэраторАК-1» в правой части кровли.",
+    "Запрошенный план+44.870 присутствует в том же комплекте и сохранённом анализе; источник не отсутствует.",
+    "При обзорном просмотре верхнего плана отдельная выноскаАК-1 не установлена. Это не исчерпывающая проверка всех символов и всех проектных мест установки.",
+    "План финишного покрытия+41.280 является другим изображением того же уровня и не добавляет самостоятельный экземпляр изделия."
+  ],
+  "saved_document_retrieval": {
+    "scope": "all_document_vector_text_other_pages",
+    "query_terms": [
+      "41.280",
+      "ОГШ-1",
+      "ОН-4",
+      "ЛП-1",
+      "ЛП-2",
+      "К-1",
+      "К-4",
+      "АР-1",
+      "кровли",
+      "секций",
+      "отм",
+      "масштабе",
+      "разбивкой",
+      "осям",
+      "уклонами",
+      "отметками",
+      "плане",
+      "показаны",
+      "контуры",
+      "примыкания",
+      "узлы",
+      "также",
+      "кровельные",
+      "аэраторы"
+    ],
+    "candidate_hits": 19,
+    "selected_hits": 6,
+    "selected_pages": [
+      3,
+      5,
+      6,
+      8,
+      10
+    ],
+    "status": "hits"
+  },
+  "saved_deferred_candidate": {
+    "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+    "pointer": "/block_analyses/1/deferred_findings/0",
+    "finding": {
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "documentation",
+      "finding": "На плане кровли 2, 3 секций на отм. +41.280 показаны два аэратора АК-1, а в спецификации кровельных аэраторов указано три. Для установления расхождения нужен план кровли на отм. +44.870: третий аэратор может относиться к нему.",
+      "norm_quote": null,
+      "value_found": "Кровельный аэратор АК-1 — 2 обозначения на плане; АК-1 — 3 шт. в спецификации",
+      "recommendation": "Сверить размещение всех трёх аэраторов АК-1 с планом кровли на отм. +44.870 и уточнить план или спецификацию при подтверждении расхождения.",
+      "claim_type": "context_gap",
+      "problem_class": "aerator_quantity_unresolved",
+      "affected_entity": "кровельные аэраторы АК-1",
+      "evidence_quote": "На плане два обозначения «Кровельный аэратор АК-1»; в спецификации: «АК-1 | Аэратор кровельный ТЕХНОниколь 110x470 | 3».",
+      "evidence_kind": "same_page",
+      "context_status": "needs_retrieval",
+      "confidence": 0.9,
+      "counterevidence_checked": true,
+      "required_context": [
+        "План кровли 2, 3 секций на отм. +44.870 (лист 4)"
+      ],
+      "_detector_model": "codex/gpt-6-sol",
+      "_detector_run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+      "_detector_ref": "codex:001",
+      "_comparison": {
+        "schema_version": 1,
+        "relation": "new",
+        "role": "unique_detector_finding",
+        "counterpart_refs": [],
+        "confidence": 1.0,
+        "reason": "Другой независимый детектор не вернул смысловой аналог.",
+        "reviewer_model": "codex/gpt-6.1-sol",
+        "origin": "dual_comparison"
+      },
+      "_evidence_gate": {
+        "status": "deferred",
+        "reasons": [
+          "non_publishable_claim_type",
+          "insufficient_context",
+          "speculative_wording"
+        ]
+      }
+    }
+  },
+  "decision": "Не объявлять третье изделие лишним и не считать дефицит доказанным. Сохранить адресный вопрос увязки трёх изделий спецификации с местами установки; для количественного дефекта нужны полный реестр экземпляров и границы спецификации.",
+  "runtime_boundary": "Кандидат явно запросил доступный лист4, но по этому артефакту нельзя доказать завершённое последующее адресное чтение и решение. Проверка очереди добора контекста относится к анализу реализации.",
+  "recommended_behavior": "Отложенный кандидат должен завершаться адресным добором имеющегося листа и журналом результата: подтверждено, опровергнуто, остаётся вопрос или источник недоступен. Не превращать needs_retrieval в молчаливое окончательное снятие.",
+  "benchmark_changed": false,
+  "production_changed": false
+}
