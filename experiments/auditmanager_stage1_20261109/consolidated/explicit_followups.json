@@ -54,6 +54,16 @@
     },
     {
       "candidate_ids": [
+        "B-AR-F-001"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для вывода о техническом нарушении проверить применимость редакций и конкретное противоречие требований по зимним работам. До этого сохранять только уточнение ссылок, не оценивать последствия как подтверждённые."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AR-F-007"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
