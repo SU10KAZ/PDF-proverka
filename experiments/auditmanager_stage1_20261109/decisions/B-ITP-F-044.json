@@ -49,5 +49,47 @@
     "PZ_direct_flow": "261.450",
     "PZ_sum_of_printed_flows": "261.50",
     "load_difference": "0.024"
+  },
+  "atomic_dispositions": [
+    {
+      "claim": "Графика5,205/260,25 противПЗ5,229/261,50",
+      "verdict": "confirmed_source_values"
+    },
+    {
+      "claim": "Обе пары точно равныQ×1000/20",
+      "verdict": "refuted_for_PZ_direct_product_261_45"
+    },
+    {
+      "claim": "Сумма опубликованных расходовПЗ равна261,50",
+      "verdict": "confirmed_decimal_sum"
+    },
+    {
+      "claim": "Вентиляция1,527×1000/20=76,35, опубликовано76,40",
+      "verdict": "confirmed_arithmetic"
+    },
+    {
+      "claim": "Разница0,05 сама по себе требует отдельного замечания",
+      "verdict": "not_established_intermediate_rounding"
+    },
+    {
+      "claim": "Разница нагрузок0,024 объяснена тем же округлением расхода",
+      "verdict": "not_established"
+    },
+    {
+      "claim": "Необходимо заменить оборудование ввода",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходного тезиса с сохранённымиTEXT/GRAPHIC и границами первичного решения.",
+    "scorable_narrow_claim": "Сохранить несогласованность исходной нагрузки и подписей ввода; не превращать небольшую промежуточную разницу в дополнительный дефект.",
+    "unscored_claims": [
+      "Действующая редакция исходных нагрузок",
+      "История расчёта и округления",
+      "Влияние на оборудование"
+    ],
+    "control_pair_readiness": "Локально отделены разные исходные нагрузки от промежуточного округления; исторической пары верного/неверного подбора оборудования нет.",
+    "automatic_filter_authorized": false
   }
 }

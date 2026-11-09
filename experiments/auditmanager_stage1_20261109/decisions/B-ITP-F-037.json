@@ -33,5 +33,39 @@
     "conditional_difference_using_PZ_m": "9.00",
     "conditional_difference_using_questionnaire_m": "5.00",
     "condition": "Одинаковые режим, точка отсчёта и высотная база; их совпадение ещё требуется подтвердить."
+  },
+  "atomic_dispositions": [
+    {
+      "claim": "ПЗ задаёт95,59м, анкета91,59м для ввода первой зоны",
+      "verdict": "confirmed_document_difference"
+    },
+    {
+      "claim": "86,59м в анкете является требуемым выходным напором",
+      "verdict": "confirmed_requirement_not_measurement"
+    },
+    {
+      "claim": "Разности составляют4м между источниками и условно9/5м до выхода",
+      "verdict": "confirmed_conditional_arithmetic"
+    },
+    {
+      "claim": "9/5м являются доказанным располагаемым перепадом",
+      "verdict": "not_established_same_mode_and_datum"
+    },
+    {
+      "claim": "Доказаны дефицит напора и неправильная арматура",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходного тезиса с сохранённымиTEXT/GRAPHIC и границами первичного решения.",
+    "scorable_narrow_claim": "Вопрос о согласовании напора на вводе с режимом и высотной базой; не выдавать условную разность за гидравлический баланс.",
+    "unscored_claims": [
+      "Актуальная редакцияВК",
+      "Общий режим и высотная база",
+      "Полный баланс потерь"
+    ],
+    "control_pair_readiness": "Подтверждённой пары достаточного/недостаточного напора нет. Связать сF038 по высотным отметкам, сохранив разные предметы проверки.",
+    "automatic_filter_authorized": false
   }
 }

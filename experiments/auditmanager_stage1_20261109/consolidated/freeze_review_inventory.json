@@ -12,10 +12,10 @@
     "candidate_records": 291,
     "decision_themes": 247,
     "themes_with_explicit_followups": 165,
-    "themes_with_direct_atomic_dispositions": 226,
+    "themes_with_direct_atomic_dispositions": 232,
     "themes_with_linked_claim_disposition": 1,
     "themes_with_direct_control_pair": 150,
-    "themes_with_scope_review": 26,
+    "themes_with_scope_review": 32,
     "stage_complete": false
   },
   "items": [
@@ -5499,7 +5499,7 @@
         "B-ITP-F-007"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json",
-      "decision_sha256": "4c3b660258ca004ec995130e51449101075b82e73745bd1f2782fa6d6f833760",
+      "decision_sha256": "80725162dc61ad03bf5e1c5301f9349e232eb695808ce2d524e94a2fb8b35d9c",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-007",
@@ -5542,7 +5542,8 @@
         "scorable_narrow_claim": "Согласование двух противоречащих заданий по категории электроснабжения; не расширять до отсутствияВРУ.",
         "unscored_claims": [
           "Фактическая схема питания и технологического резервирования",
-          "НаличиеВРУ и учёта в смежном разделе"
+          "НаличиеВРУ и учёта в смежном разделе",
+          "Применимость приложенногоТЗ к этапу проекта: различие этапов отдельно зафиксированоF040; конфликт текста не равен доказанному нарушению обязательного задания."
         ],
         "control_pair_readiness": "Составной случай разделён на подтверждённое противоречие и неподтверждённое отсутствие. Отдельной исторической пары нет.",
         "automatic_filter_authorized": false
@@ -6602,7 +6603,7 @@
         "B-ITP-F-037"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-037.json",
-      "decision_sha256": "434891b37e229bd34ee385a2707307570894bcea7983021b1b00914802e039cb",
+      "decision_sha256": "77e4dc763659487421731725cbfec2d7e8f78380090db6e5edb06498a7707ac7",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-037",
@@ -6612,7 +6613,28 @@
       ],
       "narrow_output": "Согласовать исходный напор ХВС на вводе в ИТП для первой зоны: ПЗ задаёт95,59м, анкета абонента —91,59м. В анкете требуемый выходной напор ГВС86,59м. После согласования режима и высотной базы проверить баланс потерь.",
       "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "ПЗ задаёт95,59м, анкета91,59м для ввода первой зоны",
+          "verdict": "confirmed_document_difference"
+        },
+        {
+          "claim": "86,59м в анкете является требуемым выходным напором",
+          "verdict": "confirmed_requirement_not_measurement"
+        },
+        {
+          "claim": "Разности составляют4м между источниками и условно9/5м до выхода",
+          "verdict": "confirmed_conditional_arithmetic"
+        },
+        {
+          "claim": "9/5м являются доказанным располагаемым перепадом",
+          "verdict": "not_established_same_mode_and_datum"
+        },
+        {
+          "claim": "Доказаны дефицит напора и неправильная арматура",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Подтверждено расхождение документов одного корпуса и первой зоны; совпадают нагрузка0,728 и отметка верхнего крана51,97. Условные разности9м и5м не являются проверенным располагаемым перепадом. Напор86,59 — требуемый, не измеренный. Дефицит напора, неверная арматура и нормативное нарушение не доказаны; актуальная редакция смежного ВК и полный гидравлический баланс не проверены.",
@@ -6622,8 +6644,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходного тезиса с сохранённымиTEXT/GRAPHIC и границами первичного решения.",
+        "scorable_narrow_claim": "Вопрос о согласовании напора на вводе с режимом и высотной базой; не выдавать условную разность за гидравлический баланс.",
+        "unscored_claims": [
+          "Актуальная редакцияВК",
+          "Общий режим и высотная база",
+          "Полный баланс потерь"
+        ],
+        "control_pair_readiness": "Подтверждённой пары достаточного/недостаточного напора нет. Связать сF038 по высотным отметкам, сохранив разные предметы проверки.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -6631,7 +6664,7 @@
         "B-ITP-F-038"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-038.json",
-      "decision_sha256": "8b577cb170f4ffee8d61aa9fcfb7be388327f137593e8cb5b82a1bd38102d5da",
+      "decision_sha256": "35c602bbbe1e1dd36f6aa55f734b93813654cc257bc170858a9006bc799f891f",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-038",
@@ -6641,7 +6674,28 @@
       ],
       "narrow_output": "Уточнить высотные отметки ИТП: названия планов в ведомости содержат−4,000; в анкете поле «Отметка пола ИТП» —−4,900, а строка размещения и относительной отметки пола —−4,450. Указать единую высотную базу и смысл каждой отметки.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Ведомость планов содержит−4,000; анкета пола−4,900 и−4,450",
+          "verdict": "confirmed_document_values"
+        },
+        {
+          "claim": "−4,000 однозначно является отметкой чистого пола",
+          "verdict": "not_established_title_only"
+        },
+        {
+          "claim": "Разницы объяснены разными конструктивными уровнями",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Все отметки необходимо автоматически заменить одной",
+          "verdict": "not_supported"
+        },
+        {
+          "claim": "Ошибка монтажа или давления доказана",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Ведомость не называет−4,000 отметкой чистого пола. В анкете обе строки названы отметками пола, но различие чистого пола и конструкций не пояснено в этих строках. Нельзя автоматически заменить все значения на одно. Смежные АР/КР и фактическая геометрия не проверены; ошибка монтажа и расчёта давления не доказана.",
@@ -6651,8 +6705,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходного тезиса с сохранённымиTEXT/GRAPHIC и границами первичного решения.",
+        "scorable_narrow_claim": "Один вопрос об общей высотной базе и назначении трёх значений.",
+        "unscored_claims": [
+          "АР/КР и фактические уровни",
+          "Влияние отметок на расчёт давления"
+        ],
+        "control_pair_readiness": "Неравенство чисел само по себе не подтверждает физическое противоречие; примера доказанных разных баз пока нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -6660,7 +6724,7 @@
         "B-ITP-F-039"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-039.json",
-      "decision_sha256": "bf51c30f320ccf21c8edcd0e01506607808f21ea62345ec8c31c38d80c7e0720",
+      "decision_sha256": "1db31635b83a1f4cbde483f5346662bb1f05664b507abc635a861ae5535b3a4a",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-039",
@@ -6670,7 +6734,24 @@
       ],
       "narrow_output": "Актуализировать ведомость прилагаемых документов: спецификация обозначена .С на12листах, но представлена с обозначением .СО и нумерацией до15; ПЗ указана на15листах, но в комплекте есть лист20.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Ведомость указывает.С/12листов иПЗ/15листов",
+          "verdict": "confirmed_TEXT"
+        },
+        {
+          "claim": "Представлены.СО с номером15 иПЗ с номером20",
+          "verdict": "confirmed_existing_sheet_identifiers"
+        },
+        {
+          "claim": "Максимальный номер равен точному количеству уникальных листов",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Документы потеряны или комплект технически неполон",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Подтверждено расхождение ведомости с существующими листами того же шифра. Максимальный номер листа не доказывает точное количество уникальных листов или полноту комплекта; пропуск документов и технический дефект оборудования не установлены. Формулировать одним вопросом комплектации, не тремя дефектами.",
@@ -6680,8 +6761,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходного тезиса с сохранённымиTEXT/GRAPHIC и границами первичного решения.",
+        "scorable_narrow_claim": "Один вопрос об актуализации ведомости и обозначений; не три самостоятельных дефекта.",
+        "unscored_claims": [
+          "Точное число уникальных листов",
+          "Полнота комплекта и история редакций"
+        ],
+        "control_pair_readiness": "Отдельной пары утраченного и перенумерованного листа нет; по максимальному номеру отсутствие не доказывать.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -6689,7 +6780,7 @@
         "B-ITP-F-040"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-040.json",
-      "decision_sha256": "0a87923d6dfe7455c8641ed41e6f79fa42443194445965aad67929e35aeba70f",
+      "decision_sha256": "749b9a919d92ecdcb6ece7c7fcb5744d01a593cea646ae56fbe7d9d0973f2566",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-040",
@@ -6699,7 +6790,24 @@
       ],
       "narrow_output": "Уточнить обозначение этапа: титулы ИТП.ТМ указывают этап1, а п.1.1 приложенного ТЗ — этап2; адрес, название Событие6.2 и кадастровый номер77:07:0013002:4706 совпадают. Подтвердить применимость приложенного ТЗ и согласовать наименование.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Титулыэтап1, приложенноеТЗэтап2 при совпадающих адресе и кадастровом номере",
+          "verdict": "confirmed_TEXT"
+        },
+        {
+          "claim": "Совпадение участка доказывает тождество этапов",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Различие этапа доказывает чужоеТЗ и неприменимость всех требований",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Правильный этап установлен",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Совпадение участка не доказывает тождество этапов; различие этапов не доказывает чужое ТЗ. Пункт1.4 «В одну очередь» не снимает расхождение поля «этап». Не выбирать правильный номер без согласованного задания и не объявлять все требования ТЗ неприменимыми.",
@@ -6709,8 +6817,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходного тезиса с сохранённымиTEXT/GRAPHIC и границами первичного решения.",
+        "scorable_narrow_claim": "Вопрос о принадлежности и применимости приложенногоТЗ; сохранить различие реквизитов и совпадение объекта.",
+        "unscored_claims": [
+          "Согласованное задание и этап строительства",
+          "Применимость отдельных требованийТЗ"
+        ],
+        "control_pair_readiness": "Не использовать ни совпадение адреса, ни различие этапа как универсальное основание принятия/отбрасыванияТЗ. Связано с конфликтом категорийF007.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -6761,7 +6879,7 @@
         "B-ITP-F-044"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json",
-      "decision_sha256": "9a3e8dab4d04dd69f2431c365bc9a58a8f53daf606cde9e04c1bcca3e258d057",
+      "decision_sha256": "2a46b122ca2c41e1aeff054be481066700a8c8499669287a08bb9f5a89b23a10",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-044",
@@ -6771,7 +6889,36 @@
       ],
       "narrow_output": "Согласовать нагрузку и расход теплового ввода: на разрезах1-1/2-2 и аксонометрии указаны5,205Гкал/ч и260,25м³/ч, в ПЗ —5,229Гкал/ч и261,50м³/ч. Подтвердить действующие исходные данные и обновить связанные подписи.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Графика5,205/260,25 противПЗ5,229/261,50",
+          "verdict": "confirmed_source_values"
+        },
+        {
+          "claim": "Обе пары точно равныQ×1000/20",
+          "verdict": "refuted_for_PZ_direct_product_261_45"
+        },
+        {
+          "claim": "Сумма опубликованных расходовПЗ равна261,50",
+          "verdict": "confirmed_decimal_sum"
+        },
+        {
+          "claim": "Вентиляция1,527×1000/20=76,35, опубликовано76,40",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Разница0,05 сама по себе требует отдельного замечания",
+          "verdict": "not_established_intermediate_rounding"
+        },
+        {
+          "claim": "Разница нагрузок0,024 объяснена тем же округлением расхода",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Необходимо заменить оборудование ввода",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Графические и текстовые значения относятся к вводу ИТП с температурами90/70. Причина различий, история редакций и влияние на типоразмер оборудования не установлены. Не выдавать отдельную ошибку из-за разницы0,05м³/ч: по формуле проекта5,229×1000/20=261,45, а сумма опубликованных расходов261,50 содержит вентиляцию76,40 вместо прямого результата76,35. Округление промежуточного расхода может объяснить0,05, но не разницу исходных нагрузок0,024Гкал/ч.",
@@ -6781,8 +6928,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходного тезиса с сохранённымиTEXT/GRAPHIC и границами первичного решения.",
+        "scorable_narrow_claim": "Сохранить несогласованность исходной нагрузки и подписей ввода; не превращать небольшую промежуточную разницу в дополнительный дефект.",
+        "unscored_claims": [
+          "Действующая редакция исходных нагрузок",
+          "История расчёта и округления",
+          "Влияние на оборудование"
+        ],
+        "control_pair_readiness": "Локально отделены разные исходные нагрузки от промежуточного округления; исторической пары верного/неверного подбора оборудования нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -6790,7 +6948,7 @@
         "B-ITP-F-050"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json",
-      "decision_sha256": "d4ee7cbf38d0562ad8112d5e4a9fbce0e8e7bb43b72882d31f7b84fac38f1cd6",
+      "decision_sha256": "693016921491b5dd0c2c10b23f03b22e9269d9a9ba37245e1ccb25d73e2b7d14",
       "original_claims": [
         {
           "candidate_id": "B-ITP-F-050",
@@ -6800,7 +6958,28 @@
       ],
       "narrow_output": "Согласовать нагрузочную подпись LVF400 на плане фундаментов: масса91кг, масса с обвязкой60кг. Согласно примечанию масса с обвязкой включает теплоноситель; она записана на31кг меньше собственной. Уточнить массу принятого исполнения и значение для строительного задания.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Одна выноскаLVF400 содержит собственную массу91 и массу с обвязкой60кг",
+          "verdict": "confirmed_existing_graphic_evidence"
+        },
+        {
+          "claim": "Примечание включает теплоноситель в массу с обвязкой",
+          "verdict": "confirmed_TEXT"
+        },
+        {
+          "claim": "Масса с обвязкой записана меньше собственной на31кг",
+          "verdict": "confirmed_arithmetic_and_label_conflict"
+        },
+        {
+          "claim": "60кг перенесены из листа подбора по доказанной причине",
+          "verdict": "not_established_provenance"
+        },
+        {
+          "claim": "Конструктор принял заниженную нагрузку",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Оба числа прочитаны на одном графическом фрагменте. В подборе отдельно указана массаLVF40060кг, в спецификации91кг; это возможный источник переноса, а не доказанная причина ошибки. Паспорт фактического исполнения, заполнение и принятая конструктором нагрузка не проверены. Не назначать исправленное значение автоматически, не заявлять доказанное занижение расчётной нагрузки основания.",
@@ -6810,8 +6989,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходного тезиса с сохранённымиTEXT/GRAPHIC и границами первичного решения.",
+        "scorable_narrow_claim": "Сохранить внутреннее противоречие нагрузочной подписи с адресомLVF400; точное исправленное значение не назначать.",
+        "unscored_claims": [
+          "Паспорт принятого исполнения и заполнение",
+          "Фактическое строительное задание и принятые нагрузки"
+        ],
+        "control_pair_readiness": "Сравнить сF019: здесь конфликт не просто разных масс в документах, а направления величин в одной выноске с поясняющим примечанием. Это контроль различения состава массы, не подтверждение расчёта основания.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
