@@ -222,6 +222,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-015"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Получить и проследить векторный либо монтажный узел ввода/QFD1: явно установить концы каждого проводника N/PE. До этого заморозить наличие перемычки и производные последствия как неоцениваемые, не считать технически опровергнутыми."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-016"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
