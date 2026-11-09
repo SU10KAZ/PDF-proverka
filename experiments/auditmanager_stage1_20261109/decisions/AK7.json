@@ -1,0 +1,15 @@
+{
+  "candidate_ids": [
+    "H-AK-7"
+  ],
+  "decision": "refuted",
+  "output_section": null,
+  "review_date": "2026-11-09",
+  "primary_adjudication": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK7_primary_check.json",
+    "sha256": "03559d66b582f6bfe450b0acebc1134162473b95714ffa16f5eef58a44cd77d6"
+  },
+  "wording": "Снять утверждение о трёх отмеченных AO при итоге2 на листе14: подтверждены две отметки.",
+  "limits": "Не отменять другие AI/AO/DI/DO замечания по этому результату. Название исполнительного устройства не заменяет фактическую отметку канала.",
+  "production_changed": false
+}

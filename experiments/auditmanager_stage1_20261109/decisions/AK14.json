@@ -1,0 +1,16 @@
+{
+  "candidate_ids": [
+    "H-AK-14"
+  ],
+  "decision": "confirmed_terminal_address_ambiguity",
+  "output_section": "Технические замечания",
+  "review_date": "2026-11-09",
+  "primary_adjudication": {
+    "path": "experiments/auditmanager_stage1_20261109/followup/AK14_primary_adjudication.json",
+    "sha256": "487d04234ff08cce0f4a72e3675111dea1bc7b8fbb8d6941d61f47bb64a4ec5a"
+  },
+  "wording": "Сохранить одну системную тему неоднозначных клеммных адресов с адресами шкафов.",
+  "limits": "Примечание об уточнении у изготовителя не доказывает устранение неоднозначности; фактическое ошибочное подключение не установлено.",
+  "preservation": "Принимается только изложенный узкий смысл; исходные составные строки и версии модели сохранены.",
+  "production_changed": false
+}

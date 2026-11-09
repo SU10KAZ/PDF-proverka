@@ -1,0 +1,17 @@
+{
+  "candidate_ids": [
+    "H-ITP-40",
+    "B-ITP-F-043"
+  ],
+  "decision": "confirmed_document_load_conflict",
+  "output_section": "Технические замечания",
+  "review_date": "2026-11-09",
+  "primary_adjudication": {
+    "path": "experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+    "sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834"
+  },
+  "wording": "Согласовать подпись0,246Гкал/ч на разрезах отопленияIIIзоны с ПЗ0,191 и подбором0,21965 с запасом15%; выяснить назначение подписи.",
+  "limits": "Фактический недостаток мощности не доказан; принадлежность к дублю UNI-039 остаётся отдельным вопросом.",
+  "preservation": "Принимается только изложенный узкий смысл; исходные составные строки и версии модели сохранены.",
+  "production_changed": false
+}

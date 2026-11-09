@@ -1,0 +1,17 @@
+{
+  "candidate_ids": [
+    "H-AR-17",
+    "B-AR-F-017"
+  ],
+  "decision": "confirmed_numeric_difference_question",
+  "output_section": "Вопросы и уточнения",
+  "review_date": "2026-11-09",
+  "primary_adjudication": {
+    "path": "experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
+    "sha256": "df73701f0cbb7275908c4ab51a94c3a5987c248b5e16d2dd3fc34968997bb98a"
+  },
+  "wording": "Увязать высоты экранов ОГШ-1/2/3 между ведомостью и видами, указав базу измерения.",
+  "limits": "Разные физические границы и КМ10.2 не проверены; производство неверных изделий не установлено.",
+  "preservation": "Принимается только изложенный узкий смысл; исходные составные строки и версии модели сохранены.",
+  "production_changed": false
+}

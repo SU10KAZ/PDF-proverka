@@ -1,0 +1,16 @@
+{
+  "candidate_ids": [
+    "H-EOM-8"
+  ],
+  "decision": "refuted",
+  "output_section": null,
+  "review_date": "2026-11-09",
+  "primary_adjudication": {
+    "path": "experiments/auditmanager_stage1_20261109/followup/EOM8_primary_refutation.json",
+    "sha256": "70382fc940e66ef269ab8b012014bee051d23554e0c71d03c35a171d42d05217"
+  },
+  "wording": "Снять утверждение об отсутствии ЯУ-ДУ2.1 на плане: обозначение связано с показанным ящиком.",
+  "limits": "Остальные характеристики подключения этой проверкой не подтверждены.",
+  "preservation": "Принимается только изложенный узкий смысл; исходные составные строки и версии модели сохранены.",
+  "production_changed": false
+}

@@ -1,0 +1,178 @@
+[
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-AK-57/status.json",
+    "sha256": "a7cd7fbbc5f106c4ed47e3dfe811c2b82eb60f17e8e09d8ee48d95a5d86972b5"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-AK-57/03_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-ITP-40/status.json",
+    "sha256": "df538e65b3edbf50d3c472462374f4b23094f42c461d2705d8aad746d2c5021c"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-ITP-40/02_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-EOM-2/status.json",
+    "sha256": "b311de88d1985b0ccfba81d10b11a490b91c0556cb34712c0c383deb6d1648ce"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-EOM-2/02_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-KM-6/status.json",
+    "sha256": "d745674185326223e21723b0d15c3fe3840e16b7cfbeabda55b7936232b16257"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-KM-6/03_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-VK-32/status.json",
+    "sha256": "a1b905a918223402337931531beca43de2accb1c2a04f9cea84b896a5687a272"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-VK-32/03_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-ITP-63/status.json",
+    "sha256": "0de9a5556ebbd193580b27e5b72eeafd40fac364b365503f816b24277442d93c"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-ITP-63/03_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-ITP-64/status.json",
+    "sha256": "c64f33c149d51096715eef813dd473c87d6b478567643c150ace2737c802c037"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-ITP-64/05_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-EOM-76/status.json",
+    "sha256": "eba6c738158b7c638c8d9df264d33dc14142395db2b6f48c6296bcb8affcbbc7"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-EOM-76/03_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-EOM-11/status.json",
+    "sha256": "7d2de984b209350b28a44cdc25b5e49008b910209a4786a89a7bc081ae6e268b"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-EOM-11/02_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-AR-14/status.json",
+    "sha256": "ce2673e7fa969ee0b9438f47501f486ab16c77ee72df7ecb91123d446c18b7ed"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/H-AR-14/01_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-AK-000/status.json",
+    "sha256": "2891f30d44339b9da8d0c33d8176f66f6243f37f8bd0b3a421cdb99187205fbe"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-AK-000/03_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-AK-002/status.json",
+    "sha256": "aae4d8b0cd052f626c6f5cbbfb722e43bcec6e0204be1d8cd3ec052a08c880b9"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-AK-002/01_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-AK-003/status.json",
+    "sha256": "713e28f69876eb633f4a5ed200a5dff1733b1977f4c67678d44058a4c7407156"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-AK-003/04_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-ITP-000/status.json",
+    "sha256": "2274c3dba3e7b986a22822233b1a91251b362299ea95760d52983f41f45edf45"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-ITP-000/03_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-ITP-001/status.json",
+    "sha256": "5bd26bb341073d8b7b6b804df196e0b66a8a2c4e7ffea439cb39e2a4f7e58aaa"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-ITP-001/02_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-ITP-006/status.json",
+    "sha256": "ec9470d307a42fd881ceb0f7c5c2930067c65c4f75f89b9c4f60903d0ad16462"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-ITP-006/02_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-ITP-007/status.json",
+    "sha256": "a1175e4d5f9582cbbea09a0cbecb5b7f1972d018a52327ab4c90b5e2457c41da"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-ITP-007/02_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-KM-000/status.json",
+    "sha256": "9151c58c3ec148bec502d9164e7530536df7aa77c71aee55fa0ae4356c4f1137"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-KM-000/04_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-KM-001/status.json",
+    "sha256": "6c4968e79f00a0fec9ed6034a0b27df678a40cd7f5232b5dae56b8b5fc395584"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-KM-001/05_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-VK-002/status.json",
+    "sha256": "08e965830f58d372d146e6f425de5f8af0dcd0d30d44c50e4fd3f43305d03a55"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-VK-002/02_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-VK-007/status.json",
+    "sha256": "7f942bf70f80397e64a0ddc267274bf288124b3bf9c3df3069cbbce1d47837d8"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-VK-007/03_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-EOM-002/status.json",
+    "sha256": "18a97295e80590006cba81fa362ed39c8e5e516f4575f15696389d596ee2330a"
+  },
+  {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_revision_repair/review/jobs/B-EOM-002/03_evidence.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "candidate_ids": [
+    "H-VK-14"
+  ],
+  "decision": "confirmed_ambiguous_product_size",
+  "output_section": "Вопросы и уточнения",
+  "review_date": "2026-11-09",
+  "primary_adjudication": {
+    "path": "experiments/auditmanager_stage1_20261109/VK14_primary_TEXT.json",
+    "sha256": "ff5811ba4af99665e6e5c3c5c4947e6e90029d64b40e85e2f5e400cf91f534f2"
+  },
+  "wording": "Уточнить типоразмер строки полипропиленовой трубы д50x0, 5,2м, ProAqua: отсутствует однозначное обозначение стенки/изделия.",
+  "limits": "Буквальная запись x0 не доказывает закупку физической трубы с нулевой стенкой. Привязка к конкретной плановой линии не подтверждена.",
+  "production_changed": false
+}

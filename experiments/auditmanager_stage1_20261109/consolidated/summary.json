@@ -1,0 +1,16 @@
+{
+  "records": 291,
+  "historical": 47,
+  "classic": 244,
+  "repaired_records": 25,
+  "unresolved_validation_revisions": 0,
+  "model_atom_counts_not_defects": {
+    "supported": 668,
+    "needs_data": 416,
+    "refuted": 37,
+    "out_of_scope": 2
+  },
+  "records_with_unresolved_evidence": 251,
+  "stage_complete": false,
+  "production_promotion_allowed": false
+}
