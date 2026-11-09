@@ -589,6 +589,16 @@
     },
     {
       "candidate_ids": [
+        "B-ITP-F-033"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для технического вывода проверить конкретные исполнения фланцев и характеристики оцинкованного листа, условия применения и согласования. До этого несовместимость/негодность изделий не считать подтверждённым дефектом."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-ITP-F-045"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F045_door_joint_context.json",
