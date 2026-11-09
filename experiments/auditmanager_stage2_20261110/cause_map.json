@@ -1,0 +1,453 @@
+{
+  "stage": 2,
+  "status": "in_progress",
+  "run_manifest": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/protocol.json",
+    "sha256": "3312f980d860c90851b07e6811766c4cd6bc07fe7b4018a7dabd3926ccba5d1f"
+  },
+  "run_commit": "9076439437baf19aa5bb3c1e2ba55ff2642a7c78",
+  "verified_code_identity": [
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+      "sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+      "run_manifest_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+      "matches_run_manifest": true
+    },
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+      "sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+      "run_manifest_sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+      "matches_run_manifest": true
+    },
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/blocks_for_text.py",
+      "sha256": "e7b448ec6687c25a0cf275692a74aa429305bf09d4fca5c83154075cd932bf93",
+      "run_manifest_sha256": "e7b448ec6687c25a0cf275692a74aa429305bf09d4fca5c83154075cd932bf93",
+      "matches_run_manifest": true
+    },
+    {
+      "path": "backend/app/pipeline/stages/text_analysis/md_prescan.py",
+      "sha256": "b7aca7946c2c783f544e32d67fcea84bc32480c2fe78237aa7006496cab0995e",
+      "run_manifest_sha256": "b7aca7946c2c783f544e32d67fcea84bc32480c2fe78237aa7006496cab0995e",
+      "matches_run_manifest": true
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_review/deterministic_critic.py",
+      "sha256": "c68aa35cf37b938e410b84919c26cfc4bdb814510be03f029f808951eb2823a9",
+      "run_manifest_sha256": "c68aa35cf37b938e410b84919c26cfc4bdb814510be03f029f808951eb2823a9",
+      "matches_run_manifest": true
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_review/deterministic_corrector.py",
+      "sha256": "248cff65548e55c2cb47a59fc6a96b6f31e8e32d6970abf109ebdc4943c481b5",
+      "run_manifest_sha256": "248cff65548e55c2cb47a59fc6a96b6f31e8e32d6970abf109ebdc4943c481b5",
+      "matches_run_manifest": true
+    },
+    {
+      "path": "prompts/pipeline/en/findings_merge_task.md",
+      "sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+      "run_manifest_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+      "matches_run_manifest": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "merge_omission",
+      "evidence_level": "confirmed_useful_finding_lost",
+      "conclusion": "AK G075/G076: одна размерная цепь подтверждена графикой; отсутствует в ответе объединения и финале. Причина решения модели неизвестна.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage2_20261110/AK_cabinet_dimension_addendum.json",
+        "sha256": "fa7b483b2d98302b625b11e1ac60c8b848e23b64c20c0518bc534be08e794e3a"
+      },
+      "proposed_behavior": "Учёт каждого кандидата: итоговая находка, объединение с сохранением тезисов или доказанная причина снятия."
+    },
+    {
+      "id": "text_reference_loss",
+      "evidence_level": "confirmed_field_loss_and_downstream_effect",
+      "conclusion": "19ЭОМ: ссылки есть вT-кандидатах, пусты в ответе объединения; no_evidence даёт16понижений и3ручных проверки. Не все исходные тезисы технически верны.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage2_20261110/merge_text_reference_cause.json",
+        "sha256": "4d8c27309d91d85af0c5595e9e31b7144dd05dd4d8313c12decc5d2a4f023a26"
+      },
+      "proposed_behavior": "Сохранять адресные ссылки и происхождение через source_finding_ids, проверять их существование и смысл."
+    },
+    {
+      "id": "metadata_false_match",
+      "evidence_level": "reproduced_current_and_run_identical_code",
+      "conclusion": "Фраза о переданном контексте вevidence_quote вызываетinternal_metadata_comparison для проектной экспликации. Аналог сохранён другим детектором.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage2_20261110/metadata_gate_replay.json",
+        "sha256": "68de4b9b8208b1dabee54e93c834b5a076e0c4af2dc416b303b9c73e18104775"
+      },
+      "proposed_behavior": "Проверять предмет претензии, а не простое упоминание контекста."
+    },
+    {
+      "id": "deferred_context_projection",
+      "evidence_level": "reproduced_six_saved_views",
+      "conclusion": "Четыре отложенных кандидата иrequired_context отсутствуют в компактном входе текстового этапа; в полном файле остаются. Это не четыре доказанные потери.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage2_20261110/deferred_projection_replay.json",
+        "sha256": "4b599d63fe02f07974ba67ae226bbf75c59b2517b3fac0d7b8c6620e88e3ed4e"
+      },
+      "proposed_behavior": "Отдельная очередь адресного добора с результатом каждого запроса и ограничением нагрузки."
+    },
+    {
+      "id": "prescan_generic_recommendation",
+      "evidence_level": "reproduced_generation",
+      "conclusion": "Одинаковый совет об индексах завес появляется детерминированно после ответа моделей; перенос модели между проектами не доказан.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage2_20261110/prescan_curtain_origin.json",
+        "sha256": "f6d127aa45ef3afffa95dfe00ba1a01a67a7b71388b3edac111416e0cb2db69a"
+      },
+      "proposed_behavior": "Не превращать совпадение слов в готовую претензию без проверки объекта и основания; сохранять происхождение."
+    },
+    {
+      "id": "missing_ids_not_missing_meaning",
+      "evidence_level": "semantic_mapping",
+      "conclusion": "Четыре кандидата безIDсвязи и триотложенных имеют смысловые аналоги в финале.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage2_20261110/unlinked_and_deferred_review.json",
+        "sha256": "3a41e7aa25e660fefe9673b590c4675578c99166a7f12234f56949c8df7bfc1a"
+      },
+      "proposed_behavior": "Сохранять всеsourceIDsпри объединении; полноту считать по тезисам, а не числу строк."
+    },
+    {
+      "id": "post_verify_integrity",
+      "evidence_level": "verified_all_six",
+      "conclusion": "Финальные JSON совпадают со снимками верификатора по содержимому и с записанными финальными хешами.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage2_20261110/saved_runtime_inventory.json",
+        "sha256": "3d4f5b1262484b36239e458b491804b2749eed5e6a73fbf8b33740f0576609b0"
+      },
+      "proposed_behavior": "Сохранить проверку финальных артефактов; разность сериализации не потеря содержания."
+    }
+  ],
+  "coverage_limits": [
+    "Saved classic control is a particular Codex configuration, not proof of all production variants.",
+    "Run-manifest matching proves source identity for these mechanisms, not every provider action.",
+    "478published candidates and4deferred inventoried; explicit linkage does not certify semantic completeness of470linked candidates.",
+    "Full historical-only positive-target matching to classic outputs remains open; absence of baseline IDs is not proof of a miss."
+  ],
+  "next_required_work": {
+    "historical_only_positive_targets_to_match": [
+      {
+        "target_id": "AK14:65ea2c2649999f640c83",
+        "discipline": "AK",
+        "route": "technical",
+        "candidate_ids": [
+          "H-AK-14"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-AK-14"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "AR14_K3_support_levels:11d2c61818f07c8b5a71",
+        "discipline": "AR",
+        "route": "question",
+        "candidate_ids": [
+          "H-AR-14"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-AR-14"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "AR35_unlabelled_areas:8b080f37f0ffc62859e0",
+        "discipline": "AR",
+        "route": "question",
+        "candidate_ids": [
+          "H-AR-35"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-AR-35"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "AR39_lower_profile_and_rope:82b33aee103e9ee382ee",
+        "discipline": "AR",
+        "route": "question",
+        "candidate_ids": [
+          "H-AR-39"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-AR-39"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "AR59_rope_load_path:63ef9a4878fe506c4a1f",
+        "discipline": "AR",
+        "route": "question",
+        "candidate_ids": [
+          "H-AR-59"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-AR-59"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "EOM11:7985c84eea058c206240",
+        "discipline": "EOM",
+        "route": "technical",
+        "candidate_ids": [
+          "H-EOM-11"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-EOM-11"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
+        "discipline": "EOM",
+        "route": "question",
+        "candidate_ids": [
+          "H-EOM-111"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-EOM-111"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "EOM27_active_socket_circuits:46bf196510e24cc289cf",
+        "discipline": "EOM",
+        "route": "technical",
+        "candidate_ids": [
+          "H-EOM-27"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-EOM-27"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "EOM5_shunt_trip_identity:877b6fefac02ba992ea1",
+        "discipline": "EOM",
+        "route": "question",
+        "candidate_ids": [
+          "H-EOM-5"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-EOM-5"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "ITP17_grooved_connection_identity:d04789ed3175389531f2",
+        "discipline": "ITP",
+        "route": "question",
+        "candidate_ids": [
+          "H-ITP-17"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-ITP-17"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "ITP58_GVS_branch_flows:f563ab4150d33b1acce3",
+        "discipline": "ITP",
+        "route": "question",
+        "candidate_ids": [
+          "H-ITP-58"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-ITP-58"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
+        "discipline": "ITP",
+        "route": "question",
+        "candidate_ids": [
+          "H-ITP-68"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-ITP-68"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
+        "discipline": "ITP",
+        "route": "question",
+        "candidate_ids": [
+          "H-ITP-72"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-ITP-72"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+        "discipline": "KM",
+        "route": "question",
+        "candidate_ids": [
+          "H-KM-14"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-KM-14"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "KM5_S3_bent_handrail_developed_length:f55d97014c925f15f7ac",
+        "discipline": "KM",
+        "route": "question",
+        "candidate_ids": [
+          "H-KM-5"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-KM-5"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+        "discipline": "KM",
+        "route": "technical",
+        "candidate_ids": [
+          "H-KM-9"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-KM-9"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "VK50_specification_duplicates:f2c9bd72860a821601dd",
+        "discipline": "VK",
+        "route": "question",
+        "candidate_ids": [
+          "H-VK-50"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-VK-50"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "VK50_specification_duplicates:f59ff2a504ccf24245d9",
+        "discipline": "VK",
+        "route": "question",
+        "candidate_ids": [
+          "H-VK-50"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-VK-50"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "VK20_sensor_count_identity:composite:1",
+        "discipline": "VK",
+        "route": "question",
+        "candidate_ids": [
+          "H-VK-20"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-VK-20"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "VK34_transition_assembly:composite:1",
+        "discipline": "VK",
+        "route": "question",
+        "candidate_ids": [
+          "H-VK-34"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-VK-34"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      },
+      {
+        "target_id": "VK51_apartment_scope:composite:1",
+        "discipline": "VK",
+        "route": "question",
+        "candidate_ids": [
+          "H-VK-51"
+        ],
+        "baseline_candidate_ids": [],
+        "historical_candidate_ids": [
+          "H-VK-51"
+        ],
+        "primary_input_files_present": true,
+        "full_evidence_availability": "not_inferred_from_primary_files",
+        "eligible_for_run_scoring": false
+      }
+    ],
+    "instruction": "Compare each bounded target to saved full output and upstream candidates; use same-version object identity. Mark unknown cause explicitly. Do not infer loss from missing IDs."
+  },
+  "stage_complete": false,
+  "production_changed": false
+}
