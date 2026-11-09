@@ -670,6 +670,18 @@
     },
     {
       "candidate_ids": [
+        "B-ITP-F-003"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F003_main_circuit_components.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Проверить максимальные давления у позиций63,96,103 на всасывающей/нагнетательной стороне, в статическом режиме и при работе от мобильной котельной.",
+        "Проверить паспорта точных артикулов и допустимые давления при90/70°C, включая исполнения и согласованные аналоги.",
+        "Остальную обвязку проверять по каждой позиции и контуру; не распространять заключение на все изделия PN16 проекта. До этих проверок не учитывать доказанную разгерметизацию или обязательную массовую замену."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-ITP-F-005"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F005_test_pressure_scope.json",
