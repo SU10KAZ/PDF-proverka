@@ -885,6 +885,17 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-001"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F001_norm_editions_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Перед оценкой технического нарушения установить применимую нормативную базу и проверить конкретное затронутое требование. Пока это не выполнено, зафиксировать соответствующие тезисы как неоценённые, не включать в положительные технические метрики.",
+        "Не считать проверенными статусы СП20.2011, СП28.2012, СП63.2012, СП2.2012, СП48.2011 и СП72.2011 на основании этой записи. Проверить первичные источники, если статус используется в итоговом выводе; иначе оставить эти тезисы неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-002"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
