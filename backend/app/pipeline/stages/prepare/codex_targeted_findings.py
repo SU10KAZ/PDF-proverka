@@ -734,6 +734,8 @@ def build_targeted_findings_passes(project_info: dict[str, Any], project_id: str
         )
     from .candidate_recovery import build_recovery_passes
     passes.extend(build_recovery_passes(_version_output_dir(project_id), md_path))
+    from .object_operation_passes import build_object_operation_passes
+    passes.extend(build_object_operation_passes(_version_output_dir(project_id), md_path))
     return passes
 
 
@@ -836,6 +838,8 @@ def combine_findings_with_targeted(
     combined = dict(production) if isinstance(production, dict) else {"findings": []}
     if isinstance(combined.get("candidate_recovery_reports"), list):
         combined["candidate_recovery_reports"] = list(combined["candidate_recovery_reports"])
+    if isinstance(combined.get("object_operation_reports"), list):
+        combined["object_operation_reports"] = list(combined["object_operation_reports"])
     findings = [dict(item) for item in production_findings if isinstance(item, dict)]
     seen_keys = {_canonical_finding_key(item) for item in findings}
     seen_keys.discard("")
@@ -853,6 +857,13 @@ def combine_findings_with_targeted(
     observer_enabled = _finding_evidence_observer_enabled()
 
     for stage, payload in targeted_payloads:
+        if stage.startswith("object_operations_") and isinstance(payload, dict):
+            combined.setdefault("object_operation_reports", []).append({
+                "stage": stage, "coverage": payload.get("operation_coverage"),
+                "requested_operations": payload.get("requested_operations", []),
+                "unverified_receipts": payload.get("unverified_operation_receipts", []),
+                "pending": payload.get("operation_pending", []), "semantic_verified": False,
+            })
         if stage.startswith("candidate_recovery_") and isinstance(payload, dict):
             from backend.app.pipeline.stages.findings_merge.recovery_links import apply_duplicate_links
             link_report = apply_duplicate_links(findings, payload.get("recovery_link_updates", []))

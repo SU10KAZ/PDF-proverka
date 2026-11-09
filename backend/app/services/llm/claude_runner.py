@@ -743,6 +743,9 @@ async def _run_codex_targeted_findings_merge(
                 payload["context_retrieval"] = search_receipt
                 if followup is not None:
                     passes.append(followup)
+            if targeted_pass.stage.startswith("object_operations_"):
+                from backend.app.pipeline.stages.prepare.object_operation_passes import validate_object_operation_payload
+                payload = validate_object_operation_payload(targeted_pass, payload)
             targeted_payloads.append((targeted_pass.stage, payload))
         else:
             logger.warning(
@@ -1799,6 +1802,9 @@ async def _run_targeted_findings_merge_via_provider(
         })
         if ok:
             _write_json(resolved_output_dir / targeted_pass.output_filename, payload)
+            if targeted_pass.stage.startswith("object_operations_"):
+                from backend.app.pipeline.stages.prepare.object_operation_passes import validate_object_operation_payload
+                payload = validate_object_operation_payload(targeted_pass, payload)
             targeted_payloads.append((targeted_pass.stage, payload))
 
     _write_json(
