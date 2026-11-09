@@ -142,6 +142,17 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Для окончательных обозначений согласовать реестр с заводскими схемами. Фактическое подключение и нормативную квалификацию до проверки оставить неоценёнными.",
+        "На этапе6 объединить насос Пн5.1 из F014 и F056 с сохранением всех трёх расходящихся позиций."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-016",
         "B-AK-F-017"
       ],
