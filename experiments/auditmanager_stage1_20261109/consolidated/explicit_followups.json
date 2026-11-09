@@ -4,6 +4,16 @@
   "items": [
     {
       "candidate_ids": [
+        "H-ITP-72"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP72_wall_and_velocity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "До вывода о влиянии на систему сопоставить конкретные участки отопления на схеме с расчётом и восстановить используемые сопротивления и запас насоса; не считать рисунок ГВС доказательством толщин всех ветвей."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-ITP-F-006"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
