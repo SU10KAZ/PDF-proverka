@@ -569,6 +569,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Если оценивать применимость редакций, установить дату/основание нормативной базы проекта и переходные условия. До этого не включать нарушение применимости или техническое несоответствие в положительные метрики."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-047"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F047_unsubstantiated_norm_status.json",
