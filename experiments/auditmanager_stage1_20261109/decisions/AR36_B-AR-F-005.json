@@ -60,5 +60,57 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
     "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
   },
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "К-3: опубликованные площади покрытия10,8м², слоёв10,84/10,83м², плитки18,96м², объёмPIR1,24м³",
+      "verdict": "confirmed_existing_TEXT_and_graphic_evidence"
+    },
+    {
+      "claim": "18,96−10,84=8,12м², превышение74,9077%",
+      "verdict": "confirmed_arithmetic"
+    },
+    {
+      "claim": "10,84×0,13=1,4092м³",
+      "verdict": "confirmed_conditional_arithmetic"
+    },
+    {
+      "claim": "1,4092м³ является обязательной потребностьюPIR",
+      "verdict": "not_established_same_layer_extent"
+    },
+    {
+      "claim": "75,82=4×18,96",
+      "verdict": "refuted_exact_arithmetic_product_is_75_84"
+    },
+    {
+      "claim": "0,43=10,84×0,04",
+      "verdict": "approximate_after_rounding_exact_product_0_4336"
+    },
+    {
+      "claim": "К-4:536,21 против517,7 даёт примерно3,6%",
+      "verdict": "confirmed_conditional_comparison_not_universal_allowance"
+    },
+    {
+      "claim": "Доказаны избыток закупки и нехватка утеплителя",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных тезисов с сохранёнными первичными доказательствами и повторный десятичный расчёт.",
+    "scorable_narrow_claim": "Один вопрос о расчёте взаимосвязанных количествК-3; сохранить инженерное принятие исходной темы, не переносить его на каждое равенство и последствие.",
+    "unscored_claims": [
+      "Геометрия каждого слоя, запас и вычеты",
+      "Окончательное число опор по раскладке",
+      "Реальная закупка и дефицит"
+    ],
+    "control_pair_readiness": "Точное неверное равенство75,82=4×18,96 опровергнуто. Это арифметический контрконтроль, а не доказательство ложности всей принятой темы. Подтверждённой пары допустимого/недопустимого запаса нет.",
+    "automatic_filter_authorized": false
+  },
+  "arithmetic_correction": {
+    "original_claim": "75,82 = 4,0 × 18,96",
+    "exact_product": "75.84",
+    "published_minus_product": "-0.02",
+    "effect": "Снять точное равенство; происхождение количества и достаточность опор не установлены."
+  }
 }

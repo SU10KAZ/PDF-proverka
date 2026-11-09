@@ -7088,6 +7088,58 @@
         "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
       },
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "К-3: опубликованные площади покрытия10,8м², слоёв10,84/10,83м², плитки18,96м², объёмPIR1,24м³",
+          "verdict": "confirmed_existing_TEXT_and_graphic_evidence"
+        },
+        {
+          "claim": "18,96−10,84=8,12м², превышение74,9077%",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "10,84×0,13=1,4092м³",
+          "verdict": "confirmed_conditional_arithmetic"
+        },
+        {
+          "claim": "1,4092м³ является обязательной потребностьюPIR",
+          "verdict": "not_established_same_layer_extent"
+        },
+        {
+          "claim": "75,82=4×18,96",
+          "verdict": "refuted_exact_arithmetic_product_is_75_84"
+        },
+        {
+          "claim": "0,43=10,84×0,04",
+          "verdict": "approximate_after_rounding_exact_product_0_4336"
+        },
+        {
+          "claim": "К-4:536,21 против517,7 даёт примерно3,6%",
+          "verdict": "confirmed_conditional_comparison_not_universal_allowance"
+        },
+        {
+          "claim": "Доказаны избыток закупки и нехватка утеплителя",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными первичными доказательствами и повторный десятичный расчёт.",
+        "scorable_narrow_claim": "Один вопрос о расчёте взаимосвязанных количествК-3; сохранить инженерное принятие исходной темы, не переносить его на каждое равенство и последствие.",
+        "unscored_claims": [
+          "Геометрия каждого слоя, запас и вычеты",
+          "Окончательное число опор по раскладке",
+          "Реальная закупка и дефицит"
+        ],
+        "control_pair_readiness": "Точное неверное равенство75,82=4×18,96 опровергнуто. Это арифметический контрконтроль, а не доказательство ложности всей принятой темы. Подтверждённой пары допустимого/недопустимого запаса нет.",
+        "automatic_filter_authorized": false
+      },
+      "arithmetic_correction": {
+        "original_claim": "75,82 = 4,0 × 18,96",
+        "exact_product": "75.84",
+        "published_minus_product": "-0.02",
+        "effect": "Снять точное равенство; происхождение количества и достаточность опор не установлены."
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json"
     },
     {
@@ -8406,6 +8458,36 @@
         "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
       },
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "К-3/К-4: бетонная плитка40мм в ведомости покрытий и натуральный камень600×600×40мм в материалах",
+          "verdict": "confirmed_existing_TEXT_and_graphic_evidence"
+        },
+        {
+          "claim": "В материалах есть оговорка по согласованию; К-4 отсылает кЛД",
+          "verdict": "confirmed_context"
+        },
+        {
+          "claim": "Узел молниеотвода независимо подтверждает материалК-4",
+          "verdict": "not_checked_in_this_decision"
+        },
+        {
+          "claim": "Закуплен неправильный материал или окончательное согласование отсутствует",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными первичными доказательствами и повторный десятичный расчёт.",
+        "scorable_narrow_claim": "Одна тема согласования материала двух покрытий с сохранением оговорок; узел молниеотвода не добавлять в доказанные источники.",
+        "unscored_claims": [
+          "Окончательный выбор поЛД и согласованию",
+          "Материал в узле молниеотвода",
+          "Фактическая поставка"
+        ],
+        "control_pair_readiness": "Пара неверной и согласованной замены материала не подтверждена. Оговорка по согласованию сама по себе не доказывает ни устранение расхождения, ни ошибку закупки.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json"
     },
     {
@@ -8444,6 +8526,52 @@
       "previous_proposed_output_section": "Вопросы и уточнения",
       "adjudicator_disposition": "Не выпускать отдельное замечание или обязательный вопрос только на основании разности округлённых чисел. Факт разности сохранить в исследовательском реестре. При доказанном влиянии на подбор/количество или невозможности объяснения точностью исходных чисел рассмотреть заново.",
       "not_equivalent_to": "Не означает, что исходный расчёт проверен и признан правильным; это недостаточность основания для замечания.",
+      "atomic_dispositions": [
+        {
+          "claim": "Сумма опубликованных пяти длин259,47м при итоге259,48м",
+          "verdict": "confirmed_decimal_sum"
+        },
+        {
+          "claim": "Расхождение0,01м доказывает ошибку исходного расчёта",
+          "verdict": "not_established_rounding_counterexample"
+        },
+        {
+          "claim": "Проект действительно использовал предложенные скрытые значения",
+          "verdict": "not_established_synthetic_example_only"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными первичными доказательствами и повторный десятичный расчёт.",
+        "scorable_narrow_claim": "Факт разности опубликованных чисел; максимум редакционное уточнение, не положительный технический дефект.",
+        "unscored_claims": [
+          "Исходные неокруглённые величины и метод подсчёта",
+          "Влияние на закупку"
+        ],
+        "control_pair_readiness": "Синтетический пример доказывает возможность округления, но не причину расхождения в проекте и не является исторической контрольной парой.",
+        "automatic_filter_authorized": false
+      },
+      "conditional_counterexample": {
+        "kind": "synthetic_not_project_evidence",
+        "unrounded_terms_m": [
+          "153.822",
+          "27.352",
+          "35.432",
+          "12.692",
+          "30.182"
+        ],
+        "rounding": "Decimal ROUND_HALF_UP to0.01m",
+        "rounded_terms_m": [
+          "153.82",
+          "27.35",
+          "35.43",
+          "12.69",
+          "30.18"
+        ],
+        "sum_before_rounding_m": "259.480",
+        "rounded_total_m": "259.48",
+        "conclusion": "Пять округлённых строк и округлённый полный итог могут одновременно совпадать с опубликованными значениями."
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-003.json"
     },
     {
@@ -8468,6 +8596,39 @@
         "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
       },
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "Ведомость материалов содержит75,82 и2144,84шт. опор",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "К-4:2144,84=4×536,21",
+          "verdict": "confirmed_arithmetic_not_proof_of_layout"
+        },
+        {
+          "claim": "К-3:75,82=4×18,96",
+          "verdict": "refuted_exact_arithmetic"
+        },
+        {
+          "claim": "Дробная расчётная величина доказывает физическую поставку части опоры",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Достаточно автоматически округлить до76/2145 для правильной комплектации",
+          "verdict": "not_established_without_layout"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными первичными доказательствами и повторный десятичный расчёт.",
+        "scorable_narrow_claim": "Вопрос о комплектовочной потребностиК-3/К-4; частьК-3 объединять с общей темой количествК-3, не увеличивая число независимых дефектов.",
+        "unscored_claims": [
+          "Раскладка опор, условия расхода и окончательная комплектация",
+          "Данные заказа и поставки"
+        ],
+        "control_pair_readiness": "Подтверждённой пары допустимого расчётного расхода и ошибочного заказа нет. Дробное значение в ведомости не является универсальным основанием технического замечания.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json"
     },
     {

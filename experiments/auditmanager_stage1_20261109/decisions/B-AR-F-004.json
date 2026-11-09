@@ -19,5 +19,38 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
     "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
   },
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "Ведомость материалов содержит75,82 и2144,84шт. опор",
+      "verdict": "confirmed_authoritative_TEXT"
+    },
+    {
+      "claim": "К-4:2144,84=4×536,21",
+      "verdict": "confirmed_arithmetic_not_proof_of_layout"
+    },
+    {
+      "claim": "К-3:75,82=4×18,96",
+      "verdict": "refuted_exact_arithmetic"
+    },
+    {
+      "claim": "Дробная расчётная величина доказывает физическую поставку части опоры",
+      "verdict": "not_established"
+    },
+    {
+      "claim": "Достаточно автоматически округлить до76/2145 для правильной комплектации",
+      "verdict": "not_established_without_layout"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных тезисов с сохранёнными первичными доказательствами и повторный десятичный расчёт.",
+    "scorable_narrow_claim": "Вопрос о комплектовочной потребностиК-3/К-4; частьК-3 объединять с общей темой количествК-3, не увеличивая число независимых дефектов.",
+    "unscored_claims": [
+      "Раскладка опор, условия расхода и окончательная комплектация",
+      "Данные заказа и поставки"
+    ],
+    "control_pair_readiness": "Подтверждённой пары допустимого расчётного расхода и ошибочного заказа нет. Дробное значение в ведомости не является универсальным основанием технического замечания.",
+    "automatic_filter_authorized": false
+  }
 }

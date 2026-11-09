@@ -30,5 +30,35 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
     "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
   },
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "К-3/К-4: бетонная плитка40мм в ведомости покрытий и натуральный камень600×600×40мм в материалах",
+      "verdict": "confirmed_existing_TEXT_and_graphic_evidence"
+    },
+    {
+      "claim": "В материалах есть оговорка по согласованию; К-4 отсылает кЛД",
+      "verdict": "confirmed_context"
+    },
+    {
+      "claim": "Узел молниеотвода независимо подтверждает материалК-4",
+      "verdict": "not_checked_in_this_decision"
+    },
+    {
+      "claim": "Закуплен неправильный материал или окончательное согласование отсутствует",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных тезисов с сохранёнными первичными доказательствами и повторный десятичный расчёт.",
+    "scorable_narrow_claim": "Одна тема согласования материала двух покрытий с сохранением оговорок; узел молниеотвода не добавлять в доказанные источники.",
+    "unscored_claims": [
+      "Окончательный выбор поЛД и согласованию",
+      "Материал в узле молниеотвода",
+      "Фактическая поставка"
+    ],
+    "control_pair_readiness": "Пара неверной и согласованной замены материала не подтверждена. Оговорка по согласованию сама по себе не доказывает ни устранение расхождения, ни ошибку закупки.",
+    "automatic_filter_authorized": false
+  }
 }
