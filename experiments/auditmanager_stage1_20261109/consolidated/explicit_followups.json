@@ -903,6 +903,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-007"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F007_round_pipe_unreproduced_total.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Установить исходную раскладку41.125/298.970, проверить типы профилей и погонную массу; иначе заморозить эти итоговые поправки как неоцениваемые."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-008"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F008_weld_calculation_requirement.json",
