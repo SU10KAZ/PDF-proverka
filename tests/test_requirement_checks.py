@@ -1,4 +1,6 @@
 from backend.app.pipeline.stages.text_analysis.requirement_checks import authoritative_text_blocks,reconcile_requirement_checks
+from copy import deepcopy
+import pytest
 
 
 def fixture():
@@ -34,3 +36,28 @@ def test_graphic_summaries_and_duplicate_ids_are_not_authoritative_text():
     assert 'Heating summary' not in blocks['b']
     md+='### BLOCK #3 [TEXT]: b\nDifferent quote\n'
     assert authoritative_text_blocks(md)=={}
+
+
+@pytest.mark.parametrize('second_verdict',['applies','does_not_apply','unknown'])
+def test_repeated_object_requirement_pair_remains_unresolved(second_verdict):
+    data=fixture()
+    first=data['requirement_applicability_checks'][0]
+    data['requirement_applicability_checks'].append({**first,'applicability':second_verdict})
+    before=deepcopy(data)
+    result=reconcile_requirement_checks(data,{'b':'Only heating; heating circuit'})
+    assert result['unresolved']==2
+    assert all(row['status']=='not_checked' for row in result['checks'])
+    assert all(row['reason']=='duplicate_or_conflicting_applicability_checks' for row in result['checks'])
+    assert [row['receipt']['applicability'] for row in result['checks']]==['applies',second_verdict]
+    assert data==before
+
+
+def test_same_requirement_for_distinct_objects_keeps_each_receipt():
+    data=fixture()
+    data['object_registry'].append({'id':'other'})
+    first=data['requirement_applicability_checks'][0]
+    data['requirement_applicability_checks'].append({**first,'object_id':'other','applicability':'does_not_apply'})
+    result=reconcile_requirement_checks(data,{'b':'Only heating; heating circuit'})
+    assert [row['status'] for row in result['checks']]==['reported_applies','reported_does_not_apply']
+    assert result['unresolved']==0
+    assert not result['semantic_verified']

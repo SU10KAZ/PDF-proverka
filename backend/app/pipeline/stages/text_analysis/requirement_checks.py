@@ -27,6 +27,10 @@ def reconcile_requirement_checks(data, text_blocks):
     object_ids=Counter(o.get('id') for o in objects if isinstance(o,dict) and isinstance(o.get('id'),str)) if isinstance(objects,list) else Counter()
     checks=data.get('requirement_applicability_checks',[])
     checks=checks if isinstance(checks,list) else []
+    pair_counts=Counter(
+        (check['requirement_id'],check['object_id']) for check in checks
+        if isinstance(check,dict) and isinstance(check.get('requirement_id'),str)
+        and isinstance(check.get('object_id'),str))
     def quoted(evidence):
         return isinstance(evidence,list) and bool(evidence) and all(
             isinstance(e,dict) and isinstance(e.get('block_id'),str) and e['block_id'] in text_blocks
@@ -42,6 +46,8 @@ def reconcile_requirement_checks(data, text_blocks):
         if not isinstance(oid,str) or object_ids[oid]!=1:
             row['reason']='unknown_or_ambiguous_object';continue
         row.update(requirement_id=check['requirement_id'],object_id=oid)
+        if pair_counts[(check['requirement_id'],oid)]!=1:
+            row['reason']='duplicate_or_conflicting_applicability_checks';continue
         applicability=check.get('applicability')
         if applicability not in ('applies','does_not_apply','unknown') or not isinstance(check.get('reason'),str) or not check['reason'].strip():
             row['reason']='missing_applicability_reason';continue

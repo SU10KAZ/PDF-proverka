@@ -67,7 +67,7 @@
     {
       "id": "H06",
       "status": "partial",
-      "verified_or_implemented_scope": "Requirement scope/edition/quotation checks implemented. ITP source scope and four row quantities reviewed locally.",
+      "verified_or_implemented_scope": "Requirement scope/edition/quotation checks implemented. ITP source scope and four row quantities reviewed locally. Duplicate or conflicting receipts for the same requirement/object pair remain not_checked with original receipts preserved; distinct objects remain separate.",
       "remaining": "Astra ITP applicability pilot awaits payload-specific approval after automatic rejection. Exact catalogue execution and external applicability retrieval remain incomplete.",
       "evidence": []
     },
@@ -124,5 +124,14 @@
     "python_tests_passed": 11,
     "javascript_syntax": "passed",
     "scope": "Executable computed-list tests plus API grouping and Excel roundtrip tests; no browser render or production deployment."
+  },
+  "requirement_conflict_validation": {
+    "passed": 14,
+    "tests": [
+      "tests/test_requirement_checks.py",
+      "tests/test_object_registry.py",
+      "tests/test_object_operation_passes.py"
+    ],
+    "boundary": "Local synthetic controls; no independent source-scope model pilot or semantic acceptance."
   }
 }
