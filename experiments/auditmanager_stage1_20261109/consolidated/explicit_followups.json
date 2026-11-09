@@ -177,6 +177,16 @@
     },
     {
       "candidate_ids": [
+        "B-VK-F-005"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F005_fitting_pressure.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Привязать4 деталиSTPL1011045 к участкамК2 и проверить допустимые режимы соединения по документации изготовителя/поставки и согласованному проектному решению; до этого не считать подтверждённым дефектом прочности."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-VK-F-006"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F006_test_criterion.json",
