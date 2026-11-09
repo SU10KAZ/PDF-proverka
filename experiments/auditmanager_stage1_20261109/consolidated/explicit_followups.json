@@ -171,6 +171,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-029"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить состав поставки 178513 и закупочную ведомость; установить, является ли это комплектом или отдельным изделием, затем уточнить строки и количество без автоматической замены кодов."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-032"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",

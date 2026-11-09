@@ -269,7 +269,7 @@ B-EOM-F-025,EOM,classic_usefulness,Первичная проверка не за
 B-EOM-F-026,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-027,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-028,EOM,classic_usefulness,Первичная проверка не завершена,,,
-B-EOM-F-029,EOM,classic_usefulness,Первичная проверка не завершена,,,
+B-EOM-F-029,EOM,classic_usefulness,shared_product_code_requires_supply_definition,Вопросы и уточнения,"Уточнить идентификацию поставки в СО, лист 18: код 178513 Bolta указан для бетонного держателя токоотвода, шпильки М8, гайки М8 и соединителя СЛУ-50/65. Каждая позиция повторяется в группах по 104 и 82 шт. Указать, обозначает ли код комплект, с раскрытием его состава, либо привести подтверждённые коды отдельных изделий.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json
 B-EOM-F-030,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-031,EOM,classic_usefulness,Первичная проверка не завершена,,,
 B-EOM-F-032,EOM,classic_usefulness,commercial_area_inputs_require_coordination,Вопросы и уточнения,"Согласовать площади коммерческих помещений в расчёте ВРУ-К с экспликациями листов 16 и 26: для 7Н указаны 105,4 в расчёте и 108,1 м² в экспликациях, для 8Н — 68,6 и 63,0 м². Уточнить границы расчётной площади и методику принятия мощности перед корректировкой нагрузок.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json
