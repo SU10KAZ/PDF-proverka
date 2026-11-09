@@ -1,0 +1,137 @@
+{
+  "historical_case": "H-VK-32",
+  "history_source": "experiments/auditmanager_stage1_20261109/decisions/VK32_drain_count_identity.json",
+  "engineer_decision": {
+    "decision": "Отклонено",
+    "reason": "Замечание исходит из того, что количество водосточных воронок в спецификации К2 (12 к-т, стр. 32 PDF) не соответствует расчёту (11 воронок) и плану технического пространства (10 опусков), а модель воронки в спецификации не указана. На планах кровли (стр. 17, 18 PDF) показаны водосточные воронки ВВ-2.1, 2.2 и ВВ-3.1…3.10 — всего 12, что соответствует спецификации; под теми же марками воронки показаны на схемах системы К2 (стр. 26, 27 PDF). Опуски на плане технического пространства +38,640 (стр. 16 PDF) — это стояки К2, к которым присоединяется по нескольку воронок, поэтому их число не равно числу воронок. Расчётная схема (стр. 36, 37 PDF) является однолинейной схемой расходов по участкам водосбора и для подсчёта изделий не предназначена. Модель воронки и её комплектация (корпус HL62.1H/1 DN110, листвоуловитель) приведены в спецификации узла установки воронки (стр. 17 PDF). Исправление проектной документации не требуется.",
+    "assessment": "Основное снятие вывода о лишнем комплекте поддержано схемами. Полнота всех аргументов инженера и отсутствие иных вопросов не подтверждены."
+  },
+  "source_md": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/VK/document.md",
+    "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+  },
+  "specification_row": {
+    "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+    "quote": "| 1 | Водосточная воронка с электроподогревом ф110 |  |  |  | к-т | 12 |  |  |"
+  },
+  "graphics_reinspected_this_pass": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-001/images/blk_bf4a62ad15554778a7859e339ff538cc_6471b342ae3c.png",
+      "sha256": "a481893115616279d2a6429f4beeeb700f858dd5cd6639f47d4c99dde2303065",
+      "block_id": "blk_bf4a62ad15554778a7859e339ff538cc",
+      "directly_viewed": true,
+      "observation": "СхемаК2 секции2: две воронки с маркамиВВ-2.1 иВВ-2.2."
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-34/images/blk_2707c7b12fb2453aaf9a67b91f2b185f_6471b342ae3c.png",
+      "sha256": "466918ad22b94097ef6909d2a785f1dce0b98aedb1d6bdb819149b5a79615ab0",
+      "block_id": "blk_2707c7b12fb2453aaf9a67b91f2b185f",
+      "directly_viewed": true,
+      "observation": "СхемаК2 секции3: воронкиВВ-3.1,3.2 слева,3.3,3.4 сверху,3.5,3.6 в средней ветви,3.7,3.8,3.9,3.10 справа; десять различных маркированных изделий."
+    }
+  ],
+  "manually_observed_inventory": {
+    "section_2": [
+      "ВВ-2.1",
+      "ВВ-2.2"
+    ],
+    "section_3": [
+      "ВВ-3.1",
+      "ВВ-3.2",
+      "ВВ-3.3",
+      "ВВ-3.4",
+      "ВВ-3.5",
+      "ВВ-3.6",
+      "ВВ-3.7",
+      "ВВ-3.8",
+      "ВВ-3.9",
+      "ВВ-3.10"
+    ]
+  },
+  "operation": {
+    "id": "VK32_funnels_scheme_vs_specification",
+    "kind": "sum",
+    "terms": [
+      {
+        "object": "К2 секции 2 и 3",
+        "parameter": "количество водосточных воронок",
+        "unit": "воронка в составе комплекта",
+        "basis": "одна маркированная воронка на комплект; сверка количества, не комплектности",
+        "regime": "проектный состав",
+        "value": "2",
+        "source_refs": [
+          "blk_bf4a62ad15554778a7859e339ff538cc"
+        ]
+      },
+      {
+        "object": "К2 секции 2 и 3",
+        "parameter": "количество водосточных воронок",
+        "unit": "воронка в составе комплекта",
+        "basis": "одна маркированная воронка на комплект; сверка количества, не комплектности",
+        "regime": "проектный состав",
+        "value": "10",
+        "source_refs": [
+          "blk_2707c7b12fb2453aaf9a67b91f2b185f"
+        ]
+      }
+    ],
+    "target": {
+      "object": "К2 секции 2 и 3",
+      "parameter": "количество водосточных воронок",
+      "unit": "воронка в составе комплекта",
+      "basis": "одна маркированная воронка на комплект; сверка количества, не комплектности",
+      "regime": "проектный состав",
+      "value": "12",
+      "source_refs": [
+        "blk_9b1d774c2f6c4127b2f8618e3792a647"
+      ]
+    }
+  },
+  "execution": {
+    "operations": [
+      {
+        "status": "computed",
+        "source_interpretation_verified": false,
+        "id": "VK32_funnels_scheme_vs_specification",
+        "kind": "sum",
+        "comparison_basis": {
+          "object": "К2 секции 2 и 3",
+          "parameter": "количество водосточных воронок",
+          "unit": "воронка в составе комплекта",
+          "basis": "одна маркированная воронка на комплект; сверка количества, не комплектности",
+          "regime": "проектный состав"
+        },
+        "term_sources": [
+          [
+            "blk_bf4a62ad15554778a7859e339ff538cc"
+          ],
+          [
+            "blk_2707c7b12fb2453aaf9a67b91f2b185f"
+          ]
+        ],
+        "target_sources": [
+          "blk_9b1d774c2f6c4127b2f8618e3792a647"
+        ],
+        "calculated": "12",
+        "stated": "12",
+        "difference": "0",
+        "numerically_equal": true,
+        "publication": "review_scope_rounding_and_consequences_before_publication"
+      }
+    ],
+    "computed": 1,
+    "not_checked": 0,
+    "coverage_complete": false
+  },
+  "negative_control": "Do not issue surplus-one-funnel claim by comparing physical funnels with calculation symbols or downpipes. Twelve marked funnels agree numerically with twelve specification kits.",
+  "positive_control_candidate": "H-VK-20 sensor mapping question; not yet replayed as a matched positive control in this pass.",
+  "control_pair_complete": false,
+  "set_balance_not_performed_reason": "Specification gives aggregate quantity, not a list of the twelve marks. Do not invent specification identities to make set comparison pass.",
+  "limits": [
+    "Manual inventory on known graphics, not independent model discovery.",
+    "Roof plans and catchment-to-calculation mapping not checked here.",
+    "Count agreement does not establish kit completeness or hydraulic correctness.",
+    "No universal equivalence of kits and physical objects introduced."
+  ],
+  "new_model_calls": 0
+}
