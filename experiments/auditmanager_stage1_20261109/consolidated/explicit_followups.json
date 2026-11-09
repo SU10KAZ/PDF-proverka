@@ -158,6 +158,16 @@
     },
     {
       "candidate_ids": [
+        "H-EOM-27"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM27_active_socket_circuits.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Установить по исходному расчёту, не включены ли группы в агрегированные строки, и пересчитать затронутые режимы с применимыми коэффициентами. До этого величину дефицита и последствия для оборудования не считать доказанными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-EOM-70",
         "B-EOM-F-008"
       ],
