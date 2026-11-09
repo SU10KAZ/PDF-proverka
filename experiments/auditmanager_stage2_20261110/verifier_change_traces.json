@@ -1,0 +1,2751 @@
+{
+  "summary": {
+    "changed_findings": 21,
+    "no_evidence_changes_with_upstream_refs_and_empty_merge_refs": 19
+  },
+  "code_mechanisms": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/findings_review/deterministic_critic.py",
+      "sha256": "c68aa35cf37b938e410b84919c26cfc4bdb814510be03f029f808951eb2823a9",
+      "symbol": "deterministic_verdict",
+      "line": 337,
+      "behavior": "Empty referenced image/text sets produce no_evidence; not a semantic refutation."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/pipeline/stages/findings_review/deterministic_corrector.py",
+      "sha256": "248cff65548e55c2cb47a59fc6a96b6f31e8e32d6970abf109ebdc4943c481b5",
+      "symbol": "_downgrade_or_flag",
+      "line": 173,
+      "behavior": "Protected severities get human-review flag; others move to cross-check severity."
+    }
+  ],
+  "traces": [
+    {
+      "candidate_id": "B-AK-F-011",
+      "finding_id": "F-011",
+      "discipline": "AK",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "e80bfb2112c7f1f2c8a76f2db4a81416c585bcf9f551c132bfafe9ecd8eaa41f"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/AK/findings_merge.json",
+          "sha256": "b6d1db9271e40fe95ca2e59427570dd303a512dee4e9beac25df5d7a2a36adca"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-009",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "source": "МД стр. 7, раздел 5; стр. 27, условные обозначения; стр. 89, кабельный журнал",
+          "finding": "Общие данные сначала называют четыре завесы У1–У4, затем определяют ведущую У4.3 и ведомые У4.4–У4.6. В кабельном журнале учтены только один клапан, один насос и один термостат, тогда как перечень элементов предусматривает Y1–Y2, M1–M2 и TS1–TS2. Привести обозначения к единому виду и определить подключения второго смесительного узла и второго термостата либо явно указать их комплектную проводку.",
+          "norm": "ГОСТ 21.408-2013, раздел 7",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_3555a6e6bcc443c39eaba461232ceec3",
+            "blk_6e54eb477b59421dbea94ef657f05a46",
+            "blk_1afb9b9bff5242cca6f364f218b96506",
+            "blk_abed08ccd9a347bb9fa290fd8696b197"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-011",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "sheet": "Лист 23",
+        "page": [
+          7,
+          27,
+          89
+        ],
+        "problem": "Не определены подключения второго смесительного узла завес.",
+        "description": "Описание называет завесы У1–У4 и У4.3–У4.6. Перечень элементов содержит Y1–Y2, M1–M2 и TS1–TS2, а кабельный журнал учитывает лишь по одному клапану, насосу и термостату.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить полноту схем соединений и кабельного журнала.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Унифицировать обозначения завес и указать кабели второго узла либо его комплектную проводку.",
+        "risk": "Часть оборудования завес может остаться без управления.",
+        "source_finding_ids": [
+          "T-009"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_523708af1c384b0e8bc6767d93644336",
+          "blk_abed08ccd9a347bb9fa290fd8696b197"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_3555a6e6bcc443c39eaba461232ceec3",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+            "page": 89
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_1afb9b9bff5242cca6f364f218b96506",
+        "blk_3555a6e6bcc443c39eaba461232ceec3",
+        "blk_6e54eb477b59421dbea94ef657f05a46",
+        "blk_abed08ccd9a347bb9fa290fd8696b197"
+      ],
+      "merged_explicit_block_ids": [
+        "blk_3555a6e6bcc443c39eaba461232ceec3",
+        "blk_523708af1c384b0e8bc6767d93644336",
+        "blk_abed08ccd9a347bb9fa290fd8696b197"
+      ],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_1afb9b9bff5242cca6f364f218b96506",
+        "blk_6e54eb477b59421dbea94ef657f05a46"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-011",
+        "changed_fields": [
+          "absence_guard_downgraded",
+          "absence_guard_evidence",
+          "absence_guard_original_severity",
+          "severity"
+        ],
+        "before": {
+          "absence_guard_downgraded": null,
+          "absence_guard_evidence": null,
+          "absence_guard_original_severity": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "absence_guard_downgraded": true,
+          "absence_guard_evidence": "На листе 41 приведены подключения приводов Y1, Y2 и насосов M1, M2 двух смесительных узлов завес.",
+          "absence_guard_original_severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Уточнить соответствие обозначений завес У1–У4 и У4.3–У4.6 в общих данных, а также учёт межприборных участков Y1–Y2, M1–M2 и TS1–TS2: схема внешних подключений эти соединения показывает, но отдельные строки раздела ВТЗ КЖ лист31 перечисляют линии к первым устройствам.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-AK-F-021",
+      "finding_id": "F-021",
+      "discipline": "AK",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "e80bfb2112c7f1f2c8a76f2db4a81416c585bcf9f551c132bfafe9ecd8eaa41f"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/AK/findings_merge.json",
+          "sha256": "b6d1db9271e40fe95ca2e59427570dd303a512dee4e9beac25df5d7a2a36adca"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json",
+          "sha256": "e1221c563cfdf13442cf7197a43f4a81a8ce262ec4f68a3bbd2c69a5afa1d6fc"
+        }
+      ],
+      "text_candidates": [],
+      "merged_finding": {
+        "id": "F-021",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "sheet": "Лист 39",
+        "page": 43,
+        "problem": "Кабель насоса M4 отсутствует в перечне материалов.",
+        "description": "На схеме внешних подключений указан ППГнг(А)-HF 5×4 мм² длиной 15 м; соответствующая позиция в переданной спецификации листа не установлена.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить полноту учёта кабеля в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-066"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-066"
+                ],
+                "designation_source": "analysis candidate"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить питание насоса и включить требуемый кабель в спецификацию.",
+        "risk": "Недопоставка кабеля для насоса.",
+        "source_finding_ids": [
+          "G-066"
+        ],
+        "source_block_ids": [
+          "blk_0c71a5773a2348d0822a526b8c88b16a"
+        ],
+        "related_block_ids": [
+          "blk_0c71a5773a2348d0822a526b8c88b16a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_0c71a5773a2348d0822a526b8c88b16a",
+            "page": 43
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-sol",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-066",
+              "mode": "independent",
+              "detected_at": "2026-11-06T23:04:11.145816+00:00",
+              "context_source": "structured_alia_scheme"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6.1-sol",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 65,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [],
+      "merged_explicit_block_ids": [
+        "blk_0c71a5773a2348d0822a526b8c88b16a"
+      ],
+      "source_refs_absent_from_explicit_merge_fields": [],
+      "observed_verifier_change": {
+        "finding_id": "F-021",
+        "changed_fields": [
+          "absence_guard_downgraded",
+          "absence_guard_evidence",
+          "absence_guard_original_severity",
+          "severity"
+        ],
+        "before": {
+          "absence_guard_downgraded": null,
+          "absence_guard_evidence": null,
+          "absence_guard_original_severity": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "absence_guard_downgraded": true,
+          "absence_guard_evidence": "На листе 29 показано подключение M4, а в перечне материалов предусмотрен кабель ППГнг(A)-HF 3x1,5 мм².",
+          "absence_guard_original_severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": null,
+      "adjudicated_wording": "Снять замечание о неучтённом кабеле5×4,15м: линия Пкр6.1-13 кM4 на схеме обозначена3×1,5,15м. Ведомость листа39 содержит75м3×1,5, что совпадает с суммой трёх линий схемы15+45+15м, включая насос.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-001",
+      "finding_id": "F-001",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F001_cable_description.json",
+          "sha256": "905f1f26daecb1841c99b8c7c2a70103cf60d545a0bb95358d82e9267004b5e5"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-001",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "cable",
+          "source": "МД стр. 3, лист 1, раздел 4; стр. 41, спецификация кабелей.",
+          "finding": "В общих указаниях кабели ППГнг(А)-HF описаны как имеющие ПВХ-изоляцию и ПВХ-оболочку, тогда как спецификация предусматривает безгалогенные полимерные композиции. Описание материала противоречит выбранной марке и создаёт неоднозначность закупки. Привести требования к изоляции и оболочке в соответствие с маркой и пожарными характеристиками кабеля.",
+          "norm": "ГОСТ 31996-2012, раздел 4; ГОСТ 31565-2012, таблица 2.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957",
+            "blk_67c8cc82d7e24f738797d9b75ce14e97"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-001",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable",
+        "sheet": "Листы 1, 5",
+        "page": [
+          3,
+          41
+        ],
+        "problem": "Материал кабеля ППГнг(А)-HF описан противоречиво",
+        "description": "Общие указания называют изоляцию и оболочку кабеля выполненными из ПВХ, а спецификация предусматривает безгалогенные полимерные композиции.",
+        "norm": "ГОСТ 31996-2012 (норматив-кандидат), пункт не подтверждён; ГОСТ 31565-2012 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 31996-2012",
+            "cited_designation": "ГОСТ 31996-2012",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить обозначение и конструкцию силового кабеля.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 31565-2012",
+            "cited_designation": "ГОСТ 31565-2012",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить пожарные характеристики кабеля.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать описание материала изоляции и оболочки с выбранной маркой кабеля и спецификацией.",
+        "risk": "Неоднозначность закупки и поставка кабеля с иными характеристиками.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_67c8cc82d7e24f738797d9b75ce14e97",
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_67c8cc82d7e24f738797d9b75ce14e97",
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-001",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Согласовать описание ППГнг(A)-HF: общие данные называют изоляцию и оболочку ПВХ, а СО описывает полимерные композиции с отсутствием выделения коррозионно-активных газообразных продуктов при горении и тлении. Уточнить описание по принятой марке и подтверждённым данным изделия.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-003",
+      "finding_id": "F-003",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+          "sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-003",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "calculation",
+          "source": "МД стр. 4, лист 2.1, таблица нагрузок ВРУ-2, панель РП5.",
+          "finding": "Сумма установленных мощностей перечисленных потребителей РП5 составляет 94,5 кВт вместо 94,1 кВт. Сумма их расчётных мощностей составляет 89,9 кВт вместо пожарного итога 89,5 кВт. Оба расхождения равны мощности клапанов ОЗК и ДУ — 0,4 кВт, что указывает на возможный пропуск этой строки. Проверить включение клапанов в пожарный режим и пересчитать сводные нагрузки.",
+          "norm": "СП 256.1325800.2016, раздел 7.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_c5f0556f94c14503bfe178ef5941c077"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "calculation",
+        "sheet": "Лист 2.1",
+        "page": 4,
+        "problem": "В итогах РП5 ВРУ-2 возможно не учтены клапаны",
+        "description": "Сумма установленных мощностей перечисленных потребителей составляет 94,5 кВт вместо 94,1 кВт, расчётных мощностей пожарного режима — 89,9 кВт вместо 89,5 кВт. Оба расхождения равны мощности клапанов ОЗК и ДУ 0,4 кВт.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить учёт нагрузок противопожарных систем.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить включение клапанов в пожарный режим и пересчитать итоговые нагрузки.",
+        "risk": "Занижение расчётной нагрузки оборудования пожарного режима.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_c5f0556f94c14503bfe178ef5941c077"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_c5f0556f94c14503bfe178ef5941c077"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-003",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Проверить итоги РП5: сумма перечисленных Py94,5кВт против94,1; сумма перечисленных Pp89,9кВт против89,5 в строке «Pp.лож». Расхождения по0,4кВт совпадают с мощностью C2518.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-030",
+      "finding_id": "F-030",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F030_CT_minimum_substitutions.json",
+          "sha256": "537dee4a137c78461c807d74d1def9412b209d680414692bc6b0dbd638082946"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-007",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "current_transformer",
+          "source": "МД стр. 4 и 6, листы 2.1 и 3, таблицы проверки ТТ, строка минимальной нагрузки.",
+          "finding": "При проверке минимального тока счётчиков ВРУ-2 и ВРУ-3 подставлены 77 и 74 А, которые не соответствуют рассчитанной выше минимальной нагрузке. Для ВРУ-2 следует подставлять около 23,9 и 30,6 А: вторичные токи 0,341 и 0,383 А. Для ВРУ-3 — 39,4 и 28,6 А: 0,394 и 0,358 А. Эти значения также превышают 5% от 5 А, однако опубликованное расчётное обоснование необходимо исправить.",
+          "norm": "ПУЭ, пункт 1.5.17.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_7d22e811017e4e969b2d732e9e30c50d",
+            "blk_7ca68a936c85428dbd4b60b2893398a2"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-030",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "current_transformer",
+        "sheet": "Листы 2.1, 3",
+        "page": [
+          4,
+          6
+        ],
+        "problem": "Проверка минимальной нагрузки трансформаторов тока выполнена с неверными исходными токами",
+        "description": "В расчёты ВРУ-2 и ВРУ-3 подставлены 77 и 74 А вместо рассчитанных минимальных токов. Для ВРУ-2 вторичные токи составляют около 0,341 и 0,383 А, для ВРУ-3 — 0,394 и 0,358 А. Значения превышают 0,25 А, но опубликованное обоснование требует исправления.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.5.17",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить выбор трансформаторов тока при минимальной нагрузке.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": "1.5.17",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подставить рассчитанные минимальные первичные токи и исправить таблицы проверки.",
+        "risk": "Недостоверное обоснование точности коммерческого учёта.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2",
+        "blk_7d22e811017e4e969b2d732e9e30c50d"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2",
+        "blk_7d22e811017e4e969b2d732e9e30c50d"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-030",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "В проверках ТТ ВРУ-2 и ВРУ-3 строка4 использует числители77 и74А вместо минимальных токов из строки2. Для ВРУ-2 из23,9/70 и30,6/80 получаются0,341 и0,3825А; для ВРУ-3 из39,4/100 и28,6/80 —0,394 и0,3575А. Согласуйте подстановки. Все результаты остаются выше порога0,1А, указанного в самих таблицах.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-031",
+      "finding_id": "F-031",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F031_CT_emergency_assumptions.json",
+          "sha256": "170491373e1f56f3edabfeeba46b1bd400c09a887065f8bcc05472f567d8e71a"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-008",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "current_transformer",
+          "source": "МД стр. 4, 6 и 7, таблицы выбора ТТ и сводные таблицы режимов.",
+          "finding": "В расчётах ТТ приняты максимальные токи 384,1 А для ВРУ-2 и 465,1 А для ВРУ-3, тогда как в сводных таблицах с компенсацией приведены 390,3 и 471,4 А. Номиналы выбираются с допущением 20% перегрузки, но конкретные исполнения ТТ и допустимость такой длительной нагрузки не указаны. Согласовать максимальные токи и подтвердить по паспортам допустимую нагрузку и точность учёта, особенно для ТТ 400/5 ВРУ-3.",
+          "norm": "ПУЭ, пункты 1.5.16 и 1.5.17.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_c5f0556f94c14503bfe178ef5941c077",
+            "blk_7d22e811017e4e969b2d732e9e30c50d",
+            "blk_5b30188592764230a7cd894838a60430",
+            "blk_7ca68a936c85428dbd4b60b2893398a2"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-031",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "current_transformer",
+        "sheet": "Листы 2.1, 3, 4",
+        "page": [
+          4,
+          6,
+          7
+        ],
+        "problem": "Максимальные токи в проверке ТТ расходятся со сводными таблицами",
+        "description": "Для ВРУ-2 и ВРУ-3 в расчётах ТТ приняты 384,1 и 465,1 А, тогда как сводные таблицы с компенсацией дают 390,3 и 471,4 А. Допустимость принятой 20-процентной перегрузки конкретных ТТ паспортами не подтверждена.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.5.16",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить выбор ТТ по максимальному току и условиям учёта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": "1.5.16",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать расчётные токи и подтвердить допустимую длительную нагрузку и точность конкретных ТТ по паспортам.",
+        "risk": "Перегрузка ТТ либо нарушение точности учёта.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 35,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_5b30188592764230a7cd894838a60430",
+        "blk_7ca68a936c85428dbd4b60b2893398a2",
+        "blk_7d22e811017e4e969b2d732e9e30c50d",
+        "blk_c5f0556f94c14503bfe178ef5941c077"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_5b30188592764230a7cd894838a60430",
+        "blk_7ca68a936c85428dbd4b60b2893398a2",
+        "blk_7d22e811017e4e969b2d732e9e30c50d",
+        "blk_c5f0556f94c14503bfe178ef5941c077"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-031",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "В расчёте ТТ ВРУ-2 принято Iаб=384,1А, ВРУ-3 —465,1А. В сводных строках «Авар. Пожар» с компенсацией в столбце Ip указаны390,3 и471,4 соответственно. Согласуйте режим и исходные значения, уточните единицы Ip и основание допустимой20-процентной перегрузки выбранных ТТ.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-032",
+      "finding_id": "F-032",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
+          "sha256": "5162f21dcede7066fb3d1512cd551bef5cf76a3746d6360ac9d9959a69283c99"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-009",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "calculation",
+          "source": "МД стр. 7, таблица ВРУ-К; стр. 19 и 28, экспликации коммерческих помещений.",
+          "finding": "Площади коммерческих помещений в расчёте ВРУ-К расходятся с экспликацией: для 7Н принято 105,4 м² вместо 108,1 м², для 8Н — 68,6 м² вместо 63,0 м². При использовании показателя 0,22 кВт/м² нагрузка 7Н по экспликации составляет 23,782 кВт вместо 23,2 кВт. Согласовать площади и основание назначения мощности; для помещений с принятой минимальной мощностью 20 кВт отдельно указать это условие.",
+          "norm": "СП 256.1325800.2016, раздел 7.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_fb5f780dae7a475ca6c249f62b64771e",
+            "blk_f2b273baee994702906a6e5d94a43063",
+            "blk_29be4ff018f040daaa2000c0a3ebde08"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-032",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "calculation",
+        "sheet": "Листы 4, 16, 26",
+        "page": [
+          7,
+          19,
+          28
+        ],
+        "problem": "Площади помещений 7Н и 8Н в расчёте ВРУ-К отличаются от экспликации",
+        "description": "В расчёте для 7Н принято 105,4 м² вместо 108,1 м², для 8Н — 68,6 м² вместо 63,0 м². При показателе 0,22 кВт/м² нагрузка 7Н по экспликации составляет 23,782 кВт вместо 23,2 кВт.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить исходные площади и удельную нагрузку встроенных помещений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать площади с экспликацией и отдельно указать основания принятой минимальной мощности.",
+        "risk": "Недостоверные нагрузки коммерческих помещений.",
+        "source_finding_ids": [
+          "T-009"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_29be4ff018f040daaa2000c0a3ebde08",
+        "blk_f2b273baee994702906a6e5d94a43063",
+        "blk_fb5f780dae7a475ca6c249f62b64771e"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_29be4ff018f040daaa2000c0a3ebde08",
+        "blk_f2b273baee994702906a6e5d94a43063",
+        "blk_fb5f780dae7a475ca6c249f62b64771e"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-032",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Согласовать площади коммерческих помещений в расчёте ВРУ-К с экспликациями листов 16 и 26: для 7Н указаны 105,4 в расчёте и 108,1 м² в экспликациях, для 8Н — 68,6 и 63,0 м². Уточнить границы расчётной площади и методику принятия мощности перед корректировкой нагрузок.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-033",
+      "finding_id": "F-033",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F033_apartment_board_scope.json",
+          "sha256": "733ea2ad8e0939b80ecb45e225de97885ae4879d5e2d56470b01ce7441c11a83"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-012",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "documentation",
+          "source": "МД стр. 3, описание квартирного электроснабжения; стр. 12–14, примечания; стр. 38, спецификация.",
+          "finding": "Общие указания относят установку внутриквартирных щитов к собственникам, примечания предусматривают временные щиты механизации на период отделки, но спецификация содержит 90 квартирных щитов учёта с автоматикой. Количество соответствует числу квартир, однако назначение поставляемых щитов не определено однозначно. Уточнить, являются ли эти позиции временными щитами, и согласовать границу поставки.",
+          "norm": "ГОСТ 21.110-2013, раздел 4.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957",
+            "blk_16237a8ebd10423194e4a2b0f4b82c26",
+            "blk_73536f4c222b401e8da714ed88d23fce",
+            "blk_17ebeac60c9b497cb8c124a8e3b66068",
+            "blk_7170586af51c43f79c96734a40269d7d"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-033",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "sheet": "Листы 1, 9, 10, 11, 2",
+        "page": [
+          3,
+          12,
+          13,
+          14,
+          38
+        ],
+        "problem": "Назначение 90 квартирных щитов в поставке не определено однозначно",
+        "description": "Общие указания относят установку внутриквартирных щитов к собственникам, примечания предусматривают временные щиты на период отделки, а спецификация содержит 90 квартирных щитов учёта с автоматикой.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить состав и границу поставки оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить, являются ли щиты временными или постоянными, и согласовать границу поставки.",
+        "risk": "Ошибки комплектации и распределения ответственности.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_16237a8ebd10423194e4a2b0f4b82c26",
+        "blk_17ebeac60c9b497cb8c124a8e3b66068",
+        "blk_7170586af51c43f79c96734a40269d7d",
+        "blk_73536f4c222b401e8da714ed88d23fce",
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_16237a8ebd10423194e4a2b0f4b82c26",
+        "blk_17ebeac60c9b497cb8c124a8e3b66068",
+        "blk_7170586af51c43f79c96734a40269d7d",
+        "blk_73536f4c222b401e8da714ed88d23fce",
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-033",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Уточнить назначение и границу поставки 90 квартирных щитов в СО (63 шт. 3ЩКВ и 27 шт. 2ЩКВ с автоматикой): общие указания относят установку внутриквартирного щита к собственнику, а примечания листов 10–11 предусматривают временный щит механизации вместо квартирного на период отделки. Отразить, к какому этапу и чьему объёму относятся позиции СО.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-034",
+      "finding_id": "F-034",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+          "sha256": "a63aa0206c93f1d384029fc98b7d1b4c335e25505edd3672d091df494b1d711a"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-013",
+          "severity": "ЭКОНОМИЧЕСКОЕ",
+          "category": "documentation",
+          "source": "МД стр. 42, спецификация труб и креплений.",
+          "finding": "Труба безгалогенная гофрированная диаметром 32 мм включена дважды с одинаковым описанием и количеством 190 м. Два ряда дают 380 м без разграничения участков. Проверить повтор и исключить двойной учёт либо указать назначение каждой строки.",
+          "norm": "ГОСТ 21.110-2013, раздел 4.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_1da24da5ad594599aa59defe9fde265b"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-034",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "documentation",
+        "sheet": "Лист 6",
+        "page": 42,
+        "problem": "Гофрированная труба 32 мм повторена в спецификации",
+        "description": "Одинаковая безгалогенная гофрированная труба диаметром 32 мм указана дважды по 190 м, что даёт суммарно 380 м без разделения участков.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить количество и недублирование позиций спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить повтор и удалить дублирующую строку либо указать назначение каждой позиции.",
+        "risk": "Избыточная закупка 190 м трубы.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_1da24da5ad594599aa59defe9fde265b"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_1da24da5ad594599aa59defe9fde265b"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-034",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "requires_human_review"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "requires_human_review": null
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "requires_human_review": true
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Уточнить назначение двух одинаковых строк гофрированной безгалогенной трубы Ø32 по 190 м в СО, лист 6: являются ли они объёмами разных участков или повтором одной потребности. Формальная сумма строк — 380 м.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-035",
+      "finding_id": "F-035",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+          "sha256": "d2fdf2b0a62b954bc12f46539bcc5944fc1413db62c61166ff991b5d317f8177"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-014",
+          "severity": "ЭКОНОМИЧЕСКОЕ",
+          "category": "documentation",
+          "source": "МД стр. 44, спецификация лотков помещения ВРУ-2.",
+          "finding": "В пределах одного перечня дважды последовательно записаны соединитель LG1000 по 96 шт. и винт СМ010620 по 768 шт. В результате получается 192 соединителя и 1536 винтов. Проверить, относятся ли повторные строки к самостоятельным участкам; при отсутствии такого основания удалить повтор.",
+          "norm": "ГОСТ 21.110-2013, раздел 4.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_0779457166304b91a87d7b7902f8359f"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-035",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "documentation",
+        "sheet": "Лист 8",
+        "page": 44,
+        "problem": "Соединители и винты ВРУ-2 повторены в перечне",
+        "description": "Последовательно дважды записаны соединитель LG1000 по 96 шт. и винт СМ010620 по 768 шт. Итоги становятся 192 соединителя и 1536 винтов.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить количество изделий и исключение дублей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-014"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить принадлежность повторных строк; при отсутствии отдельных участков удалить повтор.",
+        "risk": "Избыточная закупка крепежа.",
+        "source_finding_ids": [
+          "T-014"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_0779457166304b91a87d7b7902f8359f"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_0779457166304b91a87d7b7902f8359f"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-035",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "requires_human_review"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "requires_human_review": null
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "requires_human_review": true
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Уточнить повтор пары LG1000 по 96 шт. и СМ010620 по 768 шт. в разделе ВРУ-2, СО лист 8. Две пары дают 192 соединителя и 1536 винтов. Указать участки их применения или подтвердить ошибочное повторение.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-036",
+      "finding_id": "F-036",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+          "sha256": "4e9118267e89143c1c088e4a42e68b3b72d0bd1650e9b643f6bc1993fcf2eb85"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-015",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "source": "МД стр. 49, 51–54, спецификация лотков.",
+          "finding": "Один артикул ДКС 3530410 указан для перфорированного лотка 200×80 на первом и жилых этажах и для неперфорированного лотка того же размера в технических пространствах. Заказ по одинаковому артикулу не обеспечивает два разных исполнения. Уточнить требуемую перфорацию и исправить артикулы по каталогу.",
+          "norm": "ГОСТ 21.110-2013, раздел 4.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_448a82ffb63145aa96b55305485c4ee5",
+            "blk_7d46590ad5b64af08f435cadad0053cd",
+            "blk_e106d0b41bf9480aaf187ef2259994db",
+            "blk_79370c7a344c44559b2d828291b6a1b6",
+            "blk_f3f718605a024394b9026b08fa4c9b20"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-036",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "sheet": "Листы 13, 15, 16, 17, 18",
+        "page": [
+          49,
+          51,
+          52,
+          53,
+          54
+        ],
+        "problem": "Один артикул лотка указан для двух исполнений",
+        "description": "Артикул ДКС 3530410 назначен перфорированному и неперфорированному лотку 200×80 мм на разных этажах.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить однозначность обозначения изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-015"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить каталог производителя и указать правильные артикулы для каждого исполнения.",
+        "risk": "Поставка лотков с неверной перфорацией.",
+        "source_finding_ids": [
+          "T-015"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_448a82ffb63145aa96b55305485c4ee5",
+        "blk_79370c7a344c44559b2d828291b6a1b6",
+        "blk_7d46590ad5b64af08f435cadad0053cd",
+        "blk_e106d0b41bf9480aaf187ef2259994db",
+        "blk_f3f718605a024394b9026b08fa4c9b20"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_448a82ffb63145aa96b55305485c4ee5",
+        "blk_79370c7a344c44559b2d828291b6a1b6",
+        "blk_7d46590ad5b64af08f435cadad0053cd",
+        "blk_e106d0b41bf9480aaf187ef2259994db",
+        "blk_f3f718605a024394b9026b08fa4c9b20"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-036",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Согласовать исполнение и код лотка 200×80 L3000 толщиной 1,0 мм: артикул ДКС 3530410 указан для перфорированного лотка первого этажа и неперфорированных лотков техпространств +38,690, +41,290 и +44,650. Установить требуемое исполнение по участкам и привести наименования и коды в соответствие.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-037",
+      "finding_id": "F-037",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+          "sha256": "15432598db63ee87b27c7deece7cbcede488860c1944a00c2f5ef1fa513caa1f"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-016",
+          "severity": "ЭКОНОМИЧЕСКОЕ",
+          "category": "documentation",
+          "source": "МД стр. 53–54, спецификация технических пространств.",
+          "finding": "Метраж крышек меньше метража лотков, для которых предусмотрены крышки: на отметке +38,690 — 126 м против 130 м, на +41,290 — 55 м против 57 м, на +44,650 — 40 м против 41 м. Суммарная разница составляет 7 м. Уточнить участки без крышек либо увеличить их количество.",
+          "norm": "ГОСТ 21.110-2013, раздел 4.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_79370c7a344c44559b2d828291b6a1b6",
+            "blk_f3f718605a024394b9026b08fa4c9b20"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-037",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "documentation",
+        "sheet": "Листы 17, 18",
+        "page": [
+          53,
+          54
+        ],
+        "problem": "Крышек для лотков предусмотрено на 7 м меньше",
+        "description": "На отметках +38,690, +41,290 и +44,650 указано соответственно 126 м крышек на 130 м лотков, 55 м на 57 м и 40 м на 41 м.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить количественную согласованность комплектующих.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-016"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать участки без крышек либо дополнить спецификацию на 7 м.",
+        "risk": "Недокомплект крышек при монтаже.",
+        "source_finding_ids": [
+          "T-016"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_79370c7a344c44559b2d828291b6a1b6",
+        "blk_f3f718605a024394b9026b08fa4c9b20"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_79370c7a344c44559b2d828291b6a1b6",
+        "blk_f3f718605a024394b9026b08fa4c9b20"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-037",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "requires_human_review"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "requires_human_review": null
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "requires_human_review": true
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Согласовать метраж лотков 3530410 и крышек 3552410 с длиной закрываемых участков: на отметке +38,690 указано 130/126 м, +41,290 — 57/55 м, +44,650 — 41/40 м. Разница по этим трём подразделам составляет 7 м. Уточнить запас и участки без крышек до корректировки количества.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-038",
+      "finding_id": "F-038",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+          "sha256": "96f4c1648640eb1c94ca979a73869993ab04a7359a183655ca07a3807fe43e64"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-018",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "documentation",
+          "source": "МД стр. 42, спецификация креплений труб.",
+          "finding": "Клипсы для труб диаметром 25 и 32 мм учтены в метрах, соответственно 2345 и 190, с совпадением чисел с метражом труб. Для штучных держателей количество креплений этим не определено. Указать единицу «шт.» и рассчитать количество по принятому шагу крепления.",
+          "norm": "ГОСТ 21.110-2013, раздел 4.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_1da24da5ad594599aa59defe9fde265b"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-038",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "sheet": "Лист 6",
+        "page": 42,
+        "problem": "Количество клипс для труб указано в метрах",
+        "description": "Клипсы для труб 25 и 32 мм учтены соответственно как 2345 и 190 м; эти числа совпадают с метражом труб и не определяют количество штучных креплений.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить единицы измерения и количество изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать единицу «шт.» и вычислить количество по принятому шагу крепления.",
+        "risk": "Неправильная закупка держателей.",
+        "source_finding_ids": [
+          "T-018"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_1da24da5ad594599aa59defe9fde265b"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_1da24da5ad594599aa59defe9fde265b"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-038",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Уточнить единицы и количество клипс Ø25/Ø32 на листе 6 СО: указаны 2345 и 190 м, что не задаёт количество отдельных держателей. Представить количество креплений с основанием расчёта.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-039",
+      "finding_id": "F-039",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F039_frame_capacity.json",
+          "sha256": "a1d31ff9ed8eb3319579cf81a42e523bb9007502dc39096902d226b85774ebda"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-019",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "documentation",
+          "source": "МД стр. 40, спецификация электроустановочных изделий.",
+          "finding": "Для 56 карбоновых розеток предусмотрены 51 однопостовая и 5 двухпостовых рамок, то есть 61 посадочное место. При размещении пяти пар розеток потребовались бы 46 однопостовых рамок. Уточнить комплектацию рамок и подрозетников; возможный запас или размещение других механизмов обозначить явно.",
+          "norm": "ГОСТ 21.110-2013, раздел 4.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_99cc8bf95861437186be76b36e9d446b"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-039",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "sheet": "Лист 4",
+        "page": 40,
+        "problem": "Количество рамок не согласовано с количеством розеток",
+        "description": "Для 56 розеток предусмотрены 51 однопостовая и 5 двухпостовых рамок, всего 61 посадочное место. При пяти парах розеток потребовались бы 46 однопостовых рамок.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.75,
+            "reason": "Проверить комплектность электроустановочных изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-019"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-019"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить распределение механизмов по рамкам и обозначить предусмотренный запас.",
+        "risk": "Избыточная либо неполная комплектация.",
+        "source_finding_ids": [
+          "T-019"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 53,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_99cc8bf95861437186be76b36e9d446b"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_99cc8bf95861437186be76b36e9d446b"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-039",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Уточнить раскладку карбоновых электроустановочных изделий по АИ и MAF: для 56 одноместных розеток указаны 51 однопостовая и 5 двухпостовых рамок, всего 61 пост. Указать назначение остальных постов или запас перед изменением количества рамок.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-040",
+      "finding_id": "F-040",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F040_parking_sum_refuted.json",
+          "sha256": "80f9efbe1165cbf69cd274cf70c536c6fdc4ca0a31b3493bdadd03be31b8057c"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-020",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "calculation",
+          "source": "МД стр. 18 и 27, экспликации машино-мест.",
+          "finding": "Сумма площадей всех опубликованных строк машино-мест составляет 1622,7 м², а итог указан 1636,5 м². Разница 13,8 м² равна площади одного типового места 5300×2600 мм и существенно превышает возможное накопление округлений. Проверить пропущенную строку либо исправить итог в обеих повторяющихся таблицах.",
+          "norm": null,
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_99098cf6f63347aca6b7e76e43ab3336",
+            "blk_53e5d0ecb2fe4e9480416db361afefda"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-040",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "calculation",
+        "sheet": "Листы 15, 25",
+        "page": [
+          18,
+          27
+        ],
+        "problem": "Итог площади машино-мест превышает сумму строк",
+        "description": "Сумма опубликованных площадей составляет 1622,7 м², итог — 1636,5 м². Разница 13,8 м² равна площади одного типового места 5300×2600 мм.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проверить пропущенную строку либо исправить итог в обеих таблицах.",
+        "risk": "Недостоверные исходные площади для смежных расчётов.",
+        "source_finding_ids": [
+          "T-020"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_53e5d0ecb2fe4e9480416db361afefda",
+        "blk_99098cf6f63347aca6b7e76e43ab3336"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_53e5d0ecb2fe4e9480416db361afefda",
+        "blk_99098cf6f63347aca6b7e76e43ab3336"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-040",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": null,
+      "adjudicated_wording": "Не выпускать F-040: сумма опубликованных площадей всех 89 строк 1501–1589 равна 1636,5 м² в обеих экспликациях и совпадает с итогом. Заявленная сумма 1622,7 м² и разница 13,8 м² опровергнуты.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-041",
+      "finding_id": "F-041",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F041_F048_contradictory_norm_status.json",
+          "sha256": "777df2fb3800db17423feed421e17427a9394ad86256c34011b7650b31fdc47f"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-021",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "normative_refs",
+          "source": "МД стр. 3, лист 1, раздел 4.",
+          "finding": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+          "norm": "ГОСТ 33542-2015, предисловие, пункт 5; раздел 6.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-041",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Ссылка на стандарт идентификации проводников устарела",
+        "description": "В общих указаниях приведён ГОСТ Р 50462-2009, имеющий статус «заменён» согласно предоставленному перечню нормативных ссылок.",
+        "norm": "ГОСТ Р 50462-2009 (норматив-кандидат), пункт не подтверждён; ГОСТ 33542-2015 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 50462-2009",
+            "cited_designation": "ГОСТ Р 50462-2009",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить статус документа, на который ссылается проект.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 33542-2015",
+            "cited_designation": "ГОСТ 33542-2015",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить актуальные правила идентификации проводников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Актуализировать ссылку и согласовать указания по цветовой маркировке.",
+        "risk": "Неоднозначное применение требований к идентификации проводников.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 21,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "formal_reference_category",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-041",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": null,
+      "adjudicated_wording": "Не выпускать F-041/F-048 как требование заменить отменённый ГОСТ Р50462-2009: официальная карточка показывает действующий статус, а локальная подсказка противоречит собственным полям. Сохранить проверку качества справочника отдельно от замечаний проекту.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-042",
+      "finding_id": "F-042",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F042_SPZ_legend_scope.json",
+          "sha256": "8c770016e591be6e1ee95b9176a5d5aba5cbfd37c147f904cd2563a9209e4b3d"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-022",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "fire_safety",
+          "source": "МД стр. 3, раздел 4; стр. 18, 20–23, примечания к планам и условные обозначения.",
+          "finding": "Общие указания запрещают совместную прокладку СПЗ с другими кабелями на одном лотке, но повторяющиеся примечания и легенды объединяют «СПЗ и нагрузки I категории» в одно обозначение лотка. Потребители I категории включают также оборудование, не относящееся к СПЗ. Уточнить указания так, чтобы отдельная трасса СПЗ была однозначно отделена от прочих сетей; фактическое нарушение прокладки по тексту не установлено.",
+          "norm": "Федеральный закон №123-ФЗ, статья 82, часть 2; конкретный пункт СП 6.13130 следует проверить по принятой редакции.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957",
+            "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+            "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+            "blk_628818db493e46e7bdccc75b01afbd16"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-042",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "fire_safety",
+        "sheet": "Листы 1, 15, 18, 19, 20, 21",
+        "page": [
+          3,
+          18,
+          20,
+          21,
+          22,
+          23
+        ],
+        "problem": "Обозначение трасс СПЗ и остальных потребителей I категории неоднозначно",
+        "description": "Общие указания запрещают совместную прокладку кабелей СПЗ с другими кабелями на одном лотке, но повторяющиеся легенды объединяют «СПЗ и нагрузки I категории» в одно обозначение. Фактическая совместная прокладка по переданным данным не установлена.",
+        "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён; СП 6.13130.2025 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к электроснабжению систем противопожарной защиты.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-022"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 6.13130.2025",
+            "cited_designation": "СП 6.13130.2025",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к трассам кабелей СПЗ в применённой редакции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-022"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Разделить в легендах обозначения трасс СПЗ и прочих сетей I категории; проверить фактические трассы.",
+        "risk": "Монтаж кабелей с нарушением принятого разделения трасс.",
+        "source_finding_ids": [
+          "T-022"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+        "blk_628818db493e46e7bdccc75b01afbd16",
+        "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+        "blk_628818db493e46e7bdccc75b01afbd16",
+        "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-042",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "В текстах легенд листов18–21 указано «Кабель проложенный в лотке СПЗ и нагрузок I категории», тогда как общие указания запрещают совместную прокладку СПЗ с другими кабелями на одном лотке. Уточните, как на планах различаются эти трассы и их состав; объединённая формулировка сама по себе не устанавливает физическое объединение.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-043",
+      "finding_id": "F-043",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F043_hanger_fireproofing_supply.json",
+          "sha256": "c635932a8d19138d1870cc16af9486c5aeab7f54456fa941f43692eb5b52e434"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-023",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "fire_safety",
+          "source": "МД стр. 27, спецификация материалов ОСК-180; стр. 55–56, заключительные листы общей спецификации.",
+          "finding": "В локальном составе ОСК-180 предусмотрен огнезащитный материал МБОР толщиной 10 мм для защиты подвесов. В общей спецификации приведены плиты ФК-10, решётки, минераловатный утеплитель и герметик, но отдельная позиция МБОР и её количество отсутствуют. Уточнить комплектность поставки и учесть защиту подвесов в соответствии с подтверждённым исполнением ОСК-180.",
+          "norm": "ГОСТ 21.110-2013, раздел 4; Федеральный закон №123-ФЗ, статья 137.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+            "blk_82bd0b6201d04037beca3195d87933ce",
+            "blk_8a5db6616dac4b8bbe73c13b7c54a140"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-043",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "fire_safety",
+        "sheet": "Листы 25, 19, 20",
+        "page": [
+          27,
+          55,
+          56
+        ],
+        "problem": "Материал защиты подвесов ОСК-180 отсутствует в общей спецификации",
+        "description": "Локальный состав ОСК-180 предусматривает МБОР толщиной 10 мм для защиты подвесов, но в общей спецификации отдельная позиция МБОР и её количество не приведены.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён; ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить полноту общей спецификации материалов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.7,
+            "reason": "Проверить подтверждённое огнестойкое исполнение конструкции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить подтверждённый состав ОСК-180 и включить защиту подвесов в комплект поставки.",
+        "risk": "Неполное исполнение огнезащитной конструкции.",
+        "source_finding_ids": [
+          "T-023"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 41,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_82bd0b6201d04037beca3195d87933ce",
+        "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+        "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_82bd0b6201d04037beca3195d87933ce",
+        "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+        "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-043",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "ЭКСПЛУАТАЦИОННОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "Локальная спецификация ОСК-180 предусматривает МБОР10мм для защиты подвесов (позиция5). В прочитанном разделе общей СО, листы19–20, отдельная позиция МБОР не указана; на листе20 есть утеплитель50мм для другого слоя. Уточните позицию учёта, количество и комплектность материала защиты подвесов.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-044",
+      "finding_id": "F-044",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F044_F045_incomplete_reference_identity.json",
+          "sha256": "ea77298204f5f47fec14183ada91f47f7de67218bd30c44c9a3164e9ef567fc9"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-021",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "normative_refs",
+          "source": "МД стр. 3, лист 1, раздел 4.",
+          "finding": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+          "norm": "ГОСТ 33542-2015, предисловие, пункт 5; раздел 6.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-044",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Наименование нормативного документа по эксплуатации электроустановок неполное",
+        "description": "В перечне встречается общее наименование правил технической эксплуатации электроустановок потребителей без номера и даты утверждения; применённая редакция не идентифицирована.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Указать точное обозначение и редакцию применяемых правил.",
+        "risk": "Неоднозначность эксплуатационных требований.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "operations"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-044",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "В разделе7 «Техника безопасности» общих данных ссылка «МПБЭЭ» дана без расшифровки и реквизитов, а правила технической эксплуатации электроустановок потребителей — без номера и даты утверждения. Уточните подразумеваемые документы и редакции в этом предложении.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-045",
+      "finding_id": "F-045",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F044_F045_incomplete_reference_identity.json",
+          "sha256": "ea77298204f5f47fec14183ada91f47f7de67218bd30c44c9a3164e9ef567fc9"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-021",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "normative_refs",
+          "source": "МД стр. 3, лист 1, раздел 4.",
+          "finding": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+          "norm": "ГОСТ 33542-2015, предисловие, пункт 5; раздел 6.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-045",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Ссылка «МПБЭЭ» не идентифицирует нормативный документ",
+        "description": "В перечне приведено сокращение «МПБЭЭ» без полного наименования, номера и даты. По нему нельзя установить применённые требования безопасности эксплуатации.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Заменить сокращение точной ссылкой на применяемые правила охраны труда.",
+        "risk": "Неоднозначность нормативной основы монтажных и эксплуатационных указаний.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction",
+            "operations"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-045",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "В разделе7 «Техника безопасности» общих данных ссылка «МПБЭЭ» дана без расшифровки и реквизитов, а правила технической эксплуатации электроустановок потребителей — без номера и даты утверждения. Уточните подразумеваемые документы и редакции в этом предложении.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    },
+    {
+      "candidate_id": "B-EOM-F-046",
+      "finding_id": "F-046",
+      "discipline": "EOM",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+          "sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315"
+        }
+      ],
+      "text_candidates": [
+        {
+          "id": "T-021",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+          "category": "normative_refs",
+          "source": "МД стр. 3, лист 1, раздел 4.",
+          "finding": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+          "norm": "ГОСТ 33542-2015, предисловие, пункт 5; раздел 6.",
+          "norm_quote": null,
+          "related_block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957"
+          ]
+        }
+      ],
+      "merged_finding": {
+        "id": "F-046",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Применённая редакция ряда ссылочных документов не установлена",
+        "description": "Для ГОСТ 21.101-2026, ГОСТ Р 50571.5.54-2024 и СП 6.13130.2025 в переданных материалах отсутствует подтверждение точного обозначения и даты введения. Это основание для проверки ссылок, но само по себе не доказывает их недействительность.",
+        "norm": "ГОСТ 21.101-2026 (норматив-кандидат), пункт не подтверждён; ГОСТ Р 50571.5.54-2024 (норматив-кандидат), пункт не подтверждён; СП 6.13130.2025 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.101-2026",
+            "cited_designation": "ГОСТ 21.101-2026",
+            "candidate_relevance": 0.6,
+            "reason": "Подтвердить точное обозначение и дату введения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "analysis candidate"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ Р 50571.5.54-2024",
+            "cited_designation": "ГОСТ Р 50571.5.54-2024",
+            "candidate_relevance": 0.6,
+            "reason": "Подтвердить точное обозначение и дату введения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "analysis candidate"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 6.13130.2025",
+            "cited_designation": "СП 6.13130.2025",
+            "candidate_relevance": 0.6,
+            "reason": "Подтвердить применённую редакцию и дату введения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "analysis candidate"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить обозначения и редакции с официальными текстами перед выпуском комплекта.",
+        "risk": "Непроверяемые ссылки при экспертизе проекта.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 15,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "source_related_block_ids": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "merged_explicit_block_ids": [],
+      "source_refs_absent_from_explicit_merge_fields": [
+        "blk_d90c772851514a0a9c65cdd019e56957"
+      ],
+      "observed_verifier_change": {
+        "finding_id": "F-046",
+        "changed_fields": [
+          "corrected_by",
+          "corrector_note",
+          "severity"
+        ],
+        "before": {
+          "corrected_by": null,
+          "corrector_note": null,
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+        },
+        "after": {
+          "corrected_by": "deterministic",
+          "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+        }
+      },
+      "adjudicated_output_section": "Вопросы и уточнения",
+      "adjudicated_wording": "В ведомости ЭОМ2-1, лист1, уточнить обозначение «ГОСТ21.101-2026» до «ГОСТ Р21.101-2026» и привести названиеГОСТ Р50571.5.54-2024 к официальному: «Электроустановки низковольтные. Часть5-54. Выбор и монтаж электрического оборудования. Заземляющие устройства и защитные проводники». Общий вопрос о неподтверждённом существовании трёх документов снять: источники и даты найдены.",
+      "causal_boundary": "Saved candidate→merge comparison locates disappearance of explicit reference fields. It does not yet identify the internal merge operation, nor establish semantic validity of every original assertion."
+    }
+  ],
+  "recommended_hypothesis": "Preserve source-to-evidence references through merge, validate their existence and object relevance before verification; do not bypass no_evidence or restore severity blindly.",
+  "limits": [
+    "An adjudicated question is useful but not automatically a technical defect.",
+    "Reference presence does not prove semantic relevance.",
+    "Saved snapshots prove field-level transitions; internal cause requires merge implementation/output tracing.",
+    "No production changes or new model runs performed."
+  ]
+}
