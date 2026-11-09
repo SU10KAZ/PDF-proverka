@@ -52,6 +52,7 @@ def main():
             'linked_scope': (linked or {}).get('scope'),
             'linked_do_not_publish': (linked or {}).get('do_not_publish'),
             'followup_requirements': d.get('followup_requirements', []),
+            'followup_dispositions': d.get('followup_dispositions', []),
             'control_pair': d.get('control_pair'),
             'other_pair_evidence': {k: d[k] for k in (
                 'control_pair_candidate', 'control_pair_limits', 'pair_reference',
@@ -80,6 +81,7 @@ def main():
             'themes_with_linked_claim_disposition': sum(x['linked_claim_disposition'] is not None for x in items),
             'themes_with_direct_control_pair': sum(x['control_pair'] is not None for x in items),
             'themes_with_scope_review': sum(x['benchmark_scope_review'] is not None for x in items),
+            'themes_with_followup_dispositions': sum(bool(x['followup_dispositions']) for x in items),
             'stage_complete': False,
         },
         'items': items,

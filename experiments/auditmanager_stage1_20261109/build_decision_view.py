@@ -23,6 +23,9 @@ def main():
             for q in source.get('quotes',[]):assert q in text
             for e in d.get('evidence',[]):
                 if 'authoritative_TEXT' in e:assert text[e['start']:e['end']]==e['authoritative_TEXT']
+        if 'followup_dispositions' in d:
+            assert [x['requirement'] for x in d['followup_dispositions']]==d.get('followup_requirements',[])
+            assert all(x['unscored_claims'] and x['retained_evidence_boundary'] for x in d['followup_dispositions'])
         decisions.append(d)
     summary={'candidate_records':len(records),'records_with_narrow_primary_decision':len(covered),'remaining_records':len(records)-len(covered),
              'decision_themes':len(decisions),'technical_themes':sum(d['output_section']=='Технические замечания' for d in decisions),
@@ -43,7 +46,8 @@ def main():
         for r in records:
             d=covered.get(r['candidate_id'],{});w.writerow([r['candidate_id'],r['discipline'],r['phase'],d.get('decision','Первичная проверка не завершена'),d.get('output_section',''),d.get('wording',d.get('required_behavior','')),d.get('decision_file','')])
     followups=[{'candidate_ids':d['candidate_ids'],'decision_file':d['decision_file'],
-                'output_section':d['output_section'],'required_checks':d['followup_requirements']}
+                'output_section':d['output_section'],'required_checks':d['followup_requirements'],
+                'dispositions':d.get('followup_dispositions',[])}
                for d in decisions if d.get('followup_requirements')]
     (OUT/'explicit_followups.json').write_text(json.dumps({
         'scope':'Explicit followup_requirements only; not an exhaustive inventory of uncertainties in limits or atomic_dispositions.',
