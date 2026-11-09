@@ -131,6 +131,26 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-023"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Проектировщик должен подтвердить применяемую марку. Для вывода о непригодности потребуются характеристики изделия и расчёт; пока такие последствия исключены из положительных метрик."
+      ]
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-024"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить графику узла, размещение опор и применимость к15 плитам; подтвердить соответствие марок консолей. До этого не включать45 недостающих консолей в подтверждённые технические дефекты."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-028"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
