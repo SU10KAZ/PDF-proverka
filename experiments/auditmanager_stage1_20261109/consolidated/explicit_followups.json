@@ -883,6 +883,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-008"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F008_weld_calculation_requirement.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Проверить доступность и содержаниеКМ8/КМД, расчётные усилия, геометрию и размеры швов; при отсутствии материалов заморозить тезис о недостаточной прочности как неоцениваемый."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-010"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F010_end_caps_material_accounting.json",
