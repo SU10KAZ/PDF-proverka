@@ -834,7 +834,9 @@ def combine_findings_with_targeted(
         production_findings = []
 
     combined = dict(production) if isinstance(production, dict) else {"findings": []}
-    findings = [item for item in production_findings if isinstance(item, dict)]
+    if isinstance(combined.get("candidate_recovery_reports"), list):
+        combined["candidate_recovery_reports"] = list(combined["candidate_recovery_reports"])
+    findings = [dict(item) for item in production_findings if isinstance(item, dict)]
     seen_keys = {_canonical_finding_key(item) for item in findings}
     seen_keys.discard("")
     # next_idx от МАКСИМАЛЬНОГО существующего номера, не от len(): база от LLM может
@@ -852,7 +854,10 @@ def combine_findings_with_targeted(
 
     for stage, payload in targeted_payloads:
         if stage.startswith("candidate_recovery_") and isinstance(payload, dict):
+            from backend.app.pipeline.stages.findings_merge.recovery_links import apply_duplicate_links
+            link_report = apply_duplicate_links(findings, payload.get("recovery_link_updates", []))
             combined.setdefault("candidate_recovery_reports", []).append({
+                "link_repairs": link_report,
                 "stage": stage, "candidate_decisions": payload.get("candidate_decisions", []),
                 "pending": payload.get("recovery_pending", []), "semantic_verified": False,
             })

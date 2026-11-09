@@ -107,7 +107,9 @@ reason in Russian, source_refs exact inspected block IDs). For graphic claims wi
 adequate attached images return needs_data, not a confirmed finding. Include evidence
 and exact locations in any finding. Do not invent norms. Preserve useful questions
 as questions; do not convert them into technical defects. Do not omit a decision.
-A duplicate must identify the existing finding in its reason; never add a duplicate.
+For duplicate decisions, provide target_finding_ids: the exact IDs of ALL existing
+findings preserving the candidate atoms, and explain the mapping in reason. Never
+add a duplicate finding. Do not infer a target ID from its numbering.
 '''
         passes.append(CodexTargetedPass(stage=f'candidate_recovery_{key}',
             output_filename=f'03_candidate_recovery_{key}.json',
@@ -143,4 +145,7 @@ def validate_recovery_payload(targeted_pass, payload):
             pending.append({'finding': item, 'reason': reason})
         else:
             accepted.append({**item, 'recovery_semantic_verified': False})
-    return {**payload, 'findings': accepted, 'recovery_pending': pending}
+    from backend.app.pipeline.stages.findings_merge.recovery_links import prepare_duplicate_links
+    links, unresolved_links = prepare_duplicate_links(packet, payload.get('candidate_decisions'))
+    return {**payload, 'findings': accepted, 'recovery_pending': pending + unresolved_links,
+            'recovery_link_updates': links}
