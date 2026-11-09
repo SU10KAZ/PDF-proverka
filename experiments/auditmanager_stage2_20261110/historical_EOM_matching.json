@@ -1,0 +1,213 @@
+{
+  "discipline": "EOM",
+  "benchmark": "AM-SIX-BENCHMARK-1",
+  "sources": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+      "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/01_blocks_analysis.json",
+      "sha256": "6c8fd1997a0242e4de3e4d8514a61f6e2086f68a71be19c4b908347ac9a0997c"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/03_findings.json",
+      "sha256": "a523742cddbde96de36c98e167d8baa413a8d08df7f31c746259a6896f09be49"
+    }
+  ],
+  "review_scope": {
+    "final_findings": 49,
+    "text_candidates": 24,
+    "published_graphic_candidates": 56,
+    "deferred_candidates": 1
+  },
+  "results": [
+    {
+      "target_id": "EOM11:7985c84eea058c206240",
+      "route": "technical",
+      "target_context": [
+        {
+          "theme": "EOM11",
+          "candidate_ids": [
+            "H-EOM-11"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/EOM11.json",
+            "sha256": "1d38db92b11e8fcde7159b7685795f19804600fc29102e6fed2bb5a1f76630a1"
+          },
+          "wording": "Согласовать с СО линии С2513(65м) иС3510(95м): на схемах FRHF5×35, в предоставленном кабельном подразделе такой позиции нет. СтрокаHF5×35 относится к другому исполнению.",
+          "primary_adjudication": {
+            "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/EOM11_both_lines_source_check.json",
+            "sha256": "e3ec650ec4a4018cbb7a98b37de89d710f45f3bf069a81682a7631f96b49dcd5"
+          },
+          "limits": "Сумма160м относится к двум линиям, а не полному объёму проекта. Поставка в смежном комплекте не проверена; фактическая нехватка160м не доказана.",
+          "followup_boundaries": []
+        }
+      ],
+      "required_meaning": {
+        "claim": "В проверенном кабельном подразделе отсутствует позицияFRHF5×35",
+        "verdict": "confirmed_bounded_absence"
+      },
+      "final_match": "not_found_in_reviewed_output",
+      "upstream_match": "not_found_in_24_text_56_graphic_and_1_deferred_candidates",
+      "matching_basis": "F-001/T-001 сравнивают ПВХ и безгалогенную оболочку в общих указаниях; это не отсутствие FRHF5×35 для С2513/С3510 в кабельном подразделеСО. G-кандидаты этих линий не содержат.",
+      "earliest_observed_gap": "candidate_generation_or_earlier",
+      "root_cause": "unknown: saved candidates do not identify whether source interpretation, object linkage or the verification operation failed",
+      "proposed_method_to_test": "Сопоставлять каждую рабочую кабельную линию со спецификацией по полной марке, исполнению, числу жил и сечению; HF не подменяет FRHF. Сохранять границу проверенного подраздела и отдельно проверять поставку в смежном комплекте."
+    },
+    {
+      "target_id": "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
+      "route": "question",
+      "target_context": [
+        {
+          "theme": "EOM111_outdoor_unit_identifier",
+          "candidate_ids": [
+            "H-EOM-111"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+            "sha256": "8c56324a1cdd435e58e33992a1133a3b6069ba04fab79a7dff7986472a091e25"
+          },
+          "wording": "Уточнить маркировку наружных блоков в зоне для квартир 403, 405, 406: два отдельных блока имеют обозначение К3.2.406 и модель AJ068TXJ3KH/EA, третий — К3.2.403. На этом плане выноска К3.2.405 отсутствует. Согласовать индивидуальные обозначения с документацией кондиционирования.",
+          "primary_adjudication": null,
+          "limits": "Просмотрен исходный графический блок целиком. Подтверждены отдельные символы с одинаковым позиционным обозначением и подпись общей зоны; это не повторный вид одного блока. Одинаковая модель у разных блоков допустима и не является предметом замечания. Правильное обозначение каждой позиции не установлено. Отсутствие К3.2.405 ограничено просмотренным планом, не всем проектом. Три изображённых блока могут соответствовать трём квартирам при ошибке одной выноски; недостача блока для 405 и избыточность для 406 не доказаны. Схемы индивидуальных связей, документация кондиционирования и спецификация поставки не проверены. Текстовые таблицы на изображении не использованы для исправления авторитетного TEXT.",
+          "followup_boundaries": [
+            {
+              "requirement": "Сверить индивидуальные связи с квартирами и документацию кондиционирования; определить, какую выноску изменить. Не удалять оборудование и не добавлять новый блок только по повтору маркировки.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Отсутствующий блок квартиры405, лишний блок406 и окончательная исправленная выноска.",
+              "retained_evidence_boundary": "Два физических блока подписаны К3.2.406 при зоне403/405/406, выноска405 отсутствует в просмотренной области; одинаковая модель не означает дублирование оборудования.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            },
+            {
+              "requirement": "Проверить первичные результаты и журналы AuditManager для установления этапа потери находки; историческое поле failure_stage не является доказательством причины реализации.",
+              "status": "deferred_runtime_verification",
+              "unscored_claims": "Причина потери находки текущим AuditManager на этапе определения уникальности.",
+              "retained_evidence_boundary": "Графическое расхождение подтверждено, историческое failure_stage не заменяет журналы выполнения.",
+              "target_stage": 2,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            }
+          ]
+        }
+      ],
+      "required_meaning": {
+        "claim": "Два отдельных блока имеют К3.2.406 и AJ068TXJ3KH/EA",
+        "verdict": "supported_graphic"
+      },
+      "final_match": "not_found_in_reviewed_output",
+      "upstream_match": "not_found_in_24_text_56_graphic_and_1_deferred_candidates",
+      "matching_basis": "G-048/F-028 рассматривают номера квартир в подоснове типового этажа; не два отдельных наружных блокаК3.2.406 и отсутствие выноскиК3.2.405. Остальные дубли относятся к помещениям, примечаниям и артикулам.",
+      "earliest_observed_gap": "candidate_generation_or_earlier",
+      "root_cause": "unknown: saved candidates do not identify whether source interpretation, object linkage or the verification operation failed",
+      "proposed_method_to_test": "Проверять уникальность позиционных обозначений физических экземпляров в пределах системы и плана; отличать повторный вид от отдельного блока. Одинаковую модель разрешать; ошибку маркировки не превращать в доказанную недостачу оборудования."
+    },
+    {
+      "target_id": "EOM27_active_socket_circuits:46bf196510e24cc289cf",
+      "route": "technical",
+      "target_context": [
+        {
+          "theme": "EOM27_active_socket_circuits",
+          "candidate_ids": [
+            "H-EOM-27"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/EOM27_active_socket_circuits.json",
+            "sha256": "539cb99a7e98600cef013c0847d9dc68ea77774c009848fae45ae4d535d828a1"
+          },
+          "wording": "На схеме РП3 ВРУ-2 предусмотрены рабочие розеточные группы С2326 и С2327 по2кВт. В таблице РП3 после C2324 начинается РП4; отдельных строк этих групп нет. Согласуйте состав таблицы со схемой и подтвердите учёт двух нагрузок в итогах и зависимых расчётах.",
+          "primary_adjudication": null,
+          "limits": "Подтверждён пропуск отдельных строк в предоставленной таблице, а не отсутствие всех расчётов по всему проекту. Суммы24 строк дают62,560/60,710кВт, воспроизводя62,6/60,7 после округления; это свидетельство воспроизводимости итога без отдельных добавок двух групп, но не доказательство отсутствия скрытого агрегирования в других строках. Нельзя автоматически прибавить4кВт ко всем режимам без проверки спроса и двойного учёта. РезервыС2325/С2328 не являются активными пропусками. Таблица целиком не заканчиваетсяC2324 — заканчивается разделРП3. Выбор кабелей, перегрузка и необходимость замены аппаратов не проверены.",
+          "followup_boundaries": [
+            {
+              "requirement": "Установить по исходному расчёту, не включены ли группы в агрегированные строки, и пересчитать затронутые режимы с применимыми коэффициентами. До этого величину дефицита и последствия для оборудования не считать доказанными.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Безусловная прибавка4кВт, величина дефицита мощности и последствия для оборудования.",
+              "retained_evidence_boundary": "Рабочие С2326/С2327 по2кВт есть на схеме, отдельных строк в таблице РП3 нет; С2328 является резервом. Агрегирование и режим спроса требуют проверки.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            }
+          ]
+        }
+      ],
+      "required_meaning": {
+        "claim": "Их отдельных строк нет вРП3.",
+        "verdict": "Подтверждено полным TEXT таблицы;24 строкиC231–C2324."
+      },
+      "final_match": "not_found_in_reviewed_output",
+      "upstream_match": "not_found_in_24_text_56_graphic_and_1_deferred_candidates",
+      "matching_basis": "T-003/F-003 проверяют клапаныРП5; G-013/014/F-012 — мощность2ЩСС1; G-022/F-018 — пустые группыЩМ-к. Ни один не проверяет рабочиеС2326/С2327 вРП3ВРУ-2.",
+      "earliest_observed_gap": "candidate_generation_or_earlier",
+      "root_cause": "unknown: saved candidates do not identify whether source interpretation, object linkage or the verification operation failed",
+      "proposed_method_to_test": "Сверять множество рабочих цепей схемы и строк таблицы по щиту и идентификатору, отдельно отмечать резерв и агрегирование. Пропуск двух строк сохранять; автоматически добавлять4кВт ко всем режимам нельзя."
+    },
+    {
+      "target_id": "EOM5_shunt_trip_identity:946dc28da1dfa089e8c3",
+      "route": "negative",
+      "target_context": [
+        {
+          "theme": "EOM5_shunt_trip_identity",
+          "candidate_ids": [
+            "H-EOM-5"
+          ],
+          "source": {
+            "path": "experiments/auditmanager_stage1_20261109/decisions/EOM5_shunt_trip_identity.json",
+            "sha256": "d8d84614d752aab554ea481335da63b34bd3a39419682483c124627b5df5b1b4"
+          },
+          "wording": "Для QF3.20 цепи С2320 фанкойлов МОП С2 уточнить выбранное исполнение ВА-301 C16А и совместимый независимый расцепитель. На схеме показан один переключаемый полюс; руководство DEKraft2025 допускает РН-300-2Р только с двухполюсным ВА-300. Подтвердить совместимость конкретной комплектации с учётом разрешённых DEKraft/EKF и аналогов.",
+          "primary_adjudication": null,
+          "limits": "Нельзя объявить невозможной всю проектную реализацию: точные артикулы и комплектовочная ведомость не проверены. Название ВА-301 само по себе не означает1P: у производителя есть1P и2P. Число жил кабеля также не определяет полюсность. QF3.17 подписан ВА-303, поэтому его нельзя включать в этот вывод о ВА-301 без отдельной проверки. Наличие N/PE не доказывает второй переключаемый полюс.",
+          "followup_boundaries": [
+            {
+              "requirement": "Установить артикулы и полюсность QF3.20, артикул расцепителя и подтверждение изготовителем совместимости. До этого вопрос не учитывать как доказанный технический дефект.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Несовместимость фактической комплектации QF3.20 и невозможность реализации проекта.",
+              "retained_evidence_boundary": "Схема показывает один переключаемый полюс QF3.20 ВА-301; руководство ограничивает РН-300-2Р двухполюсным ВА-300, но артикулы и разрешённые аналоги не установлены.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            },
+            {
+              "requirement": "Совместимость QF3.17/ВА-303 проверять отдельно по его комплектации; не переносить запрет РН-300-2Р из руководства1P/2P на другую серию.",
+              "status": "unscored_pending_project_data",
+              "unscored_claims": "Несовместимость QF3.17/ВА-303 по ограничению иной серии.",
+              "retained_evidence_boundary": "Графика различает QF3.17 ВА-303 и QF3.20 ВА-301; перенос ограничения1P/2P на ВА-303 не обоснован.",
+              "target_stage": null,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            },
+            {
+              "requirement": "Для окончательной оценки исторического снятия восстановить исходный артефакт SCH-C006; поздний пересказ причины хранить отдельно от факта текущего просмотра схемы.",
+              "status": "deferred_runtime_verification",
+              "unscored_claims": "Точная историческая причина снятия SCH-C006.",
+              "retained_evidence_boundary": "На просмотренном фрагменте N/PE не показывают второго коммутационного полюса; поздний пересказ не заменяет исходный артефакт снятия.",
+              "target_stage": 2,
+              "resolved": false,
+              "benchmark_handling": "Исключить указанные неподтверждённые тезисы из метрик; сохранить исходное требование и не считать исключение опровержением."
+            }
+          ]
+        }
+      ],
+      "required_meaning": {
+        "claim": "Оба QF3.20 и QF3.17 подписаны ВА-301",
+        "status": "частично опровергнуто графикой: QF3.17 ВА-303; QF3.20 ВА-301"
+      },
+      "final_match": "not_found_in_reviewed_output",
+      "upstream_match": "not_found_in_24_text_56_graphic_and_1_deferred_candidates",
+      "matching_basis": "G-021/F-017 рассматривают PE трёхфазного наружного блока; G-026/028/F-021 — напряжение однофазных групп. QF3.20/С2320, ВА-301 и совместимость расцепителяРН-300-2Р не представлены.",
+      "earliest_observed_gap": "candidate_generation_or_earlier",
+      "root_cause": "unknown: saved candidates do not identify whether source interpretation, object linkage or the verification operation failed",
+      "proposed_method_to_test": "Связать коммутационные контакты конкретного аппарата с исполнением и совместимостью аксессуара по паспорту. Учитывать разрешённые аналоги; N/PE и число жил не доказывают число переключаемых полюсов."
+    }
+  ],
+  "limits": [
+    "Сверены все тексты кандидатов, единственный отложенный кандидат и описания финальных замечаний.",
+    "Два технических тезиса ограничены несогласованностью схемы с предоставленной таблицей/спецификацией; фактическая недопоставка и перегрузка не установлены. Два остальных тезиса — вопросы.",
+    "Эти четыре пропуска не объясняются ранее найденной потерей ссылок при объединении: соответствующих кандидатов в сохранённом входе объединения нет.",
+    "Эталонv1 не изменён; инженерные решения и границы первичных доказательств доступны по target_context."
+  ],
+  "production_changed": false
+}
