@@ -569,6 +569,16 @@
     },
     {
       "candidate_ids": [
+        "B-ITP-F-045"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F045_door_joint_context.json",
+      "output_section": null,
+      "required_checks": [
+        "Проверить нормативный первоисточник пункта и архитектурно-конструктивное решение границы помещений/деформационного шва. До этого случай оставить неоцениваемым, не считать технически опровергнутым или подтверждённым."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-VK-20"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
