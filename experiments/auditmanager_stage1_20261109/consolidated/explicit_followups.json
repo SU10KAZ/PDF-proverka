@@ -233,6 +233,16 @@
     },
     {
       "candidate_ids": [
+        "B-EOM-F-033"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F033_apartment_board_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Сверить договорные границы поставки и монтажа, назначение 3ЩКВ/2ЩКВ и учёт временных щитов; после этого уточнить наименования и принадлежность объёмов."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-EOM-F-034"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
