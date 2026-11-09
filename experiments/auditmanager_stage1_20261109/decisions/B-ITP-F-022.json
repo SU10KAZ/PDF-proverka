@@ -36,5 +36,39 @@
   "production_changed": false,
   "arithmetic": {
     "nominal_difference_l": "6.9"
+  },
+  "atomic_dispositions": [
+    {
+      "claim": "Лист требует объём не менее606,9л, выбранLVF600 иСО указывает600л",
+      "verdict": "confirmed_internal_selection_discrepancy"
+    },
+    {
+      "claim": "Разность6,9л",
+      "verdict": "confirmed_arithmetic"
+    },
+    {
+      "claim": "ОтдельныйRM80 автоматически компенсирует разность",
+      "verdict": "not_established_different_function"
+    },
+    {
+      "claim": "Доказана недостаточная компенсация при эксплуатации",
+      "verdict": "not_established"
+    },
+    {
+      "claim": "Коэффициент1,3 обязателен для всех проектов",
+      "verdict": "not_established_project_specific"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставлены исходные тезисы и сохранённые доказательства; повторно проверены пять расчётов скорости и суммы длин.",
+    "scorable_narrow_claim": "Сохранить вопрос о несогласованном подборе по собственному условию листа.",
+    "unscored_claims": [
+      "Полезные объёмы, уровни и алгоритмАУПД",
+      "Исходный объём системы",
+      "Достаточность компенсации"
+    ],
+    "control_pair_readiness": "Случай не подтверждает ни универсальный запас1,3, ни суммирование номинальных объёмов баков разных функций.",
+    "automatic_filter_authorized": false
   }
 }

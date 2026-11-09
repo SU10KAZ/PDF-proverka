@@ -10170,6 +10170,40 @@
       "arithmetic": {
         "nominal_difference_l": "6.9"
       },
+      "atomic_dispositions": [
+        {
+          "claim": "Лист требует объём не менее606,9л, выбранLVF600 иСО указывает600л",
+          "verdict": "confirmed_internal_selection_discrepancy"
+        },
+        {
+          "claim": "Разность6,9л",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "ОтдельныйRM80 автоматически компенсирует разность",
+          "verdict": "not_established_different_function"
+        },
+        {
+          "claim": "Доказана недостаточная компенсация при эксплуатации",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Коэффициент1,3 обязателен для всех проектов",
+          "verdict": "not_established_project_specific"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы и сохранённые доказательства; повторно проверены пять расчётов скорости и суммы длин.",
+        "scorable_narrow_claim": "Сохранить вопрос о несогласованном подборе по собственному условию листа.",
+        "unscored_claims": [
+          "Полезные объёмы, уровни и алгоритмАУПД",
+          "Исходный объём системы",
+          "Достаточность компенсации"
+        ],
+        "control_pair_readiness": "Случай не подтверждает ни универсальный запас1,3, ни суммирование номинальных объёмов баков разных функций.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-022.json"
     },
     {
@@ -10333,6 +10367,40 @@
         "ventilation_PZ_mean_C": "72.5",
         "ventilation_selection_mean_C": "70"
       },
+      "atomic_dispositions": [
+        {
+          "claim": "ДОО75/55 против80/60; вентиляция85/60 против80/60",
+          "verdict": "confirmed_project_input_conflicts"
+        },
+        {
+          "claim": "Средние температурыДОО65/70 и вентиляции72,5/70°C",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "В обоих случаях температура в подборе занижена",
+          "verdict": "refuted_DOO_direction"
+        },
+        {
+          "claim": "Равная разность температурДОО устраняет различие абсолютных температур",
+          "verdict": "not_supported"
+        },
+        {
+          "claim": "Установлены неправильные окончательные размеры баков",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы и сохранённые доказательства; повторно проверены пять расчётов скорости и суммы длин.",
+        "scorable_narrow_claim": "Сохранить вопрос о согласовании входных температур по контурам; объединить с давлением/объёмомF023 без потери адресов.",
+        "unscored_claims": [
+          "Численное изменение расширения",
+          "Совместный пересчёт с давлением",
+          "Окончательные типоразмеры"
+        ],
+        "control_pair_readiness": "ДОО и вентиляция показывают противоположное направление изменения среднего; нельзя переносить вывод о занижении с одного контура на другой.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-024.json"
     },
     {
@@ -10472,6 +10540,40 @@
           "result": null
         }
       },
+      "atomic_dispositions": [
+        {
+          "claim": "Все пять пересчётов скорости поQ иDнар−2s отличаются от опубликованных",
+          "verdict": "confirmed_conditional_five_case_arithmetic"
+        },
+        {
+          "claim": "Повторённые0,66 относятся к разным расходам76,40/61,12 при одинаковой трубе",
+          "verdict": "confirmed_document_inputs"
+        },
+        {
+          "claim": "Пересчёт доказывает реальную скорость и необходимость замены трубы",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Потери можно автоматически менять пропорционально скорости",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "H-ITP-72b является новым восстановлением сверх свежего классическогоF025",
+          "verdict": "not_supported_duplicate_existing_baseline_atom"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы и сохранённые доказательства; повторно проверены пять расчётов скорости и суммы длин.",
+        "scorable_narrow_claim": "Одна тема внутренней согласованности пяти адресных расчётов; H-ITP-72b тот же атом вторичной вентиляции, не отдельная находка.",
+        "unscored_claims": [
+          "Фактический проход, допуски, отложения и режим",
+          "Потери и полная гидравлическая увязка",
+          "Остальные тезисы исходногоH-ITP-72"
+        ],
+        "control_pair_readiness": "Контроль группировки: сохранить пять различных сочетаний, не удвоить совпадающий атомH-ITP-72b/F025. Универсальная пара допустимой/недопустимой скорости отсутствует.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-025.json"
     },
     {
@@ -10538,6 +10640,40 @@
         "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
       },
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "Суммы опубликованных длинИТП976,9 и дренажа159,0м",
+          "verdict": "confirmed_decimal_sum"
+        },
+        {
+          "claim": "Рядом присутствуют2546/977.0 и199/158.8",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "Каждый итог выражает длину в метрах",
+          "verdict": "not_established_missing_quantity_semantics"
+        },
+        {
+          "claim": "Разницы0,1/0,2м доказывают неверную потребность",
+          "verdict": "not_established_rounding_and_scope"
+        },
+        {
+          "claim": "Требуется увеличить закупку на разность",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы и сохранённые доказательства; повторно проверены пять расчётов скорости и суммы длин.",
+        "scorable_narrow_claim": "Вопрос о назначении итогов и точности, без приписывания единиц и закупочного дефицита.",
+        "unscored_claims": [
+          "Смысл итогов2546/199",
+          "Неокруглённые длины",
+          "Фактическая потребность"
+        ],
+        "control_pair_readiness": "Нет подтверждённой пары неверной длины и допустимого округления этого проекта. Не применять универсальный числовой допуск.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-026.json"
     },
     {
@@ -10660,6 +10796,40 @@
         ],
         "missing_item": "отдельная строка цилиндра для трубы325мм",
         "counterevidence": "Маты WIRED MAT предусмотрены, адресное назначение не определено."
+      },
+      "atomic_dispositions": [
+        {
+          "claim": "В ведомости85,1м трубы325×7 и1,7м трубы273×7",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "В двух проверенных таблицах нет отдельной строки цилиндра325;273×40 указан2 и97м",
+          "verdict": "confirmed_bounded_table_inventory"
+        },
+        {
+          "claim": "Изоляция трубы325 отсутствует во всём проекте",
+          "verdict": "not_established_mats_present"
+        },
+        {
+          "claim": "Маты точно предназначены для этой трубы",
+          "verdict": "not_established_allocation"
+        },
+        {
+          "claim": "Строку273 нужно автоматически заменить на325 или добавить85,1м",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы и сохранённые доказательства; повторно проверены пять расчётов скорости и суммы длин.",
+        "scorable_narrow_claim": "Вопрос об адресном соответствии труб и видов изоляции в проверенных таблицах; сохранить наличие матов как контекст.",
+        "unscored_claims": [
+          "Распределение матов по оборудованию и трубам",
+          "Правильность марки строки97м",
+          "Комплектность поставки"
+        ],
+        "control_pair_readiness": "Отсутствие строки цилиндра не равно отсутствию изоляции. Доказанной пары полного и неполного покрытия этой трубы нет.",
+        "automatic_filter_authorized": false
       },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json"
     },
@@ -10805,6 +10975,44 @@
       "limits": "Общее требование спускников во всех низших точках уже есть, а оба диапазона задают одинаковый диаметр25мм. Поэтому отсутствие дренажа Ду150 и ошибка монтажа не доказаны. Безразмерное0,01 соответствует10мм/м, но это не проверка нормативной достаточности уклона. Уклон0,003 трубопроводов на аксонометрии относится к иному указанию: не объявлять его противоречием уклону пола или сливной трубы. Смежные разделы и фактическая геометрия не проверены.",
       "engineer_decision": "Решение инженера для свежей классической записи не установлено.",
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "Диапазоны доДу125/свышеДу150 не охватываютДу150",
+          "verdict": "confirmed_wording_gap"
+        },
+        {
+          "claim": "Общее требование спускников во всех низших точках и одинаковыйдиаметр25мм присутствуют",
+          "verdict": "confirmed_countercontext"
+        },
+        {
+          "claim": "Из пропуска диапазона следует отсутствие дренажаДу150",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Запись уклона0,01мм требует уточнения размерности",
+          "verdict": "confirmed_editorial_issue"
+        },
+        {
+          "claim": "Безразмерное0,01 соответствует10мм/м",
+          "verdict": "confirmed_unit_conversion_not_normative_adequacy"
+        },
+        {
+          "claim": "Уклон0,003 другого трубопровода доказывает противоречие уклону пола",
+          "verdict": "not_established_different_object"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставлены исходные тезисы и сохранённые доказательства; повторно проверены пять расчётов скорости и суммы длин.",
+        "scorable_narrow_claim": "Один редакционный вопрос о диапазонах и размерности с сохранением общего требования дренажа.",
+        "unscored_claims": [
+          "Фактическая геометрия и уклоны",
+          "Нормативная достаточность выбранного уклона",
+          "Смежные разделы"
+        ],
+        "control_pair_readiness": "Контрконтекст предотвращает ложный вывод об отсутствии спускника; подтверждённой пары работающего/неработающего дренажа нет.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json"
     },
     {

@@ -64,5 +64,39 @@
     "DOO_selection_mean_C": "70",
     "ventilation_PZ_mean_C": "72.5",
     "ventilation_selection_mean_C": "70"
+  },
+  "atomic_dispositions": [
+    {
+      "claim": "ДОО75/55 против80/60; вентиляция85/60 против80/60",
+      "verdict": "confirmed_project_input_conflicts"
+    },
+    {
+      "claim": "Средние температурыДОО65/70 и вентиляции72,5/70°C",
+      "verdict": "confirmed_arithmetic"
+    },
+    {
+      "claim": "В обоих случаях температура в подборе занижена",
+      "verdict": "refuted_DOO_direction"
+    },
+    {
+      "claim": "Равная разность температурДОО устраняет различие абсолютных температур",
+      "verdict": "not_supported"
+    },
+    {
+      "claim": "Установлены неправильные окончательные размеры баков",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставлены исходные тезисы и сохранённые доказательства; повторно проверены пять расчётов скорости и суммы длин.",
+    "scorable_narrow_claim": "Сохранить вопрос о согласовании входных температур по контурам; объединить с давлением/объёмомF023 без потери адресов.",
+    "unscored_claims": [
+      "Численное изменение расширения",
+      "Совместный пересчёт с давлением",
+      "Окончательные типоразмеры"
+    ],
+    "control_pair_readiness": "ДОО и вентиляция показывают противоположное направление изменения среднего; нельзя переносить вывод о занижении с одного контура на другой.",
+    "automatic_filter_authorized": false
   }
 }

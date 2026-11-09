@@ -61,5 +61,39 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/ITP/document.md",
     "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
   },
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "Суммы опубликованных длинИТП976,9 и дренажа159,0м",
+      "verdict": "confirmed_decimal_sum"
+    },
+    {
+      "claim": "Рядом присутствуют2546/977.0 и199/158.8",
+      "verdict": "confirmed_authoritative_TEXT"
+    },
+    {
+      "claim": "Каждый итог выражает длину в метрах",
+      "verdict": "not_established_missing_quantity_semantics"
+    },
+    {
+      "claim": "Разницы0,1/0,2м доказывают неверную потребность",
+      "verdict": "not_established_rounding_and_scope"
+    },
+    {
+      "claim": "Требуется увеличить закупку на разность",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставлены исходные тезисы и сохранённые доказательства; повторно проверены пять расчётов скорости и суммы длин.",
+    "scorable_narrow_claim": "Вопрос о назначении итогов и точности, без приписывания единиц и закупочного дефицита.",
+    "unscored_claims": [
+      "Смысл итогов2546/199",
+      "Неокруглённые длины",
+      "Фактическая потребность"
+    ],
+    "control_pair_readiness": "Нет подтверждённой пары неверной длины и допустимого округления этого проекта. Не применять универсальный числовой допуск.",
+    "automatic_filter_authorized": false
+  }
 }
