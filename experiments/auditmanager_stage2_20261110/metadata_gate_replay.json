@@ -1,0 +1,200 @@
+{
+  "mechanism": "Broad phrase match in evidence_quote defers a project-level room-number finding.",
+  "code": {
+    "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+    "sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+    "symbol": "gate_findings / _INTERNAL_METADATA_RE"
+  },
+  "source": {
+    "path": "experiments/auditmanager_stage2_20261110/merge_coverage_inventory.json",
+    "sha256": "d1c7a02538ab042c69879a94dd52c8f1fc01032af415dc824152f499ba9ebcd3"
+  },
+  "original_regex_matches_by_field": {
+    "finding": [],
+    "evidence_quote": [
+      "переданном контекст"
+    ],
+    "recommendation": []
+  },
+  "cases": [
+    {
+      "case": "historical_exact_candidate",
+      "synthetic": false,
+      "input": {
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "В экспликации помещений −1 этажа номер 0.0.2.2 присвоен и венткамере площадью 43,9 м², и помещению РУ площадью 11,1 м². По этому номеру нельзя однозначно определить помещение для привязки электрических решений.",
+        "norm_quote": null,
+        "value_found": "0.0.2.2 | Венткамера | 43,9 | B2; 0.0.2.2 | РУ | 11,1 | B3",
+        "recommendation": "Уточнить номера помещений в экспликации и привести обозначения на плане в соответствие с ней.",
+        "claim_type": "contradiction",
+        "problem_class": "duplicate_room_number",
+        "affected_entity": "помещения 0.0.2.2 в экспликации −1 этажа",
+        "evidence_quote": "В одной экспликации −1 этажа указаны «0.0.2.2 | Венткамера | 43,9 | B2» и «0.0.2.2 | РУ | 11,1 | B3»; оба обозначения также повторяются в переданном контексте другого листа.",
+        "evidence_kind": "same_page",
+        "context_status": "sufficient",
+        "confidence": 0.9,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-sol",
+        "_detector_run_id": "stage01-20261106T222601Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:002",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое дублирование номера 0.0.2.2 у венткамеры 43,9 м² категории B2 и РУ 11,1 м² категории B3; последствия и рекомендации эквивалентны.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "internal_metadata_comparison"
+          ]
+        }
+      },
+      "published_count": 0,
+      "deferred_count": 1,
+      "reasons": [
+        "internal_metadata_comparison"
+      ],
+      "stats": {
+        "schema_version": 1,
+        "candidates": 1,
+        "published": 0,
+        "deferred": 1,
+        "min_confidence": 0.8,
+        "max_published_per_block": null,
+        "reason_counts": {
+          "internal_metadata_comparison": 1
+        }
+      }
+    },
+    {
+      "case": "synthetic_neutral_source_wording",
+      "synthetic": true,
+      "input": {
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "В экспликации помещений −1 этажа номер 0.0.2.2 присвоен и венткамере площадью 43,9 м², и помещению РУ площадью 11,1 м². По этому номеру нельзя однозначно определить помещение для привязки электрических решений.",
+        "norm_quote": null,
+        "value_found": "0.0.2.2 | Венткамера | 43,9 | B2; 0.0.2.2 | РУ | 11,1 | B3",
+        "recommendation": "Уточнить номера помещений в экспликации и привести обозначения на плане в соответствие с ней.",
+        "claim_type": "contradiction",
+        "problem_class": "duplicate_room_number",
+        "affected_entity": "помещения 0.0.2.2 в экспликации −1 этажа",
+        "evidence_quote": "В одной экспликации −1 этажа указаны «0.0.2.2 | Венткамера | 43,9 | B2» и «0.0.2.2 | РУ | 11,1 | B3»; оба обозначения также повторяются на другом листе.",
+        "evidence_kind": "same_page",
+        "context_status": "sufficient",
+        "confidence": 0.9,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-sol",
+        "_detector_run_id": "stage01-20261106T222601Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:002",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое дублирование номера 0.0.2.2 у венткамеры 43,9 м² категории B2 и РУ 11,1 м² категории B3; последствия и рекомендации эквивалентны.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "internal_metadata_comparison"
+          ]
+        }
+      },
+      "published_count": 1,
+      "deferred_count": 0,
+      "reasons": [],
+      "stats": {
+        "schema_version": 1,
+        "candidates": 1,
+        "published": 1,
+        "deferred": 0,
+        "min_confidence": 0.8,
+        "max_published_per_block": null,
+        "reason_counts": {}
+      }
+    },
+    {
+      "case": "synthetic_actual_metadata_complaint",
+      "synthetic": true,
+      "input": {
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "Переданный контекст блока определяет иной тип фрагмента. Исправить тип фрагмента в разметке.",
+        "norm_quote": null,
+        "value_found": "0.0.2.2 | Венткамера | 43,9 | B2; 0.0.2.2 | РУ | 11,1 | B3",
+        "recommendation": "Исправить тип фрагмента в разметке.",
+        "claim_type": "contradiction",
+        "problem_class": "duplicate_room_number",
+        "affected_entity": "помещения 0.0.2.2 в экспликации −1 этажа",
+        "evidence_quote": "Переданная разметка: тип фрагмента не совпадает с контекстом блока.",
+        "evidence_kind": "same_page",
+        "context_status": "sufficient",
+        "confidence": 0.9,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-sol",
+        "_detector_run_id": "stage01-20261106T222601Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:002",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое дублирование номера 0.0.2.2 у венткамеры 43,9 м² категории B2 и РУ 11,1 м² категории B3; последствия и рекомендации эквивалентны.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "internal_metadata_comparison"
+          ]
+        }
+      },
+      "published_count": 0,
+      "deferred_count": 1,
+      "reasons": [
+        "internal_metadata_comparison"
+      ],
+      "stats": {
+        "schema_version": 1,
+        "candidates": 1,
+        "published": 0,
+        "deferred": 1,
+        "min_confidence": 0.8,
+        "max_published_per_block": null,
+        "reason_counts": {
+          "internal_metadata_comparison": 1
+        }
+      }
+    }
+  ],
+  "conclusion": "Changing only the source-context phrase changes gate outcome. This reproduces a wording-sensitive false metadata classification, not an engineering validity check.",
+  "preserved_final_finding": "B-EOM-F-024 survives through another detector candidate; no final loss in this run is claimed.",
+  "recommended_behavior": "Classify whether the assertion complains about internal representation. Mere mention of provided context as a source must not suppress a project-document discrepancy.",
+  "limits": [
+    "Neutral and metadata variants are synthetic; not independent historical engineer decisions.",
+    "Passing the gate does not establish technical validity or appropriate output severity.",
+    "Do not remove the metadata guard wholesale; real complaints about internal extraction must remain out of project findings."
+  ],
+  "production_changed": false
+}
