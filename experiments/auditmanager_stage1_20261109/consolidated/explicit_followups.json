@@ -816,6 +816,18 @@
     },
     {
       "candidate_ids": [
+        "H-KM-12",
+        "B-KM-F-022"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Идентифицировать точный анкер/аналог,его применимую документацию и установку; получитьКЖ/КМ8/КМД либо заморозить тезисы о несущей способности как неоцениваемые.",
+        "СопоставитьF-002/F-003 со старым аудитом до вывода о дублировании исторической находки."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-KM-13",
         "B-KM-F-004"
       ],
