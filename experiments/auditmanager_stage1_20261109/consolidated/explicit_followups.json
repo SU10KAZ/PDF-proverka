@@ -840,6 +840,16 @@
     },
     {
       "candidate_ids": [
+        "H-KM-5"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM5_S3_bent_handrail_developed_length.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Восстановить полную пространственную развёртку поз.1ОГМ4С3 по всем связанным видам/КМД или авторскому расчёту; иначе заморозить тезис о400мм лишней длины как неоцениваемый."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-KM-6",
         "B-KM-F-018"
       ],
