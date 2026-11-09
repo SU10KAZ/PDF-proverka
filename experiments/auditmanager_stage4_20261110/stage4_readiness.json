@@ -106,11 +106,13 @@
     }
   ],
   "latest_local_validation": {
-    "source_commit": "69019a69132b1de6006b22f14bbd0b967d699e87",
-    "tests_passed": 189,
-    "duration_seconds": 2.07,
-    "scope": "Selected stage4 unit/integration suites and classic dedup tests; no new model calls.",
-    "boundary": "Passing tests do not establish six-project quality improvement, completeness or production readiness."
+    "source_commit": "9069c242a770f84533b343d829eaad22dd947d98",
+    "tests_passed": 200,
+    "frontend_tests_passed": 2,
+    "duration_seconds": 2.17,
+    "javascript_syntax": "passed",
+    "scope": "Combined stage4 unit/integration suites, classic dedup, Excel import and question routing; no model calls.",
+    "boundary": "Not full six-project candidate execution, independent discovery, semantic adjudication or production acceptance."
   },
   "external_permission_pending": {
     "pilot": "ITP requirement scope",
@@ -156,5 +158,45 @@
     "sha256": "5b737476dcadee9463c90b5c73e8dee77455fc2fba7be074193499214d0d3bc9",
     "findings_unchanged": 244,
     "scope": "Deterministic verifier/corrector on saved findings only; no full candidate audits or semantic acceptance."
-  }
+  },
+  "execution_readiness": {
+    "input_package": "six_project_input_package.json",
+    "source_graphs": "six_project_source_graphs.json",
+    "sheet_metadata": "six_project_sheet_metadata.json",
+    "isolation_review": "executor_isolation_review.json",
+    "restricted_features_probe": "codex_restricted_features_probe.json",
+    "full_candidate_runs_started": false,
+    "candidate_frozen": false,
+    "model_jobs_live": false
+  },
+  "next_required_checks": [
+    {
+      "id": "H01",
+      "remaining": "Semantic review of unresolved EOM sources; recovery accounting for all unresolved candidates."
+    },
+    {
+      "id": "H02",
+      "remaining": "Linked-document recovery on real controls, including unresolved AR/KM context."
+    },
+    {
+      "id": "H03",
+      "remaining": "Whole-project object extraction and operation coverage; known-fragment pilot is insufficient."
+    },
+    {
+      "id": "H04",
+      "remaining": "Real source-addressed two-way identity sets with completeness and supply scope verified; aggregate specification counts must not be fabricated as instance sets."
+    },
+    {
+      "id": "H05",
+      "remaining": "Retain confirmed technical quantity conflict alongside prepared VK question/negative pair; whole-path model behavior remains untested."
+    },
+    {
+      "id": "H06",
+      "remaining": "ITP payload-specific approval and model applicability pilot; exact execution and exceptions still unresolved."
+    },
+    {
+      "id": "H07",
+      "remaining": "Rendered browser acceptance and end-to-end filter pairs; local Excel/merge/verifier preservation passed."
+    }
+  ]
 }
