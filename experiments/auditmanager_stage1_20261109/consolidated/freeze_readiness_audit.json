@@ -1,0 +1,3086 @@
+{
+  "purpose": "Freeze readiness audit, not a frozen scoring benchmark or model-quality result.",
+  "input_inventory": {
+    "path": "experiments/auditmanager_stage1_20261109/consolidated/freeze_review_inventory.json",
+    "sha256": "3160624b93f5fbd1ec37d521262de36a3c593f33909251e8b54b782366e9c96c"
+  },
+  "summary": {
+    "records": 291,
+    "themes": 247,
+    "disciplines": {
+      "AK": 71,
+      "AR": 29,
+      "EOM": 58,
+      "ITP": 62,
+      "KM": 33,
+      "VK": 38
+    },
+    "followup_requirements_with_dispositions": 227,
+    "pair_status_counts": {
+      "description_requires_pair_validation": 158,
+      "no_explicit_pair_link": 85,
+      "standalone_design_runtime_unproven": 4
+    },
+    "structural_coverage_passed": true,
+    "stage_complete": false
+  },
+  "remaining_freeze_requirements": [
+    "Adopt an explicit versioned scoring protocol preserving atomic verdicts and unknowns; do not classify by verdict prefix or output section alone.",
+    "Record which proposed filters each validated pair can support; missing pairs remain evidence gaps, not implicit approvals.",
+    "Seal evaluator artifacts and manifest; exclude answers and history from independent discovery inputs."
+  ],
+  "standalone_controls": [
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json",
+      "sha256": "b7830b59eb82f7c9e168e16808ea16fb378fafd8b779e637a7f9adb219c6a8d6",
+      "control_id": "PAIR-EOM-CABLE-SCOPE-001",
+      "implementation_test_status": "not_executed",
+      "evidence_limits": []
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/rounding_control_pair.json",
+      "sha256": "694184daeac68eee26de623332d5332a9a0c1cf6b67d0c986fa6d1919b490acf",
+      "control_id": "PAIR-EOM-ROUNDING-001",
+      "implementation_test_status": "not_executed",
+      "evidence_limits": [
+        "Пара проверяет обоснованность выводов по опубликованным числам, не физическую исправность систем.",
+        "Обе записи принадлежат одному известному проекту; независимая инженерная оценка пары отсутствует.",
+        "Исходные неокруглённые нагрузки и иной исторический перерасчётUNI-028 не проверены."
+      ]
+    },
+    {
+      "path": "experiments/auditmanager_stage1_20261109/followup/signal_count_control_pair.json",
+      "sha256": "dbecc6e94f266dceadd214fd1374191aaab6c5fa981fa086f2ff87d1f17f0a3f",
+      "control_id": "PAIR-AK-SIGNAL-COUNT-001",
+      "implementation_test_status": "not_executed",
+      "evidence_limits": [
+        "Положительная сторона подтверждена первичной графической проверкой, но не принята инженером как отдельная новая находка. Это недостаток исторической контрольной пары, а не основание скрыть факт.",
+        "Обе стороны относятся к одному известному проекту; переносимость на новые матрицы не проверена.",
+        "Подсчёт точек не подтверждает правильность выбораDI/DO/AI/AO для каждой функции."
+      ]
+    }
+  ],
+  "items": [
+    {
+      "candidate_ids": [
+        "H-AK-100",
+        "B-AK-F-015"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+      "decision_sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-AK-137",
+        "B-AK-F-019"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+      "decision_sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-AK-14"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK14.json",
+      "decision_sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-AK-57",
+        "B-AK-F-037",
+        "B-AK-F-004"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+      "decision_sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-AK-65",
+        "B-AK-F-043"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+      "decision_sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-AK-7"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK7.json",
+      "decision_sha256": "244524861dafa21ed85aa490e087c7ea10a654b59f18184b137f99eade018260",
+      "pair_status": "standalone_design_runtime_unproven",
+      "standalone_controls": [
+        "PAIR-AK-SIGNAL-COUNT-001"
+      ],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Evaluate the named controls against sealed runtime outputs; retain their evidence gaps."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-001",
+        "B-AK-F-002"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+      "decision_sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-003"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+      "decision_sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-005"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+      "decision_sha256": "48b97c42cfa0b0277fb9cf701da41869de070db06fd4ec75fb99b0a388d1e722",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-006"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+      "decision_sha256": "7dfe111f83f7d778b22f32158e23e25225b08f4f4ec3226926ddce63dfb1ef6a",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-007"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F007_channel_sensor_registers.json",
+      "decision_sha256": "fbe52e955ce80b9dad8f13866e0909301293e611659942cd56288337921fa18f",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-008"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+      "decision_sha256": "c9bf31b3153a37963b0821177ba1398e145ddd70d03bda5a6432545628397940",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-009",
+        "B-AK-F-010"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+      "decision_sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-011"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+      "decision_sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-012"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
+      "decision_sha256": "adda5976fdc931fee477376e4e53dc398de605c62cba05511adc92776b58090d",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-013"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+      "decision_sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-014"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+      "decision_sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-016",
+        "B-AK-F-017"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+      "decision_sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-018"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F018_drive_system_assignment.json",
+      "decision_sha256": "62cb406cdf423f7781c27e355c359c2d507189af8b12a26d34f7380119ed6eeb",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-020"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+      "decision_sha256": "f6dbf031fc8ba16fd61cd5ebad1825e32f84c0bd4cd39527accb1a6230d293f2",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-021"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json",
+      "decision_sha256": "e1221c563cfdf13442cf7197a43f4a81a8ce262ec4f68a3bbd2c69a5afa1d6fc",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-022"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+      "decision_sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-023"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+      "decision_sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-024"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+      "decision_sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-025"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F025_area_arithmetic.json",
+      "decision_sha256": "07e3ecfae124a6d164abe6ca32408a492672da6b4e93242bf06e1c5b16464480",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-026"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F026_protection_boolean_condition.json",
+      "decision_sha256": "cc1fd6840fb366f09e8f1ccbee1d9fef95dc5cbd40222981dbc35909b749eea3",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-027"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F027_sensor_interface_scope.json",
+      "decision_sha256": "ce13d144b26733768053137e7f68d5b9cc1e428ea30e05cf60a79d73d40a2756",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-028"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
+      "decision_sha256": "4d6c40af5a9db18ddf520f1f06842a8cc958439af0f690fd5cf2020d5b19fc05",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-029"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+      "decision_sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-030"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+      "decision_sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-031"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+      "decision_sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-032"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+      "decision_sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-033"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F033_power_reference_scope.json",
+      "decision_sha256": "9c240dda69a02709b23452f71dd767d98d4719b50a184253a9911e6ab23eb836",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-034"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F034_sheet_title_scope.json",
+      "decision_sha256": "6585e034e65b924f17e740e1048b28a2d32e06e1ef4f41226e46f88f3bc4292a",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-035"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
+      "decision_sha256": "17877ee974090aeee8c5f2406c725cff99f585b7f47a60d464c265ca844e90ec",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-036"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F036_damper_signal_direction.json",
+      "decision_sha256": "679a411c9e04b0c8c1987471b621d8fdc5d6935a1db687f71aefcf1cec7b07eb",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-038"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F038_temperature_graphic_connection.json",
+      "decision_sha256": "67c1995d61ab5adda8800a0f465a1c6eb0deb791c8eab1570f2650bc9999e2a1",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-039"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F039_served_rooms_conflict.json",
+      "decision_sha256": "c5a07b351f4355a0bceeca4d625d01832f64782fd1432801547cbdf40ed24840",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-040"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+      "decision_sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-041"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+      "decision_sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-042"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F042_pressure_legend_scope.json",
+      "decision_sha256": "4ce2a068ccb529525bd5ef450e448e30bdfd57fbbc4aa15339d719306e8e54e0",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-044"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+      "decision_sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-045"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+      "decision_sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-046"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F046_position_range_editorial.json",
+      "decision_sha256": "912b8afed5b7dd638a2fb92ba907a9cda2ab531204e7f17dabe88ee0f2c2c81b",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-047",
+        "B-AK-F-048",
+        "B-AK-F-049"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+      "decision_sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08",
+      "pair_status": "standalone_design_runtime_unproven",
+      "standalone_controls": [
+        "PAIR-AK-SIGNAL-COUNT-001"
+      ],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Evaluate the named controls against sealed runtime outputs; retain their evidence gaps."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-050"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F050_heater_legend_identity.json",
+      "decision_sha256": "f316e24040e8fd1ffc2a9d7fa9bcf2e56cc64e483684d014745f7f825ce3e5fe",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-051"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F051_cabinet_label_scope.json",
+      "decision_sha256": "a66c212be8c1dde3bd5132cf55aa4a8b92153efad0e9b2b3ce89f39fa3f5b853",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-052"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F052_local_cable_balance.json",
+      "decision_sha256": "269fbd7df09fb79b766b4bbed801b044d88de0bba6e8555945cb4280f992cf2e",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-053"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F053_local_cable_balance.json",
+      "decision_sha256": "f0fe30025610ce7f3d413dec02072e1dd1a2937afe5cd720b3a8737b91bde092",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-054",
+        "B-AK-F-055"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F054_F055_terminal_number_scope.json",
+      "decision_sha256": "4a7aa14ce7d3712f5f0fae9d7f00aa72c1eab8f2adf2882a6722775ca9ec6901",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-056",
+        "B-AK-F-057"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+      "decision_sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-058"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+      "decision_sha256": "7f391d6a377940f60763577625de4cf7ec7cdf80d28ddb2317108f1965f7d1f3",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-059"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F059_thermostat_supply_routes.json",
+      "decision_sha256": "a7be6977f7aa7550425ba748f034d799915371cf2c66d7f896ac9303d180026b",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-060"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+      "decision_sha256": "4ae7511ca6056afa1ff0f85c52539b4154b6ba45c99f75bac26d841da23f0d38",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-061"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F061_penetration_detail_scope.json",
+      "decision_sha256": "fd69d890fb13cea2f5adfa44fc272a31dc5e66368917c5c7159597065583df04",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-062"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F062_rs485_termination_scope.json",
+      "decision_sha256": "dac89ca44e9f34cac80e09ed47110833c50c5b6a1230d8fd7eab7e626221ee49",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-063"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F063_ethernet_evidence_scope.json",
+      "decision_sha256": "8b7fd4e404aceea2c7c4ae623bbf6b1fffed1b72c954cbf730c014a28f3e2352",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-064"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F064_reference_register_scope.json",
+      "decision_sha256": "5d142f45af5de6a7c5002d60bedc3b7517fad1dc38ff05f0d8616263c90ca6ee",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AK-F-065"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK_F065_norm_replacement_applicability.json",
+      "decision_sha256": "ee0e2ec0de3444283d4ddfdf2bd26ef2a9bd08ac871d666d8989d6842015220b",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-AR-14"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
+      "decision_sha256": "05111c82d10d6fb78c3da1b8772f8fd53762fe7ba14e599d4e65dd4e9c9b0696",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-AR-17",
+        "B-AR-F-017"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR17.json",
+      "decision_sha256": "2c7bce2f3456b9bebdf7059d5b3ee79a40c72b29a994684d937747fdce46a7fd",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-AR-35"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR35_unlabelled_areas.json",
+      "decision_sha256": "7274cc7e622df36e93d23f17add55aa23bfc3c85446d0eda662dae68c24a265e",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-AR-36",
+        "B-AR-F-005"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+      "decision_sha256": "c0e65e558fcbde7f84022893578b1c64f1bf53f716100b3106a804db4280d657",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-AR-39"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json",
+      "decision_sha256": "fab3cfc34776601f09f252dd037bc85315ede337f0fe1ffc5158c73957e3ae90",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-AR-3"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json",
+      "decision_sha256": "65c2e351bb163c7c021872d4a4d92d6cc76da5a8084e72ab755f2e1a692dc2a3",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-AR-59"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json",
+      "decision_sha256": "4b6aa9839c0eacf44e35943d5a025230990997de3f5f0ff9cafab922635db986",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-001"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+      "decision_sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-002"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+      "decision_sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-007"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
+      "decision_sha256": "ce707aee07ee4cfe839a3ab5f6c83717d449ac8da6a8d1e7fbab4b49feb44bde",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-008"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F008_sheet_register.json",
+      "decision_sha256": "b35cb86bcd0ba6f11196bc1af9696e6dc5296f7cbe34ae124a24876558cdb29f",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-009"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F009_club_classification_scope.json",
+      "decision_sha256": "61976229e7eab9c4d96c6917b2954409fdafba9d960a76a0583702a0b3396796",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-010"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F010_glass_formula.json",
+      "decision_sha256": "af4c9d286eda3a59c8c19a99796fe1a7f7f8d4332f8b28ee7d225e1e2e004690",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-011"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F011_access_register.json",
+      "decision_sha256": "16b8030466ed9894b7dab677ae14f1e4a922012725ffc0c400ef12def3a6f0bc",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-012"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F012_parapet_drain_slope.json",
+      "decision_sha256": "f7d7c74d3ac3763d7cc2f1ecedbfd36dba37ca7e17a0a61866fc104e4107a628",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-014"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F014_insulation_identity.json",
+      "decision_sha256": "c99e19d272729607a77cc1d3873ca5be57009c2c5bd329ffa7cca5d64fc4b181",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-018"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F018_screen_identity.json",
+      "decision_sha256": "4697afa158d947df5c5673d1292bbf9c16d10cff73cc1d5ea894d98a7d4d9580",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-019"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F019_drain_dimension_identity.json",
+      "decision_sha256": "e79744f4cdcd92555300ebf906102336e2f387e3346959f1863c410fd596c537",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-020"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F020_OGN4_height.json",
+      "decision_sha256": "7801c49ea3c7172f8c0487ab722a493b90e3c08973e31e151dc0d953d1fcfd19",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-021"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F021_unsubstantiated_norm_status.json",
+      "decision_sha256": "f6f409e343eb3ef75475098e5b271ef13e019b2bc4fb85541ffb4fc52e7190da",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-022"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_F022_stone_standard_replacement.json",
+      "decision_sha256": "1dd7e7ba2bce83c8f4f7697c001d4116d7cd5d9c00d611f8014b2ffacd2d67b2",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-013",
+        "B-AR-F-015"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json",
+      "decision_sha256": "1b5bec9fd487811b2b78e77d12d54eae2ef20a5a9f8770de2a94673ffb5aa51f",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-003"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-003.json",
+      "decision_sha256": "7cc5787488c15dd0d0ae9b8a8ee51b367e6a366de095d2824bcc245073b96899",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-004"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json",
+      "decision_sha256": "537a01df4ce22327d818b38016a5a600bc295ff1a19845640465f4f4af74e6d2",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-006"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json",
+      "decision_sha256": "1147ad2d578ff19db335f86765998d19952dfea3e32ff9ac3da027a390ff84a8",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-AR-F-016"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
+      "decision_sha256": "6de616cbb7c5cca66864facc621709f0f7ac35569d40b16b8fded829cd5b3436",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-002"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json",
+      "decision_sha256": "2851662c79803e5a4e8d362f3c73fee55915522fab48395fe380e426b4dd512d",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-003"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+      "decision_sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248",
+      "pair_status": "standalone_design_runtime_unproven",
+      "standalone_controls": [
+        "PAIR-EOM-ROUNDING-001"
+      ],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Evaluate the named controls against sealed runtime outputs; retain their evidence gaps."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-004",
+        "H-EOM-28"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-004.json",
+      "decision_sha256": "6ec81943e3282643c6afdba57f11970e973a2a86b2afb5d28ca09687c5194b16",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-005"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json",
+      "decision_sha256": "9b98c505b2fdb2cbc3f9bff2b6489f30e19884381c8eec62cf2515fbd5ae81d8",
+      "pair_status": "standalone_design_runtime_unproven",
+      "standalone_controls": [
+        "PAIR-EOM-ROUNDING-001"
+      ],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Evaluate the named controls against sealed runtime outputs; retain their evidence gaps."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-006"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+      "decision_sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-007"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json",
+      "decision_sha256": "80725162dc61ad03bf5e1c5301f9349e232eb695808ce2d524e94a2fb8b35d9c",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-011"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-011.json",
+      "decision_sha256": "8a084a320ad746b20cbd7831a159cca9581237cd62b98235ce6b11553998e0de",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-014"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-014.json",
+      "decision_sha256": "817028329da55c5233d5125a6095de379052f53a421de663b5fe777d4110921d",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-015"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-015.json",
+      "decision_sha256": "3d68c70b29aa5dde6b5c09383bfd180c5304a2b38484cedb3cef205a780f25af",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-016"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-016.json",
+      "decision_sha256": "08e2ee802e6a8be9e9f5a16dc884d01f4b962cc6bc6dbbf87a6d41f850988661",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-017"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-017.json",
+      "decision_sha256": "74771a0b6daae9eabd6757acee99d68e3f5ee7bb36d07325f9e22017d22bfc27",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-019"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-019.json",
+      "decision_sha256": "d14191a3805e1d8d50b4034b70e8f574e01db915700c511b5da59836f66bdfa9",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-020"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+      "decision_sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-021"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+      "decision_sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-022"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-022.json",
+      "decision_sha256": "bdc1b9b8e17f8d4f6431e10bb694e9032588c6833ee872e935de193bf6ee30bb",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-023"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-023.json",
+      "decision_sha256": "595fa7304d48f38c01f2be3368151416604df6f002b42913c5977d4e25f2c5fd",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-024"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-024.json",
+      "decision_sha256": "3337cb4eb8166e1d8b866ec77e1b8640adf4f659cec8c3b764d511ddc6bf7fa6",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-025",
+        "H-ITP-72b"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-025.json",
+      "decision_sha256": "d4942202ecc3470ab136bd00705df8420c3161499013567a2ff122a7c3c8a603",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-026"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-026.json",
+      "decision_sha256": "6d986df9fb3f9b2e8f000a6f33b2a535301725f63d5bc258b1d913cf3169be82",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-027"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+      "decision_sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-029"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json",
+      "decision_sha256": "92f98a8b73d3db1a60c32f0d100a2dfd0e5688ea5295792e06a212154edd7ef0",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-030"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+      "decision_sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-031"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-031.json",
+      "decision_sha256": "1e77b4c1af3d96d38544e8d299129f7e02e867812d6138b2c8ecb99817db0e26",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-035"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-035.json",
+      "decision_sha256": "cf7c89bf0fa2b42a1a69c07ec109e87ea4a7822255d1751f4a866ec5179c52af",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-037"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-037.json",
+      "decision_sha256": "77e4dc763659487421731725cbfec2d7e8f78380090db6e5edb06498a7707ac7",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-038"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-038.json",
+      "decision_sha256": "35c602bbbe1e1dd36f6aa55f734b93813654cc257bc170858a9006bc799f891f",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-039"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-039.json",
+      "decision_sha256": "1db31635b83a1f4cbde483f5346662bb1f05664b507abc635a861ae5535b3a4a",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-040"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-040.json",
+      "decision_sha256": "749b9a919d92ecdcb6ece7c7fcb5744d01a593cea646ae56fbe7d9d0973f2566",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-042"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+      "decision_sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-044"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json",
+      "decision_sha256": "2a46b122ca2c41e1aeff054be481066700a8c8499669287a08bb9f5a89b23a10",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-050"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-050.json",
+      "decision_sha256": "693016921491b5dd0c2c10b23f03b22e9269d9a9ba37245e1ccb25d73e2b7d14",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-051"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-051.json",
+      "decision_sha256": "48acd1c90479c0e5404f0712745a913c194d59c4f253660ae2a1eec826c66e9e",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-021"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-KM-F-021.json",
+      "decision_sha256": "0ec652c53eec2935443671b2130971e404095ccb25d169db74954cd6adc9d6ae",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-024"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-KM-F-024.json",
+      "decision_sha256": "ee417134781cb32eb990c6a47841e5348b34eebf7a42363cbf4a004733035123",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-008"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-008.json",
+      "decision_sha256": "04017a8927d6b2f0a646bbcb162274eb2227858c8917d70c4a68455e32d8adc3",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-012"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-012.json",
+      "decision_sha256": "b647e50a0cbbc0c7df6e837f512c04193d3662f8ab59ef977989bd0f1176734e",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-014"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-014.json",
+      "decision_sha256": "a9974e014f896ed662677424d1ee50e93b654ebb9878fe140dfb4315b895ff3e",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-029"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-VK-F-029.json",
+      "decision_sha256": "61c33a57b18b840b9ea0afde4e0c119000cb7e6afeec5dda123f622efcff2e94",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-EOM-11"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM11.json",
+      "decision_sha256": "1d38db92b11e8fcde7159b7685795f19804600fc29102e6fed2bb5a1f76630a1",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-EOM-111"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+      "decision_sha256": "8c56324a1cdd435e58e33992a1133a3b6069ba04fab79a7dff7986472a091e25",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-EOM-27"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM27_active_socket_circuits.json",
+      "decision_sha256": "539cb99a7e98600cef013c0847d9dc68ea77774c009848fae45ae4d535d828a1",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-EOM-5"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM5_shunt_trip_identity.json",
+      "decision_sha256": "d8d84614d752aab554ea481335da63b34bd3a39419682483c124627b5df5b1b4",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-EOM-70",
+        "B-EOM-F-008"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json",
+      "decision_sha256": "4f491caf2dcbd75d1512da43f998abe388b1f23f0362d570367c25c0c8a59887",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-EOM-76",
+        "B-EOM-F-012"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json",
+      "decision_sha256": "b34a2943aefce4b68eb1a8ee496d4ef4c7645c11d945a2c2768827a8fd1c7f80",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-EOM-8"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM8.json",
+      "decision_sha256": "cd3198220c028d4cb8d6bd25723a7249f7515defaad806528f8b4543fb000f5f",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-001"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F001_cable_description.json",
+      "decision_sha256": "905f1f26daecb1841c99b8c7c2a70103cf60d545a0bb95358d82e9267004b5e5",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-007"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json",
+      "decision_sha256": "1c27b242ec894d3038ec6afb0afb4a727801b04675928076ed2d19c28944fed1",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-009"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json",
+      "decision_sha256": "ce3785a0efeda80ba7dd010d463cb406632919a791bb99394e43c8cd472609c0",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-010"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F010_meter_CT_identity.json",
+      "decision_sha256": "a703160135a73507c68370fde3502cd18805f7170e1f697e52463ef0a0d5794a",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-011"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F011_meter_internal_symbols.json",
+      "decision_sha256": "846fefca5751cb80b828934db27ad8c1a4654799dc592ca6b77352ea93e0e4c9",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-013"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F013_small_load_currents.json",
+      "decision_sha256": "91ce3dbd9625bde7420f0793438f84470d7631517c4677e3d72c2623203a6cb6",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-014"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F014_phase_A_current.json",
+      "decision_sha256": "658e2faf7e777cc659e49710a787ab6dfbae0ae51a050597f960008447f3eaa9",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-015"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json",
+      "decision_sha256": "b4c38d74f02f8e2978cabce4ea20aa5f68dec66f0c1afeebb72e0fec1a03b824",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-016"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+      "decision_sha256": "fd397c9b88821ec58404f09b5ee75556f169bd87b1258e15617e5ee42ff06997",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-017"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F017_poles_and_PE_scope.json",
+      "decision_sha256": "19e3acff85440a85eb46002f0f9f7f6563081deff719e91d8b476c8e861a22eb",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-018"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F018_temporary_outgoing_parameters.json",
+      "decision_sha256": "58493afcb1d36bea9496f9f5d00c72ef3c74624d28c411e5913af9ba3174b22e",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-019"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F019_typical_floor_scope.json",
+      "decision_sha256": "683b019ef27fdb28bf2963996eb113c81f014344286e744930005b9c075e8b80",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-020"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F020_enclosure_minimums.json",
+      "decision_sha256": "bf585abffce6c388509728cf559c7128600172b2a0e177b5b859c20235fb3d07",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-021",
+        "B-EOM-F-023"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F021_F023_controller_voltage_scope.json",
+      "decision_sha256": "da0ea92659220b1cded0204453c0e08ae0435cd61d0525346e3b97a3a908d47e",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-022"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F022_ventilation_power_rounding.json",
+      "decision_sha256": "a61e8bb81c63cacd0ee0e6e3ce075dbe8455c1bba1dfa4fe172b8cfd034336f2",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-024"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F024_room_number_collision.json",
+      "decision_sha256": "5f37d81095b90f1c769eaa87ed868673fea3491c2d83db7d2d23cfb63b3d61e5",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-025"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F025_repeated_note_numbers.json",
+      "decision_sha256": "78365e20d4bc3174de421622aba55969f5ac8fa86617b555fc7ed94f2bee6484",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-026"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json",
+      "decision_sha256": "534e82c9adb2dbcd334fd051e503f06a2a98d77822fcd5164d1370eb54b3fb56",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-027"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F027_penetration_material_scope.json",
+      "decision_sha256": "f57f007725816118bf933a0276615dbac5cebbcec1c404dfbca5023f8b26092a",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-028"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json",
+      "decision_sha256": "d3b57fbf21e0f9bdc4d803134c2255b9a4b4d5f6ff34b7610023e084aa0eb2bf",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-029"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F029_shared_product_code.json",
+      "decision_sha256": "77e362cc528f68c54dffd966b254eb69b718ae3b96f59718c2a8d61bd6aeb2a7",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-030"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F030_CT_minimum_substitutions.json",
+      "decision_sha256": "537dee4a137c78461c807d74d1def9412b209d680414692bc6b0dbd638082946",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-031"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F031_CT_emergency_assumptions.json",
+      "decision_sha256": "170491373e1f56f3edabfeeba46b1bd400c09a887065f8bcc05472f567d8e71a",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-032"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
+      "decision_sha256": "5162f21dcede7066fb3d1512cd551bef5cf76a3746d6360ac9d9959a69283c99",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-033"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F033_apartment_board_scope.json",
+      "decision_sha256": "733ea2ad8e0939b80ecb45e225de97885ae4879d5e2d56470b01ce7441c11a83",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-034"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+      "decision_sha256": "a63aa0206c93f1d384029fc98b7d1b4c335e25505edd3672d091df494b1d711a",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-035"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+      "decision_sha256": "d2fdf2b0a62b954bc12f46539bcc5944fc1413db62c61166ff991b5d317f8177",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-036"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+      "decision_sha256": "4e9118267e89143c1c088e4a42e68b3b72d0bd1650e9b643f6bc1993fcf2eb85",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-037"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+      "decision_sha256": "15432598db63ee87b27c7deece7cbcede488860c1944a00c2f5ef1fa513caa1f",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-038"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+      "decision_sha256": "96f4c1648640eb1c94ca979a73869993ab04a7359a183655ca07a3807fe43e64",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-039"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F039_frame_capacity.json",
+      "decision_sha256": "a1d31ff9ed8eb3319579cf81a42e523bb9007502dc39096902d226b85774ebda",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-040"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F040_parking_sum_refuted.json",
+      "decision_sha256": "80f9efbe1165cbf69cd274cf70c536c6fdc4ca0a31b3493bdadd03be31b8057c",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-041",
+        "B-EOM-F-048"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F041_F048_contradictory_norm_status.json",
+      "decision_sha256": "777df2fb3800db17423feed421e17427a9394ad86256c34011b7650b31fdc47f",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-042"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F042_SPZ_legend_scope.json",
+      "decision_sha256": "8c770016e591be6e1ee95b9176a5d5aba5cbfd37c147f904cd2563a9209e4b3d",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-043"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F043_hanger_fireproofing_supply.json",
+      "decision_sha256": "c635932a8d19138d1870cc16af9486c5aeab7f54456fa941f43692eb5b52e434",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-044",
+        "B-EOM-F-045"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F044_F045_incomplete_reference_identity.json",
+      "decision_sha256": "ea77298204f5f47fec14183ada91f47f7de67218bd30c44c9a3164e9ef567fc9",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-046"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F046_new_reference_identity.json",
+      "decision_sha256": "54f2976ada098bcf7450fafdcb6a6d57c96b7e2a347b17920f260cef2205a315",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-047"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F047_unsubstantiated_norm_status.json",
+      "decision_sha256": "f04e2b4063049458130984b879e82b2425d856e3a0c06759420be45498de9757",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-EOM-F-049"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+      "decision_sha256": "4584797c55ba058a83a66f9c599d6383a81c40397467675ecfb4e337504858db",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-EOM-2"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/H-EOM-2.json",
+      "decision_sha256": "d9d8e62b62288e57895d5524e6411535980bd8d807ebdaa39f0e8134f54d50b0",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-ITP-63",
+        "B-ITP-F-018"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json",
+      "decision_sha256": "ec886ea171d16f2c81f3c31963104eeae8dd14400b7a53af1c76b644ff88c610",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-ITP-64",
+        "B-ITP-F-041"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/H-ITP-64.json",
+      "decision_sha256": "a19c036e2038bc59c340d9147430c370a05bc48bbdcb8c2de0e60d8f2d5f245b",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-ITP-17"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP17_grooved_connection_identity.json",
+      "decision_sha256": "86d4789b355603010fb36e5634f9f707854e9747a4637168699bba57a468ab33",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-ITP-40",
+        "B-ITP-F-043",
+        "B-ITP-F-012",
+        "B-ITP-F-049"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+      "decision_sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-ITP-44",
+        "B-ITP-F-008"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP44_GVS_maxima.json",
+      "decision_sha256": "44c276625c7e8a17cde89f7d22fabb997b8e89f85b6f6ec3145ef251f5ef1584",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-ITP-58"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP58_GVS_branch_flows.json",
+      "decision_sha256": "18f4757f2b96969381e5504499213117983b5aaf771b02e5eb0207a647b01ad4",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-ITP-68"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP68_grooved_scope.json",
+      "decision_sha256": "99115cd8d26c814d789321933bae0f8e25a5bb13ded0fd458ae71bd361177c69",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-ITP-72"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP72_wall_and_velocity.json",
+      "decision_sha256": "475f5d890f33898ddc718d97ca9a785222529966ef0a5f87a312705ee21bd388",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-001"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+      "decision_sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-002"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F002_pump_pressure_selection.json",
+      "decision_sha256": "285f145dedcc2e37880b8f9aff5f28843c48abf036fe352239e5ef2e1d3f9eab",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-003"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F003_main_circuit_components.json",
+      "decision_sha256": "496838d6085febe6249ffc96981a652f3aff44dde82bc08fbb5d5f657a6a527c",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-004"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+      "decision_sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-005"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F005_test_pressure_scope.json",
+      "decision_sha256": "a7d32222f7f10b1f04ca6b13c42a7ababe200a411e6d0b42cce5ff47abb8648d",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-006"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+      "decision_sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-009"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F009_GVS_inlet_temperature.json",
+      "decision_sha256": "3105d42ff9d51573ed429301e98e68c83ef5967b37dd3d7f64806bb506c6d000",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-010"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F010_GVS_formula.json",
+      "decision_sha256": "370abff31e496cbfad890ab79c2379f01d1dbb05fa320d5f3f64af72a9eac867",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-013"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F013_valve_pressure_basis.json",
+      "decision_sha256": "80055a293163ac5e68ab2d10372b3ec944b67fe8ed6788cd668b4c0d61cfefd7",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-028"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+      "decision_sha256": "948c401ded92dc7baf8da111f58e08619ee6485d56c8a1167192c2fd338a3e81",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-032"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F032_channel_standard_scope.json",
+      "decision_sha256": "2a2861ef488cb53b24ae648891bf66e9912e56d0c64403e708afb229da0649d4",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-033"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+      "decision_sha256": "d8b8c313183679e564f305522d3a0c60a3ac6011a65f0e86b54d4d0a7278e6ff",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-034"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+      "decision_sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-036"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F036_gauge_range_allocation.json",
+      "decision_sha256": "414eb7b03e2e13826337c12f9b097562f2a8efcf45dbcb35da7ab6ce225e9a83",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-045"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F045_door_joint_context.json",
+      "decision_sha256": "4685d6c2de3fb99d05716d987776edf0a4656a78acf868e8cd1de3bb701f9b6f",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-052"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F052_unsubstantiated_norm_status.json",
+      "decision_sha256": "2f8a002cdcb34f772d26f0e861355cba8ae759942434a6b2b0a0089235183584",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-053"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_F053_standard_title.json",
+      "decision_sha256": "48b25ee12d05eb09a1826215610c1a59dfe0f759cbf315a2d0f57949a5950513",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-ITP-F-046",
+        "B-ITP-F-047",
+        "B-ITP-F-048"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+      "decision_sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-KM-12",
+        "B-KM-F-022"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json",
+      "decision_sha256": "b9d5cb7748465536b642a9edc3df0d3d5d897d8df415e46fe603482443a9aaa5",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-KM-13",
+        "B-KM-F-004"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM13_F004_S2_anchor_multiplicity.json",
+      "decision_sha256": "b039e259c55746828a55fdad1fbb9afe04bc99d2498ae858403e14b33bf19631",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-KM-14"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json",
+      "decision_sha256": "ef42022ce9ccb4895b2cc4bb11aacc050a7d72636e26bd45375b95a0c663a3b4",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-KM-3",
+        "B-KM-F-017"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM3.json",
+      "decision_sha256": "b453c43a58d1054330e0ac62fc71b0488ebbfcc1bca7aabe16011cd7d124e215",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-KM-5"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM5_S3_bent_handrail_developed_length.json",
+      "decision_sha256": "0d30fb366a7e5dc1cbcaf40ea55979118c8c44e929912483c5b539a27e5f69c9",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-KM-6",
+        "B-KM-F-018"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json",
+      "decision_sha256": "332c6b03682d0728dc030587f7934bbd6c930302eda3c3c261bee60353061ea3",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-KM-9"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM9_LK5_landing_elevation.json",
+      "decision_sha256": "258baafbac8c43c86e9a48ba228505f40cb9bd22ad945c8c03aa587ff06eb35b",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-001"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F001_norm_editions_scope.json",
+      "decision_sha256": "33b3aa3bc7d3e7470afa0640da907a872316eb10bda4279b180e36cca8f558de",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-002"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
+      "decision_sha256": "151514dfc81300d49bb4d1a639ed4f1aa4c315ae354ce07ec93e89f6a653d70a",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-003"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F003_loads_document_link.json",
+      "decision_sha256": "c6dc587ee5359dc549bda0a342845dbff0d8941417085f9949b3e6e5f8eb6691",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-005"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F005_total_plate_balance.json",
+      "decision_sha256": "c0650dd58ee0c6cf3ec04847956f7b9534183f7169c5f65f167fba59080061cf",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-006"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F006_profile_mass_recalculation.json",
+      "decision_sha256": "50baec1746488e3179ac2bd45e64ef3493a81ef06326deb30af36fc3a165e822",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-007"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F007_round_pipe_unreproduced_total.json",
+      "decision_sha256": "6b38efc1f6e92ce5dc08ce3b43ed619504013063160fdb52d3bd13e62f931a88",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-008"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F008_weld_calculation_requirement.json",
+      "decision_sha256": "76a198553e6e2fd04bef42ef3c57894d433c24e7a4c6943a44fafc3d6ccda164",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-009"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F009_sheet_cross_reference.json",
+      "decision_sha256": "7fbdfa43cd59998b7eba82f63bed364033f257914b0db60f482280b24d7def1e",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-010"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F010_end_caps_material_accounting.json",
+      "decision_sha256": "b32312f6cad2d814ffc5e487eaa8e55ef5b42e961a8126469f22ee529d1cf693",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-011"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F011_dimension_reference_points.json",
+      "decision_sha256": "b47d5331d28fc2d1a12dc1c4f52e732d33cedfa68ff068827a9e9481165cc324",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-012"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F012_level_list_scope.json",
+      "decision_sha256": "f2c0052c8e3217c2fc0115deb2f4d7a426e4127d17ce0a4ca37e36645858abcd",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-013"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F013_pipe_standard_designations.json",
+      "decision_sha256": "a15f78ba84e466ec6c47f29ec3e77b047613bf2a079f141e886a4882d67ab649",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-014"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F014_adjacent_flights_identity.json",
+      "decision_sha256": "857bb51fbcda52cbe45356bedd45240cc052c6a5c9a0b10d0dbe639c0492ebfc",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-015"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+      "decision_sha256": "86849d4e464c5efa654fd2e5aa1e08127b5859ee7c63a2ec2eddd62ecda17ea5",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-016"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F016_label_count_scope.json",
+      "decision_sha256": "38f37126a25f3a6b37eaba9d42387f4084f2b39e40f54f08e6d103f71ed0c1d6",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-019"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F019_OGM11_end_component_boundaries.json",
+      "decision_sha256": "fc992c096f95e4d0d40316e308fe0f78b6970c3f1e7fccfbdb82d8883a88cf98",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-020"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F020_conditional_diagonal.json",
+      "decision_sha256": "8f35494d8dc6ed5ce840b1d43c8f126ebd9d4369ce0a661397afc4e434fa538c",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-023"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F023_unsubstantiated_norm_status.json",
+      "decision_sha256": "1feee037a29dea4b4d84ffe7b1f9efc173698c585ac0a27a0b83ad03b09f6928",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-025"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F025_standard_title_editorial.json",
+      "decision_sha256": "3f8d7c7073427759289a2b6f7d9c0bfa350602d05a9aca89b1e6a7dd04534045",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-KM-F-026"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/KM_F026_reference_scope_insufficient.json",
+      "decision_sha256": "976e489296aefdfb5c8a92b0b3c410c83fdd2346637207c0c607a932094fc38f",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-VK-14",
+        "B-VK-F-007"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK14.json",
+      "decision_sha256": "570852e44331a5bb4b36806002728b354e19f8b7079a17ab6c5abf7f6d7d1619",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-VK-20"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
+      "decision_sha256": "3578c3e05b80511d0099d88947437916b5e5a6ebf51ecb954e5a6a3864d79ea7",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "H-VK-32"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK32_drain_count_identity.json",
+      "decision_sha256": "80d35cd06b41bb419ff6f993241724454b9d071d9bfed11eb0fc70076c193eff",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-VK-34"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK34_transition_assembly.json",
+      "decision_sha256": "95a1cebf034d549a43414aaae64ae4958235c1ee0422b79a34774442233349d2",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-VK-35",
+        "B-VK-F-010"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK35_B-VK-F-010.json",
+      "decision_sha256": "b175eeb75cd23a55a2ea601623e65898bc8dd4756c4fe16cf2e8aa8ad3e83f72",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-VK-50"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK50_specification_duplicates.json",
+      "decision_sha256": "319f054bb25806e96933d833737ffc90db90db21a0e38a15f5a24160037f59ae",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "H-VK-51"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK51_apartment_scope.json",
+      "decision_sha256": "344b267b8859af5d55248419f377c165905514effb084a96b5c4921560ab6dcb",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-001"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F001_revision_interval.json",
+      "decision_sha256": "79bc3fdfe1e64b0c5c7a6f7cb2b6343303ffa8549cb671f94ae6c06e33872e03",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-002"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F002_revision_compensator_inventory.json",
+      "decision_sha256": "37e68f7608b3f3fadbc1ff458cf06e0a66ab06ee536959a3ee17a0acbe076489",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-003"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F003_reinforcement_counts.json",
+      "decision_sha256": "e9e6f6cdb5f27558c3a138869ea0665a50d8d8baa273e180a4a9b9fcd9542f53",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-004"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F004_insulation_scope.json",
+      "decision_sha256": "1aee463c39c642ce1ee9ae8c8f9995e6a86275fba0dbfc86edd2668bb7cc0d39",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-005"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F005_fitting_pressure.json",
+      "decision_sha256": "d664c9be4e8783c858f95081a7bdd835b22159b57c485a4df5adae1a0408346b",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-006"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F006_test_criterion.json",
+      "decision_sha256": "8de36f9d965c639b3b294ae1a2230ff52558f1750c107d647263ae1d8bb996f5",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-009",
+        "H-VK-21"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F009_pipe_125_inventory.json",
+      "decision_sha256": "841874d6b0fce166bb0a0222ebc8cfe4a015cd33e59413d62f02186a20fbede9",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-011"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F011_technical_space_level.json",
+      "decision_sha256": "9ce8af0902e7e64d2af46e6fe4a4b62030dd6ff186c03c5bfd021ee870e5aeac",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-013",
+        "H-VK-33"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F013_drain_assembly_scope.json",
+      "decision_sha256": "51f2e39a7857fc364ed2dc076d1601c1f1d3e881aa3ee0968085461f31447dea",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-015"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F015_roof_title_level.json",
+      "decision_sha256": "0c536b77f695dcdbc9642bc8b64731cbcd50a0012262a72bea4510cbb30e6eb0",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-016"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F016_incomplete_riser_label.json",
+      "decision_sha256": "8447bc2b8cb74289c3e594d5791f2c7ef25745a6002c29d68927c47cdc83e006",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-017",
+        "B-VK-F-018",
+        "B-VK-F-019",
+        "B-VK-F-020",
+        "B-VK-F-022",
+        "B-VK-F-023",
+        "B-VK-F-028"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F017_F028_cross_references.json",
+      "decision_sha256": "3b9bdd5ae305bfa08f477c45706ea5b839ced2270c0aa0fa4477f7e919f84dbf",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-021"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F021_revision_height.json",
+      "decision_sha256": "f634d5f6dcd488ebfedd3ca87aace2adb92dd0d2f7b5366e19409b3f55b53ef8",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-024"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F024_riser_labels.json",
+      "decision_sha256": "c521ebd56bdcd601648f2bba29be378bdf57734b9251f3f7e1bbbd5dcc43c1f5",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-025"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F025_continuation_elevation.json",
+      "decision_sha256": "2a1beda87cf3322201fb6e53330711d1f999fca43503b885c39fcab6f4edb118",
+      "pair_status": "description_requires_pair_validation",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "Validate both sides and historical provenance before filter acceptance; otherwise retain explicit evidence gap."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-026"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F026_sheet_title_scope.json",
+      "decision_sha256": "86ba3ae54be03ffe2187c024a1f9a4ec164f82c56050c0794ff33f0955c39239",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    },
+    {
+      "candidate_ids": [
+        "B-VK-F-027"
+      ],
+      "decision_file": "experiments/auditmanager_stage1_20261109/decisions/VK_F027_calculation_level_labels.json",
+      "decision_sha256": "49dda7205363350c951c84c3700e8d9ee08324e23f0236f50dfa885bece5e924",
+      "pair_status": "no_explicit_pair_link",
+      "standalone_controls": [],
+      "automatic_filter_authorized": false,
+      "evaluation_boundary": "Use only explicitly supported narrow claims. Unknown, conditional, unchecked and out-of-profile claims are not technical positives or technical refutations. Preserve engineer feedback separately.",
+      "next_action": "No filter acceptance on this theme alone. Pair evidence is not linked here; do not infer that it does not exist elsewhere."
+    }
+  ],
+  "limits": [
+    "This audit checks coverage, links and disposition presence, not engineering truth.",
+    "The 291 records and 247 themes are not independent defects or a recall denominator.",
+    "A completed primary queue and followup disposition list do not prove any runtime improvement."
+  ]
+}
