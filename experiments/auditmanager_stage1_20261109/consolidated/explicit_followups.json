@@ -283,6 +283,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-040"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для признания неправильного типа канала сопоставить пять сигналов с принципиальными схемами шкафов и интерфейсами нагревателей. До этого оставить вопрос о назначении сигнала, а отсутствие выхода и автоматическую замену DI→DO не оценивать как подтверждённые дефекты."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-041"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
