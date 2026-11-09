@@ -234,6 +234,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-060"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Согласовать окончательный номер термостата и маркировку линии. Фактическое подключение и работоспособность до проверки считать неизвестными, не включать в подтверждённые последствия."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-064"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F064_reference_register_scope.json",
