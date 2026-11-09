@@ -1,0 +1,998 @@
+{
+  "purpose": "Stage 2 evidence: saved classic-control runs and code identity; not new model runs.",
+  "current_checkout_commit": "57baad143be115e8d33c31663af56f37541a55e1",
+  "code_identity": [
+    {
+      "path": "prompts/disciplines/_registry.json",
+      "symbol": "\"-АК\"",
+      "current_sha256": "9a926e56e3a8b90c054b70fe4ff2f70673a2aad3f000142209c68f96ebe7daa4",
+      "historical_sha256": "9a926e56e3a8b90c054b70fe4ff2f70673a2aad3f000142209c68f96ebe7daa4",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Маршрутизация имени АК в профиль SS"
+    },
+    {
+      "path": "backend/app/core/config.py",
+      "symbol": "_STAGE_MODEL_DEFAULTS",
+      "current_sha256": "fb6c9008e0eccc935c8824346e45cfa310d74c52c61d2e9efd05a128cd281204",
+      "historical_sha256": "fb6c9008e0eccc935c8824346e45cfa310d74c52c61d2e9efd05a128cd281204",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Конфигурация моделей и флагов; defaults отдельно от runtime"
+    },
+    {
+      "path": "backend/app/pipeline/manager.py",
+      "symbol": "async def _run_findings_verify",
+      "current_sha256": "3669393512f030c4f4360c3a78577dc1b7c0d5dda2d7896c294f4b7d4f6b2cdd",
+      "historical_sha256": "3669393512f030c4f4360c3a78577dc1b7c0d5dda2d7896c294f4b7d4f6b2cdd",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Оркестрация, verifier и critic v2"
+    },
+    {
+      "path": "prompts/pipeline/en/text_analysis_task.md",
+      "symbol": "файл целиком",
+      "current_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+      "historical_sha256": "f7770bef8ad9939e6e1b4050a71ccc564e7cf2f52b75d9fdb4cdf4d9651e63c6",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Текстовая инструкция: полный MD, расчёты, междокументные сверки"
+    },
+    {
+      "path": "prompts/pipeline/en/findings_merge_task.md",
+      "symbol": "файл целиком",
+      "current_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+      "historical_sha256": "7198f0b59c72384d3fe489840457e7985d8c0b01e368580a0599e7dbb9543cc8",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Инструкция объединения, подтверждение и severity; source_finding_ids"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/runner.py",
+      "symbol": "def merge_similar_findings",
+      "current_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+      "historical_sha256": "0f17e84ba5611024cf385fbf495e331cf97478d1be2d46f9fb8d6dc760f1da6b",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Детерминированное объединение по нормализованной проблеме"
+    },
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+      "symbol": "SYSTEM_PROMPT_BASE",
+      "current_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+      "historical_sha256": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Блоковый анализ, режимы ансамбля, evidence gate, deferred_findings"
+    },
+    {
+      "path": "backend/app/pipeline/stages/block_grounding/block_source_router.py",
+      "symbol": "def resolve_block_package",
+      "current_sha256": "bcf439093d0dabe83b5f8d8acdd187aff61d32d12f8722ece0a05e8879f81a84",
+      "historical_sha256": "bcf439093d0dabe83b5f8d8acdd187aff61d32d12f8722ece0a05e8879f81a84",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Векторные профили и PNG; fallback зависит от типа/размера блока"
+    },
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/finding_evidence_gate.py",
+      "symbol": "def gate_findings",
+      "current_sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+      "historical_sha256": "b2a803e8948f02876fb4ef4809d6484959a829221bf82e997ac30c4b251ef986",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Отложенные кандидаты и дедуп problem_class+affected_entity"
+    },
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/document_retrieval.py",
+      "symbol": "def retrieve_document_context",
+      "current_sha256": "1f257bd6fd57523c72cb82705db53f0a663debadd5f0bcf5921961aea2375a87",
+      "historical_sha256": "1f257bd6fd57523c72cb82705db53f0a663debadd5f0bcf5921961aea2375a87",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Поиск текстового контекста по document_graph"
+    },
+    {
+      "path": "backend/app/pipeline/stages/text_analysis/absence_guard.py",
+      "symbol": "def enforce_absence_guard",
+      "current_sha256": "2b01f93e0a12925e5f371ef14b4b98a3d389b33dff6aaf405eb047852b5dc15f",
+      "historical_sha256": "2b01f93e0a12925e5f371ef14b4b98a3d389b33dff6aaf405eb047852b5dc15f",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Проверка заявлений отсутствия; пропуск при непустом absence_checked"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_verify/runner.py",
+      "symbol": "async def run_findings_verify",
+      "current_sha256": "bce7a68a3fd1976d04dd747abe44dce5c21eb42b8af5c3bdfceff8889c69154a",
+      "historical_sha256": "bce7a68a3fd1976d04dd747abe44dce5c21eb42b8af5c3bdfceff8889c69154a",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Структурный critic/corrector и проверка отсутствия"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_review/deterministic_corrector.py",
+      "symbol": "def correct_findings",
+      "current_sha256": "248cff65548e55c2cb47a59fc6a96b6f31e8e32d6970abf109ebdc4943c481b5",
+      "historical_sha256": "2191ceb8df8553b351d9d97fc9a0d8e6357de1c116cc89d46a729e5dad3e0e5e",
+      "same_as_historical_snapshot": false,
+      "historical_claim_not_new_verification": "Исправление адресов и понижение без удаления найденных строк"
+    },
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/provenance.py",
+      "symbol": "файл целиком",
+      "current_sha256": "80e8da3faad9f33deea368c6f3f080a5d0e246b61b1eb54f36925d7b12a771f1",
+      "historical_sha256": "80e8da3faad9f33deea368c6f3f080a5d0e246b61b1eb54f36925d7b12a771f1",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Происхождение и конфликтующие мнения детекторов"
+    },
+    {
+      "path": "backend/app/services/common/discipline_service.py",
+      "symbol": "def load_discipline",
+      "current_sha256": "985e064de9a3a6473a992c1db96192427634221b889c0720a053895abd6c0d2c",
+      "historical_sha256": "985e064de9a3a6473a992c1db96192427634221b889c0720a053895abd6c0d2c",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Загрузка профиля дисциплины и инъекция в промпт"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/task_builder.py",
+      "symbol": "def load_template_for_llm",
+      "current_sha256": "ff07802ffff915944817e2abd44b8a21a8008551f1f05174f799afa7484e845e",
+      "historical_sha256": "ff07802ffff915944817e2abd44b8a21a8008551f1f05174f799afa7484e845e",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Приоритет английского шаблона, project override и сборка задачи"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/prepare_service.py",
+      "symbol": "def _run_prepare",
+      "current_sha256": "72b7d79965f748c2b123ad10ed7dbffe91b77bdb170b1f5ccbc0a40d4be5e61b",
+      "historical_sha256": "72b7d79965f748c2b123ad10ed7dbffe91b77bdb170b1f5ccbc0a40d4be5e61b",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Подготовка и локальный контекст вместо прежней Gemma"
+    },
+    {
+      "path": "backend/app/pipeline/stages/norms/runner.py",
+      "symbol": "async def run_norm_verification",
+      "current_sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+      "historical_sha256": "32da5afb09aaca00c977b55e31cdea43efa79d7a0f7fadcb4b9ba9f1871fca5a",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Проверка нормативных ссылок, цитат и исправление"
+    },
+    {
+      "path": "backend/app/services/findings/finding_quality.py",
+      "symbol": "def evaluate_finding_practicality",
+      "current_sha256": "c10856b72066fd8d304583112641713bee953523abe39efcd367a36b91c5b52d",
+      "historical_sha256": "c10856b72066fd8d304583112641713bee953523abe39efcd367a36b91c5b52d",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Разметка практичности и приоритета; сама функция не удаляет строки"
+    },
+    {
+      "path": "backend/app/pipeline/stages/critic_v2_triage/runner.py",
+      "symbol": "def run_critic_v2_triage",
+      "current_sha256": "6446b65527a9d30585da496ea51693112fa6abd6650baacf7c78ae73588088a7",
+      "historical_sha256": "6446b65527a9d30585da496ea51693112fa6abd6650baacf7c78ae73588088a7",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Дополнительные артефакты critic v2; основной findings не переписывается"
+    },
+    {
+      "path": "backend/app/services/findings/verdict_preservation.py",
+      "symbol": "файл целиком",
+      "current_sha256": "837d9a697f3d52fdc7827aecee7a69013755e46768d087283c83c06ad1c33e90",
+      "historical_sha256": "837d9a697f3d52fdc7827aecee7a69013755e46768d087283c83c06ad1c33e90",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Сохранение решений инженера при повторных проходах"
+    },
+    {
+      "path": "backend/app/services/export/excel_service.py",
+      "symbol": "async def generate_excel",
+      "current_sha256": "24d9b1ec831c5839566ecae5f2be0afd17d864327d2aab15d13d42d5e05f47bd",
+      "historical_sha256": "24d9b1ec831c5839566ecae5f2be0afd17d864327d2aab15d13d42d5e05f47bd",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Вызов генератора Excel"
+    },
+    {
+      "path": "tests/test_audit_coverage_honesty.py",
+      "symbol": "файл целиком",
+      "current_sha256": "a2b62de79a6ea426e8d2ec5cf0568c5b117ca0a938b40f41d657950ced1e426a",
+      "historical_sha256": "a2b62de79a6ea426e8d2ec5cf0568c5b117ca0a938b40f41d657950ced1e426a",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Проверки честного состояния покрытия, не качества технических находок"
+    },
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/ensemble_mode.py",
+      "symbol": "файл целиком",
+      "current_sha256": "22f145363f415ecc7e9d5186cf5dcc042e85e977a590052cd530526ad8f85d94",
+      "historical_sha256": "22f145363f415ecc7e9d5186cf5dcc042e85e977a590052cd530526ad8f85d94",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Выбор режима без OpenRouter"
+    },
+    {
+      "path": "backend/app/services/llm/codex_model_substitution.py",
+      "symbol": "def substitute_codex_model",
+      "current_sha256": "43e30e79caf5d5721eb6e34a47333df1a48ff02d1b3232164d36ce3eedf86332",
+      "historical_sha256": "43e30e79caf5d5721eb6e34a47333df1a48ff02d1b3232164d36ce3eedf86332",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Опциональная подмена model ID из APP_DATA_DIR"
+    },
+    {
+      "path": "prompts/disciplines/SS/checklist.md",
+      "symbol": "файл целиком",
+      "current_sha256": "4efe2296d18124aae441a05d01f8ea70ddace7ec4cd6608362796a0003b020f6",
+      "historical_sha256": "4efe2296d18124aae441a05d01f8ea70ddace7ec4cd6608362796a0003b020f6",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Профиль SS: инструкция, не контроль выполнения"
+    },
+    {
+      "path": "prompts/disciplines/ITP/checklist.md",
+      "symbol": "файл целиком",
+      "current_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+      "historical_sha256": "22aa3697b2557feb65e2e25f1478e81ec2d48ba815818f62eef40a8059f0dbb1",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Профиль ITP: инструкция, не контроль выполнения"
+    },
+    {
+      "path": "prompts/disciplines/AR/checklist.md",
+      "symbol": "файл целиком",
+      "current_sha256": "eccb7879023a126427fd61a0ed36237eb42bbebd4bec63c4009004247d7f3179",
+      "historical_sha256": "eccb7879023a126427fd61a0ed36237eb42bbebd4bec63c4009004247d7f3179",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Профиль AR: инструкция, не контроль выполнения"
+    },
+    {
+      "path": "prompts/disciplines/KM/checklist.md",
+      "symbol": "файл целиком",
+      "current_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+      "historical_sha256": "544487191d8d819081298ed15ef532be9c5db6196942b4e959eb79de4d7bf993",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Профиль KM: инструкция, не контроль выполнения"
+    },
+    {
+      "path": "prompts/disciplines/VK/checklist.md",
+      "symbol": "файл целиком",
+      "current_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+      "historical_sha256": "5bcccef4fbe706983b1f125dbdcded15d97ba697677eb8b07998da72147eabd1",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Профиль VK: инструкция, не контроль выполнения"
+    },
+    {
+      "path": "prompts/disciplines/EOM/checklist.md",
+      "symbol": "файл целиком",
+      "current_sha256": "2835479eeb630d894349903ad601d3b6ce2cac1c05386f1a5601b58390d8664e",
+      "historical_sha256": "2835479eeb630d894349903ad601d3b6ce2cac1c05386f1a5601b58390d8664e",
+      "same_as_historical_snapshot": true,
+      "historical_claim_not_new_verification": "Профиль EOM: инструкция, не контроль выполнения"
+    }
+  ],
+  "runs": [
+    {
+      "discipline": "AK",
+      "saved_status": "completed_unadjudicated",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/status/AK.json",
+          "sha256": "420f8465d5db321269410a836cbe2432dbdc00dac656ebd3d6c81a156587b103"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/AK/findings_merge.json",
+          "sha256": "b6d1db9271e40fe95ca2e59427570dd303a512dee4e9beac25df5d7a2a36adca"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/AK/findings_verify.json",
+          "sha256": "50cb7325a8bd900cb7aa0eaf6cce1316c545b171383fb2db247463c913ef7d3e"
+        }
+      ],
+      "usage_records": [
+        {
+          "stage": "text_analysis",
+          "model": "codex/gpt-6.1-sol",
+          "input_tokens": 210913,
+          "output_tokens": 13791,
+          "duration_ms": 281626,
+          "cost_usd": 0.0
+        },
+        {
+          "stage": "findings_merge",
+          "model": "codex/gpt-6-sol",
+          "input_tokens": 218796,
+          "output_tokens": 28091,
+          "duration_ms": 518372,
+          "cost_usd": 0.0
+        }
+      ],
+      "block_progress": {
+        "completed": 70,
+        "total": 70,
+        "ok": true,
+        "detectors_failed": []
+      },
+      "verifier_detail": {
+        "findings_total": 65,
+        "deterministic_issues": 0,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "absence_candidates": 7,
+        "absence_downgraded": 2
+      },
+      "before_count": 65,
+      "after_count": 65,
+      "removed_ids": [],
+      "added_ids": [],
+      "changed_findings": [
+        {
+          "finding_id": "F-011",
+          "changed_fields": [
+            "absence_guard_downgraded",
+            "absence_guard_evidence",
+            "absence_guard_original_severity",
+            "severity"
+          ],
+          "before": {
+            "absence_guard_downgraded": null,
+            "absence_guard_evidence": null,
+            "absence_guard_original_severity": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "absence_guard_downgraded": true,
+            "absence_guard_evidence": "На листе 41 приведены подключения приводов Y1, Y2 и насосов M1, M2 двух смесительных узлов завес.",
+            "absence_guard_original_severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-021",
+          "changed_fields": [
+            "absence_guard_downgraded",
+            "absence_guard_evidence",
+            "absence_guard_original_severity",
+            "severity"
+          ],
+          "before": {
+            "absence_guard_downgraded": null,
+            "absence_guard_evidence": null,
+            "absence_guard_original_severity": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "absence_guard_downgraded": true,
+            "absence_guard_evidence": "На листе 29 показано подключение M4, а в перечне материалов предусмотрен кабель ППГнг(A)-HF 3x1,5 мм².",
+            "absence_guard_original_severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        }
+      ],
+      "saved_final_sha_matches_verify_snapshot": false
+    },
+    {
+      "discipline": "ITP",
+      "saved_status": "completed_unadjudicated",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/status/ITP.json",
+          "sha256": "cddcbd65fc91c4dfd66dea4949116225aef33b31a058b4b50796ac751185031b"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/ITP/findings_merge.json",
+          "sha256": "3a3c2505680f1086348eebb0d72aad9c0a6eb9c356789dd0eb97b04d6da21c3a"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/ITP/findings_verify.json",
+          "sha256": "3a3c2505680f1086348eebb0d72aad9c0a6eb9c356789dd0eb97b04d6da21c3a"
+        }
+      ],
+      "usage_records": [
+        {
+          "stage": "text_analysis",
+          "model": "codex/gpt-6.1-sol",
+          "input_tokens": 205768,
+          "output_tokens": 16669,
+          "duration_ms": 339203,
+          "cost_usd": 0.0
+        },
+        {
+          "stage": "findings_merge",
+          "model": "codex/gpt-6-sol",
+          "input_tokens": 137826,
+          "output_tokens": 26010,
+          "duration_ms": 477071,
+          "cost_usd": 0.0
+        }
+      ],
+      "block_progress": {
+        "completed": 48,
+        "total": 48,
+        "ok": true,
+        "detectors_failed": []
+      },
+      "verifier_detail": {
+        "findings_total": 53,
+        "deterministic_issues": 0,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "absence_candidates": 8,
+        "absence_downgraded": 0
+      },
+      "before_count": 53,
+      "after_count": 53,
+      "removed_ids": [],
+      "added_ids": [],
+      "changed_findings": [],
+      "saved_final_sha_matches_verify_snapshot": false
+    },
+    {
+      "discipline": "AR",
+      "saved_status": "completed_unadjudicated",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/status/AR.json",
+          "sha256": "a4357f8812c1a6149a930d439daddf2c3413c99fe77fd7f61d72d35a3b78b24a"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/AR/findings_merge.json",
+          "sha256": "4aaa1778182c65c3f1a6513eee6b86738647e55604c39923486a15f73a6c2b0f"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/AR/findings_verify.json",
+          "sha256": "4aaa1778182c65c3f1a6513eee6b86738647e55604c39923486a15f73a6c2b0f"
+        }
+      ],
+      "usage_records": [
+        {
+          "stage": "text_analysis",
+          "model": "codex/gpt-6.1-sol",
+          "input_tokens": 82440,
+          "output_tokens": 7901,
+          "duration_ms": 162636,
+          "cost_usd": 0.0
+        },
+        {
+          "stage": "findings_merge",
+          "model": "codex/gpt-6-sol",
+          "input_tokens": 157702,
+          "output_tokens": 10982,
+          "duration_ms": 210655,
+          "cost_usd": 0.0
+        }
+      ],
+      "block_progress": {
+        "completed": 42,
+        "total": 42,
+        "ok": true,
+        "detectors_failed": []
+      },
+      "verifier_detail": {
+        "findings_total": 22,
+        "deterministic_issues": 0,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "absence_candidates": 3,
+        "absence_downgraded": 0
+      },
+      "before_count": 22,
+      "after_count": 22,
+      "removed_ids": [],
+      "added_ids": [],
+      "changed_findings": [],
+      "saved_final_sha_matches_verify_snapshot": false
+    },
+    {
+      "discipline": "KM",
+      "saved_status": "completed_unadjudicated",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/status/KM.json",
+          "sha256": "21d23088fcc38ee62b9101bdc4401b7b2c1d8462d08bb8c213b34dd01d1fcaf4"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/KM/findings_merge.json",
+          "sha256": "d85048316ccca845e1cac247c6896671cdd78283848f73e2ad1ecf5ed226fa02"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/KM/findings_verify.json",
+          "sha256": "d85048316ccca845e1cac247c6896671cdd78283848f73e2ad1ecf5ed226fa02"
+        }
+      ],
+      "usage_records": [
+        {
+          "stage": "text_analysis",
+          "model": "codex/gpt-6.1-sol",
+          "input_tokens": 97355,
+          "output_tokens": 9878,
+          "duration_ms": 202429,
+          "cost_usd": 0.0
+        },
+        {
+          "stage": "findings_merge",
+          "model": "codex/gpt-6-sol",
+          "input_tokens": 181040,
+          "output_tokens": 18367,
+          "duration_ms": 343014,
+          "cost_usd": 0.0
+        }
+      ],
+      "block_progress": {
+        "completed": 54,
+        "total": 54,
+        "ok": true,
+        "detectors_failed": []
+      },
+      "verifier_detail": {
+        "findings_total": 26,
+        "deterministic_issues": 0,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "absence_candidates": 10,
+        "absence_downgraded": 0
+      },
+      "before_count": 26,
+      "after_count": 26,
+      "removed_ids": [],
+      "added_ids": [],
+      "changed_findings": [],
+      "saved_final_sha_matches_verify_snapshot": false
+    },
+    {
+      "discipline": "VK",
+      "saved_status": "completed_unadjudicated",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/status/VK.json",
+          "sha256": "10ee722e6308520228ddc90e45799eb17a5fc0b261352a6c8aff011d8c9b7e11"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/VK/findings_merge.json",
+          "sha256": "4253071824eeb8bebf8fb16dd3241862109691deb521d6580cdae31cac08139a"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/VK/findings_verify.json",
+          "sha256": "4253071824eeb8bebf8fb16dd3241862109691deb521d6580cdae31cac08139a"
+        }
+      ],
+      "usage_records": [
+        {
+          "stage": "text_analysis",
+          "model": "codex/gpt-6.1-sol",
+          "input_tokens": 116277,
+          "output_tokens": 8513,
+          "duration_ms": 175733,
+          "cost_usd": 0.0
+        },
+        {
+          "stage": "findings_merge",
+          "model": "codex/gpt-6-sol",
+          "input_tokens": 107073,
+          "output_tokens": 16173,
+          "duration_ms": 299292,
+          "cost_usd": 0.0
+        }
+      ],
+      "block_progress": {
+        "completed": 35,
+        "total": 35,
+        "ok": true,
+        "detectors_failed": []
+      },
+      "verifier_detail": {
+        "findings_total": 29,
+        "deterministic_issues": 0,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "absence_candidates": 5,
+        "absence_downgraded": 0
+      },
+      "before_count": 29,
+      "after_count": 29,
+      "removed_ids": [],
+      "added_ids": [],
+      "changed_findings": [],
+      "saved_final_sha_matches_verify_snapshot": false
+    },
+    {
+      "discipline": "EOM",
+      "saved_status": "completed_unadjudicated",
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/status/EOM.json",
+          "sha256": "0de4c33f087e9353bfcfa3bc84a4f118b5f9da167445d4dbcbb78d509cefd45f"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_merge.json",
+          "sha256": "4f45dea89a106170da9e7ce7a0a9a61664d6176e6cc351d2876596bd97b5ce39"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/snapshots/EOM/findings_verify.json",
+          "sha256": "d15870091424921798f5b4b5beb1bc227dad0d9d3e12a376e61d09f2f7edef8a"
+        }
+      ],
+      "usage_records": [
+        {
+          "stage": "text_analysis",
+          "model": "codex/gpt-6.1-sol",
+          "input_tokens": 216001,
+          "output_tokens": 13708,
+          "duration_ms": 280710,
+          "cost_usd": 0.0
+        },
+        {
+          "stage": "findings_merge",
+          "model": "codex/gpt-6-sol",
+          "input_tokens": 208605,
+          "output_tokens": 22859,
+          "duration_ms": 424809,
+          "cost_usd": 0.0
+        }
+      ],
+      "block_progress": {
+        "completed": 85,
+        "total": 85,
+        "ok": true,
+        "detectors_failed": []
+      },
+      "verifier_detail": {
+        "findings_total": 49,
+        "deterministic_issues": 19,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 16,
+        "flagged_human": 3,
+        "absence_candidates": 3,
+        "absence_downgraded": 0
+      },
+      "before_count": 49,
+      "after_count": 49,
+      "removed_ids": [],
+      "added_ids": [],
+      "changed_findings": [
+        {
+          "finding_id": "F-001",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-003",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-030",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-031",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-032",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-033",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-034",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "requires_human_review"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "requires_human_review": null
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "requires_human_review": true
+          }
+        },
+        {
+          "finding_id": "F-035",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "requires_human_review"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "requires_human_review": null
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "requires_human_review": true
+          }
+        },
+        {
+          "finding_id": "F-036",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-037",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "requires_human_review"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "requires_human_review": null
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "requires_human_review": true
+          }
+        },
+        {
+          "finding_id": "F-038",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-039",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-040",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-041",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-042",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-043",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-044",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-045",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        },
+        {
+          "finding_id": "F-046",
+          "changed_fields": [
+            "corrected_by",
+            "corrector_note",
+            "severity"
+          ],
+          "before": {
+            "corrected_by": null,
+            "corrector_note": null,
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          },
+          "after": {
+            "corrected_by": "deterministic",
+            "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          }
+        }
+      ],
+      "saved_final_sha_matches_verify_snapshot": false
+    }
+  ],
+  "limits": [
+    "Saved completion status is not evidence of a currently live process.",
+    "A saved usage model name is a recorded attribution, not independent provider receipt verification.",
+    "Zero recorded cost is not proof of zero subscription or total economic cost.",
+    "ID preservation does not prove semantic preservation; inspect changed text and upstream candidate mapping.",
+    "Matching current code hash does not by itself prove which code executed in a historical run.",
+    "No inference that a removed candidate was useful or a retained candidate was correct without the frozen adjudication."
+  ]
+}
