@@ -3,6 +3,7 @@ from backend.app.pipeline.stages.findings_merge.runner import merge_similar_find
 from backend.app.pipeline.stages.prepare.codex_targeted_findings import combine_findings_with_targeted
 from backend.app.services.findings.dedup.class_dedup import derive_class_key
 from backend.app.services.findings.dedup.fuzzy_dedup import fuzzy_dedup
+from backend.app.services.findings.findings_service import group_similar_findings
 
 
 def pair():
@@ -13,6 +14,7 @@ def pair():
 
 def test_same_words_in_different_sections_survive_all_dedup_routes(tmp_path):
     findings=pair()
+    assert len(group_similar_findings(findings)) == 2
     assert derive_class_key(findings[0]) != derive_class_key(findings[1])
     kept,_=fuzzy_dedup(findings)
     assert len(kept)==2
@@ -25,6 +27,7 @@ def test_same_words_in_different_sections_survive_all_dedup_routes(tmp_path):
 
 def test_same_section_duplicates_still_merge():
     findings=pair();findings[1]['report_section']='technical_findings'
+    assert group_similar_findings(findings)[0]['_group']['merged_ids'] == ['F-001', 'F-002']
     kept,_=fuzzy_dedup(findings)
     assert len(kept)==1
     result=combine_findings_with_targeted({'findings':[findings[0]]},[('targeted',{'findings':[findings[1]]})])

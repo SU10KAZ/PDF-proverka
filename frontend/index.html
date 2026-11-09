@@ -2890,7 +2890,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <template v-for="f in paginatedFindings" :key="f.id">
+                            <template v-for="(f, findingIndex) in paginatedFindings" :key="f.id">
+                                <tr v-if="findingSectionHeading(findingIndex)" class="findings-section-heading">
+                                    <th :colspan="expertReviewMode ? 8 : 6" scope="colgroup">{{ findingSectionHeading(findingIndex) }}</th>
+                                </tr>
                                 <tr :class="['row-' + sevClass(f.severity), { 'row-expanded': expandedFindingId === f.id, 'row-accepted': getExpertDecision(f.id) === 'accepted', 'row-rejected': getExpertDecision(f.id) === 'rejected', 'row-group': f.sub_findings }]">
                                     <td class="id-cell"
                                         @click="toggleFindingBlocks(f.id)"

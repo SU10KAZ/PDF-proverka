@@ -1559,7 +1559,9 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
     """
     from collections import OrderedDict
 
-    groups: OrderedDict[str, list[dict]] = OrderedDict()
+    from backend.app.services.findings.report_routing import report_section_key
+
+    groups: OrderedDict[tuple, list[dict]] = OrderedDict()
 
     for f in findings:
         problem = f.get("problem") or f.get("description") or f.get("finding") or ""
@@ -1567,7 +1569,7 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
         category = f.get("category", "")
 
         pattern = _normalize_problem_pattern(problem)
-        key = f"{severity}||{category}||{pattern}"
+        key = (report_section_key(f), severity, category, pattern)
 
         if key not in groups:
             groups[key] = []

@@ -10966,7 +10966,20 @@ const app = createApp({
         // Ивановича 07-04): эксперту удобнее видеть все замечания сразу, не листая страницы.
         // totalPages=1 → пагинатор `v-if="findingsTotalPages > 1"` в шаблоне сам скрывается.
         // Оптимизация/дискуссии пагинацию сохраняют (PAGE_SIZE).
-        const paginatedFindings = computed(() => sortedFindings.value);
+        const findingsHaveQuestions = computed(() =>
+            sortedFindings.value.some(f => f.report_section === 'questions'));
+        const paginatedFindings = computed(() => {
+            const items = sortedFindings.value;
+            return [...items.filter(f => f.report_section !== 'questions'),
+                ...items.filter(f => f.report_section === 'questions')];
+        });
+        function findingSectionHeading(index) {
+            if (!findingsHaveQuestions.value) return '';
+            const items = paginatedFindings.value;
+            const question = items[index]?.report_section === 'questions';
+            if (index > 0 && question === (items[index - 1]?.report_section === 'questions')) return '';
+            return question ? 'Вопросы и уточнения' : 'Замечания';
+        }
         const findingsTotalPages = computed(() => 1);
 
         const paginatedOptimization = computed(() => {
@@ -21548,7 +21561,7 @@ const app = createApp({
             filteredFindings, sortedFindings, sortedOptimization,
             // Pagination
             PAGE_SIZE, findingsPage, optimizationPage, discussionPage,
-            paginatedFindings, findingsTotalPages,
+            paginatedFindings, findingsTotalPages, findingSectionHeading,
             paginatedOptimization, optimizationTotalPages,
             paginatedDiscussion, discussionTotalPages,
             // Expert Review

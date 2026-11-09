@@ -74,8 +74,8 @@
     {
       "id": "H07",
       "status": "partial",
-      "verified_or_implemented_scope": "Explicit question routing added to classic Excel and protected across deduplication; narrow metadata/prescan changes retained. Actual Excel export/import roundtrip preserves IDs, decisions and comments in both sections; accepted comments no longer discarded.",
-      "remaining": "Portal display and real filter controls still need acceptance checks; Excel roundtrip verified locally on a synthetic project, not full six-project production acceptance.",
+      "verified_or_implemented_scope": "Explicit question routing added to classic Excel and protected across deduplication; narrow metadata/prescan changes retained. Actual Excel export/import roundtrip preserves IDs, decisions and comments in both sections; accepted comments no longer discarded. Portal table groups explicit questions under a separate heading and API grouping preserves section boundaries.",
+      "remaining": "Browser-level rendered portal acceptance and real filter control pairs remain; whole six-project acceptance not established.",
       "evidence": [
         {
           "path": "experiments/auditmanager_stage4_20261110/metadata_gate_candidate_replay.json",
@@ -118,5 +118,11 @@
     ],
     "passed": 9,
     "scope": "Actual generated XLSX imported into isolated temporary project; reordered finding IDs, section headers, accepted clarification and rejected duplicate reason checked. No model calls."
+  },
+  "portal_sections_validation": {
+    "frontend_tests_passed": 2,
+    "python_tests_passed": 11,
+    "javascript_syntax": "passed",
+    "scope": "Executable computed-list tests plus API grouping and Excel roundtrip tests; no browser render or production deployment."
   }
 }
