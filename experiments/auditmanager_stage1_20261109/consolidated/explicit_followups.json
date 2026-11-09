@@ -201,6 +201,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-045"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Подтвердить окончательную маркировку прибора и согласовать КЖ; фактические последствия до проверки исключены из положительных метрик."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-047",
         "B-AK-F-048",
         "B-AK-F-049"
