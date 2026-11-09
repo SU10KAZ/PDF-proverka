@@ -609,6 +609,17 @@
     },
     {
       "candidate_ids": [
+        "B-ITP-F-052"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F052_unsubstantiated_norm_status.json",
+      "output_section": null,
+      "required_checks": [
+        "Найти первичный акт о регистрации/замене СНиП, проверить применимость к дате проекта. До этого исключить тезис о нормативном дефекте из положительных и отрицательных технических метрик.",
+        "Восстановить точный вход исследовательского запуска и код передачи LOCAL VERIFIED NORM STATUS; отдельно проверить генерацию и контроль качества записей norms_db. Исправить доказанную ошибку описания СП49 на этапе изменения базы после фиксации исходного состояния."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-VK-20"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK20_sensor_count_identity.json",
