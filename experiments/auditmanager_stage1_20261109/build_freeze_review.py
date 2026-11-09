@@ -57,7 +57,8 @@ def main():
                 'control_pair_candidate', 'control_pair_limits', 'pair_reference',
                 'control_case', 'conditional_counterexample', 'dedup_validation_case'
             ) if k in d},
-            'freeze_review_status': 'pending_semantic_review',
+            'benchmark_scope_review': d.get('benchmark_scope_review'),
+            'freeze_review_status': d.get('benchmark_scope_review', {}).get('status', 'pending_semantic_review'),
             'scoring_authorization': False,
         })
     assert seen == set(by_id)
@@ -78,6 +79,7 @@ def main():
             'themes_with_direct_atomic_dispositions': sum(x['atomic_dispositions'] is not None for x in items),
             'themes_with_linked_claim_disposition': sum(x['linked_claim_disposition'] is not None for x in items),
             'themes_with_direct_control_pair': sum(x['control_pair'] is not None for x in items),
+            'themes_with_scope_review': sum(x['benchmark_scope_review'] is not None for x in items),
             'stage_complete': False,
         },
         'items': items,

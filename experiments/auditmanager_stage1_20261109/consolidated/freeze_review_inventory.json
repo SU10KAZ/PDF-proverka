@@ -12,9 +12,10 @@
     "candidate_records": 291,
     "decision_themes": 247,
     "themes_with_explicit_followups": 165,
-    "themes_with_direct_atomic_dispositions": 200,
+    "themes_with_direct_atomic_dispositions": 204,
     "themes_with_linked_claim_disposition": 1,
     "themes_with_direct_control_pair": 150,
+    "themes_with_scope_review": 4,
     "stage_complete": false
   },
   "items": [
@@ -96,6 +97,7 @@
         "evidence_limit": "Прямая графическая проверка функций, исторический положительный пример принят инженером. Исторического ложного удаления RS как дубля не установлено; причинный этап пропуска ещё требует runtime evidence."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -177,6 +179,7 @@
         "evidence_limit": "Исторический положительный пример принят инженером. Отдельного исторического отклонения именно двойной закупки нет; отрицательная проверка ограничена недоказанностью суммы и реально присутствующей позицией. Полнота общего количества3×1,5 не проверена."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -185,7 +188,7 @@
         "H-AK-14"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK14.json",
-      "decision_sha256": "45c34ea7487c25ff0714197d1dad251db1d06858bbad94d09d939aa16b847652",
+      "decision_sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a",
       "original_claims": [
         {
           "candidate_id": "H-AK-14",
@@ -195,7 +198,24 @@
       ],
       "narrow_output": "Сохранить одну системную тему неоднозначных клеммных адресов с адресами шкафов.",
       "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Повтор клемм разных независимых цепей без различающего полного адреса",
+          "verdict": "confirmed_for_five_listed_drawings"
+        },
+        {
+          "claim": "Примечание об уточнении у изготовителя устраняет неоднозначность исходных схем",
+          "verdict": "not_supported"
+        },
+        {
+          "claim": "Имеется фактическое короткое замыкание или ошибочный монтаж",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Любое повторение PE/N является дефектом",
+          "verdict": "not_supported"
+        }
+      ],
       "linked_claim_disposition": {
         "original_address_ambiguity": "supported",
         "manufacturer_note": "confirmed_context_not_refutation",
@@ -212,7 +232,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными первичными решениями; не новый независимый аудит.",
+        "scorable_narrow_claim": "Неоднозначность адресов только пяти шкафов из confirmed_addresses связанной проверки; одна системная тема с сохранением адресов.",
+        "unscored_claims": [
+          "Фактический монтаж и отказ оборудования",
+          "Заводская документация и все прочие шкафы комплекта"
+        ],
+        "control_pair_readiness": "В связанном решении есть ограничения для PE/N, но отдельная доказанная историческая отрицательная пара не зафиксирована. Не считать общий фильтр повторов клемм испытанным.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -222,7 +253,7 @@
         "B-AK-F-004"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
-      "decision_sha256": "487b93d1ccf35acd2953eed6b2386c4cc5f84cd43b670ee0d3c1fef9aeefa892",
+      "decision_sha256": "464a7f2d208986a030e1cecafa209342dd433973672bb6043a9d40c674263deb",
       "original_claims": [
         {
           "candidate_id": "H-AK-57",
@@ -242,7 +273,36 @@
       ],
       "narrow_output": "Согласовать диапазоны PDS между таблицами сигналов, перечнями и СО, сохранив адресные случаи первичной проверки. Для ШАУВ-4-К4ПЧ дополнительно: при общем количестве4 состав20–200/50–500Па равен2/2 в таблице сигналов,1/3 в перечне и3/1 в СО. Непригодность приборов и отказ без паспорта не утверждать.",
       "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Шесть адресных приборов имеют20–200Па в таблице и50–500Па в перечне",
+          "verdict": "confirmed_in_linked_six_instance_register"
+        },
+        {
+          "claim": "Состав четырёх приборов ШАУВ-4-К4ПЧ: таблица2/2, перечень1/3, СО3/1",
+          "verdict": "confirmed_existing_primary_evidence"
+        },
+        {
+          "claim": "Диапазон50–500Па предназначен исключительно для фильтров",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Уставки50/100Па находятся вне50–500Па",
+          "verdict": "refuted_numeric_membership"
+        },
+        {
+          "claim": "Интервал20–50Па не охватывается диапазоном50–500Па",
+          "verdict": "confirmed_interval_difference_not_proof_of_required_operating_point"
+        },
+        {
+          "claim": "Все адреса листов18/22 исходногоF037 проверены по совпадению темы",
+          "verdict": "not_established_no_automatic_scope_extension"
+        },
+        {
+          "claim": "Приборы фактически непригодны или система откажет",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": {
         "path": "experiments/auditmanager_stage1_20261109/followup/AK57_primary_adjudication.json",
@@ -261,7 +321,19 @@
         "evidence_limit": "Локальная проверенная пара; правильность выбора диапазона по реальным условиям и паспорту не установлена."
       },
       "other_pair_evidence": {},
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными первичными решениями; не новый независимый аудит.",
+        "scorable_narrow_claim": "Одна тема диапазонов с шестью адресами связанной проверки и дополнительным балансомF004; совпадение общего количества не снимает различие состава.",
+        "unscored_claims": [
+          "Пригодность конкретной поставки и правильный выбор диапазона",
+          "Исходные ссылкиF037 на листы18/22 вне поимённого подтверждённого реестра",
+          "Сравнительные примеры листов8/14 из исторического тезиса вне явно сохранённой адресной проверки"
+        ],
+        "control_pair_readiness": "Локальная параPDS4 противPDS1/PDS2/PDS3 сохранена в control_pair. Она проверяет сверку документов, а не универсальную пригодность приборов.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -329,6 +401,7 @@
         "evidence_limit": "Локальный отрицательный тезис, не независимый исторический ложный случай. Без отдельной пары не вводить общий фильтр повторных обозначений."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -337,7 +410,7 @@
         "H-AK-7"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AK7.json",
-      "decision_sha256": "e166ff566d7f53f672bdd764d9d84e99d2b091b19fb2ca0ef3030f730790add5",
+      "decision_sha256": "244524861dafa21ed85aa490e087c7ea10a654b59f18184b137f99eade018260",
       "original_claims": [
         {
           "candidate_id": "H-AK-7",
@@ -347,7 +420,24 @@
       ],
       "narrow_output": "Снять утверждение о трёх отмеченных AO при итоге2 на листе14: подтверждены две отметки.",
       "output_section": null,
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "На листе14 показаны три точкиAO при итоге2",
+          "verdict": "refuted_primary_dot_count"
+        },
+        {
+          "claim": "На проверенном изображении две точкиAO и итог2",
+          "verdict": "confirmed_linked_primary_check"
+        },
+        {
+          "claim": "Отсутствие ложного кандидата доказывает работу фильтра",
+          "verdict": "not_established_filter_credit_false"
+        },
+        {
+          "claim": "Все расхожденияAI/AO/DI/DO можно снять",
+          "verdict": "not_supported"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": {
         "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/evaluation/AK7_primary_check.json",
@@ -360,7 +450,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными первичными решениями; не новый независимый аудит.",
+        "scorable_narrow_claim": "Отрицательный контроль только ложного утвержденияAO3 при итоге2 на листе14; не оценивать им выбор типов сигналов.",
+        "unscored_claims": [
+          "Причина отсутствия кандидата в выдаче",
+          "Корректность функционального назначения каналов"
+        ],
+        "control_pair_readiness": "Связанное решение ссылается на отдельный положительный контрольDI/DO листа21. Его необходимо проверить и связать по хешу до объявления пары готовой.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -428,6 +529,7 @@
         "evidence_limit": "Междисциплинарная пара для принципа границ подсчёта. Не доказывает безопасность автоматического подавления любого замечания при наличии внешней ссылки; полнота АК1-ПА остаётся неизвестной."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -498,6 +600,7 @@
         "evidence_limit": "Проверена согласованность численного отношения, не полная комплектность поставки. Подтверждённого исторического отклонения замечания именно о соотношении3:6 нет; инженерное решение по этому кандидату не установлено."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -554,6 +657,7 @@
         "evidence_limit": "Подтверждённая локальная пара разных типов датчиков одного шкафа. Она проверяет сопоставление типов, не фактическую комплектность поставки."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -615,6 +719,7 @@
         "evidence_limit": "Проверенная пара границ междокументной сверки. В отрицательном случае опровергнуто безусловное требование добавить изделия в АК2-ПА, но полнота поставки АК1-ПА не доказана."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -678,6 +783,7 @@
         "evidence_limit": "Подтверждённая локальная документальная пара; фактическая поставка и историческое отклонение инженером не проверены."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -736,6 +842,7 @@
         "evidence_limit": "Пара проверяет границы сопоставления; не доказывает фактическую комплектность смежной поставки или необходимость удаления второго TE3."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -802,6 +909,7 @@
         "evidence_limit": "Подтверждённая локальная пара типов оборудования, но нет исторического решения инженера по ложному аналогу. Комплектность смежного раздела не проверена."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -867,6 +975,7 @@
         "evidence_limit": "Пара подтверждена первичными документами одного комплекта, но для F011 нет исторического инженерного отказа. Она не подтверждает полноту кабельной поставки."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -927,6 +1036,7 @@
         "evidence_limit": "Локальный контрпример отделяет ошибку документа от последствий; независимая пара ложного и полезного замечаний о закупке пока не подтверждена."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -993,6 +1103,7 @@
         "evidence_limit": "Локальная пара подтверждена полными TEXT-таблицами; инженерного отклонённого аналога нет. Она не подтверждает итоговый заказ."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1063,6 +1174,7 @@
         "evidence_limit": "Прямая пара одного составного кандидата и соседней согласованной линии. Инженерное решение не установлено; неправильный монтаж не доказан."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1138,6 +1250,7 @@
         "evidence_limit": "Локальная пара проверяет различение устройств и границы реестра. Исторического отклонённого инженером ложного замечания для этой пары нет; это не проверка фактической комплектации."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1194,6 +1307,7 @@
         "evidence_limit": "Независимая подтверждённая пара ложного и полезного замечаний о подборе ПЧ отсутствует; это локальная граница доказанного вывода."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1251,6 +1365,7 @@
         "evidence_limit": "Локальная пара сверки схемы и журнала, без инженерного решения и расчёта электрической пригодности."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1305,6 +1420,7 @@
         "evidence_limit": "Пара проверяет чтение кабельной подписи и сохранение реального документального конфликта. Она не подтверждает фактическую поставку или инженерное решение."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1366,6 +1482,7 @@
         "evidence_limit": "Внутренние арифметические контроли; независимая историческая пара ложного и полезного замечаний по исполнению кабеля отсутствует."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1414,6 +1531,7 @@
         "evidence_limit": "Локальная документальная пара; инженерного отклонения аналога и проверки взаимозаменяемости нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1471,6 +1589,7 @@
         "evidence_limit": "Пара подтверждает арифметику и необходимость проверить область применения, не фактические объёмы креплений. Исторического решения инженера нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1530,6 +1649,7 @@
         "evidence_limit": "Пара проверяет воспроизводимость расчёта, но положительный пример другой величины. Подтверждённого ошибочного итога именно площади в этой паре нет; исторической инженерной оценки F025 нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1592,6 +1712,7 @@
         "evidence_limit": "Пара проверяет чтение режима и измеряемой величины, а не техническую достаточность дежурной защиты. Исторической инженерной оценки и испытания контроллера нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1657,6 +1778,7 @@
         "evidence_limit": "Пара разделяет подтверждённый документальный конфликт и необоснованную электрическую интерпретацию одного кандидата. Она не доказывает фактическую совместимость и не является подтверждённой парой исправного/неисправного оборудования."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1713,6 +1835,7 @@
         "evidence_limit": "Наличие газоанализа сRS-485 подтверждено, но полная корректность его архитектуры не проверена. Независимой подтверждённой пары ошибок смены протокола нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1786,6 +1909,7 @@
         "evidence_limit": "Подтверждено разделение основания и параметров одного случая. Исторической инженерно подтверждённой пары неверной/верной технической установки нет; полная нормативная правильность параметров не доказана."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1858,6 +1982,7 @@
         "evidence_limit": "Это разделение тезисов одного кандидата. Подтверждённой исторической пары ложного и полезного технических замечаний для универсального фильтра нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1922,6 +2047,7 @@
         "evidence_limit": "Подтверждённая локальная пара на одном артикуле; не основание для общего запрета повторов одинаковых марок."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -1974,6 +2100,7 @@
         "evidence_limit": "Пара проверяет сопоставление обозначений; историческое ошибочное замечание именно по согласованной силовой линии отсутствует. Это контрольный корректный объект, не доказанная история снятия. Эквивалентность трёх разных контрольных марок не доказана."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2036,6 +2163,7 @@
         "evidence_limit": "Отрицательный объект непосредственно проверен на графике, но исторического ложного замечания о паре ЭМ/АСУД.ИО нет. Подтверждённого примера пропуска питания в смежном комплекте также нет; правило автоматической технической браковки по разным шифрам не обосновано."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2096,6 +2224,7 @@
         "evidence_limit": "Пара отделяет название листа от содержания схемы. Полного визуального штампа в доступном фрагменте нет; исторической инженерной оценки нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2147,6 +2276,7 @@
         "evidence_limit": "Независимого подтверждённого ложного случая повторной позиции здесь нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2208,6 +2338,7 @@
         "evidence_limit": "Локальная пара смысла подписи и направления, не проверка фактической электрической схемы. Подтверждённого ошибочного монтажа и исторического инженерного решения нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2268,6 +2399,7 @@
         "evidence_limit": "Оба случая проверены по исходным материалам, но положительный контроль касается междокументной идентификации, а не доказанной неверной точки монтажа. Для узкого фильтра графической привязки подтверждённого положительного случая неверной точки пока нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2324,6 +2456,7 @@
         "evidence_limit": "Подтверждённая пара внутри одного комплекта. Сведения ОВ и фактические воздушные трассы не проверены; исторической инженерной оценки нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2381,6 +2514,7 @@
         "evidence_limit": "Проверена графическая пара разных назначений сигналов. Нет исторического подтверждённого отказа либо принятого инженером исправления DI→DO; такую пару нельзя объявлять доказательством необходимости изменения аппаратуры."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2438,6 +2572,7 @@
         "evidence_limit": "Прямая пара самостоятельных тезисов одного кандидата: ошибочная адресация и сохраняемая полезная неоднозначность. Она не доказывает физическую ошибку подключения или программы; инженерное принятие не установлено."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2492,6 +2627,7 @@
         "evidence_limit": "Пара различает редакционное обобщение и идентификацию конкретного прибора. Оба проверены по первичным документам, исторического решения инженера для этих blind-кандидатов нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2549,6 +2685,7 @@
         "evidence_limit": "Пара подтверждена локальными документами; фактический монтаж и историческая инженерная оценка отсутствуют."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2605,6 +2742,7 @@
         "evidence_limit": "Подтверждённая пара одного шкафа, без исторического решения инженера и проверки монтажа."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2656,6 +2794,7 @@
         "evidence_limit": "Оба графических случая проверены. Пара различает редакционный диапазон и неоднозначные индивидуальные позиции,не доказывает последствия монтажа."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2728,6 +2867,7 @@
         "evidence_limit": "Воспроизводимые локальные контроли одной матрицы, не независимая историческая пара по разным проектам."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2788,6 +2928,7 @@
         "evidence_limit": "Нет независимой подтверждённой пары с действительно неверным символом нагревателя. Не применять общий фильтр снятия всех замечаний к легендам."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2844,6 +2985,7 @@
         "evidence_limit": "Пара проверяет различение редакционной идентификации и подтверждённого конфликта разных приборов. Полного доказательства эквивалентности двух марок шкафа по ЭМ пока нет; поэтому вопрос сохраняется. Исторического инженерного отказа нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2893,6 +3035,7 @@
         "evidence_limit": "Прямая подтверждённая пара одного листа и одной операции подсчёта. Фактическая поставка и исторические решения инженера не установлены."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -2945,6 +3088,7 @@
         "evidence_limit": "Прямая подтверждённая пара одного листа и одной операции подсчёта. Фактическая поставка и исторические решения инженера не установлены."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3019,6 +3163,7 @@
         "evidence_limit": "Пара различает область нумерации. Подтверждённого технически неверного соединения для положительного контроля нет; до заводской схемы это вопрос, не технический дефект. Исторического решения инженера нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3081,6 +3226,7 @@
         "evidence_limit": "Отдельного исторического ложного случая допустимого повтора позиции в той же области не подтверждено. Универсальный запрет одинаковых марок между разными шкафами отсюда не следует."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3138,6 +3284,7 @@
         "evidence_limit": "Пара идентификации подтверждена документами; отсутствие ТЕ1 в целом не проверено и не используется как доказанный отрицательный факт. Исторической оценки инженера нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3199,6 +3346,7 @@
         "evidence_limit": "Пара подтверждена перечнем, СО и непосредственно просмотренными схемами одного шкафа. Исторической инженерной оценки F059 нет; заводская поставка не проверена."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3260,6 +3408,7 @@
         "evidence_limit": "Подтверждённая локальная пара идентификации и смежная пара против ошибочного количественного вывода; инженерной исторической оценки нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3322,6 +3471,7 @@
         "evidence_limit": "Контрольная пара присутствия/отсутствия обозначенного элемента проверена по исходной графике. Историческое ложное замечание именно об узлеБ и инженерное решение по кандидату не установлены. Нормативная пригодность обоих типов проходок не оценена."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3380,6 +3530,7 @@
         "evidence_limit": "Подтверждённая тематическая пара отсутствует. F061 содержит реальное рассогласование узла и явного проектного требования, но не заменяет контрольную пару по RS-485. Фильтр не должен подавлять нарушение, когда требование и конкретное исполнение установлены."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3437,6 +3588,7 @@
         "evidence_limit": "Подтверждённая тематическая пара отсутствует. Для проверки фильтра нужен реальный участок с известными концами, длиной и применимым пределом; синтетический пример допустим только как тест механизма."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3493,6 +3645,7 @@
         "evidence_limit": "Нет подтверждённого положительного случая пропуска именно обязательного ссылочного документа в этой ведомости. Перед автоматическим фильтром нужен такой контроль."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3559,6 +3712,7 @@
         "evidence_limit": "Это пара границ вывода одного кандидата, не подтверждённая историческая пара технических дефектов. Пример доказанной обязательности новой редакции для данного комплекта отсутствует."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3606,6 +3760,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3615,7 +3770,7 @@
         "B-AR-F-017"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/AR17.json",
-      "decision_sha256": "9bf29829f97e0b41143e0cf46e5d0814c5b0871275c5729181dd380cf52ab46c",
+      "decision_sha256": "2c7bce2f3456b9bebdf7059d5b3ee79a40c72b29a994684d937747fdce46a7fd",
       "original_claims": [
         {
           "candidate_id": "H-AR-17",
@@ -3630,7 +3785,32 @@
       ],
       "narrow_output": "Увязать высоты экранов ОГШ-1/2/3 между ведомостью и видами, указав базу измерения.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Ведомость содержит высоты5900/2800/1900мм",
+          "verdict": "confirmed_linked_TEXT"
+        },
+        {
+          "claim": "Виды содержат5700/2600/1700мм, В.4 —1690мм",
+          "verdict": "confirmed_linked_graphic_register"
+        },
+        {
+          "claim": "Численные различия составляют200мм, для1690мм —210мм",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Разница200мм является доказанной монтажной поправкой",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Базы отсутствуют во всём проекте включаяКМ10.2",
+          "verdict": "not_established_scope_limit"
+        },
+        {
+          "claim": "Произведены неправильные изделия",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": {
         "path": "experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
@@ -3643,7 +3823,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными первичными решениями; не новый независимый аудит.",
+        "scorable_narrow_claim": "Один полезный вопрос о согласовании высот и баз измерения с сохранением марок и видов; историческое принятие сохранить отдельно.",
+        "unscored_claims": [
+          "Эквивалентность физических границ размеров",
+          "Увязка поКМ10.2",
+          "Фактическая неправильность изделий"
+        ],
+        "control_pair_readiness": "Подтверждённой пары допустимого и ошибочного расхождения высот нет. Не вводить универсальный допуск200мм.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -3694,6 +3886,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3728,6 +3921,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3783,6 +3977,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3842,6 +4037,7 @@
           "limits": "Кандидат пары для сохранения вопроса К-3 и удержания недоказанной коллизии К-4; не полностью подтверждённая пара технически ложного и истинного дефекта, runtime-фильтр не испытан."
         }
       },
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3897,6 +4093,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -3949,6 +4146,7 @@
         "restriction": "Наличие правильной строки в ведомости не отменяет несовпадающую строку в указаниях; различие редакций само по себе не подтверждает нарушение технологии."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4006,6 +4204,7 @@
         "restriction": "Не обучать фильтр удалять строку целиком: одна ошибочная часть не отменяет подтверждённый статус другой. Пара проверяет полную/частичную/территориальную связь, не техническую непригодность материалов."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4053,6 +4252,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4104,6 +4304,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4155,6 +4356,7 @@
         "preserve": "Сохранить исходную проектную запись и неопределённость назначения, без навязывания нового класса."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4207,6 +4409,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4248,6 +4451,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4295,6 +4499,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4340,6 +4545,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4391,6 +4597,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4438,6 +4645,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4489,6 +4697,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4541,6 +4750,7 @@
         "restriction": "Фильтр должен требовать источник и различать недостаточно данных/опровергнуто; нельзя удалять все замечания по старым обозначениям."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4593,6 +4803,7 @@
         "restriction": "Не переносить ошибку одного справочного статуса на все замечания по старым нормам. Не считать доказанную замену доказанной непригодностью изделия."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4627,6 +4838,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4655,6 +4867,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4683,6 +4896,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4715,6 +4929,7 @@
         "qualification": "Два атома одного составного классического замечания, не независимая исторически принятая пара; инженерная приёмка и испытание фильтра ещё отсутствуют."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4743,6 +4958,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4771,6 +4987,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4801,6 +5018,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4868,6 +5086,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4896,6 +5115,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4924,6 +5144,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4952,6 +5173,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -4980,6 +5202,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5008,6 +5231,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5065,6 +5289,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5093,6 +5318,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5121,6 +5347,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5149,6 +5376,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5214,6 +5442,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5271,6 +5500,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5299,6 +5529,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5344,6 +5575,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5372,6 +5604,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5409,6 +5642,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5441,6 +5675,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5495,6 +5730,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5523,6 +5759,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5560,6 +5797,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5601,6 +5839,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5629,6 +5868,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5657,6 +5897,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5685,6 +5926,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5713,6 +5955,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5741,6 +5984,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5783,6 +6027,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5811,6 +6056,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5839,6 +6085,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5883,6 +6130,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5911,6 +6159,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5939,6 +6188,7 @@
       "followup_requirements": [],
       "control_pair": "Отдельная исторически принятая пара ошибочного/полезного замечания по этому фильтру ещё не подтверждена.",
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5967,6 +6217,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -5995,6 +6246,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6023,6 +6275,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6054,6 +6307,7 @@
       "followup_requirements": [],
       "control_pair": "Положительный пример неверной нормативной ссылки для этого нового фильтра ещё не подтверждён.",
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6085,6 +6339,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6149,6 +6404,7 @@
         "negative": "Не считать совпадение модели AJ068TXJ3KH/EA дублированием оборудования и не объявлять отсутствие оборудования по отсутствию одной подписи."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6201,6 +6457,7 @@
         "restriction": "Не распространять исключение резервов на линии с потребителем и ненулевыми мощностями; проверка не доказывает универсальное отсутствие требований к резервам."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6254,6 +6511,7 @@
         "negative": "Не объявлять QF3.17 тем же ВА-301: на изображении ВА-303. Не считать2P несовместимым только потому, что оно тоже называется ВА-301."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6333,6 +6591,7 @@
         "negative": "Не объявлять ошибочным итог 83,2, который воспроизводится по собственным табличным строкам."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6374,6 +6633,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6405,6 +6665,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6464,6 +6725,7 @@
         "negative": "Не переносить дословное свойство безгалогенности из соседней строки МКЭШнг(а)-HF и не заявлять факт неправильной поставки без документов."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6528,6 +6790,7 @@
         "positive": "Сохранить вопрос о временной нагрузке и защите; также сохранить отдельное несовпадение мощности одной линии К21."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6584,6 +6847,7 @@
         "restriction": "Не снимать реальные недостачи по одному упоминанию арендатора или совпадению числа с диапазоном."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6638,6 +6902,7 @@
         "restriction": "Нельзя снимать все расхождения ТТ по одному наличию на листе подходящего числа — нужна привязка к счётчику и цепи."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6690,6 +6955,7 @@
         "restriction": "Этот случай не является подтверждённым отрицательным примером правильной внутренней схемы."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6742,6 +7008,7 @@
         "restriction": "Не переносить точность этой таблицы как универсальный допуск; не считать наличие запаса доказанным объяснением."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6793,6 +7060,7 @@
         "negative": "Не выдавать совпадение со сбалансированной формулой за доказательство корректного максимального фазного тока; не объявлять рубильник63А перегруженным по этим данным."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6844,6 +7112,7 @@
         "preserve": "Сохранять спорный узел и запрос уточнения отдельно от технических дефектов."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6895,6 +7164,7 @@
         "negative": "Не назначать8,6А точным фазным током и не выводить перегрузку из разницы со сводным значением."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6943,6 +7213,7 @@
         "restriction": "Не считать возможное L,N,PE доказанным наличием защитного проводника."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -6995,6 +7266,7 @@
         "restriction": "Не вводить универсальное снятие замечаний к временным или типовым схемам."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7048,6 +7320,7 @@
         "restriction": "Наличие другого типового варианта не доказывает правильности его привязки к квартирам и не снимает все замечания по этажности."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7100,6 +7373,7 @@
         "restriction": "Не использовать этот частичный контроль как основание для автоматического снятия всех расхождений IP."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7158,6 +7432,7 @@
         "restriction": "Гипотеза о преобразователе не должна автоматически снимать реальные ошибки; её требуется подтвердить."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7206,6 +7481,7 @@
         "restriction": "Нельзя превращать 0,1 кВт в общий допустимый порог расхождения."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7261,6 +7537,7 @@
         "negative": "Не считать повтор той же экспликации на другом листе новой коллизией и не объединять две разные строки только по номеру."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7316,6 +7593,7 @@
         "negative": "Не объявлять техническим противоречием скрытую прокладку в административных и открытую в технических помещениях без доказательства общего объекта."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7364,6 +7642,7 @@
         "negative": "Не объявлять конфликтом одновременное наличие неперфорированного100×80 аварийного и перфорированного200×80 рабочего: это разные назначения и размеры."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7416,6 +7695,7 @@
         "restriction": "Возможность разных операций не доказывает совместимость конкретных материалов."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7464,6 +7744,7 @@
         "restriction": "Не считать типовой характер листа достаточным объяснением любого расхождения квартир."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7519,6 +7800,7 @@
         "negative": "Не назначать чужой код по сходству названия и не считать совпадение кода доказательством неправильной поставки без проверки комплекта."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7575,6 +7857,7 @@
         "restriction": "Не переносить0,1 или0,25А в универсальный порог и не снимать саму ошибку подстановки лишь потому, что итог неравенства сохранился."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7631,6 +7914,7 @@
         "restriction": "Не переносить20% как универсальный разрешённый запас и не считать прохождение условной арифметики доказательством безопасности."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7695,6 +7979,7 @@
         "negative": "Не объявлять ошибкой умножение 105,4×0,22≈23,2 и не считать мощность 8Н обязанной равняться площади×0,22 без методики."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7754,6 +8039,7 @@
         "negative": "Не удалять оборудование из СО только потому, что его установку выполняет собственник; не считать временное и постоянное решения двумя одновременно поставляемыми комплектами без доказательств."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7801,6 +8087,7 @@
         "negative": "Не удалять количество и не менять единицу автоматически без расчёта потребности и границ участка."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7848,6 +8135,7 @@
         "negative": "Не удалять количество и не менять единицу автоматически без расчёта потребности и границ участка."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7903,6 +8191,7 @@
         "negative": "Не объявлять дублем одинаковый код на разных явно названных участках и не удалять их объёмы."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -7958,6 +8247,7 @@
         "negative": "Не погашать эту разницу крышками другой ширины, в штуках и из предшествующего подраздела; не считать саму разницу доказанным дефицитом."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8009,6 +8299,7 @@
         "negative": "Не удалять количество и не менять единицу автоматически без расчёта потребности и границ участка."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8068,6 +8359,7 @@
         "negative": "Для белой группы 6/6 не выпускать замечание о несовпадении количества; равенство не доказывает прочие характеристики изделий."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8121,6 +8413,7 @@
         "positive_requirement": "Сохранять реально невоспроизводимый итог при проверенном составе строк и точности; не использовать данный случай как разрешение игнорировать арифметические расхождения вообще."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8179,6 +8472,7 @@
         "restriction": "Контроль применим только к проверке нормативных статусов и сохранению уточнений. Для технического фильтра маркировки независимой пары нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8231,6 +8525,7 @@
         "restriction": "Не снимать реальную совместную прокладку только на основании общего проектного запрета."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8283,6 +8578,7 @@
         "restriction": "Комплектная поставка остаётся возможностью, а не доказанным основанием снять вопрос."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8345,6 +8641,7 @@
         "restriction": "Наличие других ссылок не доказывает применимость нерасшифрованной ссылки."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8405,6 +8702,7 @@
         "restriction": "Не превращать год2024/2025/2026 в критерий подозрительности; проверять каждую ссылку отдельно."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8457,6 +8755,7 @@
         "restriction": "Фильтр должен требовать источник и различать недостаточно данных/опровергнуто; нельзя удалять все замечания по старым обозначениям."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8507,6 +8806,7 @@
         "restriction": "Не считать одинаковые названия автоматическим дублем документов; сопоставлять название с полным обозначением."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8540,6 +8840,7 @@
       "other_pair_evidence": {
         "pair_reference": "experiments/auditmanager_stage1_20261109/followup/cable_scope_control_pair.json"
       },
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8577,6 +8878,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8614,6 +8916,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8676,6 +8979,7 @@
         "negative": "Не объявлять ВГП65×4,0 и электросварную76×3,5 противоречивыми описаниями одной трубы: вСО это отдельные позиции78,4м и91,2м."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8750,6 +9054,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8814,6 +9119,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8861,6 +9167,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8911,6 +9218,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -8965,6 +9273,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9018,6 +9327,7 @@
         "negative": "Не снимать замечание по фланцамРу25 или пробному22кгс/см²: эти строки описывают другие характеристики."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9072,6 +9382,7 @@
         "negative": "Не сравнивать напор насоса27,92м напрямую с пределом16бар и не объявлять К17 работающим при входном давленииВ1 только из-за принадлежности к той же зоне."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9121,6 +9432,7 @@
         "negative": "Не переносить PN16 на соседние краны71: по спецификации они PN25, арт.065N0366GR. Наличие PN25 у соседей также не снимает проверку фильтра63."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9183,6 +9495,7 @@
         "negative": "Не приписывать20бар схеме45 по соседнему клапану40 или только поСО. У клапана40 действительно20бар — исправление45 не снимает его самостоятельную проверку. Учитывать указание общих данных о настройке по схеме."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9233,6 +9546,7 @@
         "restriction": "Не превращать ограничение вывода о прочности в фильтр удаления всего кандидата: вопрос о единице и области указания подтверждён. Этот составной случай не является двумя независимыми контрольными примерами."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9280,6 +9594,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9337,6 +9652,7 @@
           "scope": "Только контрпример логическому выводу «16.54 вместо 5 всегда ошибка». Доля 0.3 и возврат 55 не установлены для фактического режима проекта; не универсальная норма и не доказательство правильности подбора."
         }
       },
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9394,6 +9710,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9447,6 +9764,7 @@
       "other_pair_evidence": {
         "control_pair_limits": "Контрпример внутри расчёта: ГВС 1, G=36.40, Kv=52, даёт 0.49 при исходных 0.5. Это не инженерно подтверждённая пара пригодности фильтра. Положительный дефект Kv=40 против 4 в F-014 сохраняется отдельно и не снимается этим основанием."
       },
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9500,6 +9818,7 @@
         "negative": "Не объявлять само отличиеDN40 от наружногоD45 ошибкой: это разные столбцы таблицы. Не объявлять любой переход114 ошибочным только из-за наличия трубы108 в общейСО."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9550,6 +9869,7 @@
         "restriction": "Не вводить фильтр по наличию слова горячекатаный рядом с ГОСТ8278: стандарт допускает такую заготовку. Подтверждённая здесь несогласованность относится к названию готового профиля; не удалять её вместе с недоказанным выводом о прочности."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9606,6 +9926,7 @@
         "restriction": "Не снимать все нормативные замечания как малозначимые и не считать каждую старую ссылку доказанной технической неисправностью."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9663,6 +9984,7 @@
         "negative": "Не считать совместноеСП74/СНиП доказательством конфликта и не заявлять отсутствие реквизитов115 во всём проекте."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9716,6 +10038,7 @@
         "negative": "Не утверждать, что все175 приборов недостаточны; не считать каждый символP отдельным прибором из позиции112 и не игнорировать комплектные приборы."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9766,6 +10089,7 @@
         "restriction": "Не обучать фильтр снимать ссылки на основании разных слов дверь/шов; не считать возможное отделение помещения доказанным оправданием."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9818,6 +10142,7 @@
         "restriction": "Фильтр должен требовать источник и различать недостаточно данных/опровергнуто; нельзя удалять все замечания по старым обозначениям."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9872,6 +10197,7 @@
         "restriction": "Не считать этот пример доказательством для глобального фильтра нормативных замечаний."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -9967,6 +10293,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10041,6 +10368,7 @@
         "evidence_limit": "Нет независимой подтверждённой пары отказавшего/безопасного крепления. Нормативные пороги не переносить как универсальныйфильтр."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10108,6 +10436,7 @@
         "evidence_limit": "Это разные тезисы одной составной находки, не независимая подтверждённая пара для универсального фильтра."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10200,6 +10529,7 @@
         "evidence_limit": "Отрицательный контроль ограничивает степень уверенности; это не доказанно ложное историческое замечание и не полная пара нового фильтра."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10237,6 +10567,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10298,6 +10629,7 @@
         "evidence_limit": "H-KM-5 не является доказанно ложным замечанием, поэтому полной отрицательной пары для фильтра нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10367,6 +10699,7 @@
         "evidence_limit": "Для нового фильтра ещё нет независимой подтверждённой пары, где разность действительно объяснена ногой100мм. Б/В демонстрируют другой тип сопряжения, но не доказывают универсальный размер ноги."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10426,6 +10759,7 @@
         "evidence_limit": "Положительный случай принят инженеромUA-009; отрицательный проверен по графике, отдельное инженерное решение поF-014 отсутствует. Пара не устанавливает универсальный допуск150мм."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10487,6 +10821,7 @@
         "evidence_limit": "Это контроль границ вывода на одном случае, а не независимая подтверждённая пара ложного и полезного технических замечаний."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10538,6 +10873,7 @@
         "negative": "Не требовать безусловного добавления профилей из другого комплекта и не утверждать отсутствие анкеров: они явно учтены вСО."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10600,6 +10936,7 @@
         "evidence_limit": "Это уточнение границ одного кандидата; независимого подтверждённого случая недостаточной прочности для пары нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10658,6 +10995,7 @@
         "evidence_limit": "Контроль составного вывода и объединения; не независимая пара инженерно утверждённых массовых замечаний."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10720,6 +11058,7 @@
         "evidence_limit": "Полной независимой пары одного массового фильтра нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10786,6 +11125,7 @@
         "evidence_limit": "Контроль воспроизводимости арифметики; не доказано, что41.125 невозможно при другом обоснованном составе. Полной независимой пары фильтра массовых замечаний нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10853,6 +11193,7 @@
         "evidence_limit": "Это две оценки одного кандидата, не независимая пара подтверждённого дефекта и ложного замечания."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10898,6 +11239,7 @@
         "negative": "Не сообщать об отсутствии схемы или всего листа3 при наличии его в ведомости. Не повышать замечание до технического дефекта из-за возможного неудобства поиска."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -10959,6 +11301,7 @@
         "evidence_limit": "Контроль относится к разным тезисам одного кандидата, не является независимой инженерно утверждённой парой нового фильтра."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11011,6 +11354,7 @@
         "evidence_limit": "Отрицательный случай не опровергнут технически; это неполная пара для фильтра."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11063,6 +11407,7 @@
         "evidence_limit": "Это контроль границ вывода, а не пара однотипных инженерно утверждённых решений."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11121,6 +11466,7 @@
         "evidence_limit": "Это ограничение вывода одного случая; отдельной подтверждённой пары нового нормативного фильтра нет."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11170,6 +11516,7 @@
         "evidence_limit": "Оба случая проверены по изображениям одного комплекта. Решение инженера по этим новым кандидатам в имеющихся записях не представлено; это контрольная пара аудиторской проверки, не пара инженерно утверждённых решений."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11221,6 +11568,7 @@
         "evidence_limit": "Оба случая проверены по изображениям одного комплекта. Решение инженера по этим новым кандидатам в имеющихся записях не представлено; это контрольная пара аудиторской проверки, не пара инженерно утверждённых решений."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11276,6 +11624,7 @@
         "evidence_limit": "Положительная часть касается повторяемости, а не ещё не разрешённого полного итога228анкеровЛК6."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11332,6 +11681,7 @@
         "evidence_limit": "F019 не доказанно ложен; полноценной отрицательной пары нет. Допустим адресный вопрос, не автоматическое снятие всех разниц200мм."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11389,6 +11739,7 @@
         "evidence_limit": "Полной контрольной пары нет; автоматическое подавление таких кандидатов не обосновано."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11451,6 +11802,7 @@
         "evidence_limit": "F023 не доказанно ложен; пара проверяет наличие доказательства,не даёт универсального запрета нормативных замечаний."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11504,6 +11856,7 @@
         "evidence_limit": "Пара проверяет классификацию,не универсальное снятие замечаний о нормативных ссылках."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11565,6 +11918,7 @@
         "evidence_limit": "Полной контрольной пары нет. Это решение по недостаточности данного доказательства, не универсальный фильтр нормативных ссылок."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11602,6 +11956,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11666,6 +12021,7 @@
         "negative": "Не считать разницу количества подписей и приборов доказанным закупочным дефицитом; исключать ППМ, легенды и повторные виды из подсчёта ДЗ."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11729,6 +12085,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11785,6 +12142,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11819,6 +12177,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11876,6 +12235,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -11949,6 +12309,7 @@
         "status": "Логические границы одного случая; независимая подтверждённая отрицательная пара пока отсутствует."
       },
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12000,6 +12361,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12063,6 +12425,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12119,6 +12482,7 @@
           "runtime_tested": false
         }
       },
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12172,6 +12536,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12227,6 +12592,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12289,6 +12655,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12376,6 +12743,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12421,6 +12789,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12507,6 +12876,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12554,6 +12924,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12603,6 +12974,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12736,6 +13108,7 @@
           "scope": "Ручная контрольная группа для объединения, не полноценная пара технически ложного и полезного замечания."
         }
       },
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12787,6 +13160,7 @@
       ],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12832,6 +13206,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12885,6 +13260,7 @@
           "limits": "F025 не технически опровергнут целиком; F024 подтверждает документальную неоднозначность, не ошибку монтажа."
         }
       },
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12934,6 +13310,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     },
@@ -12979,6 +13356,7 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
+      "benchmark_scope_review": null,
       "freeze_review_status": "pending_semantic_review",
       "scoring_authorization": false
     }
