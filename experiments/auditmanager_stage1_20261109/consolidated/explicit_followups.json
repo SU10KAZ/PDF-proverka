@@ -221,6 +221,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-039"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F039_served_rooms_conflict.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Подтвердить обслуживаемые помещения по ОВ и согласовать подпись. До этого неправильный выбор управления или фактическое обслуживание помещений исключены из положительных метрик."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-045"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
