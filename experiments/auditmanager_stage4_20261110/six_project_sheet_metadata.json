@@ -1,0 +1,73 @@
+{
+  "graphs": [
+    {
+      "discipline": "AK",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/AK/03_analysis/runs/candidate/document_graph.json",
+      "input_sha256": "7203dabd193766a007ba5652c6a04b5c7fc28c3498777e57f1397c048cf5bee5",
+      "output_sha256": "1fe77649bf5c8e6beff6c4e64881b5e8bb9b49eb49f55a09e0132fafaff2b4d9",
+      "sheet_status_counts": {
+        "high": 100,
+        "conflict": 0,
+        "missing": 5
+      }
+    },
+    {
+      "discipline": "ITP",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/ITP/03_analysis/runs/candidate/document_graph.json",
+      "input_sha256": "60034893161dfc2fa370344c77e070f360deae462cc9471a2efda4618aa90bb7",
+      "output_sha256": "e7fb5e8a4a62f27f89b24cdb9a209e0dbd663a63ae9cfcd6f7016b9629d9daab",
+      "sheet_status_counts": {
+        "high": 51,
+        "conflict": 0,
+        "missing": 115
+      }
+    },
+    {
+      "discipline": "AR",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/AR/03_analysis/runs/candidate/document_graph.json",
+      "input_sha256": "95930c0c5a78b5871764d089dec77b75afe41f6be3836f970f12c0578774472c",
+      "output_sha256": "433a38fd6fdff277a0980f41a0de65ae0899d90936fae8521480441042ffb3de",
+      "sheet_status_counts": {
+        "high": 15,
+        "conflict": 0,
+        "missing": 2
+      }
+    },
+    {
+      "discipline": "KM",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/KM/03_analysis/runs/candidate/document_graph.json",
+      "input_sha256": "61d99681d3cdd6141d99d8e87e8aff645ed86f910164b080a0554a51ef468bd8",
+      "output_sha256": "253176a3eb07e280b9b1542989c8351f014e733af5476f6a7772dab302ede51b",
+      "sheet_status_counts": {
+        "high": 10,
+        "conflict": 0,
+        "missing": 2
+      }
+    },
+    {
+      "discipline": "VK",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/VK/03_analysis/runs/candidate/document_graph.json",
+      "input_sha256": "6b4fe8add7f5d54563dd9820c84a162c9163ed5d96143db6a051b97c027a4a49",
+      "output_sha256": "95cd553e8d6292623c0fd88643660c12f3d1f7b571b0fa370aa341e2dd8662a4",
+      "sheet_status_counts": {
+        "high": 35,
+        "conflict": 0,
+        "missing": 3
+      }
+    },
+    {
+      "discipline": "EOM",
+      "path": "/tmp/auditmanager_six_candidate_inputs_20261110/EOM/03_analysis/runs/candidate/document_graph.json",
+      "input_sha256": "671debc7fd99c7e79a2ca113304e21ec44618668b5bb5d297fc9790af6a98868",
+      "output_sha256": "87950eff34bcaa5cce9046fe72a50cc791dfd00f33a7b4ef8214c0b742f1cd10",
+      "sheet_status_counts": {
+        "high": 54,
+        "conflict": 0,
+        "missing": 2
+      }
+    }
+  ],
+  "new_model_calls": 0,
+  "boundary": "Missing sheet labels are not PDF page numbers. Use explicit PDF page and block references when a sheet label is unavailable.",
+  "authoritative_text_blocks_unchanged": 627
+}
