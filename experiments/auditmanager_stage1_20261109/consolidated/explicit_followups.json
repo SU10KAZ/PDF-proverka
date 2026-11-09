@@ -130,6 +130,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-064"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F064_reference_register_scope.json",
+      "output_section": null,
+      "required_checks": [
+        "Если проверяется полнота ведомости в целом, собрать все ссылки комплекта и проверить принадлежность каждой категории ведомости по применимой редакции. До этого полноту не считать ни подтверждённой,ни опровергнутой."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AR-14"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
