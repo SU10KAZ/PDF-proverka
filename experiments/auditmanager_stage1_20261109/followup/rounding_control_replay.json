@@ -2,7 +2,7 @@
   "control_id": "PAIR-EOM-ROUNDING-001",
   "negative_evidence": {
     "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
-    "sha256": "67b992ccd683b920ed318511bb017858fcb4b875dc661e9988f8a810eb578343"
+    "sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248"
   },
   "positive_evidence": {
     "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json",

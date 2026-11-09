@@ -1295,7 +1295,7 @@
     },
     {
       "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
-      "expected_sha256": "67b992ccd683b920ed318511bb017858fcb4b875dc661e9988f8a810eb578343",
+      "expected_sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248",
       "status": "ok",
       "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/rounding_control_pair.json/negative/evidence"
     },
@@ -1307,7 +1307,7 @@
     },
     {
       "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/rounding_control_replay.json",
-      "expected_sha256": "5e786e65047933902505c260ccfe5c04d0821a7dc9eef0f937580d0cc1bda687",
+      "expected_sha256": "48e034873450c9e385fb7a38b37e7a2d908f257702ed72ea3745e23fab6fefe7",
       "status": "ok",
       "context": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/followup/rounding_control_pair.json/replay"
     },
