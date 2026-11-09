@@ -183,7 +183,7 @@ B-AR-F-016,AR,classic_usefulness,confirmed_dimension_area_reconciliation,Воп�
 B-AR-F-017,AR,classic_usefulness,confirmed_numeric_difference_question,Вопросы и уточнения,"Увязать высоты экранов ОГШ-1/2/3 между ведомостью и видами, указав базу измерения.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR17.json
 B-AR-F-018,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-019,AR,classic_usefulness,hold_dimension_identity_not_established_300_is_not_proven_slope_radius,,"Не выпускать утверждение, что радиус повышенного уклона ошибочно принят 300 вместо 500 мм: размеры 300+300 на узле подтверждены, но их связь именно с границей зоны 5% не установлена. Примечание прямо требует радиус не менее 500 мм.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F019_drain_dimension_identity.json
-B-AR-F-020,AR,classic_usefulness,Первичная проверка не завершена,,,
+B-AR-F-020,AR,classic_usefulness,OGN4_height_difference_confirmed_reference_points_present_cause_unresolved,Вопросы и уточнения,"Согласовать высоту ОГН-4: на виде указан размер 2110 мм, в ведомости — 2100 мм; узел крепления содержит h=2,1 м и отметки +43,380/+41,280, также дающие 2100 мм. Уточнить основание разницы 10 мм и применяемый размер.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F020_OGN4_height.json
 B-AR-F-021,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-AR-F-022,AR,classic_usefulness,Первичная проверка не завершена,,,
 B-KM-F-001,KM,classic_usefulness,Первичная проверка не завершена,,,
