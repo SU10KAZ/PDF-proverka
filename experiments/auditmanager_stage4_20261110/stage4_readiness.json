@@ -150,5 +150,11 @@
       "tests/test_object_operation_passes.py"
     ],
     "boundary": "Local synthetic controls; no independent source-scope model pilot or semantic acceptance."
+  },
+  "six_project_deterministic_preservation": {
+    "evidence": "experiments/auditmanager_stage4_20261110/six_project_verifier_preservation.json",
+    "sha256": "5b737476dcadee9463c90b5c73e8dee77455fc2fba7be074193499214d0d3bc9",
+    "findings_unchanged": 244,
+    "scope": "Deterministic verifier/corrector on saved findings only; no full candidate audits or semantic acceptance."
   }
 }

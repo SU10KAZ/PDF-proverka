@@ -1,0 +1,2956 @@
+{
+  "scope": "Saved six-project findings through current deterministic verifier/corrector only",
+  "projects": [
+    {
+      "discipline": "AK",
+      "before": 65,
+      "after": 65,
+      "removed": [],
+      "added": [],
+      "changes": [],
+      "stats": {
+        "findings_total": 65,
+        "deterministic_issues": 0,
+        "critic_error": null,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "corrector_error": null
+      },
+      "review": {
+        "meta": {
+          "project_id": "six-preservation-AK",
+          "review_date": "2026-11-10T02:56:37.998290",
+          "stage": "findings_critic",
+          "mode": "deterministic",
+          "total_reviewed": 65,
+          "verdicts": {
+            "pass": 65
+          },
+          "deterministic_issues": 0,
+          "semantic_issues": 0,
+          "llm_candidates": 65,
+          "llm_failed": false,
+          "semantic_unverified": 0
+        },
+        "reviews": [
+          {
+            "finding_id": "F-001",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+              "blk_b8f98350127c4603bb6811846ec13309"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-002",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+              "blk_abed08ccd9a347bb9fa290fd8696b197",
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-003",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_8de25b2b318647aeac8b3298fe03a98c",
+              "blk_66ba3cf1e99c46a292deb3fecd22f58a",
+              "blk_b8f98350127c4603bb6811846ec13309",
+              "blk_52496725d0f247bf913f197b2ed305ac"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-004",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_e3e39f8820d7474caa10ab626d2a2c91"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-005",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_e3e39f8820d7474caa10ab626d2a2c91"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-006",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_0457419703024673bb4328b18d47501e",
+              "blk_192d323532434ee1aba250ffaac80b47"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-007",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_07ee87d0cd9b46359b3c2b177440fe89",
+              "blk_54608a880c2545aa926c442d213988c3"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-008",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7785cb8293734c16b18fc1aff53c761f",
+              "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+              "blk_a4846024d95044a09f7a24d76da41c31"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-009",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_523708af1c384b0e8bc6767d93644336"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-010",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_523708af1c384b0e8bc6767d93644336"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-011",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_523708af1c384b0e8bc6767d93644336",
+              "blk_abed08ccd9a347bb9fa290fd8696b197",
+              "blk_3555a6e6bcc443c39eaba461232ceec3"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-012",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_aa15c30f0e7e48988cadcac795e1ccff",
+              "blk_3efc4048723143beaeb20fa1792f1776",
+              "blk_13738f8bb6f840fcb0cb37491b612396"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-013",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+              "blk_3d78558e2eb34cb189b102380b0d3d00",
+              "blk_07eb5e614f424f588877ee1d3d5ce41b",
+              "blk_8c1c32681acd42c79d8190b013bbbf0c"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-014",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_28e6a3fa2bff45aabce4aed90feff741",
+              "blk_c0ed6bca935843c18344796377677f2f",
+              "blk_30ab2c5b39b8442baf89f7a9cfe31434"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-015",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_c13afb271fc74ce4a28b79e59652ee51",
+              "blk_3e1eb0838e6b4a33b9a090a9c4b998dd"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-016",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_2aeda93ede5444ebb33f638cd45586f2"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-017",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_2aeda93ede5444ebb33f638cd45586f2"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-018",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_47163e69651c48528b3e054d5a5db095",
+              "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-019",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_45a5493bf459424ea614bc2de6d6e514",
+              "blk_43571d7cab5b47d2b07660a9e43a42c9",
+              "blk_b8f98350127c4603bb6811846ec13309"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-020",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_065a335469904b2db1640b480b321503",
+              "blk_c63456cda51644db9470fb57f29b27de"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-021",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_0c71a5773a2348d0822a526b8c88b16a"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-022",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_3efc4048723143beaeb20fa1792f1776",
+              "blk_13738f8bb6f840fcb0cb37491b612396",
+              "blk_c5ecdd6fe0d145118c604b663f84bba8"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-023",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_978fa763ed7e4a39977b35b866485e2e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-024",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_978fa763ed7e4a39977b35b866485e2e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-025",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_6ba4df04a74d4e8d8db22cb4db7aff4f"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-026",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_a5c923d5f33046ad9585e4102dc033c7",
+              "blk_76e892431d7d4c48a09aba49a57b223c"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-027",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_1865bf51c17e444491a5621d4a33c331",
+              "blk_fa4aa30b23024db7b83018947c1c7f74",
+              "blk_b8f98350127c4603bb6811846ec13309"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-028",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_e1d470118a394e9a9e75718113a9b37d"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-029",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_1865bf51c17e444491a5621d4a33c331"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-030",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_adc4052a68344abf9c8f56861b9294d1",
+              "blk_1865bf51c17e444491a5621d4a33c331"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-031",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+              "blk_f4bf6dec4072413fa43043bf27d880eb"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-032",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "blk_b8f98350127c4603bb6811846ec13309"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-033",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_8de25b2b318647aeac8b3298fe03a98c",
+              "blk_1865bf51c17e444491a5621d4a33c331"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-034",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_6995cff7e34a4a41b99ec565101c4e02",
+              "blk_6e394962eb18407fb17b09f063c30a5c",
+              "blk_183b00bc56b74dc4b19072a6f269822e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-035",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_aa15c30f0e7e48988cadcac795e1ccff"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-036",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_aa15c30f0e7e48988cadcac795e1ccff"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-037",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_28e6a3fa2bff45aabce4aed90feff741",
+              "blk_4e142b330766407099c7d561f0a8eb6a",
+              "blk_560cb89105bd46158749d4d59c9e52f9",
+              "blk_4f10f081ebcc4fb1a837e257963d7fc8"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-038",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_28e6a3fa2bff45aabce4aed90feff741"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-039",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_e3e39f8820d7474caa10ab626d2a2c91"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-040",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_e3e39f8820d7474caa10ab626d2a2c91",
+              "blk_07ee87d0cd9b46359b3c2b177440fe89",
+              "blk_6995cff7e34a4a41b99ec565101c4e02",
+              "blk_66980560083f4bb483d5ce1f9c8156e2",
+              "blk_54608a880c2545aa926c442d213988c3"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-041",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_2aeda93ede5444ebb33f638cd45586f2",
+              "blk_1421872a752e4019a31247d056c0e9bc"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-042",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_2aeda93ede5444ebb33f638cd45586f2"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-043",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_1421872a752e4019a31247d056c0e9bc"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-044",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_6995cff7e34a4a41b99ec565101c4e02",
+              "blk_66980560083f4bb483d5ce1f9c8156e2"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-045",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_66980560083f4bb483d5ce1f9c8156e2",
+              "blk_065a335469904b2db1640b480b321503"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-046",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_5999641136b84d1c9a5dd129e06ae055"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-047",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7785cb8293734c16b18fc1aff53c761f"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-048",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7785cb8293734c16b18fc1aff53c761f"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-049",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7785cb8293734c16b18fc1aff53c761f"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-050",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7785cb8293734c16b18fc1aff53c761f"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-051",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_dc32b584ce9748a5b520a300112b12de"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-052",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_1c493988cdf14cee9ad351ef2e706470"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-053",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_1c493988cdf14cee9ad351ef2e706470"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-054",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_96ed7d88fb23414bb14d93191a89365a"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-055",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_f784be4786274e8c84f32d874ed99969"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-056",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_127bea47b93f4214ac6430c54b21517a"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-057",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_127bea47b93f4214ac6430c54b21517a"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-058",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_065a335469904b2db1640b480b321503"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-059",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_40bad73db9d44699955a7a4682f309a8"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-060",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_40bad73db9d44699955a7a4682f309a8"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-061",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_3a652e527d9242058c018c7b7199b5e6",
+              "blk_3ce77761b19f4562bb8fdf7579aa80ec",
+              "blk_256f5749f1274c84b54b8873170bdccc"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-062",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_eed9c1e7960b4f06804c0fa986d09740"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-063",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_e7af9d2de9a4471daa970c45845957e5"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-064",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_388cf697312746a88850319891c6bcae",
+              "blk_adc4052a68344abf9c8f56861b9294d1"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-065",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_adc4052a68344abf9c8f56861b9294d1"
+            ],
+            "suggested_fix": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+          "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "e03e93fd5cd91f60ae1e4a06c0f6c5308f8b25093f1f540d7f86346cfaf9beb7"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "e80bfb2112c7f1f2c8a76f2db4a81416c585bcf9f551c132bfafe9ecd8eaa41f"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/document_graph.json",
+          "sha256": "4a7da52c5ca9223e188d2b64351a4ee9ea2294bc3cb49d5b2840306c20dd88e4"
+        }
+      ]
+    },
+    {
+      "discipline": "ITP",
+      "before": 53,
+      "after": 53,
+      "removed": [],
+      "added": [],
+      "changes": [],
+      "stats": {
+        "findings_total": 53,
+        "deterministic_issues": 0,
+        "critic_error": null,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "corrector_error": null
+      },
+      "review": {
+        "meta": {
+          "project_id": "six-preservation-ITP",
+          "review_date": "2026-11-10T02:56:38.022733",
+          "stage": "findings_critic",
+          "mode": "deterministic",
+          "total_reviewed": 53,
+          "verdicts": {
+            "pass": 53
+          },
+          "deterministic_issues": 0,
+          "semantic_issues": 0,
+          "llm_candidates": 53,
+          "llm_failed": false,
+          "semantic_unverified": 0
+        },
+        "reviews": [
+          {
+            "finding_id": "F-001",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_9e12a8bcbfb24db49d81af74c06e24f0"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-002",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_55ab0b4be112477eb9dec207df68000e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-003",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+              "blk_f249587fe98945f7a1c5d30e102aaa68"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-004",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_acc3bf59f8f447f988de16849e40e9f1",
+              "blk_e65f4bff781945f19da5a4ec2919b764"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-005",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_94b58ecf5d404f7d90c272d267eb2e48",
+              "blk_90da5d0d361c48008030c2bf87767ced",
+              "blk_9167c15ea57c423ea6ad708738bb420f",
+              "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-006",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_67b9571de5e74033b6c491043f8c87d1"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-007",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_2a57b9d72094420086e4401e9bfbbc9e",
+              "blk_8a446a40473d48d18d60edba74661d9e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-008",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_3050f16afc994b889498a2535ea14a52"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-009",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_a5c04128f54f404e900b3ee4e3a854ba"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-010",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-011",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_fed30df45d124919a8b7cc13253733b1"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-012",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b8c120f6cbc04397b8c5514a03fa3152",
+              "blk_296b8547a33a47dbb7a9b8e546d964e0"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-013",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_296b8547a33a47dbb7a9b8e546d964e0"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-014",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_30789714316b48908c5addc9bfb135d2"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-015",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b8c120f6cbc04397b8c5514a03fa3152",
+              "blk_11981549aceb463ba84c7c0de619d2fc",
+              "blk_30789714316b48908c5addc9bfb135d2"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-016",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_128a43447f394e0687d841e25e436e75"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-017",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_128a43447f394e0687d841e25e436e75"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-018",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_64d234df62024a40b06b044dcb8f4bc9",
+              "blk_ae35014464b5493f84ca38481c3ffa60"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-019",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_606823ca386e49ffbe2f96d95e08793b",
+              "blk_64d234df62024a40b06b044dcb8f4bc9",
+              "blk_396954f77098430281d203e5380eb32e",
+              "blk_128a43447f394e0687d841e25e436e75",
+              "blk_1601889b50624245a5c590ad23d87175"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-020",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_a203939b21504fa6935b621a29929d7d"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-021",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_26b23c5bfabe4917a156a91077b5458d"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-022",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b4fb33513ca44182af058d09c8ab2dbb"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-023",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7e913f6c32cb4db7aa9d9b8688b6e979"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-024",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+              "blk_3050f16afc994b889498a2535ea14a52"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-025",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-026",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_d0ef4dbea56d4b74b97a10119fbee223"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-027",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+              "blk_f249587fe98945f7a1c5d30e102aaa68"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-028",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_d0ef4dbea56d4b74b97a10119fbee223"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-029",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_d0ef4dbea56d4b74b97a10119fbee223"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-030",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+              "blk_d0ef4dbea56d4b74b97a10119fbee223"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-031",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+              "blk_5e8d45b076bf429e863f27b16da7b261"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-032",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_9e9fdca2261a4324959220546412f377",
+              "blk_f409d1ebb4764f25aa0c123ad7fd22e9"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-033",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_033ce4c4cbae41368d96485419afe95a",
+              "blk_fd984f8c5d03427497ffd926feaf8ed5"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-034",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_693e53fec5744b27b721eb667e933ef5",
+              "blk_90da5d0d361c48008030c2bf87767ced",
+              "blk_9167c15ea57c423ea6ad708738bb420f",
+              "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-035",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_c2e6708f6356460eb04d337fd749e8c7"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-036",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_29a310ba9cf94b72b83f0944dfb47467",
+              "blk_a84dc3455457476dadbc35029e2e7ae8"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-037",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_3050f16afc994b889498a2535ea14a52"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-038",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_90da5d0d361c48008030c2bf87767ced",
+              "blk_9167c15ea57c423ea6ad708738bb420f",
+              "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-039",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_90da5d0d361c48008030c2bf87767ced",
+              "blk_9167c15ea57c423ea6ad708738bb420f",
+              "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-040",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_8c5527e3317248dca7d78ca059f0ec46"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-041",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_ae35014464b5493f84ca38481c3ffa60"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-042",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_27af51f0cd26488ea08ffa55589b0c3e",
+              "blk_06029d59a01b4b779037ffcee1ae5260",
+              "blk_cc80e7962a094791b984d8fb5391e886",
+              "blk_94b58ecf5d404f7d90c272d267eb2e48"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-043",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+              "blk_b8c120f6cbc04397b8c5514a03fa3152"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-044",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_871a2c95697d4a93adb86dd3e2456614",
+              "blk_94b58ecf5d404f7d90c272d267eb2e48",
+              "blk_bd55e9b9fbff4d0886c6084a326ec05e",
+              "blk_049ee88c136045da9910995a4c44a1e8"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-045",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-046",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_dbf7b3d84e5642c9805145cb7502e78d",
+              "blk_5d085f4c917a4e568fd33327e6f8edea"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-047",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_5d085f4c917a4e568fd33327e6f8edea"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-048",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_6496640ac5e44e98a89acc7af56d0509"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-049",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_d0a62bc2e56f4d07bb33a73622429881"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-050",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_693e53fec5744b27b721eb667e933ef5"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-051",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_3162e0fafc32457285830ec07afdd653"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-052",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_9167c15ea57c423ea6ad708738bb420f",
+              "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-053",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_9167c15ea57c423ea6ad708738bb420f"
+            ],
+            "suggested_fix": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/03_findings.json",
+          "sha256": "1357b3b3f91976407cbb0db31adeb5cc672bd0797c21074c989957418362186a"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "89f7118e7b1eb0ae0ffc05d965b439b9a74030b0223824f96150632b166ba043"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "1865b37edff1d3f91a25580b65ec9918216f65dec0a2f4a788317da91183a597"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/document_graph.json",
+          "sha256": "9bd290beb4589803e4c302428f3fef507f1e10536c3941e6796ee1e27d4cb679"
+        }
+      ]
+    },
+    {
+      "discipline": "AR",
+      "before": 22,
+      "after": 22,
+      "removed": [],
+      "added": [],
+      "changes": [],
+      "stats": {
+        "findings_total": 22,
+        "deterministic_issues": 0,
+        "critic_error": null,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "corrector_error": null
+      },
+      "review": {
+        "meta": {
+          "project_id": "six-preservation-AR",
+          "review_date": "2026-11-10T02:56:38.040013",
+          "stage": "findings_critic",
+          "mode": "deterministic",
+          "total_reviewed": 22,
+          "verdicts": {
+            "pass": 22
+          },
+          "deterministic_issues": 0,
+          "semantic_issues": 0,
+          "llm_candidates": 22,
+          "llm_failed": false,
+          "semantic_unverified": 0
+        },
+        "reviews": [
+          {
+            "finding_id": "F-001",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_9229dc363c184ae3abca81013e330dfa",
+              "blk_ae58e44ff89a43deb9ed9088e9778125",
+              "blk_da80f01d01214295afe19fe6063fe5e1"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-002",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_9229dc363c184ae3abca81013e330dfa",
+              "blk_507c287c56f04302a7ca1097e7af79ff"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-003",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_136a04c93a0c42ea92caf6551369e3b4",
+              "blk_6ff6b58a285e4ec1b276342a846e08e7"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-004",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_507c287c56f04302a7ca1097e7af79ff",
+              "blk_d79ac3d31db644eea9b53e1860e4c51c"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-005",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_507c287c56f04302a7ca1097e7af79ff",
+              "blk_d79ac3d31db644eea9b53e1860e4c51c"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-006",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b9257ef1636a40f9a224955e061eb46e",
+              "blk_507c287c56f04302a7ca1097e7af79ff",
+              "blk_5a677abb29e64cc2bfdf78c166eaf99a"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-007",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_136a04c93a0c42ea92caf6551369e3b4",
+              "blk_2f3068ab00334ed49a43fbc0d168a15b"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-008",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_d9481af62d6447f6b591d328f7d0d3a9",
+              "blk_c725ce887579494f86b4968fc113b951",
+              "blk_9229dc363c184ae3abca81013e330dfa",
+              "blk_2f3068ab00334ed49a43fbc0d168a15b"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-009",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_9229dc363c184ae3abca81013e330dfa"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-010",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_136a04c93a0c42ea92caf6551369e3b4"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-011",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_61f174f49da34cb0821c0b91863cd608"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-012",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_70fe5a65859f4c0ab666ce5e17f1452d"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-013",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_602b484f088b4a029d3ba6e01df3f645"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-014",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_602b484f088b4a029d3ba6e01df3f645"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-015",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_602b484f088b4a029d3ba6e01df3f645",
+              "blk_b9257ef1636a40f9a224955e061eb46e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-016",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_82cbe376e70f4cc3833a1203b0d0a0ee"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-017",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_3d63e546cfb54b108a681fffc5c2e192",
+              "blk_622df5aee83e4bb09a3944020fb92380",
+              "blk_c52dea9d372c4c468025a641ffac8192",
+              "blk_fc7a4e61819c4c0ca3606d47a0282ae6"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-018",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_3833cfb33b574f36b5a8f0764f7471e5"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-019",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_f09f368364644083843f0762eb294a7d"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-020",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_eb64722d53da4f5aa3e984fa2fb552c5"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-021",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_6ef90a858b8e47e1ac668fa68744b9f2",
+              "blk_2c751cd478764bae9d5e0b1df794ad89"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-022",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_d79ac3d31db644eea9b53e1860e4c51c"
+            ],
+            "suggested_fix": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/03_findings.json",
+          "sha256": "061817611a78a8ab2a21af6d9ec1e07be0cfa62b3b27394a9f78d6f3e262f113"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "799b8aab94e84524b647b97aad62762afec8bfe32b40f66cb31980e82c520c9c"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "7369e5d233fff61bdac12f19ff10da31bf797f53f521aad52a06fd9584cbb803"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/document_graph.json",
+          "sha256": "4f5130cddad20ef055eb7a6b40bba1b1052ac013de25fc5e7dad1fffb75bbc0f"
+        }
+      ]
+    },
+    {
+      "discipline": "KM",
+      "before": 26,
+      "after": 26,
+      "removed": [],
+      "added": [],
+      "changes": [],
+      "stats": {
+        "findings_total": 26,
+        "deterministic_issues": 0,
+        "critic_error": null,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "corrector_error": null
+      },
+      "review": {
+        "meta": {
+          "project_id": "six-preservation-KM",
+          "review_date": "2026-11-10T02:56:38.051719",
+          "stage": "findings_critic",
+          "mode": "deterministic",
+          "total_reviewed": 26,
+          "verdicts": {
+            "pass": 26
+          },
+          "deterministic_issues": 0,
+          "semantic_issues": 0,
+          "llm_candidates": 26,
+          "llm_failed": false,
+          "semantic_unverified": 0
+        },
+        "reviews": [
+          {
+            "finding_id": "F-001",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_531e843c117243a3b1582cb3399f4681",
+              "blk_5e4c3725456d4cafa74220f8a1fad14c",
+              "blk_f63af88de2a840e49ca709d736eaa225"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-002",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_531e843c117243a3b1582cb3399f4681",
+              "blk_5e4c3725456d4cafa74220f8a1fad14c",
+              "blk_7b0802767f0147c197b0a35334b4a7ae",
+              "blk_f63af88de2a840e49ca709d736eaa225"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-003",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_531e843c117243a3b1582cb3399f4681",
+              "blk_5e4c3725456d4cafa74220f8a1fad14c",
+              "blk_f63af88de2a840e49ca709d736eaa225"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-004",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7b0802767f0147c197b0a35334b4a7ae",
+              "blk_addaa8965de54d218095d13652f30388",
+              "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+              "blk_ec977eb41e834dc8b7b332a66932a777"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-005",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7b0802767f0147c197b0a35334b4a7ae",
+              "blk_b9096ac74f95416da66cc607a9828c3f"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-006",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7b0802767f0147c197b0a35334b4a7ae",
+              "blk_addaa8965de54d218095d13652f30388",
+              "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+              "blk_ec977eb41e834dc8b7b332a66932a777"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-007",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7b0802767f0147c197b0a35334b4a7ae",
+              "blk_b9096ac74f95416da66cc607a9828c3f"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-008",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_531e843c117243a3b1582cb3399f4681",
+              "blk_5e4c3725456d4cafa74220f8a1fad14c",
+              "blk_f63af88de2a840e49ca709d736eaa225"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-009",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_531e843c117243a3b1582cb3399f4681",
+              "blk_5e4c3725456d4cafa74220f8a1fad14c",
+              "blk_addaa8965de54d218095d13652f30388",
+              "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+              "blk_ec977eb41e834dc8b7b332a66932a777",
+              "blk_f63af88de2a840e49ca709d736eaa225"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-010",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_addaa8965de54d218095d13652f30388",
+              "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+              "blk_ec977eb41e834dc8b7b332a66932a777"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-011",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-012",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_9dbddaba8e334be3ab857afe48df76ec",
+              "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-013",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+              "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+              "blk_60fce78600474a06989f2253821f34f2",
+              "blk_00eaf91abb0f48a38267e99e757644a1",
+              "blk_6451cc830d2b45f5bf19bbc352d4a419",
+              "blk_49d947c318c3478582a39740abda8658",
+              "blk_7b0802767f0147c197b0a35334b4a7ae"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-014",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "blk_6d4c4daf192546de9f1dce661aafe577",
+              "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-015",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_f0a5333974ac4088b7778f525922b014",
+              "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-016",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_09df648d1b4d4cc097ea6f0e25ceef52"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-017",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_441423dd5fb448c89a33b610c54783ba",
+              "blk_1849759086c445e687f8c0e2b424250b"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-018",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+              "blk_44d5d64039f74e2188935e15eabafb7d"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-019",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7315b3a722f946d48c34d31d1eac62ad"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-020",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_6d3a9c479ffe4b57b3cd3e5310d5abfd"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-021",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7b0802767f0147c197b0a35334b4a7ae"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-022",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_ddc4b49561b745ffab319ae7f3b20860",
+              "blk_531e843c117243a3b1582cb3399f4681",
+              "blk_7b0802767f0147c197b0a35334b4a7ae"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-023",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_531e843c117243a3b1582cb3399f4681"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-024",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_531e843c117243a3b1582cb3399f4681"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-025",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_5e4c3725456d4cafa74220f8a1fad14c"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-026",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_531e843c117243a3b1582cb3399f4681"
+            ],
+            "suggested_fix": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/03_findings.json",
+          "sha256": "5cc411cb487bc27ebe24c9b7329376e90938dbf2de52ad2898b83e5f3263e866"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "e3bcbaa316e94905c5f50e5d6d997d64e8daeb05dbdd7de2e7e52e73128bc41d"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "77df990dfd1235194e0c597dfe4cc1720f793e3cb8594bf78b2d0294c58b1363"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/document_graph.json",
+          "sha256": "f0e2fb078fab2c266eafaaa6c305ed03f7001d1ef015d4afc5a0eb19d01989c8"
+        }
+      ]
+    },
+    {
+      "discipline": "VK",
+      "before": 29,
+      "after": 29,
+      "removed": [],
+      "added": [],
+      "changes": [],
+      "stats": {
+        "findings_total": 29,
+        "deterministic_issues": 0,
+        "critic_error": null,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 0,
+        "flagged_human": 0,
+        "corrector_error": null
+      },
+      "review": {
+        "meta": {
+          "project_id": "six-preservation-VK",
+          "review_date": "2026-11-10T02:56:38.067635",
+          "stage": "findings_critic",
+          "mode": "deterministic",
+          "total_reviewed": 29,
+          "verdicts": {
+            "pass": 29
+          },
+          "deterministic_issues": 0,
+          "semantic_issues": 0,
+          "llm_candidates": 29,
+          "llm_failed": false,
+          "semantic_unverified": 0
+        },
+        "reviews": [
+          {
+            "finding_id": "F-001",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_dfae064f26494949a92afe3b0f6f9158",
+              "blk_5cbadcc65a5549348d33245b22ca8bd4"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-002",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_082880f1dc1c45628641110a8a4f8f44",
+              "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-003",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_686c23c287f1430199897dff70be0878",
+              "blk_9b1d774c2f6c4127b2f8618e3792a647"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-004",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_686c23c287f1430199897dff70be0878",
+              "blk_9b1d774c2f6c4127b2f8618e3792a647"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-005",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_686c23c287f1430199897dff70be0878",
+              "blk_9b1d774c2f6c4127b2f8618e3792a647"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-006",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_686c23c287f1430199897dff70be0878"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-007",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-008",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-009",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_2832f2bda58d416ab8c388c81c339b02"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-010",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_5a8674f9dc2343498ae3b666f20e67c9"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-011",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_5c59e6512a18487d9748e1766d2233b2",
+              "blk_d2571e41e76d4f328298d074001845db"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-012",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_082880f1dc1c45628641110a8a4f8f44"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-013",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_f55a34ccc6704860863578612dabc254",
+              "blk_9b1d774c2f6c4127b2f8618e3792a647"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-014",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_082880f1dc1c45628641110a8a4f8f44",
+              "blk_686c23c287f1430199897dff70be0878"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-015",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_646b9b78524b469f982f5ec9f3b85138"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-016",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_c5143b0e4651468d97318ae7d877d087"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-017",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_dfae064f26494949a92afe3b0f6f9158",
+              "blk_ece9516e802e47a8baa35590355f2526",
+              "blk_b5c6b2d82a0c49eeab068093582b6e3e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-018",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_dfae064f26494949a92afe3b0f6f9158",
+              "blk_b5c6b2d82a0c49eeab068093582b6e3e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-019",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+              "blk_c5143b0e4651468d97318ae7d877d087",
+              "blk_b5c6b2d82a0c49eeab068093582b6e3e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-020",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+              "blk_c5143b0e4651468d97318ae7d877d087"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-021",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_bf9e42b43a6a45a8bab27fd03948ed37"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-022",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_11ab29134110467ba6ce9b0991b6ea82",
+              "blk_c5143b0e4651468d97318ae7d877d087",
+              "blk_b5c6b2d82a0c49eeab068093582b6e3e"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-023",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_11ab29134110467ba6ce9b0991b6ea82",
+              "blk_c5143b0e4651468d97318ae7d877d087"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-024",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7f11769cf1164f53aec644339cd35e97"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-025",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_7f11769cf1164f53aec644339cd35e97"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-026",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_2707c7b12fb2453aaf9a67b91f2b185f"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-027",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_d2571e41e76d4f328298d074001845db",
+              "blk_646b9b78524b469f982f5ec9f3b85138"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-028",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_dfae064f26494949a92afe3b0f6f9158",
+              "blk_bf9e42b43a6a45a8bab27fd03948ed37",
+              "blk_11ab29134110467ba6ce9b0991b6ea82"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-029",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_686c23c287f1430199897dff70be0878"
+            ],
+            "suggested_fix": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/03_findings.json",
+          "sha256": "99e5efc8da399c1fe136fd900bc3c5ef666bbe82621c086cd16888f61d538569"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "c3a05a56646e0a79391445b39a6fc95c674feefc57de755a9fe67ba7b014ed85"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "a614ce7a5242fbe9acdc592d2bc61f3fed990e5aa39efbffd47b9133af3fd99a"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/document_graph.json",
+          "sha256": "f8a6d808f113114e70a93d4f174dba31e1e346fc4052a66bc65263abdd891bee"
+        }
+      ]
+    },
+    {
+      "discipline": "EOM",
+      "before": 49,
+      "after": 49,
+      "removed": [],
+      "added": [],
+      "changes": [],
+      "stats": {
+        "findings_total": 49,
+        "deterministic_issues": 19,
+        "critic_error": null,
+        "phantom_cleaned": 0,
+        "page_fixed": 0,
+        "downgraded": 16,
+        "flagged_human": 3,
+        "corrector_error": null
+      },
+      "review": {
+        "meta": {
+          "project_id": "six-preservation-EOM",
+          "review_date": "2026-11-10T02:56:38.088084",
+          "stage": "findings_critic",
+          "mode": "deterministic",
+          "total_reviewed": 49,
+          "verdicts": {
+            "pass": 30,
+            "no_evidence": 19
+          },
+          "deterministic_issues": 19,
+          "semantic_issues": 0,
+          "llm_candidates": 30,
+          "llm_failed": false,
+          "semantic_unverified": 0
+        },
+        "reviews": [
+          {
+            "finding_id": "F-001",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-002",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_4e968dd71c7149aca85e4195d5c3de49"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-003",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-004",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_4e968dd71c7149aca85e4195d5c3de49"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-005",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_513e35c4f8a7432986e9a498d4573996"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-006",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-007",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-008",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-009",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-010",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-011",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_bff3aa753df547ec83b1266204928ad6"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-012",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_36068a499bde44769a64017e35fba41d"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-013",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_afe25191170644b09e517f34b5500150"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-014",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_fbd847573ddd408aae3067c0c1bb9dde"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-015",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_fbd847573ddd408aae3067c0c1bb9dde"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-016",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-017",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-018",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_ca30e6e10e074c64a8ee87789591480c"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-019",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_78ea210434524e3f9c120cb6dfe2d620"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-020",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_692503882d074efa83d0d595875347eb",
+              "blk_aaed5c43e84b4efdaa0186aacc4b8dd2"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-021",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_af9f7cd6dba549149cd7152de8b85c41"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-022",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_af9f7cd6dba549149cd7152de8b85c41"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-023",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_af9f7cd6dba549149cd7152de8b85c41"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-024",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_bd26d730d0a84c57900a87e3f5a47cce"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-025",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_fa92d7f0122a40cfbcc8d881d48f7c91"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-026",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_30fff9afce94400da47f707afe842467",
+              "blk_093ddb2393604f25acc1035ea56fb849",
+              "blk_f2d7503ca4194cdd9f74db689da88907",
+              "blk_df95942d720b43bea700fb8897d65cd8",
+              "blk_dc3fcd7dcce44a8994616c5102f52467",
+              "blk_03a27c5915f346d8a6dcae1a7ff5c0b2",
+              "blk_5426f9963660497388fb57433dcdabc8",
+              "blk_f64f2569076a40c1b64bf31ea10e312c",
+              "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+              "blk_e711cefb283642b380ccb060295464b5",
+              "blk_aadc46b32a1e430dabaf320154f219d3",
+              "blk_eb3872bfde2f4951ba95726c8226a252"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-027",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_5cd7f6fbfedd4f6180108050325082de"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-028",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_eecde8b541dd4b21a39a0ba7f0260bba"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-029",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_e9d70b5ef3504a009fe4711839535a08"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-030",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-031",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-032",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-033",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-034",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-035",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-036",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-037",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-038",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-039",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-040",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-041",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-042",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-043",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-044",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-045",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-046",
+            "verdict": "no_evidence",
+            "failed_checks": [
+              "evidence_presence"
+            ],
+            "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+            "evidence_checked": [],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-047",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_76d1760dd5b34882a0df18538f78e39b"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-048",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_d90c772851514a0a9c65cdd019e56957"
+            ],
+            "suggested_fix": null
+          },
+          {
+            "finding_id": "F-049",
+            "verdict": "pass",
+            "failed_checks": [],
+            "reason": "Прошёл структурные проверки (1/2/4). Семантическая проверка LLM не запускалась.",
+            "evidence_checked": [
+              "blk_b6605a23b38f4e00b2f8076b62b21532"
+            ],
+            "suggested_fix": null
+          }
+        ]
+      },
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/03_findings.json",
+          "sha256": "a523742cddbde96de36c98e167d8baa413a8d08df7f31c746259a6896f09be49"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/01_blocks_analysis.json",
+          "sha256": "6c8fd1997a0242e4de3e4d8514a61f6e2086f68a71be19c4b908347ac9a0997c"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/02_text_analysis.json",
+          "sha256": "9d15defbb94a0f38173b4036ca1ef8e70ef4877bd7799b9cf42c830c7c8fc884"
+        },
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/document_graph.json",
+          "sha256": "05135bf0a4adfbdf8edf5e2a03d8553f725309b869643a67186f170415af956a"
+        }
+      ]
+    }
+  ],
+  "new_model_calls": 0,
+  "boundary": "Not independent discovery, not a full new audit, not semantic truth adjudication. Any changed fields require assessment before acceptance.",
+  "all_244_findings_unchanged": true,
+  "verifier_execution_errors": 0
+}
