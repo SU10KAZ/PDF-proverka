@@ -182,3 +182,30 @@ def test_success_first_try_no_retry(monkeypatch, tmp_path):
     ctx = FakeCtx(out, wait_returns=[])
     res = asyncio.run(runner.run_text_analysis(ctx))
     assert res.success is True
+
+
+@pytest.mark.parametrize('known_source', [True, False])
+def test_runner_recomputes_quantity_results_without_publishing_findings(monkeypatch, tmp_path, known_source):
+    import json
+    out = _mk_output(tmp_path)
+    operand = dict(object='cabinet', parameter='height', unit='mm', basis='overall',
+                   regime='installed', value='2400', source_refs=['b1'])
+    operation = dict(id='Q1', kind='compare', terms=[operand], target={**operand, 'value': '1800'})
+    output_path = out / '02_text_analysis.json'
+    output_path.write_text(json.dumps({'text_findings': [], 'quantity_check_operations': [operation],
+                                       'quantity_check_results': {'computed': 999}}))
+    (out / 'document_graph.json').write_text(json.dumps({'pages': [
+        {'page': 1, 'text_blocks': [{'id': 'b1' if known_source else 'unrelated'}]}]}))
+    _patch_runner(monkeypatch, [(0, 'ok')])
+    result = asyncio.run(runner.run_text_analysis(FakeCtx(out, wait_returns=[])))
+    assert result.success
+    saved = json.loads(output_path.read_text())
+    checks = saved['quantity_check_results']
+    assert checks['computed'] == int(known_source)
+    assert checks['not_checked'] == int(not known_source)
+    if known_source:
+        assert checks['operations'][0]['difference'] == '600'
+    else:
+        assert checks['operations'][0]['reason'] == 'unresolved_sources'
+    assert saved['text_findings'] == []
+    assert checks['coverage_complete'] is False
