@@ -110,6 +110,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-013"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Установить действующую редакцию повторных строк и сверить итоговый учёт по типам кабеля. До этого фактический перерасход и ущерб исключены из положительных метрик."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-016",
         "B-AK-F-017"
       ],
