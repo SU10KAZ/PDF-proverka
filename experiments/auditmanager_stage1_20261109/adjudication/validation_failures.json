@@ -1,0 +1,177 @@
+[
+  {
+    "candidate_id": "H-AK-57",
+    "job": "H-AK-57",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-57/04_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AK-57/04_evidence.json"
+  },
+  {
+    "candidate_id": "H-ITP-40",
+    "job": "H-ITP-40",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-ITP-40/02_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-ITP-40/02_evidence.json"
+  },
+  {
+    "candidate_id": "H-EOM-2",
+    "job": "H-EOM-2",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-2/02_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-2/02_evidence.json"
+  },
+  {
+    "candidate_id": "H-KM-6",
+    "job": "H-KM-6",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-6/03_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-KM-6/03_evidence.json"
+  },
+  {
+    "candidate_id": "H-VK-32",
+    "job": "H-VK-32",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-32/01_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-VK-32/01_evidence.json"
+  },
+  {
+    "candidate_id": "H-ITP-63",
+    "job": "H-ITP-63",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-ITP-63/01_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-ITP-63/01_evidence.json"
+  },
+  {
+    "candidate_id": "H-ITP-64",
+    "job": "H-ITP-64",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-ITP-64/02_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-ITP-64/02_evidence.json"
+  },
+  {
+    "candidate_id": "H-EOM-76",
+    "job": "H-EOM-76",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-76/01_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-76/01_evidence.json"
+  },
+  {
+    "candidate_id": "H-EOM-11",
+    "job": "H-EOM-11",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-11/02_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-11/02_evidence.json"
+  },
+  {
+    "candidate_id": "H-AR-14",
+    "job": "H-AR-14",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-14/01_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-AR-14/01_evidence.json"
+  },
+  {
+    "candidate_id": "B-AK-F-001",
+    "job": "B-AK-000",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/04_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/04_evidence.json"
+  },
+  {
+    "candidate_id": "B-AK-F-002",
+    "job": "B-AK-000",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/04_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/04_evidence.json"
+  },
+  {
+    "candidate_id": "B-AK-F-012",
+    "job": "B-AK-002",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-002/02_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-002/02_evidence.json"
+  },
+  {
+    "candidate_id": "B-AK-F-014",
+    "job": "B-AK-003",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-003/04_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-003/04_evidence.json"
+  },
+  {
+    "candidate_id": "B-ITP-F-001",
+    "job": "B-ITP-000",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-000/03_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-000/03_evidence.json"
+  },
+  {
+    "candidate_id": "B-ITP-F-008",
+    "job": "B-ITP-001",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-001/03_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-001/03_evidence.json"
+  },
+  {
+    "candidate_id": "B-ITP-F-026",
+    "job": "B-ITP-006",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-006/03_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-006/03_evidence.json"
+  },
+  {
+    "candidate_id": "B-ITP-F-029",
+    "job": "B-ITP-007",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-007/02_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-ITP-007/02_evidence.json"
+  },
+  {
+    "candidate_id": "B-KM-F-001",
+    "job": "B-KM-000",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-000/03_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-000/03_evidence.json"
+  },
+  {
+    "candidate_id": "B-KM-F-003",
+    "job": "B-KM-000",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-000/03_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-000/03_evidence.json"
+  },
+  {
+    "candidate_id": "B-KM-F-004",
+    "job": "B-KM-000",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-000/03_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-000/03_evidence.json"
+  },
+  {
+    "candidate_id": "B-KM-F-006",
+    "job": "B-KM-001",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-001/05_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-KM-001/05_evidence.json"
+  },
+  {
+    "candidate_id": "B-VK-F-009",
+    "job": "B-VK-002",
+    "error": "TEXT quote not in authoritative block",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-002/02_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-002/02_evidence.json"
+  },
+  {
+    "candidate_id": "B-VK-F-029",
+    "job": "B-VK-007",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-007/02_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-VK-007/02_evidence.json"
+  },
+  {
+    "candidate_id": "B-EOM-F-012",
+    "job": "B-EOM-002",
+    "error": "Evidence refs must cover cited source IDs exactly",
+    "response": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-002/03_response.json",
+    "feedback": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-EOM-002/03_evidence.json"
+  }
+]

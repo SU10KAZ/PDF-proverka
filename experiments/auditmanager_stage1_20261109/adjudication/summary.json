@@ -1,0 +1,23 @@
+{
+  "jobs": 112,
+  "candidates": 291,
+  "historical_candidates": 47,
+  "classic_candidates": 244,
+  "model_atom_counts_not_defects": {
+    "supported": 608,
+    "needs_data": 405,
+    "refuted": 34,
+    "out_of_scope": 3
+  },
+  "jobs_with_rejected_revision": 22,
+  "candidates_with_rejected_revision": 25,
+  "candidate_flag_counts": {
+    "unresolved_evidence": 247,
+    "check_question_profile_and_utility": 133,
+    "rejected_revision_stale_saved_assessment": 25,
+    "verify_refutation_scope": 27
+  },
+  "stage_complete": false,
+  "production_promotion_allowed": false,
+  "all_model_verdicts_provisional": true
+}
