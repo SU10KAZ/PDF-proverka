@@ -177,6 +177,17 @@
     },
     {
       "candidate_ids": [
+        "H-VK-50"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK50_specification_duplicates.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Для технического вывода о дублях установить артикулы/аналоги и распределение потребности по участкам; до этого не считать количества излишней закупкой.",
+        "Для этапа причин потерь проверить первичный артефактJ006 и итоговую выдачу той же версии; поздняя историческая пометка сама по себе не доказывает этап подавления."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-VK-F-001"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F001_revision_interval.json",

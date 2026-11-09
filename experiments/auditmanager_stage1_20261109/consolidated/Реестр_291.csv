@@ -16,7 +16,7 @@ H-VK-21,VK,historical_control,Первичная проверка не заве�
 H-VK-32,VK,historical_control,Первичная проверка не завершена,,,
 H-VK-33,VK,historical_control,Первичная проверка не завершена,,,
 H-VK-34,VK,historical_control,Первичная проверка не завершена,,,
-H-VK-50,VK,historical_control,Первичная проверка не завершена,,,
+H-VK-50,VK,historical_control,accepted_compound_history_split_editorial_errors_from_duplicate_candidates,Вопросы и уточнения,"Уточнить спецификацию: вК2.1 номер4 повторён у опорной трубы и отвода; вК2 поз.11 запись «8¹ из двух колен по44¹» не согласуется с суммой углов44+44=88. Отдельно проверить перечисленные пары похожих позицийК1,К2 иК2.3 и объединить только после подтверждения одного изделия и раздельности/повтора учтённой потребности, сохранив обоснованное суммарное количество.",/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK50_specification_duplicates.json
 H-VK-51,VK,historical_control,Первичная проверка не завершена,,,
 H-EOM-5,EOM,historical_control,Первичная проверка не завершена,,,
 H-EOM-8,EOM,historical_control,refuted,,Снять утверждение об отсутствии ЯУ-ДУ2.1 на плане: обозначение связано с показанным ящиком.,/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM8.json
