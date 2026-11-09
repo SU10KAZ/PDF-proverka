@@ -816,6 +816,18 @@
     },
     {
       "candidate_ids": [
+        "H-KM-13",
+        "B-KM-F-004"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM13_F004_S2_anchor_multiplicity.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Установить методику массы127кг и геометрию обработки пластин либо заморозить тезис о точном дефиците массы как неоцениваемый.",
+        "Сопоставить историческую находкуUA-013 с журналами классического AuditManager до утверждения причины пропуска."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-002"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
