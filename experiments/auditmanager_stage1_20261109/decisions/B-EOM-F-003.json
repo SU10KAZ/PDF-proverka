@@ -153,5 +153,60 @@
   ],
   "followup_requirements": [
     "Проверить неокруглённые значения и состав режимов РП5 совместно с историческим UNI-028; совпадение разности с C2518 не доказывает пропуск этой строки."
-  ]
+  ],
+  "atomic_dispositions": [
+    {
+      "claim": "Опубликованные строки даютPy94,5 иPp89,9 против94,1/89,5",
+      "verdict": "confirmed_decimal_sum"
+    },
+    {
+      "claim": "Разности равны0,4кВт и совпадают сC2518",
+      "verdict": "confirmed_numeric_coincidence"
+    },
+    {
+      "claim": "Совпадение доказывает пропускC2518",
+      "verdict": "not_established_cause"
+    },
+    {
+      "claim": "Округление не может объяснить разности",
+      "verdict": "refuted_by_synthetic_counterexample"
+    },
+    {
+      "claim": "Проект действительно использовал значения синтетического примера",
+      "verdict": "not_established"
+    },
+    {
+      "claim": "Технически неверны итоговый расчёт и оборудование",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+    "scorable_narrow_claim": "Вопрос о точности исходных чисел и составе режима; не считать доказанным техническим дефектом или пропуском клапанов.",
+    "unscored_claims": [
+      "Реальные неокруглённые нагрузки и одновременность",
+      "Иной перерасчёт изUNI-028",
+      "Причина расхождения"
+    ],
+    "control_pair_readiness": "Контроль округления сопоставлен сB-EOM-F-005. Синтетический пример доказывает возможность, не реальную причину; историческая инженерная приёмка этой пары отсутствует.",
+    "automatic_filter_authorized": false
+  },
+  "conditional_counterexample": {
+    "kind": "synthetic_not_project_evidence",
+    "modified_rows": "C251–C2511",
+    "each_unrounded_Py_and_Pp_kW": "0.0636",
+    "each_rounded_value_kW": "0.1",
+    "other_rows": "unchanged published values",
+    "unrounded_sums": {
+      "Py": "94.0996",
+      "Pp": "89.4996"
+    },
+    "rounded_sums": {
+      "Py": "94.1",
+      "Pp": "89.5"
+    },
+    "rounding": "Decimal ROUND_HALF_UP to0.1kW",
+    "meaning": "Все опубликованные строки и итоги одновременно возможны без пропускаC2518."
+  }
 }

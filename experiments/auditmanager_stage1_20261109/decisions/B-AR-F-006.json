@@ -45,5 +45,38 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
     "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
   },
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "Ведомость покрытийК-4 содержит геотекстиль вместо мембраны",
+      "verdict": "refuted_existing_graphic_evidence"
+    },
+    {
+      "claim": "Ведомость покрытий и ведомость материалов согласованы по мембране",
+      "verdict": "confirmed_existing_TEXT_and_graphic_evidence"
+    },
+    {
+      "claim": "Адресный узелК-4 и его перечень содержат геотекстиль без отдельной мембраны",
+      "verdict": "confirmed_local_document_conflict"
+    },
+    {
+      "claim": "Мембрана физически отсутствует и пожарные требования нарушены",
+      "verdict": "not_established"
+    },
+    {
+      "claim": "Геотекстиль и мембрана взаимозаменяемы",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+    "scorable_narrow_claim": "Сохранить локальное расхождение узелК-4↔ведомости; снять ошибочную привязку конфликта к двум согласованным ведомостям.",
+    "unscored_claims": [
+      "Фактический состав покрытия",
+      "Пожарная пригодность и взаимозаменяемость материалов"
+    ],
+    "control_pair_readiness": "Локальная положительная/отрицательная пара сравнения документов уже сохранена; инженерное принятие пары и испытание фильтра не установлены.",
+    "automatic_filter_authorized": false
+  }
 }

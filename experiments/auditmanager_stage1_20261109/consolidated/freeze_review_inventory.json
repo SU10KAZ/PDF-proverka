@@ -12,10 +12,10 @@
     "candidate_records": 291,
     "decision_themes": 247,
     "themes_with_explicit_followups": 165,
-    "themes_with_direct_atomic_dispositions": 208,
+    "themes_with_direct_atomic_dispositions": 214,
     "themes_with_linked_claim_disposition": 1,
     "themes_with_direct_control_pair": 150,
-    "themes_with_scope_review": 8,
+    "themes_with_scope_review": 14,
     "stage_complete": false
   },
   "items": [
@@ -5053,7 +5053,7 @@
         "B-AR-F-006"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json",
-      "decision_sha256": "0068c59a033239fe429e4c96c00aa6d3932a8d32bd88cf8234d2d8668e70e148",
+      "decision_sha256": "1147ad2d578ff19db335f86765998d19952dfea3e32ff9ac3da027a390ff84a8",
       "original_claims": [
         {
           "candidate_id": "B-AR-F-006",
@@ -5063,7 +5063,28 @@
       ],
       "narrow_output": "Согласовать состав К-4: ведомость покрытий и ведомость материалов указывают противопожарную мембрану АЛЬФА ПРОФ НГ; адресный узел размещения молниеотвода с маркойК-4 и его перечень указывают геотекстиль300г/м² без отдельной мембраны.",
       "output_section": "Технические замечания",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Ведомость покрытийК-4 содержит геотекстиль вместо мембраны",
+          "verdict": "refuted_existing_graphic_evidence"
+        },
+        {
+          "claim": "Ведомость покрытий и ведомость материалов согласованы по мембране",
+          "verdict": "confirmed_existing_TEXT_and_graphic_evidence"
+        },
+        {
+          "claim": "Адресный узелК-4 и его перечень содержат геотекстиль без отдельной мембраны",
+          "verdict": "confirmed_local_document_conflict"
+        },
+        {
+          "claim": "Мембрана физически отсутствует и пожарные требования нарушены",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Геотекстиль и мембрана взаимозаменяемы",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Установлено различие документов об одном покрытии. Фактическое отсутствие мембраны на объекте, пожарное нарушение и возможность замены материалов не установлены.",
@@ -5077,8 +5098,18 @@
         "qualification": "Два атома одного составного классического замечания, не независимая исторически принятая пара; инженерная приёмка и испытание фильтра ещё отсутствуют."
       },
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Сохранить локальное расхождение узелК-4↔ведомости; снять ошибочную привязку конфликта к двум согласованным ведомостям.",
+        "unscored_claims": [
+          "Фактический состав покрытия",
+          "Пожарная пригодность и взаимозаменяемость материалов"
+        ],
+        "control_pair_readiness": "Локальная положительная/отрицательная пара сравнения документов уже сохранена; инженерное принятие пары и испытание фильтра не установлены.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5086,7 +5117,7 @@
         "B-AR-F-016"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
-      "decision_sha256": "cfca774aff37f360eefc2489b447cca484e90a08738e8162b85e60d0e7f21463",
+      "decision_sha256": "6de616cbb7c5cca66864facc621709f0f7ac35569d40b16b8fded829cd5b3436",
       "original_claims": [
         {
           "candidate_id": "B-AR-F-016",
@@ -5096,7 +5127,24 @@
       ],
       "narrow_output": "Уточнить площадь Оп-1:145,44м×0,690м=100,3536м² уже по горизонтальному габариту против78,5м² в ведомости. Проверить длину, развёртку и смысл столбца площади.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Оп-1:145,44м,690мм,78,5м²",
+          "verdict": "confirmed_existing_graphic_evidence"
+        },
+        {
+          "claim": "145,44×0,690=100,3536м²; разность21,8536м²",
+          "verdict": "confirmed_conditional_arithmetic"
+        },
+        {
+          "claim": "Полученное произведение является окончательной площадью заготовок",
+          "verdict": "not_established_geometry_and_quantity_scope"
+        },
+        {
+          "claim": "Недостаточно закуплено металла",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Не считать100,3536м² окончательной площадью заготовки: загибы, нахлёсты, раскрой и область суммарной длины не установлены. Недостаточная закупка не доказана.",
@@ -5106,8 +5154,19 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Вопрос об увязке длины, габарита и площадиОп-1; арифметику сохранять с условием одинаковой области величин.",
+        "unscored_claims": [
+          "Развёртка, загибы, нахлёсты, раскрой",
+          "Смысл площади и суммарной длины",
+          "Закупка"
+        ],
+        "control_pair_readiness": "Доказанной пары достаточной и недостаточной площади заготовок нет; универсальную формулу закупки из этого случая не выводить.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5115,7 +5174,7 @@
         "B-EOM-F-002"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json",
-      "decision_sha256": "f1d1adcb3343100c2de93c7a2033a607624bba00eb83e5293bd8d761a78fcfe4",
+      "decision_sha256": "2851662c79803e5a4e8d362f3c73fee55915522fab48395fe380e426b4dd512d",
       "original_claims": [
         {
           "candidate_id": "B-EOM-F-002",
@@ -5125,7 +5184,24 @@
       ],
       "narrow_output": "Увязать формулу РП2 180×0,32=57,6кВт с табличными240кВт и69,6кВт.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "ВРП2 формула180×0,32=57,6 отличается от таблицы240/69,6",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "240×0,32=76,8;69,6/240=0,29",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Правильным следует назначить коэффициент0,29 либо нагрузку76,8",
+          "verdict": "not_established_design_basis"
+        },
+        {
+          "claim": "Подобрано неправильное оборудование",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Правильный коэффициент и нагрузка не установлены; неверный выбор оборудования не доказан.",
@@ -5135,8 +5211,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Сохранить вопрос о внутренней согласованности формулы и таблицыРП2; правильную исходную нагрузку не назначать.",
+        "unscored_claims": [
+          "Правильный коэффициент спроса и исходная мощность",
+          "Последствия для оборудования"
+        ],
+        "control_pair_readiness": "Есть подтверждённое противоречие исходных чисел; пары нормативно верного и неверного коэффициента нет.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5144,7 +5230,7 @@
         "B-EOM-F-003"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
-      "decision_sha256": "b9db0a64ba88a357586e448bfa0ac2c6fa1915e357028bd73666a573acc29cca",
+      "decision_sha256": "67b992ccd683b920ed318511bb017858fcb4b875dc661e9988f8a810eb578343",
       "original_claims": [
         {
           "candidate_id": "B-EOM-F-003",
@@ -5154,7 +5240,32 @@
       ],
       "narrow_output": "Проверить итоги РП5: сумма перечисленных Py94,5кВт против94,1; сумма перечисленных Pp89,9кВт против89,5 в строке «Pp.лож». Расхождения по0,4кВт совпадают с мощностью C2518.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Опубликованные строки даютPy94,5 иPp89,9 против94,1/89,5",
+          "verdict": "confirmed_decimal_sum"
+        },
+        {
+          "claim": "Разности равны0,4кВт и совпадают сC2518",
+          "verdict": "confirmed_numeric_coincidence"
+        },
+        {
+          "claim": "Совпадение доказывает пропускC2518",
+          "verdict": "not_established_cause"
+        },
+        {
+          "claim": "Округление не может объяснить разности",
+          "verdict": "refuted_by_synthetic_counterexample"
+        },
+        {
+          "claim": "Проект действительно использовал значения синтетического примера",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Технически неверны итоговый расчёт и оборудование",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Совпадение разности с C2518 не доказывает причину ошибки. Название режима сохраняется буквально из TEXT; одновременность работы и неверный подбор оборудования не установлены. Суммирование опубликованных округлённых строк не доказывает ошибку итогового расчёта по неокруглённым данным. В связанном UNI-028 поздняя оценка ссылается на иной перерасчёт; сам перерасчёт пока не проверен. Тезис о технически неверном итоге не включать в положительные метрики до разрешения точности и состава режима.",
@@ -5165,9 +5276,38 @@
         "Проверить неокруглённые значения и состав режимов РП5 совместно с историческим UNI-028; совпадение разности с C2518 не доказывает пропуск этой строки."
       ],
       "control_pair": null,
-      "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "other_pair_evidence": {
+        "conditional_counterexample": {
+          "kind": "synthetic_not_project_evidence",
+          "modified_rows": "C251–C2511",
+          "each_unrounded_Py_and_Pp_kW": "0.0636",
+          "each_rounded_value_kW": "0.1",
+          "other_rows": "unchanged published values",
+          "unrounded_sums": {
+            "Py": "94.0996",
+            "Pp": "89.4996"
+          },
+          "rounded_sums": {
+            "Py": "94.1",
+            "Pp": "89.5"
+          },
+          "rounding": "Decimal ROUND_HALF_UP to0.1kW",
+          "meaning": "Все опубликованные строки и итоги одновременно возможны без пропускаC2518."
+        }
+      },
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Вопрос о точности исходных чисел и составе режима; не считать доказанным техническим дефектом или пропуском клапанов.",
+        "unscored_claims": [
+          "Реальные неокруглённые нагрузки и одновременность",
+          "Иной перерасчёт изUNI-028",
+          "Причина расхождения"
+        ],
+        "control_pair_readiness": "Контроль округления сопоставлен сB-EOM-F-005. Синтетический пример доказывает возможность, не реальную причину; историческая инженерная приёмка этой пары отсутствует.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5243,7 +5383,7 @@
         "B-EOM-F-005"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json",
-      "decision_sha256": "e925e615836e65a4721b55a74dee858201bb7b7a80308314612c036d6207d950",
+      "decision_sha256": "9b98c505b2fdb2cbc3f9bff2b6489f30e19884381c8eec62cf2515fbd5ae81d8",
       "original_claims": [
         {
           "candidate_id": "B-EOM-F-005",
@@ -5253,7 +5393,24 @@
       ],
       "narrow_output": "Увязать полную мощность ввода2 ВРУ-3 в режиме с компенсацией: Pp121,6/cosφ0,97=125,36кВА, в таблице123,2; расчёт ТТ использует125,4.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Компенсированный ввод2:121,6кВт,cosφ0,97,123,2кВА; расчётТТ использует125,4кВА",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "121,6/0,97=125,3608247кВА",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Обычное округление до опубликованной точности объясняет123,2кВА",
+          "verdict": "refuted_under_explicit_nearest_rounding_assumption"
+        },
+        {
+          "claim": "Оборудование обязательно требуется заменить",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Проверен конкретный режим с компенсацией; другие режимы не смешивать. Замена вводного оборудования не обоснована этой арифметикой.",
@@ -5263,8 +5420,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Сохранить вопрос о конкретном расчётном противоречии одного режима; его нельзя снять тем же объяснением округления, чтоF003.",
+        "unscored_claims": [
+          "Правильные исходные данные и режим компенсации",
+          "Влияние на подбор оборудования"
+        ],
+        "control_pair_readiness": "Положительный контроль против снятия всех малых разностей: при округлении к ближайшему опубликованная123,2 не достижима из допустимыхP/cosφ. F003 является отрицательным контролем категоричного вывода об ошибке; это не доказательство полной правильностиF003.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {
@@ -5272,7 +5439,7 @@
         "B-EOM-F-006"
       ],
       "decision_file": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
-      "decision_sha256": "3f048de42b3f00fc89dfc569bde18ad70c6f1d3b0e55fb169dd994f3390a532f",
+      "decision_sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4",
       "original_claims": [
         {
           "candidate_id": "B-EOM-F-006",
@@ -5282,7 +5449,28 @@
       ],
       "narrow_output": "Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2.",
       "output_section": "Вопросы и уточнения",
-      "atomic_dispositions": null,
+      "atomic_dispositions": [
+        {
+          "claim": "Пять слагаемых25 дают125, а не100",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Формулы вводов125,1/100 отличаются от табличных100/83,2",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "Послеаварийная формула225,1 отличается от табличной суммы183,2",
+          "verdict": "confirmed_arithmetic_and_TEXT"
+        },
+        {
+          "claim": "225,1 является правильной проектной нагрузкой",
+          "verdict": "not_established_conflicting_formula_operands"
+        },
+        {
+          "claim": "Необходима замена вводного оборудования",
+          "verdict": "not_established"
+        }
+      ],
       "linked_claim_disposition": null,
       "primary_adjudication": null,
       "limits": "Исходная проектная нагрузка и необходимость изменения оборудования не установлены; не назначать225,1 автоматически.",
@@ -5292,8 +5480,18 @@
       "followup_requirements": [],
       "control_pair": null,
       "other_pair_evidence": {},
-      "benchmark_scope_review": null,
-      "freeze_review_status": "pending_semantic_review",
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Вопрос о формулахВРУ-К и их связи с таблицей; объединить связанные расхождения, сохранив каждый операнд.",
+        "unscored_claims": [
+          "Исходные проектные нагрузки",
+          "Требуемые номиналы оборудования"
+        ],
+        "control_pair_readiness": "Пять25 против100 — точная ошибка напечатанного равенства. Это не доказывает, какая из конфликтующих нагрузок должна использоваться в проекте.",
+        "automatic_filter_authorized": false
+      },
+      "freeze_review_status": "reviewed_scope_pending_benchmark_freeze",
       "scoring_authorization": false
     },
     {

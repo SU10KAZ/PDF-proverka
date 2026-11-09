@@ -24,5 +24,35 @@
     "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/AR/document.md",
     "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
   },
-  "production_changed": false
+  "production_changed": false,
+  "atomic_dispositions": [
+    {
+      "claim": "Оп-1:145,44м,690мм,78,5м²",
+      "verdict": "confirmed_existing_graphic_evidence"
+    },
+    {
+      "claim": "145,44×0,690=100,3536м²; разность21,8536м²",
+      "verdict": "confirmed_conditional_arithmetic"
+    },
+    {
+      "claim": "Полученное произведение является окончательной площадью заготовок",
+      "verdict": "not_established_geometry_and_quantity_scope"
+    },
+    {
+      "claim": "Недостаточно закуплено металла",
+      "verdict": "not_established"
+    }
+  ],
+  "benchmark_scope_review": {
+    "status": "reviewed_scope_pending_benchmark_freeze",
+    "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+    "scorable_narrow_claim": "Вопрос об увязке длины, габарита и площадиОп-1; арифметику сохранять с условием одинаковой области величин.",
+    "unscored_claims": [
+      "Развёртка, загибы, нахлёсты, раскрой",
+      "Смысл площади и суммарной длины",
+      "Закупка"
+    ],
+    "control_pair_readiness": "Доказанной пары достаточной и недостаточной площади заготовок нет; универсальную формулу закупки из этого случая не выводить.",
+    "automatic_filter_authorized": false
+  }
 }

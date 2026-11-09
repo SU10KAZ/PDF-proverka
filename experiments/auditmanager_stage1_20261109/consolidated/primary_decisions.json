@@ -8679,6 +8679,39 @@
         "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
       },
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "Ведомость покрытийК-4 содержит геотекстиль вместо мембраны",
+          "verdict": "refuted_existing_graphic_evidence"
+        },
+        {
+          "claim": "Ведомость покрытий и ведомость материалов согласованы по мембране",
+          "verdict": "confirmed_existing_TEXT_and_graphic_evidence"
+        },
+        {
+          "claim": "Адресный узелК-4 и его перечень содержат геотекстиль без отдельной мембраны",
+          "verdict": "confirmed_local_document_conflict"
+        },
+        {
+          "claim": "Мембрана физически отсутствует и пожарные требования нарушены",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Геотекстиль и мембрана взаимозаменяемы",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Сохранить локальное расхождение узелК-4↔ведомости; снять ошибочную привязку конфликта к двум согласованным ведомостям.",
+        "unscored_claims": [
+          "Фактический состав покрытия",
+          "Пожарная пригодность и взаимозаменяемость материалов"
+        ],
+        "control_pair_readiness": "Локальная положительная/отрицательная пара сравнения документов уже сохранена; инженерное принятие пары и испытание фильтра не установлены.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json"
     },
     {
@@ -8708,6 +8741,36 @@
         "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
       },
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "Оп-1:145,44м,690мм,78,5м²",
+          "verdict": "confirmed_existing_graphic_evidence"
+        },
+        {
+          "claim": "145,44×0,690=100,3536м²; разность21,8536м²",
+          "verdict": "confirmed_conditional_arithmetic"
+        },
+        {
+          "claim": "Полученное произведение является окончательной площадью заготовок",
+          "verdict": "not_established_geometry_and_quantity_scope"
+        },
+        {
+          "claim": "Недостаточно закуплено металла",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Вопрос об увязке длины, габарита и площадиОп-1; арифметику сохранять с условием одинаковой области величин.",
+        "unscored_claims": [
+          "Развёртка, загибы, нахлёсты, раскрой",
+          "Смысл площади и суммарной длины",
+          "Закупка"
+        ],
+        "control_pair_readiness": "Доказанной пары достаточной и недостаточной площади заготовок нет; универсальную формулу закупки из этого случая не выводить.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json"
     },
     {
@@ -8738,6 +8801,35 @@
       "limits": "Правильный коэффициент и нагрузка не установлены; неверный выбор оборудования не доказан.",
       "preservation": "Полезное узкое классическое замечание сохранить; подтверждённый отказ оборудования не заявлять. Значимость и маршрутизация допускают решение инженера.",
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "ВРП2 формула180×0,32=57,6 отличается от таблицы240/69,6",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "240×0,32=76,8;69,6/240=0,29",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Правильным следует назначить коэффициент0,29 либо нагрузку76,8",
+          "verdict": "not_established_design_basis"
+        },
+        {
+          "claim": "Подобрано неправильное оборудование",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Сохранить вопрос о внутренней согласованности формулы и таблицыРП2; правильную исходную нагрузку не назначать.",
+        "unscored_claims": [
+          "Правильный коэффициент спроса и исходная мощность",
+          "Последствия для оборудования"
+        ],
+        "control_pair_readiness": "Есть подтверждённое противоречие исходных чисел; пары нормативно верного и неверного коэффициента нет.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json"
     },
     {
@@ -8896,6 +8988,61 @@
       "followup_requirements": [
         "Проверить неокруглённые значения и состав режимов РП5 совместно с историческим UNI-028; совпадение разности с C2518 не доказывает пропуск этой строки."
       ],
+      "atomic_dispositions": [
+        {
+          "claim": "Опубликованные строки даютPy94,5 иPp89,9 против94,1/89,5",
+          "verdict": "confirmed_decimal_sum"
+        },
+        {
+          "claim": "Разности равны0,4кВт и совпадают сC2518",
+          "verdict": "confirmed_numeric_coincidence"
+        },
+        {
+          "claim": "Совпадение доказывает пропускC2518",
+          "verdict": "not_established_cause"
+        },
+        {
+          "claim": "Округление не может объяснить разности",
+          "verdict": "refuted_by_synthetic_counterexample"
+        },
+        {
+          "claim": "Проект действительно использовал значения синтетического примера",
+          "verdict": "not_established"
+        },
+        {
+          "claim": "Технически неверны итоговый расчёт и оборудование",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Вопрос о точности исходных чисел и составе режима; не считать доказанным техническим дефектом или пропуском клапанов.",
+        "unscored_claims": [
+          "Реальные неокруглённые нагрузки и одновременность",
+          "Иной перерасчёт изUNI-028",
+          "Причина расхождения"
+        ],
+        "control_pair_readiness": "Контроль округления сопоставлен сB-EOM-F-005. Синтетический пример доказывает возможность, не реальную причину; историческая инженерная приёмка этой пары отсутствует.",
+        "automatic_filter_authorized": false
+      },
+      "conditional_counterexample": {
+        "kind": "synthetic_not_project_evidence",
+        "modified_rows": "C251–C2511",
+        "each_unrounded_Py_and_Pp_kW": "0.0636",
+        "each_rounded_value_kW": "0.1",
+        "other_rows": "unchanged published values",
+        "unrounded_sums": {
+          "Py": "94.0996",
+          "Pp": "89.4996"
+        },
+        "rounded_sums": {
+          "Py": "94.1",
+          "Pp": "89.5"
+        },
+        "rounding": "Decimal ROUND_HALF_UP to0.1kW",
+        "meaning": "Все опубликованные строки и итоги одновременно возможны без пропускаC2518."
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json"
     },
     {
@@ -9046,6 +9193,52 @@
       "limits": "Проверен конкретный режим с компенсацией; другие режимы не смешивать. Замена вводного оборудования не обоснована этой арифметикой.",
       "preservation": "Полезное узкое классическое замечание сохранить; подтверждённый отказ оборудования не заявлять. Значимость и маршрутизация допускают решение инженера.",
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "Компенсированный ввод2:121,6кВт,cosφ0,97,123,2кВА; расчётТТ использует125,4кВА",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "121,6/0,97=125,3608247кВА",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Обычное округление до опубликованной точности объясняет123,2кВА",
+          "verdict": "refuted_under_explicit_nearest_rounding_assumption"
+        },
+        {
+          "claim": "Оборудование обязательно требуется заменить",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Сохранить вопрос о конкретном расчётном противоречии одного режима; его нельзя снять тем же объяснением округления, чтоF003.",
+        "unscored_claims": [
+          "Правильные исходные данные и режим компенсации",
+          "Влияние на подбор оборудования"
+        ],
+        "control_pair_readiness": "Положительный контроль против снятия всех малых разностей: при округлении к ближайшему опубликованная123,2 не достижима из допустимыхP/cosφ. F003 является отрицательным контролем категоричного вывода об ошибке; это не доказательство полной правильностиF003.",
+        "automatic_filter_authorized": false
+      },
+      "rounding_bound_check": {
+        "assumption": "Nearest rounding of P to0.1kW, cosφ to0.01, S to0.1kVA; not a universal engineering tolerance.",
+        "P_interval_kW": [
+          "121.55",
+          "121.65"
+        ],
+        "cos_interval": [
+          "0.965",
+          "0.975"
+        ],
+        "reported_S_interval_kVA": [
+          "123.15",
+          "123.25"
+        ],
+        "conservative_lower_P_over_cos_kVA": "124.6666666666666666666666667",
+        "conclusion": "Даже консервативная нижняя граница превышает верхнюю границу опубликованнойS; интервалы не пересекаются."
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-005.json"
     },
     {
@@ -9076,6 +9269,39 @@
       "limits": "Исходная проектная нагрузка и необходимость изменения оборудования не установлены; не назначать225,1 автоматически.",
       "preservation": "Полезное узкое классическое замечание сохранить; подтверждённый отказ оборудования не заявлять. Значимость и маршрутизация допускают решение инженера.",
       "production_changed": false,
+      "atomic_dispositions": [
+        {
+          "claim": "Пять слагаемых25 дают125, а не100",
+          "verdict": "confirmed_arithmetic"
+        },
+        {
+          "claim": "Формулы вводов125,1/100 отличаются от табличных100/83,2",
+          "verdict": "confirmed_authoritative_TEXT"
+        },
+        {
+          "claim": "Послеаварийная формула225,1 отличается от табличной суммы183,2",
+          "verdict": "confirmed_arithmetic_and_TEXT"
+        },
+        {
+          "claim": "225,1 является правильной проектной нагрузкой",
+          "verdict": "not_established_conflicting_formula_operands"
+        },
+        {
+          "claim": "Необходима замена вводного оборудования",
+          "verdict": "not_established"
+        }
+      ],
+      "benchmark_scope_review": {
+        "status": "reviewed_scope_pending_benchmark_freeze",
+        "basis": "Сопоставление исходных тезисов с сохранёнными доказательствами; десятичные расчёты проверены локально.",
+        "scorable_narrow_claim": "Вопрос о формулахВРУ-К и их связи с таблицей; объединить связанные расхождения, сохранив каждый операнд.",
+        "unscored_claims": [
+          "Исходные проектные нагрузки",
+          "Требуемые номиналы оборудования"
+        ],
+        "control_pair_readiness": "Пять25 против100 — точная ошибка напечатанного равенства. Это не доказывает, какая из конфликтующих нагрузок должна использоваться в проекте.",
+        "automatic_filter_authorized": false
+      },
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json"
     },
     {
