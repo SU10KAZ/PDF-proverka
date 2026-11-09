@@ -1,0 +1,1790 @@
+{
+  "purpose": "Explicit semantic triage of eight unlinked and four deferred candidates; no automatic restoration or new truth verdict.",
+  "inventory_source": {
+    "path": "experiments/auditmanager_stage2_20261110/merge_coverage_inventory.json",
+    "sha256": "d1c7a02538ab042c69879a94dd52c8f1fc01032af415dc824152f499ba9ebcd3"
+  },
+  "summary": {
+    "reviewed_entries": 12,
+    "unlinked_candidates_with_preserved_meaning": 4,
+    "deferred_candidates_with_preserved_meaning": 3,
+    "remaining_entries_not_proven_useful_losses": 5
+  },
+  "items": [
+    {
+      "discipline": "AK",
+      "source_id": "T-004",
+      "source_pointer": "/text_findings/3",
+      "source_finding": {
+        "id": "T-004",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "source": "МД стр. 14, перечень элементов листа 10; стр. 95, позиции 4.4–4.5 и 4.8",
+        "finding": "Для ШАУВ-4-К4ПЧ перечень элементов требует один датчик 20–200 Па и три датчика 50–500 Па, а спецификация — три датчика 20–200 Па и один 50–500 Па. Также указан один накладной датчик ТЕ2, тогда как позиция 4.8 спецификации предусматривает два. Согласовать распределение диапазонов и количество датчиков до закупки.",
+        "norm": "ГОСТ 21.110-2013, п. 4.1",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1"
+        ]
+      },
+      "final_matches": [
+        {
+          "id": "F-004",
+          "severity": "ЭКОНОМИЧЕСКОЕ",
+          "category": "documentation",
+          "sheet": "Лист 10",
+          "page": 14,
+          "problem": "Диапазоны и количества дифференциальных датчиков для ШАУВ-4-К4ПЧ противоречат друг другу. Таблица сигналов предусматривает два прибора 20–200 Па и два 50–500 Па, перечень элементов — соответственно один и три, а спецификация — три и один.",
+          "description": "Диапазоны и количества дифференциальных датчиков для ШАУВ-4-К4ПЧ противоречат друг другу. Таблица сигналов предусматривает два прибора 20–200 Па и два 50–500 Па, перечень элементов — соответственно один и три, а спецификация — три и один.",
+          "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "ГОСТ 21.110-2013",
+              "cited_designation": "ГОСТ 21.110-2013",
+              "candidate_relevance": 0.9,
+              "reason": "Проверить согласованность спецификации с перечнем элементов и схемой.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-008",
+                  "G-009"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "T-004"
+                  ],
+                  "designation_source": "source finding"
+                }
+              },
+              "clause_candidate": "4.1",
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Согласовать диапазоны каждого PDS1–PDS4 и количества приборов в таблице сигналов, перечне элементов и спецификации.",
+          "risk": "Ошибочная закупка датчиков и неполная комплектация.",
+          "source_finding_ids": [
+            "G-008",
+            "G-009"
+          ],
+          "source_block_ids": [
+            "blk_e3e39f8820d7474caa10ab626d2a2c91"
+          ],
+          "related_block_ids": [
+            "blk_e3e39f8820d7474caa10ab626d2a2c91"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+              "page": 14
+            }
+          ],
+          "highlight_regions": [],
+          "source_stage": "stage01_atomicity_guard",
+          "atomicity_guard": {
+            "split_from": "F-004",
+            "reason": "distinct_nonrecommendational_candidates_same_block"
+          },
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-008",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "raw_vector"
+              },
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-sol",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-009",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "raw_vector"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "extension",
+            "relations": [
+              {
+                "relation": "extension",
+                "role": "extends",
+                "counterpart_refs": [
+                  "codex:006"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания выявляют расхождение количеств PDS по диапазонам между перечнем элементов и спецификацией: 1/3 против 3/1 для 20–200/50–500 Па. Левое дополнительно учитывает таблицу сигналов с количеством 2/2.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              },
+              {
+                "relation": "extension",
+                "role": "base",
+                "counterpart_refs": [
+                  "codex:003"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания выявляют расхождение количеств PDS по диапазонам между перечнем элементов и спецификацией: 1/3 против 3/1 для 20–200/50–500 Па. Левое дополнительно учитывает таблицу сигналов с количеством 2/2.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 59,
+            "engineering_relevance": "medium",
+            "impact_axes": [
+              "construction"
+            ],
+            "formalism_flags": [],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "low"
+          }
+        },
+        {
+          "id": "F-005",
+          "severity": "ЭКОНОМИЧЕСКОЕ",
+          "category": "documentation",
+          "sheet": "Лист 10",
+          "page": 14,
+          "problem": "В перечне элементов листа 10 предусмотрен один накладной датчик температуры ТЕ2, что соответствует схеме. В спецификации шкафа ШАУВ-4-К4ПЧ количество таких датчиков указано равным двум.",
+          "description": "В перечне элементов листа 10 предусмотрен один накладной датчик температуры ТЕ2, что соответствует схеме. В спецификации шкафа ШАУВ-4-К4ПЧ количество таких датчиков указано равным двум.",
+          "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "ГОСТ 21.110-2013",
+              "cited_designation": "ГОСТ 21.110-2013",
+              "candidate_relevance": 0.9,
+              "reason": "Проверить согласованность спецификации с перечнем элементов и схемой.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-011"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "T-004"
+                  ],
+                  "designation_source": "source finding"
+                }
+              },
+              "clause_candidate": "4.1",
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Согласовать количество накладных датчиков температуры в спецификации с перечнем элементов и функциональной схемой.",
+          "risk": "Ошибочная закупка датчиков и неполная комплектация.",
+          "source_finding_ids": [
+            "G-011"
+          ],
+          "source_block_ids": [
+            "blk_e3e39f8820d7474caa10ab626d2a2c91"
+          ],
+          "related_block_ids": [
+            "blk_e3e39f8820d7474caa10ab626d2a2c91"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+              "page": 14
+            }
+          ],
+          "highlight_regions": [],
+          "source_stage": "stage01_atomicity_guard",
+          "atomicity_guard": {
+            "split_from": "F-004",
+            "reason": "distinct_nonrecommendational_candidates_same_block"
+          },
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-011",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "raw_vector"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "new",
+            "relations": [
+              {
+                "relation": "new",
+                "role": "unique_detector_finding",
+                "counterpart_refs": [],
+                "confidence": 1.0,
+                "reason": "Другой независимый детектор не вернул смысловой аналог.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 59,
+            "engineering_relevance": "medium",
+            "impact_axes": [
+              "construction"
+            ],
+            "formalism_flags": [],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "low"
+          }
+        }
+      ],
+      "assessment": "preserved_meaning_missing_source_id",
+      "reason": "Оба тезиса сохранены: распределение диапазонов и число накладных датчиков. СвязьT-004 отсутствует; итог ссылается на графические кандидаты.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+        "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+      }
+    },
+    {
+      "discipline": "AK",
+      "source_id": "T-008",
+      "source_pointer": "/text_findings/7",
+      "source_finding": {
+        "id": "T-008",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "source": "МД стр. 27, перечень элементов и условные обозначения листа 23",
+        "finding": "Перечень завес содержит для Y1 и Y2 количество 4, хотя перечислены два привода; для двигателей M3–M6 количество 2, хотя перечислены четыре двигателя четырех завес. Условные обозначения подтверждают четыре отдельных двигателя. Уточнить состав смесительных узлов и исправить количество клапанов и двигателей.",
+        "norm": "ГОСТ 21.110-2013, п. 4.1",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_1afb9b9bff5242cca6f364f218b96506"
+        ]
+      },
+      "final_matches": [
+        {
+          "id": "F-009",
+          "severity": "ЭКОНОМИЧЕСКОЕ",
+          "category": "documentation",
+          "sheet": "Лист 23",
+          "page": 27,
+          "problem": "На листе 23 в перечне элементов для M3–M6 указано 2 электродвигателя вентилятора, тогда как на схеме показаны четыре: M3, M4, M5 и M6 для завес У4.3–У4.6. Количество в перечне не соответствует схеме.",
+          "description": "На листе 23 в перечне элементов для M3–M6 указано 2 электродвигателя вентилятора, тогда как на схеме показаны четыре: M3, M4, M5 и M6 для завес У4.3–У4.6. Количество в перечне не соответствует схеме.",
+          "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "ГОСТ 21.110-2013",
+              "cited_designation": "ГОСТ 21.110-2013",
+              "candidate_relevance": 0.9,
+              "reason": "Проверить количество изделий в перечне элементов.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-042",
+                  "G-044"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "T-008"
+                  ],
+                  "designation_source": "source finding"
+                }
+              },
+              "clause_candidate": "4.1",
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Согласовать перечень со схемой, указав четыре электродвигателя M3–M6.",
+          "risk": "Ошибочная комплектация и стоимость поставки.",
+          "source_finding_ids": [
+            "G-042",
+            "G-044"
+          ],
+          "source_block_ids": [
+            "blk_523708af1c384b0e8bc6767d93644336"
+          ],
+          "related_block_ids": [
+            "blk_523708af1c384b0e8bc6767d93644336"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+              "page": 27
+            }
+          ],
+          "highlight_regions": [],
+          "source_stage": "stage01_atomicity_guard",
+          "atomicity_guard": {
+            "split_from": "F-009",
+            "reason": "distinct_nonrecommendational_candidates_same_block"
+          },
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-042",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "structured_alia_scheme"
+              },
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-sol",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-044",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "structured_alia_scheme"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "match",
+            "relations": [
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:003"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают одно расхождение: на схеме четыре двигателя М3–М6, в перечне элементов — 2.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              },
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:001"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают одно расхождение: на схеме четыре двигателя М3–М6, в перечне элементов — 2.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 75,
+            "engineering_relevance": "high",
+            "impact_axes": [
+              "cost",
+              "coordination"
+            ],
+            "formalism_flags": [],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "high"
+          }
+        },
+        {
+          "id": "F-010",
+          "severity": "ЭКОНОМИЧЕСКОЕ",
+          "category": "documentation",
+          "sheet": "Лист 23",
+          "page": 27,
+          "problem": "На листе 23 в перечне элементов для Y1, Y2 указано 4 регулирующих клапана с электроприводом, тогда как схема содержит два таких клапана — по одному в каждом смесительном узле с насосами M1 и M2. Количество в перечне не соответствует схеме.",
+          "description": "На листе 23 в перечне элементов для Y1, Y2 указано 4 регулирующих клапана с электроприводом, тогда как схема содержит два таких клапана — по одному в каждом смесительном узле с насосами M1 и M2. Количество в перечне не соответствует схеме.",
+          "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "ГОСТ 21.110-2013",
+              "cited_designation": "ГОСТ 21.110-2013",
+              "candidate_relevance": 0.9,
+              "reason": "Проверить количество изделий в перечне элементов.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-043",
+                  "G-045"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "T-008"
+                  ],
+                  "designation_source": "source finding"
+                }
+              },
+              "clause_candidate": "4.1",
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Устранить расхождение количества клапанов Y1, Y2 между перечнем элементов и схемой смесительных узлов.",
+          "risk": "Ошибочная комплектация и стоимость поставки.",
+          "source_finding_ids": [
+            "G-043",
+            "G-045"
+          ],
+          "source_block_ids": [
+            "blk_523708af1c384b0e8bc6767d93644336"
+          ],
+          "related_block_ids": [
+            "blk_523708af1c384b0e8bc6767d93644336"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+              "page": 27
+            }
+          ],
+          "highlight_regions": [],
+          "source_stage": "stage01_atomicity_guard",
+          "atomicity_guard": {
+            "split_from": "F-009",
+            "reason": "distinct_nonrecommendational_candidates_same_block"
+          },
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-043",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "structured_alia_scheme"
+              },
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-sol",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-045",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "structured_alia_scheme"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "match",
+            "relations": [
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:004"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают одно расхождение: на схеме два клапана с электроприводами Y1 и Y2, в перечне элементов — 4.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              },
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:002"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают одно расхождение: на схеме два клапана с электроприводами Y1 и Y2, в перечне элементов — 4.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 75,
+            "engineering_relevance": "high",
+            "impact_axes": [
+              "cost",
+              "coordination"
+            ],
+            "formalism_flags": [],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "high"
+          }
+        }
+      ],
+      "assessment": "preserved_meaning_missing_source_id",
+      "reason": "Количество двигателей и приводов сохранено двумя строками через графические кандидаты; потеря ID не потеря обоих тезисов.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+        "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+      }
+    },
+    {
+      "discipline": "AK",
+      "source_id": "T-017",
+      "source_pointer": "/text_findings/16",
+      "source_finding": {
+        "id": "T-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "source": "МД стр. 52, 54 и 57, перечни креплений; стр. 103, позиции 22.5–22.8",
+        "finding": "Локальный комплект одной опоры включает одну плиту, один двойной подвес, четыре консоли и четыре анкера. На 15 плит и 15 подвесов спецификация содержит 60 анкеров, но только 15 консолей вместо 60. Также локально указан подвес BSD4120, а в спецификации — BSD2120. Согласовать конструкцию опоры и количество консолей; при сохранении локального решения недостает 45 консолей.",
+        "norm": "ГОСТ 21.110-2013, п. 4.1",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_56331ec5845f4d73be99b93df1faec9c",
+          "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ]
+      },
+      "final_matches": [
+        {
+          "id": "F-023",
+          "severity": "ЭКОНОМИЧЕСКОЕ",
+          "category": "documentation",
+          "sheet": "Лист 53",
+          "page": 57,
+          "problem": "В таблице крепления к кровле на листе 53 для опоры под лотковые трассы указан подвес ДКС BSD4120, а в спецификации на странице PDF 103, поз. 22.6 — BSD2120. Марки подвеса в монтажном решении и спецификации не согласованы.",
+          "description": "В таблице крепления к кровле на листе 53 для опоры под лотковые трассы указан подвес ДКС BSD4120, а в спецификации на странице PDF 103, поз. 22.6 — BSD2120. Марки подвеса в монтажном решении и спецификации не согласованы.",
+          "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "ГОСТ 21.110-2013",
+              "cited_designation": "ГОСТ 21.110-2013",
+              "candidate_relevance": 0.9,
+              "reason": "Проверить марки и количества монтажных изделий в спецификации.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-077",
+                  "G-078"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "T-017"
+                  ],
+                  "designation_source": "source finding"
+                }
+              },
+              "clause_candidate": "4.1",
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Согласовать марку подвеса в таблице крепления к кровле и позиции 22.6 спецификации.",
+          "risk": "Недопоставка крепежа и задержка монтажа.",
+          "source_finding_ids": [
+            "G-077",
+            "G-078"
+          ],
+          "source_block_ids": [
+            "blk_978fa763ed7e4a39977b35b866485e2e"
+          ],
+          "related_block_ids": [
+            "blk_978fa763ed7e4a39977b35b866485e2e"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+              "page": 57
+            }
+          ],
+          "highlight_regions": [],
+          "source_stage": "stage01_atomicity_guard",
+          "atomicity_guard": {
+            "split_from": "F-023",
+            "reason": "distinct_nonrecommendational_candidates_same_block"
+          },
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-077",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "structured_alia_scheme"
+              },
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-sol",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-078",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "structured_alia_scheme"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "match",
+            "relations": [
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:002"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают на одно расхождение марки подвеса: BSD4120 в ведомости крепления к кровле и BSD2120 (BSD-21) в позиции 22.6 спецификации. Детализация эквивалентна.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              },
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:001"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают на одно расхождение марки подвеса: BSD4120 в ведомости крепления к кровле и BSD2120 (BSD-21) в позиции 22.6 спецификации. Детализация эквивалентна.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 89,
+            "engineering_relevance": "high",
+            "impact_axes": [
+              "schedule",
+              "construction",
+              "coordination"
+            ],
+            "formalism_flags": [],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "high"
+          }
+        },
+        {
+          "id": "F-024",
+          "severity": "ЭКОНОМИЧЕСКОЕ",
+          "category": "documentation",
+          "sheet": "Лист 53",
+          "page": 57,
+          "problem": "Ведомость крепления к кровле предусматривает 4 консоли на одну плиту, тогда как спецификация содержит по 15 плит и подвесов, но только 15 консолей. Для 15 таких креплений по ведомости требуется 60 консолей.",
+          "description": "Ведомость крепления к кровле предусматривает 4 консоли на одну плиту, тогда как спецификация содержит по 15 плит и подвесов, но только 15 консолей. Для 15 таких креплений по ведомости требуется 60 консолей.",
+          "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "ГОСТ 21.110-2013",
+              "cited_designation": "ГОСТ 21.110-2013",
+              "candidate_relevance": 0.9,
+              "reason": "Проверить марки и количества монтажных изделий в спецификации.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-079"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "T-017"
+                  ],
+                  "designation_source": "source finding"
+                }
+              },
+              "clause_candidate": "4.1",
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Согласовать количество консолей на одно крепление и исправить ведомость или спецификацию.",
+          "risk": "Недопоставка крепежа и задержка монтажа.",
+          "source_finding_ids": [
+            "G-079"
+          ],
+          "source_block_ids": [
+            "blk_978fa763ed7e4a39977b35b866485e2e"
+          ],
+          "related_block_ids": [
+            "blk_978fa763ed7e4a39977b35b866485e2e"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+              "page": 57
+            }
+          ],
+          "highlight_regions": [],
+          "source_stage": "stage01_atomicity_guard",
+          "atomicity_guard": {
+            "split_from": "F-023",
+            "reason": "distinct_nonrecommendational_candidates_same_block"
+          },
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-sol",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-079",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:04:11.145816+00:00",
+                "context_source": "structured_alia_scheme"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "new",
+            "relations": [
+              {
+                "relation": "new",
+                "role": "unique_detector_finding",
+                "counterpart_refs": [],
+                "confidence": 1.0,
+                "reason": "Другой независимый детектор не вернул смысловой аналог.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 69,
+            "engineering_relevance": "medium",
+            "impact_axes": [
+              "schedule",
+              "construction",
+              "coordination"
+            ],
+            "formalism_flags": [
+              "reference_register",
+              "editorial_fix"
+            ],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "low"
+          }
+        }
+      ],
+      "assessment": "preserved_bounded_meaning_missing_source_id",
+      "reason": "Марка подвеса и количество консолей сохранены. Эталон ограничивает60консолей применимостью узла; нельзя требовать восстановления безусловного дефицита45.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+        "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+      }
+    },
+    {
+      "discipline": "AK",
+      "source_id": "T-028",
+      "source_pointer": "/text_findings/27",
+      "source_finding": {
+        "id": "T-028",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "source": "MD стр. 5 / характеристика систем",
+        "finding": "Воздушно-тепловые завесы обозначены индексами вида «У1.1», «У2.1» и т.п. Нужно проверить, не должен ли применяться более однозначный индекс «ВТЗ»/«ЗВТ», чтобы не смешивать завесы с установками.",
+        "norm": "ГОСТ 21.602-2016",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_6e394962eb18407fb17b09f063c30a5c"
+        ]
+      },
+      "final_matches": [],
+      "assessment": "unlinked_unverified_recommendation",
+      "reason": "Предложение заменить индексыУ наВТЗ/ЗВТ не является подтверждённым дефектом из эталона. Нормативное основание не установлено; отсутствие нельзя назвать доказанной потерей полезной находки.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+        "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+      }
+    },
+    {
+      "discipline": "AK",
+      "source_id": "G-075",
+      "source_pointer": "/block_analyses/63/findings/0",
+      "source_finding": {
+        "id": "G-075",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "На узле «Установка шкафов автоматики и управления» листа 53 противоречат друг другу вертикальные размеры: высота шкафа 1400 мм и расстояние от пола до его низа 1000 мм дают высоту верха 2400 мм, тогда как общий размер указан 1800 мм. Расхождение составляет 600 мм.\n\nРекомендация: Согласовать высоту установки и габарит шкафа, исправив вертикальную размерную цепь.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_d52bf811660e42b59acdce0038f9fbf0",
+        "value_found": "1400; 1000; 1800",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-075",
+              "mode": "independent",
+              "detected_at": "2026-11-06T23:04:11.145816+00:00",
+              "context_source": "structured_alia_scheme"
+            }
+          ],
+          "context_source": "structured_alia_scheme"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одну размерную ошибку узла установки шкафа на листе 53: 1400 + 1000 = 2400 мм при указанном общем размере 1800 мм. Детализация эквивалентна.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        }
+      },
+      "final_matches": [],
+      "assessment": "unlinked_candidate_truth_unresolved",
+      "reason": "Размерная цепь1400+1000против1800 отсутствует среди найденных финальных соответствий. Нужна отдельная проверка графических баз; согласие двух моделей не доказательство ошибки. Не включать автоматически в замороженный эталон.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+        "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+      }
+    },
+    {
+      "discipline": "AK",
+      "source_id": "G-076",
+      "source_pointer": "/block_analyses/63/findings/1",
+      "source_finding": {
+        "id": "G-076",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "На узле установки шкафа автоматики и управления, лист 53, размерная цепь по высоте противоречива: высота шкафа 1400 мм и расстояние от его низа до пола 1000 мм дают 2400 мм, тогда как общий размер от верха шкафа до пола указан 1800 мм.\n\nРекомендация: Согласовать общий и составляющие размеры установки шкафа.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_d52bf811660e42b59acdce0038f9fbf0",
+        "value_found": "1800; 1400; 1000",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-sol",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-076",
+              "mode": "independent",
+              "detected_at": "2026-11-06T23:04:11.145816+00:00",
+              "context_source": "structured_alia_scheme"
+            }
+          ],
+          "context_source": "structured_alia_scheme"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одну размерную ошибку узла установки шкафа на листе 53: 1400 + 1000 = 2400 мм при указанном общем размере 1800 мм. Детализация эквивалентна.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        }
+      },
+      "final_matches": [],
+      "assessment": "same_unresolved_claim_as_G075",
+      "reason": "Дубликат той же размерной цепи другого детектора. Не две независимые потери; причина невключения в ответ объединения не записана.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+        "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+      }
+    },
+    {
+      "discipline": "ITP",
+      "source_id": "T-016",
+      "source_pointer": "/text_findings/15",
+      "source_finding": {
+        "id": "T-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pumps",
+        "source": "МД стр. 8, 24, 52, 76; насос отопления ДОО",
+        "finding": "Экспликация указывает мощность насоса отопления ДОО 0,55 кВт, тогда как марка IL 40/220-1,5/4, спецификация, пояснительная записка и технический лист задают двигатель 1,5 кВт. Кроме того, технический лист показывает рабочий напор 16,98 м выше указанного максимального 16,64 м. Исправить мощность и получить согласованную характеристику насоса для проверки рабочей точки.",
+        "norm": null,
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_1601889b50624245a5c590ad23d87175"
+        ]
+      },
+      "final_matches": [
+        {
+          "id": "F-016",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "sheet": null,
+          "page": 78,
+          "problem": "Для насоса К12 IL 40/220-1,5/4-R в экспликации на странице PDF 8 указана мощность 0,55 кВт, тогда как технические данные на странице PDF 76, расчёт на странице PDF 52 и спецификация на странице PDF 24 указывают 1,5 кВт.",
+          "description": "Для насоса К12 IL 40/220-1,5/4-R в экспликации на странице PDF 8 указана мощность 0,55 кВт, тогда как технические данные на странице PDF 76, расчёт на странице PDF 52 и спецификация на странице PDF 24 указывают 1,5 кВт.",
+          "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "СП 510.1325800.2022",
+              "cited_designation": "СП 510.1325800.2022",
+              "candidate_relevance": 0.72,
+              "reason": "Проверить подтверждение рабочей точки и электрической мощности выбранного насоса.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-037",
+                  "G-038"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "T-016",
+                    "G-037",
+                    "G-038",
+                    "G-041"
+                  ],
+                  "designation_source": "экспертная оценка"
+                }
+              },
+              "clause_candidate": null,
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Исправить мощность насоса К12 в экспликации на 1,5 кВт в соответствии с техническими данными и спецификацией.",
+          "risk": "Неверный выбор электрической защиты и неподтверждённая производительность насоса.",
+          "source_finding_ids": [
+            "G-037",
+            "G-038"
+          ],
+          "source_block_ids": [
+            "blk_128a43447f394e0687d841e25e436e75"
+          ],
+          "related_block_ids": [
+            "blk_128a43447f394e0687d841e25e436e75"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_128a43447f394e0687d841e25e436e75",
+              "page": 78
+            }
+          ],
+          "highlight_regions": [],
+          "source_stage": "stage01_atomicity_guard",
+          "atomicity_guard": {
+            "split_from": "F-016",
+            "reason": "distinct_nonrecommendational_candidates_same_block"
+          },
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-037",
+                "mode": "independent",
+                "detected_at": "2026-11-06T21:56:05.864405+00:00",
+                "context_source": "raw_vector"
+              },
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-sol",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-038",
+                "mode": "independent",
+                "detected_at": "2026-11-06T21:56:05.864405+00:00",
+                "context_source": "raw_vector"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "match",
+            "relations": [
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:003"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания описывают одно противоречие мощности насоса К12 IL 40/220-1,5/4-R: 0,55 кВт в экспликации против 1,5 кВт в технических данных и расчёте.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              },
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:001"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания описывают одно противоречие мощности насоса К12 IL 40/220-1,5/4-R: 0,55 кВт в экспликации против 1,5 кВт в технических данных и расчёте.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "sheet_unavailable": true,
+          "sheet_unavailable_reason": "page_not_in_map",
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 55,
+            "engineering_relevance": "medium",
+            "impact_axes": [],
+            "formalism_flags": [],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "low"
+          }
+        },
+        {
+          "id": "F-017",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "pumps",
+          "sheet": null,
+          "page": 78,
+          "problem": "В технических данных насоса IL 40/220-1,5/4-R напор фактической рабочей точки 16,98 м превышает указанный максимальный напор 16,64 м.",
+          "description": "В технических данных насоса IL 40/220-1,5/4-R напор фактической рабочей точки 16,98 м превышает указанный максимальный напор 16,64 м.",
+          "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "СП 510.1325800.2022",
+              "cited_designation": "СП 510.1325800.2022",
+              "candidate_relevance": 0.72,
+              "reason": "Проверить подтверждение рабочей точки и электрической мощности выбранного насоса.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-041"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "T-016",
+                    "G-037",
+                    "G-038",
+                    "G-041"
+                  ],
+                  "designation_source": "экспертная оценка"
+                }
+              },
+              "clause_candidate": null,
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Проверить характеристику насоса и исправить противоречащие значения напора в технических данных.",
+          "risk": "Неверный выбор электрической защиты и неподтверждённая производительность насоса.",
+          "source_finding_ids": [
+            "G-041"
+          ],
+          "source_block_ids": [
+            "blk_128a43447f394e0687d841e25e436e75"
+          ],
+          "related_block_ids": [
+            "blk_128a43447f394e0687d841e25e436e75"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_128a43447f394e0687d841e25e436e75",
+              "page": 78
+            }
+          ],
+          "highlight_regions": [],
+          "source_stage": "stage01_atomicity_guard",
+          "atomicity_guard": {
+            "split_from": "F-016",
+            "reason": "distinct_nonrecommendational_candidates_same_block"
+          },
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-sol",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-041",
+                "mode": "independent",
+                "detected_at": "2026-11-06T21:56:05.864405+00:00",
+                "context_source": "raw_vector"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "new",
+            "relations": [
+              {
+                "relation": "new",
+                "role": "unique_detector_finding",
+                "counterpart_refs": [],
+                "confidence": 1.0,
+                "reason": "Другой независимый детектор не вернул смысловой аналог.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "sheet_unavailable": true,
+          "sheet_unavailable_reason": "page_not_in_map",
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 55,
+            "engineering_relevance": "medium",
+            "impact_axes": [],
+            "formalism_flags": [],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "low"
+          }
+        }
+      ],
+      "assessment": "preserved_meaning_missing_source_id",
+      "reason": "Сохранены два тезиса: мощностьК12 и разность напоров16.98/16.64. Итог ссылается наG-037/038/041, а неT-016.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/03_findings.json",
+        "sha256": "1357b3b3f91976407cbb0db31adeb5cc672bd0797c21074c989957418362186a"
+      }
+    },
+    {
+      "discipline": "EOM",
+      "source_id": "T-024",
+      "source_pointer": "/text_findings/23",
+      "source_finding": {
+        "id": "T-024",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "documentation",
+        "source": "MD стр. 1 / характеристика систем",
+        "finding": "Воздушно-тепловые завесы обозначены индексами вида «У1.1», «У2.1» и т.п. Нужно проверить, не должен ли применяться более однозначный индекс «ВТЗ»/«ЗВТ», чтобы не смешивать завесы с установками.",
+        "norm": "ГОСТ 21.602-2016",
+        "norm_quote": null,
+        "related_block_ids": [
+          "blk_3620ab17f57a4d9596292b555c5abcc7",
+          "blk_97dfd866170b49b5b153ad8e250776b3"
+        ]
+      },
+      "final_matches": [],
+      "assessment": "unlinked_unverified_recommendation",
+      "reason": "Текст повторяет рекомендацию об индексах завес изАК. Само совпадение не доказывает перенос между проектами, но происхождение требует проверки. Не восстанавливать как полезную находку без адресного доказательства.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/03_findings.json",
+        "sha256": "a523742cddbde96de36c98e167d8baa413a8d08df7f31c746259a6896f09be49"
+      }
+    },
+    {
+      "discipline": "AR",
+      "source_kind": "deferred",
+      "source_pointer": "/block_analyses/1/deferred_findings/0",
+      "source_finding": {
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "finding": "На плане кровли 2, 3 секций на отм. +41.280 показаны два аэратора АК-1, а в спецификации кровельных аэраторов указано три. Для установления расхождения нужен план кровли на отм. +44.870: третий аэратор может относиться к нему.",
+        "norm_quote": null,
+        "value_found": "Кровельный аэратор АК-1 — 2 обозначения на плане; АК-1 — 3 шт. в спецификации",
+        "recommendation": "Сверить размещение всех трёх аэраторов АК-1 с планом кровли на отм. +44.870 и уточнить план или спецификацию при подтверждении расхождения.",
+        "claim_type": "context_gap",
+        "problem_class": "aerator_quantity_unresolved",
+        "affected_entity": "кровельные аэраторы АК-1",
+        "evidence_quote": "На плане два обозначения «Кровельный аэратор АК-1»; в спецификации: «АК-1 | Аэратор кровельный ТЕХНОниколь 110x470 | 3».",
+        "evidence_kind": "same_page",
+        "context_status": "needs_retrieval",
+        "confidence": 0.9,
+        "counterevidence_checked": true,
+        "required_context": [
+          "План кровли 2, 3 секций на отм. +44.870 (лист 4)"
+        ],
+        "_detector_model": "codex/gpt-6-sol",
+        "_detector_run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:001",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context",
+            "speculative_wording"
+          ]
+        }
+      },
+      "final_matches": [],
+      "assessment": "deferred_context_gap_unresolved",
+      "reason": "Двааэратора на одном плане противтрёх вСО; требуется второй план+44.870. Это не подтверждённый дефицит. Не установлено выполнение требуемого поиска контекста.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/03_findings.json",
+        "sha256": "061817611a78a8ab2a21af6d9ec1e07be0cfa62b3b27394a9f78d6f3e262f113"
+      }
+    },
+    {
+      "discipline": "AR",
+      "source_kind": "deferred",
+      "source_pointer": "/block_analyses/19/deferred_findings/0",
+      "source_finding": {
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "finding": "На аксонометрическом виде заполнение шумозащитного экрана указано стальными ламелями, а в ведомости для ОГШ-1, ОГШ-2 и ОГШ-3 — акустическими сэндвич-панелями с минераловатным утеплителем толщиной 30 мм. Вид не привязан к конкретной марке экрана, поэтому применимость этих описаний к одному изделию не установлена.",
+        "norm_quote": null,
+        "value_found": "Заполнение стальными ламелями; заполнение акустическими сэндвич-панелями с минераловатным утеплителем толщ. 30 мм",
+        "recommendation": "Установить марку экрана на аксонометрическом виде и согласовать описание заполнения с ведомостью и разделом КМ 10.2.",
+        "claim_type": "context_gap",
+        "problem_class": "unlinked_screen_infill_descriptions",
+        "affected_entity": "Заполнение шумозащитного экрана на аксонометрическом виде, лист 8",
+        "evidence_quote": "«Заполнение стальными ламелями»; в ведомости для ОГШ-1, ОГШ-2 и ОГШ-3: «заполнение акустическими сэндвич-панелями с минераловатным утеплителем толщ. 30 мм».",
+        "evidence_kind": "same_page",
+        "context_status": "needs_retrieval",
+        "confidence": 0.92,
+        "counterevidence_checked": true,
+        "required_context": [
+          "Привязка аксонометрического вида к марке шумозащитного экрана",
+          "Рабочий проект конструкций шумозащитных элементов кровли, раздел КМ 10.2"
+        ],
+        "_detector_model": "codex/gpt-6-sol",
+        "_detector_run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:002",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "extension",
+          "role": "extends",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 0.94,
+          "reason": "Оба замечания сопоставляют стальные ламели в аксонометрии с акустическими сэндвич-панелями толщиной 30 мм для ОГШ-1, ОГШ-2 и ОГШ-3. Правое существенно дополняет левое: отсутствие марки на аксонометрии не позволяет подтвердить, что описания относятся к одному изделию, и требует установить привязку вида.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context"
+          ]
+        }
+      },
+      "final_matches": [
+        {
+          "id": "F-018",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "sheet": "Лист 8",
+          "page": 10,
+          "problem": "Заполнение шумозащитного экрана на аксонометрии не согласовано с ведомостью.",
+          "description": "На аксонометрическом виде указаны стальные ламели, а в ведомости для ОГШ-1, ОГШ-2 и ОГШ-3 — акустические сэндвич-панели с минераловатным утеплителем толщиной 30 мм. Марка экрана на аксонометрии не установлена, поэтому применимость двух описаний к одному изделию требует проверки.",
+          "norm": null,
+          "norm_quote": null,
+          "candidate_norm_references": [],
+          "solution": "Указать марку экрана на аксонометрии и согласовать её заполнение с ведомостью и рабочими решениями КМ.",
+          "risk": "Поставка или монтаж экрана с заполнением, не соответствующим принятому решению по шумозащите.",
+          "source_finding_ids": [
+            "G-009"
+          ],
+          "source_block_ids": [
+            "blk_3833cfb33b574f36b5a8f0764f7471e5"
+          ],
+          "related_block_ids": [
+            "blk_3833cfb33b574f36b5a8f0764f7471e5"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_3833cfb33b574f36b5a8f0764f7471e5",
+              "page": 10
+            }
+          ],
+          "highlight_regions": [],
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T233136Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-009",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:31:36.350498+00:00",
+                "context_source": "structured_architecture"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "extension",
+            "relations": [
+              {
+                "relation": "extension",
+                "role": "base",
+                "counterpart_refs": [
+                  "codex:002"
+                ],
+                "confidence": 0.94,
+                "reason": "Оба замечания сопоставляют стальные ламели в аксонометрии с акустическими сэндвич-панелями толщиной 30 мм для ОГШ-1, ОГШ-2 и ОГШ-3. Правое существенно дополняет левое: отсутствие марки на аксонометрии не позволяет подтвердить, что описания относятся к одному изделию, и требует установить привязку вида.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "quality": {
+            "practicality_score": 79,
+            "engineering_relevance": "high",
+            "impact_axes": [
+              "schedule",
+              "construction",
+              "coordination"
+            ],
+            "formalism_flags": [
+              "reference_register",
+              "editorial_fix"
+            ],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "high"
+          }
+        }
+      ],
+      "assessment": "preserved_question_via_other_candidate",
+      "reason": "Отложенный тезис о ламелях/сэндвич-панелях представлен вF018 черезG009 с сохранением вопроса идентичности.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/03_findings.json",
+        "sha256": "061817611a78a8ab2a21af6d9ec1e07be0cfa62b3b27394a9f78d6f3e262f113"
+      }
+    },
+    {
+      "discipline": "KM",
+      "source_kind": "deferred",
+      "source_pointer": "/block_analyses/39/deferred_findings/0",
+      "source_finding": {
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "finding": "Для поручня ОГМ11 показан продольный размер 3100 мм, а в ведомости для позиции 2 указана длина 2900 мм. Для установления противоречия необходимо определить границы детали с учётом концевых узлов.",
+        "norm_quote": null,
+        "value_found": "3100; поз. 2: L=2,900м",
+        "recommendation": "Сопоставить размер 3100 мм с длиной позиции 2 по узлам Б(4) и Д(4) и уточнить ведомость при подтверждении расхождения.",
+        "claim_type": "context_gap",
+        "problem_class": "handrail_length_consistency",
+        "affected_entity": "ОГМ11, поручень позиции 2",
+        "evidence_quote": "На изображении ОГМ11 вдоль поручня указан размер 3100; в ведомости ОГМ11 для позиции 2 — L=2,900м. У соседнего ОГМ14 размер 3430 также отличается от ведомостной длины 3,330 м, поэтому габаритный размер нельзя автоматически приравнять к длине заготовки.",
+        "evidence_kind": "same_page",
+        "context_status": "needs_retrieval",
+        "confidence": 0.9,
+        "counterevidence_checked": true,
+        "required_context": [
+          "Узлы Б(4) и Д(4) с границами и размерами концевых деталей поручня ОГМ11",
+          "Деталировка позиции 2 ОГМ11 с указанием длины заготовки"
+        ],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:001",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "extension",
+          "role": "extends",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 0.93,
+          "reason": "Оба замечания сопоставляют размер 3100 мм с L=2,900 м для позиции 2 ОГМ11. Левое существенно дополняет правое: требует проверить границы детали по узлам Б(4) и Д(4), прежде чем считать разницу 200 мм подтверждённым противоречием.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context"
+          ]
+        }
+      },
+      "final_matches": [
+        {
+          "id": "F-019",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+          "category": "documentation",
+          "sheet": "Лист 9",
+          "page": 11,
+          "problem": "Размер 3100 мм для ОГМ11 требует сопоставления с ведомостной длиной поручня 2900 мм.",
+          "description": "На виде ОГМ11 вдоль верхнего поручня указан размер 3100 мм, а в ведомости для позиции 2 — длина 2900 мм. Разница 200 мм пока не доказывает ошибку: границы позиции 2 и концевых деталей по узлам Б(4) и Д(4) не установлены. У соседнего ограждения также различаются габаритный размер и ведомостная длина.",
+          "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "ГОСТ 21.502-2016",
+              "cited_designation": "ГОСТ 21.502-2016",
+              "candidate_relevance": 0.75,
+              "reason": "Проверить, совпадают ли границы размерной линии с границами детали позиции 2.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-023"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "G-023"
+                  ],
+                  "designation_source": "inferred from finding context"
+                }
+              },
+              "clause_candidate": null,
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Проверить узлы Б(4) и Д(4) и деталировку позиции 2; исправить ведомость или вид только при подтверждении расхождения.",
+          "risk": "Неверная трактовка габарита может привести к ошибочному изменению длины заготовки.",
+          "source_finding_ids": [
+            "G-023"
+          ],
+          "source_block_ids": [
+            "blk_7315b3a722f946d48c34d31d1eac62ad"
+          ],
+          "related_block_ids": [
+            "blk_7315b3a722f946d48c34d31d1eac62ad"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_7315b3a722f946d48c34d31d1eac62ad",
+              "page": 11
+            }
+          ],
+          "highlight_regions": [],
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-sol",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-023",
+                "mode": "independent",
+                "detected_at": "2026-11-06T23:48:47.021565+00:00",
+                "context_source": "structured_structure"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "extension",
+            "relations": [
+              {
+                "relation": "extension",
+                "role": "base",
+                "counterpart_refs": [
+                  "codex:001"
+                ],
+                "confidence": 0.93,
+                "reason": "Оба замечания сопоставляют размер 3100 мм с L=2,900 м для позиции 2 ОГМ11. Левое существенно дополняет правое: требует проверить границы детали по узлам Б(4) и Д(4), прежде чем считать разницу 200 мм подтверждённым противоречием.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 47,
+            "engineering_relevance": "medium",
+            "impact_axes": [
+              "coordination"
+            ],
+            "formalism_flags": [
+              "reference_register",
+              "editorial_fix"
+            ],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "low"
+          }
+        }
+      ],
+      "assessment": "preserved_question_via_other_candidate",
+      "reason": "Отложенные3100/2900ОГМ11 сохранены черезG023; итог прямо ограничивает вывод неизвестными границами детали.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/03_findings.json",
+        "sha256": "5cc411cb487bc27ebe24c9b7329376e90938dbf2de52ad2898b83e5f3263e866"
+      }
+    },
+    {
+      "discipline": "EOM",
+      "source_kind": "deferred",
+      "source_pointer": "/block_analyses/18/deferred_findings/0",
+      "source_finding": {
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "documentation",
+        "finding": "В экспликации помещений −1 этажа номер 0.0.2.2 присвоен и венткамере площадью 43,9 м², и помещению РУ площадью 11,1 м². По этому номеру нельзя однозначно определить помещение для привязки электрических решений.",
+        "norm_quote": null,
+        "value_found": "0.0.2.2 | Венткамера | 43,9 | B2; 0.0.2.2 | РУ | 11,1 | B3",
+        "recommendation": "Уточнить номера помещений в экспликации и привести обозначения на плане в соответствие с ней.",
+        "claim_type": "contradiction",
+        "problem_class": "duplicate_room_number",
+        "affected_entity": "помещения 0.0.2.2 в экспликации −1 этажа",
+        "evidence_quote": "В одной экспликации −1 этажа указаны «0.0.2.2 | Венткамера | 43,9 | B2» и «0.0.2.2 | РУ | 11,1 | B3»; оба обозначения также повторяются в переданном контексте другого листа.",
+        "evidence_kind": "same_page",
+        "context_status": "sufficient",
+        "confidence": 0.9,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-sol",
+        "_detector_run_id": "stage01-20261106T222601Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:002",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое дублирование номера 0.0.2.2 у венткамеры 43,9 м² категории B2 и РУ 11,1 м² категории B3; последствия и рекомендации эквивалентны.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "internal_metadata_comparison"
+          ]
+        }
+      },
+      "final_matches": [
+        {
+          "id": "F-024",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ",
+          "category": "documentation",
+          "sheet": "Лист 15",
+          "page": 18,
+          "problem": "Один номер присвоен венткамере и помещению РУ",
+          "description": "В экспликации −1 этажа номер 0.0.2.2 присвоен венткамере площадью 43,9 м² и помещению РУ площадью 11,1 м².",
+          "norm": "ГОСТ 21.101-2026 (норматив-кандидат), пункт не подтверждён",
+          "norm_quote": null,
+          "candidate_norm_references": [
+            {
+              "designation": "ГОСТ 21.101-2026",
+              "cited_designation": "ГОСТ 21.101-2026",
+              "candidate_relevance": 0.7,
+              "reason": "Проверить однозначность обозначения помещений на плане и в экспликации.",
+              "provenance": {
+                "producer": "stage03_candidate_contract",
+                "designation_source": "stage03.candidate_norm_references",
+                "source_finding_ids": [
+                  "G-031"
+                ],
+                "input_provenance": {
+                  "source_finding_ids": [
+                    "G-031"
+                  ],
+                  "designation_source": "analysis candidate"
+                }
+              },
+              "clause_candidate": null,
+              "quote_candidate": null
+            }
+          ],
+          "solution": "Назначить уникальные номера помещениям и согласовать экспликацию с планом.",
+          "risk": "Ошибочная привязка электрического оборудования к помещению.",
+          "source_finding_ids": [
+            "G-031"
+          ],
+          "source_block_ids": [
+            "blk_bd26d730d0a84c57900a87e3f5a47cce"
+          ],
+          "related_block_ids": [
+            "blk_bd26d730d0a84c57900a87e3f5a47cce"
+          ],
+          "evidence_text_refs": [],
+          "evidence": [
+            {
+              "type": "image",
+              "block_id": "blk_bd26d730d0a84c57900a87e3f5a47cce",
+              "page": 18
+            }
+          ],
+          "highlight_regions": [],
+          "provenance": {
+            "found_by": [
+              "codex"
+            ],
+            "detector_summary": "codex",
+            "detections": [
+              {
+                "detector": "codex",
+                "model": "codex/gpt-6-astra",
+                "prompt_version": "stage01-findings-evidence-v3",
+                "run_id": "stage01-20261106T222601Z-ensemble_codex-only:codex",
+                "raw_finding_id": "G-031",
+                "mode": "independent",
+                "detected_at": "2026-11-06T22:26:01.368094+00:00",
+                "context_source": "image_only"
+              }
+            ]
+          },
+          "detector_summary": "codex",
+          "detector_comparison": {
+            "schema_version": 1,
+            "primary_relation": "match",
+            "relations": [
+              {
+                "relation": "match",
+                "role": "peer",
+                "counterpart_refs": [
+                  "codex:002"
+                ],
+                "confidence": 1.0,
+                "reason": "Оба замечания указывают на одинаковое дублирование номера 0.0.2.2 у венткамеры 43,9 м² категории B2 и РУ 11,1 м² категории B3; последствия и рекомендации эквивалентны.",
+                "reviewer_model": "codex/gpt-6.1-sol",
+                "origin": "dual_comparison"
+              }
+            ],
+            "gap_search": false
+          },
+          "norm_references": [],
+          "norm_paragraph_state": "resolver_pending",
+          "quality": {
+            "practicality_score": 55,
+            "engineering_relevance": "medium",
+            "impact_axes": [],
+            "formalism_flags": [],
+            "likely_formal_only": false,
+            "severity_mismatch": false,
+            "review_priority": "low"
+          }
+        }
+      ],
+      "assessment": "preserved_question_via_other_candidate_gate_reason_needs_review",
+      "reason": "Повтор номера0.0.2.2 сохранён черезG031. Для отложенного кандидата записанinternal_metadata_comparison, хотя текст касается экспликации проекта. Причину фильтра нужно воспроизвести отдельно; наличие аналога не делает причину корректной.",
+      "final_source": {
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/03_findings.json",
+        "sha256": "a523742cddbde96de36c98e167d8baa413a8d08df7f31c746259a6896f09be49"
+      }
+    }
+  ],
+  "next_checks": [
+    "Reproduce EOM internal_metadata_comparison against exact candidate and rule.",
+    "Inspect AK cabinet graphic dimensions before adding any truth target.",
+    "Inspect AR requested second roof plan or explicitly retain unavailable context.",
+    "Trace provenance of repeated curtain-index text without assuming cross-project contamination."
+  ],
+  "stage_2_complete": false
+}
