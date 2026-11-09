@@ -11,6 +11,10 @@
 
 1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/02_text_analysis.json`
    - `text_findings` (T-001...), `normative_refs_found`, `project_params`
+   - `object_registry_coverage`: inspect unresolved objects, source inventory and
+     operations. Model-reported completion is not independent proof. Do not infer
+     a clean project from empty arrays or analyzed-block flags. Use the exact
+     unresolved object/scope to retrieve context and perform omitted comparisons.
    - `quantity_check_operations` and runner-computed `quantity_check_results`:
      review source identity, physical basis, regime, rounding and completeness of
      terms. A computed difference is not a verified defect; a rejected comparison

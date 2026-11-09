@@ -99,6 +99,26 @@ Analyze the MD content COMPLETELY. Extract:
 
 {DISCIPLINE_FINDING_CATEGORIES}
 
+## Object registry and operation coverage
+
+Before drafting findings, return `object_registry`: objects with unique `id`,
+`identity` (full mark/execution/instance), `scope` (system, building, level and supply
+boundary as applicable), `kind`, and `source_refs` (exact original block IDs).
+Connect repeated views of one instance; never equate matching marks across scopes.
+Return `object_inventory_coverage` per inspected source block: `block_id`,
+`status` (inventoried/no_objects/needs_data), `object_ids`, and `reason`.
+An unread graphic is needs_data; an analyzed block does not prove inventory coverage.
+
+For EACH object return `object_operation_results` for identity_across_views,
+quantity_balance, dimension_consistency, requirement_applicability, document_links.
+Each receipt has `object_id`, `operation`, `status` (checked/not_applicable/needs_data/
+not_checked), `reason` explaining the actual comparison/result or applicability,
+and `source_refs`. Include calculations through the operation arrays below.
+Do not mark checked merely because the object was read; do not invent dimensions,
+requirements, supply boundaries or missing counterparts. Missing source material
+means needs_data; inapplicability needs a specific reason. Preserve unresolved
+operations for targeted follow-up without turning them automatically into defects.
+
 ## Source-addressed object balances
 
 Include `object_balance_operations` for applicable comparisons of a scheme's active
