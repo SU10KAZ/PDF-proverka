@@ -53,6 +53,24 @@ Before merging findings — group `block_analyses[]` by page and verify:
 
 Any discrepancy found → add as a new finding (F-NNN).
 
+### Candidate decision receipts (MANDATORY)
+
+Return top-level `candidate_decisions`, one per input text finding, block finding,
+and deferred block finding. Identify each by `origin` (`text` or `graphic`) and
+exact JSON `pointer` into its input file (for example `/text_findings/0` or
+`/block_analyses/2/findings/1`). This addresses duplicate or missing candidate IDs.
+Each receipt has `decision` (`retained`, `duplicate`, `refuted`, `needs_data`, or
+`out_of_profile`), `reason` in Russian, and `source_refs` (exact document graph
+block IDs actually inspected). For retained/duplicate claims, keep the candidate's
+ID in the final finding's `source_finding_ids` and preserve each useful location
+and atomic claim. A link alone does not prove preservation of meaning.
+For refutation, name the original claim and the contrary source evidence; lack of
+context is `needs_data`, never `refuted`. Scope exclusion is not technical falsity.
+Inspect authoritative MD TEXT; graphic claims need actual graphic evidence.
+Do not use a detector's interpretation as independent proof. If you cannot inspect
+the required sources, record `needs_data` and describe the missing context.
+Do not publish deferred claims merely to satisfy candidate accounting.
+
 ### Step 2: Merge Findings
 
 Merge findings from both stages (01 blocks + 02 text).
