@@ -893,6 +893,16 @@
     },
     {
       "candidate_ids": [
+        "B-KM-F-005"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F005_total_plate_balance.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Разрешить неоднозначность анкеровЛК6 и соответствие изделийЛК4.1; проверить методику массы пластин. До этого точные итоговые исправления анкеров и массы оставить неоцениваемыми."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-KM-F-006"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F006_profile_mass_recalculation.json",
