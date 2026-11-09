@@ -60,7 +60,9 @@ needs_data with exact missing context, not a refuted or confirmed defect.
 Return JSON with object_operation_results (object_id, operation, status checked/
 not_applicable/needs_data/not_checked, reason in Russian, source_refs) and findings.
 Each finding must have object_id, operation, severity, problem, description, solution,
-page/sheet when established, and evidence with exact block_id. Separate questions
+page/sheet when established, evidence with exact block_id, and report_section:
+technical_findings for confirmed technical conflicts, questions for conditional,
+minor editorial or out-of-profile clarifications. Separate questions
 from proven conflicts in the wording; never invent a norm or universal tolerance.
 Preserve all listed operations, even those that remain unresolved. Do not declare
 whole-project coverage or silently add an operation outside the supplied list.'''

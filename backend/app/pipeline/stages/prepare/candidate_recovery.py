@@ -108,7 +108,9 @@ MD TEXT is authoritative: never correct its recognition from images. Inspect att
 images for GRAPHIC claims. The context is bounded; missing context means needs_data,
 not refuted. Compare with existing findings by meaning and location before adding.
 Return JSON with findings (only supported, genuinely missing findings in Russian,
-standard final finding fields and source_finding_ids), and candidate_decisions
+standard final finding fields and source_finding_ids, plus report_section set to
+technical_findings for confirmed technical conflicts or questions for conditional,
+minor editorial or out-of-profile clarifications), and candidate_decisions
 (origin, pointer, decision retained/duplicate/refuted/needs_data/out_of_profile,
 reason in Russian, source_refs exact inspected block IDs). For graphic claims without
 adequate attached images return needs_data, not a confirmed finding. Include evidence
