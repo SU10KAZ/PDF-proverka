@@ -77,6 +77,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-028"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "Сверить исходнуюПД,книгу2 и согласование реестра для определения адресата изменения. До этого применимость записи и совместимость архитектуры оставить неоценёнными."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-031"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
