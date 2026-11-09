@@ -521,6 +521,17 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-065"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F065_norm_replacement_applicability.json",
+      "output_section": "Вопросы и уточнения",
+      "required_checks": [
+        "До фиксации эталона оставить обязательность переработки и конкретное техническое несоответствие неоценёнными, если не будут представлены даты утверждения/изменения комплекта и применимые требования.",
+        "На этапе причин потерь восстановить вход исследовательского запуска, код передачи LOCAL VERIFIED NORM STATUS и происхождение записи norms_db; не считать правильность одного значения доказательством надёжности всей базы."
+      ]
+    },
+    {
+      "candidate_ids": [
         "H-AR-14"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
