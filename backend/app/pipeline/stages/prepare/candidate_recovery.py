@@ -91,6 +91,8 @@ def build_recovery_passes(output_dir, md_path):
                   'selected_md_pages': selected_pages, 'missing_or_budgeted_md_pages': skipped_pages,
                   'attached_image_block_ids_in_order': image_refs, 'unavailable_image_block_ids': unavailable,
                   'authoritative_md': '\n'.join(chunks), 'context_complete': False,
+                  'crop_source': {'directory': str(blocks_dir.resolve()),
+                                  'index_sha256': hashlib.sha256(index_path.read_bytes()).hexdigest() if index_path.exists() else None},
                   'md_source': {'path': str(md_path.resolve()), 'sha256': hashlib.sha256(md_path.read_bytes()).hexdigest()},
                   'allowed_source_refs': sorted(set(image_refs) | {r for r, page in block_pages.items() if page in selected_pages and r in text_ids})}
         instructions = '''Review the unlinked candidate_group against the supplied original sources.

@@ -12,7 +12,7 @@ from backend.app.services.llm.codex_runner import run_codex_json_messages
 BASE = Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs')
 RESULTS = Path('/tmp/auditmanager_text_recovery_astra_20261110')
 
-async def main(*, results_dir=RESULTS, source_ids=None, follow_context=False):
+async def main(*, results_dir=RESULTS, source_ids=None, follow_context=False, candidate_kind="text"):
     assert substitute_codex_model('gpt-6-astra') == 'gpt-6-astra', 'Astra substitution forbidden for this pilot'
     results_dir.mkdir(exist_ok=True)
     for disc in ('AK', 'ITP', 'AR', 'KM', 'VK', 'EOM'):
@@ -28,7 +28,8 @@ async def main(*, results_dir=RESULTS, source_ids=None, follow_context=False):
             for request in passes:
                 packet = json.loads(request.messages[-1]['content'])
                 sid = packet['candidate']['source_id']
-                if packet['candidate']['origin'] != 'text' or (source_ids and sid not in source_ids):
+                eligible = packet['candidate'].get('deferred') if candidate_kind == 'deferred' else packet['candidate']['origin'] == 'text'
+                if not eligible or (source_ids and sid not in source_ids):
                     continue
                 suffix = '_context' if request.stage.endswith('_context') else ''
                 name = f'{disc}_{sid}{suffix}'
@@ -41,7 +42,7 @@ async def main(*, results_dir=RESULTS, source_ids=None, follow_context=False):
                     'model': 'gpt-6-astra', 'scope': 'known-case recovery pilot, not blind evaluation'}, ensure_ascii=False, indent=2))
                 for attempt in range(1, 4):
                     assert substitute_codex_model('gpt-6-astra') == 'gpt-6-astra'
-                    print(f'START {disc}/{sid} attempt={attempt} model=gpt-6-astra images={len(request.image_paths)}', flush=True)
+                    print(f'START {name} attempt={attempt} model=gpt-6-astra images={len(request.image_paths)}', flush=True)
                     result = await run_codex_json_messages(request.messages, model='codex/gpt-6-astra',
                         timeout=900, stage='candidate_recovery_pilot', project_id=f'{disc}-{sid}',
                         image_paths=request.image_paths)
@@ -56,7 +57,7 @@ async def main(*, results_dir=RESULTS, source_ids=None, follow_context=False):
                             if followup is not None:
                                 passes.append(followup)
                         target.write_text(json.dumps(receipt, ensure_ascii=False, indent=2))
-                        print(f'DONE {disc}/{sid} findings={len(receipt["validated_payload"]["findings"])} duration_ms={result.duration_ms}', flush=True)
+                        print(f'DONE {name} findings={len(receipt["validated_payload"]["findings"])} duration_ms={result.duration_ms}', flush=True)
                         break
                     print(f'ERROR {sid}: {result.error_message}; retry after 10s', flush=True)
                     if attempt < 3:
@@ -71,5 +72,6 @@ if __name__ == '__main__':
     parser.add_argument('--output-dir', type=Path, default=RESULTS)
     parser.add_argument('--source-ids', nargs='*')
     parser.add_argument('--follow-context', action='store_true')
+    parser.add_argument('--candidate-kind', choices=['text','deferred'], default='text')
     args = parser.parse_args()
-    asyncio.run(main(results_dir=args.output_dir, source_ids=args.source_ids, follow_context=args.follow_context))
+    asyncio.run(main(results_dir=args.output_dir, source_ids=args.source_ids, follow_context=args.follow_context, candidate_kind=args.candidate_kind))

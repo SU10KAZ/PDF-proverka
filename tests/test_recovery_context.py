@@ -79,3 +79,26 @@ def test_common_phrase_does_not_starve_late_exact_mark_or_repeat_context():
     assert [h['block_id'] for h in result['hits']] == ['b2', 'exact']
     assert result['already_supplied'][0]['block_id'] == 'b1'
     assert result['backlog']
+
+
+def test_graphic_summary_requires_indexed_image_even_if_summary_already_shown(tmp_path):
+    path = tmp_path/'document.md'; path.write_text(MD)
+    crop_dir = tmp_path/'crops'; crop_dir.mkdir()
+    index = crop_dir/'index.json'; index.write_text(json.dumps({'blocks':[{'block_id':'g1','file':'g.png'}]}))
+    (crop_dir/'g.png').write_bytes(b'graphic transport fixture')
+    candidate = {'origin':'graphic','pointer':'/block_analyses/0/deferred_findings/0'}
+    packet = {'candidate':candidate,'authoritative_md':MD,'allowed_source_refs':['b1'],
+              'md_source':{'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()},
+              'crop_source':{'directory':str(crop_dir),'index_sha256':hashlib.sha256(index.read_bytes()).hexdigest()}}
+    request = CodexTargetedPass('candidate_recovery_test','x.json',[{'role':'system','content':'review'},
+        {'role':'user','content':json.dumps(packet)}])
+    payload = {'candidate_decisions':[{**candidate,'decision':'needs_data','context_queries':['U1.1']}]}
+    followup, receipt = build_context_followup(request,payload)
+    assert followup.image_paths == ((crop_dir/'g.png').resolve(),)
+    assert receipt['images']['attached'][0]['block_id'] == 'g1'
+    assert 'g1' in json.loads(followup.messages[-1]['content'])['allowed_source_refs']
+    index.write_text('{}')
+    followup, receipt = build_context_followup(request,payload)
+    assert followup.image_paths == ()
+    assert receipt['images']['unavailable'] == ['g1']
+    assert 'g1' not in json.loads(followup.messages[-1]['content'])['allowed_source_refs']

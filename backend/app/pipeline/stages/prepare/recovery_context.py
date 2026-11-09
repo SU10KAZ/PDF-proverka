@@ -91,10 +91,11 @@ def build_context_followup(request, payload):
     raw = path.read_bytes()
     if hashlib.sha256(raw).hexdigest() != source.get('sha256'):
         return None, {'status': 'md_version_changed'}
-    existing_ids = set(re.findall(r'^###[ \t]+BLOCK[^\n]*?\[[^]]+\]:[ \t]*(\S+)',
+    existing_ids = set(re.findall(r'^###[ \t]+BLOCK[^\n]*?\[(?:TEXT|TABLE)\]:[ \t]*(\S+)',
                                   packet['authoritative_md'], re.M | re.I))
+    existing_ids.update(packet.get('attached_image_block_ids_in_order', []))
     report = search_md_context(raw.decode('utf-8'), queries, exclude_block_ids=existing_ids)
-    new = [h for h in report['hits'] if h['content'] not in packet['authoritative_md']]
+    new = report['hits']
     if not new:
         return None, {'status': 'no_new_context', 'search': report}
     packet['candidate_group'] = unresolved
@@ -102,11 +103,39 @@ def build_context_followup(request, payload):
     packet['retrieved_context'] = new
     packet['context_search_receipt'] = report
     packet['previous_decisions'] = decisions
-    # GRAPHIC summaries remain navigation hints, not evidence without an image.
-    packet['allowed_source_refs'] = sorted(set(packet['allowed_source_refs']) | {
+    # Attach only local, explicitly indexed crops from the same frozen index.
+    # A summary or an unavailable crop never becomes graphic evidence.
+    images = list(request.image_paths)
+    image_ids = list(packet.get('attached_image_block_ids_in_order', []))
+    crop_source = packet.get('crop_source', {})
+    crop_dir = Path(crop_source.get('directory', '')).resolve()
+    index_path = crop_dir / 'index.json'
+    files = {}
+    crop_status = 'index_unavailable_or_changed'
+    if index_path.is_file():
+        index_raw = index_path.read_bytes()
+        if hashlib.sha256(index_raw).hexdigest() == crop_source.get('index_sha256'):
+            files = {b.get('block_id'): b.get('file') for b in json.loads(index_raw).get('blocks', []) if isinstance(b, dict)}
+            crop_status = 'index_verified'
+    unavailable, attached = [], []
+    for hit in new:
+        if hit['kind'] not in {'IMAGE', 'GRAPHIC'}:
+            continue
+        bid = hit['block_id']
+        name = files.get(bid)
+        path = (crop_dir / name).resolve() if isinstance(name, str) else None
+        if path is None or not path.is_relative_to(crop_dir) or not path.is_file() or len(images) >= 8:
+            unavailable.append(bid)
+            continue
+        images.append(path)
+        image_ids.append(bid)
+        attached.append({'block_id': bid, 'path': str(path), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+    packet['attached_image_block_ids_in_order'] = image_ids
+    packet['context_image_receipt'] = {'status': crop_status, 'attached': attached, 'unavailable': unavailable}
+    packet['allowed_source_refs'] = sorted(set(packet['allowed_source_refs']) | set(image_ids) | {
         h['block_id'] for h in new if h['kind'] in {'TEXT', 'TABLE'}})
     followup = CodexTargetedPass(stage=request.stage+'_context',
         output_filename=request.output_filename.replace('.json', '_context.json'),
         messages=[request.messages[0], {'role': 'user', 'content': json.dumps(packet, ensure_ascii=False)}],
-        image_paths=request.image_paths)
-    return followup, {'status': 'scheduled', 'search': report}
+        image_paths=tuple(images))
+    return followup, {'status': 'scheduled', 'search': report, 'images': packet['context_image_receipt']}
