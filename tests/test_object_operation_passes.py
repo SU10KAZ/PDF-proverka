@@ -28,3 +28,22 @@ def test_unavailable_graphic_cannot_close_operation(tmp_path):
         'object_id':'A','operation':'dimension_consistency','status':'checked','reason':'read it','source_refs':['g']}]})
     assert result['unverified_operation_receipts']
     assert result['operation_coverage']['unresolved_operations']==5
+
+
+def test_needs_data_is_not_retried_without_new_source_context(tmp_path):
+    from backend.app.pipeline.stages.text_analysis.object_registry import OPERATIONS
+    md=tmp_path/'document.md';md.write_text('## Page 1\n### BLOCK #1 [TEXT]: b\nCabinet A\n## Page 2\n### BLOCK #2 [TEXT]: other\nCounterpart specification\n')
+    obj={'id':'A','identity':'A','scope':'level 1','kind':'cabinet','source_refs':['b']}
+    receipts=[{'object_id':'A','operation':op,'status':'needs_data','reason':'counterpart missing','source_refs':[]} for op in OPERATIONS]
+    data={'object_registry':[obj],'object_operation_results':receipts}
+    path=tmp_path/'02_text_analysis.json';path.write_text(json.dumps(data))
+    assert build_object_operation_passes(tmp_path,md)==[]
+    plan=json.loads((tmp_path/'03_object_operation_plan.json').read_text())
+    assert len(plan['backlog'])==5
+    receipts[0]['context_queries']=['Counterpart specification']
+    path.write_text(json.dumps(data))
+    requests=build_object_operation_passes(tmp_path,md)
+    assert len(requests)==1
+    packet=json.loads(requests[0].messages[-1]['content'])
+    assert [o['operation'] for o in packet['operations']]==[OPERATIONS[0]]
+    assert 'other' in packet['allowed_source_refs']

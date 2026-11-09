@@ -31,8 +31,30 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
         if len(passes)>=max_requests:
             backlog.append({'object_id':obj['id'],'operations':operations,'status':'not_checked','reason':'request_budget'})
             continue
+        from .recovery_context import search_md_context
+        source_ids = list(obj['source_refs'])
+        searches, new_by_operation = {}, {}
+        eligible = []
+        for operation in operations:
+            if operation['status'] != 'needs_data':
+                eligible.append(operation)
+                continue
+            queries = operation.get('receipt', {}).get('context_queries', [])
+            search = search_md_context(md, queries, exclude_block_ids=set(obj['source_refs']))
+            searches[operation['operation']] = search
+            new_ids = [h['block_id'] for h in search['hits'] if h['block_id'] in blocks]
+            if not new_ids:
+                backlog.append({'object_id':obj['id'],'operations':[operation], 'status':'needs_data',
+                                'reason':'no_new_context', 'search':search})
+                continue
+            new_by_operation[operation['operation']] = new_ids
+            source_ids.extend(new_ids)
+            eligible.append(operation)
+        operations = eligible
+        if not operations:
+            continue
         context, images, image_ids, omitted, size = [], [], [], [], 0
-        for bid in dict.fromkeys(obj['source_refs']):
+        for bid in dict.fromkeys(source_ids):
             block = blocks[bid]
             if size+len(block['content'])>60000:
                 omitted.append({'block_id':bid,'reason':'text_budget'})
@@ -47,7 +69,18 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
                 else:
                     omitted.append({'block_id':bid,'reason':'image_unavailable_or_budget'})
         allowed=sorted({b['block_id'] for b in context if b['kind'] in ('TEXT','TABLE')}|set(image_ids))
-        packet={'object':obj,'operations':operations,'source_context':context,
+        eligible = []
+        for operation in operations:
+            new_ids = new_by_operation.get(operation['operation'])
+            if new_ids is not None and not set(new_ids).intersection(allowed):
+                backlog.append({'object_id':obj['id'],'operations':[operation],'status':'needs_data',
+                                'reason':'new_context_not_supplied', 'omitted':omitted})
+            else:
+                eligible.append(operation)
+        operations = eligible
+        if not operations:
+            continue
+        packet={'object':obj,'operations':operations,'source_context':context,'context_searches':searches,
                 'attached_image_ids_in_order':image_ids,'allowed_source_refs':allowed,'omitted':omitted,
                 'scope_complete':False}
         key=hashlib.sha256(obj['id'].encode()).hexdigest()[:16]
@@ -56,7 +89,8 @@ MD TEXT/TABLE is authoritative. GRAPHIC summaries are navigation only; inspect t
 attached images before making graphic claims. Match instance, execution, scope,
 units and physical basis before comparing. Never infer compliance from a missing
 comparison. If a counterpart, calculation or applicability source is absent, return
-needs_data with exact missing context, not a refuted or confirmed defect.
+needs_data with exact missing context and context_queries (up to six literal
+object marks or short phrases for MD search), not a refuted or confirmed defect.
 Return JSON with object_operation_results (object_id, operation, status checked/
 not_applicable/needs_data/not_checked, reason in Russian, source_refs) and findings.
 Each finding must have object_id, operation, severity, problem, description, solution,

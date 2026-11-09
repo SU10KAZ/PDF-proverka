@@ -116,7 +116,8 @@ not_checked), `reason` explaining the actual comparison/result or applicability,
 and `source_refs`. Include calculations through the operation arrays below.
 Do not mark checked merely because the object was read; do not invent dimensions,
 requirements, supply boundaries or missing counterparts. Missing source material
-means needs_data; inapplicability needs a specific reason. Preserve unresolved
+means needs_data with context_queries (up to six literal object marks or short
+phrases identifying missing source context); inapplicability needs a specific reason. Preserve unresolved
 operations for targeted follow-up without turning them automatically into defects.
 
 ## Source-addressed object balances
