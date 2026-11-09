@@ -251,6 +251,16 @@
     },
     {
       "candidate_ids": [
+        "B-AK-F-044"
+      ],
+      "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+      "output_section": "Технические замечания",
+      "required_checks": [
+        "Согласовать окончательные номера с заводскими схемами. До проверки фактической цепи отказ и неправильное подключение исключены из положительных метрик."
+      ]
+    },
+    {
+      "candidate_ids": [
         "B-AK-F-045"
       ],
       "decision_file": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
