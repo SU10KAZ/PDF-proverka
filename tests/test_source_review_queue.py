@@ -63,6 +63,20 @@ def test_image_headers_require_raster_and_duplicate_headers_remain_ambiguous():
     assert packet['missing_or_ambiguous_block_ids'] == ['i']
 
 
+def test_final_claim_sources_are_included_separately_from_candidate_sources():
+    f = finding(['t'])
+    f.update(related_block_ids=['g'], evidence=[{'type': 'text', 'block_id': 'extra'}],
+             evidence_text_refs=['t'], source_block_ids=['missing'])
+    md = MD + '### BLOCK #3 [TEXT]: extra\nFinal claim context\n'
+    packet = build_source_review_queue([f], md)['packets'][0]
+    assert [s['block_id'] for s in packet['sources']] == ['t', 'extra']
+    assert packet['reference_origins']['t'] == ['source_candidate', 'final_finding']
+    assert packet['reference_origins']['extra'] == ['final_finding']
+    assert packet['required_graphic_block_ids'] == ['g']
+    assert packet['missing_or_ambiguous_block_ids'] == ['missing']
+    assert packet['source_context_status'] == 'needs_data'
+
+
 def test_direct_evidence_does_not_bypass_lineage_review_and_stale_links_are_ignored():
     f = {'id': 'F-1', 'problem': 'Final claim', 'severity': 'critical', 'related_block_ids': ['t'],
          'source_finding_ids': ['T-1'], 'source_candidate_lineage': [

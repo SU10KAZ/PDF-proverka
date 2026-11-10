@@ -6,6 +6,7 @@ from collections import Counter
 from copy import deepcopy
 
 from backend.app.pipeline.stages.text_analysis.requirement_checks import authoritative_text_blocks
+from backend.app.pipeline.stages.findings_review.deterministic_critic import _referenced_block_ids
 
 
 def attach_pending_source_reviews(findings, known_block_ids):
@@ -70,6 +71,14 @@ def build_source_review_queue(findings, md, *, max_chars=100000):
         for request in requests if isinstance(requests, list) else []:
             if isinstance(request, dict) and isinstance(request.get('block_ids'), list):
                 refs.extend(r for r in request['block_ids'] if isinstance(r, str) and r)
+        candidate_refs = set(refs)
+        image_refs, text_refs, _ = _referenced_block_ids(finding)
+        final_refs = set(image_refs + text_refs)
+        refs.extend(image_refs + text_refs)
+        packet['reference_origins'] = {
+            ref: [label for label, group in (('source_candidate', candidate_refs), ('final_finding', final_refs)) if ref in group]
+            for ref in dict.fromkeys(refs)
+        }
         used = 0
         for ref in dict.fromkeys(refs):
             if ref not in blocks:

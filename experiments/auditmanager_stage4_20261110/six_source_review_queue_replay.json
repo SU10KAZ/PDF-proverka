@@ -5,7 +5,8 @@
       "findings": 65,
       "pending": 24,
       "context_counts": {
-        "available_bounded_text": 24
+        "available_bounded_text": 14,
+        "needs_data": 10
       },
       "core_field_changes": [],
       "packets": [
@@ -20,6 +21,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_f9a46b38e8aa4c498ede6fbe4a461052": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_b8f98350127c4603bb6811846ec13309": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -40,6 +51,32 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_f9a46b38e8aa4c498ede6fbe4a461052": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_abed08ccd9a347bb9fa290fd8696b197": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_7b41b193ccad4f559ba654a2248576d5": [
+              "source_candidate"
+            ],
+            "blk_3eda565e44cb443c8143585904b82ced": [
+              "source_candidate"
+            ],
+            "blk_25cd2a4f5a734187897f8aba96b1dbad": [
+              "source_candidate"
+            ],
+            "blk_a256f98d4e01408d90baba99d8b2cc19": [
+              "source_candidate"
+            ],
+            "blk_2258a0dfd8c84b6197e4cbb4d229ea27": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -48,18 +85,63 @@
           "finding_id": "F-003",
           "finding_sha256": "efbe79b14f30504158bdf2cf25a31b7a24634dcc2b59a5226a03f9d62a47571e",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_52496725d0f247bf913f197b2ed305ac",
             "blk_ed9c75d3fd26408c88f163f107138612",
             "blk_400b84df0f63420ab16fb5c330de54b7",
             "blk_b8f98350127c4603bb6811846ec13309"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_8de25b2b318647aeac8b3298fe03a98c",
+            "blk_66ba3cf1e99c46a292deb3fecd22f58a"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_52496725d0f247bf913f197b2ed305ac": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ed9c75d3fd26408c88f163f107138612": [
+              "source_candidate"
+            ],
+            "blk_400b84df0f63420ab16fb5c330de54b7": [
+              "source_candidate"
+            ],
+            "blk_b8f98350127c4603bb6811846ec13309": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_8de25b2b318647aeac8b3298fe03a98c": [
+              "final_finding"
+            ],
+            "blk_66ba3cf1e99c46a292deb3fecd22f58a": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_8de25b2b318647aeac8b3298fe03a98c",
+            "blk_66ba3cf1e99c46a292deb3fecd22f58a"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+              "exists": true,
+              "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_66ba3cf1e99c46a292deb3fecd22f58a",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_66ba3cf1e99c46a292deb3fecd22f58a.png",
+              "exists": true,
+              "sha256": "bb1ad5076255d43b3f37bacc2855e9f860699cbf8d9ba175c84c5e1f03864d0d",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-006",
@@ -72,6 +154,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_0457419703024673bb4328b18d47501e": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_192d323532434ee1aba250ffaac80b47": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -80,65 +172,192 @@
           "finding_id": "F-007",
           "finding_sha256": "a35fe90b744c3a6c4238f8c74be7cc6cf241158798bfaecf1a8c0e7874859d35",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
             "blk_917406a6b2804ee2abedff901eb85582",
             "blk_576ad6ac1cff48f79ac223f56ba405ae",
             "blk_5b5187b5afb740efb6423fa40c399349"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_07ee87d0cd9b46359b3c2b177440fe89",
+            "blk_54608a880c2545aa926c442d213988c3"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d": [
+              "source_candidate"
+            ],
+            "blk_917406a6b2804ee2abedff901eb85582": [
+              "source_candidate"
+            ],
+            "blk_576ad6ac1cff48f79ac223f56ba405ae": [
+              "source_candidate"
+            ],
+            "blk_5b5187b5afb740efb6423fa40c399349": [
+              "source_candidate"
+            ],
+            "blk_07ee87d0cd9b46359b3c2b177440fe89": [
+              "final_finding"
+            ],
+            "blk_54608a880c2545aa926c442d213988c3": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_07ee87d0cd9b46359b3c2b177440fe89",
+            "blk_54608a880c2545aa926c442d213988c3"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+              "exists": true,
+              "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_54608a880c2545aa926c442d213988c3",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+              "exists": true,
+              "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-008",
           "finding_sha256": "0f77455395825cf9dee42970e90afff1360067958de50bdfa3a069b3008d8202",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_a4846024d95044a09f7a24d76da41c31",
             "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_7785cb8293734c16b18fc1aff53c761f"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_a4846024d95044a09f7a24d76da41c31": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_5bb120b4d9cd4ceebfc4c15a896ddd48": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_7785cb8293734c16b18fc1aff53c761f": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_7785cb8293734c16b18fc1aff53c761f"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+              "exists": true,
+              "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-011",
           "finding_sha256": "5784c80813ca2bb7ea5f566d524606e26be1194a492ad6a2adde5c4bb9a6452e",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_3555a6e6bcc443c39eaba461232ceec3",
             "blk_6e54eb477b59421dbea94ef657f05a46",
             "blk_1afb9b9bff5242cca6f364f218b96506",
             "blk_abed08ccd9a347bb9fa290fd8696b197"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_523708af1c384b0e8bc6767d93644336"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_3555a6e6bcc443c39eaba461232ceec3": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_6e54eb477b59421dbea94ef657f05a46": [
+              "source_candidate"
+            ],
+            "blk_1afb9b9bff5242cca6f364f218b96506": [
+              "source_candidate"
+            ],
+            "blk_abed08ccd9a347bb9fa290fd8696b197": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_523708af1c384b0e8bc6767d93644336": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_523708af1c384b0e8bc6767d93644336"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+              "exists": true,
+              "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-012",
           "finding_sha256": "514a7dcc24983e53008e19353f428048b1cb0427eb900aa215dd1000c4840cb2",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_3efc4048723143beaeb20fa1792f1776",
             "blk_13738f8bb6f840fcb0cb37491b612396"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_aa15c30f0e7e48988cadcac795e1ccff"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_3efc4048723143beaeb20fa1792f1776": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_13738f8bb6f840fcb0cb37491b612396": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_aa15c30f0e7e48988cadcac795e1ccff": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_aa15c30f0e7e48988cadcac795e1ccff"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_aa15c30f0e7e48988cadcac795e1ccff",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_aa15c30f0e7e48988cadcac795e1ccff.png",
+              "exists": true,
+              "sha256": "0354adb15875e22f260471e80906de287b5c5346c08f80afee08619c000c57fa",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-013",
@@ -153,6 +372,24 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_30ab2c5b39b8442baf89f7a9cfe31434": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_3d78558e2eb34cb189b102380b0d3d00": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_07eb5e614f424f588877ee1d3d5ce41b": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_8c1c32681acd42c79d8190b013bbbf0c": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -161,7 +398,7 @@
           "finding_id": "F-014",
           "finding_sha256": "64efcbcda12a6f406b5390c0dacc6298a253f4e3cac7ffc43270804e03a6346e",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_6414183ffe264f65a253b3d6a5155da1",
             "blk_08e6971dafd541b2a40e0aa270404a4e",
@@ -171,11 +408,64 @@
             "blk_611c64e52f5d4223aaee5cf72c58e34e",
             "blk_0074662f330048ff843342b285e6a016"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_28e6a3fa2bff45aabce4aed90feff741",
+            "blk_c0ed6bca935843c18344796377677f2f"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_6414183ffe264f65a253b3d6a5155da1": [
+              "source_candidate"
+            ],
+            "blk_08e6971dafd541b2a40e0aa270404a4e": [
+              "source_candidate"
+            ],
+            "blk_83ff7d2544fe4ddd843f3c1ec01c7087": [
+              "source_candidate"
+            ],
+            "blk_30ab2c5b39b8442baf89f7a9cfe31434": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ba2cc771448645a5b9a7203af971680b": [
+              "source_candidate"
+            ],
+            "blk_611c64e52f5d4223aaee5cf72c58e34e": [
+              "source_candidate"
+            ],
+            "blk_0074662f330048ff843342b285e6a016": [
+              "source_candidate"
+            ],
+            "blk_28e6a3fa2bff45aabce4aed90feff741": [
+              "final_finding"
+            ],
+            "blk_c0ed6bca935843c18344796377677f2f": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_28e6a3fa2bff45aabce4aed90feff741",
+            "blk_c0ed6bca935843c18344796377677f2f"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_28e6a3fa2bff45aabce4aed90feff741",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_28e6a3fa2bff45aabce4aed90feff741.png",
+              "exists": true,
+              "sha256": "ae05baaa4c1c951d6acd0491b088101434eff280efa4350630ab7b512c9de7b0",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_c0ed6bca935843c18344796377677f2f",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_c0ed6bca935843c18344796377677f2f.png",
+              "exists": true,
+              "sha256": "f26dd1d18d31cb5990d87ed8aabf21c5f613e4d999eba6691f469af00408ab5c",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-015",
@@ -188,6 +478,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_c13afb271fc74ce4a28b79e59652ee51": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_3e1eb0838e6b4a33b9a090a9c4b998dd": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -196,17 +496,45 @@
           "finding_id": "F-018",
           "finding_sha256": "4833c2dadacdec26b190cf795a2567d0ff2f40bd61b6f76deedb8bf85d3c66c9",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
             "blk_2ad1534d9efb41548a02a2b2a6020ba6",
             "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_47163e69651c48528b3e054d5a5db095"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_4b31b3207abe4695bdb1d9d9c4b5df2f": [
+              "source_candidate"
+            ],
+            "blk_2ad1534d9efb41548a02a2b2a6020ba6": [
+              "source_candidate"
+            ],
+            "blk_5bb120b4d9cd4ceebfc4c15a896ddd48": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_47163e69651c48528b3e054d5a5db095": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_47163e69651c48528b3e054d5a5db095"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+              "exists": true,
+              "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-019",
@@ -222,6 +550,26 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_45a5493bf459424ea614bc2de6d6e514": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_43571d7cab5b47d2b07660a9e43a42c9": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_c63456cda51644db9470fb57f29b27de": [
+              "source_candidate"
+            ],
+            "blk_b8f98350127c4603bb6811846ec13309": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_2258a0dfd8c84b6197e4cbb4d229ea27": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -238,6 +586,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_3efc4048723143beaeb20fa1792f1776": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_13738f8bb6f840fcb0cb37491b612396": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_c5ecdd6fe0d145118c604b663f84bba8": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -252,6 +614,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_6ba4df04a74d4e8d8db22cb4db7aff4f": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -267,6 +635,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_a5c923d5f33046ad9585e4102dc033c7": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_76e892431d7d4c48a09aba49a57b223c": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -283,6 +661,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_1865bf51c17e444491a5621d4a33c331": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_fa4aa30b23024db7b83018947c1c7f74": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_b8f98350127c4603bb6811846ec13309": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -297,6 +689,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_e1d470118a394e9a9e75718113a9b37d": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -311,6 +709,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_1865bf51c17e444491a5621d4a33c331": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -326,6 +730,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_adc4052a68344abf9c8f56861b9294d1": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_1865bf51c17e444491a5621d4a33c331": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -341,6 +755,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_2258a0dfd8c84b6197e4cbb4d229ea27": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f4bf6dec4072413fa43043bf27d880eb": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -349,47 +773,126 @@
           "finding_id": "F-032",
           "finding_sha256": "7a475817414382e914177c66b000aa58bc6ec15eddaad50c59460dbb5936068e",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_13604b1cfe21408f85c2bc28e358b012",
             "blk_019b790b96c0452e9b83c348ec3d429c",
             "blk_b8f98350127c4603bb6811846ec13309"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_b8712be58c8b43f6ac75cfa6420d5479"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_13604b1cfe21408f85c2bc28e358b012": [
+              "source_candidate"
+            ],
+            "blk_019b790b96c0452e9b83c348ec3d429c": [
+              "source_candidate"
+            ],
+            "blk_b8f98350127c4603bb6811846ec13309": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_b8712be58c8b43f6ac75cfa6420d5479": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_b8712be58c8b43f6ac75cfa6420d5479"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_b8712be58c8b43f6ac75cfa6420d5479.png",
+              "exists": true,
+              "sha256": "1e2341ee22473618e8dd909d53c863618bd86d002b9d77d0b4b5e71ef6e9c0ba",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-033",
           "finding_sha256": "29cb3ff690c7906f646adc72a0a3defb324b804dff6f9db56aee29b7b76efb63",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_1865bf51c17e444491a5621d4a33c331",
             "blk_76e892431d7d4c48a09aba49a57b223c"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_8de25b2b318647aeac8b3298fe03a98c"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_1865bf51c17e444491a5621d4a33c331": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_76e892431d7d4c48a09aba49a57b223c": [
+              "source_candidate"
+            ],
+            "blk_8de25b2b318647aeac8b3298fe03a98c": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_8de25b2b318647aeac8b3298fe03a98c"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+              "exists": true,
+              "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-034",
           "finding_sha256": "9393297e6ccb81b93e09b11eb53b2ff4a6e265d368143c88ec6b0e24104c6dca",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_183b00bc56b74dc4b19072a6f269822e",
             "blk_6e394962eb18407fb17b09f063c30a5c"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_6995cff7e34a4a41b99ec565101c4e02"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_183b00bc56b74dc4b19072a6f269822e": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_6e394962eb18407fb17b09f063c30a5c": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_6995cff7e34a4a41b99ec565101c4e02": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_6995cff7e34a4a41b99ec565101c4e02"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+              "exists": true,
+              "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         }
       ],
       "stats": {
@@ -414,8 +917,8 @@
       "findings": 53,
       "pending": 42,
       "context_counts": {
-        "available_bounded_text": 39,
-        "needs_data": 3
+        "available_bounded_text": 32,
+        "needs_data": 10
       },
       "core_field_changes": [],
       "packets": [
@@ -429,6 +932,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_9e12a8bcbfb24db49d81af74c06e24f0": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -443,6 +952,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_55ab0b4be112477eb9dec207df68000e": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -458,6 +973,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_7471e2839fbf42aca0c1f9f94a59bda2": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f249587fe98945f7a1c5d30e102aaa68": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -473,6 +998,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_acc3bf59f8f447f988de16849e40e9f1": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_e65f4bff781945f19da5a4ec2919b764": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -481,18 +1016,51 @@
           "finding_id": "F-005",
           "finding_sha256": "ea04b15dc9e64bb290ad3d0c9576ef8d2bdaff60a191aea8f2882114948658cb",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_90da5d0d361c48008030c2bf87767ced",
             "blk_9167c15ea57c423ea6ad708738bb420f",
             "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
             "blk_9e12a8bcbfb24db49d81af74c06e24f0"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_94b58ecf5d404f7d90c272d267eb2e48"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_90da5d0d361c48008030c2bf87767ced": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_9167c15ea57c423ea6ad708738bb420f": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_96ab0b973faf4cbaa6f1241aa4df16e9": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_9e12a8bcbfb24db49d81af74c06e24f0": [
+              "source_candidate"
+            ],
+            "blk_94b58ecf5d404f7d90c272d267eb2e48": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_94b58ecf5d404f7d90c272d267eb2e48"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+              "exists": true,
+              "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-006",
@@ -504,6 +1072,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_67b9571de5e74033b6c491043f8c87d1": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -519,6 +1093,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_2a57b9d72094420086e4401e9bfbbc9e": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_8a446a40473d48d18d60edba74661d9e": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -533,6 +1117,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_3050f16afc994b889498a2535ea14a52": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -547,6 +1137,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_a5c04128f54f404e900b3ee4e3a854ba": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -561,6 +1157,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -575,6 +1177,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_fed30df45d124919a8b7cc13253733b1": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -583,15 +1191,37 @@
           "finding_id": "F-012",
           "finding_sha256": "05f60fcb3255558c7ce0a6896cc704a40b42289fd08a1a509872a54075a50743",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_296b8547a33a47dbb7a9b8e546d964e0"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_b8c120f6cbc04397b8c5514a03fa3152"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_296b8547a33a47dbb7a9b8e546d964e0": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_b8c120f6cbc04397b8c5514a03fa3152": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_b8c120f6cbc04397b8c5514a03fa3152"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+              "exists": true,
+              "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-013",
@@ -603,6 +1233,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_296b8547a33a47dbb7a9b8e546d964e0": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -618,6 +1254,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_11981549aceb463ba84c7c0de619d2fc": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_30789714316b48908c5addc9bfb135d2": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -626,44 +1272,153 @@
           "finding_id": "F-015",
           "finding_sha256": "cbf20d0d228b62139fae17a0d9bd0533625e3864c404a3ed7741183159e07e59",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_11981549aceb463ba84c7c0de619d2fc",
             "blk_30789714316b48908c5addc9bfb135d2"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_b8c120f6cbc04397b8c5514a03fa3152"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_11981549aceb463ba84c7c0de619d2fc": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_30789714316b48908c5addc9bfb135d2": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_b8c120f6cbc04397b8c5514a03fa3152": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_b8c120f6cbc04397b8c5514a03fa3152"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+              "exists": true,
+              "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-018",
           "finding_sha256": "39ca3c1cda1f0eb5298db257c3a8752094cbb56e5aa69eba2ea46470439fb20d",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_ae35014464b5493f84ca38481c3ffa60"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_64d234df62024a40b06b044dcb8f4bc9"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_ae35014464b5493f84ca38481c3ffa60": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_64d234df62024a40b06b044dcb8f4bc9": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_64d234df62024a40b06b044dcb8f4bc9"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_64d234df62024a40b06b044dcb8f4bc9.png",
+              "exists": true,
+              "sha256": "34e4d8eea4b9128f856f6793d5b330b666d8954956dd96c27b98c5678f1a7351",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-019",
           "finding_sha256": "5974ee64c78c549e9d0bf091458e54ad4f6a3e7ff9a9d07b9890ada0ebb16c3c",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_1601889b50624245a5c590ad23d87175"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_606823ca386e49ffbe2f96d95e08793b",
+            "blk_64d234df62024a40b06b044dcb8f4bc9",
+            "blk_396954f77098430281d203e5380eb32e",
+            "blk_128a43447f394e0687d841e25e436e75"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_1601889b50624245a5c590ad23d87175": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_606823ca386e49ffbe2f96d95e08793b": [
+              "final_finding"
+            ],
+            "blk_64d234df62024a40b06b044dcb8f4bc9": [
+              "final_finding"
+            ],
+            "blk_396954f77098430281d203e5380eb32e": [
+              "final_finding"
+            ],
+            "blk_128a43447f394e0687d841e25e436e75": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_606823ca386e49ffbe2f96d95e08793b",
+            "blk_64d234df62024a40b06b044dcb8f4bc9",
+            "blk_396954f77098430281d203e5380eb32e",
+            "blk_128a43447f394e0687d841e25e436e75"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_606823ca386e49ffbe2f96d95e08793b",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_606823ca386e49ffbe2f96d95e08793b.png",
+              "exists": true,
+              "sha256": "2590ec1fa6878028f58f107b148d7b86b67dd3f6c36285a9b46ae3f1dec76de0",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_64d234df62024a40b06b044dcb8f4bc9.png",
+              "exists": true,
+              "sha256": "34e4d8eea4b9128f856f6793d5b330b666d8954956dd96c27b98c5678f1a7351",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_396954f77098430281d203e5380eb32e",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_396954f77098430281d203e5380eb32e.png",
+              "exists": true,
+              "sha256": "31ba80944012830d7222bb6907053322400d471911e18146498bec0fae13241a",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_128a43447f394e0687d841e25e436e75",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_128a43447f394e0687d841e25e436e75.png",
+              "exists": true,
+              "sha256": "c4063b3b34fed1a321c7724a88cc86016d5dbd1f99a0a0bc5aca57b45a704d9e",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-020",
@@ -675,6 +1430,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_a203939b21504fa6935b621a29929d7d": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -689,6 +1450,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_26b23c5bfabe4917a156a91077b5458d": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -703,6 +1470,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_b4fb33513ca44182af058d09c8ab2dbb": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -717,6 +1490,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_7e913f6c32cb4db7aa9d9b8688b6e979": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -725,15 +1504,37 @@
           "finding_id": "F-024",
           "finding_sha256": "b042cf964f937991b09994ebfc9a3b9ad0da317576f20883da50a690149cdf65",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_3050f16afc994b889498a2535ea14a52"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_3050f16afc994b889498a2535ea14a52": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_6d5640f1a71b440cb7ca3f2c177af08a": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+              "exists": true,
+              "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-025",
@@ -745,6 +1546,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -760,6 +1567,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_d0ef4dbea56d4b74b97a10119fbee223": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -775,6 +1592,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_7471e2839fbf42aca0c1f9f94a59bda2": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f249587fe98945f7a1c5d30e102aaa68": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -790,6 +1617,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_d0ef4dbea56d4b74b97a10119fbee223": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -805,6 +1642,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_d0ef4dbea56d4b74b97a10119fbee223": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -820,6 +1667,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_d0ef4dbea56d4b74b97a10119fbee223": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -835,6 +1692,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_5c7cb0c7b68c4f78ac019a2e7535195f": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_5e8d45b076bf429e863f27b16da7b261": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -850,6 +1717,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_9e9fdca2261a4324959220546412f377": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f409d1ebb4764f25aa0c123ad7fd22e9": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -865,6 +1742,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_033ce4c4cbae41368d96485419afe95a": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_fd984f8c5d03427497ffd926feaf8ed5": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -873,17 +1760,47 @@
           "finding_id": "F-034",
           "finding_sha256": "5c11b2ee22fbb04403d6981822a4aaef1020f6d819f41bc806c3577d73489312",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_90da5d0d361c48008030c2bf87767ced",
             "blk_9167c15ea57c423ea6ad708738bb420f",
             "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_693e53fec5744b27b721eb667e933ef5"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_90da5d0d361c48008030c2bf87767ced": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_9167c15ea57c423ea6ad708738bb420f": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_96ab0b973faf4cbaa6f1241aa4df16e9": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_693e53fec5744b27b721eb667e933ef5": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_693e53fec5744b27b721eb667e933ef5"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+              "exists": true,
+              "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-035",
@@ -895,6 +1812,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_c2e6708f6356460eb04d337fd749e8c7": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -910,6 +1833,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_29a310ba9cf94b72b83f0944dfb47467": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_a84dc3455457476dadbc35029e2e7ae8": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -924,6 +1857,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_3050f16afc994b889498a2535ea14a52": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -940,6 +1879,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_90da5d0d361c48008030c2bf87767ced": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_9167c15ea57c423ea6ad708738bb420f": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_96ab0b973faf4cbaa6f1241aa4df16e9": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -956,6 +1909,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_90da5d0d361c48008030c2bf87767ced": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_9167c15ea57c423ea6ad708738bb420f": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_96ab0b973faf4cbaa6f1241aa4df16e9": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -970,6 +1937,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_8c5527e3317248dca7d78ca059f0ec46": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -984,6 +1957,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_ae35014464b5493f84ca38481c3ffa60": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -997,13 +1976,32 @@
           "unresolved_block_ids": [
             "blk_cc80e7962a094791b984d8fb5391e886",
             "blk_27af51f0cd26488ea08ffa55589b0c3e",
-            "blk_94b58ecf5d404f7d90c272d267eb2e48"
+            "blk_94b58ecf5d404f7d90c272d267eb2e48",
+            "blk_06029d59a01b4b779037ffcee1ae5260"
           ],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_cc80e7962a094791b984d8fb5391e886": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_27af51f0cd26488ea08ffa55589b0c3e": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_94b58ecf5d404f7d90c272d267eb2e48": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_06029d59a01b4b779037ffcee1ae5260": [
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [
             "blk_cc80e7962a094791b984d8fb5391e886",
             "blk_27af51f0cd26488ea08ffa55589b0c3e",
-            "blk_94b58ecf5d404f7d90c272d267eb2e48"
+            "blk_94b58ecf5d404f7d90c272d267eb2e48",
+            "blk_06029d59a01b4b779037ffcee1ae5260"
           ],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": [
@@ -1030,6 +2028,14 @@
               "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af",
               "attached_to_model": false,
               "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+              "exists": true,
+              "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
             }
           ]
         },
@@ -1044,6 +2050,16 @@
             "blk_6d5640f1a71b440cb7ca3f2c177af08a"
           ],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_b8c120f6cbc04397b8c5514a03fa3152": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_6d5640f1a71b440cb7ca3f2c177af08a": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [
             "blk_b8c120f6cbc04397b8c5514a03fa3152",
             "blk_6d5640f1a71b440cb7ca3f2c177af08a"
@@ -1081,6 +2097,24 @@
             "blk_049ee88c136045da9910995a4c44a1e8"
           ],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_871a2c95697d4a93adb86dd3e2456614": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_bd55e9b9fbff4d0886c6084a326ec05e": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_94b58ecf5d404f7d90c272d267eb2e48": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_049ee88c136045da9910995a4c44a1e8": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [
             "blk_871a2c95697d4a93adb86dd3e2456614",
             "blk_bd55e9b9fbff4d0886c6084a326ec05e",
@@ -1146,7 +2180,8 @@
       "findings": 22,
       "pending": 11,
       "context_counts": {
-        "available_bounded_text": 11
+        "available_bounded_text": 9,
+        "needs_data": 2
       },
       "core_field_changes": [],
       "packets": [
@@ -1162,6 +2197,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_9229dc363c184ae3abca81013e330dfa": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ae58e44ff89a43deb9ed9088e9778125": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_da80f01d01214295afe19fe6063fe5e1": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1180,6 +2229,25 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_507c287c56f04302a7ca1097e7af79ff": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_9229dc363c184ae3abca81013e330dfa": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ae58e44ff89a43deb9ed9088e9778125": [
+              "source_candidate"
+            ],
+            "blk_d79ac3d31db644eea9b53e1860e4c51c": [
+              "source_candidate"
+            ],
+            "blk_da80f01d01214295afe19fe6063fe5e1": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1195,6 +2263,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_136a04c93a0c42ea92caf6551369e3b4": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_6ff6b58a285e4ec1b276342a846e08e7": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1210,6 +2288,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_507c287c56f04302a7ca1097e7af79ff": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_d79ac3d31db644eea9b53e1860e4c51c": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1225,6 +2313,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_507c287c56f04302a7ca1097e7af79ff": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_d79ac3d31db644eea9b53e1860e4c51c": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1233,18 +2331,50 @@
           "finding_id": "F-006",
           "finding_sha256": "abd0ff000628d8d548cf35ee8a2b3133a3924f97a3ca07e954a7d535981e7f66",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_507c287c56f04302a7ca1097e7af79ff",
             "blk_5a677abb29e64cc2bfdf78c166eaf99a",
             "blk_ba73c64702884635a06b2882d4e2bf91",
             "blk_d79ac3d31db644eea9b53e1860e4c51c"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_b9257ef1636a40f9a224955e061eb46e"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_507c287c56f04302a7ca1097e7af79ff": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_5a677abb29e64cc2bfdf78c166eaf99a": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ba73c64702884635a06b2882d4e2bf91": [
+              "source_candidate"
+            ],
+            "blk_d79ac3d31db644eea9b53e1860e4c51c": [
+              "source_candidate"
+            ],
+            "blk_b9257ef1636a40f9a224955e061eb46e": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_b9257ef1636a40f9a224955e061eb46e"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png",
+              "exists": true,
+              "sha256": "7dd38136e060454182817ea43ee1391af5c00ccef3033610e3f9bcd509207f98",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-007",
@@ -1259,6 +2389,22 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_136a04c93a0c42ea92caf6551369e3b4": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_2f3068ab00334ed49a43fbc0d168a15b": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_6ff6b58a285e4ec1b276342a846e08e7": [
+              "source_candidate"
+            ],
+            "blk_747f574e1fa54f62aa0ad09874faa314": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1267,7 +2413,7 @@
           "finding_id": "F-008",
           "finding_sha256": "343ac96d6fee082847387f54492cc29372c890ecc422c6d0e338cbe81ae9adeb",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_2f3068ab00334ed49a43fbc0d168a15b",
             "blk_747f574e1fa54f62aa0ad09874faa314",
@@ -1275,11 +2421,59 @@
             "blk_ae58e44ff89a43deb9ed9088e9778125",
             "blk_da80f01d01214295afe19fe6063fe5e1"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_d9481af62d6447f6b591d328f7d0d3a9",
+            "blk_c725ce887579494f86b4968fc113b951"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_2f3068ab00334ed49a43fbc0d168a15b": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_747f574e1fa54f62aa0ad09874faa314": [
+              "source_candidate"
+            ],
+            "blk_9229dc363c184ae3abca81013e330dfa": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ae58e44ff89a43deb9ed9088e9778125": [
+              "source_candidate"
+            ],
+            "blk_da80f01d01214295afe19fe6063fe5e1": [
+              "source_candidate"
+            ],
+            "blk_d9481af62d6447f6b591d328f7d0d3a9": [
+              "final_finding"
+            ],
+            "blk_c725ce887579494f86b4968fc113b951": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_d9481af62d6447f6b591d328f7d0d3a9",
+            "blk_c725ce887579494f86b4968fc113b951"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_d9481af62d6447f6b591d328f7d0d3a9",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_d9481af62d6447f6b591d328f7d0d3a9.png",
+              "exists": true,
+              "sha256": "b9babbb428e2fe61966f47c92a4d27c4c79594752908b621beaab0d9b56c49bc",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_c725ce887579494f86b4968fc113b951",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_c725ce887579494f86b4968fc113b951.png",
+              "exists": true,
+              "sha256": "ce214ad533c2692e49e588f3bfb80c3fbe146d71176312ecaff106e69a3525a1",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-009",
@@ -1293,6 +2487,18 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_9229dc363c184ae3abca81013e330dfa": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ae58e44ff89a43deb9ed9088e9778125": [
+              "source_candidate"
+            ],
+            "blk_da80f01d01214295afe19fe6063fe5e1": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1308,6 +2514,15 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_136a04c93a0c42ea92caf6551369e3b4": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_6ff6b58a285e4ec1b276342a846e08e7": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1322,6 +2537,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_61f174f49da34cb0821c0b91863cd608": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1365,6 +2586,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_531e843c117243a3b1582cb3399f4681": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_5e4c3725456d4cafa74220f8a1fad14c": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f63af88de2a840e49ca709d736eaa225": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1382,6 +2617,24 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_531e843c117243a3b1582cb3399f4681": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_5e4c3725456d4cafa74220f8a1fad14c": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_7b0802767f0147c197b0a35334b4a7ae": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f63af88de2a840e49ca709d736eaa225": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1398,6 +2651,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_531e843c117243a3b1582cb3399f4681": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_5e4c3725456d4cafa74220f8a1fad14c": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f63af88de2a840e49ca709d736eaa225": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1415,6 +2682,24 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_7b0802767f0147c197b0a35334b4a7ae": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_addaa8965de54d218095d13652f30388": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_e0e6bcff961f41f3ad9620d662bd7b43": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ec977eb41e834dc8b7b332a66932a777": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1430,6 +2715,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_7b0802767f0147c197b0a35334b4a7ae": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_b9096ac74f95416da66cc607a9828c3f": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1447,6 +2742,24 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_7b0802767f0147c197b0a35334b4a7ae": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_addaa8965de54d218095d13652f30388": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_e0e6bcff961f41f3ad9620d662bd7b43": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ec977eb41e834dc8b7b332a66932a777": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1462,6 +2775,16 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_7b0802767f0147c197b0a35334b4a7ae": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_b9096ac74f95416da66cc607a9828c3f": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1478,6 +2801,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_531e843c117243a3b1582cb3399f4681": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_5e4c3725456d4cafa74220f8a1fad14c": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f63af88de2a840e49ca709d736eaa225": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1497,6 +2834,32 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_531e843c117243a3b1582cb3399f4681": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_5e4c3725456d4cafa74220f8a1fad14c": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_addaa8965de54d218095d13652f30388": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_e0e6bcff961f41f3ad9620d662bd7b43": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ec977eb41e834dc8b7b332a66932a777": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f63af88de2a840e49ca709d736eaa225": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1513,6 +2876,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_addaa8965de54d218095d13652f30388": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_e0e6bcff961f41f3ad9620d662bd7b43": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_ec977eb41e834dc8b7b332a66932a777": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1540,7 +2917,8 @@
       "findings": 29,
       "pending": 14,
       "context_counts": {
-        "available_bounded_text": 14
+        "needs_data": 3,
+        "available_bounded_text": 11
       },
       "core_field_changes": [],
       "packets": [
@@ -1548,18 +2926,61 @@
           "finding_id": "F-001",
           "finding_sha256": "43a5ebf048b4675a509ac16b05c328022e12b391c49324d3622c893c719272e5",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_0322283990a44921bed00f2feff715a4",
             "blk_686c23c287f1430199897dff70be0878",
             "blk_c64786c6b8ed4532a0ff7c797c3f335b",
             "blk_d01ac56c817044c4a525d02e3251ba0e"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_dfae064f26494949a92afe3b0f6f9158",
+            "blk_5cbadcc65a5549348d33245b22ca8bd4"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_0322283990a44921bed00f2feff715a4": [
+              "source_candidate"
+            ],
+            "blk_686c23c287f1430199897dff70be0878": [
+              "source_candidate"
+            ],
+            "blk_c64786c6b8ed4532a0ff7c797c3f335b": [
+              "source_candidate"
+            ],
+            "blk_d01ac56c817044c4a525d02e3251ba0e": [
+              "source_candidate"
+            ],
+            "blk_dfae064f26494949a92afe3b0f6f9158": [
+              "final_finding"
+            ],
+            "blk_5cbadcc65a5549348d33245b22ca8bd4": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_dfae064f26494949a92afe3b0f6f9158",
+            "blk_5cbadcc65a5549348d33245b22ca8bd4"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_dfae064f26494949a92afe3b0f6f9158",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_dfae064f26494949a92afe3b0f6f9158.png",
+              "exists": true,
+              "sha256": "69e3cecdabaadd863bd889864419423a11c0742197f05f323b6aa66aac59ac40",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_5cbadcc65a5549348d33245b22ca8bd4",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_5cbadcc65a5549348d33245b22ca8bd4.png",
+              "exists": true,
+              "sha256": "2216ff3413bddc65ada1bf4927d4ccea92bc3391de1c40d4bfd63ed1db08d4d4",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-002",
@@ -1577,6 +2998,31 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_082880f1dc1c45628641110a8a4f8f44": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_686c23c287f1430199897dff70be0878": [
+              "source_candidate"
+            ],
+            "blk_733ee397f6cf418fb158aa823b35cdcc": [
+              "source_candidate"
+            ],
+            "blk_aa5ad48812d541538c628ba1476d1b05": [
+              "source_candidate"
+            ],
+            "blk_c64786c6b8ed4532a0ff7c797c3f335b": [
+              "source_candidate"
+            ],
+            "blk_d01ac56c817044c4a525d02e3251ba0e": [
+              "source_candidate"
+            ],
+            "blk_e6ea1f0742914463bbf7ce02d97c5afa": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1594,6 +3040,22 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_686c23c287f1430199897dff70be0878": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_9b1d774c2f6c4127b2f8618e3792a647": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_c64786c6b8ed4532a0ff7c797c3f335b": [
+              "source_candidate"
+            ],
+            "blk_d01ac56c817044c4a525d02e3251ba0e": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1611,6 +3073,22 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_686c23c287f1430199897dff70be0878": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_9b1d774c2f6c4127b2f8618e3792a647": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_c64786c6b8ed4532a0ff7c797c3f335b": [
+              "source_candidate"
+            ],
+            "blk_d01ac56c817044c4a525d02e3251ba0e": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1628,6 +3106,22 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_686c23c287f1430199897dff70be0878": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_9b1d774c2f6c4127b2f8618e3792a647": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_c64786c6b8ed4532a0ff7c797c3f335b": [
+              "source_candidate"
+            ],
+            "blk_d01ac56c817044c4a525d02e3251ba0e": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1644,6 +3138,18 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_686c23c287f1430199897dff70be0878": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_c64786c6b8ed4532a0ff7c797c3f335b": [
+              "source_candidate"
+            ],
+            "blk_d01ac56c817044c4a525d02e3251ba0e": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1658,6 +3164,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_e6ea1f0742914463bbf7ce02d97c5afa": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1672,6 +3184,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_e6ea1f0742914463bbf7ce02d97c5afa": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1686,6 +3204,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_2832f2bda58d416ab8c388c81c339b02": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1700,6 +3224,12 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_5a8674f9dc2343498ae3b666f20e67c9": [
+              "source_candidate",
+              "final_finding"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1708,7 +3238,7 @@
           "finding_id": "F-011",
           "finding_sha256": "0a095ad799e69673bba1fdea7c53679047e1275542af8d61d3e6690a5ddcd15f",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_082880f1dc1c45628641110a8a4f8f44",
             "blk_686c23c287f1430199897dff70be0878",
@@ -1717,11 +3247,60 @@
             "blk_c64786c6b8ed4532a0ff7c797c3f335b",
             "blk_d01ac56c817044c4a525d02e3251ba0e"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_5c59e6512a18487d9748e1766d2233b2",
+            "blk_d2571e41e76d4f328298d074001845db"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_082880f1dc1c45628641110a8a4f8f44": [
+              "source_candidate"
+            ],
+            "blk_686c23c287f1430199897dff70be0878": [
+              "source_candidate"
+            ],
+            "blk_733ee397f6cf418fb158aa823b35cdcc": [
+              "source_candidate"
+            ],
+            "blk_aa5ad48812d541538c628ba1476d1b05": [
+              "source_candidate"
+            ],
+            "blk_c64786c6b8ed4532a0ff7c797c3f335b": [
+              "source_candidate"
+            ],
+            "blk_d01ac56c817044c4a525d02e3251ba0e": [
+              "source_candidate"
+            ],
+            "blk_5c59e6512a18487d9748e1766d2233b2": [
+              "final_finding"
+            ],
+            "blk_d2571e41e76d4f328298d074001845db": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_5c59e6512a18487d9748e1766d2233b2",
+            "blk_d2571e41e76d4f328298d074001845db"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_5c59e6512a18487d9748e1766d2233b2",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_5c59e6512a18487d9748e1766d2233b2.png",
+              "exists": true,
+              "sha256": "5b03eccc5f3b197ae3cc39cc517a61f429c8b1db084f0c388136307ccb853bc2",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_d2571e41e76d4f328298d074001845db",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_d2571e41e76d4f328298d074001845db.png",
+              "exists": true,
+              "sha256": "cbe1a352b0351cb8d6e1feae822f80c3a0cc8662c2e7948530993d8930d2dc6d",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-012",
@@ -1735,6 +3314,18 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_082880f1dc1c45628641110a8a4f8f44": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_733ee397f6cf418fb158aa823b35cdcc": [
+              "source_candidate"
+            ],
+            "blk_aa5ad48812d541538c628ba1476d1b05": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1743,15 +3334,37 @@
           "finding_id": "F-013",
           "finding_sha256": "c39cabd2ad520f7d39b25ef6ce8dfc79f81394642d1341f0473043b382b2d06a",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_9b1d774c2f6c4127b2f8618e3792a647"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_f55a34ccc6704860863578612dabc254"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_9b1d774c2f6c4127b2f8618e3792a647": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_f55a34ccc6704860863578612dabc254": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_f55a34ccc6704860863578612dabc254"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_f55a34ccc6704860863578612dabc254",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_f55a34ccc6704860863578612dabc254.png",
+              "exists": true,
+              "sha256": "739211db1e32875132edfd3e612331c6c34d7cbaaa2a88703022e5bf172f7856",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-014",
@@ -1768,6 +3381,28 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_082880f1dc1c45628641110a8a4f8f44": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_686c23c287f1430199897dff70be0878": [
+              "source_candidate",
+              "final_finding"
+            ],
+            "blk_733ee397f6cf418fb158aa823b35cdcc": [
+              "source_candidate"
+            ],
+            "blk_aa5ad48812d541538c628ba1476d1b05": [
+              "source_candidate"
+            ],
+            "blk_c64786c6b8ed4532a0ff7c797c3f335b": [
+              "source_candidate"
+            ],
+            "blk_d01ac56c817044c4a525d02e3251ba0e": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1795,7 +3430,8 @@
       "findings": 49,
       "pending": 26,
       "context_counts": {
-        "available_bounded_text": 26
+        "available_bounded_text": 19,
+        "needs_data": 7
       },
       "core_field_changes": [],
       "packets": [
@@ -1810,6 +3446,14 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_d90c772851514a0a9c65cdd019e56957": [
+              "source_candidate"
+            ],
+            "blk_67c8cc82d7e24f738797d9b75ce14e97": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1818,15 +3462,36 @@
           "finding_id": "F-002",
           "finding_sha256": "0529087b42586ce558d22c2c41a7818dccda3689ef5a5ac0614e4ac0f8fd5aad",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_c5f0556f94c14503bfe178ef5941c077"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_c5f0556f94c14503bfe178ef5941c077": [
+              "source_candidate"
+            ],
+            "blk_4e968dd71c7149aca85e4195d5c3de49": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_4e968dd71c7149aca85e4195d5c3de49.png",
+              "exists": true,
+              "sha256": "a5b8b99f7c248661b1a326103a59062fb9691488c4e6c7f2c5f6275e166e3bf5",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-003",
@@ -1838,6 +3503,11 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_c5f0556f94c14503bfe178ef5941c077": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1846,65 +3516,155 @@
           "finding_id": "F-004",
           "finding_sha256": "7d6efed9b3ab0991653e0290fb8ece0282732faeb15fb52b5d4a4c7ecf268558",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_c5f0556f94c14503bfe178ef5941c077"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_c5f0556f94c14503bfe178ef5941c077": [
+              "source_candidate"
+            ],
+            "blk_4e968dd71c7149aca85e4195d5c3de49": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_4e968dd71c7149aca85e4195d5c3de49.png",
+              "exists": true,
+              "sha256": "a5b8b99f7c248661b1a326103a59062fb9691488c4e6c7f2c5f6275e166e3bf5",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-005",
           "finding_sha256": "dbc16a251e6c6408177df171fda8f223301201531808233a94bc7a47c6c85d93",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_5b30188592764230a7cd894838a60430",
             "blk_7ca68a936c85428dbd4b60b2893398a2"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_513e35c4f8a7432986e9a498d4573996"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_5b30188592764230a7cd894838a60430": [
+              "source_candidate"
+            ],
+            "blk_7ca68a936c85428dbd4b60b2893398a2": [
+              "source_candidate"
+            ],
+            "blk_513e35c4f8a7432986e9a498d4573996": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_513e35c4f8a7432986e9a498d4573996"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_513e35c4f8a7432986e9a498d4573996.png",
+              "exists": true,
+              "sha256": "a01102c8349160a0b2f4a2f050c1821c1a185575010318cdbc589a1a80b09798",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-006",
           "finding_sha256": "c24b37091389c46661d1bcdf8bf7558fdca3815e258b9b6c9f6766ec36dfb83f",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_fb5f780dae7a475ca6c249f62b64771e"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_fb5f780dae7a475ca6c249f62b64771e": [
+              "source_candidate"
+            ],
+            "blk_aac0d4eb9b294c218e9de35c7a5dda11": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+              "exists": true,
+              "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-009",
           "finding_sha256": "5176b42f9ca2bc3f7350af17c243e438280fcd3f7b750266ea3cd61c7c0b6597",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_fb5f780dae7a475ca6c249f62b64771e",
             "blk_af87003578d3440a9be734a66a09af90"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_fb5f780dae7a475ca6c249f62b64771e": [
+              "source_candidate"
+            ],
+            "blk_af87003578d3440a9be734a66a09af90": [
+              "source_candidate"
+            ],
+            "blk_aac0d4eb9b294c218e9de35c7a5dda11": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+              "exists": true,
+              "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-020",
           "finding_sha256": "f1da6719b9849cb56f26bb93ec78569a9591ad6eff753b56d73fb97febf1a05c",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_9d136cd00b634d6ebfb2c450f4afad8c",
             "blk_3e3c5ece56bd4622a52dd2de301562a5",
@@ -1912,25 +3672,92 @@
             "blk_7170586af51c43f79c96734a40269d7d",
             "blk_af87003578d3440a9be734a66a09af90"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_692503882d074efa83d0d595875347eb",
+            "blk_aaed5c43e84b4efdaa0186aacc4b8dd2"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_9d136cd00b634d6ebfb2c450f4afad8c": [
+              "source_candidate"
+            ],
+            "blk_3e3c5ece56bd4622a52dd2de301562a5": [
+              "source_candidate"
+            ],
+            "blk_49e2914a00634fe6869970613f9bc4ca": [
+              "source_candidate"
+            ],
+            "blk_7170586af51c43f79c96734a40269d7d": [
+              "source_candidate"
+            ],
+            "blk_af87003578d3440a9be734a66a09af90": [
+              "source_candidate"
+            ],
+            "blk_692503882d074efa83d0d595875347eb": [
+              "final_finding"
+            ],
+            "blk_aaed5c43e84b4efdaa0186aacc4b8dd2": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_692503882d074efa83d0d595875347eb",
+            "blk_aaed5c43e84b4efdaa0186aacc4b8dd2"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_692503882d074efa83d0d595875347eb",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_692503882d074efa83d0d595875347eb.png",
+              "exists": true,
+              "sha256": "1226081366c8abccd98605f4c615f4498cc12b16b2a2b58dcb74a637444494b1",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_aaed5c43e84b4efdaa0186aacc4b8dd2",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_aaed5c43e84b4efdaa0186aacc4b8dd2.png",
+              "exists": true,
+              "sha256": "0c2a7403ee1605157e817cc57c9bcdadd708ae642909c58dd5207d2543ad25a1",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-029",
           "finding_sha256": "013464df755ea764f23039c8c2c1eb32fd5c186bd67465862ee74ea7dd9e75dd",
           "status": "pending",
-          "source_context_status": "available_bounded_text",
+          "source_context_status": "needs_data",
           "supplied_text_block_ids": [
             "blk_f3f718605a024394b9026b08fa4c9b20"
           ],
-          "unresolved_block_ids": [],
+          "unresolved_block_ids": [
+            "blk_e9d70b5ef3504a009fe4711839535a08"
+          ],
           "budgeted_block_ids": [],
-          "required_graphic_block_ids": [],
+          "reference_origins": {
+            "blk_f3f718605a024394b9026b08fa4c9b20": [
+              "source_candidate"
+            ],
+            "blk_e9d70b5ef3504a009fe4711839535a08": [
+              "final_finding"
+            ]
+          },
+          "required_graphic_block_ids": [
+            "blk_e9d70b5ef3504a009fe4711839535a08"
+          ],
           "missing_or_ambiguous_block_ids": [],
-          "graphic_files": []
+          "graphic_files": [
+            {
+              "block_id": "blk_e9d70b5ef3504a009fe4711839535a08",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_e9d70b5ef3504a009fe4711839535a08.png",
+              "exists": true,
+              "sha256": "03ba8e98ce77522284cecb783768d9f302dc7dd6b716f84fc6ff94411c3bbdce",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-030",
@@ -1943,6 +3770,14 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_7d22e811017e4e969b2d732e9e30c50d": [
+              "source_candidate"
+            ],
+            "blk_7ca68a936c85428dbd4b60b2893398a2": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1960,6 +3795,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_c5f0556f94c14503bfe178ef5941c077": [
+              "source_candidate"
+            ],
+            "blk_7d22e811017e4e969b2d732e9e30c50d": [
+              "source_candidate"
+            ],
+            "blk_5b30188592764230a7cd894838a60430": [
+              "source_candidate"
+            ],
+            "blk_7ca68a936c85428dbd4b60b2893398a2": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1976,6 +3825,17 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_fb5f780dae7a475ca6c249f62b64771e": [
+              "source_candidate"
+            ],
+            "blk_f2b273baee994702906a6e5d94a43063": [
+              "source_candidate"
+            ],
+            "blk_29be4ff018f040daaa2000c0a3ebde08": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -1994,6 +3854,23 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_d90c772851514a0a9c65cdd019e56957": [
+              "source_candidate"
+            ],
+            "blk_16237a8ebd10423194e4a2b0f4b82c26": [
+              "source_candidate"
+            ],
+            "blk_73536f4c222b401e8da714ed88d23fce": [
+              "source_candidate"
+            ],
+            "blk_17ebeac60c9b497cb8c124a8e3b66068": [
+              "source_candidate"
+            ],
+            "blk_7170586af51c43f79c96734a40269d7d": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2008,6 +3885,11 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_1da24da5ad594599aa59defe9fde265b": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2022,6 +3904,11 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_0779457166304b91a87d7b7902f8359f": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2040,6 +3927,23 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_448a82ffb63145aa96b55305485c4ee5": [
+              "source_candidate"
+            ],
+            "blk_7d46590ad5b64af08f435cadad0053cd": [
+              "source_candidate"
+            ],
+            "blk_e106d0b41bf9480aaf187ef2259994db": [
+              "source_candidate"
+            ],
+            "blk_79370c7a344c44559b2d828291b6a1b6": [
+              "source_candidate"
+            ],
+            "blk_f3f718605a024394b9026b08fa4c9b20": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2055,6 +3959,14 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_79370c7a344c44559b2d828291b6a1b6": [
+              "source_candidate"
+            ],
+            "blk_f3f718605a024394b9026b08fa4c9b20": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2069,6 +3981,11 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_1da24da5ad594599aa59defe9fde265b": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2083,6 +4000,11 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_99cc8bf95861437186be76b36e9d446b": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2098,6 +4020,14 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_99098cf6f63347aca6b7e76e43ab3336": [
+              "source_candidate"
+            ],
+            "blk_53e5d0ecb2fe4e9480416db361afefda": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2112,6 +4042,11 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_d90c772851514a0a9c65cdd019e56957": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2129,6 +4064,20 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_d90c772851514a0a9c65cdd019e56957": [
+              "source_candidate"
+            ],
+            "blk_b3482bfd0cc04cb8b9f47c726e9147f3": [
+              "source_candidate"
+            ],
+            "blk_397b5080da9f400ea3bd03c1c1bfea5e": [
+              "source_candidate"
+            ],
+            "blk_628818db493e46e7bdccc75b01afbd16": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2145,6 +4094,17 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27": [
+              "source_candidate"
+            ],
+            "blk_82bd0b6201d04037beca3195d87933ce": [
+              "source_candidate"
+            ],
+            "blk_8a5db6616dac4b8bbe73c13b7c54a140": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2159,6 +4119,11 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_d90c772851514a0a9c65cdd019e56957": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2173,6 +4138,11 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_d90c772851514a0a9c65cdd019e56957": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []
@@ -2187,6 +4157,11 @@
           ],
           "unresolved_block_ids": [],
           "budgeted_block_ids": [],
+          "reference_origins": {
+            "blk_d90c772851514a0a9c65cdd019e56957": [
+              "source_candidate"
+            ]
+          },
           "required_graphic_block_ids": [],
           "missing_or_ambiguous_block_ids": [],
           "graphic_files": []

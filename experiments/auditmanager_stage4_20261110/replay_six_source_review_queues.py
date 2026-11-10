@@ -50,6 +50,7 @@ def main():
                     'unresolved_block_ids': p['unresolved_block_ids'], 'budgeted_block_ids': p['budgeted_block_ids']}
                    for p in queue['packets']]
         for packet, summary in zip(queue['packets'], packets):
+            summary['reference_origins'] = packet.get('reference_origins', {})
             summary['required_graphic_block_ids'] = packet['required_graphic_block_ids']
             summary['missing_or_ambiguous_block_ids'] = packet['missing_or_ambiguous_block_ids']
             summary['graphic_files'] = []

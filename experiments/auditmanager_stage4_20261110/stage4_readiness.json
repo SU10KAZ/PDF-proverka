@@ -367,13 +367,15 @@
     "boundary": "Expanded review workload is not semantic acceptance; no automatic model dispatch. Earlier EOM 19-case control queue and prepared pilot remain frozen known-case inputs."
   },
   "source_queue_graphic_context": {
-    "tests_passed": 21,
-    "packets_requiring_graphics": 3,
-    "graphic_reference_occurrences": 9,
-    "unique_graphic_files": 8,
+    "tests_passed": 26,
+    "packets_requiring_graphics": 32,
+    "graphic_reference_occurrences": 49,
+    "unique_graphic_files": 40,
     "all_required_files_exist": true,
     "source": "six_source_review_queue_replay.json",
     "attached_to_model": false,
-    "boundary": "Classifies source_review_requests references only. Existing files are not proof of readable content, complete final-claim context or semantic correctness. Final finding direct references and linked documents may need additional context."
+    "scope": "Both original-candidate and final-finding explicit references, with reference origins preserved.",
+    "supersedes_previous_scope": "Previous 3 packets/8 images counted candidate request references only, omitting final-finding references.",
+    "boundary": "File availability is not visual inspection, complete cross-document context or semantic acceptance. Frozen EOM pilot payload unchanged."
   }
 }
