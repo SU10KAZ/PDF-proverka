@@ -1,0 +1,17 @@
+{
+  "findings_sha256": "cdc49f123ff177b155d76cb275c8d592657b36dec22e5411ffe74edcf91c24cf",
+  "queue_sha256": "ab5093f06a81ffb419b0dd5385d2cd3a2f5fc67bc2275c75f281885564047ab9",
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "scope": "Bounded source verification plus adjudication, using the real workflow; candidate decisions require independent admission review.",
+  "initial_requests": [
+    {
+      "finding_id": "F-024",
+      "request_sha256": "553d8c24a65e070a535c6bbd4219ca2e0a0cb6b3672d48d824bd4bc03fcbf82e",
+      "message_chars": 39594,
+      "image_count": 14,
+      "image_bytes": 10890458
+    }
+  ]
+}

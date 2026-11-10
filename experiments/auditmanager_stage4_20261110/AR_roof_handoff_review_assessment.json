@@ -1,0 +1,71 @@
+{
+  "status": "source_review_supports_question_but_adjudication_defers",
+  "model": "codex/gpt-6-astra",
+  "images_supplied": 14,
+  "source_review_question_claim": "F-024-C6",
+  "source_review_question_status": "supported",
+  "adjudication_action": "defer",
+  "applied_to_report": false,
+  "context_loss_remaining": "Terminal output had no context_queries; handoff omitted prior operation queries retained inside the bound request. Adjudication cited empty reported_context_queries.",
+  "policy_issue": "Adjudication asks for supported defect core and treats incomplete search as insufficient basis for question; requires separate policy evaluation, not forced retain.",
+  "semantic_acceptance": false,
+  "full_acceptance_proven": false,
+  "evidence_files": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/00_followup.json",
+      "sha256": "0e606d2645258342934ffcfceefb71d26c3a10e85bd54704d90fb4ee1a2f84bc"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/00_review/attempt.json",
+      "sha256": "5865f5376683a32a2f2115be351985699665e5e15559cc3b569fe3cdb2cde48a"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/00_review/request.json",
+      "sha256": "e213aecfe2e5bf53e2cc99cfacf117cbe3478b3b93969c1cb9321e94a02d679e"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/00_review/result.json",
+      "sha256": "95246cc30e587cd4c7574e43c8da14a20e41bff43fe9011b44957e9f24d23dd6"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/00_validation.json",
+      "sha256": "4b2466e609281931e60079e5956969ccfbd2ad4fa85088eb32b22c84edf64201"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/05_adjudication/attempt.json",
+      "sha256": "17096c7634a013e5357cdc26d1818d2519f0a6c8089fec17270a3747c128980c"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/05_adjudication/request.json",
+      "sha256": "4500683bf9598c2b5125b6b52b5b5a4a33b22917f6aa2e7cbbb212193b13604e"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/05_adjudication/result.json",
+      "sha256": "cc99f83f2c52a68c1031b0c87005c8e83e65ead259acc2db68f82f9ebb8712b5"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/binding.json",
+      "sha256": "fcea680d280ef7b9ad5d3c32f08b3530256610c74d67d6454376865847245e9b"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024/candidate.json",
+      "sha256": "8407c7cae6dc493288b024d41d66602dd104482bf80ca9978219fe66326115fa"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/F-024_initial_request.json",
+      "sha256": "82a71adb7156ed116ec4447605f2c0530664a1fef1e0f1b706d5d508fabd4047"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/findings.json",
+      "sha256": "c807ae9d9bfa91fb0b7eac8c68168c8b3b716a30099eca99eb83e7c21261aca7"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/manifest.json",
+      "sha256": "23b7f8196e6cea49a63a754d578c9809e8565c188569e3697c3d95f2856f3b2c"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_source_evidence/queue.json",
+      "sha256": "a239cf3e953d3c1e15900d240d4448790ddd330db826e432f3f5449d0f70178d"
+    }
+  ]
+}

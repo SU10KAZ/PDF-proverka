@@ -1,0 +1,12 @@
+{
+  "status": "references_recovered_technical_question_not_yet_recovered",
+  "model": "codex/gpt-6-astra",
+  "images_inspected_reported": 10,
+  "calculation_reference_present": true,
+  "technical_load_path_finding_emitted": false,
+  "candidate_findings": 2,
+  "candidate_scope": "Document navigation questions only: duplicate sheet 12 and differing KM4.2/KM5.2 references. Not admitted or counted as recovered rope-load finding.",
+  "next_action": "Check actual availability and identity of linked KM volumes before claiming absent calculation or concluding engineer question. Preserve scope and current source version.",
+  "semantic_acceptance": false,
+  "full_acceptance_proven": false
+}
