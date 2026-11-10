@@ -51,7 +51,7 @@ def _check_decision(response, decision):
         raise ValueError('unrefuted_defect_basis_cannot_be_suppressed')
     if action in ('retain','revise') and not any(r['verdict']=='supported' for r in bases):
         raise ValueError('supported_defect_basis_required')
-    if action=='retain' and any(r['verdict']!='supported' for r in bases):
+    if action=='retain' and any(r['verdict']!='supported' for r in reviews):
         raise ValueError('mixed_basis_requires_revision')
     if action in ('revise','question'):
         fields=decision.get('approved_fields')

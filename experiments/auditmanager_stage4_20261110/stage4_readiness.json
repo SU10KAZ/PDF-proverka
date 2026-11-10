@@ -586,9 +586,11 @@
     "known_semantic_decisions_applied": 2,
     "model_query_followups_prepared": 1,
     "tests_initial_selected_unique": 86,
-    "automatic_semantic_decision_producer": "not_integrated",
+    "automatic_semantic_decision_producer": "ITP adjudication pilot prepared on same sources plus prior model reply; auto-review rejected expanded payload, specific approval pending.",
     "absence_model_replayed": false,
     "new_model_calls": 0,
-    "stage4_complete": false
+    "stage4_complete": false,
+    "tests_latest_selected": 88,
+    "remaining": "Live adjudication quality and admission controls; independent full six-project candidate audits not started. Structural/Excel replay is not proof of independent recall improvement."
   }
 }

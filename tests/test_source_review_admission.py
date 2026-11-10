@@ -94,3 +94,13 @@ def test_confirmed_minor_issue_requires_explicit_profile_decision():
     assert receipts[0]['status']=='applied'
     assert out['findings'][0]['report_section']=='questions'
     assert out['source_review_history'][0]['decision']['claim_reviews'][0]['verdict']=='supported'
+
+
+def test_retain_cannot_leave_unverified_context_in_original_wording():
+    doc,entries,md=case('retain','supported');e=entries[0]
+    e['response']['claims'].append({'claim_id':'C2','claim':'Original description says cause is X','status':'needs_data',
+        'reason':'Cause missing','missing_data':['Calculation'],'evidence':[]})
+    e['decision']['response_sha256']=evidence_digest(e['response'])
+    e['decision']['claim_reviews'].append({'claim_id':'C2','role':'context','verdict':'needs_data','reason':'Cause is unverified'})
+    out,receipts=apply_review_admissions(doc,entries,md)
+    assert out==doc and receipts[0]['status']=='not_applied'
