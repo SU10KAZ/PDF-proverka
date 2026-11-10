@@ -4,12 +4,27 @@
     {
       "control": "EOM_instance_inventory",
       "directory": "/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM/execution/object_inventory_000",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "40152beec47f22d75b2aef25e9be5549fbbc54856abac2f089685a220e712eab",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 742475,
+      "input_tokens": 15696,
+      "output_tokens": 36710,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "EOM_instance_graphic",
+      "directory": "/tmp/auditmanager_eom_instance_graphic_control_20261110",
       "status": "result_pending",
       "attempt_receipt": {
         "status": "started",
-        "request_sha256": "ee521e1a7b145a04b4ffdf94725b076ea77dab4f895a5a19e67d815da165c0fd",
-        "model": "codex/gpt-6-astra",
-        "reasoning_effort": "high"
+        "request_sha256": "81979232d98c86cc5751ffa0d0b9b9859b1629be3d155cfc8338ddef480e0b85"
       },
       "token_counters_incomplete": true
     },
@@ -802,14 +817,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 40,
+  "completed_requests": 41,
   "pending_results": 2,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 1201984,
-  "reported_output_tokens": 409115,
+  "reported_input_tokens": 1217680,
+  "reported_output_tokens": 445825,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 135.834,
+  "completed_request_minutes_sum": 148.208,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

@@ -163,15 +163,18 @@
     {
       "hypothesis": "H03",
       "control": "EOM separate instances and repeated positional identifier H03-P02/N02",
-      "state": "generic_inventory_running",
+      "state": "inventory_label_error_detail_control_running",
       "root": "/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM",
-      "process_receipt": "/tmp/auditmanager_eom_instance_process_20261110/process.json",
+      "process_receipt": "/tmp/auditmanager_eom_instance_graphic_process_20261110/process.json",
       "evidence": [
-        "EOM_instance_inventory_manifest.json"
+        "EOM_instance_inventory_manifest.json",
+        "EOM_instance_inventory_assessment.json",
+        "EOM_instance_graphic_manifest.json"
       ],
       "expected_answer_hidden": true,
       "known_source_selection": true,
-      "production_acceptance": false
+      "production_acceptance": false,
+      "detail": "161records but E05 reads405 while source shows second406; no target finding. High-resolution equipment callout control started. No manual correction injected into request."
     },
     {
       "hypothesis": "H04",

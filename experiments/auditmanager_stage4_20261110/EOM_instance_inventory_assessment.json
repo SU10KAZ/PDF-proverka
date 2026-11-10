@@ -1,0 +1,46 @@
+{
+  "control_id": "H03-P02/N02",
+  "result_sha256": "40152beec47f22d75b2aef25e9be5549fbbc54856abac2f089685a220e712eab",
+  "objects": 161,
+  "findings": 0,
+  "control_passed": false,
+  "observed_error": {
+    "object_id": "E05",
+    "model_literal": "К3.2.405",
+    "source_literal": "К3.2.406",
+    "model_object": {
+      "id": "E05",
+      "identity": "Наружный блок К3.2.405",
+      "scope": "Наружная сторона центрального узла секции С3",
+      "kind": "оборудование кондиционирования, физический экземпляр",
+      "source_refs": [
+        "blk_4b5016856cc94ec088efe86a8ec2a925"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Модель и позиция",
+          "value": "AJ068TXJ3KH/EA; К3.2.405",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Средняя из трёх соседних выносок справа от наклонного крыла."
+        }
+      ]
+    }
+  },
+  "source_check": "Two adjacent graphic callouts read AJ068TXJ3KH/EA К3.2.406; third callout AJ080TXJ4KH/EA К3.2.403. Leaders go to separate depicted equipment positions. Actual intended replacement designation remains unproved.",
+  "directly_viewed_graphics": [
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_1.png",
+      "sha256": "8a30b73979650f894f992ca1018177f24b488c3ce71f55c7e0cfa2b36d6769e1"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_4.png",
+      "sha256": "fd9808a7c67d904191b7169e1010a1b28b20854c515b15827be80cab8f5b3a55"
+    }
+  ],
+  "cause_boundary": "Literal graphic-reading error observed. Whether caused by resolution, contextual normalization or another mechanism is not established.",
+  "negative_limit": "Same model on separate devices is allowed; no actual equipment shortage or excess established.",
+  "next_control": "Whole original GRAPHIC rendered as nine overlapping tiles; generic literal equipment callout extraction, no expected labels or prior response. Both prompt scope and resolution differ, so their separate effects are unmeasured.",
+  "full_inventory_semantics_verified": false,
+  "production_acceptance": false
+}
