@@ -747,5 +747,21 @@
     "new_context_sent": false,
     "original_finding_mutated": false,
     "production_changed": false
+  },
+  "whole_project_object_inventory": {
+    "status": "KM_live_execution_started",
+    "preflight": "whole_project_inventory_preflight.json",
+    "source_blocks_all_six": 961,
+    "prepared_packets_all_six": 91,
+    "KM_blocks": 111,
+    "KM_packets": 14,
+    "KM_model": "codex/gpt-6-astra",
+    "KM_process_session": 96229,
+    "KM_execution_dir": "/tmp/auditmanager_whole_project_inventory_20261110/KM/execution",
+    "source_only": true,
+    "engineer_answers_sent": false,
+    "new_project_blind_test": false,
+    "whole_project_comparative_audit": false,
+    "remaining": "Complete inventory, validate source coverage and identities, link objects across packets, execute unresolved operations, and assess discoveries against frozen controls afterwards."
   }
 }
