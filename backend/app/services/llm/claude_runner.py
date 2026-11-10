@@ -716,6 +716,12 @@ async def _run_codex_targeted_findings_merge(
     total_input_tokens = base_result.input_tokens
 
     for targeted_pass in passes:
+        from backend.app.pipeline.stages.prepare.object_operation_followup import verify_operation_source_binding
+        source_error = verify_operation_source_binding(targeted_pass)
+        if source_error:
+            targeted_payloads.append((targeted_pass.stage, {"findings": [],
+                "context_retrieval": {"status": "source_binding_changed_before_dispatch", "reason": source_error}}))
+            continue
         exit_code, targeted_text, targeted_result = await _run_codex_json_stage(
             stage=targeted_pass.stage,
             messages=targeted_pass.messages,
@@ -733,6 +739,11 @@ async def _run_codex_targeted_findings_merge(
         total_input_tokens += targeted_result.input_tokens
         if targeted_text:
             combined_text_parts.append(targeted_text)
+        source_error = verify_operation_source_binding(targeted_pass)
+        if source_error:
+            targeted_payloads.append((targeted_pass.stage, {"findings": [],
+                "context_retrieval": {"status": "source_binding_changed_during_dispatch", "reason": source_error}}))
+            continue
         if exit_code == 0 and isinstance(targeted_result.json_data, dict):
             payload = targeted_result.json_data
             if targeted_pass.stage.startswith("candidate_recovery_"):
@@ -746,6 +757,11 @@ async def _run_codex_targeted_findings_merge(
             if targeted_pass.stage.startswith("object_operations_"):
                 from backend.app.pipeline.stages.prepare.object_operation_passes import validate_object_operation_payload
                 payload = validate_object_operation_payload(targeted_pass, payload)
+                from backend.app.pipeline.stages.prepare.object_operation_followup import build_object_operation_followup
+                followup, retrieval = build_object_operation_followup(targeted_pass, targeted_result.json_data)
+                payload["context_retrieval"] = retrieval
+                if followup is not None:
+                    passes.append(followup)
             targeted_payloads.append((targeted_pass.stage, payload))
         else:
             logger.warning(

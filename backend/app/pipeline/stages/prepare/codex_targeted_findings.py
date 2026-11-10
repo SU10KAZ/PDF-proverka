@@ -30,6 +30,7 @@ class CodexTargetedPass:
     output_filename: str
     messages: list[dict[str, str]]
     image_paths: tuple[str | Path, ...] = ()
+    continuation_source: dict[str, Any] | None = None
 
 
 def _finding_evidence_observer_enabled() -> bool:
@@ -740,7 +741,9 @@ def build_targeted_findings_passes(project_info: dict[str, Any], project_id: str
     from .candidate_recovery import build_recovery_passes
     passes.extend(build_recovery_passes(_version_output_dir(project_id), md_path))
     from .object_operation_passes import build_object_operation_passes
-    passes.extend(build_object_operation_passes(_version_output_dir(project_id), md_path))
+    import os
+    passes.extend(build_object_operation_passes(_version_output_dir(project_id), md_path,
+        enable_followup=os.environ.get("AUDIT_OBJECT_CONTEXT_FOLLOWUPS", "0") == "1"))
     return passes
 
 
@@ -872,6 +875,7 @@ def combine_findings_with_targeted(
                 "unverified_receipts": payload.get("unverified_operation_receipts", []),
                 "pending": payload.get("operation_pending", []), "semantic_verified": False,
                 "candidate_ledger": payload.get("operation_candidate_ledger", []),
+                "context_retrieval": payload.get("context_retrieval"),
             })
         if stage.startswith("candidate_recovery_") and isinstance(payload, dict):
             from backend.app.pipeline.stages.findings_merge.recovery_links import apply_duplicate_links

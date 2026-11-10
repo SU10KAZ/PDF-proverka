@@ -7,7 +7,7 @@ from backend.app.pipeline.stages.block_context.contract import resolve_blocks_di
 from backend.app.pipeline.stages.text_analysis.object_registry import reconcile_object_registry
 
 
-def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
+def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable_followup=False):
     from .codex_targeted_findings import CodexTargetedPass
     output_dir, md_path = Path(output_dir), Path(md_path)
     text_path = output_dir/'02_text_analysis.json'
@@ -27,6 +27,10 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
     index_path = crops/'index.json'
     index = json.loads(index_path.read_text()) if index_path.is_file() else {}
     files = {b.get('block_id'):b.get('file') for b in index.get('blocks',[]) if isinstance(b,dict)}
+    continuation_source = None
+    if enable_followup:
+        from .object_operation_followup import freeze_operation_sources
+        continuation_source = freeze_operation_sources(md_path, crops, files, graph)
     passes, backlog, planned = [], [], []
     for obj in coverage['objects']:
         operations = [r for r in coverage['operations'] if r['object_id']==obj['id'] and r['status'] in ('not_checked','needs_data')]
@@ -121,7 +125,7 @@ Use quote only for an exact source substring; describe paraphrases as descriptio
 Preserve all listed operations, even those that remain unresolved. Do not declare
 whole-project coverage or silently add an operation outside the supplied list.'''
         passes.append(CodexTargetedPass('object_operations_'+key,'03_object_operations_'+key+'.json',
-            [{'role':'system','content':instructions},{'role':'user','content':json.dumps(packet,ensure_ascii=False)}],tuple(images)))
+            [{'role':'system','content':instructions},{'role':'user','content':json.dumps(packet,ensure_ascii=False)}],tuple(images),continuation_source=continuation_source))
         planned.append({'object_id':obj['id'],'stage':passes[-1].stage,'operations':[r['operation'] for r in operations],'omitted':omitted})
     (output_dir/'03_object_operation_plan.json').write_text(json.dumps({
         'requests':planned,'backlog':backlog,'invalid_objects':coverage['invalid_objects'],

@@ -1,0 +1,23 @@
+{
+  "implementation": "backend/app/pipeline/stages/prepare/object_operation_followup.py",
+  "runtime_caller": "backend/app/services/llm/claude_runner.py::_run_codex_targeted_findings_merge",
+  "enabled_by": "AUDIT_OBJECT_CONTEXT_FOLLOWUPS=1",
+  "default_enabled": false,
+  "max_followup_revisions": 3,
+  "source_bindings": "Executor-owned MD and image hashes, separate from model messages; verified before and after dispatch.",
+  "behavior": [
+    "Preserve original context and all previous candidate payloads.",
+    "Continue only on scoped needs_data with additional source context.",
+    "Keep explicit omitted-source backlog and unresolved statuses.",
+    "Source mutation prevents dispatch or admission; classic base retained.",
+    "Per-pass files and all candidate provenance retained by existing targeted executor."
+  ],
+  "tests_passed": 40,
+  "test_mode": "Fake provider through actual targeted executor; no live run of integrated opt-in path yet.",
+  "provider_bridge_changed": false,
+  "limits": [
+    "Provider bridge executes only frozen planned roles; no extra unplanned continuation calls added there.",
+    "A flag and local tests do not constitute candidate freeze, quality acceptance or production rollout.",
+    "Standalone live OGM5 workflow and real response retention are separate evidence from this runtime integration."
+  ]
+}
