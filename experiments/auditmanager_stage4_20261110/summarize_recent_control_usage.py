@@ -10,6 +10,9 @@ from pathlib import Path
 
 def summarize():
     directories = [
+        ('AR_roof_P03_context1', Path('/tmp/auditmanager_ar_roof_operations_20261111/P03/context_1')),
+        *[(f'AR_roof_operations_{oid}', Path('/tmp/auditmanager_ar_roof_operations_20261111')/oid) for oid in ('P03','ASSEMBLY_K3')],
+        ('EOM_semantic_grouping', Path('/tmp/auditmanager_eom_semantic_grouping_control_20261111')),
         ('AR_roof_inventory', Path('/tmp/auditmanager_ar_roof_inventory_control_20261111/AR/execution/object_inventory_000')),
         ('EOM_instance_inventory', Path('/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM/execution/object_inventory_000')),
         ('EOM_instance_graphic', Path('/tmp/auditmanager_eom_instance_graphic_control_20261110')),

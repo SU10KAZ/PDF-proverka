@@ -1,0 +1,22 @@
+{
+  "scope": "Known-source inventory of three roof graphics and four same-page TEXT/TABLE blocks. Not a whole-project blind audit.",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 611290,
+  "result_sha256": "659043e1e706bde74a243a0e81bb465e577c1c74b636c65f4aab7e16276b96aa",
+  "object_records": 84,
+  "text_candidates": 2,
+  "operation_receipts": 0,
+  "unresolved_source_blocks": 2,
+  "next_actual_objects": [
+    "P03",
+    "ASSEMBLY_K3"
+  ],
+  "limits": [
+    "84 entries include views, legend entries and material assemblies, not 84 independent physical objects or defects.",
+    "No geometry operation was completed in inventory; actual object operations have been launched separately.",
+    "Model records section 1 at the overview, while assembly scope says sections 2,3. Applicability must be source-checked before transferring K-3 parameters.",
+    "Local levels near drains do not establish support heights at all locations.",
+    "Two material mismatch candidates retain source wording and require applicability/duplicate/source review."
+  ],
+  "full_acceptance_proven": false
+}
