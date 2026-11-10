@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
-from backend.app.pipeline.stages.prepare.recovery_context import expand_operation_queries, search_md_context
+from backend.app.pipeline.stages.prepare.object_operation_continuation import prepare_object_operation_continuation
 
 ROOT = Path('/tmp/auditmanager_km_ogm5_operation_control_20261110')
 INVENTORY = Path('/tmp/auditmanager_whole_project_inventory_20261110/KM')
@@ -40,65 +40,17 @@ def prepare():
     for binding in manifest['images']:
         if hashlib.sha256(Path(binding['path']).read_bytes()).hexdigest() != binding['sha256']:
             raise ValueError('Previously supplied image changed')
-    requested = {o['operation'] for o in packet['operations']}
-    pending = [r for r in response['object_operation_results']
-        if r['object_id']==packet['object']['id'] and r['operation'] in requested and r['status']=='needs_data']
-    if not pending or len({r['operation'] for r in pending}) != len(pending):
-        raise ValueError('No unique pending operations')
     graph = json.loads(Path('/tmp/auditmanager_six_candidate_inputs_20261110/KM/03_analysis/runs/candidate/document_graph.json').read_text())
-    searches, candidate_ids = {}, []
-    pending_names = {r['operation'] for r in pending}
-    # Preserve primary sources cited by the original operation, including notes
-    # which the first builder erroneously omitted from source_context.
-    for op in packet['operations']:
-        if op['operation'] in pending_names:
-            candidate_ids.extend(op.get('receipt',{}).get('source_refs',[]))
-    for op in pending:
-        queries = expand_operation_queries(op.get('context_queries',[]))
-        search = search_md_context(md,queries['queries'],exclude_block_ids=packet['allowed_source_refs'],
-            prior_backlog_ids=[b['block_id'] for b in packet['omitted']],source_graph=graph)
-        candidate_ids.extend(b['block_id'] for b in search['hits'])
-        searches[op['operation']] = {**search,'hits':[{k:v for k,v in b.items() if k!='content'} for b in search['hits']]}
-    context = {b['block_id']:b for b in packet['source_context']}
-    omitted = []
-    size = sum(len(b['content']) for b in context.values())
-    for bid in dict.fromkeys(candidate_ids):
-        if bid in context:
-            continue
-        if bid not in sources:
-            omitted.append({'block_id':bid,'reason':'source_unavailable'});continue
-        block = sources[bid]
-        if size+len(block['content']) > 95000:
-            omitted.append({'block_id':bid,'reason':'text_budget'});continue
-        context[bid] = block
-        size += len(block['content'])
-    attached = list(packet['attached_image_ids_in_order'])
-    for bid in context:
-        if context[bid]['kind'] not in ('IMAGE','GRAPHIC') or bid in attached:
-            continue
-        if bid not in images or len(attached)>=16:
-            omitted.append({'block_id':bid,'reason':'image_unavailable_or_budget'});continue
-        attached.append(bid)
-    bindings = [images[bid] for bid in attached]
-    for im in bindings:
-        if hashlib.sha256(Path(im['path']).read_bytes()).hexdigest()!=im['sha256']:
-            raise ValueError('Graphic version changed')
-    compact_searches={op:{'query_hit_counts':s['query_hit_counts'],
-        'hits':[{'block_id':b['block_id']} for b in s['hits']],
-        'backlog':[{'block_id':b['block_id']} for b in s['backlog']],
-        'deferred_queries':s['deferred_queries'],'absence_proven':False} for op,s in searches.items()}
-    packet.update(operations=[o for o in packet['operations'] if o['operation'] in pending_names],
-        source_context=list(context.values()),context_searches=compact_searches,
-        attached_image_ids_in_order=attached,omitted=omitted,
-        allowed_source_refs=sorted({bid for bid,b in context.items() if b['kind'] in ('TEXT','TABLE')}|set(attached)),
-        prior_operation_response_untrusted=response,context_revision=1,
-        source_md_sha256=source_manifest['source_md_sha256'],scope_complete=False)
-    request={'messages':[original['messages'][0],{'role':'user','content':json.dumps(packet,ensure_ascii=False)}],
-             'image_paths':[im['path'] for im in bindings]}
+    original_hashes={bid:b['sha256'] for bid,b in zip(packet['attached_image_ids_in_order'],manifest['images'],strict=True)}
+    prepared=prepare_object_operation_continuation(original,response,sources,images,md,
+        expected_request_sha256=manifest['request_sha256'],expected_md_sha256=source_manifest['source_md_sha256'],
+        original_image_hashes=original_hashes,graph=graph)
+    if prepared['status']!='prepared':
+        raise ValueError('No additional source context')
+    request=prepared['request'];searches=prepared['searches'];bindings=prepared['images'];omitted=prepared['omitted']
+    pending_names={o['operation'] for o in json.loads(request['messages'][-1]['content'])['operations']}
     chars=sum(len(m['content']) for m in request['messages'])
     image_bytes=sum(Path(im['path']).stat().st_size for im in bindings)
-    if chars>120000 or image_bytes>24000000:
-        raise ValueError('Continuation request budget exceeded')
     receipt={'request_sha256':evidence_digest(request),'model':'codex/gpt-6-astra','message_chars':chars,
         'image_count':len(bindings),'image_bytes':image_bytes,'images':bindings,
         'operations':sorted(pending_names),'original_request_sha256':manifest['request_sha256'],
