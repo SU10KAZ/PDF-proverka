@@ -128,20 +128,16 @@
     "boundary": "Not full six-project candidate execution, independent discovery, semantic adjudication or production acceptance."
   },
   "external_permission_pending": {
-    "pilot": "ITP requirement scope",
+    "pilot": "KM OGM5 expanded continuation",
     "provider": "Codex CLI",
     "model": "gpt-6-astra",
-    "payload_chars": 27170,
-    "pdf_pages": [
-      1,
-      29,
-      30,
-      31,
-      150,
-      151,
-      152
-    ],
-    "sent": false
+    "payload_chars": 102331,
+    "images": 16,
+    "image_bytes": 4548875,
+    "request_sha256": "50fd281c6afedeae00b34b9be8599acb38551f15c2c93eeacbbdc92d052a49bc",
+    "sent": false,
+    "reason": "Automatic approval review rejected expanded payload; specific user question pending",
+    "manifest": "KM_OGM5_continuation_manifest.json"
   },
   "excel_roundtrip_validation": {
     "tests": [
@@ -180,7 +176,10 @@
     "restricted_features_probe": "codex_restricted_features_probe.json",
     "full_candidate_runs_started": false,
     "candidate_frozen": false,
-    "model_jobs_live": false
+    "model_jobs_live": true,
+    "live_job_observation_utc": "2026-11-10T16:22:35.440916+00:00",
+    "live_job_pid": 3228866,
+    "live_job_scope": "KM source-only inventory; this snapshot is not a live monitor"
   },
   "next_required_checks": [
     {
@@ -749,7 +748,7 @@
     "production_changed": false
   },
   "whole_project_object_inventory": {
-    "status": "KM_live_execution_started",
+    "status": "KM_live_execution_in_progress",
     "preflight": "whole_project_inventory_preflight.json",
     "source_blocks_all_six": 961,
     "prepared_packets_all_six": 91,
@@ -766,7 +765,10 @@
     "first_packet_assessment": "KM_inventory_packet000_assessment.json",
     "first_packet_reported_objects": 22,
     "first_packet_duration_ms": 590802,
-    "whole_project_complete": false
+    "whole_project_complete": false,
+    "completed_packets": 6,
+    "reported_packet_local_object_records": 154,
+    "latest_assessment": "KM_inventory_packet005_assessment.json"
   },
   "object_operation_sheet_queries": {
     "status": "implemented_and_actual_query_replayed",
@@ -779,14 +781,109 @@
     "semantic_acceptance": false
   },
   "km_cross_packet_identity_control": {
-    "status": "prepared_specific_payload_approval_pending",
+    "status": "completed_response_not_semantically_accepted",
     "pair_count": 14,
     "source_packets_completed": 2,
     "model": "claude/claude-sonnet-5-5",
     "manifest": "KM_identity_control_manifest.json",
-    "request_sent": false,
+    "request_sent": true,
     "automatic_merges": false,
     "main_inventory_session_unaffected": 96229,
-    "remaining": "Obtain response after approval, validate source receipts and graphic semantics, preserve unresolved relationships."
+    "remaining": "Resolve evidence errors and relationship semantics before using the relations; OGM6 scope statement was bounded to its original packet and is not a proven Astra error.",
+    "assessment": "KM_identity_control_assessment.json",
+    "pairs_with_contract_errors": [
+      "P002",
+      "P004",
+      "P009",
+      "P010",
+      "P013",
+      "P014"
+    ],
+    "semantic_verified": false
+  },
+  "superseded_status_records": [
+    {
+      "reason": "Status refresh after completed Claude identity and OGM5 controls",
+      "external_permission_pending": {
+        "pilot": "ITP requirement scope",
+        "provider": "Codex CLI",
+        "model": "gpt-6-astra",
+        "payload_chars": 27170,
+        "pdf_pages": [
+          1,
+          29,
+          30,
+          31,
+          150,
+          151,
+          152
+        ],
+        "sent": false
+      },
+      "km_cross_packet_identity_control": {
+        "status": "completed_response_not_semantically_accepted",
+        "pair_count": 14,
+        "source_packets_completed": 2,
+        "model": "claude/claude-sonnet-5-5",
+        "manifest": "KM_identity_control_manifest.json",
+        "request_sent": true,
+        "automatic_merges": false,
+        "main_inventory_session_unaffected": 96229,
+        "remaining": "Resolve evidence errors and relationship semantics before using the relations; OGM6 scope statement was bounded to its original packet and is not a proven Astra error.",
+        "assessment": "KM_identity_control_assessment.json",
+        "pairs_with_contract_errors": [
+          "P002",
+          "P004",
+          "P009",
+          "P010",
+          "P013",
+          "P014"
+        ],
+        "semantic_verified": false
+      },
+      "execution_readiness": {
+        "input_package": "six_project_input_package.json",
+        "source_graphs": "six_project_source_graphs.json",
+        "sheet_metadata": "six_project_sheet_metadata.json",
+        "isolation_review": "executor_isolation_review.json",
+        "restricted_features_probe": "codex_restricted_features_probe.json",
+        "full_candidate_runs_started": false,
+        "candidate_frozen": false,
+        "model_jobs_live": false
+      }
+    }
+  ],
+  "km_ogm5_operation_control": {
+    "status": "first_followup_completed_partial",
+    "assessment": "KM_OGM5_operation_control_assessment.json",
+    "duration_ms": 66393,
+    "operation_statuses": {
+      "identity_across_views": "reported_checked",
+      "quantity_balance": "not_checked",
+      "dimension_consistency": "needs_data",
+      "requirement_applicability": "needs_data",
+      "document_links": "needs_data"
+    },
+    "semantic_verified": false,
+    "context_loss_fixed": "Operation receipt source_refs are now retained, including general notes. Verified locally; expanded model followup not yet sent.",
+    "continuation_manifest": "KM_OGM5_continuation_manifest.json"
+  },
+  "latest_consolidated_execution_snapshot": {
+    "stage": 4,
+    "completed_stages": 3,
+    "total_stages": 8,
+    "stage4_complete": false,
+    "stage5_to_8_complete": false,
+    "six_project_comparative_candidate_audits_started": false,
+    "production_released": false,
+    "inventory_efficiency_evidence": "KM_inventory_interim_efficiency.json",
+    "operation_retrieval_diagnosis": "KM_operation_retrieval_diagnosis.json",
+    "remaining": [
+      "Finish all 14 KM source inventory packets and validate object/source coverage.",
+      "Execute source-bound cross-packet comparisons; do not count retrieved blocks or checked labels as correct conclusions.",
+      "Validate graphic detail recovery and positive/negative controls across hypotheses and disciplines.",
+      "Complete reusable continuation handling for object operation searches, including image budget backlog.",
+      "Freeze the accepted candidate, compare model contribution and output retention, then run six known projects plus new projects before production acceptance."
+    ]
   }
 }
