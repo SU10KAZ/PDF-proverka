@@ -1,0 +1,76 @@
+{
+  "request_sha256": "ffe0ce23dbd7ee4e7963306f2149dbc5f330f5f43fd5099f8c81a99404351274",
+  "parent_request_sha256": "0d2b8ec4c88dc0ac5c7d2a9156c939eff0ece206347fdb297621cdb835c4130e",
+  "project_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "manufacturer_pdf_sha256": "ec735722d5005e1fa65c88757fd5aba59cd0a162679aeea9149f511540586eb7",
+  "external_sources": [
+    {
+      "source_id": "manufacturer_pdf_page_12",
+      "document_id": "manufacturer_manual_990886",
+      "source_url": "https://api.systeme.ru/product/media/download/990886",
+      "pdf_sha256": "ec735722d5005e1fa65c88757fd5aba59cd0a162679aeea9149f511540586eb7",
+      "pdf_page_number": 12,
+      "attachment_index_one_based": 10,
+      "image_sha256": "cde4bed811f806cc857e7d4305d6a0a8b0e17ee20cf2816f95875fc5b7a9c23c"
+    },
+    {
+      "source_id": "manufacturer_pdf_page_13",
+      "document_id": "manufacturer_manual_990886",
+      "source_url": "https://api.systeme.ru/product/media/download/990886",
+      "pdf_sha256": "ec735722d5005e1fa65c88757fd5aba59cd0a162679aeea9149f511540586eb7",
+      "pdf_page_number": 13,
+      "attachment_index_one_based": 11,
+      "image_sha256": "e8164d68112cf66bd3475dad6948aaa0ec429a7761ff621a4e8c0a1253f73d57"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "image_bindings": [
+    {
+      "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_0.png",
+      "sha256": "d52afca6a13d07536f89e97bde8f3ff73ef685c2afd9afb14bba2c3f33161872"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_1.png",
+      "sha256": "6a5e11c377aebe4443ee039930c746ffa57d22760f9132ca2614a8be1901a144"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_2.png",
+      "sha256": "71a680f4d46cdb4a0820609acd6b5d1b11a1e1e6c73bf6efb2f89dc2d623f951"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_3.png",
+      "sha256": "10bdcd85865a272b6ec6b54f19ce0e1a163d0cc672b9e4de633468d8d909bfc6"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_4.png",
+      "sha256": "736e438e76c3cfad560227ac6f1830b9f9fce87a5ae28fb23c22a1c6a95da6b7"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_5.png",
+      "sha256": "c9171c2ac537ff2dd2a5cd7deee3f3a7ed990115961ff43d53ebdafa5f69ced9"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_6.png",
+      "sha256": "741b9a4b6269950c991c6407343dc6ccf11b7f7dd54afd111d7294974aa8a655"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_7.png",
+      "sha256": "b4cda16b2aaa07a0b7bf5d5c76afaf7127334836c1453d2e53319264b329148e"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_8.png",
+      "sha256": "bcca89e08e2f3c5e842752d6b870bd398bcb4178979c685e3e52496304df7f7f"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_manufacturer_source_20261111/page_12.png",
+      "sha256": "cde4bed811f806cc857e7d4305d6a0a8b0e17ee20cf2816f95875fc5b7a9c23c"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_manufacturer_source_20261111/page_13.png",
+      "sha256": "e8164d68112cf66bd3475dad6948aaa0ec429a7761ff621a4e8c0a1253f73d57"
+    }
+  ],
+  "history_or_engineer_answers_supplied": false,
+  "manufacturer_evaluator_notes_supplied": false,
+  "automatic_retries": 0
+}

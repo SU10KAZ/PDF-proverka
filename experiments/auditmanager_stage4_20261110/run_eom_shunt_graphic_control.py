@@ -50,4 +50,7 @@ async def main(execute):
 
 if __name__=='__main__':
     import argparse
-    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true');asyncio.run(main(p.parse_args().execute))
+    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true')
+    p.add_argument('--block-id',default=BID);p.add_argument('--output-root',default=str(ROOT))
+    args=p.parse_args();BID=args.block_id;ROOT=Path(args.output_root)
+    asyncio.run(main(args.execute))

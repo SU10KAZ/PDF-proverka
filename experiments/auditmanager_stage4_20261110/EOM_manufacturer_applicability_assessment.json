@@ -1,0 +1,17 @@
+{
+  "status": "bounded_applicability_control",
+  "model": "codex/gpt-6-astra",
+  "historical_answers_supplied": false,
+  "observations": [
+    "Series VA301 alone does not prove pole count; manufacturer assortment includes 1P and 2P.",
+    "RN300-2P condition is restricted to documented accessory/execution; EKF not established.",
+    "Actual QF3.20 manufacturer/article selection unresolved."
+  ],
+  "candidate_status": "not_admitted",
+  "remaining": [
+    "Verify candidate semantics against sources and source-review admission.",
+    "Model report_section is free prose, not canonical questions routing.",
+    "Separate VRU3 QF3.17 identity control pending."
+  ],
+  "full_acceptance": false
+}
