@@ -89,6 +89,7 @@ def _run_deterministic_phase(output_dir: Path, project_id: str) -> dict:
         output_dir, project_id=project_id, on_log=None, write=True,
     ))
     from .source_review_queue import build_source_review_queue, attach_pending_source_reviews
+    from .source_review_graphics import attach_graphic_receipts
     from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
     from backend.app.pipeline.stages.findings_review.deterministic_critic import build_index, iter_findings
     queue_error, pending = None, None
@@ -108,6 +109,7 @@ def _run_deterministic_phase(output_dir: Path, project_id: str) -> dict:
         md_path = resolve_document_markdown(output_dir)
         md = md_path.read_text(encoding='utf-8') if md_path else ''
         queue = build_source_review_queue(findings, md)
+        attach_graphic_receipts(queue, md, output_dir / 'blocks_stage02_100')
         (output_dir / '03_source_review_queue.json').write_text(
             json.dumps(queue, ensure_ascii=False, indent=2), encoding='utf-8')
         pending = queue['pending_count']

@@ -377,5 +377,12 @@
     "scope": "Both original-candidate and final-finding explicit references, with reference origins preserved.",
     "supersedes_previous_scope": "Previous 3 packets/8 images counted candidate request references only, omitting final-finding references.",
     "boundary": "File availability is not visual inspection, complete cross-document context or semantic acceptance. Frozen EOM pilot payload unchanged."
+  },
+  "source_review_graphic_attachments": {
+    "artifact": "source_review_graphic_receipts_replay.json",
+    "ready_packets": 32,
+    "tests_passed": 25,
+    "automatic_dispatch": false,
+    "semantic_verified": false
   }
 }
