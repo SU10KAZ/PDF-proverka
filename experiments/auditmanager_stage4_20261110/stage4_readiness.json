@@ -575,5 +575,20 @@
     "unresolved_checks": 14,
     "needs_data_findings_in_technical_section": 5,
     "automatic_application": false
+  },
+  "integrated_source_review_admission": {
+    "status": "implemented_and_known_case_replayed",
+    "report": "experiments/auditmanager_stage4_20261110/integrated_admission_replay.json",
+    "runtime_hook": "findings_verify.runner.run_findings_verify after absence phase",
+    "input_contract": "Saved response inbox prepares context; separately reviewed semantic admission inbox applies decisions. No inbox leaves legacy findings unchanged.",
+    "baseline_findings": 244,
+    "output_findings": 243,
+    "known_semantic_decisions_applied": 2,
+    "model_query_followups_prepared": 1,
+    "tests_initial_selected_unique": 86,
+    "automatic_semantic_decision_producer": "not_integrated",
+    "absence_model_replayed": false,
+    "new_model_calls": 0,
+    "stage4_complete": false
   }
 }

@@ -43,3 +43,21 @@ def test_supported_claim_queries_do_not_trigger_search(tmp_path):
     md,findings,queue,response=data(); c=response['claims'][0]
     c['status']='supported'; c['evidence']=[{'block_id':'t','quote':'K22 plan'}]
     assert prepare_review_followup(response,queue,findings,md,tmp_path)['status']=='no_model_queries'
+
+
+def test_file_phase_prepares_sources_without_mutating_findings(tmp_path):
+    import json
+    from backend.app.pipeline.stages.findings_verify.source_review_followup import run_review_response_phase
+    md,findings,queue,response=data()
+    path=tmp_path/'03_findings.json';path.write_text(json.dumps({'findings':findings}));before=path.read_bytes()
+    (tmp_path/'03_source_review_responses.json').write_text(json.dumps([{'response':response,'queue':queue}]))
+    stats=run_review_response_phase(tmp_path,md)
+    assert stats['prepared']==1 and stats['invalid']==0 and path.read_bytes()==before
+    report=json.loads((tmp_path/'03_source_review_followups.json').read_text())[0]
+    assert report['request']['sent'] is False
+
+
+def test_missing_inbox_removes_stale_followup(tmp_path):
+    from backend.app.pipeline.stages.findings_verify.source_review_followup import run_review_response_phase
+    target=tmp_path/'03_source_review_followups.json';target.write_text('stale')
+    assert run_review_response_phase(tmp_path,'')['skipped'] and not target.exists()

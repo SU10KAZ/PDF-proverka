@@ -1,0 +1,63 @@
+{
+  "projects": [
+    {
+      "discipline": "AK",
+      "before": 65,
+      "after": 65,
+      "admissions_applied": 0,
+      "followups_prepared": 0,
+      "other_core_fields_preserved": true,
+      "excel_path": "/tmp/auditmanager_integrated_admission_xhifrm3u/AK/report.xlsx"
+    },
+    {
+      "discipline": "ITP",
+      "before": 53,
+      "after": 53,
+      "admissions_applied": 0,
+      "followups_prepared": 1,
+      "other_core_fields_preserved": true,
+      "excel_path": "/tmp/auditmanager_integrated_admission_xhifrm3u/ITP/report.xlsx"
+    },
+    {
+      "discipline": "AR",
+      "before": 22,
+      "after": 22,
+      "admissions_applied": 0,
+      "followups_prepared": 0,
+      "other_core_fields_preserved": true,
+      "excel_path": "/tmp/auditmanager_integrated_admission_xhifrm3u/AR/report.xlsx"
+    },
+    {
+      "discipline": "KM",
+      "before": 26,
+      "after": 26,
+      "admissions_applied": 0,
+      "followups_prepared": 0,
+      "other_core_fields_preserved": true,
+      "excel_path": "/tmp/auditmanager_integrated_admission_xhifrm3u/KM/report.xlsx"
+    },
+    {
+      "discipline": "VK",
+      "before": 29,
+      "after": 29,
+      "admissions_applied": 0,
+      "followups_prepared": 0,
+      "other_core_fields_preserved": true,
+      "excel_path": "/tmp/auditmanager_integrated_admission_xhifrm3u/VK/report.xlsx"
+    },
+    {
+      "discipline": "EOM",
+      "before": 49,
+      "after": 48,
+      "admissions_applied": 2,
+      "followups_prepared": 0,
+      "other_core_fields_preserved": true,
+      "excel_path": "/tmp/auditmanager_integrated_admission_xhifrm3u/EOM/report.xlsx"
+    }
+  ],
+  "known_case_replay": true,
+  "automatic_semantic_decisions": false,
+  "new_model_calls": 0,
+  "absence_model_phase": "Explicit no-op for local replay; structural and final admission phases real.",
+  "result": "One false finding archived, one supported core revised, remaining242 findings core fields preserved through integrated verifier and Excel."
+}

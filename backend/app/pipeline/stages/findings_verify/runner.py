@@ -18,6 +18,8 @@ LLM-критик (03b/03c) как фильтр статистически бес
    чинит page/sheet, no_evidence/contradicts → requires_human_review или мягкое
    понижение. ГЛАВНЫЙ ИНВАРИАНТ: НИЧЕГО не удаляется. Пишет 03_findings_review.json
    (downstream: UI-вердикты, экспорт, БЗ) и обновляет 03_findings.json.
+   После фазы присутствия отдельные проверенные решения могут исключить запись
+   из итогового списка, сохранив её в suppressed_findings и source_review_history.
 
 2. LLM-проверка присутствия («страж отсутствия»): по ПОЛНОМУ MD подтверждает, что
    заявленный-как-отсутствующий элемент реально отсутствует; подтверждённо-ложные
@@ -65,6 +67,9 @@ class FindingsVerifyResult:
     flagged_human: int = 0
     absence_candidates: int = 0
     absence_downgraded: int = 0
+    source_followups_prepared: int = 0
+    source_review_applied: int = 0
+    source_review_not_applied: int = 0
     error: Optional[str] = None
 
 
@@ -257,6 +262,45 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
         await ctx.log(f"Верификатор (присутствие) упал (не критично): {e}", "warn")
         result.error = (result.error + f"; absence: {e}") if result.error else f"absence: {e}"
 
+    # Model-requested context is prepared locally before semantic admission.
+    # Dispatch authorization remains outside the verifier.
+    try:
+        from .source_review_followup import run_review_response_phase
+        from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+        response_md_path = resolve_document_markdown(Path(output_dir))
+        followups = await asyncio.to_thread(
+            run_review_response_phase, Path(output_dir),
+            response_md_path.read_text(encoding="utf-8") if response_md_path else "",
+        )
+        result.source_followups_prepared = followups["prepared"]
+        if not followups["skipped"]:
+            await ctx.log(f"Добор источников: подготовлено {followups['prepared']}, некорректных ответов {followups['invalid']}")
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        await ctx.log(f"Добор источников не подготовлен: {exc}", "warn")
+        result.error = (result.error + f"; source_followup: {exc}") if result.error else f"source_followup: {exc}"
+
+    # Optional reviewed semantic decisions run last. A raw model response is
+    # insufficient; changed findings/sources invalidate the admission receipt.
+    try:
+        from .source_review_admission import run_review_admission_phase
+        from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+        md_path = resolve_document_markdown(Path(output_dir))
+        admission = await asyncio.to_thread(
+            run_review_admission_phase, Path(output_dir),
+            md_path.read_text(encoding="utf-8") if md_path else "",
+        )
+        result.source_review_applied = admission["applied"]
+        result.source_review_not_applied = admission["not_applied"]
+        if not admission["skipped"]:
+            await ctx.log(
+                f"Проверка источников: применено {admission['applied']}, "
+                f"не применено {admission['not_applied']}",
+                "warn" if admission["not_applied"] else "info",
+            )
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        await ctx.log(f"Решения проверки источников не применены: {exc}", "warn")
+        result.error = (result.error + f"; source_review: {exc}") if result.error else f"source_review: {exc}"
+
     result.ok = result.deterministic_ok or result.absence_ok
     # findings_corrector = применение вердиктов + понижение подтверждённо-ложных «нет»
     ctx.update_pipeline_log(
@@ -273,6 +317,9 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
             "page_fixed": result.page_fixed,
             "downgraded": result.downgraded,
             "flagged_human": result.flagged_human,
+            "source_followups_prepared": result.source_followups_prepared,
+            "source_review_applied": result.source_review_applied,
+            "source_review_not_applied": result.source_review_not_applied,
             "absence_candidates": result.absence_candidates,
             "absence_downgraded": result.absence_downgraded,
         },

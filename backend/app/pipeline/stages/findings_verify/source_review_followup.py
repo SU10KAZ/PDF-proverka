@@ -44,3 +44,40 @@ def prepare_review_followup(response, queue, findings, md, graphic_dir):
     result['request'] = prepare_source_review_request(expanded, finding, md)
     result['status'] = 'prepared_awaiting_dispatch_authorization'
     return result
+
+
+def run_review_response_phase(output_dir, md):
+    """Consume optional saved responses into local follow-up requests only.
+
+    Receipt validation binds responses to current findings and source. No response
+    can authorize its own suppression or create an engineer-facing question.
+    """
+    import json
+    from pathlib import Path
+    from collections import Counter
+    directory=Path(output_dir)
+    inbox=directory/'03_source_review_responses.json'
+    target=directory/'03_source_review_followups.json'
+    # Prevent a prior run's prepared packet surviving a failed/absent rebuild.
+    target.unlink(missing_ok=True)
+    if not inbox.exists():return {'prepared':0,'invalid':0,'skipped':True}
+    entries=json.loads(inbox.read_text())
+    document=json.loads((directory/'03_findings.json').read_text())
+    if not isinstance(entries,list) or not isinstance(document.get('findings'),list):
+        raise ValueError('invalid_response_inbox_or_findings')
+    counts=Counter(e.get('response',{}).get('finding_id') for e in entries
+        if isinstance(e,dict) and isinstance(e.get('response'),dict)
+        and isinstance(e['response'].get('finding_id'),str))
+    reports=[]
+    for entry in entries:
+        fid=None
+        try:
+            fid=entry['response']['finding_id']
+            if not isinstance(fid,str) or counts[fid]!=1:raise ValueError('duplicate_or_invalid_response')
+            report=prepare_review_followup(entry['response'],entry['queue'],document['findings'],md,directory/'blocks_stage02_100')
+            reports.append({'finding_id':fid,**report})
+        except (KeyError,TypeError,ValueError,OSError) as exc:
+            reports.append({'finding_id':fid,'status':'invalid_response','reason':str(exc),'automatic_dispatch':False})
+    target.write_text(json.dumps(reports,ensure_ascii=False,indent=2))
+    return {'prepared':sum(r['status']=='prepared_awaiting_dispatch_authorization' for r in reports),
+            'invalid':sum(r['status'] in ('invalid_response','invalid_context_queries') for r in reports),'skipped':False}
