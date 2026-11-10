@@ -140,11 +140,19 @@
     {
       "control": "EOM_cable_context_0_2",
       "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_000/circuit_13/context_2",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started"
+        "status": "finished",
+        "is_error": false
       },
-      "token_counters_incomplete": true
+      "token_counters_incomplete": false,
+      "result_sha256": "692750d436f3be8c96b85eb6f6d5ca77025ff256c8f6ec7e64595511ba0563dc",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 76601,
+      "input_tokens": 90647,
+      "output_tokens": 3318,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_context_0_3",
@@ -177,6 +185,23 @@
       "control": "EOM_cable_context_1_3",
       "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_001/rp5_10/context_3",
       "status": "not_started"
+    },
+    {
+      "control": "EOM_shared_primary_source",
+      "directory": "/tmp/auditmanager_eom_shared_source_control_20261111",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "72f9aac695f2cb8df67fbe08e0756b82a8264444e510fa96217fbafa0a60b6c7",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 44569,
+      "input_tokens": 77986,
+      "output_tokens": 1606,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_inventory",
@@ -657,11 +682,19 @@
     {
       "control": "KM_LK6_quantity_provenance",
       "directory": "/tmp/auditmanager_km_quantity_provenance_control_20261111",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started"
+        "status": "finished",
+        "is_error": false
       },
-      "token_counters_incomplete": true
+      "token_counters_incomplete": false,
+      "result_sha256": "d9e392bb0e144e7dd836a90e87e7fb2d791d03e3abf0956742e4742838e8febd",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 144417,
+      "input_tokens": 69037,
+      "output_tokens": 6770,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "KM_LK6_quantity",
@@ -1083,14 +1116,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 56,
-  "pending_results": 2,
+  "completed_requests": 59,
+  "pending_results": 0,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 1923122,
-  "reported_output_tokens": 548568,
+  "reported_input_tokens": 2160792,
+  "reported_output_tokens": 560262,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 184.799,
+  "completed_request_minutes_sum": 189.225,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

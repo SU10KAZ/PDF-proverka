@@ -230,11 +230,11 @@
       "hypothesis": "H04",
       "kind": "positive_controls",
       "original_control": "ЭОМ: FRHF5×35 двух линий не закрывается строкойHF5×35.",
-      "evidence_state": "partial_discovery_pending_reconciliation",
+      "evidence_state": "partial_control_pending_address_and_output",
       "evidence": [
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_cable_graphic_0_assessment.json",
-          "sha256": "a2ec08fc7ffc9eece755f7f88821a745f334b79307ff01307b58b1c089943357"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_two_cable_operations_assessment.json",
+          "sha256": "c897d550705957aa3202faa9faa926b8600bd10f7fb7cb04fa46b670f046f655"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_cable_graphic_1_assessment.json",
@@ -266,11 +266,11 @@
       "hypothesis": "H04",
       "kind": "positive_controls",
       "original_control": "КМ: сохранять повторыОГМ22/25 и вопрос о сомнительных количествах.",
-      "evidence_state": "partial_control_failed_quantitative_basis",
+      "evidence_state": "partial_control_pending_quantity_question",
       "evidence": [
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_quantity_assessment.json",
-          "sha256": "865e6201b95fd88148899a16e08307ab2e018a92e668dd8c1fddcf49a6e30bf1"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_quantity_provenance_assessment.json",
+          "sha256": "de36bf5a6cc10c3e648383203c3f5bc06c01b8f6bbf844670dc4aeb4e03fe3a6"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_repeated_instances_source_review.json",
@@ -307,15 +307,19 @@
       "hypothesis": "H04",
       "kind": "negative_controls_and_limits",
       "original_control": "КМ:228 анкеров остаются условным расчётом.",
-      "evidence_state": "negative_control_failed",
+      "evidence_state": "bounded_control_recorded",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_quantity_assessment.json",
           "sha256": "865e6201b95fd88148899a16e08307ab2e018a92e668dd8c1fddcf49a6e30bf1"
         },
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_quantity_context3_validated.json",
-          "sha256": "b6a1455a565c1b761cdaa608c9783a613df9906cf343aede1a548357fa988b85"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_quantity_provenance_assessment.json",
+          "sha256": "de36bf5a6cc10c3e648383203c3f5bc06c01b8f6bbf844670dc4aeb4e03fe3a6"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_quantity_provenance_validated.json",
+          "sha256": "276bd9bdcf61fba57db08c17465b1869662842923af2e71dcb6f67a7a0b07111"
         }
       ],
       "full_acceptance_proven": false
@@ -509,13 +513,12 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 15,
+    "bounded_control_recorded": 16,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 1,
     "local_contract_verified": 2,
-    "negative_control_failed": 1,
-    "partial_control_failed_quantitative_basis": 1,
-    "partial_discovery_pending_reconciliation": 1,
+    "partial_control_pending_address_and_output": 1,
+    "partial_control_pending_quantity_question": 1,
     "requires_explicit_evidence_review": 14,
     "synthetic_contract_only": 1
   },
