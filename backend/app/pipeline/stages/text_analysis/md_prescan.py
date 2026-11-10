@@ -383,15 +383,14 @@ def scan_md_text(md_text: str) -> list[PrescanFinding]:
         )
 
     if re.search(r"\bУ\d(?:\.\d)?\b", md_text) and re.search(r"теплов\w*\s+завес|КЭВ-\s*\d+", md_text, re.I):
-        page = next(
-            (
-                p
-                for p in pages
-                if re.search(r"\bУ\d(?:\.\d)?\b", p.text)
-                and re.search(r"теплов\w*\s+завес|КЭВ-\s*\d+", p.text, re.I)
-            ),
-            pages[0],
-        )
+        # Marks and equipment names may occur on different pages. Navigate to
+        # their actual blocks; falling back to the title page loses both sources.
+        mark_pattern = re.compile(r"\bУ\d(?:\.\d)?\b")
+        curtain_pattern = re.compile(r"теплов\w*\s+завес|КЭВ-\s*\d+", re.I)
+        relevant_pages = [p for p in pages if mark_pattern.search(p.text) or curtain_pattern.search(p.text)]
+        source_blocks = list(dict.fromkeys(
+            b.block_id for p in relevant_pages for b in p.blocks
+            if mark_pattern.search(b.text) or curtain_pattern.search(b.text)))
         _append_unique(
             findings,
             PrescanFinding(
@@ -399,7 +398,7 @@ def scan_md_text(md_text: str) -> list[PrescanFinding]:
                 auto_publish=False,
                 severity="РЕКОМЕНДАТЕЛЬНОЕ",
                 category="documentation",
-                source=f"MD стр. {page.page} / характеристика систем",
+                source="MD стр. " + ", ".join(str(p.page) for p in relevant_pages) + " / упоминания систем",
                 finding=(
                     "В документе встречаются обозначения вида У1 и упоминания тепловых завес. "
                     "Установить, относятся ли они к одному объекту и есть ли конкретная "
@@ -407,7 +406,7 @@ def scan_md_text(md_text: str) -> list[PrescanFinding]:
                     "и не требует переименования в ВТЗ/ЗВТ без применимого основания."
                 ),
                 norm="",
-                related_block_ids=_first_text_block(page, "тепловые завес"),
+                related_block_ids=source_blocks,
                 keywords=("тепловые завесы", "втз", "у1"),
             ),
         )

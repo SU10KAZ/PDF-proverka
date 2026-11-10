@@ -1,0 +1,153 @@
+{
+  "cases": [
+    {
+      "discipline": "AK",
+      "source_md": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "source_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "prescan": [
+        {
+          "rule_key": "air_curtain_u_designation",
+          "status": "not_checked",
+          "claim": "В документе встречаются обозначения вида У1 и упоминания тепловых завес. Установить, относятся ли они к одному объекту и есть ли конкретная неоднозначность идентификации. Совпадение слов не доказывает ошибку и не требует переименования в ВТЗ/ЗВТ без применимого основания.",
+          "source_hint": "MD стр. 5, 7, 9, 12, 24, 25, 27, 37, 45, 58, 66, 89, 102 / упоминания систем",
+          "source_block_hints": [
+            "blk_6e394962eb18407fb17b09f063c30a5c",
+            "blk_c68be533b2c24e4799dde6fb256694f4",
+            "blk_52496725d0f247bf913f197b2ed305ac",
+            "blk_3555a6e6bcc443c39eaba461232ceec3",
+            "blk_e7af9d2de9a4471daa970c45845957e5",
+            "blk_0457419703024673bb4328b18d47501e",
+            "blk_917406a6b2804ee2abedff901eb85582",
+            "blk_a4846024d95044a09f7a24d76da41c31",
+            "blk_523708af1c384b0e8bc6767d93644336",
+            "blk_1afb9b9bff5242cca6f364f218b96506",
+            "blk_127bea47b93f4214ac6430c54b21517a",
+            "blk_e7bf605cde374aec808e8a5deb78ce97",
+            "blk_e20c8afbb3bf4f8b92e962ceeab35cae",
+            "blk_3d78558e2eb34cb189b102380b0d3d00",
+            "blk_abed08ccd9a347bb9fa290fd8696b197",
+            "blk_b8f98350127c4603bb6811846ec13309"
+          ],
+          "origin": "deterministic/md_prescan",
+          "semantic_verified": false
+        }
+      ],
+      "selected_pages": [
+        5,
+        7,
+        9,
+        12,
+        24,
+        25,
+        27,
+        37,
+        45,
+        58,
+        66,
+        89,
+        102
+      ],
+      "allowed_source_refs": [
+        "blk_0457419703024673bb4328b18d47501e",
+        "blk_0bbbb4ffa2074d42aecc5afbe5c050f2",
+        "blk_1afb9b9bff5242cca6f364f218b96506",
+        "blk_3555a6e6bcc443c39eaba461232ceec3",
+        "blk_388cf697312746a88850319891c6bcae",
+        "blk_3d78558e2eb34cb189b102380b0d3d00",
+        "blk_419647cb4cd74c26b4c46942b49756e7",
+        "blk_52496725d0f247bf913f197b2ed305ac",
+        "blk_5969464fd9304318912035df199fa35d",
+        "blk_5f225d064b374b92ae7ca74da9a29218",
+        "blk_658d1731907540c48c3ecae1bc9a14fd",
+        "blk_6ba4df04a74d4e8d8db22cb4db7aff4f",
+        "blk_6e394962eb18407fb17b09f063c30a5c",
+        "blk_6e54eb477b59421dbea94ef657f05a46",
+        "blk_77d8c6a52e15473eb0dda8aa27b37511",
+        "blk_79b1af1efb42416e91d59f675440e403",
+        "blk_7ec3c8b11e9b42ae8ee0154ce44900e1",
+        "blk_917406a6b2804ee2abedff901eb85582",
+        "blk_a4846024d95044a09f7a24d76da41c31",
+        "blk_abed08ccd9a347bb9fa290fd8696b197",
+        "blk_b8f98350127c4603bb6811846ec13309",
+        "blk_bcea3caf8104407b919f6960e2c12274",
+        "blk_c68be533b2c24e4799dde6fb256694f4",
+        "blk_dc30cd9ce97e438a8e20317aafb626a5",
+        "blk_e001628ce63040d6889ddffaa66c6c97",
+        "blk_e7af9d2de9a4471daa970c45845957e5",
+        "blk_e83da12573d946028f8ddab993d9b0a4",
+        "blk_f30f5e10b54f415392e7e149a87dae24",
+        "blk_f9a46b38e8aa4c498ede6fbe4a461052"
+      ],
+      "message_chars": 96233,
+      "semantic_verified": false,
+      "new_model_calls": 0
+    },
+    {
+      "discipline": "EOM",
+      "source_md": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.md",
+      "source_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "prescan": [
+        {
+          "rule_key": "air_curtain_u_designation",
+          "status": "not_checked",
+          "claim": "В документе встречаются обозначения вида У1 и упоминания тепловых завес. Установить, относятся ли они к одному объекту и есть ли конкретная неоднозначность идентификации. Совпадение слов не доказывает ошибку и не требует переименования в ВТЗ/ЗВТ без применимого основания.",
+          "source_hint": "MD стр. 4, 6, 19, 20, 21, 22, 23, 24, 25, 26, 28 / упоминания систем",
+          "source_block_hints": [
+            "blk_c5f0556f94c14503bfe178ef5941c077",
+            "blk_5b30188592764230a7cd894838a60430",
+            "blk_513e35c4f8a7432986e9a498d4573996",
+            "blk_134b321ecf0f4e92adb35318a327be75",
+            "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+            "blk_a2f8253a41394e43a28a53892550967d",
+            "blk_7ba4aaf5d150439494bccec6453e2974",
+            "blk_af698065359a400dbccc74ee5aed7312",
+            "blk_5d82d29a180a45bdad8bc3383c63c60a",
+            "blk_c6bcc14f2e8c4177b4e6326bd9a0ac79",
+            "blk_e8b0698df46149df9c928e20c7086358",
+            "blk_a4530c6eb87c44828ae1b54ab5a92179",
+            "blk_093ddb2393604f25acc1035ea56fb849"
+          ],
+          "origin": "deterministic/md_prescan",
+          "semantic_verified": false
+        }
+      ],
+      "selected_pages": [
+        4,
+        6,
+        19,
+        20,
+        21,
+        24
+      ],
+      "allowed_source_refs": [
+        "blk_00f94ec770cf47ffbd09f39e4a586df0",
+        "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+        "blk_45882cec39b54d29adde1cc919f850f3",
+        "blk_467fcd3780ee4a5daa26449e8caac1b7",
+        "blk_4efb5f71075b46c9a256fdebb447e338",
+        "blk_5217a559e86b49a29e9fba4f76811506",
+        "blk_54ee6784647e49ae86ad9fd46e7082e3",
+        "blk_5b30188592764230a7cd894838a60430",
+        "blk_628818db493e46e7bdccc75b01afbd16",
+        "blk_7ba4aaf5d150439494bccec6453e2974",
+        "blk_7ca68a936c85428dbd4b60b2893398a2",
+        "blk_7d22e811017e4e969b2d732e9e30c50d",
+        "blk_a2f8253a41394e43a28a53892550967d",
+        "blk_a5a42cbd9c1d43818816944aeb681a28",
+        "blk_b563632f3496433e9d8e72441fddeb3e",
+        "blk_c5f0556f94c14503bfe178ef5941c077",
+        "blk_c6bcc14f2e8c4177b4e6326bd9a0ac79",
+        "blk_cea0d11c0a0748be9861c17106d28088",
+        "blk_dab64f407e0d4351ba1d738d46d0191f",
+        "blk_f2b273baee994702906a6e5d94a43063",
+        "blk_f2c7e53dd8e74a56bd148d84acd8589b"
+      ],
+      "message_chars": 107122,
+      "semantic_verified": false,
+      "new_model_calls": 0
+    }
+  ],
+  "tests_passed": 21,
+  "boundary": "Real MD navigation only. No model decision or full recall claim. Graphics require images; bounded recovery can request further context.",
+  "production_changed": false
+}

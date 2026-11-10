@@ -268,3 +268,18 @@ def test_curtain_cooccurrence_stays_request_not_automatic_finding(tmp_path):
     assert request["semantic_verified"] is False
     assert request["status"] == "not_checked"
     assert augment_text_analysis_file(output, md)["changed"] is False
+
+
+def test_curtain_request_navigates_both_separate_pages_not_title(tmp_path):
+    md = tmp_path / 'document.md'
+    md.write_text('## СТРАНИЦА 1\n### BLOCK [TEXT]: TITLE\nТитул\n'
+                  '## СТРАНИЦА 2\n### BLOCK [TEXT]: MARK\nУ1\n'
+                  '## СТРАНИЦА 3\n### BLOCK [TEXT]: CURTAIN\nТепловая завеса КЭВ-9\n')
+    output = tmp_path / '02_text_analysis.json'
+    output.write_text(json.dumps({'text_findings': []}))
+    augment_text_analysis_file(output, md)
+    result = json.loads(output.read_text())
+    request, = result['prescan_review_requests']
+    assert request['source_block_hints'] == ['MARK', 'CURTAIN']
+    assert request['source_hint'] == 'MD стр. 2, 3 / упоминания систем'
+    assert not result['text_findings']
