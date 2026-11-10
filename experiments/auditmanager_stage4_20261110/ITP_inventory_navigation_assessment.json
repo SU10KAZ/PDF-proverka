@@ -1,0 +1,34 @@
+{
+  "hypothesis": "Keep current inventory source catalogue available during object operations",
+  "comparison": "Same initial source_context and images; add catalogue and generic navigation instruction only. Same Astra/high, one observation per variant.",
+  "known_development_control": true,
+  "model_selected_exact_counterpart_block": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+  "baseline_first_followup": {
+    "request_sha256": "b1f03cbca6439c31d5937fa8abf10d87a3457f7ca3887ee9c3f70ef1568611d0",
+    "specification_supplied": false,
+    "message_chars": 50596,
+    "images": 2
+  },
+  "baseline_second_prepared_followup": {
+    "request_sha256": "a65eb451bd769c30fd603e5daf5a573d0c228ad3bdf34f61aec273cbe4534ff0",
+    "specification_supplied": false,
+    "message_chars": 81865,
+    "images": 8
+  },
+  "catalogue_first_followup": {
+    "request_sha256": "9de0666b03020cb6aa9932d5240207a87a7cedc3e086fd79b1f3e0e9f664e52d",
+    "specification_supplied": true,
+    "message_chars": 82331,
+    "images": 8
+  },
+  "catalogue_operation_duration_ms": 33238,
+  "source_version_unchanged": true,
+  "semantic_comparison_pending": true,
+  "limitations": [
+    "One stochastic comparison does not establish a general quality or cost gain.",
+    "Navigation is not evidence of identical pipe instances; original sources still require review.",
+    "The baseline second followup was prepared but not dispatched; absence of the specification is a local retrieval observation.",
+    "New first followup includes more context and images than baseline first followup; do not infer cost savings from hop count alone."
+  ],
+  "full_acceptance_proven": false
+}
