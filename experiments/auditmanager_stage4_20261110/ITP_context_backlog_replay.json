@@ -1,0 +1,81 @@
+{
+  "known_case_local_search_replay": true,
+  "model_calls": 0,
+  "new_model_responses_simulated": false,
+  "queries_origin": "Recorded original Astra queries; no target ID or control answer given to search",
+  "pages": [
+    {
+      "revision": 2,
+      "added_block_ids": [
+        "blk_693e53fec5744b27b721eb667e933ef5",
+        "blk_8445a5ccfd584b2d8f96d2b7079e113b",
+        "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+        "blk_981b77a31c254f73aa67261d897a2987",
+        "blk_4bca5b6b81924123afd8490a7c3069c7",
+        "blk_871a2c95697d4a93adb86dd3e2456614",
+        "blk_ae35014464b5493f84ca38481c3ffa60",
+        "blk_3e3a4ed96837433284271af1226a9049",
+        "blk_75e0cb76160b4c9689280d77715b04ae",
+        "blk_feee01fd29cb41ff8e97cb7d2a902eb1",
+        "blk_19206bf86b364befaddc0a253e25bdf7",
+        "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc"
+      ],
+      "remaining_hits": 58,
+      "deferred_queries": [
+        "Количество"
+      ],
+      "text_chars": 33218,
+      "target_retrieved": false
+    },
+    {
+      "revision": 3,
+      "added_block_ids": [
+        "blk_67b9571de5e74033b6c491043f8c87d1",
+        "blk_7527066e645e47bb917a9fc17fb82ccc",
+        "blk_26b23c5bfabe4917a156a91077b5458d",
+        "blk_9a10a5131f3e467db9bd6e9cce76c59a",
+        "blk_f4ab5361370f4b7aa105af255166e8eb",
+        "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c",
+        "blk_b4fb33513ca44182af058d09c8ab2dbb",
+        "blk_dbf7b3d84e5642c9805145cb7502e78d",
+        "blk_b45c5d1f31c948e092289923f6558a2f",
+        "blk_5d085f4c917a4e568fd33327e6f8edea",
+        "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+        "blk_6496640ac5e44e98a89acc7af56d0509"
+      ],
+      "remaining_hits": 46,
+      "deferred_queries": [
+        "Количество"
+      ],
+      "text_chars": 45079,
+      "target_retrieved": false
+    },
+    {
+      "revision": 4,
+      "added_block_ids": [
+        "blk_fe2066a9479d4d9e9c215338d4f82621",
+        "blk_b236e8ad38084811b7ae15386e293de5",
+        "blk_c25d98d5cc6e4b05a83580352fea374b",
+        "blk_104762a5861a40a3b2300f8b2d0dbee1",
+        "blk_c8ae2497225a4902b681920a732f0a68",
+        "blk_3e9208547b9947268cb44a3b078741b5",
+        "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+        "blk_54235e84a8d648d19eaccce2040d5f65",
+        "blk_8e4e78d833774d1094ea7fc72932c0ff",
+        "blk_206803d3db9a4735912ba311e1dfaeb9",
+        "blk_b8c120f6cbc04397b8c5514a03fa3152",
+        "blk_f38df7112cd4484a91859d26bb714511"
+      ],
+      "remaining_hits": 34,
+      "deferred_queries": [
+        "Количество"
+      ],
+      "text_chars": 57887,
+      "target_retrieved": true
+    }
+  ],
+  "target_retrieved": true,
+  "absence_proven": false,
+  "whole_project_search_complete": false,
+  "limitation": "Bounded literal search still has backlog. Expanded sources not yet evaluated by a model; image cap and semantic sufficiency remain separate."
+}

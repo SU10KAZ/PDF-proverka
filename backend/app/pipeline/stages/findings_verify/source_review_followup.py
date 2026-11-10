@@ -1,6 +1,6 @@
-"""Prepare one local follow-up from a source-bound model response; never dispatch."""
+"""Prepare bounded local follow-ups from source-bound responses; never dispatch."""
 from .source_review_results import validate_source_review
-from .source_review_context import expand_source_review_context
+from .source_review_context import expand_source_review_context, MAX_CONTEXT_REVISIONS
 from .source_review_graphics import attach_graphic_receipts
 from .source_review_request import prepare_source_review_request
 
@@ -25,14 +25,25 @@ def prepare_review_followup(response, queue, findings, md, graphic_dir):
                 queries.append(q)
             origins.append({'claim_id':claim['claim_id'], 'query':q})
     result['query_origins'] = origins
-    if not queries:
+    packet = next(p for p in queue['packets'] if p['finding_id'] == response['finding_id'])
+    revision = packet.get('context_revision', 0)
+    previous = packet.get('context_search_receipt', {})
+    unfinished = bool(previous.get('backlog') or previous.get('deferred_queries'))
+    if revision >= MAX_CONTEXT_REVISIONS or (revision and not unfinished):
+        result['status'] = 'followup_limit_reached' if revision >= MAX_CONTEXT_REVISIONS else 'no_search_backlog'
+        return result
+    if not queries and not (revision and unfinished):
         result['status'] = 'no_model_queries'
         return result
-    packet = next(p for p in queue['packets'] if p['finding_id'] == response['finding_id'])
-    if packet.get('context_revision', 0):
-        result['status'] = 'followup_limit_reached'
+    # A supported core does not imply the bounded search was exhausted.
+    # Continue only recorded searches and preserve all original source bindings.
+    try:
+        expanded = expand_source_review_context(queue, response['finding_id'], md, queries, continue_backlog=bool(revision))
+    except ValueError as exc:
+        if str(exc) != 'context_total_budget':
+            raise
+        result['status'] = 'context_total_budget'
         return result
-    expanded = expand_source_review_context(queue, response['finding_id'], md, queries)
     attach_graphic_receipts(expanded, md, graphic_dir)
     packet = next(p for p in expanded['packets'] if p['finding_id'] == response['finding_id'])
     result['search_receipt'] = packet['context_search_receipt']

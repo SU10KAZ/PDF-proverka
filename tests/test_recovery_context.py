@@ -102,3 +102,18 @@ def test_graphic_summary_requires_indexed_image_even_if_summary_already_shown(tm
     assert followup.image_paths == ()
     assert receipt['images']['unavailable'] == ['g1']
     assert 'g1' not in json.loads(followup.messages[-1]['content'])['allowed_source_refs']
+
+
+def test_resume_backlog_order_without_injecting_unmatched_sources():
+    from backend.app.pipeline.stages.prepare.recovery_context import search_md_context
+    md = ('### BLOCK #1 [TEXT]: a\nalpha\n'
+          '### BLOCK #2 [TEXT]: b\nbeta\n'
+          '### BLOCK #3 [TEXT]: c\nalpha beta\n'
+          '### BLOCK #4 [TEXT]: unrelated\nno match\n')
+    first = search_md_context(md, ['alpha','beta'], max_blocks=1)
+    prior = [h['block_id'] for h in first['backlog']]
+    resumed = search_md_context(md, ['beta','alpha'], max_blocks=1,
+        exclude_block_ids=['a'], prior_backlog_ids=['unrelated', *prior])
+    assert resumed['hits'][0]['block_id'] == prior[0]
+    assert all(h['block_id'] != 'unrelated' for h in resumed['hits'])
+    assert resumed['absence_proven'] is False

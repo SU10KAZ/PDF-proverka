@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 
-def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_block_ids=()):
+def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_block_ids=(), prior_backlog_ids=()):
     valid, rejected = [], []
     for query in queries if isinstance(queries, list) else []:
         if isinstance(query, str) and 2 <= len(query.strip()) <= 160:
@@ -49,6 +49,11 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
             if depth < len(queue) and queue[depth] not in seen:
                 seen.add(queue[depth])
                 order.append(queue[depth])
+    # Resume previously found hits in their recorded order before new matches.
+    # IDs only reorder literal matches; they cannot introduce unmatching sources.
+    prior_rank = {bid: rank for rank, bid in enumerate(prior_backlog_ids)}
+    if prior_rank:
+        order.sort(key=lambda i: prior_rank.get(matches_all[i]['block_id'], len(prior_rank)))
     for i in order:
         row = matches_all[i]
         if used + len(row['content']) > max_chars or len(hits) >= max_blocks:

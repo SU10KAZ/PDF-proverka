@@ -50,3 +50,33 @@ def test_budget_and_zero_matches_never_prove_absence():
     packet = expand_source_review_context(queue, 'F1', md, ['not present'])['packets'][0]
     assert packet['context_search_receipt']['added_block_ids'] == []
     assert not packet['context_search_receipt']['absence_proven']
+
+
+def test_backlog_continuation_preserves_sources_and_stops_at_bound():
+    md = ''.join(f'### BLOCK #{i} [TEXT]: t{i}\nneedle source {i}\n' for i in range(60))
+    findings = [{'id':'F1','source_evidence_review_status':'pending','source_review_requests':[{'block_ids':['t0']}]}]
+    queue = build_source_review_queue(findings, md)
+    expanded = expand_source_review_context(queue, 'F1', md, ['needle'])
+    hashes = []
+    for revision in range(2, 5):
+        previous = deepcopy(expanded)
+        expanded = expand_source_review_context(expanded, 'F1', md, [], continue_backlog=True)
+        p = expanded['packets'][0]
+        assert p['context_revision'] == revision
+        assert p['sources'][:len(previous['packets'][0]['sources'])] == previous['packets'][0]['sources']
+        assert len(p['context_search_history']) == revision-1
+        hashes.append(p['context_sha256'])
+    assert len(set(hashes)) == 3
+    assert len(expanded['packets'][0]['sources']) == 49
+    assert expanded['packets'][0]['context_search_receipt']['backlog']
+    with pytest.raises(ValueError, match='followup_limit'):
+        expand_source_review_context(expanded, 'F1', md, [], continue_backlog=True)
+
+
+def test_backlog_cannot_override_total_budget():
+    md, _, queue = fixture()
+    expanded = expand_source_review_context(queue, 'F1', md, ['K22'], max_blocks=1)
+    from unittest.mock import patch
+    with patch('backend.app.pipeline.stages.findings_verify.source_review_context.MAX_TOTAL_TEXT_CHARS', 1):
+        with pytest.raises(ValueError, match='context_total_budget'):
+            expand_source_review_context(expanded, 'F1', md, [], continue_backlog=True)

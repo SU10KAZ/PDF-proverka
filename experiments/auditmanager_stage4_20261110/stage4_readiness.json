@@ -624,5 +624,15 @@
     "production_changed": false,
     "automatic_model_dispatch_integrated": false,
     "output_dir": "/tmp/auditmanager_itp_adjudication_replay_y4ywksn1"
+  },
+  "bounded_context_continuation": {
+    "status": "implemented_and_known_source_replayed",
+    "report": "ITP_context_backlog_replay.json",
+    "max_context_revisions": 4,
+    "max_total_text_chars": 240000,
+    "target_K23_calculation_retrieved": true,
+    "model_evaluation_of_expanded_sources": false,
+    "automatic_dispatch": false,
+    "remaining": "34 matching hits and one query still deferred; graphic limits and final semantic evaluation remain. No whole-project completeness claim."
   }
 }

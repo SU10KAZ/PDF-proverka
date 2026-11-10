@@ -23,7 +23,7 @@ def test_model_queries_prepare_bound_followup_without_dispatch(tmp_path):
     assert queue==before
     expanded=result['expanded_queue']
     response['context_sha256']=expanded['packets'][0]['context_sha256']
-    assert prepare_review_followup(response,expanded,findings,md,tmp_path)['status']=='followup_limit_reached'
+    assert prepare_review_followup(response,expanded,findings,md,tmp_path)['status']=='no_search_backlog'
 
 
 def test_stale_response_cannot_trigger_retrieval(tmp_path):
@@ -61,3 +61,21 @@ def test_missing_inbox_removes_stale_followup(tmp_path):
     from backend.app.pipeline.stages.findings_verify.source_review_followup import run_review_response_phase
     target=tmp_path/'03_source_review_followups.json';target.write_text('stale')
     assert run_review_response_phase(tmp_path,'')['skipped'] and not target.exists()
+
+
+def test_recorded_backlog_continues_without_new_model_queries(tmp_path):
+    md,findings,_,response=data()
+    md += ''.join(f'### BLOCK #{i+3} [TEXT]: extra{i}\nK22 source {i}\n' for i in range(15))
+    queue=build_source_review_queue(findings,md)
+    response['source_md_sha256']=queue['source_md_sha256']
+    first=prepare_review_followup(response,queue,findings,md,tmp_path)
+    queue=first['expanded_queue']
+    response['context_sha256']=queue['packets'][0]['context_sha256']
+    response['claims'][0].pop('context_queries')
+    second=prepare_review_followup(response,queue,findings,md,tmp_path)
+    assert second['status']=='prepared_awaiting_dispatch_authorization'
+    assert second['expanded_queue']['packets'][0]['context_revision']==2
+    assert second['request']['sent'] is False
+    assert second['search_receipt']['added_block_ids']
+    response['context_sha256']=queue['packets'][0]['context_sha256']
+    assert prepare_review_followup(response,second['expanded_queue'],findings,md,tmp_path)['status']=='invalid_response'
