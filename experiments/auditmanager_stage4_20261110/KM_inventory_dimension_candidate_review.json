@@ -1,0 +1,261 @@
+{
+  "project": "ПД-00580716-КМ1.2_V1",
+  "records": [
+    {
+      "packet": "object_inventory_009",
+      "raw_id": "p09_f01",
+      "raw_finding": {
+        "id": "p09_f01",
+        "object_ids": [
+          "p09_o02",
+          "p09_o03",
+          "p09_o04"
+        ],
+        "kind": "Несогласованность размерных цепей",
+        "description": "На видах ОГМ12, ОГМ9 и ОГМ11 повторяющиеся пролёты между соседними основными стойками имеют горизонтальный шаг 600 мм и вертикальный перепад 300 мм, тогда как соответствующие наклонные интервалы нижней цепи обозначены 640 мм. Для этих проекций наклонное расстояние составляет √(600²+300²) ≈ 670,82 мм. Указанные три размера не могут одновременно задавать одну геометрию.",
+        "source_refs": [
+          "blk_db827d15a9c64c8fbcc57f1ac5f8408e",
+          "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+          "blk_7315b3a722f946d48c34d31d1eac62ad"
+        ],
+        "evidence": [
+          {
+            "source_ref": "blk_db827d15a9c64c8fbcc57f1ac5f8408e",
+            "graphic_observation": "ОГМ12: четыре основных горизонтальных участка подписаны «150×4=600», уровни соседних оснований разделены размерами 300, вдоль соответствующих нижних наклонных участков стоят размеры 640."
+          },
+          {
+            "source_ref": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+            "graphic_observation": "ОГМ9: на четырёх основных пролётах повторяются горизонтальные размеры «150×4=600», вертикальные перепады 300 и наклонные размеры 640."
+          },
+          {
+            "source_ref": "blk_7315b3a722f946d48c34d31d1eac62ad",
+            "graphic_observation": "ОГМ11: между основными стойками указаны четыре горизонтальных участка по 600, четыре перепада по 300 и четыре наклонных участка по 640."
+          }
+        ],
+        "calculation": {
+          "horizontal_projection_mm": 600,
+          "vertical_projection_mm": 300,
+          "calculated_inclined_distance_mm": 670.82,
+          "specified_inclined_distance_mm": 640,
+          "difference_mm": 30.82
+        },
+        "limits": "Вывод относится к представленным размерным цепям трёх марок. Он не устанавливает, какой именно размер подлежит исправлению, и не распространяется на остальные листы или весь проект."
+      },
+      "result_sha256": "62cefd85014dffa715594dc720b590dff5fd414b20533335e381cf10306bfa39",
+      "transport_issue": "Full claim supplied in description instead of statement; preserved by adapter with claim_field provenance.",
+      "automatic_semantic_acceptance": false,
+      "disposition": "unconfirmed_comparison_basis",
+      "arithmetic": {
+        "sqrt_600_squared_plus_300_squared_mm": "670.8203932499369089227521006",
+        "not_a_proven_comparison_to_part_length": true
+      },
+      "evidence": [
+        {
+          "block_id": "blk_db827d15a9c64c8fbcc57f1ac5f8408e",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_db827d15a9c64c8fbcc57f1ac5f8408e.png",
+          "sha256": "e1be124150c7b481e5d6ced8c8f9b26004197ded48ff85f18fd825c462bf12ff"
+        },
+        {
+          "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_eb2afbd2b4c14b3ba20b6cea72f825b8.png",
+          "sha256": "8b54d8e786656ea8fcc6d152e9ab679a8548b41d18b30941543a9ab011f61ef0"
+        },
+        {
+          "block_id": "blk_7315b3a722f946d48c34d31d1eac62ad",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_7315b3a722f946d48c34d31d1eac62ad.png",
+          "sha256": "fbb7193887edf9abf2ef2b0475b4db6b849f8dd665283fa47d8bd36c9ee4c5a1"
+        }
+      ],
+      "primary_graphic_review": "OGM12 high-resolution view shows 600 horizontal spacing referenced to upright centre lines while 640 is separately dimensioned between inclined lower-member ends; adjacent short dimension intervals account for upright width. OGM9 and OGM11 originals show the same need to trace these separate dimension endpoints. The three model dimensions are not established as sides of one triangle.",
+      "limits": [
+        "No conclusion that all drawing geometry is correct.",
+        "No universal allowance of 30.82 mm or formula for compensating member ends.",
+        "Composite claim must be reviewed for each OGM independently before technical admission."
+      ],
+      "positive_control": {
+        "artifact": "KM_UA009_source_inventory_recovery.json",
+        "scope": "Retain confirmed 150 mm annotation discrepancy on the same LK5 landing; do not globally suppress dimension conflicts."
+      }
+    },
+    {
+      "packet": "object_inventory_010",
+      "raw_id": "p10_f01",
+      "raw_finding": {
+        "id": "p10_f01",
+        "object_id": "p10_ogm10",
+        "status": "расхождение размерных данных; требует уточнения базы",
+        "description": "На виде ОГМ10 вдоль верхнего элемента поз. 2 указан размер 3065 мм; в ведомости для поз. 2 указана длина L=2,965м, то есть 2965 мм. Числовое расхождение составляет 100 мм. Без концевых узлов нельзя окончательно установить, должны ли габарит на виде и заготовительная длина совпадать.",
+        "source_refs": [
+          "blk_44d5d64039f74e2188935e15eabafb7d",
+          "blk_f8cad33a4f74403cb982ba27beeb20fc"
+        ],
+        "evidence": [
+          {
+            "source_ref": "blk_44d5d64039f74e2188935e15eabafb7d",
+            "graphic_observation": "На наклонной размерной линии над верхним элементом ОГМ10 прочитано 3065; к верхнему элементу подведена выноска 2."
+          },
+          {
+            "source_ref": "blk_f8cad33a4f74403cb982ba27beeb20fc",
+            "quote": "|  |  | 2 | 40x3 |  |  |  | C245 | L=2,965м | 1 |"
+          }
+        ]
+      },
+      "result_sha256": "0d3a15200afaf8ba5b0febd59182b2bdbb598c3a54494e1ce0cadc4e2beefb85",
+      "transport_issue": "Full claim supplied in description instead of statement; preserved by adapter with claim_field provenance.",
+      "automatic_semantic_acceptance": false,
+      "disposition": "retain_bounded_annotation_conflict_classic_overlap",
+      "arithmetic": {
+        "drawing_mm": "3065",
+        "authoritative_table_mm": "2965.000",
+        "difference_mm": "100"
+      },
+      "evidence": [
+        {
+          "block_id": "blk_44d5d64039f74e2188935e15eabafb7d",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_44d5d64039f74e2188935e15eabafb7d.png",
+          "sha256": "181fa50b5add5677cb3cee995f8dbedc0bc4d5ed139cf415d6480c418391318d"
+        },
+        {
+          "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_cfd1c741a6fa4cd99c3eccd1d42afc7d.png",
+          "sha256": "b9a65fa02aecbc35f4fa72c98c2daba4002bbbc9a303ffadda7617686ee52c84"
+        },
+        {
+          "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_2a44dd3981b94cc2bc63d79e8d2f2264.png",
+          "sha256": "c8c5cf85a7f8ca54b2c70c785e03337957faa5bfe285b4d8058bdcbc00a1eee3"
+        }
+      ],
+      "primary_graphic_review": "OGM10 view and 3x PDF render show 3065 along upper element position 2, an upper-end D(4) reference and intermediate E(4). Node D shows a straight capped end; E shows the pipe/profile connection. A U-bend on neighbouring B/V nodes does not establish a 100 mm deduction for OGM10.",
+      "classic_finding": "F-018",
+      "new_incremental_discovery": false,
+      "engineer_history": {
+        "control_id": "KM:6",
+        "case_key": "ПД-00580716-КМ1.2_V1::UA-006",
+        "project": "ПД-00580716-КМ1.2_V1",
+        "finding_id": "UA-006",
+        "source": "Codex",
+        "original_claim": "Ведомости прямых поручней ОГМ4, ОГМ9 и ОГМ10 задают длины на 100 мм меньше размеров эскизов.\n\nИсходные данные: ОГМ4 л.8: наклонный размер прямого поручня 3765 мм, в ведомости Ø40×3 L=3,665 м. ОГМ9 л.9: размер 3400 мм, ведомость L=3,300 м. ОГМ10 л.9: размер 3065 мм, ведомость L=2,965 м. Отдельные вставки на недостающие 100 мм не определены. Проверялись именно прямые поручни, а не длины гнутых заготовок.",
+        "original_title": "Длины прямых поручней ОГМ4/9/10",
+        "engineer_decision": "Отклонено",
+        "engineer_reason": "Отклонено так как, ПД-00580716-КМ1.2, V1, стр. 10 (лист 8) и стр. 11 (лист 9), чертежи и ведомости элементов ОГМ4, ОГМ9 и ОГМ10, поз. 2. Размеры 3765, 3400 и 3065 мм проставлены от оси U-образного колена до свободного торца поручня под заглушку (узел Д), а поручень приваривается встык к ноге колена длиной 100 мм, поэтому заготовка короче на 100 мм (3765 − 100 = 3665). Тот же вычет 100 мм на каждый стык с коленом выдержан у всех марок листов 8 и 9, поэтому исправление проекта не требуется.",
+        "engineer_comment": "совпадает с F-020 и F-026 из старого аудита.",
+        "later_learning": "Сборочная ось включает ногу колена 100 мм; сравнивались разные границы.",
+        "later_label": "technical_rejection",
+        "control_type": "отрицательный исторический",
+        "verification_status": "не перепроверено полностью",
+        "evidence_assessment": "Габарит сборки и прямой участок с коленом могут различаться на100мм; нельзя создать универсальное разрешение всех разниц100мм.",
+        "evidence_ids": [],
+        "failure_stage": "Разные границы размера",
+        "workbook": "workspace/ПД-00580716-КМ1.2_V1/ПД-00580716-КМ1.2_V1 аудит/Unified_Engineering_Audit.xlsx",
+        "workbook_row": 7,
+        "location": "КМ1.2; л. 8, 9; PDF 10, 11; ЛК1.1 ОГМ4, ЛК3.1 ОГМ9 и ЛК4.1 ОГМ10, прямой поручень поз.2",
+        "rule_ids": [
+          "KM-002"
+        ]
+      },
+      "prior_source_review": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json",
+        "sha256": "332c6b03682d0728dc030587f7934bbd6c930302eda3c3c261bee60353061ea3"
+      },
+      "limits": [
+        "Original engineer rejection is preserved; its U-bend explanation is not supported by the linked D/E nodes.",
+        "Do not claim fabrication defect, installation failure or mandatory 100 mm length increase.",
+        "This is a bounded confirmation of the OGM10 part of a pre-existing classic finding, not a newly recovered miss."
+      ]
+    }
+  ],
+  "graphic_detail_manifests": {
+    "ogm12": {
+      "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+      "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+      "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+      "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+      "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+      "columns": 2,
+      "scale": 3,
+      "overlap": 0.025,
+      "tiles": [
+        {
+          "block_id": "blk_db827d15a9c64c8fbcc57f1ac5f8408e",
+          "page_index": 10,
+          "pdf_rotation": 270,
+          "clip_rotated_page_points": [
+            2211.6328790038824,
+            44.453702449798584,
+            2573.9650933928788,
+            612.0435862541199
+          ],
+          "path": "/tmp/auditmanager_km_dimension_detail_20261110/ogm12/detail_tile_0.png",
+          "width": 1088,
+          "height": 1704,
+          "sha256": "e45e6bf8741359b3c7df044f837dc9fe7c76d609553dfd0f8fd5d70085aac44a"
+        },
+        {
+          "block_id": "blk_db827d15a9c64c8fbcc57f1ac5f8408e",
+          "page_index": 10,
+          "pdf_rotation": 270,
+          "clip_rotated_page_points": [
+            2539.4572634510696,
+            44.453702449798584,
+            2901.789477840066,
+            612.0435862541199
+          ],
+          "path": "/tmp/auditmanager_km_dimension_detail_20261110/ogm12/detail_tile_1.png",
+          "width": 1088,
+          "height": 1704,
+          "sha256": "cb9c5e4f06da5c8ee6f61da0e050092dbbdf1550386c415750253ce674285f5d"
+        }
+      ],
+      "model_call_performed": false,
+      "semantic_verified": false
+    },
+    "ogm10": {
+      "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+      "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+      "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+      "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+      "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+      "columns": 2,
+      "scale": 3,
+      "overlap": 0.025,
+      "tiles": [
+        {
+          "block_id": "blk_44d5d64039f74e2188935e15eabafb7d",
+          "page_index": 10,
+          "pdf_rotation": 270,
+          "clip_rotated_page_points": [
+            813.5476144403219,
+            69.83151185512543,
+            1104.608771700412,
+            582.3728700876236
+          ],
+          "path": "/tmp/auditmanager_km_dimension_detail_20261110/ogm10/detail_tile_0.png",
+          "width": 874,
+          "height": 1539,
+          "sha256": "8136ce6be46ba2202cbd7447561ecfac23d2209b3de87a5cee1d538328a94119"
+        },
+        {
+          "block_id": "blk_44d5d64039f74e2188935e15eabafb7d",
+          "page_index": 10,
+          "pdf_rotation": 270,
+          "clip_rotated_page_points": [
+            1076.8886614851654,
+            69.83151185512543,
+            1367.9498187452555,
+            582.3728700876236
+          ],
+          "path": "/tmp/auditmanager_km_dimension_detail_20261110/ogm10/detail_tile_1.png",
+          "width": 874,
+          "height": 1539,
+          "sha256": "49b3785c9199a6448e87b016128ec223799addf6d929e465438df298ad905c12"
+        }
+      ],
+      "model_call_performed": false,
+      "semantic_verified": false
+    }
+  },
+  "method_conclusion": "Preserve raw candidates and compare dimension endpoints and linked nodes before accepting numerical discrepancies. Do not use rejection labels or project-specific 100 mm explanations as universal rules.",
+  "new_filter_accepted": false,
+  "whole_candidate_audit_verified": false
+}

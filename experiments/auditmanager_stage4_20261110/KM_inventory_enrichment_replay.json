@@ -1,5 +1,5 @@
 {
-  "completed_inventory_packets": 11,
+  "completed_inventory_packets": 12,
   "inventory_result_sha256": {
     "object_inventory_000": "ea3b192a606eaac93544a3a813ba4dce8e897a2a4522da8a457b7efade534821",
     "object_inventory_001": "775b5bd25add143a64fc6e6b79f43417c8b5551009953a4eddb54049d8a7cafc",
@@ -11,15 +11,16 @@
     "object_inventory_007": "1c6586a4e9dc6a520d520298f264180077c72e1296edbafae34c5ff117c6cd1b",
     "object_inventory_008": "4610f51ba2798fa105f846df95132ebe39cc91e4b808f50df2dcb2701bfc5cd6",
     "object_inventory_009": "62cefd85014dffa715594dc720b590dff5fd414b20533335e381cf10306bfa39",
-    "object_inventory_010": "0d3a15200afaf8ba5b0febd59182b2bdbb598c3a54494e1ce0cadc4e2beefb85"
+    "object_inventory_010": "0d3a15200afaf8ba5b0febd59182b2bdbb598c3a54494e1ce0cadc4e2beefb85",
+    "object_inventory_011": "4aae1e63d2db9ba7ba4853308ee646f1dabf22a2d1e3c8d6af34a45e8adedef4"
   },
   "baseline_sha256": "77df990dfd1235194e0c597dfe4cc1720f793e3cb8594bf78b2d0294c58b1363",
   "classic_text_candidates_unchanged": 10,
-  "added_candidates": 4,
-  "registered_packet_local_objects": 240,
+  "added_candidates": 6,
+  "registered_packet_local_objects": 249,
   "ua009_source_lineage_preserved": true,
   "output_path": "/tmp/auditmanager_km_inventory_enrichment_replay_20261110.json",
-  "output_sha256": "323945b5da75125f78b881288c1f7068a3a4135c738dce6aaf92b365e623f92a",
+  "output_sha256": "7c931f8835dfe7acd4a08778133729c17880197c19afca16b70595e6b2268a59",
   "semantic_verified": false,
   "full_candidate_audit_executed": false,
   "scope": "Saved real source inventory merged into saved classic text analysis; no model calls or final report generation."

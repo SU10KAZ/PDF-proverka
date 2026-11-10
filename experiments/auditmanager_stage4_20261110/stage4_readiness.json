@@ -921,7 +921,21 @@
     "local_tests_passed": 19,
     "real_replay": "KM_inventory_enrichment_replay.json",
     "classic_text_candidates_preserved": 10,
-    "inventory_candidates_added": 4,
-    "full_candidate_audit_executed": false
+    "inventory_candidates_added": 6,
+    "full_candidate_audit_executed": false,
+    "real_replay_packets": 12
+  },
+  "latest_inventory_progress_assessment": "KM_inventory_progress_assessment.json",
+  "latest_dimension_candidate_review": "KM_inventory_dimension_candidate_review.json",
+  "latest_local_integration_validation": {
+    "tests_passed": 164,
+    "seconds": 2.65,
+    "scope": "Inventory, operation workflow, source-review, recovery, quantity, requirement and question routing suites; local only.",
+    "subsequent_adapter_change_validation": {
+      "tests_passed": 18,
+      "seconds": 0.84,
+      "scope": "Description-form candidates, inventory integration and text runner regression."
+    },
+    "full_candidate_audit": false
   }
 }

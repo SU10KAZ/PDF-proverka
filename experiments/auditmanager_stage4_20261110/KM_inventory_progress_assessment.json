@@ -1,0 +1,368 @@
+{
+  "discipline": "KM",
+  "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "completed_packets": 12,
+  "total_packets": 14,
+  "packets": [
+    {
+      "packet": "object_inventory_000",
+      "result_sha256": "ea3b192a606eaac93544a3a813ba4dce8e897a2a4522da8a457b7efade534821",
+      "objects": 22,
+      "invalid_objects": 0,
+      "findings": 3,
+      "unresolved_operations": 89,
+      "unresolved_source_blocks": 2,
+      "duration_ms": 590802,
+      "input_tokens": 27976,
+      "output_tokens": 29235
+    },
+    {
+      "packet": "object_inventory_001",
+      "result_sha256": "775b5bd25add143a64fc6e6b79f43417c8b5551009953a4eddb54049d8a7cafc",
+      "objects": 16,
+      "invalid_objects": 0,
+      "findings": 0,
+      "unresolved_operations": 62,
+      "unresolved_source_blocks": 2,
+      "duration_ms": 419315,
+      "input_tokens": 23942,
+      "output_tokens": 20669
+    },
+    {
+      "packet": "object_inventory_002",
+      "result_sha256": "b4479cd0d375f7766c60cec7d7569b6401a972740201443d518881575840872a",
+      "objects": 37,
+      "invalid_objects": 0,
+      "findings": 0,
+      "unresolved_operations": 161,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 695683,
+      "input_tokens": 21314,
+      "output_tokens": 34544
+    },
+    {
+      "packet": "object_inventory_003",
+      "result_sha256": "6d7b7a4776d5d514cf77aeaf48730987e108f4f76c98ca266cb8e50083333ea9",
+      "objects": 17,
+      "invalid_objects": 0,
+      "findings": 0,
+      "unresolved_operations": 68,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 392135,
+      "input_tokens": 20683,
+      "output_tokens": 19298
+    },
+    {
+      "packet": "object_inventory_004",
+      "result_sha256": "acc697d473d22e3253326d275a83226da7ab7803748ffcb10d4c8df77b3c504e",
+      "objects": 19,
+      "invalid_objects": 0,
+      "findings": 0,
+      "unresolved_operations": 85,
+      "unresolved_source_blocks": 2,
+      "duration_ms": 409378,
+      "input_tokens": 20844,
+      "output_tokens": 20143
+    },
+    {
+      "packet": "object_inventory_005",
+      "result_sha256": "22d1c94a833385e0835e55d3d94529a9fed10c78723b7db4a6a89bd987eaaaff",
+      "objects": 43,
+      "invalid_objects": 0,
+      "findings": 0,
+      "unresolved_operations": 191,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 871661,
+      "input_tokens": 27455,
+      "output_tokens": 43215
+    },
+    {
+      "packet": "object_inventory_006",
+      "result_sha256": "c572f28d5887f9fcc10c1758ffb5c749376206fb3fe9dbd6b43ee4414a370881",
+      "objects": 37,
+      "invalid_objects": 0,
+      "findings": 1,
+      "unresolved_operations": 151,
+      "unresolved_source_blocks": 0,
+      "duration_ms": 675570,
+      "input_tokens": 26883,
+      "output_tokens": 33455
+    },
+    {
+      "packet": "object_inventory_007",
+      "result_sha256": "1c6586a4e9dc6a520d520298f264180077c72e1296edbafae34c5ff117c6cd1b",
+      "objects": 26,
+      "invalid_objects": 0,
+      "findings": 0,
+      "unresolved_operations": 124,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 437767,
+      "input_tokens": 22747,
+      "output_tokens": 21464
+    },
+    {
+      "packet": "object_inventory_008",
+      "result_sha256": "4610f51ba2798fa105f846df95132ebe39cc91e4b808f50df2dcb2701bfc5cd6",
+      "objects": 12,
+      "invalid_objects": 0,
+      "findings": 0,
+      "unresolved_operations": 49,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 376448,
+      "input_tokens": 24791,
+      "output_tokens": 18489
+    },
+    {
+      "packet": "object_inventory_009",
+      "result_sha256": "62cefd85014dffa715594dc720b590dff5fd414b20533335e381cf10306bfa39",
+      "objects": 4,
+      "invalid_objects": 0,
+      "findings": 1,
+      "unresolved_operations": 13,
+      "unresolved_source_blocks": 0,
+      "duration_ms": 196737,
+      "input_tokens": 20167,
+      "output_tokens": 9320
+    },
+    {
+      "packet": "object_inventory_010",
+      "result_sha256": "0d3a15200afaf8ba5b0febd59182b2bdbb598c3a54494e1ce0cadc4e2beefb85",
+      "objects": 7,
+      "invalid_objects": 0,
+      "findings": 1,
+      "unresolved_operations": 31,
+      "unresolved_source_blocks": 0,
+      "duration_ms": 275438,
+      "input_tokens": 23052,
+      "output_tokens": 13464
+    },
+    {
+      "packet": "object_inventory_011",
+      "result_sha256": "4aae1e63d2db9ba7ba4853308ee646f1dabf22a2d1e3c8d6af34a45e8adedef4",
+      "objects": 9,
+      "invalid_objects": 0,
+      "findings": 0,
+      "unresolved_operations": 32,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 307856,
+      "input_tokens": 22494,
+      "output_tokens": 15145
+    }
+  ],
+  "packet_local_objects": 249,
+  "raw_findings": 6,
+  "operation_status_counts": {
+    "reported_checked": 153,
+    "reported_not_applicable": 36,
+    "needs_data": 1056
+  },
+  "quote_count": 259,
+  "exact_quote_matches": 259,
+  "parameter_evidence_issues": [
+    {
+      "packet": "object_inventory_004",
+      "object_id": "p4_11",
+      "parameter_index": 0,
+      "source_ref": "blk_6e38e7f2d8ae4bae9cbf4deb442c7742",
+      "reason": "missing_exact_text_quote"
+    }
+  ],
+  "unresolved_graphics": [
+    {
+      "packet": "object_inventory_000",
+      "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+        "status": "needs_data",
+        "object_ids": [
+          "obj_03",
+          "obj_15",
+          "obj_16",
+          "obj_22"
+        ],
+        "reason": "Изображение просмотрено; основной план, марки и размеры инвентаризированы. Мелкий немаркированный элемент у верхнего левого края и обрезанное нижнее обозначение оси не позволяют полностью идентифицировать периферийную графику."
+      }
+    },
+    {
+      "packet": "object_inventory_001",
+      "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+        "status": "needs_data",
+        "object_ids": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "reason": "Все четыре панели просмотрены, марки и основные размеры зарегистрированы. Часть мелких позиционных выносок и концевых размеров недостаточно разборчива для полной проверки состава и размерных цепей; требуются более читаемые графические фрагменты."
+      }
+    },
+    {
+      "packet": "object_inventory_001",
+      "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+        "status": "needs_data",
+        "object_ids": [
+          "V2",
+          "I4",
+          "I5"
+        ],
+        "reason": "Изображение просмотрено и доступные объекты зарегистрированы. Нижнее левое обозначение оси обрезано; для полной координатной идентификации нужен необрезанный фрагмент. Графика показывает план, несмотря на навигационное описание как разреза."
+      }
+    },
+    {
+      "packet": "object_inventory_002",
+      "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+        "status": "needs_data",
+        "object_ids": [
+          "detail_a"
+        ],
+        "reason": "Изображения А, 1-1 и 5-5 осмотрены; узел, позиции и анкеры выявлены. Для полного учета размерных связей нужны однозначно читаемые границы стесненных цепей 40 в 1-1. Описание изображения не использовано для подмены графических данных."
+      }
+    },
+    {
+      "packet": "object_inventory_003",
+      "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+        "status": "needs_data",
+        "object_ids": [
+          "stair_01",
+          "mark_ogm_5",
+          "mark_ogm_6",
+          "pos_9110_ogm5_upper",
+          "pos_9110_ogm5_lower",
+          "pos_9110_ogm6"
+        ],
+        "reason": "Основной план +9.110 просмотрен и инвентаризирован; две позиции ОГМ 5 сохранены раздельно. Внизу присутствует обрезанный заголовок следующей схемы с неполным перечнем отметок; её геометрия не представлена, поэтому покрытие этого нижнего фрагмента не подтверждено."
+      }
+    },
+    {
+      "packet": "object_inventory_004",
+      "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+        "status": "needs_data",
+        "object_ids": [
+          "p4_12",
+          "p4_13",
+          "p4_14",
+          "p4_15"
+        ],
+        "reason": "Все четыре графические области осмотрены: узел А, его сечение 1–1, узлы Б и В. Зарегистрированы узлы, анкер и видимые компоненты в составе узлов. Правая нижняя анкерная выноска обрезана; для полного состава крепления нужен её отсутствующий конец."
+      }
+    },
+    {
+      "packet": "object_inventory_004",
+      "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+        "status": "needs_data",
+        "object_ids": [
+          "p4_16",
+          "p4_17",
+          "p4_18",
+          "p4_19"
+        ],
+        "reason": "Осмотрены все четыре панели ОГМ 1–ОГМ 4. Марки, форма и основные читаемые размеры зарегистрированы. Разрешение недостаточно для полного инвентаря мелких позиций деталей, всех узловых обозначений и перекрытых размеров; нужны отдельные изображения панелей с большей детализацией."
+      }
+    },
+    {
+      "packet": "object_inventory_005",
+      "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+        "status": "needs_data",
+        "object_ids": [
+          "ОГМ5_ведомость",
+          "ОГМ6_ведомость",
+          "ОГМ7_ведомость",
+          "ОГМ8_ведомость"
+        ],
+        "reason": "Все четыре панели просмотрены и сопоставлены по маркам. Мелкие позиции, часть наклонных размеров и узловых выносок недостаточно разборчивы для полного поэлементного учета и сравнения; требуется более четкий графический фрагмент."
+      }
+    },
+    {
+      "packet": "object_inventory_007",
+      "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+        "status": "needs_data",
+        "object_ids": [
+          "p7_22",
+          "p7_23",
+          "p7_24",
+          "p7_25"
+        ],
+        "reason": "Осмотрены все четыре изображения, выявлены сборки ограждений ОГМ1–ОГМ4, основные размерные цепочки и ссылки. Часть мелких позиционных обозначений, концевых размеров и привязок выносок нельзя надёжно разобрать в представленном разрешении; для полного учёта деталей и узлов нужен более читаемый фрагмент. Изображения не интерпретированы как самостоятельные конструкции лестничных маршей."
+      }
+    },
+    {
+      "packet": "object_inventory_008",
+      "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+        "status": "needs_data",
+        "object_ids": [
+          "p8_ogm5",
+          "p8_ogm6",
+          "p8_ogm7",
+          "p8_ogm8",
+          "p8_node_a"
+        ],
+        "reason": "Все четыре схемы осмотрены и марки зарегистрированы. Мелкие наклонные размеры поручней и часть концевых размерных привязок недостаточно надёжно читаются для полного сопоставления длин и подсчёта заполнения."
+      }
+    },
+    {
+      "packet": "object_inventory_011",
+      "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+        "status": "inventoried",
+        "object_ids": [
+          "ogm16",
+          "view_ogm16"
+        ],
+        "reason": "Изображение просмотрено; зарегистрированы марка, позиции, размерные цепи и ссылочные обозначения."
+      },
+      "reason": "inventory_conflicts_with_registered_objects"
+    }
+  ],
+  "duration_ms_sum": 5648790,
+  "input_tokens_sum": 282348,
+  "output_tokens_sum": 278441,
+  "semantic_verified": false,
+  "whole_project_coverage_verified": false,
+  "limits": [
+    "Object records may represent views or repeat across packets; not unique physical objects or defects.",
+    "Exact quote match verifies text provenance only, not values, interpretation, comparison or usefulness.",
+    "Graphic claims require image inspection. This script does not inspect pixels.",
+    "Unresolved operations and sources remain unresolved; completed packet does not imply completed audit."
+  ]
+}

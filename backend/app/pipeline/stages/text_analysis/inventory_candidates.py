@@ -25,7 +25,9 @@ def inventory_text_candidates(packets, known_block_ids, *, reserved_ids=()):
                 'raw_finding_sha256':hashlib.sha256(json.dumps(raw,ensure_ascii=False,sort_keys=True).encode()).hexdigest()}
             if not isinstance(raw,dict):
                 pending.append({**origin,'reason':'invalid_finding'});continue
-            claim=raw.get('statement')
+            claim_field='statement' if 'statement' in raw else 'description'
+            claim=raw.get(claim_field)
+            origin['claim_field']=claim_field
             refs=raw.get('source_refs')
             if not isinstance(claim,str) or not claim.strip() or not isinstance(refs,list) or not refs or any(not isinstance(x,str) or not x for x in refs):
                 pending.append({**origin,'reason':'missing_claim_or_source_refs'});continue

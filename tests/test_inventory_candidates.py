@@ -25,3 +25,18 @@ def test_invalid_claim_is_retained_pending_and_unresolved_source_remains_visible
     assert result['text_findings'][0]['unresolved_block_ids']==['missing']
     assert result['pending'][0]['raw_finding']=={'id':'bad'}
     assert not result['semantic_verified']
+
+
+def test_description_only_inventory_claim_retains_uncertainty_and_does_not_invent_verdict():
+    raw={'id':'p10_f01','description':'Difference 100 mm; common measurement basis unknown.',
+        'status':'needs clarification','source_refs':['drawing','table']}
+    result=inventory_text_candidates([{'packet_id':'p10','findings':[raw]}],{'drawing','table'})
+    candidate=result['text_findings'][0]
+    assert candidate['finding']==raw['description']
+    assert candidate['inventory_origin']['claim_field']=='description'
+    assert candidate['inventory_origin']['raw_finding']==raw
+    assert candidate['requires_semantic_review']
+    assert not result['pending']
+    malformed={**raw,'statement':None}
+    result=inventory_text_candidates([{'packet_id':'p10','findings':[malformed]}],{'drawing','table'})
+    assert not result['text_findings'] and result['pending']
