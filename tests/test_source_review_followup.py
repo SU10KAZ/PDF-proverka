@@ -94,3 +94,16 @@ def test_empty_first_query_batch_does_not_skip_deferred_search(tmp_path):
     payload=json.loads(result['request']['messages'][1]['content'])
     assert payload['context_search_boundary']['absence_proven'] is False
     assert result['request']['sent'] is False
+
+
+def test_followup_can_search_new_model_query_after_reading_index(tmp_path):
+    md,findings,_,response=data()
+    md+='### BLOCK #4 [TEXT]: calc\nHydraulic appendix calculation\n'
+    queue=build_source_review_queue(findings,md);response['source_md_sha256']=queue['source_md_sha256']
+    first=prepare_review_followup(response,queue,findings,md,tmp_path)
+    response['context_sha256']=first['expanded_queue']['packets'][0]['context_sha256']
+    response['claims'][0]['context_queries']=['Hydraulic appendix']
+    second=prepare_review_followup(response,first['expanded_queue'],findings,md,tmp_path)
+    assert second['status']=='prepared_awaiting_dispatch_authorization'
+    assert second['search_receipt']['added_block_ids']==['calc']
+    assert second['expanded_queue']['packets'][0]['context_revision']==2

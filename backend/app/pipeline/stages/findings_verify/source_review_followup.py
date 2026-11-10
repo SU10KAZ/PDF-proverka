@@ -29,16 +29,20 @@ def prepare_review_followup(response, queue, findings, md, graphic_dir):
     revision = packet.get('context_revision', 0)
     previous = packet.get('context_search_receipt', {})
     unfinished = bool(previous.get('backlog') or previous.get('deferred_queries'))
-    if revision >= MAX_CONTEXT_REVISIONS or (revision and not unfinished):
-        result['status'] = 'followup_limit_reached' if revision >= MAX_CONTEXT_REVISIONS else 'no_search_backlog'
+    if revision >= MAX_CONTEXT_REVISIONS:
+        result['status'] = 'followup_limit_reached'
         return result
+    if revision and not unfinished:
+        searched = {q.casefold() for receipt in [*packet.get('context_search_history', []), previous]
+                    for q in receipt.get('query_hit_counts', {})}
+        queries = [q for q in queries if q.casefold() not in searched]
     if not queries and not (revision and unfinished):
-        result['status'] = 'no_model_queries'
+        result['status'] = 'no_search_backlog' if revision else 'no_model_queries'
         return result
     # A supported core does not imply the bounded search was exhausted.
     # Continue only recorded searches and preserve all original source bindings.
     try:
-        expanded = expand_source_review_context(queue, response['finding_id'], md, queries, continue_backlog=bool(revision))
+        expanded = expand_source_review_context(queue, response['finding_id'], md, queries, continue_backlog=bool(revision and unfinished), continue_queries=bool(revision and not unfinished))
     except ValueError as exc:
         if str(exc) != 'context_total_budget':
             raise

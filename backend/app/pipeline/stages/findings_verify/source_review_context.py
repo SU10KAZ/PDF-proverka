@@ -13,7 +13,7 @@ MAX_CONTEXT_REVISIONS = 4
 MAX_TOTAL_TEXT_CHARS = 240000
 
 
-def expand_source_review_context(queue, finding_id, md, queries, *, max_chars=60000, max_blocks=12, continue_backlog=False):
+def expand_source_review_context(queue, finding_id, md, queries, *, max_chars=60000, max_blocks=12, continue_backlog=False, continue_queries=False):
     if queue.get('source_md_sha256') != hashlib.sha256(md.encode()).hexdigest():
         raise ValueError('source_version_changed')
     result = deepcopy(queue)
@@ -22,7 +22,7 @@ def expand_source_review_context(queue, finding_id, md, queries, *, max_chars=60
         raise ValueError('missing_or_ambiguous_pending_packet')
     packet = packets[0]
     revision = packet.get('context_revision', 0)
-    if revision and not continue_backlog:
+    if revision and not (continue_backlog or continue_queries):
         raise ValueError('context_followup_limit')
     if revision >= MAX_CONTEXT_REVISIONS:
         raise ValueError('context_followup_limit')
