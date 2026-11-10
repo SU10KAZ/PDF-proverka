@@ -1,0 +1,437 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "circuit_13",
+      "operation": "quantity_balance",
+      "status": "needs_data",
+      "reason": "На схеме установлена одна цепь С2513: QF5.13 — кабель ППГнг-FRHF 5×35,0 длиной 65 м — стабилизатор 40 кВА — ЩУЛ-2.2. Перекрывающиеся фрагменты схемы и повторные обозначения линии на этажных планах не являются дополнительными кабелями. Пять жил также не означают пять кабелей. В спецификации предусмотрены два стабилизатора 40 кВА, но распределение этих двух экземпляров по цепям не приведено. Таблица нагрузок ВРУ-3 содержит другой лифт ШУЛ-3.2, однако сама по себе не подтверждает установку второго стабилизатора именно на его линии. Количество кабеля в спецификации и основание длины 65 м в пакете отсутствуют. Количественное соответствие, недостача или избыток не установлены.",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14",
+        "blk_99cc8bf95861437186be76b36e9d446b",
+        "blk_b6605a23b38f4e00b2f8076b62b21532",
+        "blk_5b30188592764230a7cd894838a60430"
+      ],
+      "inspected_locations": [
+        {
+          "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+          "sheet": "2.2",
+          "description": "Просмотрены detail_tile_0–detail_tile_7 как части одной схемы. На detail_tile_1 показаны потребитель, стабилизатор и длина; на detail_tile_5 — С2513, кабель и QF5.13."
+        },
+        {
+          "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+          "sheet": "4",
+          "description": "Спецификация ЭОМ 2-1.СО: стабилизаторы 40 кВА, единица измерения шт., количество 2; индивидуальные обозначения отсутствуют."
+        },
+        {
+          "block_id": "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+          "sheet": "25",
+          "description": "Таблица материалов огнезащиты не содержит количества кабеля С2513."
+        },
+        {
+          "block_id": "blk_31afc5d4eb734ea39324bbf2ddf9bf95",
+          "sheet": "27",
+          "description": "Осмотрены узлы крепления и таблица элементов подвеса; количественного counterpart для кабеля С2513 нет."
+        },
+        {
+          "block_id": "blk_1215bf4be9df405394bcbccf2feb7736",
+          "sheet": "29",
+          "description": "Осмотрены узлы крепления и таблица элементов подвеса; количества кабеля С2513 не указаны."
+        },
+        {
+          "block_id": "blk_4109f07571fe46418fc7c9205aeb5bc7",
+          "sheet": "30",
+          "description": "Осмотрены узлы крепления и таблица элементов подвеса; количества кабеля С2513 не указаны."
+        }
+      ],
+      "missing_context": [
+        "Позиция спецификации ППГнг-FRHF 5×35,0 с количеством в метрах и перечнем включенных цепей.",
+        "Кабельный журнал либо ведомость длин для С2513: границы участка 65 м, учет вертикальных участков, подключений и запаса.",
+        "Привязка двух специфицированных стабилизаторов 40 кВА к конкретным цепям и потребителям."
+      ],
+      "context_queries": [
+        "С2513",
+        "5×35",
+        "ППГнг-FRHF",
+        "Кабельный журнал",
+        "ПД-00580716-ЭОМ 2-1.СО",
+        "Стабилизатор напряжения на 40кВа"
+      ]
+    },
+    {
+      "object_id": "circuit_13",
+      "operation": "document_links",
+      "status": "needs_data",
+      "reason": "Частичная междокументная связь подтверждена: схема листа 2.2 связывает С2513 с QF5.13, стабилизатором 40 кВА и ЩУЛ-2.2; таблица нагрузок листа 2.1 содержит C2513 с потребителем ШУЛ-2.2; планы листов 18, 20 и 21 содержат обозначение С2513 с потребителем ЩУЛ-2.2 в перечнях от ВРУ-2. На плане листа 21 показан сам ЩУЛ-2.2. Фасад ВРУ-2 подтверждает наличие РП5, а ведомость документов ссылается на спецификацию, содержащую стабилизаторы 40 кВА. Однако соответствующая запись кабельного журнала и индивидуальная привязка стабилизатора к С2513 не представлены. Полную связь кабеля и оборудования со спецификацией проверить нельзя. Локального противоречия в установленных обозначениях и связях не выявлено; это не подтверждает полноту документации проекта.",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14",
+        "blk_c5f0556f94c14503bfe178ef5941c077",
+        "blk_4b5016856cc94ec088efe86a8ec2a925",
+        "blk_3d36921f90d34667a0b6d17a54cd050a",
+        "blk_fa92d7f0122a40cfbcc8d881d48f7c91",
+        "blk_9246c510169f4ad6bc11932a046cdd17",
+        "blk_b6605a23b38f4e00b2f8076b62b21532",
+        "blk_99cc8bf95861437186be76b36e9d446b"
+      ],
+      "inspected_locations": [
+        {
+          "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+          "sheet": "2.2",
+          "description": "detail_tile_1 и detail_tile_5: непрерывная связь потребителя через стабилизатор с отходящей линией С2513 и аппаратом QF5.13."
+        },
+        {
+          "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+          "sheet": "2.1",
+          "description": "Строка C2513 в группе РП5: ШУЛ-2.2, лифт перемещения пожарных бригад."
+        },
+        {
+          "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "sheet": "18",
+          "description": "Осмотрен план; в красных перечнях от ВРУ-2 присутствует С2513 с обозначением ЩУЛ-2.2."
+        },
+        {
+          "block_id": "blk_3d36921f90d34667a0b6d17a54cd050a",
+          "sheet": "20",
+          "description": "Осмотрен план; в красных перечнях от ВРУ-2 повторяется С2513 с обозначением ЩУЛ-2.2."
+        },
+        {
+          "block_id": "blk_fa92d7f0122a40cfbcc8d881d48f7c91",
+          "sheet": "21",
+          "description": "Осмотрен план 10-го этажа: ЩУЛ-2.2 показан у лифтов секции С2; в нижнем красном перечне от ВРУ-2 присутствует С2513."
+        },
+        {
+          "block_id": "blk_9246c510169f4ad6bc11932a046cdd17",
+          "sheet": "2.1",
+          "description": "Осмотрены фасад ВРУ-2, схема учета и ключ маркировки линий. На фасаде выделена панель РП5 ПЭСПЗ; ключ различает номер ВРУ, РП и отходящей линии."
+        },
+        {
+          "block_id": "blk_bbe9060267e84022afbb7bccfc8749b2",
+          "sheet": "3",
+          "description": "Осмотрены фасад и план ВРУ-3. Его панели РП5 относятся к другому ВРУ и не подтверждают состав цепи С2513 ВРУ-2."
+        }
+      ],
+      "missing_context": [
+        "Ответная запись С2513 в кабельном журнале или ведомости соединений с началом, концом, маркой, сечением и ссылкой на спецификацию.",
+        "Документ, связывающий конкретную позицию стабилизатора 40 кВА со схемой питания ЩУЛ-2.2 и определяющий участки подключения до и после стабилизатора."
+      ],
+      "context_queries": [
+        "С2513",
+        "C2513",
+        "ЩУЛ-2.2",
+        "ШУЛ-2.2",
+        "Кабельный журнал",
+        "Стабилизатор напряжения на 40кВа"
+      ]
+    }
+  ],
+  "findings": [],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "circuit_13",
+        "identity": "С2513",
+        "scope": "Отходящая цепь РП5",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_8fac348a820c41aeb2d941339987da14"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и подключение цепи",
+            "value": {
+              "line_identifier": "С2513",
+              "full_cable_designation": "ППГнг-FRHF 5×35,0",
+              "conductor_count": 5,
+              "cross_section": {
+                "value": 35,
+                "unit": "мм²"
+              },
+              "length": {
+                "value": 65,
+                "unit": "м"
+              },
+              "consumer": "Щит управления пассажирским лифтом перемещения пож. бригад ЩУЛ-2.2",
+              "connected_equipment": "Стабилизатор напряжения 40 кВА",
+              "protective_device_label": "QF5.13",
+              "reserve_status": "Не обозначена резервной; показан потребитель"
+            },
+            "unit": null,
+            "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+            "graphic_observation": "На detail_tile_1 вертикальная линия последовательно соединена со стабилизатором напряжения 40 кВА и щитом ЩУЛ-2.2. На detail_tile_5 её продолжение подписано С2513, ППГнг-FRHF 5×35,0 и подключено к QF5.13."
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "circuit_13",
+        "operation": "identity_across_views",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_8fac348a820c41aeb2d941339987da14"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "circuit_13",
+        "operation": "quantity_balance",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_8fac348a820c41aeb2d941339987da14"
+        ],
+        "receipt": {
+          "object_id": "circuit_13",
+          "operation": "quantity_balance",
+          "status": "needs_data",
+          "reason": "На схеме установлена одна цепь С2513: QF5.13 — кабель ППГнг-FRHF 5×35,0 длиной 65 м — стабилизатор 40 кВА — ЩУЛ-2.2. Перекрывающиеся фрагменты схемы и повторные обозначения линии на этажных планах не являются дополнительными кабелями. Пять жил также не означают пять кабелей. В спецификации предусмотрены два стабилизатора 40 кВА, но распределение этих двух экземпляров по цепям не приведено. Таблица нагрузок ВРУ-3 содержит другой лифт ШУЛ-3.2, однако сама по себе не подтверждает установку второго стабилизатора именно на его линии. Количество кабеля в спецификации и основание длины 65 м в пакете отсутствуют. Количественное соответствие, недостача или избыток не установлены.",
+          "source_refs": [
+            "blk_8fac348a820c41aeb2d941339987da14",
+            "blk_99cc8bf95861437186be76b36e9d446b",
+            "blk_b6605a23b38f4e00b2f8076b62b21532",
+            "blk_5b30188592764230a7cd894838a60430"
+          ],
+          "inspected_locations": [
+            {
+              "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+              "sheet": "2.2",
+              "description": "Просмотрены detail_tile_0–detail_tile_7 как части одной схемы. На detail_tile_1 показаны потребитель, стабилизатор и длина; на detail_tile_5 — С2513, кабель и QF5.13."
+            },
+            {
+              "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+              "sheet": "4",
+              "description": "Спецификация ЭОМ 2-1.СО: стабилизаторы 40 кВА, единица измерения шт., количество 2; индивидуальные обозначения отсутствуют."
+            },
+            {
+              "block_id": "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+              "sheet": "25",
+              "description": "Таблица материалов огнезащиты не содержит количества кабеля С2513."
+            },
+            {
+              "block_id": "blk_31afc5d4eb734ea39324bbf2ddf9bf95",
+              "sheet": "27",
+              "description": "Осмотрены узлы крепления и таблица элементов подвеса; количественного counterpart для кабеля С2513 нет."
+            },
+            {
+              "block_id": "blk_1215bf4be9df405394bcbccf2feb7736",
+              "sheet": "29",
+              "description": "Осмотрены узлы крепления и таблица элементов подвеса; количества кабеля С2513 не указаны."
+            },
+            {
+              "block_id": "blk_4109f07571fe46418fc7c9205aeb5bc7",
+              "sheet": "30",
+              "description": "Осмотрены узлы крепления и таблица элементов подвеса; количества кабеля С2513 не указаны."
+            }
+          ],
+          "missing_context": [
+            "Позиция спецификации ППГнг-FRHF 5×35,0 с количеством в метрах и перечнем включенных цепей.",
+            "Кабельный журнал либо ведомость длин для С2513: границы участка 65 м, учет вертикальных участков, подключений и запаса.",
+            "Привязка двух специфицированных стабилизаторов 40 кВА к конкретным цепям и потребителям."
+          ],
+          "context_queries": [
+            "С2513",
+            "5×35",
+            "ППГнг-FRHF",
+            "Кабельный журнал",
+            "ПД-00580716-ЭОМ 2-1.СО",
+            "Стабилизатор напряжения на 40кВа"
+          ]
+        }
+      },
+      {
+        "object_id": "circuit_13",
+        "operation": "dimension_consistency",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_8fac348a820c41aeb2d941339987da14"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "circuit_13",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_8fac348a820c41aeb2d941339987da14"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "circuit_13",
+        "operation": "document_links",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_8fac348a820c41aeb2d941339987da14"
+        ],
+        "receipt": {
+          "object_id": "circuit_13",
+          "operation": "document_links",
+          "status": "needs_data",
+          "reason": "Частичная междокументная связь подтверждена: схема листа 2.2 связывает С2513 с QF5.13, стабилизатором 40 кВА и ЩУЛ-2.2; таблица нагрузок листа 2.1 содержит C2513 с потребителем ШУЛ-2.2; планы листов 18, 20 и 21 содержат обозначение С2513 с потребителем ЩУЛ-2.2 в перечнях от ВРУ-2. На плане листа 21 показан сам ЩУЛ-2.2. Фасад ВРУ-2 подтверждает наличие РП5, а ведомость документов ссылается на спецификацию, содержащую стабилизаторы 40 кВА. Однако соответствующая запись кабельного журнала и индивидуальная привязка стабилизатора к С2513 не представлены. Полную связь кабеля и оборудования со спецификацией проверить нельзя. Локального противоречия в установленных обозначениях и связях не выявлено; это не подтверждает полноту документации проекта.",
+          "source_refs": [
+            "blk_8fac348a820c41aeb2d941339987da14",
+            "blk_c5f0556f94c14503bfe178ef5941c077",
+            "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "blk_3d36921f90d34667a0b6d17a54cd050a",
+            "blk_fa92d7f0122a40cfbcc8d881d48f7c91",
+            "blk_9246c510169f4ad6bc11932a046cdd17",
+            "blk_b6605a23b38f4e00b2f8076b62b21532",
+            "blk_99cc8bf95861437186be76b36e9d446b"
+          ],
+          "inspected_locations": [
+            {
+              "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+              "sheet": "2.2",
+              "description": "detail_tile_1 и detail_tile_5: непрерывная связь потребителя через стабилизатор с отходящей линией С2513 и аппаратом QF5.13."
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "sheet": "2.1",
+              "description": "Строка C2513 в группе РП5: ШУЛ-2.2, лифт перемещения пожарных бригад."
+            },
+            {
+              "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+              "sheet": "18",
+              "description": "Осмотрен план; в красных перечнях от ВРУ-2 присутствует С2513 с обозначением ЩУЛ-2.2."
+            },
+            {
+              "block_id": "blk_3d36921f90d34667a0b6d17a54cd050a",
+              "sheet": "20",
+              "description": "Осмотрен план; в красных перечнях от ВРУ-2 повторяется С2513 с обозначением ЩУЛ-2.2."
+            },
+            {
+              "block_id": "blk_fa92d7f0122a40cfbcc8d881d48f7c91",
+              "sheet": "21",
+              "description": "Осмотрен план 10-го этажа: ЩУЛ-2.2 показан у лифтов секции С2; в нижнем красном перечне от ВРУ-2 присутствует С2513."
+            },
+            {
+              "block_id": "blk_9246c510169f4ad6bc11932a046cdd17",
+              "sheet": "2.1",
+              "description": "Осмотрены фасад ВРУ-2, схема учета и ключ маркировки линий. На фасаде выделена панель РП5 ПЭСПЗ; ключ различает номер ВРУ, РП и отходящей линии."
+            },
+            {
+              "block_id": "blk_bbe9060267e84022afbb7bccfc8749b2",
+              "sheet": "3",
+              "description": "Осмотрены фасад и план ВРУ-3. Его панели РП5 относятся к другому ВРУ и не подтверждают состав цепи С2513 ВРУ-2."
+            }
+          ],
+          "missing_context": [
+            "Ответная запись С2513 в кабельном журнале или ведомости соединений с началом, концом, маркой, сечением и ссылкой на спецификацию.",
+            "Документ, связывающий конкретную позицию стабилизатора 40 кВА со схемой питания ЩУЛ-2.2 и определяющий участки подключения до и после стабилизатора."
+          ],
+          "context_queries": [
+            "С2513",
+            "C2513",
+            "ЩУЛ-2.2",
+            "ШУЛ-2.2",
+            "Кабельный журнал",
+            "Стабилизатор напряжения на 40кВа"
+          ]
+        }
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_1215bf4be9df405394bcbccf2feb7736",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_31afc5d4eb734ea39324bbf2ddf9bf95",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_3d36921f90d34667a0b6d17a54cd050a",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_4109f07571fe46418fc7c9205aeb5bc7",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_5b30188592764230a7cd894838a60430",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_9246c510169f4ad6bc11932a046cdd17",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_bbe9060267e84022afbb7bccfc8749b2",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_fa92d7f0122a40cfbcc8d881d48f7c91",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 5,
+    "unresolved_source_blocks": 14,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "document_links",
+    "quantity_balance"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}

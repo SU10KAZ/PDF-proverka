@@ -140,7 +140,11 @@
     {
       "control": "EOM_cable_context_0_2",
       "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_000/circuit_13/context_2",
-      "status": "not_started"
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started"
+      },
+      "token_counters_incomplete": true
     },
     {
       "control": "EOM_cable_context_0_3",
@@ -150,11 +154,19 @@
     {
       "control": "EOM_cable_context_1_1",
       "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_001/rp5_10/context_1",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started"
+        "status": "finished",
+        "is_error": false
       },
-      "token_counters_incomplete": true
+      "token_counters_incomplete": false,
+      "result_sha256": "459b5de80e8d603c45ac1897cc5af8c16a593ebc025679e494748e8d9c069502",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 41126,
+      "input_tokens": 87224,
+      "output_tokens": 1370,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_context_1_2",
@@ -643,6 +655,15 @@
       "error": ""
     },
     {
+      "control": "KM_LK6_quantity_provenance",
+      "directory": "/tmp/auditmanager_km_quantity_provenance_control_20261111",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started"
+      },
+      "token_counters_incomplete": true
+    },
+    {
       "control": "KM_LK6_quantity",
       "directory": "/tmp/auditmanager_km_quantity_operations_20261110/obj_09",
       "status": "response_received",
@@ -1062,14 +1083,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 55,
-  "pending_results": 1,
+  "completed_requests": 56,
+  "pending_results": 2,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 1835898,
-  "reported_output_tokens": 547198,
+  "reported_input_tokens": 1923122,
+  "reported_output_tokens": 548568,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 184.113,
+  "completed_request_minutes_sum": 184.799,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

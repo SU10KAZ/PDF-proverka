@@ -6,13 +6,19 @@ import json
 import os
 from pathlib import Path
 from .run_eom_cable_operations import prepare as initial_prepare, immutable, BASE
+from .frozen_operation_request import load_frozen_operation
 from backend.app.pipeline.stages.prepare.object_operation_followup import freeze_operation_sources, build_object_operation_followup, verify_operation_source_binding
 from backend.app.pipeline.stages.prepare.object_operation_passes import validate_object_operation_payload
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
 
 def prepare(object_id, revision=1):
     assert revision in (1, 2, 3)
-    initial_root, request, _ = initial_prepare(object_id)
+    from . import run_eom_cable_operations as initial_control
+    initial_root = initial_control.ROOT/object_id
+    if (initial_root/'request.json').exists():
+        initial_root, request, _ = load_frozen_operation(initial_root, BASE/'02_work/document.md')
+    else:
+        initial_root, request, _ = initial_prepare(object_id)
     crops = BASE/'03_analysis/runs/control/blocks_stage02_100'
     index = json.loads((crops/'index.json').read_text())
     files = {b['block_id']: b.get('file') for b in index['blocks']}
@@ -24,7 +30,11 @@ def prepare(object_id, revision=1):
     request = replace(request, continuation_source=source_binding)
     previous_root = initial_root
     if revision > 1:
-        previous_root, request = prepare(object_id, revision-1)
+        previous_root = initial_root/f'context_{revision-1}'
+        if (previous_root/'request.json').exists():
+            _, request, _ = load_frozen_operation(previous_root, BASE/'02_work/document.md')
+        else:
+            previous_root, request = prepare(object_id, revision-1)
         assert request is not None
     previous = json.loads((previous_root/'result.json').read_text())
     assert not previous['is_error']
