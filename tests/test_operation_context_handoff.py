@@ -65,3 +65,20 @@ def test_stale_handoff_cannot_add_sources_and_extras_are_not_forwarded(tmp_path)
     stale = build_source_review_queue([finding], md.read_text() + 'changed')['packets'][0]
     assert stale['rejected_upstream_contexts'] == ['source_version_mismatch']
     assert [s['block_id'] for s in stale['sources']] == ['a']
+
+
+def test_terminal_handoff_preserves_prior_queries_without_prior_verdicts(tmp_path):
+    from backend.app.pipeline.stages.prepare.object_operation_disposition import prepare_operation_disposition
+    md, request, payload = setup(tmp_path)
+    prior = {'object_operation_results': [{'object_id': 'o', 'operation': 'document_links',
+        'status': 'needs_data', 'reason': 'Missing source', 'context_queries': ['Unknown local section'],
+        'inspected_locations': [{'block_id': 'b', 'description': 'Read supporting detail'}]}],
+        'findings': [], 'engineer_decision': 'SECRET'}
+    terminal, _ = prepare_operation_disposition(request, prior)
+    packet = json.loads(terminal.messages[-1]['content'])
+    handoff = build_operation_context_handoff(terminal, payload, packet)
+    assert handoff['reported_context_queries'] == ['Unknown local section']
+    assert any(i['description'] == 'Read supporting detail' for i in handoff['reported_inspections_untrusted'])
+    assert 'SECRET' not in json.dumps(handoff)
+    assert 'needs_data' not in json.dumps(handoff)
+    assert handoff['local_search_stop']['absence_proven'] is False

@@ -13,8 +13,13 @@ def build_operation_context_handoff(request, payload, packet):
     allowed = set(packet['allowed_source_refs'])
     refs = list(dict.fromkeys(s['block_id'] for s in packet['source_context']
                              if isinstance(s, dict) and s.get('block_id') in allowed))
+    terminal = packet.get('terminal_disposition', {})
+    previous = terminal.get('previous_response', {}) if isinstance(terminal, dict) else {}
+    previous_operations = previous.get('object_operation_results', []) if isinstance(previous, dict) else []
+    current_operations = payload.get('object_operation_results', [])
+    operations = (previous_operations if isinstance(previous_operations, list) else []) + (current_operations if isinstance(current_operations, list) else [])
     inspections = []
-    for op in payload.get('object_operation_results', []):
+    for op in operations:
         if not isinstance(op, dict) or op.get('object_id') != packet['object']['id']:
             continue
         for loc in op.get('inspected_locations', []) if isinstance(op.get('inspected_locations', []), list) else []:
@@ -23,7 +28,7 @@ def build_operation_context_handoff(request, payload, packet):
     # Literal query lists only; model verdicts and external evaluation fields are
     # deliberately not transferred. Supplied sources are not proven inspected.
     queries = []
-    for op in payload.get('object_operation_results', []):
+    for op in operations:
         if isinstance(op, dict) and op.get('object_id') == packet['object']['id']:
             for q in op.get('context_queries', []) if isinstance(op.get('context_queries', []), list) else []:
                 if isinstance(q, str) and q not in queries: queries.append(q)
