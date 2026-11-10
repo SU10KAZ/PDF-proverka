@@ -1012,7 +1012,12 @@
     "assessment": "KM_OGM5_ranked_continuation_assessment.json",
     "new_technical_defects": 0,
     "retained_question_candidates": 2,
-    "internal_context_candidates": 2
+    "internal_context_candidates": 2,
+    "incremental_confirmed_question_categories": 0,
+    "classic_overlap": [
+      "F-009",
+      "F-013"
+    ]
   },
   "km_unresolved_graphics": {
     "artifact": "KM_unresolved_graphics_preparation.json",
@@ -1032,11 +1037,19 @@
     "packets": 2,
     "source_blocks": 8,
     "automatic_retries": 0,
-    "history_supplied": false
+    "history_supplied": false,
+    "completed_packets": 1,
+    "total_packets": 2,
+    "first_packet_reported_inventoried_after_validation": 2,
+    "first_packet_still_unresolved": 2,
+    "first_packet_source_confirmed_annotation_conflicts": 2,
+    "first_packet_engineer_accepted_new_findings": 0,
+    "assessment": "KM_graphic_recovery_assessment.json"
   },
   "km_clipped_axis_recovery": {
     "artifact": "KM_clipped_axis_recovery.json",
     "specific_axis_visually_recovered": true,
     "whole_block_complete": false
-  }
+  },
+  "km_clipped_graphic_context_review": "KM_clipped_graphic_context_review.json"
 }
