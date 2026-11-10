@@ -24,6 +24,12 @@ def validate_source_review(response, queue, findings, md):
     if not isinstance(response, dict) or not isinstance(queue, dict):
         errors.append('invalid_review_or_queue')
         return result
+    from .source_review_bundle import verify_source_review_bundle
+    try:
+        verify_source_review_bundle(queue)
+    except (ValueError, OSError, KeyError, TypeError):
+        errors.append('stale_or_invalid_source_bundle')
+        return result
     fid = response.get('finding_id')
     if not isinstance(fid, str) or not fid.strip():
         errors.append('invalid_finding_id')
