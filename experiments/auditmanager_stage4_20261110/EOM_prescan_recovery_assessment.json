@@ -1,0 +1,25 @@
+{
+  "request_sha256": "9aad75496b3eff6860b9b8b6685df51e08735af2cb5a7cd7367d65d6fca7263e",
+  "source_checks": {
+    "graphic": {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_134b321ecf0f4e92adb35318a327be75.png",
+      "sha256": "d9cae4fd7d32a6aa663c9e17aa97e30472127f66212ecc8abf2826c3fc546d92",
+      "directly_viewed": true,
+      "observation": "План содержит подписи У1–У5 — тепловая завеса; возле ВРУ-2 приведены строки C2316 (тепловая завеса У1), C2317 (тепловая завеса У2), C2318 (тепловая завеса У3). Проверен смысл связи марки и типа оборудования, не все цепи и не весь проект."
+    },
+    "authoritative_text_exact_substrings": [
+      "| C2316 | У1 |",
+      "| C2317 | У2 |",
+      "| C2318 | УЗ |"
+    ],
+    "do_not_correct": "УЗ in authoritative TEXT remains as written; graphic У3 is a separate observation."
+  },
+  "first_model_decision": "needs_data",
+  "review": "The observed association of U marks and air curtains is source-supported. It does not by itself establish ambiguity or a requirement to rename. The first answer makes no false automatic rename finding and honestly leaves omitted context unresolved.",
+  "classic_findings_preserved": 49,
+  "new_findings": 0,
+  "final_semantic_resolution": false,
+  "followup_session": 58499,
+  "historical_engineer_confirmed_filter_pair": false,
+  "no_filter_claim": "This is a known source-backed negative trigger control, not an independent accepted-positive/rejected-negative historical pair. No automatic suppression added."
+}
