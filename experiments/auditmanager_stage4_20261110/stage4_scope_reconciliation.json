@@ -58,8 +58,8 @@
     },
     {
       "id": "H07",
-      "evidence": "Metadata/prescan controls, question routing, verifier/Excel and browser component checks.",
-      "remaining": "Real filter pairs or explicit suppression disabled; full output acceptance belongs to stage6."
+      "evidence": "Metadata/prescan controls, question routing, verifier/Excel and browser component checks. Prescan candidates now dispatched through generic recovery (2e8bad38); final coverage reads saved continuation receipts (36b94a4a); real AK/EOM source navigation replay (0ce3ed51).",
+      "remaining": "Semantic prescan decisions remain unverified. No automatic rename or suppression; real navigation checks do not establish model quality. Full output acceptance belongs to stage6."
     }
   ],
   "no_scope_reduction": true,
@@ -89,6 +89,15 @@
       "evidence": "KM_identity_control_assessment.json",
       "detail": "P007 relation checked against both drawings; P002 reference is not an instance but raw model receipt remains contract-invalid. No automatic merges; remaining relation semantics unresolved.",
       "additional_evidence": "KM_identity_known_relation_pair.json"
+    },
+    {
+      "hypothesis": "H07",
+      "state": "recovery_and_navigation_verified_semantic_decisions_pending",
+      "evidence": [
+        "prescan_recovery_control.json",
+        "prescan_navigation_replay.json"
+      ],
+      "detail": "21 tests on latest navigation plus earlier15 decision/recovery tests. Real AK/EOM requests reach actual source pages, not title-page fallback. Existing source findings remain preserved; synthetic verdicts do not prove accuracy."
     }
   ]
 }
