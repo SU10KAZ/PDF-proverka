@@ -1,0 +1,11 @@
+{
+  "pid": 3476085,
+  "command": [
+    "/opt/py312/bin/python",
+    "-m",
+    "experiments.auditmanager_stage4_20261110.run_ak_terminal_graphic_control",
+    "--execute"
+  ],
+  "started_at_epoch": 1794340984.71124,
+  "purpose": "Resume interrupted same-source graphic reading; six tiles, no expected labels."
+}

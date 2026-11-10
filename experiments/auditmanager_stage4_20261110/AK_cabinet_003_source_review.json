@@ -26,5 +26,8 @@
   "supported_claim": "Local main-cabinet addressing ambiguity; actual physical connection and correction unknown.",
   "historical_boundary": "Stage2found no terminal ambiguity candidate for this block; motor/actuator positional-mark findings are different claims.",
   "model_answer_used_for_observations": false,
-  "full_control_complete": false
+  "full_control_complete": false,
+  "model_result": "Terminal candidate preserves PDS3–PDS5,M1–M4andY1–Y10; explicitly considers manufacturer numbering note without treating it as refutation.",
+  "additional_candidates": "Y7andM2positional ambiguity separate from terminal ambiguity; compare baseline before scoring.",
+  "final_output_verified": false
 }
