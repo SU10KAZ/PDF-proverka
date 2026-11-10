@@ -16,9 +16,17 @@ from .source_review_evidence import evidence_digest
 def _has_search_boundary(value):
     if isinstance(value, str):
         return bool(value.strip())
-    return (isinstance(value, dict) and all(
-        isinstance(value.get(key), str) and value[key].strip()
-        for key in ('scope', 'actual_review', 'limitations')))
+    if not isinstance(value, dict):
+        return False
+    scope = value.get('scope')
+    sources = value.get('sources')
+    has_scope = (isinstance(scope, str) and bool(scope.strip())) or (
+        isinstance(sources, list) and bool(sources)
+        and all(isinstance(s, str) and s.strip() for s in sources))
+    review = value.get('actual_review', value.get('actual_search_reviewed'))
+    limits = value.get('limitations')
+    return bool(has_scope and isinstance(review, str) and review.strip()
+                and isinstance(limits, str) and limits.strip())
 
 
 def _check_decision(response, decision, original=None):

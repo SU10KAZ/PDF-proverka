@@ -241,3 +241,18 @@ def test_structured_search_boundary_requires_scope_work_and_limits(boundary, acc
     assert (receipts[0]['status'] == 'applied') is accepted
     if not accepted:
         assert out == doc
+
+
+@pytest.mark.parametrize('sources,review,accepted', [
+    (['AR v1 drawings', 'KM v1 and v2 drawings'], 'Compared actual executions separately', True),
+    ([], 'Compared drawings', False),
+    ([{}], 'Compared drawings', False),
+    (['AR v1'], '', False),
+])
+def test_search_boundary_source_list_requires_explicit_review(sources, review, accepted):
+    doc, entries, md = question_case()
+    entries[0]['decision']['context_search_boundary'] = {
+        'sources': sources, 'actual_search_reviewed': review, 'limitations': 'Only supplied documents reviewed'}
+    out, receipts = apply_review_admissions(doc, entries, md)
+    assert (receipts[0]['status'] == 'applied') is accepted
+    if not accepted:assert out == doc
