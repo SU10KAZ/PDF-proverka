@@ -1,6 +1,7 @@
 """Prepare bounded semantic-review inputs without treating provenance as proof."""
 import hashlib
 import json
+import re
 from collections import Counter
 from copy import deepcopy
 
@@ -47,6 +48,9 @@ def build_source_review_queue(findings, md, *, max_chars=100000):
     findings = findings if isinstance(findings, list) else []
     counts = Counter(f.get('id') for f in findings if isinstance(f, dict) and isinstance(f.get('id'), str))
     blocks = authoritative_text_blocks(md)
+    headers = re.findall(r'^###[ \t]+BLOCK[^\n]*?\[([^]]+)\]:[ \t]*(\S+)[^\n]*$', md, re.M | re.I)
+    header_counts = Counter(bid for _, bid in headers)
+    graphic_ids = {bid for kind, bid in headers if kind.upper() in ('IMAGE', 'GRAPHIC') and header_counts[bid] == 1}
     packets = []
     for finding in findings:
         if not isinstance(finding, dict) or finding.get('source_evidence_review_status') != 'pending':
@@ -55,7 +59,8 @@ def build_source_review_queue(findings, md, *, max_chars=100000):
         packet = {'finding_id': fid, 'status': 'pending', 'semantic_verified': False,
                   'finding_snapshot': deepcopy(finding),
                   'finding_sha256': hashlib.sha256(json.dumps(finding,sort_keys=True,ensure_ascii=False).encode()).hexdigest(),
-                  'sources': [], 'unresolved_block_ids': [], 'budgeted_block_ids': []}
+                  'sources': [], 'unresolved_block_ids': [], 'budgeted_block_ids': [],
+                  'required_graphic_block_ids': [], 'missing_or_ambiguous_block_ids': []}
         packets.append(packet)
         if not isinstance(fid, str) or not fid.strip() or counts[fid] != 1:
             packet.update(status='not_ready',reason='missing_or_ambiguous_finding_id')
@@ -69,6 +74,7 @@ def build_source_review_queue(findings, md, *, max_chars=100000):
         for ref in dict.fromkeys(refs):
             if ref not in blocks:
                 packet['unresolved_block_ids'].append(ref)
+                packet['required_graphic_block_ids' if ref in graphic_ids else 'missing_or_ambiguous_block_ids'].append(ref)
             elif used + len(blocks[ref]) > max_chars:
                 packet['budgeted_block_ids'].append(ref)
             else:

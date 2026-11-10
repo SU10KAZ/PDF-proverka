@@ -36,6 +36,8 @@ def test_graphics_missing_and_oversized_blocks_are_explicit_not_truncated():
     packet = build_source_review_queue([finding(['g', 'missing', 't', 't'])], MD, max_chars=1)['packets'][0]
     assert packet['sources'] == []
     assert packet['unresolved_block_ids'] == ['g', 'missing']
+    assert packet['required_graphic_block_ids'] == ['g']
+    assert packet['missing_or_ambiguous_block_ids'] == ['missing']
     assert packet['budgeted_block_ids'] == ['t']
     assert packet['source_context_status'] == 'needs_data'
     assert build_source_review_queue([finding()], '')['packets'][0]['unresolved_block_ids'] == ['t']
@@ -49,6 +51,16 @@ def test_ambiguous_finding_or_block_identity_cannot_be_ready():
     packet = build_source_review_queue([finding()], duplicate)['packets'][0]
     assert packet['unresolved_block_ids'] == ['t']
     assert packet['sources'] == []
+
+
+def test_image_headers_require_raster_and_duplicate_headers_remain_ambiguous():
+    md = '### BLOCK #1 [IMAGE]: i\nA generated description\n'
+    packet = build_source_review_queue([finding(['i'])], md)['packets'][0]
+    assert packet['sources'] == []
+    assert packet['required_graphic_block_ids'] == ['i']
+    packet = build_source_review_queue([finding(['i'])], md + '### BLOCK #2 [TEXT]: i\nConflicting identity\n')['packets'][0]
+    assert packet['required_graphic_block_ids'] == []
+    assert packet['missing_or_ambiguous_block_ids'] == ['i']
 
 
 def test_direct_evidence_does_not_bypass_lineage_review_and_stale_links_are_ignored():

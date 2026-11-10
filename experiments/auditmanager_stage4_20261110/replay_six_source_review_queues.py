@@ -49,6 +49,15 @@ def main():
                     'supplied_text_block_ids': [s['block_id'] for s in p['sources']],
                     'unresolved_block_ids': p['unresolved_block_ids'], 'budgeted_block_ids': p['budgeted_block_ids']}
                    for p in queue['packets']]
+        for packet, summary in zip(queue['packets'], packets):
+            summary['required_graphic_block_ids'] = packet['required_graphic_block_ids']
+            summary['missing_or_ambiguous_block_ids'] = packet['missing_or_ambiguous_block_ids']
+            summary['graphic_files'] = []
+            for bid in packet['required_graphic_block_ids']:
+                path = source/'blocks_stage02_100'/f'block_{bid}.png'
+                summary['graphic_files'].append({'block_id': bid, 'path': str(path), 'exists': path.is_file(),
+                                                'sha256': hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None,
+                                                'attached_to_model': False, 'visually_reviewed_in_this_replay': False})
         pending = {f['id'] for f in current.values() if f.get('source_evidence_review_status') == 'pending'}
         assert pending == {p['finding_id'] for p in packets}
         lineage_requires_review = {f['id'] for f in current.values()

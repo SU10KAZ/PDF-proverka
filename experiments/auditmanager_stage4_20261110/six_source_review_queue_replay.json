@@ -19,7 +19,10 @@
             "blk_b8f98350127c4603bb6811846ec13309"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-002",
@@ -36,7 +39,10 @@
             "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-003",
@@ -50,7 +56,10 @@
             "blk_b8f98350127c4603bb6811846ec13309"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-006",
@@ -62,7 +71,10 @@
             "blk_192d323532434ee1aba250ffaac80b47"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-007",
@@ -76,7 +88,10 @@
             "blk_5b5187b5afb740efb6423fa40c399349"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-008",
@@ -88,7 +103,10 @@
             "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-011",
@@ -102,7 +120,10 @@
             "blk_abed08ccd9a347bb9fa290fd8696b197"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-012",
@@ -114,7 +135,10 @@
             "blk_13738f8bb6f840fcb0cb37491b612396"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-013",
@@ -128,7 +152,10 @@
             "blk_8c1c32681acd42c79d8190b013bbbf0c"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-014",
@@ -145,7 +172,10 @@
             "blk_0074662f330048ff843342b285e6a016"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-015",
@@ -157,7 +187,10 @@
             "blk_3e1eb0838e6b4a33b9a090a9c4b998dd"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-018",
@@ -170,7 +203,10 @@
             "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-019",
@@ -185,7 +221,10 @@
             "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-022",
@@ -198,7 +237,10 @@
             "blk_c5ecdd6fe0d145118c604b663f84bba8"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-025",
@@ -209,7 +251,10 @@
             "blk_6ba4df04a74d4e8d8db22cb4db7aff4f"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-026",
@@ -221,7 +266,10 @@
             "blk_76e892431d7d4c48a09aba49a57b223c"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-027",
@@ -234,7 +282,10 @@
             "blk_b8f98350127c4603bb6811846ec13309"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-028",
@@ -245,7 +296,10 @@
             "blk_e1d470118a394e9a9e75718113a9b37d"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-029",
@@ -256,7 +310,10 @@
             "blk_1865bf51c17e444491a5621d4a33c331"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-030",
@@ -268,7 +325,10 @@
             "blk_1865bf51c17e444491a5621d4a33c331"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-031",
@@ -280,7 +340,10 @@
             "blk_f4bf6dec4072413fa43043bf27d880eb"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-032",
@@ -293,7 +356,10 @@
             "blk_b8f98350127c4603bb6811846ec13309"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-033",
@@ -305,7 +371,10 @@
             "blk_76e892431d7d4c48a09aba49a57b223c"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-034",
@@ -317,7 +386,10 @@
             "blk_6e394962eb18407fb17b09f063c30a5c"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         }
       ],
       "stats": {
@@ -356,7 +428,10 @@
             "blk_9e12a8bcbfb24db49d81af74c06e24f0"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-002",
@@ -367,7 +442,10 @@
             "blk_55ab0b4be112477eb9dec207df68000e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-003",
@@ -379,7 +457,10 @@
             "blk_f249587fe98945f7a1c5d30e102aaa68"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-004",
@@ -391,7 +472,10 @@
             "blk_e65f4bff781945f19da5a4ec2919b764"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-005",
@@ -405,7 +489,10 @@
             "blk_9e12a8bcbfb24db49d81af74c06e24f0"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-006",
@@ -416,7 +503,10 @@
             "blk_67b9571de5e74033b6c491043f8c87d1"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-007",
@@ -428,7 +518,10 @@
             "blk_8a446a40473d48d18d60edba74661d9e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-008",
@@ -439,7 +532,10 @@
             "blk_3050f16afc994b889498a2535ea14a52"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-009",
@@ -450,7 +546,10 @@
             "blk_a5c04128f54f404e900b3ee4e3a854ba"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-010",
@@ -461,7 +560,10 @@
             "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-011",
@@ -472,7 +574,10 @@
             "blk_fed30df45d124919a8b7cc13253733b1"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-012",
@@ -483,7 +588,10 @@
             "blk_296b8547a33a47dbb7a9b8e546d964e0"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-013",
@@ -494,7 +602,10 @@
             "blk_296b8547a33a47dbb7a9b8e546d964e0"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-014",
@@ -506,7 +617,10 @@
             "blk_30789714316b48908c5addc9bfb135d2"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-015",
@@ -518,7 +632,10 @@
             "blk_30789714316b48908c5addc9bfb135d2"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-018",
@@ -529,7 +646,10 @@
             "blk_ae35014464b5493f84ca38481c3ffa60"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-019",
@@ -540,7 +660,10 @@
             "blk_1601889b50624245a5c590ad23d87175"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-020",
@@ -551,7 +674,10 @@
             "blk_a203939b21504fa6935b621a29929d7d"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-021",
@@ -562,7 +688,10 @@
             "blk_26b23c5bfabe4917a156a91077b5458d"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-022",
@@ -573,7 +702,10 @@
             "blk_b4fb33513ca44182af058d09c8ab2dbb"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-023",
@@ -584,7 +716,10 @@
             "blk_7e913f6c32cb4db7aa9d9b8688b6e979"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-024",
@@ -595,7 +730,10 @@
             "blk_3050f16afc994b889498a2535ea14a52"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-025",
@@ -606,7 +744,10 @@
             "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-026",
@@ -618,7 +759,10 @@
             "blk_d0ef4dbea56d4b74b97a10119fbee223"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-027",
@@ -630,7 +774,10 @@
             "blk_f249587fe98945f7a1c5d30e102aaa68"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-028",
@@ -642,7 +789,10 @@
             "blk_d0ef4dbea56d4b74b97a10119fbee223"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-029",
@@ -654,7 +804,10 @@
             "blk_d0ef4dbea56d4b74b97a10119fbee223"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-030",
@@ -666,7 +819,10 @@
             "blk_d0ef4dbea56d4b74b97a10119fbee223"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-031",
@@ -678,7 +834,10 @@
             "blk_5e8d45b076bf429e863f27b16da7b261"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-032",
@@ -690,7 +849,10 @@
             "blk_f409d1ebb4764f25aa0c123ad7fd22e9"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-033",
@@ -702,7 +864,10 @@
             "blk_fd984f8c5d03427497ffd926feaf8ed5"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-034",
@@ -715,7 +880,10 @@
             "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-035",
@@ -726,7 +894,10 @@
             "blk_c2e6708f6356460eb04d337fd749e8c7"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-036",
@@ -738,7 +909,10 @@
             "blk_a84dc3455457476dadbc35029e2e7ae8"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-037",
@@ -749,7 +923,10 @@
             "blk_3050f16afc994b889498a2535ea14a52"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-038",
@@ -762,7 +939,10 @@
             "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-039",
@@ -775,7 +955,10 @@
             "blk_96ab0b973faf4cbaa6f1241aa4df16e9"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-040",
@@ -786,7 +969,10 @@
             "blk_8c5527e3317248dca7d78ca059f0ec46"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-041",
@@ -797,7 +983,10 @@
             "blk_ae35014464b5493f84ca38481c3ffa60"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-042",
@@ -810,7 +999,39 @@
             "blk_27af51f0cd26488ea08ffa55589b0c3e",
             "blk_94b58ecf5d404f7d90c272d267eb2e48"
           ],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [
+            "blk_cc80e7962a094791b984d8fb5391e886",
+            "blk_27af51f0cd26488ea08ffa55589b0c3e",
+            "blk_94b58ecf5d404f7d90c272d267eb2e48"
+          ],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": [
+            {
+              "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_cc80e7962a094791b984d8fb5391e886.png",
+              "exists": true,
+              "sha256": "df5eab1b75e59001cf78cb3cded3596c55d5726badde250c456889c012e1a3b3",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+              "exists": true,
+              "sha256": "9ae3ec6ff303ff8f3b6317bd8cfa1b49ab22653581184818e10d9f0393bf4c7a",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+              "exists": true,
+              "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-043",
@@ -822,7 +1043,30 @@
             "blk_b8c120f6cbc04397b8c5514a03fa3152",
             "blk_6d5640f1a71b440cb7ca3f2c177af08a"
           ],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [
+            "blk_b8c120f6cbc04397b8c5514a03fa3152",
+            "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+          ],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": [
+            {
+              "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+              "exists": true,
+              "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+              "exists": true,
+              "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         },
         {
           "finding_id": "F-044",
@@ -836,7 +1080,48 @@
             "blk_94b58ecf5d404f7d90c272d267eb2e48",
             "blk_049ee88c136045da9910995a4c44a1e8"
           ],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [
+            "blk_871a2c95697d4a93adb86dd3e2456614",
+            "blk_bd55e9b9fbff4d0886c6084a326ec05e",
+            "blk_94b58ecf5d404f7d90c272d267eb2e48",
+            "blk_049ee88c136045da9910995a4c44a1e8"
+          ],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": [
+            {
+              "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_871a2c95697d4a93adb86dd3e2456614.png",
+              "exists": true,
+              "sha256": "97b3068dcdaebbf363f1bc3e40c9605fd90564b7d2b33b3f029d772dd86f97f9",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_bd55e9b9fbff4d0886c6084a326ec05e",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_bd55e9b9fbff4d0886c6084a326ec05e.png",
+              "exists": true,
+              "sha256": "c186fb2f0e6ab5c9b18d343506d096649d72b07811693d3b1d24f9a73f2384b6",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+              "exists": true,
+              "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            },
+            {
+              "block_id": "blk_049ee88c136045da9910995a4c44a1e8",
+              "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_049ee88c136045da9910995a4c44a1e8.png",
+              "exists": true,
+              "sha256": "8a15e36bf264f5c708284942ff853a4afdb5ffa7e7fe329a36da355a7686ed59",
+              "attached_to_model": false,
+              "visually_reviewed_in_this_replay": false
+            }
+          ]
         }
       ],
       "stats": {
@@ -876,7 +1161,10 @@
             "blk_da80f01d01214295afe19fe6063fe5e1"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-002",
@@ -891,7 +1179,10 @@
             "blk_da80f01d01214295afe19fe6063fe5e1"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-003",
@@ -903,7 +1194,10 @@
             "blk_6ff6b58a285e4ec1b276342a846e08e7"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-004",
@@ -915,7 +1209,10 @@
             "blk_d79ac3d31db644eea9b53e1860e4c51c"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-005",
@@ -927,7 +1224,10 @@
             "blk_d79ac3d31db644eea9b53e1860e4c51c"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-006",
@@ -941,7 +1241,10 @@
             "blk_d79ac3d31db644eea9b53e1860e4c51c"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-007",
@@ -955,7 +1258,10 @@
             "blk_747f574e1fa54f62aa0ad09874faa314"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-008",
@@ -970,7 +1276,10 @@
             "blk_da80f01d01214295afe19fe6063fe5e1"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-009",
@@ -983,7 +1292,10 @@
             "blk_da80f01d01214295afe19fe6063fe5e1"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-010",
@@ -995,7 +1307,10 @@
             "blk_6ff6b58a285e4ec1b276342a846e08e7"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-011",
@@ -1006,7 +1321,10 @@
             "blk_61f174f49da34cb0821c0b91863cd608"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         }
       ],
       "stats": {
@@ -1046,7 +1364,10 @@
             "blk_f63af88de2a840e49ca709d736eaa225"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-002",
@@ -1060,7 +1381,10 @@
             "blk_f63af88de2a840e49ca709d736eaa225"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-003",
@@ -1073,7 +1397,10 @@
             "blk_f63af88de2a840e49ca709d736eaa225"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-004",
@@ -1087,7 +1414,10 @@
             "blk_ec977eb41e834dc8b7b332a66932a777"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-005",
@@ -1099,7 +1429,10 @@
             "blk_b9096ac74f95416da66cc607a9828c3f"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-006",
@@ -1113,7 +1446,10 @@
             "blk_ec977eb41e834dc8b7b332a66932a777"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-007",
@@ -1125,7 +1461,10 @@
             "blk_b9096ac74f95416da66cc607a9828c3f"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-008",
@@ -1138,7 +1477,10 @@
             "blk_f63af88de2a840e49ca709d736eaa225"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-009",
@@ -1154,7 +1496,10 @@
             "blk_f63af88de2a840e49ca709d736eaa225"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-010",
@@ -1167,7 +1512,10 @@
             "blk_ec977eb41e834dc8b7b332a66932a777"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         }
       ],
       "stats": {
@@ -1208,7 +1556,10 @@
             "blk_d01ac56c817044c4a525d02e3251ba0e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-002",
@@ -1225,7 +1576,10 @@
             "blk_e6ea1f0742914463bbf7ce02d97c5afa"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-003",
@@ -1239,7 +1593,10 @@
             "blk_d01ac56c817044c4a525d02e3251ba0e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-004",
@@ -1253,7 +1610,10 @@
             "blk_d01ac56c817044c4a525d02e3251ba0e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-005",
@@ -1267,7 +1627,10 @@
             "blk_d01ac56c817044c4a525d02e3251ba0e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-006",
@@ -1280,7 +1643,10 @@
             "blk_d01ac56c817044c4a525d02e3251ba0e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-007",
@@ -1291,7 +1657,10 @@
             "blk_e6ea1f0742914463bbf7ce02d97c5afa"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-008",
@@ -1302,7 +1671,10 @@
             "blk_e6ea1f0742914463bbf7ce02d97c5afa"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-009",
@@ -1313,7 +1685,10 @@
             "blk_2832f2bda58d416ab8c388c81c339b02"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-010",
@@ -1324,7 +1699,10 @@
             "blk_5a8674f9dc2343498ae3b666f20e67c9"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-011",
@@ -1340,7 +1718,10 @@
             "blk_d01ac56c817044c4a525d02e3251ba0e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-012",
@@ -1353,7 +1734,10 @@
             "blk_aa5ad48812d541538c628ba1476d1b05"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-013",
@@ -1364,7 +1748,10 @@
             "blk_9b1d774c2f6c4127b2f8618e3792a647"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-014",
@@ -1380,7 +1767,10 @@
             "blk_d01ac56c817044c4a525d02e3251ba0e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         }
       ],
       "stats": {
@@ -1419,7 +1809,10 @@
             "blk_67c8cc82d7e24f738797d9b75ce14e97"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-002",
@@ -1430,7 +1823,10 @@
             "blk_c5f0556f94c14503bfe178ef5941c077"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-003",
@@ -1441,7 +1837,10 @@
             "blk_c5f0556f94c14503bfe178ef5941c077"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-004",
@@ -1452,7 +1851,10 @@
             "blk_c5f0556f94c14503bfe178ef5941c077"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-005",
@@ -1464,7 +1866,10 @@
             "blk_7ca68a936c85428dbd4b60b2893398a2"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-006",
@@ -1475,7 +1880,10 @@
             "blk_fb5f780dae7a475ca6c249f62b64771e"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-009",
@@ -1487,7 +1895,10 @@
             "blk_af87003578d3440a9be734a66a09af90"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-020",
@@ -1502,7 +1913,10 @@
             "blk_af87003578d3440a9be734a66a09af90"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-029",
@@ -1513,7 +1927,10 @@
             "blk_f3f718605a024394b9026b08fa4c9b20"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-030",
@@ -1525,7 +1942,10 @@
             "blk_7ca68a936c85428dbd4b60b2893398a2"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-031",
@@ -1539,7 +1959,10 @@
             "blk_7ca68a936c85428dbd4b60b2893398a2"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-032",
@@ -1552,7 +1975,10 @@
             "blk_29be4ff018f040daaa2000c0a3ebde08"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-033",
@@ -1567,7 +1993,10 @@
             "blk_7170586af51c43f79c96734a40269d7d"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-034",
@@ -1578,7 +2007,10 @@
             "blk_1da24da5ad594599aa59defe9fde265b"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-035",
@@ -1589,7 +2021,10 @@
             "blk_0779457166304b91a87d7b7902f8359f"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-036",
@@ -1604,7 +2039,10 @@
             "blk_f3f718605a024394b9026b08fa4c9b20"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-037",
@@ -1616,7 +2054,10 @@
             "blk_f3f718605a024394b9026b08fa4c9b20"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-038",
@@ -1627,7 +2068,10 @@
             "blk_1da24da5ad594599aa59defe9fde265b"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-039",
@@ -1638,7 +2082,10 @@
             "blk_99cc8bf95861437186be76b36e9d446b"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-040",
@@ -1650,7 +2097,10 @@
             "blk_53e5d0ecb2fe4e9480416db361afefda"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-041",
@@ -1661,7 +2111,10 @@
             "blk_d90c772851514a0a9c65cdd019e56957"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-042",
@@ -1675,7 +2128,10 @@
             "blk_628818db493e46e7bdccc75b01afbd16"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-043",
@@ -1688,7 +2144,10 @@
             "blk_8a5db6616dac4b8bbe73c13b7c54a140"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-044",
@@ -1699,7 +2158,10 @@
             "blk_d90c772851514a0a9c65cdd019e56957"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-045",
@@ -1710,7 +2172,10 @@
             "blk_d90c772851514a0a9c65cdd019e56957"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         },
         {
           "finding_id": "F-046",
@@ -1721,7 +2186,10 @@
             "blk_d90c772851514a0a9c65cdd019e56957"
           ],
           "unresolved_block_ids": [],
-          "budgeted_block_ids": []
+          "budgeted_block_ids": [],
+          "required_graphic_block_ids": [],
+          "missing_or_ambiguous_block_ids": [],
+          "graphic_files": []
         }
       ],
       "stats": {
