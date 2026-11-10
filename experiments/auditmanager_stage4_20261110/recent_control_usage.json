@@ -1,0 +1,233 @@
+{
+  "scope": "Recent EOM extraction/recovery and AR deferred control only; not all stage4 work.",
+  "requests": [
+    {
+      "control": "EOM_initial",
+      "directory": "/tmp/auditmanager_eom_balance_inventory_control_20261110/EOM/execution/object_inventory_000",
+      "status": "failed",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": true
+      },
+      "result_sha256": "6543e3f10f8864f764a1b84cc961c46a44f49f852c93853b78322f045aed9ad3",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 900103,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cost_source": "subscription",
+      "error": "codex_exec_exit_-1; codex_json_not_found",
+      "token_counters_incomplete": true
+    },
+    {
+      "control": "EOM_extraction_only",
+      "directory": "/tmp/auditmanager_eom_balance_inventory_control_20261110_extraction_only/EOM/execution/object_inventory_000",
+      "status": "failed",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": true
+      },
+      "result_sha256": "6cae2a0ca451f634f8948178ef0f60bc1d7aea22da6b5e97ca48ec9a058d9717",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 605786,
+      "input_tokens": 40105,
+      "output_tokens": 29983,
+      "cost_source": "subscription",
+      "error": "codex_json_not_found",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "EOM_split_0",
+      "directory": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM/execution/object_inventory_000",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "result_sha256": "fa5aa099a5f06ddfea009b7d4d1cf2f198383e4336b505321e60747bc8f64c8f",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 359961,
+      "input_tokens": 15217,
+      "output_tokens": 17646,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "EOM_split_1",
+      "directory": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM/execution/object_inventory_001",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "result_sha256": "71904018c0ee3e7b8e709a900ae4bc30c008437e8586fe37413eabfee78c32f5",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 336145,
+      "input_tokens": 14385,
+      "output_tokens": 16579,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "EOM_split_2",
+      "directory": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM/execution/object_inventory_002",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "result_sha256": "4f923c50e2393f7ec9ab52e6bf0d30e205d8e6bf1a276ab5d04c9a38432a909b",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 445877,
+      "input_tokens": 18148,
+      "output_tokens": 22026,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "EOM_split_3",
+      "directory": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM/execution/object_inventory_003",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "result_sha256": "04a188b5e3fa89c99dfce1f39f653e9dd999f4904b08d6e135e1a80f80865e19",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 221643,
+      "input_tokens": 15114,
+      "output_tokens": 10846,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "EOM_split_4",
+      "directory": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM/execution/object_inventory_004",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "result_sha256": "64a5d5675a0c0ca08b22796da356afdf2a15e7d07ba956afcb17dc081a6acd23",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 710096,
+      "input_tokens": 18338,
+      "output_tokens": 35207,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "EOM_graphic_strip",
+      "directory": "/tmp/auditmanager_eom_graphic_recovery_20261110",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "b19e47c47a674f531eacc2b470c3d018b353cd2fe32997682359f7033e05fa8a",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 429312,
+      "input_tokens": 23428,
+      "output_tokens": 21089,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "EOM_graphic_grid",
+      "directory": "/tmp/auditmanager_eom_graphic_recovery_20261110_grid",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "861b684bdb0edf0385cb10abc954b3ac6ef421837e0bb0bd856af4865f7602b9"
+      }
+    },
+    {
+      "control": "EOM_prescan",
+      "directory": "/tmp/auditmanager_eom_prescan_recovery_control_20261110",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "ae4b39b66158da94fe5af40b8594debc47a080804947271765dbed02c00158e1",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 23769,
+      "input_tokens": 65694,
+      "output_tokens": 811,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "EOM_prescan_followup",
+      "directory": "/tmp/auditmanager_eom_prescan_recovery_control_20261110/followup",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "9c6fcbbea912fc94dafb3dcb0fd3205205413a6410707c7da7b1a08ff21597bd",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 51871,
+      "input_tokens": 100538,
+      "output_tokens": 1588,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "AR_recovery_0",
+      "directory": "/tmp/auditmanager_ar_deferred_control_20261110/pass_0",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "40faae98994f20c5b64fc7a2881d17c2173dc536aeed50a9f83a694c8025bb39",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 16195,
+      "input_tokens": 23275,
+      "output_tokens": 420,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "AR_recovery_1",
+      "directory": "/tmp/auditmanager_ar_deferred_control_20261110/pass_1",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "946bd7d1cd82c933d26dd86c7934d77a9f65af0879a33930595a5c0077045df4",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 41146,
+      "input_tokens": 37429,
+      "output_tokens": 1351,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    }
+  ],
+  "completed_requests": 12,
+  "pending_results": 1,
+  "failed_requests": 2,
+  "reported_input_tokens": 371671,
+  "reported_output_tokens": 157546,
+  "token_accounting_complete": false,
+  "completed_request_minutes_sum": 69.032,
+  "wall_clock_elapsed_minutes": null,
+  "monetary_cost_known": false,
+  "boundaries": [
+    "Parallel request durations must not be summed as wall-clock elapsed time.",
+    "Subscription token counts do not establish remaining quota or monetary cost.",
+    "Replays from sealed results incur no new model request and are not recounted.",
+    "Response received does not establish semantic acceptance."
+  ]
+}

@@ -1,0 +1,63 @@
+"""Account once for each recent EOM/AR request, including failed attempts.
+
+This bounded ledger is not the complete six-project cost comparison. Subscription
+counters are not money and missing counters are never interpreted as free usage.
+"""
+import hashlib
+import json
+from pathlib import Path
+
+
+def summarize():
+    directories = [
+        ('EOM_initial', Path('/tmp/auditmanager_eom_balance_inventory_control_20261110/EOM/execution/object_inventory_000')),
+        ('EOM_extraction_only', Path('/tmp/auditmanager_eom_balance_inventory_control_20261110_extraction_only/EOM/execution/object_inventory_000')),
+        *[(f'EOM_split_{i}', Path('/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM/execution') / f'object_inventory_{i:03d}') for i in range(5)],
+        ('EOM_graphic_strip', Path('/tmp/auditmanager_eom_graphic_recovery_20261110')),
+        ('EOM_graphic_grid', Path('/tmp/auditmanager_eom_graphic_recovery_20261110_grid')),
+        ('EOM_prescan', Path('/tmp/auditmanager_eom_prescan_recovery_control_20261110')),
+        ('EOM_prescan_followup', Path('/tmp/auditmanager_eom_prescan_recovery_control_20261110/followup')),
+        *[(f'AR_recovery_{i}', Path('/tmp/auditmanager_ar_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
+    ]
+    rows = []
+    seen = set()
+    for label, folder in directories:
+        assert folder.resolve() not in seen
+        seen.add(folder.resolve())
+        attempt = folder / 'attempt.json'; output = folder / 'result.json'
+        row = {'control': label, 'directory': str(folder), 'status': 'not_started'}
+        rows.append(row)
+        if not attempt.exists():
+            continue
+        row['attempt_receipt'] = json.loads(attempt.read_text())
+        row['status'] = 'result_pending'
+        if not output.exists():
+            continue
+        raw = output.read_bytes(); result = json.loads(raw)
+        row.update(status='failed' if result.get('is_error') else 'response_received',
+                   result_sha256=hashlib.sha256(raw).hexdigest(),
+                   model=result.get('model'), duration_ms=result.get('duration_ms'),
+                   input_tokens=result.get('input_tokens'), output_tokens=result.get('output_tokens'),
+                   cost_source=result.get('cost_source'), error=result.get('error_message'))
+        row['token_counters_incomplete'] = bool(result.get('is_error') and not
+            (result.get('input_tokens') or result.get('output_tokens')))
+    completed = [r for r in rows if 'result_sha256' in r]
+    return {'scope': 'Recent EOM extraction/recovery and AR deferred control only; not all stage4 work.',
+            'requests': rows, 'completed_requests': len(completed),
+            'pending_results': sum(r['status'] == 'result_pending' for r in rows),
+            'failed_requests': sum(r['status'] == 'failed' for r in rows),
+            'reported_input_tokens': sum(r.get('input_tokens') or 0 for r in completed),
+            'reported_output_tokens': sum(r.get('output_tokens') or 0 for r in completed),
+            'token_accounting_complete': not any(r['token_counters_incomplete'] for r in completed),
+            'completed_request_minutes_sum': round(sum(r.get('duration_ms') or 0 for r in completed)/60000, 3),
+            'wall_clock_elapsed_minutes': None, 'monetary_cost_known': False,
+            'boundaries': ['Parallel request durations must not be summed as wall-clock elapsed time.',
+                           'Subscription token counts do not establish remaining quota or monetary cost.',
+                           'Replays from sealed results incur no new model request and are not recounted.',
+                           'Response received does not establish semantic acceptance.']}
+
+
+if __name__ == '__main__':
+    report = summarize()
+    Path(__file__).with_name('recent_control_usage.json').write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n')
+    print(json.dumps({k:v for k,v in report.items() if k != 'requests'}, ensure_ascii=False))

@@ -1,0 +1,57 @@
+{
+  "completed": 5,
+  "total": 5,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "objects": 53,
+      "invalid_objects": 0,
+      "unresolved_source_blocks": 0,
+      "duration_ms": 359961,
+      "input_tokens": 15217,
+      "output_tokens": 17646,
+      "cost_source": "subscription"
+    },
+    {
+      "stage": "object_inventory_001",
+      "objects": 45,
+      "invalid_objects": 0,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 336145,
+      "input_tokens": 14385,
+      "output_tokens": 16579,
+      "cost_source": "subscription"
+    },
+    {
+      "stage": "object_inventory_002",
+      "objects": 71,
+      "invalid_objects": 0,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 445877,
+      "input_tokens": 18148,
+      "output_tokens": 22026,
+      "cost_source": "subscription"
+    },
+    {
+      "stage": "object_inventory_003",
+      "objects": 33,
+      "invalid_objects": 0,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 221643,
+      "input_tokens": 15114,
+      "output_tokens": 10846,
+      "cost_source": "subscription"
+    },
+    {
+      "stage": "object_inventory_004",
+      "objects": 143,
+      "invalid_objects": 0,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 710096,
+      "input_tokens": 18338,
+      "output_tokens": 35207,
+      "cost_source": "subscription"
+    }
+  ],
+  "semantic_verified": false
+}

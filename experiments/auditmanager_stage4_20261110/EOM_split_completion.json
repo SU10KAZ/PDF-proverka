@@ -1,0 +1,17 @@
+{
+  "packets_completed": 5,
+  "packets_total": 5,
+  "source_blocks": 17,
+  "images": 3,
+  "objects": 345,
+  "unresolved_source_blocks": 4,
+  "duration_minutes": 34.56203333333333,
+  "input_tokens": 81202,
+  "output_tokens": 102304,
+  "source_scope": "Unchanged17-block prefix used by known-source control, not whole EOM project.",
+  "request_binding_manifest": "EOM_balance_inventory_split_manifest.json",
+  "semantic_inventory_complete": false,
+  "target_graphic_recovery_running": 38419,
+  "result_sha256": "2a4511b46eb5d0687e893806805144693355aa6dd6ce12b67fed357c166fd464",
+  "boundary": "345 records include documents, views, assemblies and consumers; they are not345independent physical instances or defects. Model-derived cross-document balance remains unproved."
+}

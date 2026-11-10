@@ -67,12 +67,12 @@
   "specific_open_controls": [
     {
       "hypothesis": "H04",
-      "state": "running_split_after_invalid_json",
+      "state": "extraction_complete_grid_recovery_running",
       "control": "Five smaller packets, all17blocks and3images preserved exactly; no manual repair of failed response.",
       "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM",
-      "session": 60228,
+      "session": null,
       "expected_answer_hidden": true,
-      "detail": "4/5 inventory packets completed. First four-tile recovery completed51objects but no required circuit marks; source balance not proved. New8x3grid covers entire same graphic; branch extraction running without expected marks.",
+      "detail": "5/5packets completed;345records;4unresolved source blocks. Not345instances or findings. Await finer graphic marks before model-derived set balance.",
       "graphic_recovery_session": 38419
     },
     {
@@ -106,7 +106,7 @@
       "hypothesis": "H02",
       "state": "real_AR_context_hop_and_question_candidate_preserved",
       "evidence": "AR_deferred_assessment.json",
-      "detail": "Required upper roof found by model queries and attached;2Astra calls completed. Source_refs/evidence mismatch repaired and replayed without calls;22baseline preserved plus1question candidate. Not proof of excess third aerator; final verifier/export acceptance pending."
+      "detail": "Required upper roof found by model queries and attached;2Astra calls completed. Source_refs/evidence mismatch repaired and replayed without calls;22baseline preserved plus1question candidate. Not proof of excess third aerator; final verifier/export acceptance pending. Deterministic verifier and real Excel now preserve22baseline plusF023question; see AR_question_output_replay.json."
     }
   ]
 }
