@@ -67,7 +67,8 @@ def _write(path,data):
 
 
 async def run_inventory_enrichment(base, md_path, graphic_dir, work_dir, *,
-        invoke, executor_id, max_packets, is_cancelled=None):
+        invoke, executor_id, max_packets, is_cancelled=None,
+        max_source_chars=60000, max_images=4):
     """Explicit experimental callback; no provider default or automatic retry.
 
     Every generated request contains only source blocks and images. The classic
@@ -79,11 +80,15 @@ async def run_inventory_enrichment(base, md_path, graphic_dir, work_dir, *,
         raise ValueError('explicit_inventory_executor_required')
     if type(max_packets) is not int or max_packets<1:
         raise ValueError('positive_inventory_budget_required')
-    passes,manifest=build_object_inventory_passes(md_path,graphic_dir)
+    if any(type(value) is not int or value < 1 for value in (max_source_chars, max_images)):
+        raise ValueError('positive_inventory_packet_limits_required')
+    passes,manifest=build_object_inventory_passes(md_path,graphic_dir,
+        max_chars=max_source_chars,max_images=max_images)
     root=Path(work_dir);root.mkdir(parents=True,exist_ok=True)
     requests=[{'messages':p.messages,'image_paths':[str(path) for path in p.image_paths]} for p in passes]
     binding={'manifest':manifest,'request_hashes':[evidence_digest(r) for r in requests],
-        'baseline_sha256':evidence_digest(base),'executor_id':executor_id,'workflow_version':1}
+        'baseline_sha256':evidence_digest(base),'executor_id':executor_id,'workflow_version':2,
+        'packet_limits':{'max_source_chars':max_source_chars,'max_images':max_images}}
     frozen=root/'binding.json'
     if frozen.exists():
         if json.loads(frozen.read_text())!=binding:

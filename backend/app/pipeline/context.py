@@ -111,3 +111,5 @@ class PipelineStageContext:
     inventory_invoke: Optional[Callable[..., Awaitable[dict]]] = field(default=None)
     inventory_executor_id: Optional[str] = field(default=None)
     inventory_max_packets: int = field(default=0)
+    inventory_max_source_chars: int = field(default=60000)
+    inventory_max_images: int = field(default=4)

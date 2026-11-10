@@ -36,5 +36,31 @@
     "every_original_block_preserved_exactly": true,
     "every_original_image_preserved": true,
     "source_only_tools_enforced": true
+  },
+  "runtime_packet_limits": {
+    "context_fields": [
+      "inventory_max_source_chars",
+      "inventory_max_images"
+    ],
+    "defaults": {
+      "max_source_chars": 60000,
+      "max_images": 4
+    },
+    "explicit_trial_limits": {
+      "max_source_chars": 12000,
+      "max_images": 1
+    },
+    "frozen_in_workflow_binding": true,
+    "workflow_version": 2,
+    "tests_passed": 32,
+    "verified_behavior": [
+      "All source blocks preserved across smaller packets",
+      "Packet budget leaves pending packets explicit",
+      "Exact completed requests reused, not resent",
+      "Changed frozen packet limits rejected before dispatch",
+      "Missing engineering operations remain not_checked"
+    ],
+    "live_full_pipeline_verified": false,
+    "production_enabled": false
   }
 }

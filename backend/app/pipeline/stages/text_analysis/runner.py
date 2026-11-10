@@ -300,6 +300,8 @@ async def run_text_analysis(
                 invoke=ctx.inventory_invoke,
                 executor_id=getattr(ctx, 'inventory_executor_id', None),
                 max_packets=getattr(ctx, 'inventory_max_packets', 0),
+                max_source_chars=getattr(ctx, 'inventory_max_source_chars', 60000),
+                max_images=getattr(ctx, 'inventory_max_images', 4),
                 is_cancelled=ctx.is_cancelled,
             )
             receipt = enriched['inventory_enrichment']
