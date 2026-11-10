@@ -1,0 +1,23 @@
+{
+  "status": "prepared",
+  "new_source_ids": [
+    "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+    "blk_092e358681fc45ada6058a3f894b2582",
+    "blk_0dc65bdd718344b78468a4d4cb3728de",
+    "blk_43ba3b4bee434762829a4599c645e859",
+    "blk_602b484f088b4a029d3ba6e01df3f645",
+    "blk_8df48eff096342b68d80dbde8a26883e",
+    "blk_a89f9cfd753e412fa2177ba8cb560ab8",
+    "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+    "blk_d1465109f2c843cd8d4190cde8e9b75d",
+    "blk_d84a19bcb0fd4084a6ef27c7a6ebf020",
+    "blk_f2425907b04848fa875228c27e181eb3",
+    "blk_f3aec0b585f6435080a6caa87767ba7c"
+  ],
+  "omitted": [],
+  "automatic_dispatch": false,
+  "absence_proven": false,
+  "semantic_verified": false,
+  "next_stage": "object_operations_c994ecef8f751a78_context_1",
+  "request_sha256": "4442d19f43d86fe79ca042e057fc0de5c8078cbda1d70f58656fe51f53958fc7"
+}

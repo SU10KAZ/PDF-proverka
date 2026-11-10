@@ -1,0 +1,30 @@
+{
+  "project": "ПД-00580716-АР6.2",
+  "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+  "evidence": [
+    {
+      "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_7542a26ddb2e4317bf9a1c3e1e239b62.png",
+      "sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7",
+      "prepared_md_stamp": "> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 5 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Архитектурные решения. Надземная часть. Секция 2, 3. Кровля | Organization: GLOBUS PROJECT | Revisions: Не указано",
+      "directly_viewed": true
+    },
+    {
+      "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+      "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+      "prepared_md_stamp": "> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 7 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное назнание ЖК Событие 6.1) | Наименование листа: Ведомость покрытий кровли, балконов и террас, тех.ниш 2, 3 секций | Organization: GLOBUS PROJECT | Revisions: Не указано",
+      "directly_viewed": true
+    }
+  ],
+  "observations": [
+    "The lower Ф.1 graphic has a separate +20,875 callout near the beginning of the corner, distinct from the +20,840 callout by В-2; the upper corresponding finish graphic states К-3 +20,990.",
+    "The К-3 assembly visibly specifies 40 mm paving and 25–50 mm adjustable supports/air gap. The 30–230 mm range belongs to К-4, not К-3.",
+    "The 75 mm arithmetic residual is (20990−20875−40); it is not a proven product height without establishing reference surfaces, intermediate layers and support location.",
+    "Both prepared graphic stamps refer to АР6.2 and sections 2,3. An overview label section 1 does not alone prove the two sources are unrelated. Local applicability still needs checking; do not silently treat a shared mark as proof.",
+    "The drawing shows lower local levels near drains; these do not prove that every support requires that height or that procurement must include 110 mm supports."
+  ],
+  "question_candidate_supported": true,
+  "confirmed_installation_defect": false,
+  "assessment_boundary": "Evaluator source check; not supplied to executing model. Supports a bounded clarification, not unconditional product incompatibility or full benchmark acceptance."
+}

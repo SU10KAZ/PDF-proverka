@@ -1,0 +1,25 @@
+{
+  "scope": "Original AR support-height controls after actual generic inventory, operations, model-requested context and terminal disposition.",
+  "positive_control": "H05-P03",
+  "negative_control": "H05-N03",
+  "historical_case": "H-AR-14 / UNI-AR6.2-014",
+  "positive_status": "not_recovered_by_astra",
+  "terminal_disposition": "internal_unresolved",
+  "emitted_findings": 0,
+  "observed_negative_behaviour": {
+    "no_unconditional_40_to_110_support_range": true,
+    "no_110mm_procurement_claim": true,
+    "no_installation_impossibility": true,
+    "no_K4_range_substitution": true
+  },
+  "source_review": "AR_roof_primary_source_review.json",
+  "actual_failure_stage": "Object and levels found; local arithmetic performed in context1; ambiguity remained internal and no question reached output.",
+  "qualification": "Negative behaviour alone is not improvement: useful bounded clarification from the historical case has not been recovered. Internal unresolved is not a refutation.",
+  "next_step": "Same-input Claude terminal disposition; no Astra terminal result or evaluator answer supplied.",
+  "generic_disposition_tests": {
+    "passed": 28,
+    "command": "pytest tests/test_object_operation_disposition.py tests/test_object_operation_followup.py tests/test_object_operation_continuation.py tests/test_object_operation_passes.py"
+  },
+  "integration_limit": "Generic builder is implemented and used by experimental harness; default production dispatch has not been changed.",
+  "full_acceptance_proven": false
+}

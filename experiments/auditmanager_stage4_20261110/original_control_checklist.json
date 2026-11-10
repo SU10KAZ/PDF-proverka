@@ -378,8 +378,17 @@
       "hypothesis": "H05",
       "kind": "positive_controls",
       "original_control": "АР: остаток75мм на угловом участке сопоставить с проектным диапазоном опор.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "actual_control_not_recovered_pending_model_comparison",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_astra_control_assessment.json",
+          "sha256": "8ab6f98777141f2043264ed831108993a876bd8555125ac791d733cd28ab9eef"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_primary_source_review.json",
+          "sha256": "4ce3b8f7010eae3700a969307a20c2ea5ca28463b2c06dc273b9804a1add81d6"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -414,8 +423,17 @@
       "hypothesis": "H05",
       "kind": "negative_controls_and_limits",
       "original_control": "АР: отметки у воронки не высоты всех опор.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_astra_control_assessment.json",
+          "sha256": "8ab6f98777141f2043264ed831108993a876bd8555125ac791d733cd28ab9eef"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_disposition_astra_result.json",
+          "sha256": "e08d399486d2395617d422a0d8d04fdc337282a6d3c866f604be0e1183f1db63"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -535,13 +553,14 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 17,
+    "actual_control_not_recovered_pending_model_comparison": 1,
+    "bounded_control_recorded": 18,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 2,
     "local_contract_verified": 2,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
-    "requires_explicit_evidence_review": 12,
+    "requires_explicit_evidence_review": 10,
     "synthetic_contract_only": 1
   },
   "boundaries": [
