@@ -26,5 +26,7 @@
   "supported_claim": "Local address ambiguity only; physical wiring fault unproved.",
   "historical_boundary": "Baseline F055 already preserves this address; do not count a matching new candidate as incremental discovery.",
   "model_answer_used_for_observations": false,
-  "full_control_complete": false
+  "full_control_complete": false,
+  "model_result": "One supported local addressing candidate includes bothPDS4/PDS5andM1/M2; broad identity remainsneeds_data; no wiring fault inferred.",
+  "final_output_verified": false
 }

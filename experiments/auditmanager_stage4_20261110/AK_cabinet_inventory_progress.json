@@ -233,7 +233,71 @@
       "source_blocks": [
         "blk_127bea47b93f4214ac6430c54b21517a"
       ],
-      "state": "result_not_saved"
+      "state": "response_received",
+      "result_sha256": "3cbabb4341f91842ef49891160d8378be34f5c184632107afb1de6a28ae4c66f",
+      "duration_ms": 203994,
+      "input_tokens": 13600,
+      "output_tokens": 9921,
+      "objects": 39,
+      "invalid_objects": 0,
+      "record_id_repairs": [],
+      "unresolved_source_blocks": 1,
+      "unresolved_operations": 195,
+      "source_inventory": [
+        {
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "status": "needs_data",
+          "semantic_verified": false,
+          "receipt": {
+            "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+            "status": "needs_data",
+            "object_ids": [
+              "cabinet_01",
+              "switch_q1",
+              "switch_q2",
+              "te1",
+              "te2",
+              "te3",
+              "ts1",
+              "pds1",
+              "pds2",
+              "pds3",
+              "pds4",
+              "pds5",
+              "motor_m1",
+              "motor_m2_fan",
+              "motor_m3",
+              "motor_m4",
+              "actuator_y7_heat",
+              "actuator_y1",
+              "actuator_y2",
+              "actuator_y3",
+              "actuator_y4",
+              "actuator_y5",
+              "actuator_y6",
+              "actuator_y7_air",
+              "actuator_y8",
+              "actuator_y9",
+              "actuator_y10",
+              "motor_m2_pump",
+              "terminal_xt1",
+              "terminal_xt2",
+              "terminal_xt3",
+              "terminal_xt4",
+              "terminal_xt5",
+              "terminal_xt6",
+              "terminal_xt7",
+              "terminal_xt8",
+              "terminal_xt9",
+              "terminal_xt10",
+              "terminal_xt11"
+            ],
+            "reason": "Изображение просмотрено целиком. Зарегистрированы шкаф, два вводных рубильника, девять измерительных и контактных приборов, четыре двигателя вентиляторов, один привод клапана теплоносителя, десять приводов воздушных клапанов, двигатель насоса и одиннадцать клеммных узлов. Повторные позиции Y7 и M2 сохранены как отдельные экземпляры. Для полной инвентаризации кабелей и клемм требуется более читаемое изображение вертикальных надписей: марки, сечения, длины, часть кабельных обозначений и мелкие характеристики привода теплоносителя не установлены уверенно. Клеммные узлы не отождествлены с отдельными распределительными коробками без подтверждения корпуса. Внешние ссылки сохранены как наблюдения, документы по ним отсутствуют в пакете. Полнота по всему проекту не заявляется."
+          }
+        }
+      ],
+      "candidate_count": 2,
+      "semantic_verified": false
     },
     {
       "stage": "object_inventory_004",
@@ -243,7 +307,7 @@
       "state": "result_not_saved"
     }
   ],
-  "completed_responses": 3,
+  "completed_responses": 4,
   "total_packets": 5,
   "semantic_verified": false,
   "stage4_complete": false,

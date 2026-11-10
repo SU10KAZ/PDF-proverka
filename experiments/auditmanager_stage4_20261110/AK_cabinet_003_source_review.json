@@ -1,0 +1,30 @@
+{
+  "control": "AK14cabinet4of5",
+  "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+  "image": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+  "image_sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+  "directly_viewed_original_resolution": true,
+  "cabinet": "ШАУВ-4-К5ПЧ",
+  "observations": [
+    {
+      "scope": "Main lower cabinet contour under four fan motorsM1–M4",
+      "fact": "Four separate cables terminate at repeated23,24,25,PEgroups without distinct strip identifiers nearby."
+    },
+    {
+      "scope": "Main lower cabinet contour underPDS3–PDS5",
+      "fact": "Three separate groups show17,18."
+    },
+    {
+      "scope": "Main lower cabinet contour under valve actuators",
+      "fact": "Repeated29,30and31,32groups; upper intermediate blocksXT2–XT11are separately named and cannot automatically supply lower cabinet strip identity."
+    },
+    {
+      "scope": "PE and local device/XTnumbers",
+      "fact": "Equal local numbers orPEalone do not establish erroneous connection."
+    }
+  ],
+  "supported_claim": "Local main-cabinet addressing ambiguity; actual physical connection and correction unknown.",
+  "historical_boundary": "Stage2found no terminal ambiguity candidate for this block; motor/actuator positional-mark findings are different claims.",
+  "model_answer_used_for_observations": false,
+  "full_control_complete": false
+}
