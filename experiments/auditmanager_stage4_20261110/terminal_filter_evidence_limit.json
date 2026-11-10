@@ -1,0 +1,35 @@
+{
+  "control_id": "H03-N03",
+  "status": "explicit_evidence_limit",
+  "historical_negative_pair_confirmed": false,
+  "policy": "No generic automatic suppression rule for repeated terminal numbers is accepted. Diagnose full cabinet/strip/terminal identity, preserve candidates and require semantic review.",
+  "observed_mechanism": [
+    {
+      "file": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
+      "function": "validate_object_operation_payload",
+      "behavior": "Unresolved questions remain operation_pending with suppressed_as_false=False; admitted candidates carry operation_semantic_verified=False."
+    },
+    {
+      "file": "backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+      "function": "combine_findings_with_targeted",
+      "behavior": "Starts from deep copies of all classic findings and appends candidates. This additive step does not interpret an operation receipt as an instruction to delete classic findings."
+    }
+  ],
+  "evidence": [
+    {
+      "path": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
+      "sha256": "6542244bf06b1734f3f99b29b59fbe1d92eb17609554f5d4b7d0093b1ad75604"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+      "sha256": "0fb634f8f01a0a430b619a4db755c96796a0eea57e02b376e557a12bdcfb06fa"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/AK_systemic_output_replay.json",
+      "sha256": "bcc2a56fb0ee96edb88811e74c23d2ecdb162eaea742825ab1216d099ca3c175"
+    }
+  ],
+  "boundary": "This establishes the bounded method and the lack of an accepted terminal-suppression rule, not a claim that every downstream model can never remove a terminal finding. The AK known grouping replay is a positive control, not a substitute historical negative pair.",
+  "acceptance_condition": "Keep suppression unsupported until an independent same-scope historical negative control and a protected positive pair are established.",
+  "full_acceptance_proven": false
+}

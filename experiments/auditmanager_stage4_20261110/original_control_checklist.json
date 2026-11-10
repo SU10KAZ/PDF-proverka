@@ -221,8 +221,13 @@
       "hypothesis": "H03",
       "kind": "negative_controls_and_limits",
       "original_control": "Нет отдельной подтверждённой исторической отрицательной пары для общего фильтра клемм; сначала диагностический режим без подавления.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "explicit_evidence_limit",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/terminal_filter_evidence_limit.json",
+          "sha256": "378545e4f658ba0901604a0ca4a5eecb8c6e9e5f250d2042c5a99ea33a3eb777"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -234,7 +239,7 @@
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_two_cable_operations_assessment.json",
-          "sha256": "c897d550705957aa3202faa9faa926b8600bd10f7fb7cb04fa46b670f046f655"
+          "sha256": "180ef7b07c2918c16cd072e2913ca5c5b534206f930ed59ea94d6af01f0b1df5"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_cable_graphic_1_assessment.json",
@@ -298,8 +303,13 @@
       "hypothesis": "H04",
       "kind": "negative_controls_and_limits",
       "original_control": "160м двух линий не факт недопоставки; не увеличивать мощность без исключения агрегирования.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_quantitative_overclaim_limits.json",
+          "sha256": "3d83268449ae5fdfedb60e4ae8fc960199124328dd63f5ef1109362cd1d9d8af"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -513,13 +523,13 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 16,
+    "bounded_control_recorded": 17,
     "disputed_requires_readjudication": 1,
-    "explicit_evidence_limit": 1,
+    "explicit_evidence_limit": 2,
     "local_contract_verified": 2,
     "partial_control_pending_address_and_output": 1,
     "partial_control_pending_quantity_question": 1,
-    "requires_explicit_evidence_review": 14,
+    "requires_explicit_evidence_review": 12,
     "synthetic_contract_only": 1
   },
   "boundaries": [

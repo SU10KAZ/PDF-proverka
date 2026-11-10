@@ -1,0 +1,22 @@
+{
+  "control_id": "H04-N02",
+  "status": "bounded_control_recorded",
+  "cable_control": "Two source-bound lengths, 65m and 95m, sum to 160m only for those two lines. Actual candidates distinguish HF from FRHF and explicitly do not infer procurement deficit.",
+  "load_control": "Set comparison identifies two active branches while excluding reserve branches. Its output requires scope/identity review; it does not add 4kW to project power or infer overload. Aggregation into another load row remains unresolved.",
+  "evidence": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/EOM_two_cable_operations_assessment.json",
+      "sha256": "180ef7b07c2918c16cd072e2913ca5c5b534206f930ed59ea94d6af01f0b1df5"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/EOM_cable_output_replay.json",
+      "sha256": "8276132b669a842d76be19f232b25514e5ccc724cb28b373c46c5a830d90a641"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/EOM_model_extracted_balance_control.json",
+      "sha256": "399336dd4802c01dd227bc7ab2762a7d7ee33411054c9f8cf0280284d27bbcf8"
+    }
+  ],
+  "boundary": "Known bounded controls; does not prove correct arithmetic and aggregation across every project or complete six-project acceptance.",
+  "full_acceptance_proven": false
+}
