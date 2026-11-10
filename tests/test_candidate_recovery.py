@@ -58,7 +58,7 @@ def test_deferred_graphic_request_is_scheduled_without_becoming_a_finding(tmp_pa
 
 
 def test_prescan_trigger_reaches_review_and_preserves_final_trace(tmp_path, monkeypatch):
-    from backend.app.pipeline.stages.findings_merge.candidate_coverage import build_candidate_coverage
+    from backend.app.pipeline.stages.findings_merge.candidate_coverage import build_candidate_coverage, write_candidate_coverage
     from backend.app.pipeline.stages.findings_merge.candidate_decisions import reconcile_candidate_decisions
     from backend.app.pipeline.stages.prepare.codex_targeted_findings import combine_findings_with_targeted
     import backend.app.pipeline.stages.prepare.candidate_recovery as recovery
@@ -97,7 +97,10 @@ def test_prescan_trigger_reaches_review_and_preserves_final_trace(tmp_path, monk
         assert combined['findings'][0] == base['findings'][0]
         assert len(combined['findings']) == (2 if action == 'retained' else 1)
         coverage = build_candidate_coverage(text, {}, combined)
-        receipt = reconcile_candidate_decisions(coverage, [decision], {'t2'})
+        (tmp_path / '03_findings.json').write_text(json.dumps(combined))
+        (tmp_path / 'document_graph.json').write_text(json.dumps({
+            'pages': [{'page': 2, 'text_blocks': [{'id': 't2'}]}]}))
+        receipt = write_candidate_coverage(tmp_path)['decision_coverage']
         assert receipt['not_checked'] == 0
         assert receipt['semantic_verified'] is False
     assert base == {'findings': [{'id': 'F-001', 'problem': 'Existing useful finding'}]}

@@ -52,3 +52,27 @@ def reconcile_candidate_decisions(coverage, decisions, known_blocks):
             'malformed_decisions': malformed,
             'not_checked': sum(r['status'] == 'not_checked' for r in rows),
             'semantic_verified': False}
+
+
+def effective_candidate_decisions(final):
+    """Read the latest supplied receipt per candidate, preserving duplicate errors.
+
+    Recovery continuations supersede earlier receipts for the addressed candidate.
+    The full immutable sequence remains in candidate_recovery_reports. A report
+    without receipts cannot erase an earlier decision; semantic validity is still
+    checked separately and no later verdict is automatically certified as true.
+    """
+    decisions = final.get('candidate_decisions', [])
+    decisions = list(decisions) if isinstance(decisions, list) else []
+    reports = final.get('candidate_recovery_reports', [])
+    for report in reports if isinstance(reports, list) else []:
+        batch = report.get('candidate_decisions') if isinstance(report, dict) else None
+        if not isinstance(batch, list):
+            continue
+        def key(receipt):
+            if isinstance(receipt, dict) and all(isinstance(receipt.get(k), str) for k in ('origin', 'pointer')):
+                return receipt['origin'], receipt['pointer']
+            return None
+        addressed = {key(r) for r in batch if key(r) is not None}
+        decisions = [r for r in decisions if key(r) not in addressed] + batch
+    return decisions

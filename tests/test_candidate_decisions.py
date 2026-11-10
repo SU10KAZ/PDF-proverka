@@ -36,3 +36,13 @@ def test_missing_duplicate_and_unknown_receipts_remain_visible():
     assert report['not_checked'] == 1
     assert report['unmatched_decisions'] == [receipt]
     assert report['malformed_decisions'] == [None]
+
+
+def test_recovery_continuation_uses_latest_receipt_without_hiding_duplicates():
+    from backend.app.pipeline.stages.findings_merge.candidate_decisions import effective_candidate_decisions
+    early = {'origin': 'prescan', 'pointer': '/prescan_review_requests/0', 'decision': 'needs_data'}
+    later = {**early, 'decision': 'refuted'}
+    final = {'candidate_decisions': [early], 'candidate_recovery_reports': [
+        {'candidate_decisions': [later, later]}, {'pending': ['dispatch failed']} ]}
+    assert effective_candidate_decisions(final) == [later, later]
+    assert final['candidate_decisions'] == [early]

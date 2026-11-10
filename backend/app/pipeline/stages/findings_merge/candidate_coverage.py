@@ -89,7 +89,7 @@ def write_candidate_coverage(output_dir):
         payloads.append(json.loads(raw))
         sources.append({'path': str(path), 'sha256': hashlib.sha256(raw).hexdigest()})
     report = build_candidate_coverage(*payloads)
-    from .candidate_decisions import reconcile_candidate_decisions
+    from .candidate_decisions import effective_candidate_decisions, reconcile_candidate_decisions
     from backend.app.pipeline.stages.prepare.graph_builder import build_block_page_index
     graph_path = output_dir / 'document_graph.json'
     graph = {}
@@ -98,7 +98,7 @@ def write_candidate_coverage(output_dir):
         graph = json.loads(graph_raw)
         sources.append({'path': str(graph_path), 'sha256': hashlib.sha256(graph_raw).hexdigest()})
     report['decision_coverage'] = reconcile_candidate_decisions(
-        report, payloads[-1].get('candidate_decisions'), set(build_block_page_index(graph)))
+        report, effective_candidate_decisions(payloads[-1]), set(build_block_page_index(graph)))
     report.update(sources=sources, missing_inputs=missing, input_inventory_complete=not missing)
     (output_dir / '03_candidate_coverage.json').write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
