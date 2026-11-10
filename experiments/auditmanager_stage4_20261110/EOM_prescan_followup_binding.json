@@ -1,0 +1,33 @@
+{
+  "request_sha256": "f5f04de60e52b874b09ea35fc64d1d20badb31561552a72ad24577d5d8efc592",
+  "images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_513e35c4f8a7432986e9a498d4573996.png",
+      "sha256": "a01102c8349160a0b2f4a2f050c1821c1a185575010318cdbc589a1a80b09798"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_134b321ecf0f4e92adb35318a327be75.png",
+      "sha256": "d9cae4fd7d32a6aa663c9e17aa97e30472127f66212ecc8abf2826c3fc546d92"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_093ddb2393604f25acc1035ea56fb849.png",
+      "sha256": "931f1c92e6962808fda59c5a722b2a0590482ac89d38d7df27299e59a79585b0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_8f29abd917ed4e3c85d10f014af7de50.png",
+      "sha256": "ccdbeef016da11d08bca3a6bd2ade7198eeae0bdac9653c346053e5fad312c72"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_e592650ad6c04f319521ddf0f1d1f654.png",
+      "sha256": "7c94857686800151a17aeeba7a507ced1ad8f9e8d796034af8b59b350ccbfc1b"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_3d36921f90d34667a0b6d17a54cd050a.png",
+      "sha256": "7fd78d19c018447bc6f262c48a57c67b8f8d4d471c94e035a4500121b401ff9c"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_fa92d7f0122a40cfbcc8d881d48f7c91.png",
+      "sha256": "b7ef2d84b20f581e3fec970773b8ae5ee114be75546d76edaca09fa7917340bb"
+    }
+  ]
+}

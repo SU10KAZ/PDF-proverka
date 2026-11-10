@@ -94,13 +94,13 @@
     },
     {
       "hypothesis": "H07",
-      "state": "live_recovery_needs_data_followup_running",
+      "state": "live_recovery_and_followup_complete_identity_uncertain",
       "evidence": [
         "prescan_recovery_control.json",
         "prescan_navigation_replay.json"
       ],
-      "detail": "First live Astra recovery completed in23769ms;49classic findings preserved;0newrows; needs_data retained in final receipt accounting. Standard context followup running; no historical answers supplied.",
-      "session": 58499
+      "detail": "Two live Astra calls completed. Actual source links reviewed;49classic findings preserved,0newfindings. Final needs_data receipt survives export accounting. TEXT УЧ/graphic У4 correspondence remains unresolved; no automatic rename or suppression. Historical positive/negative filter pair unproved.",
+      "session": null
     }
   ]
 }

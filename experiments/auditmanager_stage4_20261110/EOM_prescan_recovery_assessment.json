@@ -19,7 +19,19 @@
   "classic_findings_preserved": 49,
   "new_findings": 0,
   "final_semantic_resolution": false,
-  "followup_session": 58499,
+  "followup_session": null,
   "historical_engineer_confirmed_filter_pair": false,
-  "no_filter_claim": "This is a known source-backed negative trigger control, not an independent accepted-positive/rejected-negative historical pair. No automatic suppression added."
+  "no_filter_claim": "This is a known source-backed negative trigger control, not an independent accepted-positive/rejected-negative historical pair. No automatic suppression added.",
+  "followup": {
+    "status": "completed_needs_data",
+    "duration_ms": 51871,
+    "request_sha256": "f5f04de60e52b874b09ea35fc64d1d20badb31561552a72ad24577d5d8efc592",
+    "source_identity_uncertainty": [
+      "| СЗ314 | УЧ | 12,0 | 12,0 | 19,2 | 0,95 | 12,63 |"
+    ],
+    "model_decision_not_checked_as_fact": false,
+    "interpretation": "The source text identity discrepancy is real as written; no universal rename rule follows. Keep identity correspondence pending rather than correcting TEXT from raster. The bounded one-hop workflow has reached its followup limit.",
+    "automatic_rename_findings": 0,
+    "baseline_findings_preserved": 49
+  }
 }
