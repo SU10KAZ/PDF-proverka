@@ -1,0 +1,50 @@
+{
+  "scope": "Evaluator source observation only; not supplied to independent operation executor.",
+  "source_graphic": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_1849759086c445e687f8c0e2b424250b.png",
+  "sha256": "d7b15440e6f172fcc51f02d234f5fce4cbd94085416ddab99270a719521b115c",
+  "directly_viewed": true,
+  "observations": [
+    {
+      "mark": "ОГМ25",
+      "view": "8-8 ЛК6",
+      "instances": [
+        {
+          "levels_m": [
+            -4.0,
+            -2.2
+          ],
+          "inventory_id": "A6"
+        },
+        {
+          "levels_m": [
+            -0.7,
+            1.1
+          ],
+          "inventory_id": "A7"
+        }
+      ]
+    },
+    {
+      "mark": "ОГМ22",
+      "view": "9-9 ЛК6",
+      "instances": [
+        {
+          "levels_m": [
+            -6.1,
+            -5.7
+          ],
+          "inventory_id": "A8"
+        },
+        {
+          "levels_m": [
+            -2.2,
+            -1.8
+          ],
+          "inventory_id": "A9"
+        }
+      ]
+    }
+  ],
+  "finding_boundary": "Two physical instances per mark are visible at distinct elevations; this alone proves neither a shortage nor a wrong aggregate specification. Detailed quantity operation pending.",
+  "full_acceptance_proven": false
+}

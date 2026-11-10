@@ -549,6 +549,39 @@
       "error": ""
     },
     {
+      "control": "KM_LK6_quantity",
+      "directory": "/tmp/auditmanager_km_quantity_operations_20261110/obj_09",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "9e39ce82510cfa4497e1f314bfa47422c9af32b0b0c1f2259fd8457c1025fddf",
+        "inventory_result_sha256": "ea3b192a606eaac93544a3a813ba4dce8e897a2a4522da8a457b7efade534821",
+        "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+        "images": [],
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high",
+        "automatic_retries": 0,
+        "known_source_control": true,
+        "expected_answers_supplied": false
+      },
+      "token_counters_incomplete": true
+    },
+    {
+      "control": "KM_LK6_quantity_context_1",
+      "directory": "/tmp/auditmanager_km_quantity_operations_20261110/obj_09/context_1",
+      "status": "not_started"
+    },
+    {
+      "control": "KM_LK6_quantity_context_2",
+      "directory": "/tmp/auditmanager_km_quantity_operations_20261110/obj_09/context_2",
+      "status": "not_started"
+    },
+    {
+      "control": "KM_LK6_quantity_context_3",
+      "directory": "/tmp/auditmanager_km_quantity_operations_20261110/obj_09/context_3",
+      "status": "not_started"
+    },
+    {
       "control": "KM_OGM20_geometry",
       "directory": "/tmp/auditmanager_km_geometry_operations_20261110/E7",
       "status": "response_received",
@@ -901,7 +934,7 @@
     }
   ],
   "completed_requests": 46,
-  "pending_results": 2,
+  "pending_results": 3,
   "failed_requests": 2,
   "interrupted_requests": 4,
   "reported_input_tokens": 1371017,
