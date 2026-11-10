@@ -1,0 +1,91 @@
+{
+  "scope": "Source-review control after recovered AR question reached deterministic Excel output.",
+  "candidate_status": "candidate_ready",
+  "proposed_action": "defer",
+  "raw_decision_applied_to_report": false,
+  "question_currently_preserved_in_control_excel": true,
+  "reason_for_not_accepting_deferral": "Reviewer requests an internal node/section search already partly performed upstream. Source-review packet only inherited finding evidence references, not prior operation context/search and inspected-source records.",
+  "confirmed_model_checks": "Original levels, K-3 layer values and conditional arithmetic supported; physical exceedance remains unproven.",
+  "failure_stage": "Operation-to-source-review context handoff; source verification proposes defer rather than preserving an actionable scoped question.",
+  "required_fix": "Carry version-bound source/search provenance and reported prior inspections to independent source review, keeping observations untrusted and original images available. Require a concrete new task for further deferral; do not treat an engineer question as a proven technical violation.",
+  "remaining_work": "Verify the generic handoff with same-source positive/negative controls before accepting final admission.",
+  "full_acceptance_proven": false,
+  "evidence_files": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024_initial_request.json",
+      "sha256": "64da1696d834466efd225096064ed558150eaeb3f444cc044fe1e3cc70690cc8"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/findings.json",
+      "sha256": "4801f9f161e4f36562c725d6135d98781928f7fefac573f8644c850f41e3ed12"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/manifest.json",
+      "sha256": "7651f5126a6378f3f70b774bdd9e3a67ed22c27f7db46c8310a0181772f42a09"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/queue.json",
+      "sha256": "ae115795d2002fc39a79bf235d979d79288e8d295539548b9db82bf87d7ede57"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/01_followup.json",
+      "sha256": "7b5167baf3616e367ccf404e55124ed71fbf5f052682c913083819977053c93f"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/00_followup.json",
+      "sha256": "b3645c0c3248b1577be0858836d20cbaaab2d2ebd390e4a3d07b116072f6ab54"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/binding.json",
+      "sha256": "76c3a2febc53edd11cf977e9972301d9f288073e66d1db372c1bab34601e4bae"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/00_validation.json",
+      "sha256": "bb57780571d757afc80781c97035db7deaff04c3498817524f48e9e73d186249"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/01_validation.json",
+      "sha256": "b6a9c2c20efe7484ff024334b74727ecd5896dcfe4212f216a90e7f4ec2d8592"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/candidate.json",
+      "sha256": "9e165fd5eefedbf215f4b1a2affc764429e61a27116fc9e3d7c12e471bd8eab5"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/00_review/request.json",
+      "sha256": "3ddd4b2adbeb83ca6576809ff6821b109d5a9cafa37c6fdfc6eff2fe5c9ce603"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/00_review/attempt.json",
+      "sha256": "0435b9d3c954bab06902792bd47ad9a2d65df86164987dfc7f816d3985fa4526"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/00_review/result.json",
+      "sha256": "0f7612fbe1cb409cc6de9aa714971a8029e7364fc1e928bf333957f9f75bf5df"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/05_adjudication/request.json",
+      "sha256": "65a04107a551d0c93d607141636c00daa1d89f2b03f0cddf019fc2cd6a11dbdb"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/05_adjudication/attempt.json",
+      "sha256": "5766de8ad7130713f1efbc59dc5fab1028cea6c82f24688a0d0be3b8b0bcf628"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/05_adjudication/result.json",
+      "sha256": "663fd0024a29b09b66f3ea1fede387af86c5c41bfacaf037e408891aa9a9c2a2"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/01_review/request.json",
+      "sha256": "0bdd98f542cdaedc8a70f3dc2c5aa97721610db0440c32217b5c6d256c01f2a9"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/01_review/attempt.json",
+      "sha256": "880b7e5d7b44dfd95bbb6766cdffa4153c10d56059807eceadd9bd8e583f0044"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_question_source_evidence/F-024/01_review/result.json",
+      "sha256": "6cf2e0ede6d711bf7c45f3a1379176dc66d0ccf27044499939675154746d1bfe"
+    }
+  ]
+}

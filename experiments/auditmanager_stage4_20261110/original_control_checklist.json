@@ -378,19 +378,19 @@
       "hypothesis": "H05",
       "kind": "positive_controls",
       "original_control": "АР: остаток75мм на угловом участке сопоставить с проектным диапазоном опор.",
-      "evidence_state": "actual_control_not_recovered_by_both_models",
+      "evidence_state": "partial_recovered_question_pending_source_review_handoff",
       "evidence": [
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_astra_control_assessment.json",
-          "sha256": "290a20bf7054584bdccc69d959adc0bf59a91cdfab1706495d126dc9e07fa4dd"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_recovered_question_assessment.json",
+          "sha256": "6adf46736f602b239b9c647384988274af058ea5c12049d4da6f223707b7253d"
         },
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_primary_source_review.json",
-          "sha256": "4ce3b8f7010eae3700a969307a20c2ea5ca28463b2c06dc273b9804a1add81d6"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_question_output_replay.json",
+          "sha256": "564e405d5ec467c1bb979294990577559c89baeebeb709793101ccbc16b9511c"
         },
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_same_input_model_comparison.json",
-          "sha256": "ce94eebc5c94c686873b6ace055c5c5d4125368071b0a6e1156a76360ae5b495"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_source_review_context_loss.json",
+          "sha256": "c839f03074ee38175c2c3f253defe06215141e862f495862a33cabfa1533afba"
         }
       ],
       "full_acceptance_proven": false
@@ -430,12 +430,12 @@
       "evidence_state": "bounded_control_recorded",
       "evidence": [
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_astra_control_assessment.json",
-          "sha256": "290a20bf7054584bdccc69d959adc0bf59a91cdfab1706495d126dc9e07fa4dd"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_recovered_question_assessment.json",
+          "sha256": "6adf46736f602b239b9c647384988274af058ea5c12049d4da6f223707b7253d"
         },
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_disposition_astra_result.json",
-          "sha256": "e08d399486d2395617d422a0d8d04fdc337282a6d3c866f604be0e1183f1db63"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_navigation_v2_result.json",
+          "sha256": "6bdc6228f04d9d92f715ed3d8c1159ee5461fa9c25ce8b211caf8ab0e1f6c0f5"
         }
       ],
       "full_acceptance_proven": false
@@ -557,13 +557,13 @@
     }
   ],
   "counts": {
-    "actual_control_not_recovered_by_both_models": 1,
     "bounded_control_recorded": 18,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 2,
     "local_contract_verified": 2,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
+    "partial_recovered_question_pending_source_review_handoff": 1,
     "requires_explicit_evidence_review": 10,
     "synthetic_contract_only": 1
   },

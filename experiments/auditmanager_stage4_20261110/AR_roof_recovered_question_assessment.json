@@ -1,0 +1,28 @@
+{
+  "scope": "Known AR H05-P03 / H05-N03 pair after model-selected context and revised generic terminal policy.",
+  "positive_result": "Actual model question about K-3 reference surfaces and height coordination preserved through classic combine, deterministic verification and separate questions section.",
+  "control_id": "H-AR-14 / UNI-AR6.2-014",
+  "output_id": "F-024",
+  "source_review": "AR_roof_primary_source_review.json",
+  "output_replay": "AR_roof_question_output_replay.json",
+  "negative_checks": {
+    "conditional_calculations_not_proven_support_heights": true,
+    "no_110mm_procurement_instruction": true,
+    "no_installation_impossibility": true,
+    "no_K4_range_substitution": true,
+    "unresolved_slope_calculation_not_emitted_as_separate_defect": true
+  },
+  "duplicate_review": {
+    "F-005": "Paving area quantity, different issue.",
+    "F-012": "Slope near drain, different issue; not repeated as new proven violation.",
+    "F-013": "Paving material mismatch, different issue; the ASSEMBLY_K3 operation rediscovered this classic finding and is not counted as new."
+  },
+  "cause_addressed": "Unresolved interpretation of source surfaces formerly led to indefinite internal deferral. After additional source inspection, the generic terminal policy allowed one actionable conditional question.",
+  "limitations": [
+    "Known development control, not independent new-project discovery.",
+    "Both added source context and terminal wording changed; separate causal contribution is not isolated.",
+    "Source review completed and proposed defer; not applied because upstream context was lost. See AR_roof_source_review_context_loss.json. Final semantic admission is unresolved.",
+    "Generic terminal/navigation orchestration is experimental and not yet enabled as a complete production path."
+  ],
+  "full_acceptance_proven": false
+}

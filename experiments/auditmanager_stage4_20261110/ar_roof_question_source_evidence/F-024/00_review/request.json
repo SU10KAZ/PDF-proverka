@@ -1,0 +1,47 @@
+{
+  "sha256": "7bdc740ed3a735f8c070e1c15deea800dd4db289adcab60480f9f14925475e13",
+  "request": {
+    "messages": [
+      {
+        "role": "system",
+        "content": "Review only the supplied claims, authoritative TEXT and attached images.\nDo not access files, tools, web, historical reviews or evaluation answers.\nSeparate each substantive claim and preserve uncertainty. Include substantive\nassertions from display_fields (risk, consequence, severity and normative text)\nin your review; these fields are not established facts or verified requirements. A source address or\nmatching quote does not prove the claim. Do not correct TEXT using raster.\nFor arithmetic enumerate source rows and reproduce the operation. Distinguish\nannotation conflicts from physical defects and operating-mode assumptions.\nReturn JSON: finding_id, finding_sha256, source_md_sha256, context_sha256, claims.\nEach claim: claim_id, claim, status (supported/refuted/needs_data), reason, evidence.\nTEXT evidence: {type:\"text\", block_id, quote}, an exact quote from supplied text.\nSTAMP evidence: {type:\"metadata\", block_id, quote}, an exact quote from supplied graphic_metadata.\nThese are literal prepared-MD stamps for document/sheet identity only, not proof of drawing contents.\nIMAGE evidence: {type:\"image\", block_id, image_sha256, bbox_norm_xyxy:[left,top,right,bottom], observation}.\nRegions use normalized coordinates 0..1 of the cited attached image, including detail crops.\nSeveral images can share a source block: distinguish them by image_sha256. Detail\ncrops supplement one original graphic and are not additional physical objects.\nCite only images actually attached.\nFor needs_data include missing_data (nonempty list) and optionally context_queries\n(specific object labels or literal phrases to search in prepared MD). Missing or\nbounded context never proves whole-project absence. Do not rewrite the finding.\n"
+      },
+      {
+        "role": "user",
+        "content": "{\"finding_id\": \"F-024\", \"finding_sha256\": \"9066e89799a825057773c5ad9e375dfee34801368dc4f23b5235f836bfc4f4b0\", \"source_md_sha256\": \"bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98\", \"context_sha256\": null, \"final_claim\": {\"problem\": \"Требуется уточнить высотную увязку К-3 в угловой области Ф.1.\", \"description\": \"Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.\", \"solution\": \"Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.\"}, \"display_fields\": {\"severity\": \"question\"}, \"original_claims\": [{\"source_finding_id\": \"O-8524225dffeb6d942abcd0da\", \"source_claim\": \"problem: Требуется уточнить высотную увязку К-3 в угловой области Ф.1.\\ndescription: Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.\\nsolution: Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.\", \"block_ids\": [\"blk_7542a26ddb2e4317bf9a1c3e1e239b62\", \"blk_f3aec0b585f6435080a6caa87767ba7c\", \"blk_602b484f088b4a029d3ba6e01df3f645\"]}], \"authoritative_text\": [], \"graphic_metadata\": [{\"block_id\": \"blk_f3aec0b585f6435080a6caa87767ba7c\", \"stamp\": \"> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 5 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Архитектурные решения. Надземная часть. Секция 2, 3. Кровля | Organization: GLOBUS PROJECT | Revisions: Не указано\"}, {\"block_id\": \"blk_7542a26ddb2e4317bf9a1c3e1e239b62\", \"stamp\": \"> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 5 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Архитектурные решения. Надземная часть. Секция 2, 3. Кровля | Organization: GLOBUS PROJECT | Revisions: Не указано\"}, {\"block_id\": \"blk_602b484f088b4a029d3ba6e01df3f645\", \"stamp\": \"> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 7 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное назнание ЖК Событие 6.1) | Наименование листа: Ведомость покрытий кровли, балконов и террас, тех.ниш 2, 3 секций | Organization: GLOBUS PROJECT | Revisions: Не указано\"}], \"images_in_attachment_order\": [{\"block_id\": \"blk_7542a26ddb2e4317bf9a1c3e1e239b62\", \"sha256\": \"4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7\", \"width\": 2230, \"height\": 1352}, {\"block_id\": \"blk_f3aec0b585f6435080a6caa87767ba7c\", \"sha256\": \"b2ea91738b345a61639775c648f0964f66fe8b9ca12db56a9d78c03d3f18c430\", \"width\": 2233, \"height\": 1341}, {\"block_id\": \"blk_602b484f088b4a029d3ba6e01df3f645\", \"sha256\": \"011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0\", \"width\": 906, \"height\": 702}], \"unavailable_images\": [], \"context_search_boundary\": {\"query_hit_counts\": null, \"deferred_queries\": null, \"backlog\": null, \"absence_proven\": null}, \"missing_block_ids\": [], \"budgeted_text_block_ids\": []}"
+      }
+    ],
+    "image_paths": [
+      "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_7542a26ddb2e4317bf9a1c3e1e239b62.png",
+      "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f3aec0b585f6435080a6caa87767ba7c.png",
+      "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png"
+    ],
+    "image_bindings": [
+      {
+        "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_7542a26ddb2e4317bf9a1c3e1e239b62.png",
+        "sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7",
+        "width": 2230,
+        "height": 1352
+      },
+      {
+        "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f3aec0b585f6435080a6caa87767ba7c.png",
+        "sha256": "b2ea91738b345a61639775c648f0964f66fe8b9ca12db56a9d78c03d3f18c430",
+        "width": 2233,
+        "height": 1341
+      },
+      {
+        "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+        "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+        "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+        "width": 906,
+        "height": 702
+      }
+    ],
+    "request_sha256": "7a78d17945a7fc7cf126704e6ca679e39f204d0511d1a66123a009fc4493728f",
+    "sent": false,
+    "automatic_dispatch": false,
+    "boundary": "Prepared input only; no model request or isolation guarantee."
+  }
+}

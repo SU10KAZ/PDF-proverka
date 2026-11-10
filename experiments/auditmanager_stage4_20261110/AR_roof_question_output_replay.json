@@ -1,0 +1,28 @@
+{
+  "prior_output_findings_preserved": 23,
+  "classic_findings_preserved": 22,
+  "prior_recovered_questions_preserved": 1,
+  "final_rows": 24,
+  "recovered_question_id": "F-024",
+  "question_core_fields_preserved": true,
+  "question_exported_separately": true,
+  "all_excel_ids_unique": true,
+  "verifier_stats": {
+    "findings_total": 24,
+    "deterministic_issues": 0,
+    "critic_error": null,
+    "phantom_cleaned": 0,
+    "page_fixed": 0,
+    "downgraded": 0,
+    "flagged_human": 0,
+    "corrector_error": null,
+    "source_reviews_pending": 1,
+    "source_review_queue_error": null
+  },
+  "source_recovery_sha256": "ffb3837a6d65a91f74b123d71530b97876f934965ccf85dd786ab32be489f5a0",
+  "xlsx_path": "/tmp/auditmanager_ar_roof_question_output_20261111/report.xlsx",
+  "xlsx_sha256": "ab3449fd26d9a23abd143e00f4fc1a5602a167ba92e80b51cff9b4f1cfa5c298",
+  "new_model_calls": 0,
+  "semantic_acceptance": false,
+  "boundary": "Real model-produced candidate through deterministic verifier and Excel. Does not test model absence verifier, engineer usefulness or complete pipeline acceptance."
+}

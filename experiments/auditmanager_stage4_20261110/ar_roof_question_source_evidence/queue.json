@@ -1,0 +1,160 @@
+{
+  "packets": [
+    {
+      "finding_id": "F-024",
+      "status": "pending",
+      "semantic_verified": false,
+      "finding_snapshot": {
+        "object_id": "P03",
+        "operation": "dimension_consistency",
+        "severity": "question",
+        "problem": "Требуется уточнить высотную увязку К-3 в угловой области Ф.1.",
+        "description": "Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.",
+        "solution": "Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.",
+        "sheet": "5",
+        "related_sheets": [
+          "7"
+        ],
+        "report_section": "questions",
+        "question_basis": "actionable_source_ambiguity",
+        "profile_reason": "Неоднозначность касается размерной согласованности конкретного участка К-3: от поверхности отсчета отметок зависит применимая высота опор и увязка слоев покрытия. Основание вопроса — совместно заданные отметки и толщины, а не отсутствие документа в пакете.",
+        "engineer_action_required": true,
+        "evidence": [
+          {
+            "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+            "sheet": "5",
+            "description": "На нижнем плане Ф.1 ниже Б10₁, вдоль углового участка к В1₁, расположены выноски +20,840, +20,875, +20,870 и +20,910."
+          },
+          {
+            "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+            "sheet": "5",
+            "description": "На соответствующем финишном плане угловая область маркирована К-3 с отметкой +20,990."
+          },
+          {
+            "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+            "sheet": "7",
+            "description": "В строке К-3 предусмотрены бетонная плитка толщиной 40 мм и регулируемые опоры/воздушный зазор 25–50 мм."
+          }
+        ],
+        "operation_semantic_verified": false,
+        "source_finding_ids": [
+          "O-8524225dffeb6d942abcd0da"
+        ],
+        "operation_candidate_lineage": [
+          {
+            "source_finding_id": "O-8524225dffeb6d942abcd0da",
+            "status": "requires_semantic_review",
+            "source_claim": "problem: Требуется уточнить высотную увязку К-3 в угловой области Ф.1.\ndescription: Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.\nsolution: Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.",
+            "existing_block_ids": [
+              "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+              "blk_f3aec0b585f6435080a6caa87767ba7c",
+              "blk_602b484f088b4a029d3ba6e01df3f645"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "id": "F-024",
+        "source_stage": "AR_roof_terminal_disposition",
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "O-8524225dffeb6d942abcd0da",
+            "source_claim": "problem: Требуется уточнить высотную увязку К-3 в угловой области Ф.1.\ndescription: Для одного углового участка нижний план содержит отметки +20,840, +20,875, +20,870 и +20,910, финишный план — +20,990, а ведомость К-3 предусматривает плитку 40 мм и опоры/воздушный зазор 25–50 мм. Если нижние отметки относятся к поверхности непосредственно под опорами, в трех перечисленных точках условная высота под плиткой составляет 110, 75 и 80 мм и выходит за указанный диапазон. Однако принадлежность этих отметок поверхности под опорами не установлена. Поэтому требуется уточнение конструкции, а не констатация превышения или невозможности монтажа.\nsolution: Уточнить, к какой поверхности относятся нижние отметки в угловом участке, и показать локальную высотную увязку К-3 с финишным уровнем +20,990. По результату подтвердить применимость опор/зазора 25–50 мм либо согласовать соответствующие отметки и состав покрытия.",
+            "block_ids": [
+              "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+              "blk_f3aec0b585f6435080a6caa87767ba7c",
+              "blk_602b484f088b4a029d3ba6e01df3f645"
+            ]
+          }
+        ]
+      },
+      "finding_sha256": "9066e89799a825057773c5ad9e375dfee34801368dc4f23b5235f836bfc4f4b0",
+      "sources": [],
+      "unresolved_block_ids": [
+        "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+        "blk_f3aec0b585f6435080a6caa87767ba7c",
+        "blk_602b484f088b4a029d3ba6e01df3f645"
+      ],
+      "budgeted_block_ids": [],
+      "required_graphic_block_ids": [
+        "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+        "blk_f3aec0b585f6435080a6caa87767ba7c",
+        "blk_602b484f088b4a029d3ba6e01df3f645"
+      ],
+      "missing_or_ambiguous_block_ids": [],
+      "reference_origins": {
+        "blk_7542a26ddb2e4317bf9a1c3e1e239b62": [
+          "source_candidate",
+          "final_finding"
+        ],
+        "blk_f3aec0b585f6435080a6caa87767ba7c": [
+          "source_candidate",
+          "final_finding"
+        ],
+        "blk_602b484f088b4a029d3ba6e01df3f645": [
+          "source_candidate",
+          "final_finding"
+        ]
+      },
+      "graphic_metadata": [
+        {
+          "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+          "stamp": "> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 5 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Архитектурные решения. Надземная часть. Секция 2, 3. Кровля | Organization: GLOBUS PROJECT | Revisions: Не указано"
+        },
+        {
+          "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+          "stamp": "> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 5 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Архитектурные решения. Надземная часть. Секция 2, 3. Кровля | Organization: GLOBUS PROJECT | Revisions: Не указано"
+        },
+        {
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "stamp": "> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 7 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное назнание ЖК Событие 6.1) | Наименование листа: Ведомость покрытий кровли, балконов и террас, тех.ниш 2, 3 секций | Organization: GLOBUS PROJECT | Revisions: Не указано"
+        }
+      ],
+      "source_context_status": "needs_data",
+      "review_instruction": "Compare original source claims in source_review_requests with the final finding and authoritative TEXT. Return supported/refuted/needs_data separately for each substantive claim, with exact evidence and reasoning. A valid source ID is not proof. For arithmetic enumerate source rows and reproduce the operation. Do not infer absence from bounded context or correct TEXT from raster. Graphics and missing linked documents require additional evidence; preserve uncertainty. For a graphic actually attached to this request, cite type=image, block_id, image_sha256, bbox_norm_xyxy=[left,top,right,bottom] in [0,1], and a concrete observation. A file listed as available but not attached is not visual evidence. Do not rewrite or remove the final finding in this review response.",
+      "graphic_attachments": [
+        {
+          "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_7542a26ddb2e4317bf9a1c3e1e239b62.png",
+          "sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7",
+          "bytes": 760814,
+          "width": 2230,
+          "height": 1352,
+          "mime_type": "image/png",
+          "attached_to_model": false,
+          "visually_reviewed": false
+        },
+        {
+          "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f3aec0b585f6435080a6caa87767ba7c.png",
+          "sha256": "b2ea91738b345a61639775c648f0964f66fe8b9ca12db56a9d78c03d3f18c430",
+          "bytes": 866990,
+          "width": 2233,
+          "height": 1341,
+          "mime_type": "image/png",
+          "attached_to_model": false,
+          "visually_reviewed": false
+        },
+        {
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "bytes": 336280,
+          "width": 906,
+          "height": 702,
+          "mime_type": "image/png",
+          "attached_to_model": false,
+          "visually_reviewed": false
+        }
+      ],
+      "unavailable_graphics": [],
+      "graphic_context_status": "ready_for_attachment"
+    }
+  ],
+  "pending_count": 1,
+  "completed_count": 0,
+  "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+  "automatic_dispatch": false,
+  "semantic_verified": false
+}
