@@ -1,0 +1,17 @@
+{
+  "object_id": "O27",
+  "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+  "context1_model": "codex/gpt-6-astra",
+  "model_findings": 1,
+  "finding_scope": "Editorial ambiguity of sheet 12; not the target technical load-path question. Not admitted or counted as recovered technical finding.",
+  "operations": {
+    "requirement_applicability": "needs_data",
+    "document_links": "needs_data"
+  },
+  "context2_status": "no_additional_sources",
+  "absence_proven": false,
+  "diagnosis": "Literal object queries did not retrieve the general reference to structural calculations. Next navigation supplies all authoritative text blocks and graphic catalogue; no evaluator answers.",
+  "next_navigation_root": "/tmp/auditmanager_ar_rope_source_navigation_20261111",
+  "semantic_acceptance": false,
+  "full_acceptance_proven": false
+}
