@@ -27,7 +27,7 @@
   "split_control": {
     "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM",
     "session": 60228,
-    "status": "running",
+    "status": "running_packet5",
     "packets": 5,
     "blocks": 17,
     "images": 3,
@@ -35,7 +35,10 @@
     "max_images": 1,
     "every_original_block_preserved_exactly": true,
     "every_original_image_preserved": true,
-    "source_only_tools_enforced": true
+    "source_only_tools_enforced": true,
+    "completed_packets": 4,
+    "graphic_recovery_session": 28612,
+    "graphic_recovery_reason": "Packet002 model could not read individual circuits; same-source tiles requested without expected marks."
   },
   "runtime_packet_limits": {
     "context_fields": [
