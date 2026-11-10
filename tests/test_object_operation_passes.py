@@ -89,3 +89,22 @@ def test_shared_context_is_supplied_once_across_operation_searches(tmp_path):
         assert search['hits'][0]['block_id']=='other'
         assert 'content' not in search['hits'][0]
     assert any(marker in b['content'] for b in packet['source_context'])
+
+
+def test_response_cannot_close_operation_that_was_not_requested(tmp_path):
+    from dataclasses import replace
+    md=tmp_path/'document.md';md.write_text('## Page 1\n### BLOCK #1 [TEXT]: b\nCabinet A\n')
+    obj={'id':'A','identity':'A','scope':'level 1','kind':'cabinet','source_refs':['b']}
+    (tmp_path/'02_text_analysis.json').write_text(json.dumps({'object_registry':[obj]}))
+    request=build_object_operation_passes(tmp_path,md)[0]
+    packet=json.loads(request.messages[-1]['content'])
+    packet['operations']=[r for r in packet['operations'] if r['operation']=='dimension_consistency']
+    request=replace(request,messages=[request.messages[0],{'role':'user','content':json.dumps(packet)}])
+    receipts=[{'object_id':'A','operation':op,'status':'checked','reason':'Claimed checked','source_refs':['b']}
+              for op in ('dimension_consistency','quantity_balance')]
+    result=validate_object_operation_payload(request,{'object_operation_results':receipts})
+    statuses={r['operation']:r['status'] for r in result['operation_coverage']['operations']}
+    assert statuses['dimension_consistency']=='reported_checked'
+    assert statuses['quantity_balance']=='not_checked'
+    assert result['object_operation_results']==receipts[:1]
+    assert result['unverified_operation_receipts']==receipts[1:]

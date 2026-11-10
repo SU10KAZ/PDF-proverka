@@ -129,6 +129,10 @@ def validate_object_operation_payload(request,payload):
         if not isinstance(receipt,dict):
             receipt_pending.append(receipt)
             continue
+        if (receipt.get('object_id')!=obj['id'] or
+                not isinstance(receipt.get('operation'),str) or receipt['operation'] not in operations):
+            receipt_pending.append(receipt)
+            continue
         refs=receipt.get('source_refs')
         if receipt.get('status') in ('checked','not_applicable') and (
                 not isinstance(refs,list) or not refs or any(ref not in allowed for ref in refs)):
@@ -147,5 +151,5 @@ def validate_object_operation_payload(request,payload):
             pending.append({'finding':finding,'reason':'unaddressed_operation_or_evidence'})
         else:
             accepted.append({**finding,'operation_semantic_verified':False})
-    return {**payload,'findings':accepted,'operation_pending':pending,'operation_coverage':coverage,
+    return {**payload,'object_operation_results':receipts,'findings':accepted,'operation_pending':pending,'operation_coverage':coverage,
             'requested_operations':sorted(operations),'unverified_operation_receipts':receipt_pending}
