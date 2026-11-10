@@ -1,0 +1,12 @@
+{
+  "control": "H05-N02",
+  "model": "codex/gpt-6-astra",
+  "status": "incomplete_original_claim_not_fully_examined",
+  "operation": "dimension_consistency",
+  "model_status": "needs_data",
+  "findings": 0,
+  "observed_scope": "Model read 2730 and 400; did not address the original additional 110 or full 3240 comparison.",
+  "recovered_false_positive_filter_proven": false,
+  "next_control": "Separate known-candidate verification of exact original thesis after independent result sealed; no engineer decision or later assessment sent.",
+  "full_acceptance_proven": false
+}
