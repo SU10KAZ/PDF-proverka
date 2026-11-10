@@ -1,0 +1,19 @@
+{
+  "source_operation_sha256": "ec1c69d18c9b6ffe923e2665b0037524cc5f48b087b030603ba81249579aa5c9",
+  "request_sha256": "9beddf0bbbf908838e5a336021844f65476d27a3fa76d4b102b0fc81d3776c8d",
+  "source_candidate_sha256": "9fb42c732555b4bc1169be1b5a700c328a20e6f75f59f8622db16b4584388e76",
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "message_chars": 65486,
+  "images": 16,
+  "image_bytes": 14267561,
+  "semantic_acceptance": false,
+  "unavailable_images": [
+    {
+      "block_id": "blk_aadc46b32a1e430dabaf320154f219d3",
+      "reason": "image_limit"
+    }
+  ],
+  "previous_attempt": "Local invalid_image_budget before any provider invocation; previous 20-image preparation retained separately"
+}
