@@ -1,0 +1,15 @@
+{
+  "source_commit": "36b6fc07ec8267df80f6663846e8e3f9a1132d54",
+  "python_tests_passed": 103,
+  "python_duration_seconds": 2.24,
+  "frontend_tests_passed": 2,
+  "scope": "23 selected local suites covering source review, candidate recovery, arithmetic/object operations, requirement receipts, dedup and Excel roundtrip; plus Node question-section tests.",
+  "not_covered": [
+    "Live Astra responses",
+    "Independent whole-project discovery",
+    "Browser-rendered acceptance",
+    "New-project transfer",
+    "Production deployment"
+  ],
+  "new_model_calls": 0
+}

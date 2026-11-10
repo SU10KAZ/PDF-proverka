@@ -449,5 +449,39 @@
     "six_project_findings_preserved": 244,
     "real_prepared_request_volume_unchanged": true,
     "new_model_calls": 0
+  },
+  "latest_consolidated_validation": {
+    "source_commit": "36b6fc07ec8267df80f6663846e8e3f9a1132d54",
+    "python_tests_passed": 103,
+    "python_duration_seconds": 2.24,
+    "frontend_tests_passed": 2,
+    "scope": "23 selected local suites covering source review, candidate recovery, arithmetic/object operations, requirement receipts, dedup and Excel roundtrip; plus Node question-section tests.",
+    "not_covered": [
+      "Live Astra responses",
+      "Independent whole-project discovery",
+      "Browser-rendered acceptance",
+      "New-project transfer",
+      "Production deployment"
+    ],
+    "new_model_calls": 0
+  },
+  "stage4_next_gate_audit": {
+    "stage4_complete": false,
+    "candidate_frozen": false,
+    "immediate_next_action": "Execute the already prepared single-call EOM F-003/F-040 Astra pilot after explicit payload approval, then inspect reasoning and source receipts before larger comparisons.",
+    "pilot_request_sha256": "977847d2595261161e3f2379df917ef7ea737765de8f63631100135b80639a1e",
+    "pilot_attempt_exists": false,
+    "permission_answer_received": false,
+    "remaining_requirements": {
+      "H01": "Real semantic review and claim-level acceptance; local controls do not prove automatic correctness.",
+      "H02": "Model-generated context requests, graphic interpretation and linked-document recovery end to end; current recovery queries include manually reviewed known cases.",
+      "H03": "Whole-project object extraction and operation completeness.",
+      "H04": "Independent extraction of both compared object sets and preservation of active/reserve distinctions.",
+      "H05": "Physical quantities, units and operating modes; controlled arithmetic alone is insufficient.",
+      "H06": "Actual applicability checks with exact scope, execution and exceptions; ITP pilot also awaiting payload approval.",
+      "H07": "Browser-rendered section acceptance and filter control pairs through the full model path."
+    },
+    "later_stages": "Quality/cost, preservation acceptance, six-project regression plus new-project transfer and production release remain unaccepted.",
+    "rule": "Do not count additional preparation tests as demonstrated audit-quality improvement."
   }
 }
