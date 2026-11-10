@@ -54,4 +54,7 @@ async def main(execute):
     print('COMPLETE',flush=True)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true');args=p.parse_args();asyncio.run(main(args.execute))
+    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true')
+    p.add_argument('--source-root',default=str(SOURCE));p.add_argument('--output-root',default=str(ROOT))
+    args=p.parse_args();SOURCE=Path(args.source_root);ROOT=Path(args.output_root)
+    asyncio.run(main(args.execute))

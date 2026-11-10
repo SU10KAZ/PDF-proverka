@@ -1,0 +1,14 @@
+{
+  "controls": [
+    "H03-P02",
+    "H03-N02"
+  ],
+  "status": "unresolved_instance_identity_question_candidate",
+  "duration_ms": 72411,
+  "source_graphics_supplied": 16,
+  "additional_blocks": 12,
+  "actual_result": "Two identical labels, separate physical targets not established. Candidate minor clarification retained; shortage and replacement label not established.",
+  "history_or_engineer_answers_supplied": false,
+  "next_step": "Second bounded retrieval adds specification TEXT and keeps original drawings; two additional graphics omitted by image budget.",
+  "full_acceptance_proven": false
+}
