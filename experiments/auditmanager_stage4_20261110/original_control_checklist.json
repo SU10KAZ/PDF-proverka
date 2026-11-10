@@ -168,8 +168,21 @@
       "hypothesis": "H03",
       "kind": "positive_controls",
       "original_control": "АР: запросить назначение немаркированных зон.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_unlabelled_inventory_v2_assessment.json",
+          "sha256": "4768d9e0746e53795c2b7bdcf2ef4265a94be7d67ed53a0d6584f765a0372fdf"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_region_operation_status.json",
+          "sha256": "c656d3924707fdc0369bcb497c79e5f4e58066ea616b8547b3980bb21ad42e17"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_region05_context2_validated.json",
+          "sha256": "3f5621a66ccca59eb556907ccc3c1268e4af1f6bc1c176009ae28a3d1e5c4208"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -451,10 +464,10 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 13,
+    "bounded_control_recorded": 14,
     "explicit_evidence_limit": 1,
     "local_contract_verified": 2,
-    "requires_explicit_evidence_review": 20,
+    "requires_explicit_evidence_review": 19,
     "synthetic_contract_only": 1
   },
   "boundaries": [

@@ -14,6 +14,18 @@
       "token_counters_incomplete": true
     },
     {
+      "control": "EOM_cable_inventory",
+      "directory": "/tmp/auditmanager_eom_cable_inventory_control_20261110/EOM/execution/object_inventory_000",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "6e1ca6fd31ba126a082d23bfdc07e404b8727d8cac7060f5785e9a4dc8c1d879",
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high"
+      },
+      "token_counters_incomplete": true
+    },
+    {
       "control": "EOM_initial",
       "directory": "/tmp/auditmanager_eom_balance_inventory_control_20261110/EOM/execution/object_inventory_000",
       "status": "failed",
@@ -407,11 +419,19 @@
     {
       "control": "AR_region05_context_2",
       "directory": "/tmp/auditmanager_ar_region_operations_20261110/region_05/context_2",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started"
+        "status": "finished",
+        "is_error": false
       },
-      "token_counters_incomplete": true
+      "token_counters_incomplete": false,
+      "result_sha256": "a601bace2b19432453c8b5894815d34e3b476a53ba3f52d6fbf0b37b959dfeb8",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 69437,
+      "input_tokens": 77929,
+      "output_tokens": 2948,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "KM_recovery_0",
@@ -782,14 +802,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 39,
+  "completed_requests": 40,
   "pending_results": 2,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 1124055,
-  "reported_output_tokens": 406167,
+  "reported_input_tokens": 1201984,
+  "reported_output_tokens": 409115,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 134.677,
+  "completed_request_minutes_sum": 135.834,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

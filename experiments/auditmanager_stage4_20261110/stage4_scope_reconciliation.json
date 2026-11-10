@@ -145,18 +145,19 @@
     {
       "hypothesis": "H03",
       "control": "AR unlabelled regions H03-P03",
-      "state": "six_region_operations_needs_data_context2_running",
+      "state": "bounded_discovery_and_context_requests_recorded_final_delivery_open",
       "evidence": [
         "AR_unlabelled_source_review.json",
         "AR_unlabelled_inventory_v1_assessment.json",
         "AR_unlabelled_inventory_v2_manifest.json",
         "AR_unlabelled_inventory_v2_assessment.json",
         "AR_region_operation_status.json",
-        "AR_context_query_priority_replay.json"
+        "AR_context_query_priority_replay.json",
+        "AR_region05_context2_validated.json"
       ],
-      "detail": "Six regions found; twelve identity/document-link receipts needs_data, zero findings. First followup rejects automatic identity across different elevations. Fixed old broad queries starving new model queries; actual sheet7 source now attached. Second followup running.",
+      "detail": "All six source regions individually extracted and all six receive location-bound requests for function. Two region05 context hops preserve uncertainty and reject cross-elevation identity. No engineer question emitted; final delivery remains stage6, full acceptance false.",
       "root": "/tmp/auditmanager_ar_unlabelled_inventory_control_20261110_regions_v2/AR",
-      "process_receipt": "/tmp/auditmanager_ar_region_followup2_process_20261110/process.json",
+      "process_receipt": null,
       "production_acceptance": false
     },
     {
@@ -170,6 +171,19 @@
       ],
       "expected_answer_hidden": true,
       "known_source_selection": true,
+      "production_acceptance": false
+    },
+    {
+      "hypothesis": "H04",
+      "control": "EOM cable full execution H04-P01 and bounded shortage limitation H04-N02",
+      "state": "source_inventory_running",
+      "root": "/tmp/auditmanager_eom_cable_inventory_control_20261110/EOM",
+      "process_receipt": "/tmp/auditmanager_eom_cable_process_20261110/process.json",
+      "evidence": [
+        "EOM_cable_inventory_manifest.json"
+      ],
+      "known_source_selection": true,
+      "expected_answer_hidden": true,
       "production_acceptance": false
     }
   ]

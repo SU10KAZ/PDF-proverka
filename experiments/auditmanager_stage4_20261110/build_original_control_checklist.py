@@ -21,6 +21,7 @@ EVIDENCE={
  ('H02','negative_controls_and_limits',0):('bounded_control_recorded',['AR_deferred_assessment.json']),
  ('H02','negative_controls_and_limits',1):('bounded_control_recorded',['KM_node_navigation_summary.json']),
  ('H03','positive_controls',0):('bounded_control_recorded',['AK_systemic_output_replay.json','AK_terminal_graphic_assessment.json','AK_cabinet_001_operation_v4_validated.json']),
+ ('H03','positive_controls',2):('bounded_control_recorded',['AR_unlabelled_inventory_v2_assessment.json','AR_region_operation_status.json','AR_region05_context2_validated.json']),
  ('H04','positive_controls',1):('bounded_control_recorded',['EOM_model_extracted_balance_control.json','EOM_model_extracted_balance_claude_control.json']),
  ('H04','negative_controls_and_limits',0):('bounded_control_recorded',['EOM_model_extracted_balance_control.json']),
  ('H06','positive_controls',0):('bounded_control_recorded',['ITP_requirement_claude_assessment.json']),

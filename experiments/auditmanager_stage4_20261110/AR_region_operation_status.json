@@ -268,10 +268,19 @@
     }
   ],
   "total_findings": 0,
-  "status": "source_objects_found_context_resolution_pending",
+  "status": "bounded_discovery_and_context_request_control_recorded",
   "meaning": "An observation has been preserved and requests context; zero findings is not refutation or proof that the required engineer question has reached output.",
   "initial_context_scope": "Original plan and same-page authoritative legend/notes.",
-  "context_followup": "region_05/context_1 running; search may retrieve different levels, applicability must be checked.",
+  "context_followup": "Two completed source-only hops for region05. Different elevations and generic schedule do not establish identity. Other five retain their individual needs_data requests.",
   "full_control_passed": false,
-  "production_acceptance": false
+  "production_acceptance": false,
+  "bounded_original_requirement": "АР: запросить назначение немаркированных зон.",
+  "bounded_requirement_observed": true,
+  "final_engineer_question_emitted": false,
+  "final_delivery_stage": 6,
+  "remaining": [
+    "Resolve or explicitly report unavailable applicable adjacent sources; do not equate budget exhaustion with refutation.",
+    "Verify justified engineer question reaches final output with all six locations; internal context requests alone do not satisfy final delivery.",
+    "No full project or new-project transfer acceptance."
+  ]
 }

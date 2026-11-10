@@ -11,6 +11,7 @@ from pathlib import Path
 def summarize():
     directories = [
         ('EOM_instance_inventory', Path('/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM/execution/object_inventory_000')),
+        ('EOM_cable_inventory', Path('/tmp/auditmanager_eom_cable_inventory_control_20261110/EOM/execution/object_inventory_000')),
         ('EOM_initial', Path('/tmp/auditmanager_eom_balance_inventory_control_20261110/EOM/execution/object_inventory_000')),
         ('EOM_extraction_only', Path('/tmp/auditmanager_eom_balance_inventory_control_20261110_extraction_only/EOM/execution/object_inventory_000')),
         *[(f'EOM_split_{i}', Path('/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM/execution') / f'object_inventory_{i:03d}') for i in range(5)],
