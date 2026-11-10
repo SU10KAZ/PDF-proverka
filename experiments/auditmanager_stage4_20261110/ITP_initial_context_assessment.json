@@ -1,0 +1,998 @@
+{
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 44370,
+  "input_tokens": 24765,
+  "output_tokens": 1870,
+  "source_receipt_validation": "recorded_pending_semantic_acceptance",
+  "query_origins": [
+    {
+      "claim_id": "C3",
+      "query": "К22"
+    },
+    {
+      "claim_id": "C3",
+      "query": "1500"
+    },
+    {
+      "claim_id": "C4",
+      "query": "К23"
+    },
+    {
+      "claim_id": "C4",
+      "query": "200"
+    },
+    {
+      "claim_id": "C4",
+      "query": "бак ДОО"
+    },
+    {
+      "claim_id": "C5",
+      "query": "К22"
+    },
+    {
+      "claim_id": "C5",
+      "query": "К23"
+    },
+    {
+      "claim_id": "C5",
+      "query": "1500"
+    },
+    {
+      "claim_id": "C5",
+      "query": "200"
+    },
+    {
+      "claim_id": "C6",
+      "query": "К22"
+    },
+    {
+      "claim_id": "C6",
+      "query": "К23"
+    },
+    {
+      "claim_id": "C6",
+      "query": "бак"
+    },
+    {
+      "claim_id": "C6",
+      "query": "Количество"
+    }
+  ],
+  "retrieval_status": "prepared_awaiting_dispatch_authorization",
+  "known_relevant_blocks_retrieved": [
+    "blk_11981549aceb463ba84c7c0de619d2fc",
+    "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+    "blk_72bd74f01146432880a289b071f70238"
+  ],
+  "known_relevant_blocks_missing": [
+    "blk_7e913f6c32cb4db7aa9d9b8688b6e979"
+  ],
+  "search_receipt": {
+    "hits": [
+      {
+        "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+        "kind": "TEXT",
+        "page": 9,
+        "queries": [
+          "1500",
+          "200",
+          "бак"
+        ],
+        "start_line": 401
+      },
+      {
+        "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+        "kind": "IMAGE",
+        "page": 17,
+        "queries": [
+          "К23",
+          "200",
+          "бак ДОО",
+          "бак"
+        ],
+        "start_line": 855
+      },
+      {
+        "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+        "kind": "TEXT",
+        "page": 7,
+        "queries": [
+          "200"
+        ],
+        "start_line": 231
+      },
+      {
+        "block_id": "blk_bd55e9b9fbff4d0886c6084a326ec05e",
+        "kind": "IMAGE",
+        "page": 12,
+        "queries": [
+          "1500",
+          "200"
+        ],
+        "start_line": 525
+      },
+      {
+        "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+        "kind": "TEXT",
+        "page": 7,
+        "queries": [
+          "200"
+        ],
+        "start_line": 256
+      },
+      {
+        "block_id": "blk_63043bc6592f43068fc91591b7274963",
+        "kind": "IMAGE",
+        "page": 12,
+        "queries": [
+          "200",
+          "бак"
+        ],
+        "start_line": 543
+      },
+      {
+        "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+        "kind": "TEXT",
+        "page": 25,
+        "queries": [
+          "1500",
+          "200",
+          "бак"
+        ],
+        "start_line": 1086
+      },
+      {
+        "block_id": "blk_1601889b50624245a5c590ad23d87175",
+        "kind": "TEXT",
+        "page": 8,
+        "queries": [
+          "200"
+        ],
+        "start_line": 339
+      },
+      {
+        "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+        "kind": "IMAGE",
+        "page": 17,
+        "queries": [
+          "200",
+          "бак"
+        ],
+        "start_line": 831
+      },
+      {
+        "block_id": "blk_72bd74f01146432880a289b071f70238",
+        "kind": "TEXT",
+        "page": 107,
+        "queries": [
+          "1500",
+          "бак"
+        ],
+        "start_line": 5763
+      },
+      {
+        "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+        "kind": "IMAGE",
+        "page": 8,
+        "queries": [
+          "200"
+        ],
+        "start_line": 383
+      },
+      {
+        "block_id": "blk_1e14093822704b66ba8255e4a3f75335",
+        "kind": "TEXT",
+        "page": 128,
+        "queries": [
+          "1500",
+          "200"
+        ],
+        "start_line": 6473
+      }
+    ],
+    "backlog": [
+      {
+        "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+        "kind": "IMAGE",
+        "page": 20,
+        "queries": [
+          "200",
+          "бак"
+        ],
+        "start_line": 958,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_8445a5ccfd584b2d8f96d2b7079e113b",
+        "kind": "IMAGE",
+        "page": 138,
+        "queries": [
+          "1500",
+          "200"
+        ],
+        "start_line": 6715,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+        "kind": "IMAGE",
+        "page": 11,
+        "queries": [
+          "200"
+        ],
+        "start_line": 491,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+        "kind": "IMAGE",
+        "page": 21,
+        "queries": [
+          "200",
+          "бак"
+        ],
+        "start_line": 988,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_4bca5b6b81924123afd8490a7c3069c7",
+        "kind": "TEXT",
+        "page": 147,
+        "queries": [
+          "1500",
+          "200"
+        ],
+        "start_line": 6948,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+        "kind": "IMAGE",
+        "page": 12,
+        "queries": [
+          "200"
+        ],
+        "start_line": 509,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+        "kind": "TEXT",
+        "page": 24,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 1053,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_3e3a4ed96837433284271af1226a9049",
+        "kind": "TEXT",
+        "page": 148,
+        "queries": [
+          "1500",
+          "200"
+        ],
+        "start_line": 6978,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_75e0cb76160b4c9689280d77715b04ae",
+        "kind": "TEXT",
+        "page": 158,
+        "queries": [
+          "1500"
+        ],
+        "start_line": 7157,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_feee01fd29cb41ff8e97cb7d2a902eb1",
+        "kind": "TEXT",
+        "page": 40,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 1836,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_19206bf86b364befaddc0a253e25bdf7",
+        "kind": "TEXT",
+        "page": 165,
+        "queries": [
+          "1500"
+        ],
+        "start_line": 7295,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+        "kind": "IMAGE",
+        "page": 13,
+        "queries": [
+          "200"
+        ],
+        "start_line": 561,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+        "kind": "TEXT",
+        "page": 55,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 2650,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+        "kind": "IMAGE",
+        "page": 13,
+        "queries": [
+          "200"
+        ],
+        "start_line": 583,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+        "kind": "TEXT",
+        "page": 94,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 5173,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_9a10a5131f3e467db9bd6e9cce76c59a",
+        "kind": "IMAGE",
+        "page": 13,
+        "queries": [
+          "200"
+        ],
+        "start_line": 599,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_f4ab5361370f4b7aa105af255166e8eb",
+        "kind": "TEXT",
+        "page": 96,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 5264,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c",
+        "kind": "IMAGE",
+        "page": 14,
+        "queries": [
+          "200"
+        ],
+        "start_line": 617,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+        "kind": "TEXT",
+        "page": 97,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 5301,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_dbf7b3d84e5642c9805145cb7502e78d",
+        "kind": "IMAGE",
+        "page": 14,
+        "queries": [
+          "200"
+        ],
+        "start_line": 633,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_b45c5d1f31c948e092289923f6558a2f",
+        "kind": "TEXT",
+        "page": 99,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 5392,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+        "kind": "IMAGE",
+        "page": 14,
+        "queries": [
+          "200"
+        ],
+        "start_line": 655,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+        "kind": "TEXT",
+        "page": 100,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 5428,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+        "kind": "IMAGE",
+        "page": 15,
+        "queries": [
+          "200"
+        ],
+        "start_line": 673,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_fe2066a9479d4d9e9c215338d4f82621",
+        "kind": "TEXT",
+        "page": 102,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 5520,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_b236e8ad38084811b7ae15386e293de5",
+        "kind": "IMAGE",
+        "page": 15,
+        "queries": [
+          "200"
+        ],
+        "start_line": 689,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+        "kind": "TEXT",
+        "page": 103,
+        "queries": [
+          "200",
+          "бак"
+        ],
+        "start_line": 5553,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_104762a5861a40a3b2300f8b2d0dbee1",
+        "kind": "IMAGE",
+        "page": 15,
+        "queries": [
+          "200"
+        ],
+        "start_line": 705,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_c8ae2497225a4902b681920a732f0a68",
+        "kind": "TEXT",
+        "page": 105,
+        "queries": [
+          "200",
+          "бак"
+        ],
+        "start_line": 5643,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_3e9208547b9947268cb44a3b078741b5",
+        "kind": "IMAGE",
+        "page": 16,
+        "queries": [
+          "200"
+        ],
+        "start_line": 739,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+        "kind": "TEXT",
+        "page": 106,
+        "queries": [
+          "200",
+          "бак"
+        ],
+        "start_line": 5684,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_54235e84a8d648d19eaccce2040d5f65",
+        "kind": "IMAGE",
+        "page": 16,
+        "queries": [
+          "200"
+        ],
+        "start_line": 755,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_8e4e78d833774d1094ea7fc72932c0ff",
+        "kind": "IMAGE",
+        "page": 16,
+        "queries": [
+          "200"
+        ],
+        "start_line": 772,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_206803d3db9a4735912ba311e1dfaeb9",
+        "kind": "TEXT",
+        "page": 118,
+        "queries": [
+          "200",
+          "бак"
+        ],
+        "start_line": 6255,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+        "kind": "IMAGE",
+        "page": 17,
+        "queries": [
+          "200"
+        ],
+        "start_line": 790,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_f38df7112cd4484a91859d26bb714511",
+        "kind": "TEXT",
+        "page": 122,
+        "queries": [
+          "200",
+          "бак"
+        ],
+        "start_line": 6327,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_7d05e8efe5c84824821f86dad3ccd42f",
+        "kind": "IMAGE",
+        "page": 17,
+        "queries": [
+          "200"
+        ],
+        "start_line": 815,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_96e458220a59430fb9845378e2c44a72",
+        "kind": "TEXT",
+        "page": 155,
+        "queries": [
+          "бак"
+        ],
+        "start_line": 7093,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_049ee88c136045da9910995a4c44a1e8",
+        "kind": "IMAGE",
+        "page": 19,
+        "queries": [
+          "200"
+        ],
+        "start_line": 921,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+        "kind": "TEXT",
+        "page": 26,
+        "queries": [
+          "200"
+        ],
+        "start_line": 1120,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+        "kind": "TEXT",
+        "page": 27,
+        "queries": [
+          "200"
+        ],
+        "start_line": 1168,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+        "kind": "TEXT",
+        "page": 28,
+        "queries": [
+          "200"
+        ],
+        "start_line": 1225,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+        "kind": "TEXT",
+        "page": 30,
+        "queries": [
+          "200"
+        ],
+        "start_line": 1351,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+        "kind": "TEXT",
+        "page": 31,
+        "queries": [
+          "200"
+        ],
+        "start_line": 1421,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+        "kind": "TEXT",
+        "page": 32,
+        "queries": [
+          "200"
+        ],
+        "start_line": 1491,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_a7ba21ea8083491389a223015720c9cb",
+        "kind": "TEXT",
+        "page": 33,
+        "queries": [
+          "200"
+        ],
+        "start_line": 1556,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_fd984f8c5d03427497ffd926feaf8ed5",
+        "kind": "TEXT",
+        "page": 34,
+        "queries": [
+          "200"
+        ],
+        "start_line": 1612,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_9e9fdca2261a4324959220546412f377",
+        "kind": "TEXT",
+        "page": 35,
+        "queries": [
+          "200"
+        ],
+        "start_line": 1670,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_8a446a40473d48d18d60edba74661d9e",
+        "kind": "TEXT",
+        "page": 57,
+        "queries": [
+          "200"
+        ],
+        "start_line": 2747,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+        "kind": "TEXT",
+        "page": 60,
+        "queries": [
+          "200"
+        ],
+        "start_line": 2897,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+        "kind": "TEXT",
+        "page": 63,
+        "queries": [
+          "200"
+        ],
+        "start_line": 3100,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_432d08b6de194751ae756f627e3e5bb8",
+        "kind": "TEXT",
+        "page": 67,
+        "queries": [
+          "200"
+        ],
+        "start_line": 3370,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+        "kind": "TEXT",
+        "page": 70,
+        "queries": [
+          "200"
+        ],
+        "start_line": 3570,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_0b2352f4797f4c28a80ed1702b4009a9",
+        "kind": "TEXT",
+        "page": 73,
+        "queries": [
+          "200"
+        ],
+        "start_line": 3766,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+        "kind": "TEXT",
+        "page": 76,
+        "queries": [
+          "200"
+        ],
+        "start_line": 3967,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_c036d24ce1e54a31894d56b54ef421d4",
+        "kind": "TEXT",
+        "page": 79,
+        "queries": [
+          "200"
+        ],
+        "start_line": 4164,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_55ab0b4be112477eb9dec207df68000e",
+        "kind": "TEXT",
+        "page": 82,
+        "queries": [
+          "200"
+        ],
+        "start_line": 4364,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_fefc14a3038245fb8d626f8567232455",
+        "kind": "IMAGE",
+        "page": 84,
+        "queries": [
+          "200"
+        ],
+        "start_line": 4560,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_0cb95f43fa78424db035c2183e65f61c",
+        "kind": "IMAGE",
+        "page": 95,
+        "queries": [
+          "200"
+        ],
+        "start_line": 5247,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_1df57648fd8c441897fa56946119020b",
+        "kind": "TEXT",
+        "page": 124,
+        "queries": [
+          "200"
+        ],
+        "start_line": 6366,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_4dd78be953214ce9ae8ea5cb2c3eac21",
+        "kind": "TEXT",
+        "page": 125,
+        "queries": [
+          "200"
+        ],
+        "start_line": 6379,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_4916cf83dbce454b88ef0d17b8b1b922",
+        "kind": "IMAGE",
+        "page": 126,
+        "queries": [
+          "200"
+        ],
+        "start_line": 6393,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_53368f5043e24bc99dbbe9956b94a695",
+        "kind": "IMAGE",
+        "page": 126,
+        "queries": [
+          "200"
+        ],
+        "start_line": 6408,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_11b3cea11cca4282a6e5afbac8e2852f",
+        "kind": "TEXT",
+        "page": 129,
+        "queries": [
+          "200"
+        ],
+        "start_line": 6508,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_73e3f1efd1d4473c97a1f58ff8a20fe0",
+        "kind": "TEXT",
+        "page": 136,
+        "queries": [
+          "200"
+        ],
+        "start_line": 6673,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_2f972c2e2ed54c29bc1283946cfebb04",
+        "kind": "TEXT",
+        "page": 140,
+        "queries": [
+          "200"
+        ],
+        "start_line": 6775,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_db99f6eb0bf8436ab1b13c78ef586b5b",
+        "kind": "TEXT",
+        "page": 143,
+        "queries": [
+          "200"
+        ],
+        "start_line": 6849,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+        "kind": "TEXT",
+        "page": 150,
+        "queries": [
+          "200"
+        ],
+        "start_line": 7018,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_381e2248e56947c49b28a5d61544dc92",
+        "kind": "TEXT",
+        "page": 157,
+        "queries": [
+          "200"
+        ],
+        "start_line": 7120,
+        "reason": "context_budget"
+      },
+      {
+        "block_id": "blk_36b8ee62cd634f589519307293b58f3f",
+        "kind": "TEXT",
+        "page": 164,
+        "queries": [
+          "200"
+        ],
+        "start_line": 7265,
+        "reason": "context_budget"
+      }
+    ],
+    "query_hit_counts": {
+      "К22": 3,
+      "1500": 10,
+      "К23": 2,
+      "200": 72,
+      "бак ДОО": 3,
+      "бак": 27
+    },
+    "rejected_queries": [],
+    "deferred_queries": [
+      "Количество"
+    ],
+    "already_supplied": [
+      {
+        "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+        "kind": "IMAGE",
+        "page": 10,
+        "queries": [
+          "К22",
+          "200",
+          "бак"
+        ],
+        "start_line": 473
+      },
+      {
+        "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+        "kind": "IMAGE",
+        "page": 16,
+        "queries": [
+          "К22",
+          "200",
+          "бак"
+        ],
+        "start_line": 723
+      },
+      {
+        "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+        "kind": "IMAGE",
+        "page": 18,
+        "queries": [
+          "200",
+          "бак ДОО",
+          "бак"
+        ],
+        "start_line": 883
+      },
+      {
+        "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+        "kind": "IMAGE",
+        "page": 23,
+        "queries": [
+          "К22",
+          "К23",
+          "бак ДОО",
+          "бак"
+        ],
+        "start_line": 1035
+      }
+    ],
+    "absence_proven": false,
+    "boundary": "Literal MD search only; zero matches do not establish absence.",
+    "added_block_ids": [
+      "blk_11981549aceb463ba84c7c0de619d2fc",
+      "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "blk_9167c15ea57c423ea6ad708738bb420f",
+      "blk_bd55e9b9fbff4d0886c6084a326ec05e",
+      "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+      "blk_63043bc6592f43068fc91591b7274963",
+      "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+      "blk_1601889b50624245a5c590ad23d87175",
+      "blk_d0a62bc2e56f4d07bb33a73622429881",
+      "blk_72bd74f01146432880a289b071f70238",
+      "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "blk_1e14093822704b66ba8255e4a3f75335"
+    ],
+    "rejected_ambiguous_block_ids": []
+  },
+  "followup_request_sha256": "185d14a05df82d2ccd8b81d757d4005ab96b4331ed24a4f8094586e34af98a4b",
+  "followup_message_chars": 23534,
+  "followup_images": 8,
+  "omitted_images": [
+    {
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "reason": "image_limit"
+    }
+  ],
+  "assessment": "Model independently requested missing specifications instead of accepting candidate claims. Bounded literal retrieval recovered 3 of 4 known relevant text blocks. Broad numeric queries consume budget; K23 selection calculation remains in backlog.",
+  "graphic_observations_semantically_verified": false,
+  "retrieval_queries_were_manual": false,
+  "independent_discovery": false,
+  "stage4_complete": false,
+  "followup_sent": false,
+  "claude_followup_blocker": "Automatic approval review rejected general Claude consent; specific payload confirmation requested."
+}

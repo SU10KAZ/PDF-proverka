@@ -520,7 +520,7 @@
   "model_query_followup_preparation": {
     "status": "implemented_and_unit_tested",
     "source_review_tests_passed": 53,
-    "actual_model_generated_retrieval": "pending initial-context pilot",
+    "actual_model_generated_retrieval": "Executed Astra initial-context pilot; 3 of 4 known relevant text blocks recovered; K23 calculation deferred by budget. Follow-up not sent.",
     "automatic_dispatch": false,
     "followup_limit": 1
   },
@@ -547,5 +547,11 @@
     "other_findings_core_preserved": 241,
     "automatic_semantic_decision_proven": false,
     "production_changed": false
+  },
+  "provider_authorization_update": {
+    "claude_allowed_by_user": true,
+    "previous_30_percent_limit_removed_by_user": true,
+    "openrouter_per_request_permission_still_required": true,
+    "claude_specific_payload_status": "Auto-review rejected dispatch; explicit request for 23534 characters and 8 images pending. No Claude request sent."
   }
 }
