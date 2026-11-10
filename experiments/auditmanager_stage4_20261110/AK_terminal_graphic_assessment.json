@@ -1,0 +1,27 @@
+{
+  "scope": "Known-label source review of second AK cabinet; source graphically viewed before answer.",
+  "source_result_sha256": "f42f1958e556f8d259ca3e8cf4b4142ad47f6c27b767a4dd8fdebcddaabf99ab",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 339791,
+  "objects": 36,
+  "invalid_objects": 0,
+  "unresolved_source_blocks": 1,
+  "bounded_controls": {
+    "PDS3_cabinet_contacts": "17,18",
+    "PDS4_cabinet_contacts": "17,18",
+    "Q2_adjacent_terminal_strip": "X1"
+  },
+  "previous_errors": {
+    "PDS4": "19,20",
+    "Q2_adjacent_terminal_strip": "X2inoperationreceipt"
+  },
+  "overlap_control": "PDS4represented once, with evidence in tiles2and3.",
+  "full_graphic_acceptance": false,
+  "limits": [
+    "Reading changed both image detail and extraction instructions; effect cannot be attributed to tiling alone.",
+    "Model reportedinventoriedbutdeclaredunreadableregions; runtimekeepssourcecoverageunresolved.",
+    "Only namedcontrolfieldsreviewed; notall36recordsaccepted.",
+    "Downstreamoperationandfinaloutputforcorrectedaddressstillpending."
+  ],
+  "engineer_answers_supplied": false
+}

@@ -15,6 +15,9 @@ def prepare(packet_index,object_id,revision):
     root=Path('/tmp/auditmanager_ak_cabinet_operations_20261110')/revision/f'packet_{packet_index:03d}'
     root.mkdir(parents=True,exist_ok=True)
     source=INVENTORY/'AK/execution'/f'object_inventory_{packet_index:03d}'/'result.json'
+    if revision=='graphic_context_v4':
+        assert packet_index==1
+        source=Path('/tmp/auditmanager_ak_terminal_graphic_control_20261110/result.json')
     result=json.loads(source.read_text());assert not result['is_error']
     objects=[o for o in result['json_data']['object_registry'] if o['id']==object_id]
     assert len(objects)==1
@@ -28,6 +31,15 @@ def prepare(packet_index,object_id,revision):
     packet=json.loads(request.messages[-1]['content'])
     packet['operations']=[o for o in packet['operations'] if o['operation']=='identity_across_views']
     assert len(packet['operations'])==1
+    if revision=='graphic_context_v4':
+        detail=json.loads(Path('/tmp/auditmanager_ak_terminal_graphic_control_20261110/manifest.json').read_text())
+        tiles=detail['source_tiles']['tiles']
+        assert all(t['block_id'] in objects[0]['source_refs'] for t in tiles)
+        assert all(hashlib.sha256(Path(t['path']).read_bytes()).hexdigest()==t['sha256'] for t in tiles)
+        packet['attached_image_ids_in_order']=[t['block_id'] for t in tiles]
+        packet['graphic_detail_tiles']=[{k:t[k] for k in ['block_id','page_index','clip_rotated_page_points','grid_row','grid_column','width','height']} for t in tiles]
+        packet['graphic_detail_boundary']='Overlapping coordinate-bound tiles of one source block; not additional physical instances.'
+        request=replace(request,image_paths=tuple(Path(t['path']) for t in tiles))
     request=replace(request,messages=[request.messages[0],{'role':'user','content':json.dumps(packet,ensure_ascii=False)}])
     wire={'messages':request.messages,'image_paths':[str(p) for p in request.image_paths]}
     binding={'request_sha256':evidence_digest(wire),'inventory_result_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -63,5 +75,5 @@ async def main(args):
     print('COMPLETE',flush=True)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--packet',type=int,required=True);p.add_argument('--object-id',required=True);p.add_argument('--execute',action='store_true');p.add_argument('--revision',choices=['local_claim_v2','page_context_v3'],default='page_context_v3')
+    p=argparse.ArgumentParser();p.add_argument('--packet',type=int,required=True);p.add_argument('--object-id',required=True);p.add_argument('--execute',action='store_true');p.add_argument('--revision',choices=['local_claim_v2','page_context_v3','graphic_context_v4'],default='page_context_v3')
     asyncio.run(main(p.parse_args()))

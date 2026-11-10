@@ -1,0 +1,17 @@
+{
+  "pid": 3485804,
+  "command": [
+    "/opt/py312/bin/python",
+    "-m",
+    "experiments.auditmanager_stage4_20261110.run_ak_cabinet_operation_control",
+    "--packet",
+    "1",
+    "--object-id",
+    "cabinet_main",
+    "--revision",
+    "graphic_context_v4",
+    "--execute"
+  ],
+  "started_at_epoch": 1794341427.5738568,
+  "purpose": "Identity operation with six source tiles and authoritative notes; no expected addresses supplied."
+}
