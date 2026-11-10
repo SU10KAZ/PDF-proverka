@@ -78,6 +78,11 @@ def reconcile_object_registry(data, known_blocks):
         elif receipt.get('status') in ('inventoried', 'no_objects') and set(ids) != {
                 oid for oid, obj in valid_objects.items() if bid in obj['source_refs']}:
             row['reason'] = 'inventory_conflicts_with_registered_objects'
+        elif ('unreadable_regions' in receipt and not isinstance(receipt['unreadable_regions'], list)):
+            row['reason'] = 'invalid_unreadable_regions'
+        elif receipt.get('status') in ('inventoried', 'no_objects') and receipt.get('unreadable_regions'):
+            row['status'] = 'needs_data'
+            row['reason'] = 'declared_unreadable_regions'
         elif receipt.get('status') == 'inventoried' and ids:
             row['status'] = 'reported_inventoried'
         elif receipt.get('status') == 'no_objects' and not ids:

@@ -39,3 +39,20 @@ def test_block_cannot_be_declared_empty_when_registry_contains_an_object():
     r=reconcile_object_registry(data,{'b'})
     assert r['unresolved_source_blocks']==1
     assert r['source_inventory'][0]['reason']=='inventory_conflicts_with_registered_objects'
+
+
+def test_declared_unreadable_regions_cannot_claim_complete_source_inventory():
+    receipt={'block_id':'b','status':'inventoried','object_ids':['o'],'reason':'Read views',
+        'unreadable_regions':[{'region':'edge','description':'Callout clipped'}]}
+    data={'object_registry':[obj()],'object_inventory_coverage':[receipt]}
+    result=reconcile_object_registry(data,{'b'})
+    assert result['unresolved_source_blocks']==1
+    assert result['source_inventory'][0]['status']=='needs_data'
+    assert result['source_inventory'][0]['reason']=='declared_unreadable_regions'
+    assert receipt['status']=='inventoried'  # Preserve the model's contradictory claim.
+    receipt['unreadable_regions']=[]
+    assert reconcile_object_registry(data,{'b'})['unresolved_source_blocks']==0
+    receipt['unreadable_regions']='unknown'
+    result=reconcile_object_registry(data,{'b'})
+    assert result['source_inventory'][0]['reason']=='invalid_unreadable_regions'
+    assert result['unresolved_source_blocks']==1
