@@ -46,7 +46,7 @@ def prepare():
     print('PREPARED',json.dumps(manifest['requests']),flush=True)
     return queue,findings,md,crops
 
-async def main(execute):
+async def main(execute, finding_ids):
     queue,findings,md,crops=prepare()
     if not execute:return
     os.environ['CODEX_TRANSIENT_RETRIES']='0'
@@ -57,10 +57,14 @@ async def main(execute):
         result=await executor(request,phase)
         assert hashlib.sha256((BASE/'02_work/document.md').read_bytes()).hexdigest()==digest
         return result
-    for finding in findings:
+    for finding_id in finding_ids:
+        finding=next(f for f in findings if f['id']==finding_id)
         result=await run_source_review_workflow(queue,finding,md,crops,ROOT/finding['id'],invoke=invoke,executor_id='direct-codex-gpt-6-astra-high',max_images=16)
         print('DONE',finding['id'],result['status'],flush=True)
     print('COMPLETE',flush=True)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true');args=p.parse_args();asyncio.run(main(args.execute))
+    p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true')
+    p.add_argument('--finding-ids',nargs='+',choices=list(REFS),default=list(REFS))
+    p.add_argument('--output-root',default=str(ROOT));args=p.parse_args();ROOT=Path(args.output_root)
+    asyncio.run(main(args.execute,args.finding_ids))
