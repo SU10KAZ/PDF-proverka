@@ -1,0 +1,139 @@
+{
+  "request_sha256": "faf89fccf0fd29dcb0eae7ffc47dbe82bc7122349998f5e0e14f97238b7fc1e0",
+  "source_tiles": {
+    "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/02_work/document.pdf",
+    "pdf_sha256": "993d3f278d7b2b816c68a6e600b5ae58b6a33b9ec19a91c0678905c6a636d24a",
+    "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/02_work/blocks.json",
+    "blocks_sha256": "aa2df02c109fd7b7a1268443a6553d43b3fc23fed1522c7583783aaf214b162c",
+    "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+    "columns": 6,
+    "rows": 1,
+    "scale": 3,
+    "overlap": 0.025,
+    "tiles": [
+      {
+        "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+        "page_index": 32,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          50.390748023986816,
+          13.43205326795578,
+          481.29457741578415,
+          597.9193273186684
+        ],
+        "grid_row": 0,
+        "grid_column": 0,
+        "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_0.png",
+        "width": 1293,
+        "height": 1754,
+        "sha256": "28b4c7270b82b57ef7c9474830e22131f87d60ffa6d0342fe92fb33c98ab0b3d"
+      },
+      {
+        "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+        "page_index": 32,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          368.8848827918371,
+          13.43205326795578,
+          855.993559495608,
+          597.9193273186684
+        ],
+        "grid_row": 0,
+        "grid_column": 1,
+        "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_1.png",
+        "width": 1462,
+        "height": 1754,
+        "sha256": "5fede9d3a18bcc0ffbb963361805f0a0297c191a45718268693ddbaaf535618f"
+      },
+      {
+        "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+        "page_index": 32,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          743.5838648716608,
+          13.43205326795578,
+          1230.692541575432,
+          597.9193273186684
+        ],
+        "grid_row": 0,
+        "grid_column": 2,
+        "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_2.png",
+        "width": 1463,
+        "height": 1754,
+        "sha256": "8680ee9658a0280b4415889b7129f728a9b6f1873df91d23188d8639a0f7247f"
+      },
+      {
+        "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+        "page_index": 32,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          1118.2828469514845,
+          13.43205326795578,
+          1605.3915236552557,
+          597.9193273186684
+        ],
+        "grid_row": 0,
+        "grid_column": 3,
+        "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_3.png",
+        "width": 1463,
+        "height": 1754,
+        "sha256": "72590e7dd5418e12fa2f5d52e9318da25c321d16347641843fac64665c971a32"
+      },
+      {
+        "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+        "page_index": 32,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          1492.9818290313083,
+          13.43205326795578,
+          1980.0905057350797,
+          597.9193273186684
+        ],
+        "grid_row": 0,
+        "grid_column": 4,
+        "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_4.png",
+        "width": 1463,
+        "height": 1754,
+        "sha256": "5e57faf3ed8f9b30f5718ce9ecf738cc40fa49c4132894c9451b568b37a853fe"
+      },
+      {
+        "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+        "page_index": 32,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          1867.6808111111322,
+          13.43205326795578,
+          2298.5846405029297,
+          597.9193273186684
+        ],
+        "grid_row": 0,
+        "grid_column": 5,
+        "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_5.png",
+        "width": 1293,
+        "height": 1754,
+        "sha256": "28ea0e31c6dcce09e08ba53b195d6801b2bed0cf58a839d5a4afaf5a66792579"
+      }
+    ],
+    "padding_page_fraction": 0.0,
+    "original_crop_points": [
+      50.390748023986816,
+      13.43205326795578,
+      2298.5846405029297,
+      597.9193273186684
+    ],
+    "expanded_crop_points": [
+      50.390748023986816,
+      13.43205326795578,
+      2298.5846405029297,
+      597.9193273186684
+    ],
+    "outside_original_crop": false,
+    "model_call_performed": false,
+    "semantic_verified": false
+  },
+  "expected_answers_supplied": false,
+  "known_source_control": true,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}

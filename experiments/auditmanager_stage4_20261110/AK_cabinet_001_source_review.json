@@ -1,0 +1,54 @@
+{
+  "control": "AK14 cabinet2of5",
+  "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+  "image": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_cd9d763d198246859c3df42c18b5c3d8.png",
+  "image_sha256": "05e8996615a803ac8aeeb4c80430160eb8954f89bc42940d73a0c5613da7b8d0",
+  "directly_viewed_original_resolution": true,
+  "cabinet": "ШАУВ-1-К4АС",
+  "observations": [
+    {
+      "scope": "Main lower cabinet contour under PDS3/PDS4",
+      "fact": "Both independent cables terminate at17,18; distinct terminal-strip identifiers are not shown at those groups."
+    },
+    {
+      "scope": "Main lower cabinet contour under actuator groupsY1–Y6",
+      "fact": "Each shown group repeats29,30and31,32; separate cables/actuators visible; no distinct strip names adjacent to the lower contact groups."
+    },
+    {
+      "scope": "Intermediate actuator terminal blocksXT2–XT7",
+      "fact": "Each has own XTidentifier. Repeated local numbers1–4do not alone establish equal full address."
+    },
+    {
+      "scope": "PE contacts",
+      "fact": "Repeated protective conductor designations alone are not a conflict."
+    }
+  ],
+  "supported_claim": "Local main-cabinet address ambiguity, without asserting erroneous physical wiring.",
+  "unknown": [
+    "Full manufacturer terminal-strip scheme and applicable address convention.",
+    "Whether corrections require different terminal numbers or explicit strip names."
+  ],
+  "historical_boundary": "Known-source evaluation; previous stage2 mapping found no terminal-collision candidate for this block. Must compare the actual new candidate and final output before scoring restored useful address.",
+  "model_answer_used_for_observations": false,
+  "full_control_complete": false,
+  "model_candidate_count": 1,
+  "model_restored_scope": "One candidate covers actuatorY1–Y6and motor-side repeated groups; source-consistent local ambiguity without wiring fault.",
+  "remaining": "Candidate omits PDS3/PDS4duplicate17/18. Need examine operation receipt and final systemic grouping before claiming complete address coverage.",
+  "final_output_verified": false,
+  "observed_reading_errors": [
+    {
+      "stage": "inventory",
+      "object_id": "obj_10",
+      "model": "PDS4 cabinet terminals19,20",
+      "graphic": "17,18",
+      "cause": "Incorrect label reading; inference from numbering sequence is possible but internal cause unproved."
+    },
+    {
+      "stage": "operation",
+      "model": "Q2/X2",
+      "graphic": "Q2/X1",
+      "consequence": "Do not accept all details of the operation receipt merely because its main finding is useful."
+    }
+  ],
+  "recovery": "Same whole drawing rendered into6overlapping high-resolution tiles; no expected labels or previous answers supplied; request active."
+}
