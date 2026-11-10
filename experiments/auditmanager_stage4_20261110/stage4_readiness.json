@@ -384,5 +384,13 @@
     "tests_passed": 25,
     "automatic_dispatch": false,
     "semantic_verified": false
+  },
+  "itp_tank_graphic_control": {
+    "artifact": "ITP_F042_graphic_text_control.json",
+    "graphic_blocks_visually_checked": 3,
+    "additional_authoritative_text_blocks": 4,
+    "finding_core": "supported_annotation_conflict",
+    "equipment_inadequacy": "not_established",
+    "new_external_model_calls": 0
   }
 }

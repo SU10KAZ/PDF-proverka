@@ -1,0 +1,339 @@
+{
+  "project": "ITP",
+  "finding_id": "F-042",
+  "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+  "original_saved_finding": {
+    "id": "F-042",
+    "severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "category": "расширительные баки",
+    "sheet": "Листы 9, 14",
+    "page": [
+      16,
+      23,
+      25
+    ],
+    "problem": "Объёмы баков на чертежах отличаются от спецификации",
+    "description": "Бак теплоснабжения К22 на разрезе и плане подписан как 1000 л, а в спецификации — 1500 л. Бак ДОО К23 на плане подписан как 100 л, в спецификации — 200 л. По описаниям листов нельзя надёжно определить количество всех изображённых баков.",
+    "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+    "norm_quote": null,
+    "candidate_norm_references": [
+      {
+        "designation": "ГОСТ Р 21.101-2020",
+        "cited_designation": "ГОСТ Р 21.101-2020",
+        "candidate_relevance": 0.78,
+        "reason": "Проверить согласованность марок и характеристик оборудования на чертежах и в спецификации.",
+        "provenance": {
+          "producer": "stage03_candidate_contract",
+          "designation_source": "stage03.candidate_norm_references",
+          "source_finding_ids": [
+            "T-041",
+            "G-012",
+            "G-027",
+            "G-028",
+            "G-029",
+            "G-030"
+          ],
+          "input_provenance": {
+            "source_finding_ids": [
+              "T-041",
+              "G-012",
+              "G-027",
+              "G-028",
+              "G-029",
+              "G-030"
+            ],
+            "designation_source": "экспертная оценка"
+          }
+        },
+        "clause_candidate": null,
+        "quote_candidate": null
+      }
+    ],
+    "solution": "Сверить исходные чертежи, расчёт подбора и спецификацию, затем согласовать объёмы, габариты и количество баков.",
+    "risk": "Поставка баков неверного объёма и ошибки строительных заданий.",
+    "source_finding_ids": [
+      "T-041",
+      "G-012",
+      "G-027",
+      "G-028",
+      "G-029",
+      "G-030"
+    ],
+    "source_block_ids": [
+      "blk_27af51f0cd26488ea08ffa55589b0c3e",
+      "blk_06029d59a01b4b779037ffcee1ae5260"
+    ],
+    "related_block_ids": [
+      "blk_27af51f0cd26488ea08ffa55589b0c3e",
+      "blk_06029d59a01b4b779037ffcee1ae5260",
+      "blk_cc80e7962a094791b984d8fb5391e886",
+      "blk_94b58ecf5d404f7d90c272d267eb2e48"
+    ],
+    "evidence_text_refs": [],
+    "evidence": [
+      {
+        "type": "image",
+        "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+        "page": 16
+      },
+      {
+        "type": "image",
+        "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+        "page": 23
+      }
+    ],
+    "highlight_regions": [],
+    "provenance": {
+      "found_by": [
+        "codex"
+      ],
+      "detector_summary": "codex",
+      "detections": [
+        {
+          "detector": "codex",
+          "model": "codex/gpt-6-astra",
+          "prompt_version": "stage01-findings-evidence-v3",
+          "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+          "raw_finding_id": "G-012",
+          "mode": "independent",
+          "detected_at": "2026-11-06T21:56:05.864405+00:00",
+          "context_source": "raw_vector"
+        },
+        {
+          "detector": "codex",
+          "model": "codex/gpt-6-astra",
+          "prompt_version": "stage01-findings-evidence-v3",
+          "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+          "raw_finding_id": "G-027",
+          "mode": "independent",
+          "detected_at": "2026-11-06T21:56:05.864405+00:00",
+          "context_source": "raw_vector"
+        },
+        {
+          "detector": "codex",
+          "model": "codex/gpt-6-astra",
+          "prompt_version": "stage01-findings-evidence-v3",
+          "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+          "raw_finding_id": "G-028",
+          "mode": "independent",
+          "detected_at": "2026-11-06T21:56:05.864405+00:00",
+          "context_source": "raw_vector"
+        },
+        {
+          "detector": "codex",
+          "model": "codex/gpt-6-sol",
+          "prompt_version": "stage01-findings-evidence-v3",
+          "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+          "raw_finding_id": "G-029",
+          "mode": "independent",
+          "detected_at": "2026-11-06T21:56:05.864405+00:00",
+          "context_source": "raw_vector"
+        },
+        {
+          "detector": "codex",
+          "model": "codex/gpt-6-sol",
+          "prompt_version": "stage01-findings-evidence-v3",
+          "run_id": "stage01-20261106T215605Z-ensemble_codex-only:codex",
+          "raw_finding_id": "G-030",
+          "mode": "independent",
+          "detected_at": "2026-11-06T21:56:05.864405+00:00",
+          "context_source": "raw_vector"
+        }
+      ]
+    },
+    "detector_summary": "codex",
+    "detector_comparison": {
+      "schema_version": 1,
+      "primary_relation": "match",
+      "relations": [
+        {
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        {
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое расхождение объёма бака К22: 1000 л на плане и 1500 л в экспликации.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        {
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:004"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое расхождение объёма бака К23: 100 л на плане и 200 л в экспликации.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        {
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое расхождение объёма бака К23: 100 л на плане и 200 л в экспликации.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        },
+        {
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое расхождение объёма бака К22: 1000 л на плане и 1500 л в экспликации.",
+          "reviewer_model": "codex/gpt-6.1-sol",
+          "origin": "dual_comparison"
+        }
+      ],
+      "gap_search": false
+    },
+    "norm_references": [],
+    "norm_paragraph_state": "resolver_pending",
+    "quality": {
+      "practicality_score": 71,
+      "engineering_relevance": "high",
+      "impact_axes": [
+        "construction",
+        "coordination"
+      ],
+      "formalism_flags": [],
+      "likely_formal_only": false,
+      "severity_mismatch": false,
+      "review_priority": "high"
+    }
+  },
+  "graphic_evidence": [
+    {
+      "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_cc80e7962a094791b984d8fb5391e886.png",
+      "sha256": "df5eab1b75e59001cf78cb3cded3596c55d5726badde250c456889c012e1a3b3",
+      "review_method": "Current assistant visual inspection via view_image; no OCR replacement of TEXT",
+      "observations": [
+        {
+          "object": "K22",
+          "region_description": "Нижняя левая часть плана: два круглых бака у стены автоматики",
+          "readings": [
+            "К22 бак теплоснабжения 1000л",
+            "RM 1500 PN10"
+          ],
+          "interpretation": "Conflicting annotation and model labels in the same graphic."
+        },
+        {
+          "object": "K23",
+          "region_description": "Правая часть плана у бака ДОО и насосов отопления ДОО",
+          "readings": [
+            "К23 бак ДОО 100л",
+            "RM 200 PN10"
+          ],
+          "interpretation": "Conflicting annotation and model label in the same graphic."
+        }
+      ]
+    },
+    {
+      "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+      "sha256": "9ae3ec6ff303ff8f3b6317bd8cfa1b49ab22653581184818e10d9f0393bf4c7a",
+      "review_method": "Current assistant visual inspection via view_image; no OCR replacement of TEXT",
+      "observations": [
+        {
+          "object": "K22",
+          "region_description": "Правый край разреза 18-18",
+          "readings": [
+            "К22 бак теплоснабжения 1000л"
+          ],
+          "interpretation": "Repeated 1000 litre annotation."
+        }
+      ]
+    },
+    {
+      "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+      "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c",
+      "review_method": "Current assistant visual inspection via view_image; no OCR replacement of TEXT",
+      "observations": [
+        {
+          "object": "K22/K23",
+          "region_description": "К22 в нижней левой части; К23 в правой части плана",
+          "readings": [
+            "К22 бак теплоснабжения 1000л",
+            "К23 бак ДОО 100л"
+          ],
+          "interpretation": "Repeated annotations on a separate plan."
+        }
+      ]
+    }
+  ],
+  "authoritative_text_evidence": [
+    {
+      "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+      "quotes": [
+        "| K22 | SPL RM 1500л 10 бар | Бак расширительный V=1500л, 10 бар | 2 | 240,0 |  |",
+        "| K23 | SPL RM 200л 10 бар | Бак расширительный V=200л, 10 бар | 1 | 17,2 |  |"
+      ]
+    },
+    {
+      "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+      "quotes": [
+        "| 22 | Расширительный мембранный бак V=1500л, PN=10бар | RM 1500 PN10 | SPL801500 | SPL | шт. | 2 | 252.00 | подпитка вентиляции |",
+        "| 23 | Расширительный мембранный бак V=200л, PN=10бар | RM 200 PN10 | SPL800200 | SPL | шт. | 1 | 34.00 | подпитка, отопления |"
+      ]
+    },
+    {
+      "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+      "quotes": [
+        "Система** **отопление** Место установки* **ДОО**",
+        "**Vбака = (1,25 x Vрасш.) : Kзап. = 152 л** **1 шт. SPL RM 200 л 10 бар**"
+      ]
+    },
+    {
+      "block_id": "blk_72bd74f01146432880a289b071f70238",
+      "quotes": [
+        "Система** **другая** Место установки* **Теплоснабжение вентиляции**",
+        "**Vбака = (1,25 x Vрасш.) : Kзап. = 2540 л** **2 шт. SPL RM 1500 л 10 бар**"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "claim": "K22/K23 volume annotations conflict with specification and model labels.",
+      "status": "supported"
+    },
+    {
+      "claim": "Actual tank equipment is undersized or must be replaced.",
+      "status": "needs_data",
+      "reason": "The plan model labels, specification and selection documents agree on 1500/200 litres. Conflicting callouts alone do not establish actual equipment deficiency."
+    },
+    {
+      "claim": "All tank quantities, dimensions and selection formulas are correct.",
+      "status": "not_checked",
+      "reason": "This review establishes annotation identity/volume conflict, not complete equipment design acceptance."
+    }
+  ],
+  "recommended_behavior": "Preserve the annotation/specification conflict and reconcile identifiers. Do not infer wrong supply or revise tank selection from the obsolete-looking callout alone. Retrieve text specification and selection sheets by object/system identity.",
+  "additional_context_blocks_not_in_original_candidate_request": [
+    "blk_11981549aceb463ba84c7c0de619d2fc",
+    "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+    "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+    "blk_72bd74f01146432880a289b071f70238"
+  ],
+  "engineer_decision": "Отдельное решение инженера по классической записи F-042 здесь не установлено.",
+  "automatic_application": false,
+  "new_external_model_calls": 0,
+  "independent_discovery": false,
+  "filter_pair_limit": "Supports retaining a genuine conflict while withholding an unsupported stronger conclusion; not a confirmed independent positive/negative filter pair."
+}
