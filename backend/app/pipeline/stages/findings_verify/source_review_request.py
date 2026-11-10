@@ -1,4 +1,5 @@
 """Build one review request locally; no provider dispatch or automatic retries."""
+from .source_review_metadata import graphic_stamp_metadata
 from collections import Counter
 import hashlib
 import json
@@ -26,6 +27,10 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
     headers = re.findall(r'^###[ \t]+BLOCK[^\n]*?\[([^]]+)\]:[ \t]*(\S+)[^\n]*$', md, re.M | re.I)
     counts = Counter(bid for _, bid in headers)
     graphic_ids = {bid for kind, bid in headers if kind.upper() in ('IMAGE', 'GRAPHIC') and counts[bid] == 1}
+    metadata = packet.get('graphic_metadata', [])
+    expected_metadata = graphic_stamp_metadata(md, packet.get('required_graphic_block_ids', []))
+    if metadata and metadata != expected_metadata:
+        raise ValueError('packet_graphic_metadata_changed')
     images, omitted = [], []
     receipts = packet.get('graphic_attachments', [])
     for bid in packet.get('required_graphic_block_ids', []):
@@ -59,6 +64,7 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
                'final_claim': {k: finding.get(k) for k in ('problem', 'description', 'solution')},
                'display_fields': {k: finding.get(k) for k in ('risk', 'consequence', 'severity', 'norm', 'norm_quote') if finding.get(k) not in (None, '')},
                'original_claims': claims, 'authoritative_text': packet['sources'],
+               'graphic_metadata': metadata,
                'images_in_attachment_order': [{k: v for k, v in im.items() if k != 'path'} for im in images],
                'unavailable_images': omitted,
                'context_search_boundary': {k: packet.get('context_search_receipt', {}).get(k) for k in ('query_hit_counts', 'deferred_queries', 'backlog', 'absence_proven')},
@@ -75,6 +81,8 @@ annotation conflicts from physical defects and operating-mode assumptions.
 Return JSON: finding_id, finding_sha256, source_md_sha256, context_sha256, claims.
 Each claim: claim_id, claim, status (supported/refuted/needs_data), reason, evidence.
 TEXT evidence: {type:"text", block_id, quote}, an exact quote from supplied text.
+STAMP evidence: {type:"metadata", block_id, quote}, an exact quote from supplied graphic_metadata.
+These are literal prepared-MD stamps for document/sheet identity only, not proof of drawing contents.
 IMAGE evidence: {type:"image", block_id, image_sha256, bbox_norm_xyxy:[left,top,right,bottom], observation}.
 Regions use normalized coordinates 0..1 of the cited attached image, including detail crops.
 Several images can share a source block: distinguish them by image_sha256. Detail

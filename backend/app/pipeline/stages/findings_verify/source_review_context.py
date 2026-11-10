@@ -1,4 +1,5 @@
 """Bounded local context expansion and continuation of unfinished source search."""
+from .source_review_metadata import graphic_stamp_metadata
 from collections import Counter
 from copy import deepcopy
 import hashlib
@@ -66,9 +67,10 @@ def expand_source_review_context(queue, finding_id, md, queries, *, max_chars=60
                                        'added_block_ids': added, 'rejected_ambiguous_block_ids': rejected}
     if previous:
         packet.setdefault('context_search_history', []).append(previous)
+    packet['graphic_metadata'] = graphic_stamp_metadata(md, packet.get('required_graphic_block_ids', []))
     packet['context_revision'] = revision + 1
     packet['context_sha256'] = hashlib.sha256(json.dumps({
-        'sources': packet['sources'], 'required_graphics': packet.get('required_graphic_block_ids', []),
+        'sources': packet['sources'], 'graphic_metadata': packet['graphic_metadata'], 'required_graphics': packet.get('required_graphic_block_ids', []),
         'search_receipt': packet['context_search_receipt']}, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
     if packet.get('required_graphic_block_ids') or rejected or search['backlog'] or search['deferred_queries']:
         packet['source_context_status'] = 'needs_data'

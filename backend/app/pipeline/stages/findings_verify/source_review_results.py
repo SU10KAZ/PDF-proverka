@@ -1,4 +1,5 @@
 """Validate review receipts, never equate matching quotes with semantic truth."""
+from .source_review_metadata import graphic_stamp_metadata
 import hashlib
 import json
 import math
@@ -61,6 +62,11 @@ def validate_source_review(response, queue, findings, md):
                 errors.append('packet_source_mismatch')
             else:
                 allowed.add(bid)
+    metadata = packet.get('graphic_metadata', [])
+    expected_metadata = graphic_stamp_metadata(md, packet.get('required_graphic_block_ids', []))
+    if metadata and metadata != expected_metadata:
+        errors.append('packet_graphic_metadata_mismatch')
+    metadata_allowed = {r['block_id']: r['stamp'] for r in expected_metadata if r in metadata}
     claims = response.get('claims')
     if not isinstance(claims, list) or not claims:
         errors.append('missing_claims')
@@ -96,6 +102,12 @@ def validate_source_review(response, queue, findings, md):
             bid = item.get('block_id') if isinstance(item, dict) else None
             quote = item.get('quote') if isinstance(item, dict) else None
             kind = item.get('type', 'text') if isinstance(item, dict) else None
+            if kind == 'metadata':
+                if not isinstance(bid, str) or bid not in metadata_allowed:
+                    errors.append(prefix+'metadata_not_in_packet')
+                elif not isinstance(quote, str) or not quote.strip() or quote not in metadata_allowed[bid]:
+                    errors.append(prefix+'quote_not_in_metadata')
+                continue
             if kind == 'image':
                 refs = [g for g in graphics if isinstance(g, dict) and g.get('block_id') == bid]
                 if len(refs) > 1:

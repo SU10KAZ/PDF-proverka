@@ -2,6 +2,7 @@
 import hashlib
 import json
 import re
+from .source_review_metadata import graphic_stamp_metadata
 from collections import Counter
 from copy import deepcopy
 
@@ -99,6 +100,7 @@ def build_source_review_queue(findings, md, *, max_chars=100000):
             else:
                 packet['sources'].append({'block_id':ref,'authoritative_text':blocks[ref]})
                 used += len(blocks[ref])
+        packet['graphic_metadata'] = graphic_stamp_metadata(md, packet['required_graphic_block_ids'])
         packet['source_context_status'] = ('available_bounded_text' if refs and not packet['unresolved_block_ids']
                                            and not packet['budgeted_block_ids'] else 'needs_data')
         packet['review_instruction'] = (
