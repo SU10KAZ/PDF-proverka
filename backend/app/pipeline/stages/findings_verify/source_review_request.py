@@ -30,20 +30,27 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
     receipts = packet.get('graphic_attachments', [])
     for bid in packet.get('required_graphic_block_ids', []):
         selected = [r for r in receipts if r.get('block_id') == bid]
-        if bid not in graphic_ids or len(selected) != 1:
+        if bid not in graphic_ids or not selected:
             omitted.append({'block_id': bid, 'reason': 'graphic_receipt_unavailable'})
             continue
-        if len(images) >= max_images:
-            omitted.append({'block_id': bid, 'reason': 'image_limit'})
-            continue
-        receipt = selected[0]
-        try:
-            actual = hashlib.sha256(Path(receipt['path']).read_bytes()).hexdigest()
-        except (OSError, KeyError, TypeError):
-            actual = None
-        if actual is None or actual != receipt.get('sha256'):
-            raise ValueError('graphic_version_changed')
-        images.append({k: receipt[k] for k in ('block_id', 'path', 'sha256', 'width', 'height')})
+        seen_hashes = set()
+        for receipt in selected:
+            if receipt.get('sha256') in seen_hashes:
+                raise ValueError('ambiguous_graphic_receipt')
+            seen_hashes.add(receipt.get('sha256'))
+            if len(images) >= max_images:
+                omitted.append({'block_id':bid,'sha256':receipt.get('sha256'),'reason':'image_limit'}
+                               if len(selected)>1 else {'block_id':bid,'reason':'image_limit'})
+                continue
+            try:
+                actual = hashlib.sha256(Path(receipt['path']).read_bytes()).hexdigest()
+            except (OSError, KeyError, TypeError):
+                actual = None
+            if actual is None or actual != receipt.get('sha256'):
+                raise ValueError('graphic_version_changed')
+            image = {k:receipt[k] for k in ('block_id','path','sha256','width','height')}
+            image.update({k:receipt[k] for k in ('view_kind','page_index','clip_rotated_page_points','source_pdf_sha256') if k in receipt})
+            images.append(image)
     # Explicit allow-list: no historical decisions, detector reviews or control answers.
     claims = [{k: r.get(k) for k in ('source_finding_id', 'source_claim', 'block_ids')}
               for r in finding.get('source_review_requests', []) if isinstance(r, dict)]
@@ -69,7 +76,10 @@ Return JSON: finding_id, finding_sha256, source_md_sha256, context_sha256, claim
 Each claim: claim_id, claim, status (supported/refuted/needs_data), reason, evidence.
 TEXT evidence: {type:"text", block_id, quote}, an exact quote from supplied text.
 IMAGE evidence: {type:"image", block_id, image_sha256, bbox_norm_xyxy:[left,top,right,bottom], observation}.
-Regions use normalized coordinates 0..1. Cite only images actually attached.
+Regions use normalized coordinates 0..1 of the cited attached image, including detail crops.
+Several images can share a source block: distinguish them by image_sha256. Detail
+crops supplement one original graphic and are not additional physical objects.
+Cite only images actually attached.
 For needs_data include missing_data (nonempty list) and optionally context_queries
 (specific object labels or literal phrases to search in prepared MD). Missing or
 bounded context never proves whole-project absence. Do not rewrite the finding.

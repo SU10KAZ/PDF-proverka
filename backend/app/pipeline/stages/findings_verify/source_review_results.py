@@ -98,6 +98,8 @@ def validate_source_review(response, queue, findings, md):
             kind = item.get('type', 'text') if isinstance(item, dict) else None
             if kind == 'image':
                 refs = [g for g in graphics if isinstance(g, dict) and g.get('block_id') == bid]
+                if len(refs) > 1:
+                    refs = [g for g in refs if g.get('sha256') == item.get('image_sha256')]
                 if not isinstance(bid, str) or bid not in graphic_ids or len(refs) != 1 or refs[0].get('attached_to_model') is not True:
                     errors.append(prefix+'graphic_not_supplied')
                     continue

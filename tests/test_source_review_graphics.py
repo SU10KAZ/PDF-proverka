@@ -37,3 +37,21 @@ def test_missing_and_corrupt_graphics_remain_explicit(tmp_path):
     assert packet['graphic_context_status'] == 'incomplete'
     assert packet['graphic_attachments'] == []
     assert len(packet['unavailable_graphics']) == 2
+
+
+def test_detail_manifest_cannot_replace_source_version_or_attach_outside_files(tmp_path):
+    import json
+    root=tmp_path/'graphics';root.mkdir()
+    Image.new('RGB',(2,2)).save(root/'block_g.png')
+    Image.new('RGB',(3,3),'red').save(tmp_path/'outside.png')
+    md='### BLOCK #1 [GRAPHIC]: g\nOriginal graphic\n'
+    manifest={'source_md_sha256':sha256(md.encode()).hexdigest(),'images':[
+        {'block_id':'g','file':'../outside.png','sha256':sha256((tmp_path/'outside.png').read_bytes()).hexdigest()}]}
+    path=root/'graphic_detail_manifest.json';path.write_text(json.dumps(manifest))
+    packet=attach_graphic_receipts({'packets':[{'required_graphic_block_ids':['g']}]},md,root)['packets'][0]
+    assert len(packet['graphic_attachments'])==1
+    assert packet['unavailable_graphics'][0]['reason']=='detail_unavailable'
+    manifest['source_md_sha256']='wrong';path.write_text(json.dumps(manifest))
+    packet=attach_graphic_receipts({'packets':[{'required_graphic_block_ids':['g']}]},md,root)['packets'][0]
+    assert len(packet['graphic_attachments'])==1
+    assert packet['unavailable_graphics'][0]['reason']=='detail_manifest_unusable'

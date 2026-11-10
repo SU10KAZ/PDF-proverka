@@ -51,3 +51,37 @@ def test_image_budget_keeps_missing_evidence_visible(tmp_path):
     assert request['image_paths'] == []
     payload = json.loads(request['messages'][1]['content'])
     assert payload['unavailable_images'] == [{'block_id': 'g', 'reason': 'image_limit'}]
+
+
+def test_detail_evidence_is_bound_to_the_exact_supplied_image(tmp_path):
+    import hashlib
+    from backend.app.pipeline.stages.findings_verify.source_review_results import validate_source_review
+    queue, finding, md = fixture(tmp_path)
+    detail = tmp_path/'detail.png';Image.new('RGB',(4,3),'red').save(detail)
+    manifest={'source_md_sha256':hashlib.sha256(md.encode()).hexdigest(),
+              'images':[{'block_id':'g','file':'detail.png','sha256':hashlib.sha256(detail.read_bytes()).hexdigest(),
+                         'page_index':0,'clip_rotated_page_points':[10,20,30,40]}]}
+    (tmp_path/'graphic_detail_manifest.json').write_text(json.dumps(manifest))
+    attach_graphic_receipts(queue,md,tmp_path)
+    request=prepare_source_review_request(queue,finding,md)
+    payload=json.loads(request['messages'][1]['content'])
+    assert [im['block_id'] for im in request['image_bindings']]==['g','g']
+    assert payload['images_in_attachment_order'][1]['view_kind']=='detail_of_original_graphic'
+    assert 'SECRET_ORACLE' not in json.dumps(request['messages'])
+    supplied={(im['block_id'],im['sha256']) for im in request['image_bindings']}
+    for receipt in queue['packets'][0]['graphic_attachments']:
+        receipt['attached_to_model']=(receipt['block_id'],receipt['sha256']) in supplied
+    response={k:payload[k] for k in ('finding_id','finding_sha256','source_md_sha256','context_sha256')}
+    response['claims']=[{'claim_id':'c1','claim':'Visible local detail','status':'supported','reason':'Read detail',
+        'evidence':[{'type':'image','block_id':'g','image_sha256':manifest['images'][0]['sha256'],
+                     'bbox_norm_xyxy':[0,0,1,1],'observation':'Visible feature in the detail crop'}]}]
+    assert validate_source_review(response,queue,[finding],md)['errors']==[]
+    limited=prepare_source_review_request(queue,finding,md,max_images=1)
+    assert len(limited['image_paths'])==1
+    supplied={(im['block_id'],im['sha256']) for im in limited['image_bindings']}
+    for receipt in queue['packets'][0]['graphic_attachments']:
+        receipt['attached_to_model']=(receipt['block_id'],receipt['sha256']) in supplied
+    assert 'claim_0:graphic_not_supplied' in validate_source_review(response,queue,[finding],md)['errors']
+    Image.new('RGB',(4,3),'blue').save(detail)
+    with pytest.raises(ValueError,match='graphic_version_changed'):
+        prepare_source_review_request(queue,finding,md)

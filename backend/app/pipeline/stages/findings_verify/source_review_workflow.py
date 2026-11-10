@@ -83,11 +83,11 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
     for step in range(5):
         request=prepare_source_review_request(current,finding,md)
         response=await call(request,'review',step)
-        supplied={im['block_id']:im['sha256'] for im in request['image_bindings']}
+        supplied={(im['block_id'],im['sha256']) for im in request['image_bindings']}
         for packet in current['packets']:
             if packet['finding_id']==finding['id']:
                 for receipt in packet.get('graphic_attachments',[]):
-                    receipt['attached_to_model']=supplied.get(receipt['block_id'])==receipt['sha256']
+                    receipt['attached_to_model']=(receipt['block_id'],receipt['sha256']) in supplied
         validation=validate_source_review(response,current,[finding],md)
         _write(root/f'{step:02d}_validation.json',validation)
         if validation['errors']:raise ValueError('invalid_source_review')
