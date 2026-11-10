@@ -1,0 +1,203 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "inv_008",
+      "operation": "identity_across_views",
+      "status": "needs_data",
+      "reason": "На листе 6 СО установлена позиция оцинкованной водогазопроводной трубы Д=65х4,0 мм по ГОСТ 3262-75 в разделе «Трубопровод ИТП». Номер позиции и обозначения отдельных участков не приведены. Строка 65х4,5 в разделе «Трубопровод дренажный» относится к другой области применения и не устанавливает противоречия. Для сопоставления экземпляров нужны схемы или планы с обозначениями участков и привязкой к данной позиции. В пакете они отсутствуют; изображения не приложены.",
+      "source_refs": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+      ],
+      "context_queries": [
+        "Д=65х4,0",
+        "Трубопровод ИТП",
+        "Ду65",
+        "DN65"
+      ]
+    },
+    {
+      "object_id": "inv_008",
+      "operation": "dimension_consistency",
+      "status": "needs_data",
+      "reason": "В спецификации указано Д=65х4,0 мм, но не раскрыто, что обозначает Д: условный проход или наружный диаметр. Размеры соответствующих участков на схемах и применимая таблица сортамента ГОСТ 3262-75 не предоставлены. Для проверки нужны определение размерного обозначения, размеры тех же участков и сортамент соответствующего исполнения трубы. Сравнивать эту позицию с дренажной трубой 65х4,5 как один экземпляр оснований нет.",
+      "source_refs": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+      ],
+      "context_queries": [
+        "Д=65х4,0",
+        "ГОСТ 3262-75",
+        "условный проход",
+        "наружный диаметр",
+        "Ду65"
+      ]
+    },
+    {
+      "object_id": "inv_008",
+      "operation": "document_links",
+      "status": "needs_data",
+      "reason": "В графе обозначения документа данной строки приведён ГОСТ 3262-75. Наличие ссылки установлено, но её применимость к указанному размеру и исполнению требует соответствующего фрагмента стандарта. Для проверки связи позиции со схемами нужны общие данные или указания о комплектовании ИТП.ТМ и обозначения связанных листов. Примечание об аналогах не содержит конкретной привязки этой трубы к другим документам и не подтверждает применимость замены к ней.",
+      "source_refs": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+        "blk_d0ef4dbea56d4b74b97a10119fbee223"
+      ],
+      "context_queries": [
+        "ГОСТ 3262-75",
+        "ПД-00542664",
+        "ИТП.ТМ",
+        "Общие данные",
+        "Ведомость ссылочных",
+        "Д=65х4,0"
+      ]
+    }
+  ],
+  "findings": [],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "inv_008",
+        "identity": "Трубопровод ИТП: стальная водогазопроводная оцинкованная труба Д=65х4,0 мм",
+        "scope": "СО, лист 6; материал, отдельные участки не обозначены",
+        "kind": "позиция спецификации материала",
+        "source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Наименование, обозначение документа и количество",
+            "value": "Труба стальная водогазопроводная оцинкованная, Д=65х4,0 мм; ГОСТ 3262-75; 78.4 м",
+            "unit": null,
+            "source_ref": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "|  | Труба стальная водогазопроводная оцинкованная, Д=65х4,0 мм | ГОСТ 3262-75 |  |  | м | 78.4 |  |  |"
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "inv_008",
+        "operation": "identity_across_views",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ],
+        "receipt": {
+          "object_id": "inv_008",
+          "operation": "identity_across_views",
+          "status": "needs_data",
+          "reason": "На листе 6 СО установлена позиция оцинкованной водогазопроводной трубы Д=65х4,0 мм по ГОСТ 3262-75 в разделе «Трубопровод ИТП». Номер позиции и обозначения отдельных участков не приведены. Строка 65х4,5 в разделе «Трубопровод дренажный» относится к другой области применения и не устанавливает противоречия. Для сопоставления экземпляров нужны схемы или планы с обозначениями участков и привязкой к данной позиции. В пакете они отсутствуют; изображения не приложены.",
+          "source_refs": [
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+          ],
+          "context_queries": [
+            "Д=65х4,0",
+            "Трубопровод ИТП",
+            "Ду65",
+            "DN65"
+          ]
+        }
+      },
+      {
+        "object_id": "inv_008",
+        "operation": "quantity_balance",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "inv_008",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ],
+        "receipt": {
+          "object_id": "inv_008",
+          "operation": "dimension_consistency",
+          "status": "needs_data",
+          "reason": "В спецификации указано Д=65х4,0 мм, но не раскрыто, что обозначает Д: условный проход или наружный диаметр. Размеры соответствующих участков на схемах и применимая таблица сортамента ГОСТ 3262-75 не предоставлены. Для проверки нужны определение размерного обозначения, размеры тех же участков и сортамент соответствующего исполнения трубы. Сравнивать эту позицию с дренажной трубой 65х4,5 как один экземпляр оснований нет.",
+          "source_refs": [
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+          ],
+          "context_queries": [
+            "Д=65х4,0",
+            "ГОСТ 3262-75",
+            "условный проход",
+            "наружный диаметр",
+            "Ду65"
+          ]
+        }
+      },
+      {
+        "object_id": "inv_008",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "inv_008",
+        "operation": "document_links",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ],
+        "receipt": {
+          "object_id": "inv_008",
+          "operation": "document_links",
+          "status": "needs_data",
+          "reason": "В графе обозначения документа данной строки приведён ГОСТ 3262-75. Наличие ссылки установлено, но её применимость к указанному размеру и исполнению требует соответствующего фрагмента стандарта. Для проверки связи позиции со схемами нужны общие данные или указания о комплектовании ИТП.ТМ и обозначения связанных листов. Примечание об аналогах не содержит конкретной привязки этой трубы к другим документам и не подтверждает применимость замены к ней.",
+          "source_refs": [
+            "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "blk_d0ef4dbea56d4b74b97a10119fbee223"
+          ],
+          "context_queries": [
+            "ГОСТ 3262-75",
+            "ПД-00542664",
+            "ИТП.ТМ",
+            "Общие данные",
+            "Ведомость ссылочных",
+            "Д=65х4,0"
+          ]
+        }
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_d0ef4dbea56d4b74b97a10119fbee223",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 5,
+    "unresolved_source_blocks": 2,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "dimension_consistency",
+    "document_links",
+    "identity_across_views"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}
