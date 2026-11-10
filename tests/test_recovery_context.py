@@ -187,3 +187,19 @@ def test_node_reference_does_not_infer_node_from_metadata_or_other_sheet():
           '> **Stamp:** Code: Б | Stage: Р | Sheet: 4\nУзел В\n')
     assert not search_md_context(md, ['Б(4)'])['hits']
     assert not search_md_context(md, ['В(9)'])['hits']
+
+
+def test_dimension_typography_finds_source_without_equating_execution():
+    from backend.app.pipeline.stages.prepare.recovery_context import search_md_context
+    md = ('### BLOCK #1 [TEXT]: cable\n'
+          '| Кабель | ППГнг(A)-HF |\n| Сечение | 5x35 |\n'
+          '### BLOCK #2 [TEXT]: unrelated\nX1 is a terminal; 5x350 is another section\n')
+    for query in ('5×35', '5х35', '5 х 35'):
+        report = search_md_context(md, [query])
+        assert report['hits'][0]['block_id'] == 'cable'
+        assert report['hits'][0]['query_match_kinds'][query] == 'dimension_format_navigation'
+        assert '5x35' in report['hits'][0]['content']
+        assert '5×35' not in report['hits'][0]['content']
+        assert report['hits'][0]['reference_applicability_verified'] is False
+    assert not search_md_context(md, ['ППГнг(A)-FRHF'])['hits']
+    assert not search_md_context(md, ['Х1'])['hits']

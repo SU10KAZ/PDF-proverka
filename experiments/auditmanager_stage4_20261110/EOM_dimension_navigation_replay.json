@@ -1,0 +1,60 @@
+{
+  "scope": "Local retrieval replay using the same sealed previous response and source version; old context2 was not dispatched.",
+  "model_query": "5×35",
+  "authoritative_source_spelling": "5x35",
+  "source_block": "blk_67c8cc82d7e24f738797d9b75ce14e97",
+  "before": {
+    "status": "prepared",
+    "new_source_ids": [
+      "blk_00f94ec770cf47ffbd09f39e4a586df0",
+      "blk_3620ab17f57a4d9596292b555c5abcc7",
+      "blk_4638622aac5646e5b61bc689463e15c2",
+      "blk_4734c95395d74c0ab560a6a80f46b910",
+      "blk_628818db493e46e7bdccc75b01afbd16",
+      "blk_7170586af51c43f79c96734a40269d7d",
+      "blk_72a64016ef0142b6a226f0c79be16436",
+      "blk_76d1760dd5b34882a0df18538f78e39b",
+      "blk_84e0cee1c8a145c482898b1c10b3a24b",
+      "blk_af87003578d3440a9be734a66a09af90",
+      "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+      "blk_c47ed956c3af40b897f6b6292f26247b"
+    ],
+    "omitted": [],
+    "automatic_dispatch": false,
+    "absence_proven": false,
+    "semantic_verified": false,
+    "next_stage": "object_operations_dbfe55087a4b3059_context_2",
+    "request_sha256": "545a2e27caf63fd473a6d13c24ed859c5723b05ac35047f15f031d138ded7f79"
+  },
+  "after": {
+    "status": "prepared",
+    "new_source_ids": [
+      "blk_00f94ec770cf47ffbd09f39e4a586df0",
+      "blk_3620ab17f57a4d9596292b555c5abcc7",
+      "blk_4638622aac5646e5b61bc689463e15c2",
+      "blk_628818db493e46e7bdccc75b01afbd16",
+      "blk_67c8cc82d7e24f738797d9b75ce14e97",
+      "blk_7170586af51c43f79c96734a40269d7d",
+      "blk_72a64016ef0142b6a226f0c79be16436",
+      "blk_84e0cee1c8a145c482898b1c10b3a24b",
+      "blk_af87003578d3440a9be734a66a09af90",
+      "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+      "blk_c47ed956c3af40b897f6b6292f26247b"
+    ],
+    "omitted": [
+      {
+        "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+        "reason": "image_unavailable_or_budget"
+      }
+    ],
+    "automatic_dispatch": false,
+    "absence_proven": false,
+    "semantic_verified": false,
+    "next_stage": "object_operations_dbfe55087a4b3059_context_2",
+    "request_sha256": "7461b69ad86f14201f3028a522b3da9d7306bb86523971f34a5d23ad101c2da0"
+  },
+  "source_text_unchanged": true,
+  "matching_interpretation": "Navigation hypothesis only. Cable execution, identity, quantity and scope still require operation evidence.",
+  "tests": "34 passed across operation builder, followup, continuation and context search",
+  "full_acceptance_proven": false
+}

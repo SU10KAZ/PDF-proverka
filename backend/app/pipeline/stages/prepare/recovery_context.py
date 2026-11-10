@@ -32,6 +32,13 @@ def expand_operation_queries(queries):
             'identity_verified': False, 'absence_proven': False}
 
 
+
+def _dimension_navigation_text(text):
+    # Navigation only: typographic multiplication signs between digits. Never
+    # normalize object marks, cable execution suffixes, or authoritative content.
+    return re.sub(r"(?<=\d)\s*[xх×]\s*(?=\d)", "×", text.casefold())
+
+
 def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_block_ids=(), prior_backlog_ids=(), source_graph=None):
     sheet_pages = {}
     if source_graph is not None:
@@ -98,6 +105,8 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
                     match_kinds[q] = 'metadata_token'
                 else:
                     match_kinds[q] = 'substring'
+            elif _dimension_navigation_text(q) in _dimension_navigation_text(content):
+                match_kinds[q] = 'dimension_format_navigation'
         matches = list(match_kinds)
         if not matches:
             continue
@@ -115,7 +124,7 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
     # Round-robin across queries prevents common phrases from starving exact
     # marks that occur later in the document. Source order remains stable within
     # each query; no text is truncated or synthesized.
-    priorities = {'node_sheet_navigation': -1, 'sheet_reference': 0, 'body_token': 0, 'metadata_token': 1, 'substring': 2}
+    priorities = {'node_sheet_navigation': -1, 'sheet_reference': 0, 'body_token': 0, 'dimension_format_navigation': 0, 'metadata_token': 1, 'substring': 2}
     queues = [sorted((i for i, hit in enumerate(matches_all) if q in hit['queries']),
                      key=lambda i: priorities[matches_all[i]['query_match_kinds'][q]]) for q in valid]
     order, seen = [], set()
@@ -141,7 +150,7 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
         used += len(row['content'])
     return {'hits': hits, 'backlog': backlog, 'query_hit_counts': query_hits,
             'rejected_queries': rejected, 'deferred_queries': deferred_queries,
-            'already_supplied': already_supplied, 'absence_proven': False, 'sheet_lookup_enabled':source_graph is not None, 'boundary': 'Literal MD search and optional same-version sheet lookup; zero matches do not establish absence.'}
+            'already_supplied': already_supplied, 'absence_proven': False, 'sheet_lookup_enabled':source_graph is not None, 'boundary': 'Literal MD search, numeric dimension typography navigation and optional same-version sheet lookup; navigation does not prove identity or equivalent execution. Zero matches do not establish absence.'}
 
 
 def build_context_followup(request, payload):
