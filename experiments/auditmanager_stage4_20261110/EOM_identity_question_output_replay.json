@@ -1,0 +1,28 @@
+{
+  "baseline_findings_preserved": 49,
+  "recovered_question_id": "F-050",
+  "question_core_fields_preserved": true,
+  "question_exported_separately": true,
+  "all_excel_ids_unique": true,
+  "verifier_stats": {
+    "findings_total": 50,
+    "deterministic_issues": 19,
+    "critic_error": null,
+    "phantom_cleaned": 0,
+    "page_fixed": 0,
+    "downgraded": 16,
+    "flagged_human": 3,
+    "corrector_error": null,
+    "source_reviews_pending": 1,
+    "source_review_queue_error": null
+  },
+  "source_recovery_sha256": "4f1cfc5937967d446d40e4e16e8a6df1d4a5cf7888d911b84face560dee51e64",
+  "xlsx_path": "/tmp/auditmanager_eom_identity_question_output_20261110/report.xlsx",
+  "xlsx_sha256": "d92ee4045735f00b3810c6a7695e7c0cbf35d20919a23d1f3d989698c86ce3f2",
+  "new_model_calls": 0,
+  "semantic_acceptance": false,
+  "boundary": "Real model-produced candidate through deterministic verifier and Excel. Does not test model absence verifier, engineer usefulness or complete pipeline acceptance.",
+  "durable_xlsx_path": "experiments/auditmanager_stage4_20261110/EOM_identity_question_output_control.xlsx",
+  "source_review_queue_pending": true,
+  "full_semantic_gate_complete": false
+}

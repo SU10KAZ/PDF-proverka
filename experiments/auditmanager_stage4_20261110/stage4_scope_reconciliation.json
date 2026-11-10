@@ -163,19 +163,21 @@
     {
       "hypothesis": "H03",
       "control": "EOM separate instances and repeated positional identifier H03-P02/N02",
-      "state": "literal_labels_recovered_identity_operation_running",
+      "state": "literal_repeat_question_exported_physical_identity_unresolved",
       "root": "/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM",
-      "process_receipt": "/tmp/auditmanager_eom_instance_operations_process_20261110/process.json",
+      "process_receipt": null,
       "evidence": [
         "EOM_instance_inventory_manifest.json",
         "EOM_instance_inventory_assessment.json",
         "EOM_instance_graphic_manifest.json",
-        "EOM_instance_graphic_assessment.json"
+        "EOM_instance_graphic_assessment.json",
+        "EOM_instance_identity_validated.json",
+        "EOM_identity_question_output_replay.json"
       ],
       "expected_answer_hidden": true,
       "known_source_selection": true,
       "production_acceptance": false,
-      "detail": "161records but E05 reads405 while source shows second406; no target finding. High-resolution equipment callout control started. No manual correction injected into request."
+      "detail": "Actual candidate F050 question preserves repeated406 ambiguity; no asserted equipment shortage or exact replacement mark.49baseline core fields retained through deterministic/Excel replay. Physical instance identity and full historical meaning remain unresolved; source review queue pending."
     },
     {
       "hypothesis": "H04",

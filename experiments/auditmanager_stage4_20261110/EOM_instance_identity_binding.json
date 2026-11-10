@@ -1,0 +1,48 @@
+{
+  "request_sha256": "26acd18ddbaa7fa95ba10cf943553c082b03fae9c346ec20c8249e72387c0710",
+  "inventory_result_sha256": "9b895b4905178eaefaccc21ce948d1174a9116a2e0b5bd1c054ae47e2586f981",
+  "md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "images": [
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_0.png",
+      "sha256": "cba78bea76a76c0939a6725842e628f698f111a89098d2ad1f4f746b3e71577d"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_1.png",
+      "sha256": "8a30b73979650f894f992ca1018177f24b488c3ce71f55c7e0cfa2b36d6769e1"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_2.png",
+      "sha256": "51378c8bd6cd93e34474c95ded5ebcef1a42593faf200b9339d07bb63ed12d8a"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_3.png",
+      "sha256": "ec08a97ad43527079e752d603780f18169556a7f4d752401f1ee63203d4089b5"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_4.png",
+      "sha256": "fd9808a7c67d904191b7169e1010a1b28b20854c515b15827be80cab8f5b3a55"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_5.png",
+      "sha256": "7b9a0121d148aa46d46b4c469024680a51a9151d257a7d4af665736df3479438"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_6.png",
+      "sha256": "fbf2bdb334f3eeacc4584dd9eef206e6423158181c8692b34ec75b113fb59d2f"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_7.png",
+      "sha256": "14fe1581f0b84f6e38cfab8f761464a91bf9437e923c3f6b57eb074b93062766"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_instance_graphic_control_20261110/tiles/detail_tile_8.png",
+      "sha256": "a743cc794d2b0b964f0519aff63ad45b7529910976e296242713eb50b44d8f8e"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0,
+  "known_source_control": true,
+  "expected_answers_supplied": false
+}
