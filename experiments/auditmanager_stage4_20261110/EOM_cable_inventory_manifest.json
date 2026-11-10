@@ -1,0 +1,42 @@
+{
+  "source_md_sha256": "302104ee5dac921d6bab673e194e4ab132a80083696cc94f4af5f50981ca6060",
+  "blocks": 4,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_8fac348a820c41aeb2d941339987da14",
+        "blk_513e35c4f8a7432986e9a498d4573996",
+        "blk_67c8cc82d7e24f738797d9b75ce14e97",
+        "blk_1da24da5ad594599aa59defe9fde265b"
+      ],
+      "message_chars": 34344,
+      "images": [
+        {
+          "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+          "sha256": "0eb4286aeca07a3e7755216036b8253b936d2fc12034dddca7f78fb0bd6879c7"
+        },
+        {
+          "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+          "sha256": "a01102c8349160a0b2f4a2f050c1821c1a185575010318cdbc589a1a80b09798"
+        }
+      ]
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": true,
+  "semantic_inventory_complete": false,
+  "full_source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "source_selection": "Two complete original diagram GRAPHIC blocks and two unchanged authoritative specification TEXT blocks. No selected line identifiers, expected mismatches or historical findings.",
+  "request_digests": [
+    "6e1ca6fd31ba126a082d23bfdc07e404b8727d8cac7060f5785e9a4dc8c1d879"
+  ],
+  "requests": 1,
+  "known_source_selection": true,
+  "whole_project_control": false,
+  "independent_discovery": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}
