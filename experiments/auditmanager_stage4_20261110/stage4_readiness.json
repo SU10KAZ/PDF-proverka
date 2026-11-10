@@ -552,6 +552,18 @@
     "claude_allowed_by_user": true,
     "previous_30_percent_limit_removed_by_user": true,
     "openrouter_per_request_permission_still_required": true,
-    "claude_specific_payload_status": "Auto-review rejected dispatch; explicit request for 23534 characters and 8 images pending. No Claude request sent."
+    "claude_specific_payload_status": "Explicit approval received for this and subsequent Claude requests in task; authorized ITP follow-up completed."
+  },
+  "itp_model_query_followup_live_control": {
+    "status": "partial_pass",
+    "initial_model": "codex/gpt-6-astra",
+    "followup_model": "claude/claude-sonnet-5-5",
+    "report": "experiments/auditmanager_stage4_20261110/ITP_claude_followup_assessment.json",
+    "initial_duration_ms": 44370,
+    "followup_duration_ms": 50834,
+    "annotation_conflicts_preserved": true,
+    "scope_error": "C5 refutes unavailable text descriptions using images",
+    "retrieval_complete": false,
+    "automatic_application": false
   }
 }
