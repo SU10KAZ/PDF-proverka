@@ -1,0 +1,91 @@
+{
+  "source_md_sha256": "c8150192b8a80354ae9cd83d3ee56b959f2c12521dbceed2b005656a8f4f776c",
+  "blocks": 5,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_96ed7d88fb23414bb14d93191a89365a"
+      ],
+      "message_chars": 4475,
+      "images": [
+        {
+          "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+          "sha256": "8e69fe04c4bd1743063db50a61e17c1813f8a1214949ff6c8855abc3ed3bf1bb"
+        }
+      ]
+    },
+    {
+      "stage": "object_inventory_001",
+      "block_ids": [
+        "blk_cd9d763d198246859c3df42c18b5c3d8"
+      ],
+      "message_chars": 4626,
+      "images": [
+        {
+          "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+          "sha256": "05e8996615a803ac8aeeb4c80430160eb8954f89bc42940d73a0c5613da7b8d0"
+        }
+      ]
+    },
+    {
+      "stage": "object_inventory_002",
+      "block_ids": [
+        "blk_f784be4786274e8c84f32d874ed99969"
+      ],
+      "message_chars": 5004,
+      "images": [
+        {
+          "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+          "sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2"
+        }
+      ]
+    },
+    {
+      "stage": "object_inventory_003",
+      "block_ids": [
+        "blk_127bea47b93f4214ac6430c54b21517a"
+      ],
+      "message_chars": 5009,
+      "images": [
+        {
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba"
+        }
+      ]
+    },
+    {
+      "stage": "object_inventory_004",
+      "block_ids": [
+        "blk_47163e69651c48528b3e054d5a5db095"
+      ],
+      "message_chars": 4664,
+      "images": [
+        {
+          "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+          "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210"
+        }
+      ]
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": true,
+  "semantic_inventory_complete": false,
+  "full_source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "source_selection": "Five unchanged GRAPHIC block fragments with original page headers; no TEXT re-extraction.",
+  "request_digests": [
+    "6ff9983eeb7c045f1d5e5a4cc3a386fce079592bbc2c9ade85058ad818f83688",
+    "8ed7d177c766f040a0292b84e3a35c92c9c66bf3fc1ef7a75660150dc0efbf7b",
+    "2f8d99c5b672a4204bb9bd760271db260f0348a1e98394580e959aa89ecb24ff",
+    "40550eeb14453d9b42d8b8685bb2cc1991655490fb286ff46008c097ed11fe91",
+    "66afcd832214b83ba8135259e175d6f07c104fc43a9d21e56ef7e474adb50ba5"
+  ],
+  "requests": 5,
+  "known_source_selection": true,
+  "whole_project_control": false,
+  "independent_discovery": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}

@@ -122,6 +122,16 @@
         "KM_node_navigation_summary.json"
       ],
       "detail": "Actual target node attached after compact-reference navigation fix. Astra explicitly retained needs_data because stage П applicability to stage Р and physical cut-length boundaries remain unproved.26classic preserved,0new rows.15focused tests passed; no automatic suppression rule accepted."
+    },
+    {
+      "hypothesis": "H03",
+      "state": "AK_five_cabinet_inventory_started",
+      "control": "Original named AK14 five cabinet source drawings; generic extraction instructions only.",
+      "root": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK",
+      "session": 40416,
+      "expected_answer_hidden": true,
+      "independent_discovery": false,
+      "remaining": "Inspect model-extracted terminal addresses and physical scope, then execute identity/operation checks; one cabinet mounting-dimension recovery does not cover this control."
     }
   ]
 }
