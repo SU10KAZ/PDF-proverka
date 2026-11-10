@@ -1,0 +1,349 @@
+{
+  "operation": {
+    "id": "EOM27_model_extracted_four_circuits",
+    "kind": "set_balance",
+    "scope": "Only four known control branches C2325–C2328 within source-bound VRU2/RP3; all RP3 table rows inspected.",
+    "left": {
+      "scope_refs": [
+        "blk_4e968dd71c7149aca85e4195d5c3de49"
+      ],
+      "items": [
+        {
+          "key": [
+            "РП3",
+            "C2325"
+          ],
+          "role": "reserve",
+          "source_refs": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ]
+        },
+        {
+          "key": [
+            "РП3",
+            "C2326"
+          ],
+          "role": "active",
+          "source_refs": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ]
+        },
+        {
+          "key": [
+            "РП3",
+            "C2327"
+          ],
+          "role": "active",
+          "source_refs": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ]
+        },
+        {
+          "key": [
+            "РП3",
+            "C2328"
+          ],
+          "role": "reserve",
+          "source_refs": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ]
+        }
+      ]
+    },
+    "right": {
+      "scope_refs": [
+        "blk_c5f0556f94c14503bfe178ef5941c077"
+      ],
+      "items": []
+    }
+  },
+  "execution": {
+    "operations": [
+      {
+        "id": "EOM27_model_extracted_four_circuits",
+        "status": "computed",
+        "source_interpretation_verified": false,
+        "scope": "Only four known control branches C2325–C2328 within source-bound VRU2/RP3; all RP3 table rows inspected.",
+        "only_left": [
+          {
+            "key": [
+              "РП3",
+              "C2326"
+            ],
+            "source_refs": [
+              "blk_4e968dd71c7149aca85e4195d5c3de49"
+            ]
+          },
+          {
+            "key": [
+              "РП3",
+              "C2327"
+            ],
+            "source_refs": [
+              "blk_4e968dd71c7149aca85e4195d5c3de49"
+            ]
+          }
+        ],
+        "only_right": [],
+        "matched": 0,
+        "reserves": {
+          "left": [
+            [
+              "РП3",
+              "C2325"
+            ],
+            [
+              "РП3",
+              "C2328"
+            ]
+          ],
+          "right": []
+        },
+        "publication": "requires_source_scope_and_identity_review"
+      }
+    ],
+    "computed": 1,
+    "not_checked": 0,
+    "coverage_complete": false
+  },
+  "model_graphic_lineage": [
+    {
+      "object_id": "rp3_c2325",
+      "literal_mark": "С2325",
+      "parameters": {
+        "марка_цепи": "С2325",
+        "панель": "РП3",
+        "аппарат": "QF3.25; C50А; ВА-303; 20кА",
+        "потребитель": null,
+        "роль": "Резерв",
+        "нагрузка": null,
+        "кабель": null
+      }
+    },
+    {
+      "object_id": "rp3_c2326",
+      "literal_mark": "С2326",
+      "parameters": {
+        "марка_цепи": "С2326",
+        "панель": "РП3",
+        "аппарат": "QFD3.14; C16А; 30мА",
+        "дополнительный_аппарат": "УЗДП 25А; QSA1; 4P, AFD",
+        "потребитель": "Розетки коридора МОП во 2 секции С2; символ в полосе 2–5 этаж",
+        "роль": "рабочая",
+        "Ру_кВт": 2.0,
+        "Рр_кВт": 2.0,
+        "cosφ": 0.9,
+        "Iр_А": 10.1,
+        "кабель": "ППГнг-HF 3×4,0",
+        "длина_м": 50,
+        "ΔU_процент": 2.08,
+        "подпись_у_розетки": "ППГнг(А)-HF; 3×2,5 –10м (5×10м)"
+      }
+    },
+    {
+      "object_id": "rp3_c2327",
+      "literal_mark": "С2327",
+      "parameters": {
+        "марка_цепи": "С2327",
+        "панель": "РП3",
+        "аппарат": "QFD3.15; C16А; 30мА",
+        "дополнительный_аппарат": "УЗДП 25А; QSA1; 4P, AFD",
+        "потребитель": "Розетки коридора МОП во 2 секции С2; символ в полосе 6–10 этаж",
+        "роль": "рабочая",
+        "Ру_кВт": 2.0,
+        "Рр_кВт": 2.0,
+        "cosφ": 0.9,
+        "Iр_А": 10.1,
+        "кабель": "ППГнг-HF 3×6,0",
+        "длина_м": 65,
+        "ΔU_процент": 1.81,
+        "подпись_у_розетки": "ППГнг(А)-HF; 3×2,5 –10м (5×10м)"
+      }
+    },
+    {
+      "object_id": "rp3_c2328",
+      "literal_mark": "С2328",
+      "parameters": {
+        "марка_цепи": "С2328",
+        "панель": "РП3",
+        "аппарат": "QF3.28; C50А; ВА-303; 20кА",
+        "потребитель": null,
+        "роль": "Резерв",
+        "нагрузка": null,
+        "кабель": null
+      }
+    }
+  ],
+  "model_table_rows": {
+    "C231": {
+      "object_id": "p2_c231",
+      "quote": "| C231 | Рабочее освещение лестничной клетки в 2 секции С2 с 2-10 этаж | 0,300 | 0,300 | 1,4 | 0,95 | 0,32 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C232": {
+      "object_id": "p2_c232",
+      "quote": "| C232 | Рабочее освещение лифтового холла №1 и №2 в 2 секции С2 | 0,800 | 0,800 | 3,8 | 0,95 | 0,84 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C233": {
+      "object_id": "p2_c233",
+      "quote": "| C233 | Рабочее освещение квартирного коридора МОП в 2 секции С2 | 0,700 | 0,700 | 3,3 | 0,95 | 0,74 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C234": {
+      "object_id": "p2_c234",
+      "quote": "| C234 | Рабочее освещение бра квартирного коридора МОП в 2 секции С2 | 0,100 | 0,100 | 0,5 | 0,95 | 0,11 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C235": {
+      "object_id": "p2_c235",
+      "quote": "| C235 | Рабочее освещение лифтовых шахт Л2.1 и Л2.2 в 2 секции С2 | 0,100 | 0,100 | 0,5 | 0,95 | 0,11 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C236": {
+      "object_id": "p2_c236",
+      "quote": "| C236 | Рабочее освещение пом. ПУИ в 2 секции С2 | 0,200 | 0,200 | 1,0 | 0,95 | 0,21 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C237": {
+      "object_id": "p2_c237",
+      "quote": "| C237 | Рабочее освещение 1 технического этажа | 0,200 | 0,200 | 1,0 | 0,95 | 0,21 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C238": {
+      "object_id": "p2_c238",
+      "quote": "| C238 | Рабочее освещение 10 технического этажа | 0,200 | 0,200 | 1,0 | 0,95 | 0,21 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C239": {
+      "object_id": "p2_c239",
+      "quote": "| C239 | Рабочее освещение пом.электро- щитовой С2 | 0,100 | 0,100 | 0,5 | 0,95 | 0,11 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2310": {
+      "object_id": "p2_c2310",
+      "quote": "| C2310 | Рабочее освещение пом.СС С2 на -1 этаже | 0,100 | 0,100 | 0,5 | 0,95 | 0,11 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2311": {
+      "object_id": "p2_c2311",
+      "quote": "| C2311 | Розетка для отопительного прибора в 2 секции на -1 этаже в щитовой | 1,0 | 1,0 | 4,9 | 0,92 | 1,09 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2312": {
+      "object_id": "p2_c2312",
+      "quote": "| C2312 | Розетка для отопительного прибора в 2 секции на -1 этаже в пом. СС | 1,0 | 1,0 | 4,9 | 0,92 | 1,1 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2313": {
+      "object_id": "p2_c2313",
+      "quote": "| C2313 | Обогрев водосточных воронок на кровле | 0,2 | 0,2 | 1,0 | 0,90 | 0,2 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2314": {
+      "object_id": "p2_c2314",
+      "quote": "| C2314 | 2ШРОВ1 | 1,4 | 1,1 | 2,0 | 0,85 | 1,29 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2315": {
+      "object_id": "p2_c2315",
+      "quote": "| C2315 | 2ШРОВ2 | 3,70 | 3,300 | 5,9 | 0,85 | 3,88 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2316": {
+      "object_id": "p2_c2316",
+      "quote": "| C2316 | У1 | 12,0 | 12,0 | 19,2 | 0,95 | 12,63 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2317": {
+      "object_id": "p2_c2317",
+      "quote": "| C2317 | У2 | 12,0 | 12,0 | 19,2 | 0,95 | 12,63 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2318": {
+      "object_id": "p2_c2318",
+      "quote": "| C2318 | УЗ | 12,0 | 12,0 | 19,2 | 0,95 | 12,63 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2319": {
+      "object_id": "p2_c2319",
+      "quote": "| C2319 | Наружный блок кондиционера АМ080АХVАНH/ЕА коридор МОП С2 | 5,0 | 5,0 | 8,5 | 0,90 | 5,56 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2320": {
+      "object_id": "p2_c2320",
+      "quote": "| C2320 | Фанкойлы квартирных коридоров МОП С2 | 0,40 | 0,40 | 2,0 | 0,90 | 0,44 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2321": {
+      "object_id": "p2_c2321",
+      "quote": "| C2321 | 1ЩС | 7,300 | 6,500 | 11,0 | 0,90 | 7,22 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2322": {
+      "object_id": "p2_c2322",
+      "quote": "| C2322 | 1ЩС-УК | 3,000 | 2,700 | 4,6 | 0,90 | 3,00 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2323": {
+      "object_id": "p2_c2323",
+      "quote": "| C2323 | 1ЩО-1 | 0,46 | 0,41 | 0,7 | 0,95 | 0,44 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    },
+    "C2324": {
+      "object_id": "p2_c2324",
+      "quote": "| C2324 | 1ЩО-УК | 0,300 | 0,300 | 0,5 | 0,95 | 0,32 |",
+      "source_ref": "blk_c5f0556f94c14503bfe178ef5941c077"
+    }
+  },
+  "full_table_scope_row_count": 24,
+  "graphic_result_sha256": "88f490355ac55aacb68240b6db182099ba1876157dbf355b9b8df0bab522a436",
+  "table_result_sha256": "4f923c50e2393f7ec9ab52e6bf0d30e205d8e6bf1a276ab5d04c9a38432a909b",
+  "directly_viewed_control_tiles": [
+    {
+      "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+      "page_index": 3,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        2581.0906054279753,
+        0.0,
+        3317.940709812109,
+        597.7697226750628
+      ],
+      "grid_row": 0,
+      "grid_column": 5,
+      "path": "/tmp/auditmanager_eom_graphic_recovery_20261110_grid/blk_4e968dd71c7149aca85e4195d5c3de49/detail_tile_5.png",
+      "width": 2211,
+      "height": 1794,
+      "sha256": "33c09ee75310ba3b058b9cddffa147a822477dfbca288956810c069b747ddfa5"
+    },
+    {
+      "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+      "page_index": 3,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        2581.0906054279753,
+        514.3599939297051,
+        3317.940709812109,
+        1153.8345809774466
+      ],
+      "grid_row": 1,
+      "grid_column": 5,
+      "path": "/tmp/auditmanager_eom_graphic_recovery_20261110_grid/blk_4e968dd71c7149aca85e4195d5c3de49/detail_tile_13.png",
+      "width": 2211,
+      "height": 1919,
+      "sha256": "c0b12410ba984033c908e6988c5a64d6fb8bc99dae80e5c96f2af398ab49a06f"
+    }
+  ],
+  "bounded_source_review": "Two active2kWbranches, their protective apparatus and reserves checked on tiles5/13. Table contains24explicit individual rows; no target active row. Cable main sections3x4 and3x6 agree with this graphic; this is not whole-circuit engineering verification.",
+  "case_aliases": "Cyrillic С and Latin C; graphic РП3 and authoritative TEXT РПЗ are compared only in this explicitly reviewed source scope. TEXT unchanged.",
+  "control_pair_passed": true,
+  "independent_full_project_discovery": false,
+  "full_graphic_invalid_objects": 4,
+  "limits": [
+    "Bounded control chosen from known case; not complete scheme comparison.",
+    "Four duplicate-ID records elsewhere remain excluded and unresolved.",
+    "Aggregation into other load rows has not been ruled out; do not add4kW or claim overload.",
+    "No production release or full six-project improvement established."
+  ]
+}

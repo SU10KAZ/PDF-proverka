@@ -67,15 +67,16 @@
   "specific_open_controls": [
     {
       "hypothesis": "H04",
-      "state": "extraction_complete_grid_recovery_running",
+      "state": "bounded_model_extracted_pair_passed_full_inventory_partial",
       "control": "Five smaller packets, all17blocks and3images preserved exactly; no manual repair of failed response.",
       "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM",
       "session": null,
       "expected_answer_hidden": true,
-      "detail": "5/5packets completed;345records;4unresolved source blocks. Not345instances or findings. Await finer graphic marks before model-derived set balance.",
-      "graphic_recovery_session": 38419,
+      "detail": "Astra grid extracted four control branches. Actual model-extracted24table rows cross-checked; activeC2326/C2327lack separate rows, reservesC2325/C2328excluded. No4kWaggregate omission claim; four duplicate-IDgraphic records elsewhere remain unresolved.",
+      "graphic_recovery_session": null,
       "claude_grid_session": 23387,
-      "model_comparison_boundary": "Same frozen source task and source files; Claude resized18/24images to its2000px many-image limit, recorded encoded hashes. Neither model gets other model answer. Bounded reading control, not full model-selection acceptance."
+      "model_comparison_boundary": "Same frozen source task and source files; Claude resized18/24images to its2000px many-image limit, recorded encoded hashes. Neither model gets other model answer. Bounded reading control, not full model-selection acceptance.",
+      "evidence": "EOM_model_extracted_balance_control.json"
     },
     {
       "hypothesis": "H06",
