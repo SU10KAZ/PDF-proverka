@@ -1,0 +1,29 @@
+{
+  "status": "live_workflow_completed_candidate_rejected",
+  "model": "claude/claude-sonnet-5-5",
+  "real_calls": 2,
+  "durations_ms": [
+    32188,
+    46449
+  ],
+  "admission_receipts": [
+    {
+      "finding_id": "F-013",
+      "status": "not_applied",
+      "reason": "conclusive_claim_without_evidence"
+    }
+  ],
+  "original_finding_preserved": true,
+  "additional_contract_issue": "final_wording_verified nested inside approved_fields instead of top-level; raw response preserved, not repaired to force acceptance.",
+  "semantic_limit": "Conditional risk was marked supported with no evidence in its source-review claim; explicit derived-evidence linkage is not implemented. No automatic acceptance.",
+  "context_bug_found": "Three deferred queries were skipped after empty first search page.",
+  "context_bug_corrected_locally": true,
+  "corrected_search_revision": 2,
+  "new_source_block_ids": [
+    "blk_aa5ad48812d541538c628ba1476d1b05"
+  ],
+  "remaining_deferred_queries": [],
+  "corrected_context_sent": false,
+  "new_independent_audit": false,
+  "production_changed": false
+}

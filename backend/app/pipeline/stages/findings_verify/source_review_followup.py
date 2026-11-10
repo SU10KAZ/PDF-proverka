@@ -44,6 +44,20 @@ def prepare_review_followup(response, queue, findings, md, graphic_dir):
             raise
         result['status'] = 'context_total_budget'
         return result
+    # Exhaust deferred query batches locally when a page contains no new
+    # sources. No model call is needed to advance an empty search page.
+    while True:
+        expanded_packet = next(p for p in expanded['packets'] if p['finding_id'] == response['finding_id'])
+        receipt = expanded_packet['context_search_receipt']
+        if (receipt['added_block_ids'] or not receipt.get('deferred_queries')
+                or expanded_packet['context_revision'] >= MAX_CONTEXT_REVISIONS):
+            break
+        try:
+            expanded = expand_source_review_context(expanded, response['finding_id'], md, [], continue_backlog=True)
+        except ValueError as exc:
+            if str(exc) != 'context_total_budget':
+                raise
+            break
     attach_graphic_receipts(expanded, md, graphic_dir)
     packet = next(p for p in expanded['packets'] if p['finding_id'] == response['finding_id'])
     result['search_receipt'] = packet['context_search_receipt']

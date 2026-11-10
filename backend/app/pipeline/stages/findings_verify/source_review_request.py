@@ -54,6 +54,7 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
                'original_claims': claims, 'authoritative_text': packet['sources'],
                'images_in_attachment_order': [{k: v for k, v in im.items() if k != 'path'} for im in images],
                'unavailable_images': omitted,
+               'context_search_boundary': {k: packet.get('context_search_receipt', {}).get(k) for k in ('query_hit_counts', 'deferred_queries', 'backlog', 'absence_proven')},
                'missing_block_ids': packet.get('missing_or_ambiguous_block_ids', []),
                'budgeted_text_block_ids': packet.get('budgeted_block_ids', [])}
     instruction = '''Review only the supplied claims, authoritative TEXT and attached images.

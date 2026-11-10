@@ -79,3 +79,18 @@ def test_recorded_backlog_continues_without_new_model_queries(tmp_path):
     assert second['search_receipt']['added_block_ids']
     response['context_sha256']=queue['packets'][0]['context_sha256']
     assert prepare_review_followup(response,second['expanded_queue'],findings,md,tmp_path)['status']=='invalid_response'
+
+
+def test_empty_first_query_batch_does_not_skip_deferred_search(tmp_path):
+    md,findings,queue,response=data()
+    response['claims'][0]['context_queries']=[f'no match {i}' for i in range(6)]+['K22']
+    result=prepare_review_followup(response,queue,findings,md,tmp_path)
+    assert result['status']=='prepared_awaiting_dispatch_authorization'
+    p=result['expanded_queue']['packets'][0]
+    assert p['context_revision']==2
+    assert p['context_search_receipt']['added_block_ids']==['extra']
+    assert p['context_search_history'][0]['deferred_queries']==['K22']
+    import json
+    payload=json.loads(result['request']['messages'][1]['content'])
+    assert payload['context_search_boundary']['absence_proven'] is False
+    assert result['request']['sent'] is False
