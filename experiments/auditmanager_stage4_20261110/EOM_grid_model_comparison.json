@@ -1,0 +1,38 @@
+{
+  "same_source_request_sha256": "861b684bdb0edf0385cb10abc954b3ac6ef421837e0bb0bd856af4865f7602b9",
+  "providers": [
+    {
+      "provider": "Astra",
+      "duration_ms": 626178,
+      "reported_input_tokens": 86405,
+      "reported_output_tokens": 30782,
+      "raw_records": 79,
+      "structurally_valid_records": 75,
+      "invalid_records": 4,
+      "known_four_branch_control_passed": true,
+      "whole_block_complete": false
+    },
+    {
+      "provider": "Claude Sonnet",
+      "duration_ms": 610458,
+      "reported_input_tokens": 108103,
+      "reported_output_tokens": 91826,
+      "raw_records": 86,
+      "structurally_valid_records": 86,
+      "invalid_records": 0,
+      "known_four_branch_control_passed": true,
+      "whole_block_complete": false
+    }
+  ],
+  "source_review": "BothreadactiveC2326/C2327andreserveC2325/C2328withmatchingapparatusandload. Root viewed source tiles5/9/13. Claude distinguishes lighting/power occurrences ofC2321/C2322withuniqueIDs; Astra fields distinguish scope butIDs collide.",
+  "claude_added_value_in_this_control": "Explicit separate record keys and duplicate-mark candidate; source confirms distinct branches. No engineer acceptance yet.",
+  "recommendation": "KeepAstra primary; considerClaude for difficult scope/identity cases. Do not require double reading on every block based on one known control.",
+  "limitations": [
+    "Single known source control; not full model selection or blinded project comparison.",
+    "Claude resized18images underitsmany-imagepolicy; sourcefiles/tasks identical, encoded inputs not identical.",
+    "Token counters differ by provider and do not prove monetary cost.",
+    "Neither output is a complete engineering audit; other candidates unreviewed."
+  ],
+  "monetary_cost_known": false,
+  "production_changed": false
+}

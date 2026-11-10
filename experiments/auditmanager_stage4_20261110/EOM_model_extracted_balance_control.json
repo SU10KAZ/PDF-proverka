@@ -1,4 +1,5 @@
 {
+  "provider": "astra",
   "operation": {
     "id": "EOM27_model_extracted_four_circuits",
     "kind": "set_balance",
@@ -342,7 +343,7 @@
   "full_graphic_invalid_objects": 4,
   "limits": [
     "Bounded control chosen from known case; not complete scheme comparison.",
-    "Four duplicate-ID records elsewhere remain excluded and unresolved.",
+    "4 invalid graphic records remain excluded; record validity is not physical identity proof.",
     "Aggregation into other load rows has not been ruled out; do not add4kW or claim overload.",
     "No production release or full six-project improvement established."
   ]
