@@ -65,7 +65,7 @@
     {
       "id": "H05",
       "status": "partial",
-      "verified_or_implemented_scope": "Exact decimal comparison and basis checks implemented and unit-tested. ITP source replay verifies four exact MD rows and derived sum 819; no project-stated aggregate or violation count is claimed. VK32 manually reinspected graphic inventory 2+10 matches authoritative specification 12 kits; real negative control recorded, paired positive control incomplete. VK20 source-backed sensor mapping question paired with VK32 negative; direct callout/device arithmetic rejected as incomparable, end-to-end retention still unverified.",
+      "verified_or_implemented_scope": "Exact decimal comparison and basis checks implemented and unit-tested. ITP source replay verifies four exact MD rows and derived sum 819; no project-stated aggregate or violation count is claimed. VK32 manually reinspected graphic inventory 2+10 matches authoritative specification 12 kits; real negative control recorded, paired positive control incomplete. VK20 source-backed sensor mapping question paired with VK32 negative; direct callout/device arithmetic rejected as incomparable, end-to-end retention still unverified. EOM27 exact 24-row sums reproduce displayed RP3 totals under ordinary rounding; missing active row finding remains separate and no universal tolerance is introduced.",
       "remaining": "Verify physical interpretation, conversions, regimes and real control cases; arithmetic is not semantic proof.",
       "evidence": [
         {
@@ -79,6 +79,10 @@
         {
           "path": "experiments/auditmanager_stage4_20261110/VK20_sensor_identity_control.json",
           "sha256": "b83b6c37dbff8df584770b4f004f752e0b980af3627da7a801cd852a85022085"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM27_arithmetic_control.json",
+          "sha256": "ca716461287c295edceb6857003a5c6cce311cc2b262608e20bf3e86dd5e5601"
         }
       ]
     },
