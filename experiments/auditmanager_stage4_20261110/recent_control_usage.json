@@ -72,12 +72,99 @@
     {
       "control": "EOM_cable_graphic_1",
       "directory": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_001",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "1130b010b7fa930603ba4017e7eaf55a9ebf140475feb8baa51f9e66a0bf48a2",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 451601,
+      "input_tokens": 60543,
+      "output_tokens": 22073,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "EOM_cable_operations_0",
+      "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_000/circuit_13",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "84ad85c8fb521869e1c8b1cceb985b048a12397cab0073f7d0a01d019f4afc8f",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 29452,
+      "input_tokens": 38102,
+      "output_tokens": 1092,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "EOM_cable_operations_1",
+      "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_001/rp5_10",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "3cdc0a3ed93cd8935e754bb252e95e6586440785e8069218079601e399b59102",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 34037,
+      "input_tokens": 75746,
+      "output_tokens": 1037,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "EOM_cable_context_0_1",
+      "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_000/circuit_13/context_1",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "3c07ba6e7e4f7da9899141060aed13b6038b2fb847f46b9c2b186138bd02bc6c",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 57121,
+      "input_tokens": 71461,
+      "output_tokens": 2351,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "EOM_cable_context_0_2",
+      "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_000/circuit_13/context_2",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_context_0_3",
+      "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_000/circuit_13/context_3",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_context_1_1",
+      "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_001/rp5_10/context_1",
       "status": "result_pending",
       "attempt_receipt": {
-        "status": "started",
-        "request_sha256": "82be4047d7b8f484408d2548ea459aa87a28081567283e75b28fbf898101018d"
+        "status": "started"
       },
       "token_counters_incomplete": true
+    },
+    {
+      "control": "EOM_cable_context_1_2",
+      "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_001/rp5_10/context_2",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_context_1_3",
+      "directory": "/tmp/auditmanager_eom_cable_operations_20261110/block_001/rp5_10/context_3",
+      "status": "not_started"
     },
     {
       "control": "EOM_cable_inventory",
@@ -592,12 +679,36 @@
     {
       "control": "KM_LK6_quantity_context_2",
       "directory": "/tmp/auditmanager_km_quantity_operations_20261110/obj_09/context_2",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "51f6d6e7609204b008d10200d82b3949618e060351fb380e8a8a1983616d5a9b",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 79980,
+      "input_tokens": 56383,
+      "output_tokens": 3623,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "KM_LK6_quantity_context_3",
       "directory": "/tmp/auditmanager_km_quantity_operations_20261110/obj_09/context_3",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "755a49bef171a078495c8ce821d9cc2feaa2e3d1da7866ac5fb7e8a31e7bec07",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 131269,
+      "input_tokens": 68774,
+      "output_tokens": 6140,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "KM_OGM20_geometry",
@@ -951,14 +1062,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 49,
+  "completed_requests": 55,
   "pending_results": 1,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 1464889,
-  "reported_output_tokens": 510882,
+  "reported_input_tokens": 1835898,
+  "reported_output_tokens": 547198,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 171.055,
+  "completed_request_minutes_sum": 184.113,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

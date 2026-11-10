@@ -1,0 +1,15 @@
+{
+  "before": {
+    "status": "context_preparation_failed",
+    "reason": "Original image binding changed",
+    "external_request_sent": false
+  },
+  "after": {
+    "status": "prepared",
+    "original_eight_tiles_preserved": true,
+    "additional_graphics": 8
+  },
+  "tests": "12 passed: test_object_operation_followup.py and test_object_operation_continuation.py",
+  "runtime_commit": "0a25eb7b",
+  "semantic_acceptance_proven": false
+}

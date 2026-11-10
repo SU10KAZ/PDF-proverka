@@ -1,0 +1,1842 @@
+{
+  "text": "{\n  \"object_registry\": [\n    {\n      \"id\": \"rp1_1\",\n      \"identity\": \"СЭ11\",\n      \"scope\": \"РП1, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ11\",\n          \"cable_designation\": \"ППГнг-HF 5х1х150\",\n          \"cable_count\": 5,\n          \"conductors_per_cable\": 1,\n          \"cross_section_mm2\": 150,\n          \"length_m\": 65,\n          \"consumer\": \"Этажные щиты с маркировкой «[3/З]ЩЭРН2»: «10 ЭТАЖ» и «С 2 ПО 6 ЭТАЖ»\",\n          \"protective_device\": \"QF1.1, 250 А, ВА-333А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_0 и detail_tile_8: вертикальная линия от QF1.1 проходит через обе группы этажных щитов. Кабель и 65 м подписаны вдоль этой линии. Первый знак маркировки щитов неоднозначен.\"\n      }]\n    },\n    {\n      \"id\": \"rp1_2\",\n      \"identity\": \"СЭ12\",\n      \"scope\": \"РП1, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ12\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF1.2, 250 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_0 и detail_tile_8: позиция СЭ12 соответствует QF1.2 с надписью «Резерв»; внешний кабель и потребитель не показаны.\"\n      }]\n    },\n    {\n      \"id\": \"rp2_1\",\n      \"identity\": \"СЭ21\",\n      \"scope\": \"РП2, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ21\",\n          \"cable_designation\": \"ППГнг-HF 5х1х150\",\n          \"cable_count\": 5,\n          \"conductors_per_cable\": 1,\n          \"cross_section_mm2\": 150,\n          \"length_m\": 65,\n          \"consumer\": \"Этажные щиты «[3/З]ЩЭРН7», «С 7 ПО 9 ЭТАЖ»\",\n          \"protective_device\": \"QF2.1, 200 А, ВА-333А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_0 и detail_tile_8: линия QF2.1 продолжается вверх к группе этажных щитов; на ней стоят СЭ21, кабель и 65 м. Первый знак маркировки щитов неоднозначен.\"\n      }]\n    },\n    {\n      \"id\": \"rp2_2\",\n      \"identity\": \"СЭ22\",\n      \"scope\": \"РП2, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ22\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF2.2, 200 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_0, detail_tile_8 и detail_tile_9: QF2.2 заканчивается резервным выводом; кабельная подпись отсутствует.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_1\",\n      \"identity\": \"СЭ31\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ31\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 70,\n          \"consumer\": \"Рабочее освещение лестничной клетки в 3 секции С3 с 2–10 этаж\",\n          \"protective_device\": \"QF3.1, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_0–1 и detail_tile_8–9: от QF3.1 через К3.1 прослеживается общий стояк с ответвлениями к светильникам; рядом с СЭ31 указаны 3х2,5 и 70 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_2_1\",\n      \"identity\": \"СЭ32.1\",\n      \"scope\": \"РП3, отходящая ветвь группы QF3.2\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ32.1\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 65,\n          \"consumer\": \"Рабочее освещение лифтового холла №1 и №2 в 3 секции С3\",\n          \"protective_device\": \"QF3.2.1, C16 А; общий QF3.2, C20 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_1 и detail_tile_9: отдельный вертикальный вывод QF3.2.1 идет к нижнему из двух изображенных потребителей с подписью лифтового холла; вдоль него указано 65 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_2_2\",\n      \"identity\": \"СЭ32.2\",\n      \"scope\": \"РП3, отходящая ветвь группы QF3.2\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ32.2\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 85,\n          \"consumer\": \"Рабочее освещение лифтового холла №1 и №2 в 3 секции С3\",\n          \"protective_device\": \"QF3.2.2, C16 А; общий QF3.2, C20 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_1 и detail_tile_9: вывод QF3.2.2 прослеживается к верхнему изображенному потребителю лифтового холла; на его линии указано 85 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_3_1\",\n      \"identity\": \"СЭ33.1\",\n      \"scope\": \"РП3, отходящая ветвь группы QF3.3\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ33.1\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 65,\n          \"consumer\": \"Рабочее освещение этажного коридора МОП в 3 секции С3, 2,3 этаж\",\n          \"protective_device\": \"QF3.3.1, C16 А; общий QF3.3, C20 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_1 и detail_tile_9: линия QF3.3.1 соединена со светильником под подписью «2,3 этаж»; подпись кабеля содержит 65 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_3_2\",\n      \"identity\": \"СЭ33.2\",\n      \"scope\": \"РП3, отходящая ветвь группы QF3.3\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ33.2\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 85,\n          \"consumer\": \"Рабочее освещение этажного коридора МОП в 3 секции С3, 4,5 этаж\",\n          \"protective_device\": \"QF3.3.2, C16 А; общий QF3.3, C20 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_1 и detail_tile_9: линия QF3.3.2 идет к светильнику под подписью «4,5 этаж»; вдоль нее указаны 3х2,5 и 85 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_4_1\",\n      \"identity\": \"СЭ34.1\",\n      \"scope\": \"РП3, отходящая ветвь группы QF3.4\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ34.1\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 85,\n          \"consumer\": \"Рабочее освещение этажного коридора МОП в 3 секции С3, 6,7 этаж\",\n          \"protective_device\": \"QF3.4.1, C16 А; общий QF3.4, C20 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_1 и detail_tile_9: вертикаль QF3.4.1 заканчивается светильником под подписью «6,7 этаж»; на ней указано 85 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_4_2\",\n      \"identity\": \"СЭ34.2\",\n      \"scope\": \"РП3, отходящая ветвь группы QF3.4\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ34.2\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 85,\n          \"consumer\": \"Рабочее освещение этажного коридора МОП в 3 секции С3, 8–10 этаж\",\n          \"protective_device\": \"QF3.4.2, C16 А; общий QF3.4, C20 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_1–2 и detail_tile_9–10: вывод QF3.4.2 прослеживается к светильнику «8–10 этаж»; подпись длины 85 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_5\",\n      \"identity\": \"СЭ35\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ35\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 90,\n          \"consumer\": \"Рабочее освещение лифтовых шахт Л3.1 и Л3.2 в 3 секции С3\",\n          \"protective_device\": \"QF3.5, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_1–2 и detail_tile_9–10: QF3.5 через К3.5 связан со стояком освещения шахт; на вертикали указаны СЭ35 и 90 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_6\",\n      \"identity\": \"СЭ36\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ36\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 70,\n          \"consumer\": \"Рабочее освещение пом. ПУИ в 3 секции С3\",\n          \"protective_device\": \"QF3.6, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_1–2 и detail_tile_9–10: вертикаль QF3.6 через К3.6 связана с двумя изображенными светильниками ПУИ; длина 70 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_7\",\n      \"identity\": \"СЭ37\",\n      \"scope\": \"РП3, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ37\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF3.7, C20 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_1–2 и detail_tile_9–10: над QF3.7 написано «Резерв»; внешняя линия с кабельной подписью отсутствует.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_8\",\n      \"identity\": \"СЭ38\",\n      \"scope\": \"РП3, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ38\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF3.8, C10 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_2 и detail_tile_10: позиция СЭ38 расположена над резервным выводом QF3.8; кабель и длина не указаны.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_9\",\n      \"identity\": \"СЭ39\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ39\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 120,\n          \"consumer\": \"Надстройка С3, коридор МОП, кладовка\",\n          \"protective_device\": \"QF3.9, C10 А\",\n          \"reserve\": false,\n          \"local_cable_label\": \"ППГнг(А)-HF 3х2,5\"\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_2 и detail_tile_10: линия QF3.9 через К3.9 поднимается к выключателю и светильнику надстройки. В основной вертикальной подписи указано 120 м; возле светильника отдельно видна марка с «(А)», без длины.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_10\",\n      \"identity\": \"СЭ310\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ310\",\n          \"cable_designation\": \"ППГнг-HF 3х1,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 1.5,\n          \"length_m\": 15,\n          \"consumer\": \"Рабочее освещение пом. электрощитовой С3; ЯТП 220/36В на той же линии\",\n          \"protective_device\": \"QF3.10, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_2 и detail_tile_10: вертикаль QF3.10 соединена с выключателем, светильником и ЯТП 220/36В; подпись линии содержит 3х1,5 и 15 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_11\",\n      \"identity\": \"СЭ311\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ311\",\n          \"cable_designation\": \"ППГнг-HF 3х1,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 1.5,\n          \"length_m\": 15,\n          \"consumer\": \"Рабочее освещение пом. СС С3 на −1 этаже\",\n          \"protective_device\": \"QF3.11, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_2 и detail_tile_10: отдельная линия QF3.11 идет к выключателю и светильнику помещения СС; на ней указано 15 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_12\",\n      \"identity\": \"СЭ312\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ312\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 15,\n          \"consumer\": \"Розетка для электроотопительного прибора в 3 секции на −1 этаже в электрощитовой\",\n          \"protective_device\": \"QFD3.12, C16 А, 30 мА\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_2 и detail_tile_10: линия QFD3.12 заканчивается символом розетки электрощитовой; кабельная подпись содержит 15 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_13\",\n      \"identity\": \"СЭ313\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ313\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 15,\n          \"consumer\": \"Розетка для электроотопительного прибора в 3 секции на −1 этаже в пом. СС\",\n          \"protective_device\": \"QFD3.13, C16 А, 30 мА\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_2–3 и detail_tile_10–11: линия QFD3.13 прослеживается к розетке помещения СС; вдоль линии стоят 3х2,5 и 15 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_14\",\n      \"identity\": \"СЭ314\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ314\",\n          \"cable_designation\": \"ППГнг-HF 5х4,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 4,\n          \"length_m\": 35,\n          \"consumer\": \"Тепловая завеса на 1 этаже, У4\",\n          \"protective_device\": \"QF3.14, C25 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_2–3 и detail_tile_10–11: вертикаль QF3.14 идет к У4; на ней указаны 5х4,0 и 35 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_15\",\n      \"identity\": \"СЭ315\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ315\",\n          \"cable_designation\": \"ППГнг-HF 5х4,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 4,\n          \"length_m\": 40,\n          \"consumer\": \"Тепловая завеса на 1 этаже, У5\",\n          \"protective_device\": \"QF3.15, C25 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_2–3 и detail_tile_10–11: отдельная вертикаль QF3.15 идет к У5; подпись длины 40 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_16\",\n      \"identity\": \"СЭ316\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ316\",\n          \"cable_designation\": \"ППГнг-HF 5х4,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 4,\n          \"length_m\": 85,\n          \"consumer\": \"Наружный блок кондиционера AM100AXVANH/EA, коридор МОП С3\",\n          \"protective_device\": \"QF3.16, C25 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_3 и detail_tile_11: линия QF3.16 поднимается к ШУ и двигателю наружного блока; кабельная подпись содержит 85 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_17\",\n      \"identity\": \"СЭ317\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ317\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 90,\n          \"consumer\": \"Фанкойлы квартирных коридоров МОП С3\",\n          \"protective_device\": \"QF3.17, C16 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_3 и detail_tile_11: общая вертикаль QF3.17 соединена с двумя символами фанкойлов; на ней указано 90 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_18\",\n      \"identity\": \"СЭ318\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ318\",\n          \"cable_designation\": \"ППГнг-HF 5х16,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 16,\n          \"length_m\": 75,\n          \"consumer\": \"Щит общеобменной вентиляции в 3 секции С3 в тех. пространстве, «[3/З]ЩРОВ2»\",\n          \"protective_device\": \"QF3.18, C50 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_3 и detail_tile_11: вертикаль QF3.18 заканчивается щитом общеобменной вентиляции; рядом указаны 5х16,0 и 75 м. Начальный знак марки щита неоднозначен.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_19\",\n      \"identity\": \"СЭ319\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ319\",\n          \"cable_designation\": \"ППГнг-HF 5х4,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 4,\n          \"length_m\": 10,\n          \"consumer\": \"Щит фасадного освещения С2С3, ЩФОС2С3\",\n          \"protective_device\": \"QF3.19, C25 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_3 и detail_tile_11: линия QF3.19 соединена со щитом фасадного освещения; подпись длины 10 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_20\",\n      \"identity\": \"СЭ320\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ320\",\n          \"cable_designation\": \"ППГнг-HF 3х4,0\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 4,\n          \"length_m\": 40,\n          \"consumer\": \"Розетки коридора МОП в 3 секции С3\",\n          \"protective_device\": \"QFD3.14, C16 А, 30 мА\",\n          \"additional_device\": \"УЗДП 25 А, QSA1, 4P, AFD\",\n          \"reserve\": false,\n          \"local_cable_labels\": [\n            \"ППГнг(А)-HF 3х2,5 – 10м (5х10м)\",\n            \"ППГнг(А)-HF 3х4 – 21м (5х21м)\"\n          ]\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_3 и detail_tile_11: линия СЭ320 проходит через QFD3.14 и УЗДП к нижней розеточной группе. На основной вертикали 40 м; две локальные выноски относятся к участкам возле розетки и сохранены отдельно, без суммирования.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_21\",\n      \"identity\": \"СЭ321\",\n      \"scope\": \"РП3, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ321\",\n          \"cable_designation\": \"ППГнг-HF 3х6,0\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 6,\n          \"length_m\": 55,\n          \"consumer\": \"Розетки коридора МОП в 3 секции С3\",\n          \"protective_device\": \"QFD3.15, C16 А, 30 мА\",\n          \"additional_device\": \"УЗДП 25 А, QSA1, 4P, AFD\",\n          \"reserve\": false,\n          \"local_cable_labels\": [\n            \"ППГнг(А)-HF 3х2,5 – 10м (5х10м)\",\n            \"ППГнг(А)-HF 3х6 – 21м (5х21м)\"\n          ]\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_3–4 и detail_tile_11–12: вертикаль СЭ321 проходит через QFD3.15 и УЗДП к верхней розеточной группе. Основная длина 55 м; локальные выноски у розетки сохранены отдельно.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_22\",\n      \"identity\": \"СЭ322\",\n      \"scope\": \"РП3, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ322\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF3.22, C25 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_3–4 и detail_tile_11–12: QF3.22 подписан «Резерв»; над границей панели обозначена позиция СЭ322.\"\n      }]\n    },\n    {\n      \"id\": \"rp3_23\",\n      \"identity\": \"СЭ323\",\n      \"scope\": \"РП3, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ323\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF3.23, C50 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_3–4 и detail_tile_11–12: QF3.23 заканчивается резервным выводом; кабельная подпись отсутствует.\"\n      }]\n    },\n    {\n      \"id\": \"rp4_1\",\n      \"identity\": \"СЭ41\",\n      \"scope\": \"РП4, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ41\",\n          \"cable_designation\": \"ППГнг-HF 5х35,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 35,\n          \"length_m\": 95,\n          \"consumer\": \"Щит управления пассажирским лифтом, ЩУ/Л-3.1; стабилизатор напряжения 30 кВА\",\n          \"protective_device\": \"QF4.1, C63 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_4 и detail_tile_12: линия QF4.1 поднимается через стабилизатор к щиту управления лифтом; вдоль линии указаны 5х35,0 и 95 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp4_2\",\n      \"identity\": \"СЭ42\",\n      \"scope\": \"РП4, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ42\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 85,\n          \"consumer\": \"Щит автоматики и диспетчеризации ЩД-АСУД.К1\",\n          \"protective_device\": \"QF4.2, C16 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_4 и detail_tile_12: вертикаль QF4.2 заканчивается щитом ЩД-АСУД.К1; кабельная подпись содержит 85 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp4_3\",\n      \"identity\": \"СЭ43\",\n      \"scope\": \"РП4, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ43\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 15,\n          \"consumer\": \"Щит автоматики и диспетчеризации ЩД-О.3.2.1\",\n          \"protective_device\": \"QF4.3, C16 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_4 и detail_tile_12: линия QF4.3 идет к низко расположенному щиту автоматики; на ней указано 15 м. Знак «О» в марке визуально сходен с нулем.\"\n      }]\n    },\n    {\n      \"id\": \"rp4_4\",\n      \"identity\": \"СЭ44\",\n      \"scope\": \"РП4, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ44\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 65,\n          \"consumer\": \"Щит автоматики и диспетчеризации, «ЩД-ШУ[неразборчивый разделитель]Л3.1»\",\n          \"protective_device\": \"QF4.4, C16 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_4 и detail_tile_12: линия QF4.4 непосредственно соединена с левым из двух соседних щитов автоматики лифтов; длина 65 м. Разделитель внутри марки щита уверенно не различается.\"\n      }]\n    },\n    {\n      \"id\": \"rp4_5\",\n      \"identity\": \"СЭ45\",\n      \"scope\": \"РП4, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ45\",\n          \"cable_designation\": \"ППГнг-HF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 65,\n          \"consumer\": \"Щит автоматики и диспетчеризации, «ЩД-ШУ[неразборчивый разделитель]Л3.2»\",\n          \"protective_device\": \"QF4.5, C16 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_4–5 и detail_tile_12–13: линия QF4.5 идет к правому щиту автоматики лифтов; подпись 65 м. Разделитель внутри марки щита уверенно не различается.\"\n      }]\n    },\n    {\n      \"id\": \"rp4_6\",\n      \"identity\": \"СЭ46\",\n      \"scope\": \"РП4, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ46\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF4.6, C63 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_4–5 и detail_tile_12–13: над выводом QF4.6 написано «Резерв»; кабель и потребитель отсутствуют.\"\n      }]\n    },\n    {\n      \"id\": \"rp4_7\",\n      \"identity\": \"СЭ47\",\n      \"scope\": \"РП4, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ47\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF4.7, C16 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_4–5 и detail_tile_12–13: позиция СЭ47 соответствует резервному выводу QF4.7.\"\n      }]\n    },\n    {\n      \"id\": \"rp4_8\",\n      \"identity\": \"СЭ48\",\n      \"scope\": \"РП4, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ48\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF4.8, C16 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_4–5 и detail_tile_12–13: над QF4.8 указано «Резерв»; кабельная подпись отсутствует.\"\n      }]\n    },\n    {\n      \"id\": \"rp4_9\",\n      \"identity\": \"СЭ49\",\n      \"scope\": \"РП4, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ49\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF4.9, C25 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_4–5 и detail_tile_12–13: последний вывод РП4, QF4.9, подписан «Резерв».\"\n      }]\n    },\n    {\n      \"id\": \"rp5_1\",\n      \"identity\": \"СЭ51\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ51\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 85,\n          \"consumer\": \"Аварийное освещение лестничной клетки в 3 секции С3 с 2–10 этаж\",\n          \"protective_device\": \"QF5.1, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_5 и detail_tile_13: QF5.1 через К5.1 соединен с общим стояком светильников лестничной клетки; на линии указано FRHF и 85 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_2\",\n      \"identity\": \"СЭ52\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ52\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 80,\n          \"consumer\": \"Аварийное освещение лифтового холла №1 и №2 в 3 секции С3\",\n          \"protective_device\": \"QF5.2, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_5 и detail_tile_13: вертикаль QF5.2 через К5.2 идет к двум изображенным светильникам лифтового холла; длина 80 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_3\",\n      \"identity\": \"СЭ53\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ53\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 65,\n          \"consumer\": \"Аварийное освещение квартирного коридора МОП в 3 секции С3\",\n          \"protective_device\": \"QF5.3, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_5 и detail_tile_13: QF5.3 через К5.3 связан с нижним из двух отдельно питаемых символов освещения квартирного коридора; длина 65 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_4\",\n      \"identity\": \"СЭ54\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ54\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 75,\n          \"consumer\": \"Аварийное освещение квартирного коридора МОП в 3 секции С3\",\n          \"protective_device\": \"QF5.4, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_5 и detail_tile_13: QF5.4 через К5.4 связан с верхним отдельно изображенным светильником квартирного коридора; длина 75 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_5\",\n      \"identity\": \"СЭ55\",\n      \"scope\": \"РП5, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ55\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF5.5, C10 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_5 и detail_tile_13: позиция СЭ55 находится над выводом QF5.5 с надписью «Резерв».\"\n      }]\n    },\n    {\n      \"id\": \"rp5_6\",\n      \"identity\": \"СЭ56\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ56\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 65,\n          \"consumer\": \"Аварийное освещение, таблички ПК в коридорах МОП в 3 секции С3\",\n          \"protective_device\": \"QF5.6, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_5–6 и detail_tile_13–14: линия QF5.6 связана с двумя символами под подписью табличек ПК; на ней указано 65 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_7\",\n      \"identity\": \"СЭ57\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ57\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 80,\n          \"consumer\": \"Аварийное освещение, светильники на входом в здание на кровле\",\n          \"protective_device\": \"QF5.7, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_5–6 и detail_tile_13–14: QF5.7 через К5.7 соединен с верхним светильником на уровне кровли; подпись длины 80 м. Формулировка назначения сохранена по видимой надписи.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_8\",\n      \"identity\": \"СЭ58\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ58\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 65,\n          \"consumer\": \"Аварийное освещение, светильники на входом в здание\",\n          \"protective_device\": \"QF5.8, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_5–6 и detail_tile_13–14: линия QF5.8 через К5.8 с таймером идет к светильнику у входа; длина 65 м. Назначение сохранено по видимой надписи.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_9\",\n      \"identity\": \"СЭ59\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ59\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 105,\n          \"consumer\": \"Аварийное освещение, № указатель дома\",\n          \"protective_device\": \"QF5.9, C10 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_6 и detail_tile_14: QF5.9 через К5.9 с таймером соединен с символом под надписью «№ указатель дома»; длина 105 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_10\",\n      \"identity\": \"СЭ510\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ510\",\n          \"cable_designation\": \"ППГнг-FRHF 5х35,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 35,\n          \"length_m\": 95,\n          \"consumer\": \"Щит управления пассажирским лифтом перемещения пож. бригад, ЩУ/Л-3.2; стабилизатор напряжения 40 кВА\",\n          \"protective_device\": \"QF5.10, C80 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_6 и detail_tile_14: вертикаль QF5.10 проходит через стабилизатор к щиту лифта; кабельная подпись содержит FRHF, 5х35,0 и 95 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_11\",\n      \"identity\": \"СЭ511\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ511\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 65,\n          \"consumer\": \"АПС, СОУЭ\",\n          \"protective_device\": \"QF5.11, C16 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_6 и detail_tile_14: линия QF5.11 заканчивается щитом под надписями АПС и СОУЭ; длина 65 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_12\",\n      \"identity\": \"СЭ512\",\n      \"scope\": \"РП5, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ512\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF5.12, C80 А\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_6 и detail_tile_14: вывод QF5.12 подписан «Резерв»; кабель и длина не показаны.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_13\",\n      \"identity\": \"СЭ513\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ513\",\n          \"cable_designation\": \"ППГнг-FRHF 3х2,5\",\n          \"conductor_count\": 3,\n          \"cross_section_mm2\": 2.5,\n          \"length_m\": 210,\n          \"consumer\": \"Клапана ОЗК и ДУ\",\n          \"protective_device\": \"QF5.13, C16 А\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_6 и detail_tile_14: от QF5.13 идет общий стояк с ответвлениями к символам клапанов; на стояке указаны СЭ513 и 210 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_14\",\n      \"identity\": \"СЭ514\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ514\",\n          \"cable_designation\": \"ППГнг-FRHF 5х6,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 6,\n          \"length_m\": 90,\n          \"consumer\": \"Системы противодымной вентиляции, ДУ3.1\",\n          \"protective_device\": \"QF5.14, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_6 и detail_tile_14: линия QF5.14 поднимается через ШУ к двигателю ДУ3.1; кабельная подпись содержит 90 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_15\",\n      \"identity\": \"СЭ515\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ515\",\n          \"cable_designation\": \"ППГнг-FRHF 5х6,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 6,\n          \"length_m\": 80,\n          \"consumer\": \"Системы противодымной вентиляции, ПД3.1\",\n          \"protective_device\": \"QF5.15, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_6–7 и detail_tile_14–15: вертикаль QF5.15 соединена через ШУ с ПД3.1; указано 80 м. Повтор в перекрытии плиток учтен один раз.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_16\",\n      \"identity\": \"СЭ516\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ516\",\n          \"cable_designation\": \"ППГнг-FRHF 5х6,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 6,\n          \"length_m\": 80,\n          \"consumer\": \"Системы противодымной вентиляции, ПД3.2\",\n          \"protective_device\": \"QF5.16, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_6–7 и detail_tile_14–15: линия QF5.16 через ШУ идет к двигателю ПД3.2; вдоль нее указаны 5х6,0 и 80 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_17\",\n      \"identity\": \"СЭ517\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ517\",\n          \"cable_designation\": \"ППГнг-FRHF 5х6,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 6,\n          \"length_m\": 80,\n          \"consumer\": \"Системы противодымной вентиляции, ПД3.3.1\",\n          \"protective_device\": \"QF5.17, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_6–7 и detail_tile_14–15: QF5.17 связан через ШУ с ПД3.3.1; кабельная подпись содержит 80 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_18\",\n      \"identity\": \"СЭ518\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ518\",\n          \"cable_designation\": \"ППГнг-FRHF 5х25,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 25,\n          \"length_m\": 65,\n          \"consumer\": \"Системы противодымной вентиляции, ПД3.3.2; в общем прямоугольнике с двигателем показан нагреватель с подписью Рр=22,5 кВт\",\n          \"protective_device\": \"QF5.18, D63 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_7 и detail_tile_15: единая вертикаль QF5.18 проходит через ШУ к рамке с ПД3.3.2 и нагревателем; отдельной отходящей линии нагревателя не показано. На вертикали 5х25,0 и 65 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_19\",\n      \"identity\": \"СЭ519\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ519\",\n          \"cable_designation\": \"ППГнг-FRHF 5х6,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 6,\n          \"length_m\": 65,\n          \"consumer\": \"Системы противодымной вентиляции, ПД3.4.1\",\n          \"protective_device\": \"QF5.19, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_7 и detail_tile_15: линия QF5.19 через ШУ соединена с двигателем ПД3.4.1; длина 65 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_20\",\n      \"identity\": \"СЭ520\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ520\",\n          \"cable_designation\": \"ППГнг-FRHF 5х6,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 6,\n          \"length_m\": 65,\n          \"consumer\": \"Системы противодымной вентиляции, ПД3.4.2\",\n          \"protective_device\": \"QF5.20, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_7 и detail_tile_15: линия QF5.20 через ШУ идет к ПД3.4.2; на ней указаны 5х6,0 и 65 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_21\",\n      \"identity\": \"СЭ521\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ521\",\n          \"cable_designation\": \"ППГнг-FRHF 5х6,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 6,\n          \"length_m\": 55,\n          \"consumer\": \"Системы противодымной вентиляции, ПД3.4.3\",\n          \"protective_device\": \"QF5.21, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_7 и detail_tile_15: вертикаль QF5.21 связана через ШУ с нижним двигателем ПД3.4.3; кабельная подпись содержит 55 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_22\",\n      \"identity\": \"СЭ522\",\n      \"scope\": \"РП5, отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ522\",\n          \"cable_designation\": \"ППГнг-FRHF 5х6,0\",\n          \"conductor_count\": 5,\n          \"cross_section_mm2\": 6,\n          \"length_m\": 55,\n          \"consumer\": \"Системы противодымной вентиляции, ПД3.4.4\",\n          \"protective_device\": \"QF5.22, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": false\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_7 и detail_tile_15: линия QF5.22 через ШУ соединена с ПД3.4.4; указано 55 м.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_23\",\n      \"identity\": \"СЭ523\",\n      \"scope\": \"РП5, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ523\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF5.23, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_7 и detail_tile_15: над QF5.23 указано «Резерв»; внешняя кабельная линия отсутствует.\"\n      }]\n    },\n    {\n      \"id\": \"rp5_24\",\n      \"identity\": \"СЭ524\",\n      \"scope\": \"РП5, резервная отходящая цепь\",\n      \"kind\": \"outgoing_circuit\",\n      \"source_refs\": [\"blk_513e35c4f8a7432986e9a498d4573996\"],\n      \"observed_parameters\": [{\n        \"name\": \"Маркировка и связи цепи\",\n        \"value\": {\n          \"line_identifier\": \"СЭ524\",\n          \"cable_designation\": null,\n          \"conductor_count\": null,\n          \"cross_section_mm2\": null,\n          \"length_m\": null,\n          \"consumer\": null,\n          \"protective_device\": \"QF5.24, MA, D32 А, ВА-333Е, Ir=OFF\",\n          \"reserve\": true\n        },\n        \"unit\": null,\n        \"source_ref\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n        \"graphic_observation\": \"detail_tile_7 и detail_tile_15: крайний правый вывод QF5.24 подписан «Резерв»; кабельная марка, длина и потребитель не указаны.\"\n      }]\n    }\n  ],\n  \"object_inventory_coverage\": [{\n    \"block_id\": \"blk_513e35c4f8a7432986e9a498d4573996\",\n    \"status\": \"inventoried\",\n    \"object_ids\": [\n      \"rp1_1\", \"rp1_2\", \"rp2_1\", \"rp2_2\",\n      \"rp3_1\", \"rp3_2_1\", \"rp3_2_2\", \"rp3_3_1\", \"rp3_3_2\", \"rp3_4_1\", \"rp3_4_2\",\n      \"rp3_5\", \"rp3_6\", \"rp3_7\", \"rp3_8\", \"rp3_9\", \"rp3_10\", \"rp3_11\", \"rp3_12\",\n      \"rp3_13\", \"rp3_14\", \"rp3_15\", \"rp3_16\", \"rp3_17\", \"rp3_18\", \"rp3_19\",\n      \"rp3_20\", \"rp3_21\", \"rp3_22\", \"rp3_23\",\n      \"rp4_1\", \"rp4_2\", \"rp4_3\", \"rp4_4\", \"rp4_5\", \"rp4_6\", \"rp4_7\", \"rp4_8\", \"rp4_9\",\n      \"rp5_1\", \"rp5_2\", \"rp5_3\", \"rp5_4\", \"rp5_5\", \"rp5_6\", \"rp5_7\", \"rp5_8\",\n      \"rp5_9\", \"rp5_10\", \"rp5_11\", \"rp5_12\", \"rp5_13\", \"rp5_14\", \"rp5_15\", \"rp5_16\",\n      \"rp5_17\", \"rp5_18\", \"rp5_19\", \"rp5_20\", \"rp5_21\", \"rp5_22\", \"rp5_23\", \"rp5_24\"\n    ],\n    \"reason\": \"Просмотрены все 16 плиток одного блока; зарегистрированы 63 различимые отходящие цепи, включая резервные позиции. Перекрытия верхнего и нижнего рядов соединены по продолжению линий. Общие аппараты QF3.2, QF3.3 и QF3.4 сохранены в атрибутах их отходящих ветвей и отдельно не посчитаны. Охват ограничен маркировкой отходящих цепей РП1–РП5. Вводы, межпанельные соединения, фасады, таблицы и примечания не инвентаризированы как отдельные отходящие цепи. Длины переписаны из подписей линий, а не измерены по графике; локальные длины не суммировались. В вертикальных кабельных подписях сохранены видимые исполнения HF и FRHF без добавления «(А)»; «(А)» отдельно сохранено там, где оно видно в локальных выносках.\",\n    \"unreadable_regions\": [\n      {\n        \"region\": \"detail_tile_0, подписи этажных щитов над СЭ11 и СЭ21\",\n        \"object_ids\": [\"rp1_1\", \"rp2_1\"],\n        \"reason\": \"Начальный знак марки щита визуально неоднозначен между цифрой 3 и буквой З; сохранен как [3/З].\"\n      },\n      {\n        \"region\": \"detail_tile_3, маркировка щита общеобменной вентиляции на СЭ318\",\n        \"object_ids\": [\"rp3_18\"],\n        \"reason\": \"Начальный знак марки щита неоднозначен между 3 и З.\"\n      },\n      {\n        \"region\": \"detail_tile_4, марки щитов автоматики на СЭ43–СЭ45\",\n        \"object_ids\": [\"rp4_3\", \"rp4_4\", \"rp4_5\"],\n        \"reason\": \"В марке на СЭ43 знак О визуально сходен с нулем; внутренние разделители марок щитов на СЭ44 и СЭ45 неразборчивы. Связи с соответствующими вертикальными линиями прослеживаются.\"\n      },\n      {\n        \"region\": \"detail_tile_3–4, локальные выноски у розеточных групп СЭ320 и СЭ321\",\n        \"object_ids\": [\"rp3_20\", \"rp3_21\"],\n        \"reason\": \"Записи «10м (5х10м)» и «21м (5х21м)» читаются, но графика не раскрывает отдельные физические конечные точки каждого из пяти упомянутых участков. Эти записи не преобразованы в суммарные длины.\"\n      }\n    ]\n  }],\n  \"object_operation_results\": [],\n  \"text_findings\": []\n}",
+  "json_data": {
+    "object_registry": [
+      {
+        "id": "rp1_1",
+        "identity": "СЭ11",
+        "scope": "РП1, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ11",
+              "cable_designation": "ППГнг-HF 5х1х150",
+              "cable_count": 5,
+              "conductors_per_cable": 1,
+              "cross_section_mm2": 150,
+              "length_m": 65,
+              "consumer": "Этажные щиты с маркировкой «[3/З]ЩЭРН2»: «10 ЭТАЖ» и «С 2 ПО 6 ЭТАЖ»",
+              "protective_device": "QF1.1, 250 А, ВА-333А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_0 и detail_tile_8: вертикальная линия от QF1.1 проходит через обе группы этажных щитов. Кабель и 65 м подписаны вдоль этой линии. Первый знак маркировки щитов неоднозначен."
+          }
+        ]
+      },
+      {
+        "id": "rp1_2",
+        "identity": "СЭ12",
+        "scope": "РП1, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ12",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF1.2, 250 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_0 и detail_tile_8: позиция СЭ12 соответствует QF1.2 с надписью «Резерв»; внешний кабель и потребитель не показаны."
+          }
+        ]
+      },
+      {
+        "id": "rp2_1",
+        "identity": "СЭ21",
+        "scope": "РП2, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ21",
+              "cable_designation": "ППГнг-HF 5х1х150",
+              "cable_count": 5,
+              "conductors_per_cable": 1,
+              "cross_section_mm2": 150,
+              "length_m": 65,
+              "consumer": "Этажные щиты «[3/З]ЩЭРН7», «С 7 ПО 9 ЭТАЖ»",
+              "protective_device": "QF2.1, 200 А, ВА-333А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_0 и detail_tile_8: линия QF2.1 продолжается вверх к группе этажных щитов; на ней стоят СЭ21, кабель и 65 м. Первый знак маркировки щитов неоднозначен."
+          }
+        ]
+      },
+      {
+        "id": "rp2_2",
+        "identity": "СЭ22",
+        "scope": "РП2, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ22",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF2.2, 200 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_0, detail_tile_8 и detail_tile_9: QF2.2 заканчивается резервным выводом; кабельная подпись отсутствует."
+          }
+        ]
+      },
+      {
+        "id": "rp3_1",
+        "identity": "СЭ31",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ31",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 70,
+              "consumer": "Рабочее освещение лестничной клетки в 3 секции С3 с 2–10 этаж",
+              "protective_device": "QF3.1, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_0–1 и detail_tile_8–9: от QF3.1 через К3.1 прослеживается общий стояк с ответвлениями к светильникам; рядом с СЭ31 указаны 3х2,5 и 70 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_2_1",
+        "identity": "СЭ32.1",
+        "scope": "РП3, отходящая ветвь группы QF3.2",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ32.1",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 65,
+              "consumer": "Рабочее освещение лифтового холла №1 и №2 в 3 секции С3",
+              "protective_device": "QF3.2.1, C16 А; общий QF3.2, C20 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_1 и detail_tile_9: отдельный вертикальный вывод QF3.2.1 идет к нижнему из двух изображенных потребителей с подписью лифтового холла; вдоль него указано 65 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_2_2",
+        "identity": "СЭ32.2",
+        "scope": "РП3, отходящая ветвь группы QF3.2",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ32.2",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 85,
+              "consumer": "Рабочее освещение лифтового холла №1 и №2 в 3 секции С3",
+              "protective_device": "QF3.2.2, C16 А; общий QF3.2, C20 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_1 и detail_tile_9: вывод QF3.2.2 прослеживается к верхнему изображенному потребителю лифтового холла; на его линии указано 85 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_3_1",
+        "identity": "СЭ33.1",
+        "scope": "РП3, отходящая ветвь группы QF3.3",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ33.1",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 65,
+              "consumer": "Рабочее освещение этажного коридора МОП в 3 секции С3, 2,3 этаж",
+              "protective_device": "QF3.3.1, C16 А; общий QF3.3, C20 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_1 и detail_tile_9: линия QF3.3.1 соединена со светильником под подписью «2,3 этаж»; подпись кабеля содержит 65 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_3_2",
+        "identity": "СЭ33.2",
+        "scope": "РП3, отходящая ветвь группы QF3.3",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ33.2",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 85,
+              "consumer": "Рабочее освещение этажного коридора МОП в 3 секции С3, 4,5 этаж",
+              "protective_device": "QF3.3.2, C16 А; общий QF3.3, C20 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_1 и detail_tile_9: линия QF3.3.2 идет к светильнику под подписью «4,5 этаж»; вдоль нее указаны 3х2,5 и 85 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_4_1",
+        "identity": "СЭ34.1",
+        "scope": "РП3, отходящая ветвь группы QF3.4",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ34.1",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 85,
+              "consumer": "Рабочее освещение этажного коридора МОП в 3 секции С3, 6,7 этаж",
+              "protective_device": "QF3.4.1, C16 А; общий QF3.4, C20 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_1 и detail_tile_9: вертикаль QF3.4.1 заканчивается светильником под подписью «6,7 этаж»; на ней указано 85 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_4_2",
+        "identity": "СЭ34.2",
+        "scope": "РП3, отходящая ветвь группы QF3.4",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ34.2",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 85,
+              "consumer": "Рабочее освещение этажного коридора МОП в 3 секции С3, 8–10 этаж",
+              "protective_device": "QF3.4.2, C16 А; общий QF3.4, C20 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_1–2 и detail_tile_9–10: вывод QF3.4.2 прослеживается к светильнику «8–10 этаж»; подпись длины 85 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_5",
+        "identity": "СЭ35",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ35",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 90,
+              "consumer": "Рабочее освещение лифтовых шахт Л3.1 и Л3.2 в 3 секции С3",
+              "protective_device": "QF3.5, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_1–2 и detail_tile_9–10: QF3.5 через К3.5 связан со стояком освещения шахт; на вертикали указаны СЭ35 и 90 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_6",
+        "identity": "СЭ36",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ36",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 70,
+              "consumer": "Рабочее освещение пом. ПУИ в 3 секции С3",
+              "protective_device": "QF3.6, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_1–2 и detail_tile_9–10: вертикаль QF3.6 через К3.6 связана с двумя изображенными светильниками ПУИ; длина 70 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_7",
+        "identity": "СЭ37",
+        "scope": "РП3, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ37",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF3.7, C20 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_1–2 и detail_tile_9–10: над QF3.7 написано «Резерв»; внешняя линия с кабельной подписью отсутствует."
+          }
+        ]
+      },
+      {
+        "id": "rp3_8",
+        "identity": "СЭ38",
+        "scope": "РП3, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ38",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF3.8, C10 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_2 и detail_tile_10: позиция СЭ38 расположена над резервным выводом QF3.8; кабель и длина не указаны."
+          }
+        ]
+      },
+      {
+        "id": "rp3_9",
+        "identity": "СЭ39",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ39",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 120,
+              "consumer": "Надстройка С3, коридор МОП, кладовка",
+              "protective_device": "QF3.9, C10 А",
+              "reserve": false,
+              "local_cable_label": "ППГнг(А)-HF 3х2,5"
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_2 и detail_tile_10: линия QF3.9 через К3.9 поднимается к выключателю и светильнику надстройки. В основной вертикальной подписи указано 120 м; возле светильника отдельно видна марка с «(А)», без длины."
+          }
+        ]
+      },
+      {
+        "id": "rp3_10",
+        "identity": "СЭ310",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ310",
+              "cable_designation": "ППГнг-HF 3х1,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 1.5,
+              "length_m": 15,
+              "consumer": "Рабочее освещение пом. электрощитовой С3; ЯТП 220/36В на той же линии",
+              "protective_device": "QF3.10, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_2 и detail_tile_10: вертикаль QF3.10 соединена с выключателем, светильником и ЯТП 220/36В; подпись линии содержит 3х1,5 и 15 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_11",
+        "identity": "СЭ311",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ311",
+              "cable_designation": "ППГнг-HF 3х1,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 1.5,
+              "length_m": 15,
+              "consumer": "Рабочее освещение пом. СС С3 на −1 этаже",
+              "protective_device": "QF3.11, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_2 и detail_tile_10: отдельная линия QF3.11 идет к выключателю и светильнику помещения СС; на ней указано 15 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_12",
+        "identity": "СЭ312",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ312",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 15,
+              "consumer": "Розетка для электроотопительного прибора в 3 секции на −1 этаже в электрощитовой",
+              "protective_device": "QFD3.12, C16 А, 30 мА",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_2 и detail_tile_10: линия QFD3.12 заканчивается символом розетки электрощитовой; кабельная подпись содержит 15 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_13",
+        "identity": "СЭ313",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ313",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 15,
+              "consumer": "Розетка для электроотопительного прибора в 3 секции на −1 этаже в пом. СС",
+              "protective_device": "QFD3.13, C16 А, 30 мА",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_2–3 и detail_tile_10–11: линия QFD3.13 прослеживается к розетке помещения СС; вдоль линии стоят 3х2,5 и 15 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_14",
+        "identity": "СЭ314",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ314",
+              "cable_designation": "ППГнг-HF 5х4,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 4,
+              "length_m": 35,
+              "consumer": "Тепловая завеса на 1 этаже, У4",
+              "protective_device": "QF3.14, C25 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_2–3 и detail_tile_10–11: вертикаль QF3.14 идет к У4; на ней указаны 5х4,0 и 35 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_15",
+        "identity": "СЭ315",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ315",
+              "cable_designation": "ППГнг-HF 5х4,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 4,
+              "length_m": 40,
+              "consumer": "Тепловая завеса на 1 этаже, У5",
+              "protective_device": "QF3.15, C25 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_2–3 и detail_tile_10–11: отдельная вертикаль QF3.15 идет к У5; подпись длины 40 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_16",
+        "identity": "СЭ316",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ316",
+              "cable_designation": "ППГнг-HF 5х4,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 4,
+              "length_m": 85,
+              "consumer": "Наружный блок кондиционера AM100AXVANH/EA, коридор МОП С3",
+              "protective_device": "QF3.16, C25 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_3 и detail_tile_11: линия QF3.16 поднимается к ШУ и двигателю наружного блока; кабельная подпись содержит 85 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_17",
+        "identity": "СЭ317",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ317",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 90,
+              "consumer": "Фанкойлы квартирных коридоров МОП С3",
+              "protective_device": "QF3.17, C16 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_3 и detail_tile_11: общая вертикаль QF3.17 соединена с двумя символами фанкойлов; на ней указано 90 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_18",
+        "identity": "СЭ318",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ318",
+              "cable_designation": "ППГнг-HF 5х16,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 16,
+              "length_m": 75,
+              "consumer": "Щит общеобменной вентиляции в 3 секции С3 в тех. пространстве, «[3/З]ЩРОВ2»",
+              "protective_device": "QF3.18, C50 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_3 и detail_tile_11: вертикаль QF3.18 заканчивается щитом общеобменной вентиляции; рядом указаны 5х16,0 и 75 м. Начальный знак марки щита неоднозначен."
+          }
+        ]
+      },
+      {
+        "id": "rp3_19",
+        "identity": "СЭ319",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ319",
+              "cable_designation": "ППГнг-HF 5х4,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 4,
+              "length_m": 10,
+              "consumer": "Щит фасадного освещения С2С3, ЩФОС2С3",
+              "protective_device": "QF3.19, C25 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_3 и detail_tile_11: линия QF3.19 соединена со щитом фасадного освещения; подпись длины 10 м."
+          }
+        ]
+      },
+      {
+        "id": "rp3_20",
+        "identity": "СЭ320",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ320",
+              "cable_designation": "ППГнг-HF 3х4,0",
+              "conductor_count": 3,
+              "cross_section_mm2": 4,
+              "length_m": 40,
+              "consumer": "Розетки коридора МОП в 3 секции С3",
+              "protective_device": "QFD3.14, C16 А, 30 мА",
+              "additional_device": "УЗДП 25 А, QSA1, 4P, AFD",
+              "reserve": false,
+              "local_cable_labels": [
+                "ППГнг(А)-HF 3х2,5 – 10м (5х10м)",
+                "ППГнг(А)-HF 3х4 – 21м (5х21м)"
+              ]
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_3 и detail_tile_11: линия СЭ320 проходит через QFD3.14 и УЗДП к нижней розеточной группе. На основной вертикали 40 м; две локальные выноски относятся к участкам возле розетки и сохранены отдельно, без суммирования."
+          }
+        ]
+      },
+      {
+        "id": "rp3_21",
+        "identity": "СЭ321",
+        "scope": "РП3, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ321",
+              "cable_designation": "ППГнг-HF 3х6,0",
+              "conductor_count": 3,
+              "cross_section_mm2": 6,
+              "length_m": 55,
+              "consumer": "Розетки коридора МОП в 3 секции С3",
+              "protective_device": "QFD3.15, C16 А, 30 мА",
+              "additional_device": "УЗДП 25 А, QSA1, 4P, AFD",
+              "reserve": false,
+              "local_cable_labels": [
+                "ППГнг(А)-HF 3х2,5 – 10м (5х10м)",
+                "ППГнг(А)-HF 3х6 – 21м (5х21м)"
+              ]
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_3–4 и detail_tile_11–12: вертикаль СЭ321 проходит через QFD3.15 и УЗДП к верхней розеточной группе. Основная длина 55 м; локальные выноски у розетки сохранены отдельно."
+          }
+        ]
+      },
+      {
+        "id": "rp3_22",
+        "identity": "СЭ322",
+        "scope": "РП3, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ322",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF3.22, C25 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_3–4 и detail_tile_11–12: QF3.22 подписан «Резерв»; над границей панели обозначена позиция СЭ322."
+          }
+        ]
+      },
+      {
+        "id": "rp3_23",
+        "identity": "СЭ323",
+        "scope": "РП3, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ323",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF3.23, C50 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_3–4 и detail_tile_11–12: QF3.23 заканчивается резервным выводом; кабельная подпись отсутствует."
+          }
+        ]
+      },
+      {
+        "id": "rp4_1",
+        "identity": "СЭ41",
+        "scope": "РП4, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ41",
+              "cable_designation": "ППГнг-HF 5х35,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 35,
+              "length_m": 95,
+              "consumer": "Щит управления пассажирским лифтом, ЩУ/Л-3.1; стабилизатор напряжения 30 кВА",
+              "protective_device": "QF4.1, C63 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_4 и detail_tile_12: линия QF4.1 поднимается через стабилизатор к щиту управления лифтом; вдоль линии указаны 5х35,0 и 95 м."
+          }
+        ]
+      },
+      {
+        "id": "rp4_2",
+        "identity": "СЭ42",
+        "scope": "РП4, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ42",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 85,
+              "consumer": "Щит автоматики и диспетчеризации ЩД-АСУД.К1",
+              "protective_device": "QF4.2, C16 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_4 и detail_tile_12: вертикаль QF4.2 заканчивается щитом ЩД-АСУД.К1; кабельная подпись содержит 85 м."
+          }
+        ]
+      },
+      {
+        "id": "rp4_3",
+        "identity": "СЭ43",
+        "scope": "РП4, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ43",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 15,
+              "consumer": "Щит автоматики и диспетчеризации ЩД-О.3.2.1",
+              "protective_device": "QF4.3, C16 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_4 и detail_tile_12: линия QF4.3 идет к низко расположенному щиту автоматики; на ней указано 15 м. Знак «О» в марке визуально сходен с нулем."
+          }
+        ]
+      },
+      {
+        "id": "rp4_4",
+        "identity": "СЭ44",
+        "scope": "РП4, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ44",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 65,
+              "consumer": "Щит автоматики и диспетчеризации, «ЩД-ШУ[неразборчивый разделитель]Л3.1»",
+              "protective_device": "QF4.4, C16 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_4 и detail_tile_12: линия QF4.4 непосредственно соединена с левым из двух соседних щитов автоматики лифтов; длина 65 м. Разделитель внутри марки щита уверенно не различается."
+          }
+        ]
+      },
+      {
+        "id": "rp4_5",
+        "identity": "СЭ45",
+        "scope": "РП4, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ45",
+              "cable_designation": "ППГнг-HF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 65,
+              "consumer": "Щит автоматики и диспетчеризации, «ЩД-ШУ[неразборчивый разделитель]Л3.2»",
+              "protective_device": "QF4.5, C16 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_4–5 и detail_tile_12–13: линия QF4.5 идет к правому щиту автоматики лифтов; подпись 65 м. Разделитель внутри марки щита уверенно не различается."
+          }
+        ]
+      },
+      {
+        "id": "rp4_6",
+        "identity": "СЭ46",
+        "scope": "РП4, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ46",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF4.6, C63 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_4–5 и detail_tile_12–13: над выводом QF4.6 написано «Резерв»; кабель и потребитель отсутствуют."
+          }
+        ]
+      },
+      {
+        "id": "rp4_7",
+        "identity": "СЭ47",
+        "scope": "РП4, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ47",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF4.7, C16 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_4–5 и detail_tile_12–13: позиция СЭ47 соответствует резервному выводу QF4.7."
+          }
+        ]
+      },
+      {
+        "id": "rp4_8",
+        "identity": "СЭ48",
+        "scope": "РП4, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ48",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF4.8, C16 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_4–5 и detail_tile_12–13: над QF4.8 указано «Резерв»; кабельная подпись отсутствует."
+          }
+        ]
+      },
+      {
+        "id": "rp4_9",
+        "identity": "СЭ49",
+        "scope": "РП4, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ49",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF4.9, C25 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_4–5 и detail_tile_12–13: последний вывод РП4, QF4.9, подписан «Резерв»."
+          }
+        ]
+      },
+      {
+        "id": "rp5_1",
+        "identity": "СЭ51",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ51",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 85,
+              "consumer": "Аварийное освещение лестничной клетки в 3 секции С3 с 2–10 этаж",
+              "protective_device": "QF5.1, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_5 и detail_tile_13: QF5.1 через К5.1 соединен с общим стояком светильников лестничной клетки; на линии указано FRHF и 85 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_2",
+        "identity": "СЭ52",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ52",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 80,
+              "consumer": "Аварийное освещение лифтового холла №1 и №2 в 3 секции С3",
+              "protective_device": "QF5.2, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_5 и detail_tile_13: вертикаль QF5.2 через К5.2 идет к двум изображенным светильникам лифтового холла; длина 80 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_3",
+        "identity": "СЭ53",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ53",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 65,
+              "consumer": "Аварийное освещение квартирного коридора МОП в 3 секции С3",
+              "protective_device": "QF5.3, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_5 и detail_tile_13: QF5.3 через К5.3 связан с нижним из двух отдельно питаемых символов освещения квартирного коридора; длина 65 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_4",
+        "identity": "СЭ54",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ54",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 75,
+              "consumer": "Аварийное освещение квартирного коридора МОП в 3 секции С3",
+              "protective_device": "QF5.4, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_5 и detail_tile_13: QF5.4 через К5.4 связан с верхним отдельно изображенным светильником квартирного коридора; длина 75 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_5",
+        "identity": "СЭ55",
+        "scope": "РП5, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ55",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF5.5, C10 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_5 и detail_tile_13: позиция СЭ55 находится над выводом QF5.5 с надписью «Резерв»."
+          }
+        ]
+      },
+      {
+        "id": "rp5_6",
+        "identity": "СЭ56",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ56",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 65,
+              "consumer": "Аварийное освещение, таблички ПК в коридорах МОП в 3 секции С3",
+              "protective_device": "QF5.6, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_5–6 и detail_tile_13–14: линия QF5.6 связана с двумя символами под подписью табличек ПК; на ней указано 65 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_7",
+        "identity": "СЭ57",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ57",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 80,
+              "consumer": "Аварийное освещение, светильники на входом в здание на кровле",
+              "protective_device": "QF5.7, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_5–6 и detail_tile_13–14: QF5.7 через К5.7 соединен с верхним светильником на уровне кровли; подпись длины 80 м. Формулировка назначения сохранена по видимой надписи."
+          }
+        ]
+      },
+      {
+        "id": "rp5_8",
+        "identity": "СЭ58",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ58",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 65,
+              "consumer": "Аварийное освещение, светильники на входом в здание",
+              "protective_device": "QF5.8, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_5–6 и detail_tile_13–14: линия QF5.8 через К5.8 с таймером идет к светильнику у входа; длина 65 м. Назначение сохранено по видимой надписи."
+          }
+        ]
+      },
+      {
+        "id": "rp5_9",
+        "identity": "СЭ59",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ59",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 105,
+              "consumer": "Аварийное освещение, № указатель дома",
+              "protective_device": "QF5.9, C10 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_6 и detail_tile_14: QF5.9 через К5.9 с таймером соединен с символом под надписью «№ указатель дома»; длина 105 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_10",
+        "identity": "СЭ510",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ510",
+              "cable_designation": "ППГнг-FRHF 5х35,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 35,
+              "length_m": 95,
+              "consumer": "Щит управления пассажирским лифтом перемещения пож. бригад, ЩУ/Л-3.2; стабилизатор напряжения 40 кВА",
+              "protective_device": "QF5.10, C80 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_6 и detail_tile_14: вертикаль QF5.10 проходит через стабилизатор к щиту лифта; кабельная подпись содержит FRHF, 5х35,0 и 95 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_11",
+        "identity": "СЭ511",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ511",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 65,
+              "consumer": "АПС, СОУЭ",
+              "protective_device": "QF5.11, C16 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_6 и detail_tile_14: линия QF5.11 заканчивается щитом под надписями АПС и СОУЭ; длина 65 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_12",
+        "identity": "СЭ512",
+        "scope": "РП5, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ512",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF5.12, C80 А",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_6 и detail_tile_14: вывод QF5.12 подписан «Резерв»; кабель и длина не показаны."
+          }
+        ]
+      },
+      {
+        "id": "rp5_13",
+        "identity": "СЭ513",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ513",
+              "cable_designation": "ППГнг-FRHF 3х2,5",
+              "conductor_count": 3,
+              "cross_section_mm2": 2.5,
+              "length_m": 210,
+              "consumer": "Клапана ОЗК и ДУ",
+              "protective_device": "QF5.13, C16 А",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_6 и detail_tile_14: от QF5.13 идет общий стояк с ответвлениями к символам клапанов; на стояке указаны СЭ513 и 210 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_14",
+        "identity": "СЭ514",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ514",
+              "cable_designation": "ППГнг-FRHF 5х6,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 6,
+              "length_m": 90,
+              "consumer": "Системы противодымной вентиляции, ДУ3.1",
+              "protective_device": "QF5.14, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_6 и detail_tile_14: линия QF5.14 поднимается через ШУ к двигателю ДУ3.1; кабельная подпись содержит 90 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_15",
+        "identity": "СЭ515",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ515",
+              "cable_designation": "ППГнг-FRHF 5х6,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 6,
+              "length_m": 80,
+              "consumer": "Системы противодымной вентиляции, ПД3.1",
+              "protective_device": "QF5.15, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_6–7 и detail_tile_14–15: вертикаль QF5.15 соединена через ШУ с ПД3.1; указано 80 м. Повтор в перекрытии плиток учтен один раз."
+          }
+        ]
+      },
+      {
+        "id": "rp5_16",
+        "identity": "СЭ516",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ516",
+              "cable_designation": "ППГнг-FRHF 5х6,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 6,
+              "length_m": 80,
+              "consumer": "Системы противодымной вентиляции, ПД3.2",
+              "protective_device": "QF5.16, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_6–7 и detail_tile_14–15: линия QF5.16 через ШУ идет к двигателю ПД3.2; вдоль нее указаны 5х6,0 и 80 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_17",
+        "identity": "СЭ517",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ517",
+              "cable_designation": "ППГнг-FRHF 5х6,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 6,
+              "length_m": 80,
+              "consumer": "Системы противодымной вентиляции, ПД3.3.1",
+              "protective_device": "QF5.17, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_6–7 и detail_tile_14–15: QF5.17 связан через ШУ с ПД3.3.1; кабельная подпись содержит 80 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_18",
+        "identity": "СЭ518",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ518",
+              "cable_designation": "ППГнг-FRHF 5х25,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 25,
+              "length_m": 65,
+              "consumer": "Системы противодымной вентиляции, ПД3.3.2; в общем прямоугольнике с двигателем показан нагреватель с подписью Рр=22,5 кВт",
+              "protective_device": "QF5.18, D63 А, ВА-333Е, Ir=OFF",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_7 и detail_tile_15: единая вертикаль QF5.18 проходит через ШУ к рамке с ПД3.3.2 и нагревателем; отдельной отходящей линии нагревателя не показано. На вертикали 5х25,0 и 65 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_19",
+        "identity": "СЭ519",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ519",
+              "cable_designation": "ППГнг-FRHF 5х6,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 6,
+              "length_m": 65,
+              "consumer": "Системы противодымной вентиляции, ПД3.4.1",
+              "protective_device": "QF5.19, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_7 и detail_tile_15: линия QF5.19 через ШУ соединена с двигателем ПД3.4.1; длина 65 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_20",
+        "identity": "СЭ520",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ520",
+              "cable_designation": "ППГнг-FRHF 5х6,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 6,
+              "length_m": 65,
+              "consumer": "Системы противодымной вентиляции, ПД3.4.2",
+              "protective_device": "QF5.20, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_7 и detail_tile_15: линия QF5.20 через ШУ идет к ПД3.4.2; на ней указаны 5х6,0 и 65 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_21",
+        "identity": "СЭ521",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ521",
+              "cable_designation": "ППГнг-FRHF 5х6,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 6,
+              "length_m": 55,
+              "consumer": "Системы противодымной вентиляции, ПД3.4.3",
+              "protective_device": "QF5.21, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_7 и detail_tile_15: вертикаль QF5.21 связана через ШУ с нижним двигателем ПД3.4.3; кабельная подпись содержит 55 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_22",
+        "identity": "СЭ522",
+        "scope": "РП5, отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ522",
+              "cable_designation": "ППГнг-FRHF 5х6,0",
+              "conductor_count": 5,
+              "cross_section_mm2": 6,
+              "length_m": 55,
+              "consumer": "Системы противодымной вентиляции, ПД3.4.4",
+              "protective_device": "QF5.22, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": false
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_7 и detail_tile_15: линия QF5.22 через ШУ соединена с ПД3.4.4; указано 55 м."
+          }
+        ]
+      },
+      {
+        "id": "rp5_23",
+        "identity": "СЭ523",
+        "scope": "РП5, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ523",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF5.23, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_7 и detail_tile_15: над QF5.23 указано «Резерв»; внешняя кабельная линия отсутствует."
+          }
+        ]
+      },
+      {
+        "id": "rp5_24",
+        "identity": "СЭ524",
+        "scope": "РП5, резервная отходящая цепь",
+        "kind": "outgoing_circuit",
+        "source_refs": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Маркировка и связи цепи",
+            "value": {
+              "line_identifier": "СЭ524",
+              "cable_designation": null,
+              "conductor_count": null,
+              "cross_section_mm2": null,
+              "length_m": null,
+              "consumer": null,
+              "protective_device": "QF5.24, MA, D32 А, ВА-333Е, Ir=OFF",
+              "reserve": true
+            },
+            "unit": null,
+            "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+            "graphic_observation": "detail_tile_7 и detail_tile_15: крайний правый вывод QF5.24 подписан «Резерв»; кабельная марка, длина и потребитель не указаны."
+          }
+        ]
+      }
+    ],
+    "object_inventory_coverage": [
+      {
+        "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+        "status": "inventoried",
+        "object_ids": [
+          "rp1_1",
+          "rp1_2",
+          "rp2_1",
+          "rp2_2",
+          "rp3_1",
+          "rp3_2_1",
+          "rp3_2_2",
+          "rp3_3_1",
+          "rp3_3_2",
+          "rp3_4_1",
+          "rp3_4_2",
+          "rp3_5",
+          "rp3_6",
+          "rp3_7",
+          "rp3_8",
+          "rp3_9",
+          "rp3_10",
+          "rp3_11",
+          "rp3_12",
+          "rp3_13",
+          "rp3_14",
+          "rp3_15",
+          "rp3_16",
+          "rp3_17",
+          "rp3_18",
+          "rp3_19",
+          "rp3_20",
+          "rp3_21",
+          "rp3_22",
+          "rp3_23",
+          "rp4_1",
+          "rp4_2",
+          "rp4_3",
+          "rp4_4",
+          "rp4_5",
+          "rp4_6",
+          "rp4_7",
+          "rp4_8",
+          "rp4_9",
+          "rp5_1",
+          "rp5_2",
+          "rp5_3",
+          "rp5_4",
+          "rp5_5",
+          "rp5_6",
+          "rp5_7",
+          "rp5_8",
+          "rp5_9",
+          "rp5_10",
+          "rp5_11",
+          "rp5_12",
+          "rp5_13",
+          "rp5_14",
+          "rp5_15",
+          "rp5_16",
+          "rp5_17",
+          "rp5_18",
+          "rp5_19",
+          "rp5_20",
+          "rp5_21",
+          "rp5_22",
+          "rp5_23",
+          "rp5_24"
+        ],
+        "reason": "Просмотрены все 16 плиток одного блока; зарегистрированы 63 различимые отходящие цепи, включая резервные позиции. Перекрытия верхнего и нижнего рядов соединены по продолжению линий. Общие аппараты QF3.2, QF3.3 и QF3.4 сохранены в атрибутах их отходящих ветвей и отдельно не посчитаны. Охват ограничен маркировкой отходящих цепей РП1–РП5. Вводы, межпанельные соединения, фасады, таблицы и примечания не инвентаризированы как отдельные отходящие цепи. Длины переписаны из подписей линий, а не измерены по графике; локальные длины не суммировались. В вертикальных кабельных подписях сохранены видимые исполнения HF и FRHF без добавления «(А)»; «(А)» отдельно сохранено там, где оно видно в локальных выносках.",
+        "unreadable_regions": [
+          {
+            "region": "detail_tile_0, подписи этажных щитов над СЭ11 и СЭ21",
+            "object_ids": [
+              "rp1_1",
+              "rp2_1"
+            ],
+            "reason": "Начальный знак марки щита визуально неоднозначен между цифрой 3 и буквой З; сохранен как [3/З]."
+          },
+          {
+            "region": "detail_tile_3, маркировка щита общеобменной вентиляции на СЭ318",
+            "object_ids": [
+              "rp3_18"
+            ],
+            "reason": "Начальный знак марки щита неоднозначен между 3 и З."
+          },
+          {
+            "region": "detail_tile_4, марки щитов автоматики на СЭ43–СЭ45",
+            "object_ids": [
+              "rp4_3",
+              "rp4_4",
+              "rp4_5"
+            ],
+            "reason": "В марке на СЭ43 знак О визуально сходен с нулем; внутренние разделители марок щитов на СЭ44 и СЭ45 неразборчивы. Связи с соответствующими вертикальными линиями прослеживаются."
+          },
+          {
+            "region": "detail_tile_3–4, локальные выноски у розеточных групп СЭ320 и СЭ321",
+            "object_ids": [
+              "rp3_20",
+              "rp3_21"
+            ],
+            "reason": "Записи «10м (5х10м)» и «21м (5х21м)» читаются, но графика не раскрывает отдельные физические конечные точки каждого из пяти упомянутых участков. Эти записи не преобразованы в суммарные длины."
+          }
+        ]
+      }
+    ],
+    "object_operation_results": [],
+    "text_findings": []
+  },
+  "input_tokens": 60543,
+  "output_tokens": 22073,
+  "cost_usd": 0.0,
+  "duration_ms": 451601,
+  "model": "codex/gpt-6-astra",
+  "is_error": false,
+  "error_message": "",
+  "cached_tokens": 10240,
+  "cache_write_tokens": 0,
+  "reasoning_tokens": 1970,
+  "cost_source": "subscription",
+  "response_id": "01a1c73d-3d1c-7d70-b486-80bb40af6c9e",
+  "finish_reason": "stop"
+}

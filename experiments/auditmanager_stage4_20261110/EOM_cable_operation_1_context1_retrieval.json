@@ -1,0 +1,43 @@
+{
+  "status": "prepared",
+  "new_source_ids": [
+    "blk_99cc8bf95861437186be76b36e9d446b",
+    "blk_b6605a23b38f4e00b2f8076b62b21532",
+    "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27"
+  ],
+  "omitted": [
+    {
+      "block_id": "blk_31afc5d4eb734ea39324bbf2ddf9bf95",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_1215bf4be9df405394bcbccf2feb7736",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_4109f07571fe46418fc7c9205aeb5bc7",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_e592650ad6c04f319521ddf0f1d1f654",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_3d36921f90d34667a0b6d17a54cd050a",
+      "reason": "image_unavailable_or_budget"
+    }
+  ],
+  "automatic_dispatch": false,
+  "absence_proven": false,
+  "semantic_verified": false,
+  "next_stage": "object_operations_e41765d731772672_context_1",
+  "request_sha256": "9013bc9969d7c41f965cd199209e8584535751f6f50988deb0f2f1f828bbbe2f"
+}

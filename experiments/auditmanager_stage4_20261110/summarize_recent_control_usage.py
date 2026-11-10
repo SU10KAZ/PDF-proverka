@@ -14,6 +14,8 @@ def summarize():
         ('EOM_instance_graphic', Path('/tmp/auditmanager_eom_instance_graphic_control_20261110')),
         ('EOM_instance_identity', Path('/tmp/auditmanager_eom_instance_operations_20261110/hvac_32')),
         *[(f'EOM_cable_graphic_{i}', Path('/tmp/auditmanager_eom_cable_graphic_control_20261110') / f'block_{i:03d}') for i in (0, 1)],
+        *[(f'EOM_cable_operations_{i}', Path('/tmp/auditmanager_eom_cable_operations_20261110') / f'block_{i:03d}' / obj) for i, obj in [(0, 'circuit_13'), (1, 'rp5_10')]],
+        *[(f'EOM_cable_context_{i}_{hop}', Path('/tmp/auditmanager_eom_cable_operations_20261110') / f'block_{i:03d}' / obj / f'context_{hop}') for i, obj in [(0, 'circuit_13'), (1, 'rp5_10')] for hop in (1, 2, 3)],
         ('EOM_cable_inventory', Path('/tmp/auditmanager_eom_cable_inventory_control_20261110/EOM/execution/object_inventory_000')),
         ('EOM_initial', Path('/tmp/auditmanager_eom_balance_inventory_control_20261110/EOM/execution/object_inventory_000')),
         ('EOM_extraction_only', Path('/tmp/auditmanager_eom_balance_inventory_control_20261110_extraction_only/EOM/execution/object_inventory_000')),

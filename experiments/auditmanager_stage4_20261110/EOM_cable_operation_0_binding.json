@@ -1,0 +1,44 @@
+{
+  "request_sha256": "7c5e3847d8f34f9c2c9852377ae56eff221cdb296f03b2ac187fcb1cf74b8b11",
+  "inventory_result_sha256": "b9439c1c8c14f56f9d1d14192d1de715d8c22a7154f3171f0af7c4cb68e578bc",
+  "md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "images": [
+    {
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_0.png",
+      "sha256": "d6ea50b675a122327fbbb7b27443dc0f245747c840e9009f6fcdd899b35d642a"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_1.png",
+      "sha256": "bf618d03fa66ff42a2d4d884289c263d42760650d41b16045b79e90b5169ff67"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_2.png",
+      "sha256": "659fed250146b189c03decbfb5ad1e924fafbfbb51ef49550e8bd0ffc17ba9dc"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_3.png",
+      "sha256": "a2c424819f465739bc31ba3fec7790135bcf100123c4c41f0e14f75f21196a77"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_4.png",
+      "sha256": "a111b070884ac9ca404a3c8643acf15d6a1576fa3c2564660e3dfdc6d4c2f6dd"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_5.png",
+      "sha256": "7d0d17ce83d69ffe957bce2e532afa445dfeda06f3468017c9f35f31f51ee016"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_6.png",
+      "sha256": "4c52a05267f9a213c4217e751c9c3377ad68c84c22f538f9303efd94d5c4feac"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_7.png",
+      "sha256": "760f769eec93d9f6b948b946eb6a47d412b81ba892d351c19e2c7f43d3bd9d3d"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0,
+  "known_source_control": true,
+  "expected_answers_supplied": false
+}

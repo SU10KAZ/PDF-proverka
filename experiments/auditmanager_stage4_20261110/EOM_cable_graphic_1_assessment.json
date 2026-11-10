@@ -1,0 +1,33 @@
+{
+  "scope": "One diagram source extraction, not a full technical audit",
+  "objects": 63,
+  "invalid_objects": 0,
+  "target_object": "rp5_10",
+  "partial_recovery": {
+    "model_line": "СЭ510",
+    "graphic_line": "С3510",
+    "designation": "ППГнг-FRHF 5х35,0",
+    "length_m": 95,
+    "protective_device": "QF5.10",
+    "consumer": "ЩУ/Л-3.2"
+  },
+  "literal_reading_error": true,
+  "error_boundary": "Digit 3 read as letter Э; raw model record retained unchanged. Other line IDs in the block share this pattern but are not all independently verified.",
+  "source_reviews": [
+    {
+      "tile": "detail_tile_6.png",
+      "sha256": "07eb45b2166f9f4d0b1e08b42fbcdbe718623aa693d5238ff154004cd971c73c",
+      "directly_viewed": true
+    },
+    {
+      "tile": "detail_tile_14.png",
+      "sha256": "286707fe6e8910f2085bcbc1f39d555f97d983e3adf76dc2dd5745ef1e9cb965",
+      "directly_viewed": true
+    }
+  ],
+  "operation_next": "Use actual raw model object and original images to check quantity/document links; do not inject historical answers or silently correct extraction.",
+  "specification_reconciliation": "not_checked",
+  "full_acceptance_proven": false,
+  "raw_new_candidates": [],
+  "raw_new_candidate_status": "not_independently_verified"
+}
