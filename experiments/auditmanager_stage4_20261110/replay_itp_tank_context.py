@@ -8,6 +8,7 @@ from backend.app.pipeline.stages.findings_review.deterministic_critic import bui
 from backend.app.pipeline.stages.findings_verify.source_review_queue import attach_pending_source_reviews, build_source_review_queue
 from backend.app.pipeline.stages.findings_verify.source_review_context import expand_source_review_context
 from backend.app.pipeline.stages.findings_verify.source_review_graphics import attach_graphic_receipts
+from backend.app.pipeline.stages.findings_verify.source_review_request import prepare_source_review_request
 
 
 def main():
@@ -30,6 +31,10 @@ def main():
     assert {s['block_id'] for s in packet['sources']} == expected
     assert packet['graphic_context_status'] == 'ready_for_attachment'
     assert len(packet['graphic_attachments']) == 6
+    request = prepare_source_review_request(expanded, finding, md)
+    assert len(request['image_paths']) == 6
+    prepared = Path('/tmp/auditmanager_itp_tank_source_review_prepared.json')
+    prepared.write_text(json.dumps(request, ensure_ascii=False, indent=2)+'\n')
     for key in ('problem', 'description', 'solution', 'severity'):
         assert finding[key] == before[key]
     report = {'finding_id': 'F-042', 'source_md_sha256': expanded['source_md_sha256'],
@@ -37,7 +42,10 @@ def main():
               'query_origin': 'Manual known-case graphic review ITP_F042_graphic_text_control.json; not independent model recovery.',
               'search_receipt': packet['context_search_receipt'],
               'text_block_ids': [s['block_id'] for s in packet['sources']],
-              'graphic_receipts': packet['graphic_attachments'], 'tests_passed': 28,
+              'graphic_receipts': packet['graphic_attachments'], 'tests_passed': 41,
+              'prepared_request': {'path': str(prepared), 'request_sha256': request['request_sha256'],
+                                   'message_chars': sum(len(m['content']) for m in request['messages']),
+                                   'image_count': len(request['image_paths']), 'sent': False},
               'finding_core_unchanged': True, 'new_model_calls': 0, 'automatic_dispatch': False,
               'boundary': 'Retrieval and attachment preparation only. Actual model requests for context and response quality remain untested.'}
     Path(__file__).with_name('ITP_tank_context_expansion.json').write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n')

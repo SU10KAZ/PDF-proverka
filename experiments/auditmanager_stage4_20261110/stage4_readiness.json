@@ -416,5 +416,19 @@
     "semantic_verified": false,
     "actual_multimodal_pilot_executed": false,
     "boundary": "Synthetic receipt validation only; not model graphic-reading accuracy. Actual graphic dispatch integration still required."
+  },
+  "source_review_request_preparation": {
+    "tests_passed": 41,
+    "actual_case": "ITP F-042",
+    "prepared_request": {
+      "path": "/tmp/auditmanager_itp_tank_source_review_prepared.json",
+      "request_sha256": "89c26fb9e833ede5875ce3e4c6cde60d200bc23c592e67fcbd7ff57b2663eeb9",
+      "message_chars": 14533,
+      "image_count": 6,
+      "sent": false
+    },
+    "excluded_fields": "Engineer decisions, detector comparison and control outcomes omitted by allow-list; only original/final claims and sources included.",
+    "automatic_dispatch": false,
+    "boundary": "Known-case manually selected context; not blind model retrieval or completed model review."
   }
 }
