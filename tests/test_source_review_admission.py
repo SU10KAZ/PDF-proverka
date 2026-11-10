@@ -226,3 +226,18 @@ def test_ambiguity_exception_cannot_demote_a_supported_technical_defect():
     entries[0]['decision']['response_sha256'] = evidence_digest(entries[0]['response'])
     out, receipts = apply_review_admissions(doc, entries, md)
     assert out == doc and receipts[0]['status'] == 'not_applied'
+
+
+@pytest.mark.parametrize('boundary,accepted', [
+    ({'scope': 'Local source package', 'actual_review': 'Plans and details compared',
+      'limitations': 'Linked calculation not supplied', 'absence_proven': False}, True),
+    ({}, False), ({'scope': 'Local package'}, False),
+    ({'scope': 'Local package', 'actual_review': [], 'limitations': 'Unknown'}, False),
+])
+def test_structured_search_boundary_requires_scope_work_and_limits(boundary, accepted):
+    doc, entries, md = question_case()
+    entries[0]['decision']['context_search_boundary'] = boundary
+    out, receipts = apply_review_admissions(doc, entries, md)
+    assert (receipts[0]['status'] == 'applied') is accepted
+    if not accepted:
+        assert out == doc

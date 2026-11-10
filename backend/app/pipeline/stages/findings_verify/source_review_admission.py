@@ -13,6 +13,14 @@ from .source_review_results import validate_source_review
 from .source_review_evidence import evidence_digest
 
 
+def _has_search_boundary(value):
+    if isinstance(value, str):
+        return bool(value.strip())
+    return (isinstance(value, dict) and all(
+        isinstance(value.get(key), str) and value[key].strip()
+        for key in ('scope', 'actual_review', 'limitations')))
+
+
 def _check_decision(response, decision, original=None):
     if decision.get('response_sha256') != evidence_digest(response):
         raise ValueError('stale_semantic_decision')
@@ -85,8 +93,9 @@ def _check_decision(response, decision, original=None):
                 and decision.get('question_basis') == 'actionable_source_ambiguity'
                 and decision.get('context_search_completed') is True
                 and decision.get('engineer_action_required') is True
-                and all(isinstance(decision.get(k), str) and decision[k].strip()
-                        for k in ('context_search_boundary', 'decision_affected')))
+                and _has_search_boundary(decision.get('context_search_boundary'))
+                and isinstance(decision.get('decision_affected'), str)
+                and bool(decision['decision_affected'].strip()))
             if (not existing_ambiguity and decision.get('question_basis') not in ('minor_confirmed','outside_profile')
                     or not isinstance(decision.get('profile_reason'),str)
                     or not decision['profile_reason'].strip()):
