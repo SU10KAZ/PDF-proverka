@@ -1,0 +1,18 @@
+{
+  "status": "prepared",
+  "new_source_ids": [
+    "blk_09df648d1b4d4cc097ea6f0e25ceef52",
+    "blk_1849759086c445e687f8c0e2b424250b",
+    "blk_441423dd5fb448c89a33b610c54783ba",
+    "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+    "blk_a454c3538d6d4b3eafc59261d7229c42",
+    "blk_b9096ac74f95416da66cc607a9828c3f",
+    "blk_fe7bfb2c1c0b469ca1c3e2cb30686758"
+  ],
+  "omitted": [],
+  "automatic_dispatch": false,
+  "absence_proven": false,
+  "semantic_verified": false,
+  "next_stage": "object_operations_166a95a7b285b14f_context_1",
+  "request_sha256": "c09f16ac053706a467ae039208b977b6cc4391085a028dfff1fdc16ff4f30b1c"
+}
