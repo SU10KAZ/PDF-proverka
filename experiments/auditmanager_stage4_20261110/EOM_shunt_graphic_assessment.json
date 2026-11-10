@@ -1,0 +1,11 @@
+{
+  "scope": "Known-source graphic extraction, no expected device identities supplied.",
+  "duration_ms": 457891,
+  "object_records": 81,
+  "images": 9,
+  "actual_selected_object_id": "rp3_qf320",
+  "source_scope": "ВРУ-2 / РП3 / С2320 / QF3.20; separate from QF3.17 of ВРУ-3 in the historical negative control.",
+  "root_direct_observation": "Viewed detail_tile_4: QF3.20 is labelled C16A, ВА-301, 20кА with a release beside it. This alone does not establish manufacturer compatibility.",
+  "next_step": "Actual object operations with all nine graphic tiles and same-page authoritative notes.",
+  "full_acceptance_proven": false
+}
