@@ -1,0 +1,28 @@
+{
+  "status": "prepared",
+  "new_source_ids": [
+    "blk_006ed1728d2f4d84b4e633526ac14481",
+    "blk_095853a82158483ab52761fde61dd652",
+    "blk_104762a5861a40a3b2300f8b2d0dbee1",
+    "blk_3050f16afc994b889498a2535ea14a52",
+    "blk_32601a7d4ca34927972f1c398ca5621f",
+    "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+    "blk_66a1a7edb1534631908982534b83cf8c",
+    "blk_7527066e645e47bb917a9fc17fb82ccc",
+    "blk_8c5527e3317248dca7d78ca059f0ec46",
+    "blk_90da5d0d361c48008030c2bf87767ced",
+    "blk_984621d535974a2ebd51b5ed8dd3c153",
+    "blk_9c3fa43ddda943a2bc19432c3caa124a",
+    "blk_a1ca949836874a73b2e5918a5b35aa5a",
+    "blk_a203939b21504fa6935b621a29929d7d",
+    "blk_cc70e063642d457fa0a38b30b1a1a51f",
+    "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+    "blk_fa4cca816905454ab134c787b1d1862a"
+  ],
+  "omitted": [],
+  "automatic_dispatch": false,
+  "absence_proven": false,
+  "semantic_verified": false,
+  "next_stage": "object_operations_fa2ba56b8e8acf08_context_1",
+  "request_sha256": "cab7f99dceab536efaa2d1b8c4d810007fb11599e2d8ed867f77bcc9f410e1c5"
+}
