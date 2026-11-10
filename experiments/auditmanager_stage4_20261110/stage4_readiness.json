@@ -259,6 +259,9 @@
     "claim_level_review_records": [
       "F-001",
       "F-003",
+      "F-030",
+      "F-031",
+      "F-032",
       "F-034",
       "F-035",
       "F-037",
@@ -271,9 +274,6 @@
     "separate_arithmetic_refutation": "F-040",
     "pending_packet_count": 19,
     "not_yet_in_these_review_records": [
-      "F-030",
-      "F-031",
-      "F-032",
       "F-033",
       "F-036",
       "F-041",
@@ -281,5 +281,13 @@
       "F-043"
     ],
     "boundary": "Review coverage does not mean all claims resolved; engineering questions and external applicability remain. Runtime pending flags unchanged."
+  },
+  "source_calculation_review": {
+    "artifact": "experiments/auditmanager_stage4_20261110/EOM_calculation_claim_reviews.json",
+    "sha256": "5530695209fcea48e47ebac64b496f694381dda812971ee8fa822899711c7bcf",
+    "reviewed_findings": 3,
+    "source_facts": "Wrong minimum-current operands; inconsistent maximum-current inputs; room-area differences reproduced.",
+    "boundary": "Equipment compliance, normative thresholds and automatic load changes not established.",
+    "automatic_application": false
   }
 }

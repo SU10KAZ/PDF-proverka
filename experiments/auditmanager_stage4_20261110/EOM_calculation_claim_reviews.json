@@ -1,0 +1,533 @@
+{
+  "source": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "scope": "Known-case assistant source review; no external normative or equipment-compliance adjudication.",
+  "reviews": [
+    {
+      "finding_id": "F-030",
+      "finding_sha256": "55621b9a25f7a0f2b0d5a2566fed49899c1e5196be2b44a607cc3df6050d106b",
+      "final_finding": {
+        "id": "F-030",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "current_transformer",
+        "sheet": "Листы 2.1, 3",
+        "page": [
+          4,
+          6
+        ],
+        "problem": "Проверка минимальной нагрузки трансформаторов тока выполнена с неверными исходными токами",
+        "description": "В расчёты ВРУ-2 и ВРУ-3 подставлены 77 и 74 А вместо рассчитанных минимальных токов. Для ВРУ-2 вторичные токи составляют около 0,341 и 0,383 А, для ВРУ-3 — 0,394 и 0,358 А. Значения превышают 0,25 А, но опубликованное обоснование требует исправления.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.5.17",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить выбор трансформаторов тока при минимальной нагрузке.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": "1.5.17",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подставить рассчитанные минимальные первичные токи и исправить таблицы проверки.",
+        "risk": "Недостоверное обоснование точности коммерческого учёта.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-007",
+            "status": "requires_semantic_review",
+            "source_claim": "При проверке минимального тока счётчиков ВРУ-2 и ВРУ-3 подставлены 77 и 74 А, которые не соответствуют рассчитанной выше минимальной нагрузке. Для ВРУ-2 следует подставлять около 23,9 и 30,6 А: вторичные токи 0,341 и 0,383 А. Для ВРУ-3 — 39,4 и 28,6 А: 0,394 и 0,358 А. Эти значения также превышают 5% от 5 А, однако опубликованное расчётное обоснование необходимо исправить.",
+            "source_location": "МД стр. 4 и 6, листы 2.1 и 3, таблицы проверки ТТ, строка минимальной нагрузки.",
+            "existing_block_ids": [
+              "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "blk_7ca68a936c85428dbd4b60b2893398a2"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-007",
+            "source_claim": "При проверке минимального тока счётчиков ВРУ-2 и ВРУ-3 подставлены 77 и 74 А, которые не соответствуют рассчитанной выше минимальной нагрузке. Для ВРУ-2 следует подставлять около 23,9 и 30,6 А: вторичные токи 0,341 и 0,383 А. Для ВРУ-3 — 39,4 и 28,6 А: 0,394 и 0,358 А. Эти значения также превышают 5% от 5 А, однако опубликованное расчётное обоснование необходимо исправить.",
+            "block_ids": [
+              "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "blk_7ca68a936c85428dbd4b60b2893398a2"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Строка минимального тока использует 77 и 74 А вместо рассчитанных выше токов при 15% нагрузке.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "quote": "| 2 | Минимальный ток в линии в рабочем режиме, А (при 15% нагрузке) | Ip.мин | Ip.раб.Ic(IIc) × 0,15 | 159.3 × 0,15= 23.9A |  |  |  | 204.1 × 0,15= 30.6A |  |  |  |  |  |"
+            },
+            {
+              "block_id": "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "quote": "| 4 | Ток цепи счетчика при минимальной нагрузке, А | Icч.min | Ip.мин/Kтт > Imin.cч | 77/70 = 1.1A > 0,1A |  |  |  | 74/80 = 0.9A > 0,1A |  |  |  |  |  |"
+            },
+            {
+              "block_id": "blk_7ca68a936c85428dbd4b60b2893398a2",
+              "quote": "| 2 | Минимальный ток в линии в рабочем режиме, А (при 15% нагрузке) | Ip.мин | Ip.раб.Ic(IIc) × 0,15 | 262.4 × 0,15= 39.4А |  |  |  | 190.5 × 0,15= 28.6А |  |  |  |  |  |"
+            },
+            {
+              "block_id": "blk_7ca68a936c85428dbd4b60b2893398a2",
+              "quote": "| 4 | Ток цепи счетчика при минимальной нагрузке, А | Icч.min | Ip.мин/Kтт > Imin.cч | 77/100 = 0.8А > 0,1А |  |  |  | 74/80 = 0.9А > 0,1А |  |  |  |  |  |"
+            }
+          ],
+          "operations": [
+            {
+              "block_id": "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "operation": "23.9/70",
+              "secondary_current_A": "0.3414285714285714285714285714",
+              "rounded_0_001_A": "0.341",
+              "above_finding_stated_0_25_A": true,
+              "above_source_stated_0_1_A": true
+            },
+            {
+              "block_id": "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "operation": "30.6/80",
+              "secondary_current_A": "0.3825",
+              "rounded_0_001_A": "0.383",
+              "above_finding_stated_0_25_A": true,
+              "above_source_stated_0_1_A": true
+            },
+            {
+              "block_id": "blk_7ca68a936c85428dbd4b60b2893398a2",
+              "operation": "39.4/100",
+              "secondary_current_A": "0.394",
+              "rounded_0_001_A": "0.394",
+              "above_finding_stated_0_25_A": true,
+              "above_source_stated_0_1_A": true
+            },
+            {
+              "block_id": "blk_7ca68a936c85428dbd4b60b2893398a2",
+              "operation": "28.6/80",
+              "secondary_current_A": "0.3575",
+              "rounded_0_001_A": "0.358",
+              "above_finding_stated_0_25_A": true,
+              "above_source_stated_0_1_A": true
+            }
+          ]
+        },
+        {
+          "claim": "Порог 0,25 А (5% от 5 А) является применимым критерием для этого исполнения.",
+          "status": "needs_data",
+          "reason": "Численное неравенство с 0,25 А верно. Но в строке проверки и пояснении проекта указан порог 0,1 А; происхождение и применимость 0,25 А в замечании не обоснованы. Это не опровергает найденную ошибку подстановки.",
+          "evidence": [
+            {
+              "block_id": "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "quote": "Iмин - минимальный ток счетчика, при котором он не выходит из класса точности (для электронных счетчиков Iмин=0,1 А (РМ-2559))"
+            },
+            {
+              "block_id": "blk_7ca68a936c85428dbd4b60b2893398a2",
+              "quote": "Iмин – минимальный ток счетчика, при котором он не выходит из класса точности (для электронных счетчиков Iмин=0,1 А (РМ-2559))"
+            }
+          ]
+        },
+        {
+          "claim": "Выбранные ТТ и счётчики соответствуют всем применимым требованиям.",
+          "status": "needs_data",
+          "reason": "Арифметика не заменяет паспорт, класс точности, нагрузку вторичной цепи и проверку применимости норм."
+        }
+      ],
+      "recommendation": "Сохранить ошибку подстановки; отделить её от неподтверждённого порога 0,25 А и общего вывода о пригодности ТТ.",
+      "engineer_decision": "Отдельное решение инженера по этой классической записи не установлено."
+    },
+    {
+      "finding_id": "F-031",
+      "finding_sha256": "bbe211b5692c848618df4084ce9a0ce094fccb9c48af009abfbb8f77477db0b6",
+      "final_finding": {
+        "id": "F-031",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "current_transformer",
+        "sheet": "Листы 2.1, 3, 4",
+        "page": [
+          4,
+          6,
+          7
+        ],
+        "problem": "Максимальные токи в проверке ТТ расходятся со сводными таблицами",
+        "description": "Для ВРУ-2 и ВРУ-3 в расчётах ТТ приняты 384,1 и 465,1 А, тогда как сводные таблицы с компенсацией дают 390,3 и 471,4 А. Допустимость принятой 20-процентной перегрузки конкретных ТТ паспортами не подтверждена.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.5.16",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить выбор ТТ по максимальному току и условиям учёта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": "1.5.16",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать расчётные токи и подтвердить допустимую длительную нагрузку и точность конкретных ТТ по паспортам.",
+        "risk": "Перегрузка ТТ либо нарушение точности учёта.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 35,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-008",
+            "status": "requires_semantic_review",
+            "source_claim": "В расчётах ТТ приняты максимальные токи 384,1 А для ВРУ-2 и 465,1 А для ВРУ-3, тогда как в сводных таблицах с компенсацией приведены 390,3 и 471,4 А. Номиналы выбираются с допущением 20% перегрузки, но конкретные исполнения ТТ и допустимость такой длительной нагрузки не указаны. Согласовать максимальные токи и подтвердить по паспортам допустимую нагрузку и точность учёта, особенно для ТТ 400/5 ВРУ-3.",
+            "source_location": "МД стр. 4, 6 и 7, таблицы выбора ТТ и сводные таблицы режимов.",
+            "existing_block_ids": [
+              "blk_c5f0556f94c14503bfe178ef5941c077",
+              "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "blk_5b30188592764230a7cd894838a60430",
+              "blk_7ca68a936c85428dbd4b60b2893398a2"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-008",
+            "source_claim": "В расчётах ТТ приняты максимальные токи 384,1 А для ВРУ-2 и 465,1 А для ВРУ-3, тогда как в сводных таблицах с компенсацией приведены 390,3 и 471,4 А. Номиналы выбираются с допущением 20% перегрузки, но конкретные исполнения ТТ и допустимость такой длительной нагрузки не указаны. Согласовать максимальные токи и подтвердить по паспортам допустимую нагрузку и точность учёта, особенно для ТТ 400/5 ВРУ-3.",
+            "block_ids": [
+              "blk_c5f0556f94c14503bfe178ef5941c077",
+              "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "blk_5b30188592764230a7cd894838a60430",
+              "blk_7ca68a936c85428dbd4b60b2893398a2"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Максимальные токи, принятые в проверках ТТ, отличаются от сводных значений аварийно-пожарного режима с компенсацией.",
+          "status": "supported",
+          "comparisons": [
+            {
+              "evidence": [
+                {
+                  "block_id": "blk_7d22e811017e4e969b2d732e9e30c50d",
+                  "quote": "|  |  |  |  | Iаб= | 384,1 |  |  |  | Iаб= | 384,1 |  |  |  |"
+                },
+                {
+                  "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+                  "quote": "| Авар. Пожар | с компенсацией реактивной мощности | 611,6 | 242,4 | 390,3 | 0,94 | 256,6 |"
+                }
+              ],
+              "difference_A": "6.2"
+            },
+            {
+              "evidence": [
+                {
+                  "block_id": "blk_7ca68a936c85428dbd4b60b2893398a2",
+                  "quote": "|  |  |  |  | Iаб= | 465,1 |  |  |  |  | Iаб= | 465,1 |  |  |"
+                },
+                {
+                  "block_id": "blk_5b30188592764230a7cd894838a60430",
+                  "quote": "| Авар. Пожар | с компенсацией реактивной мощности | 1103,3 | 296,1 | 471,4 | 0,96 | 309,9 |"
+                }
+              ],
+              "difference_A": "6.3"
+            }
+          ]
+        },
+        {
+          "claim": "В расчётах явно принято допущение 20% перегрузки.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_7d22e811017e4e969b2d732e9e30c50d",
+              "quote": "|  |  |  |  | Sp= | 104.8 | (принимаем тр-р тока 350/5 с учетом 20% перегрузки; Ip.аб/1,2 \\< In1мм; 384.1/1,2=320.1 \\< 350) |  |  | Sp= | 134.3 | (принимаем тр-р тока 400/5 с учетом 20% перегрузки Ip.аб/1,2 \\< In1мм; 384.1/1,2=320.1 \\< 400) |  |  |"
+            },
+            {
+              "block_id": "blk_7ca68a936c85428dbd4b60b2893398a2",
+              "quote": "|  |  |  |  | Sp= | 172.7 | (принимаем тр-р тока 500/5 с учетом 20% перегрузки; Ip.аб/1,2 \\< In1мм; 465.1/1,2=387.6 \\< 500) |  |  |  | Sp= | 125.4 | (принимаем тр-р тока 400/5 с учетом 20% перегрузки Ip.аб/1,2 \\< In1мм; 465.1/1,2=387.6 \\< 400) |  |"
+            }
+          ]
+        },
+        {
+          "claim": "Допустимость перегрузки конкретного исполнения ТТ опровергнута либо отсутствие паспортов во всём комплекте доказано.",
+          "status": "needs_data",
+          "reason": "Проверенные таблицы не содержат паспортного подтверждения; его отсутствие во всём проекте не установлено. Нужны точное исполнение, паспорт и сопоставимый режим."
+        }
+      ],
+      "recommendation": "Сохранить согласование исходных токов. Паспортную допустимость проверять отдельно; не назначать замену ТТ только по этим таблицам.",
+      "engineer_decision": "Отдельное решение инженера по этой классической записи не установлено."
+    },
+    {
+      "finding_id": "F-032",
+      "finding_sha256": "f60872c8742286efd4dddc9591887e00eb37e760f3c7354d839e77535f0a402d",
+      "final_finding": {
+        "id": "F-032",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "calculation",
+        "sheet": "Листы 4, 16, 26",
+        "page": [
+          7,
+          19,
+          28
+        ],
+        "problem": "Площади помещений 7Н и 8Н в расчёте ВРУ-К отличаются от экспликации",
+        "description": "В расчёте для 7Н принято 105,4 м² вместо 108,1 м², для 8Н — 68,6 м² вместо 63,0 м². При показателе 0,22 кВт/м² нагрузка 7Н по экспликации составляет 23,782 кВт вместо 23,2 кВт.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить исходные площади и удельную нагрузку встроенных помещений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать площади с экспликацией и отдельно указать основания принятой минимальной мощности.",
+        "risk": "Недостоверные нагрузки коммерческих помещений.",
+        "source_finding_ids": [
+          "T-009"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-009",
+            "status": "requires_semantic_review",
+            "source_claim": "Площади коммерческих помещений в расчёте ВРУ-К расходятся с экспликацией: для 7Н принято 105,4 м² вместо 108,1 м², для 8Н — 68,6 м² вместо 63,0 м². При использовании показателя 0,22 кВт/м² нагрузка 7Н по экспликации составляет 23,782 кВт вместо 23,2 кВт. Согласовать площади и основание назначения мощности; для помещений с принятой минимальной мощностью 20 кВт отдельно указать это условие.",
+            "source_location": "МД стр. 7, таблица ВРУ-К; стр. 19 и 28, экспликации коммерческих помещений.",
+            "existing_block_ids": [
+              "blk_fb5f780dae7a475ca6c249f62b64771e",
+              "blk_f2b273baee994702906a6e5d94a43063",
+              "blk_29be4ff018f040daaa2000c0a3ebde08"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-009",
+            "source_claim": "Площади коммерческих помещений в расчёте ВРУ-К расходятся с экспликацией: для 7Н принято 105,4 м² вместо 108,1 м², для 8Н — 68,6 м² вместо 63,0 м². При использовании показателя 0,22 кВт/м² нагрузка 7Н по экспликации составляет 23,782 кВт вместо 23,2 кВт. Согласовать площади и основание назначения мощности; для помещений с принятой минимальной мощностью 20 кВт отдельно указать это условие.",
+            "block_ids": [
+              "blk_fb5f780dae7a475ca6c249f62b64771e",
+              "blk_f2b273baee994702906a6e5d94a43063",
+              "blk_29be4ff018f040daaa2000c0a3ebde08"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Для одинаковых обозначений 7Н и 8Н площади в расчёте отличаются от обеих экспликаций.",
+          "status": "supported",
+          "calculation_rows": [
+            {
+              "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+              "quote": "| 7Н | ЩМ7 | 105,4 | 0,22 | 23,2 | 23,2 | 41,5 | 0,85 | 27,3 |"
+            },
+            {
+              "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+              "quote": "| 8Н | ЩМ8 | 68,6 | 0,22 | 20,0 | 20,0 | 35,8 | 0,85 | 23,5 |"
+            }
+          ],
+          "explication_checks": [
+            {
+              "room": "7Н",
+              "evidence": [
+                {
+                  "block_id": "blk_f2b273baee994702906a6e5d94a43063",
+                  "quote": "| 7Н.1 | БКТ6 | 98,5 |  |"
+                },
+                {
+                  "block_id": "blk_f2b273baee994702906a6e5d94a43063",
+                  "quote": "| 7Н.2 | С/у | 6,1 |  |"
+                },
+                {
+                  "block_id": "blk_f2b273baee994702906a6e5d94a43063",
+                  "quote": "| 7Н.3 | ПУИ | 3,5 | B4 |"
+                }
+              ],
+              "area_sum_m2": "108.1"
+            },
+            {
+              "room": "7Н",
+              "evidence": [
+                {
+                  "block_id": "blk_29be4ff018f040daaa2000c0a3ebde08",
+                  "quote": "| 7Н.1 | БКТ6 | 98,5 |  |"
+                },
+                {
+                  "block_id": "blk_29be4ff018f040daaa2000c0a3ebde08",
+                  "quote": "| 7Н.2 | C/у | 6,1 |  |"
+                },
+                {
+                  "block_id": "blk_29be4ff018f040daaa2000c0a3ebde08",
+                  "quote": "| 7Н.3 | ПУИ | 3,5 | B4 |"
+                }
+              ],
+              "area_sum_m2": "108.1"
+            },
+            {
+              "room": "8Н",
+              "evidence": [
+                {
+                  "block_id": "blk_f2b273baee994702906a6e5d94a43063",
+                  "quote": "| 8Н.1 | БКТ7 | 55,4 |  |"
+                },
+                {
+                  "block_id": "blk_f2b273baee994702906a6e5d94a43063",
+                  "quote": "| 8Н.2 | ПУИ | 2,2 | B4 |"
+                },
+                {
+                  "block_id": "blk_f2b273baee994702906a6e5d94a43063",
+                  "quote": "| 8Н.3 | С/у | 5,4 |  |"
+                }
+              ],
+              "area_sum_m2": "63.0"
+            },
+            {
+              "room": "8Н",
+              "evidence": [
+                {
+                  "block_id": "blk_29be4ff018f040daaa2000c0a3ebde08",
+                  "quote": "| 8Н.1 | БКТ7 | 55,4 |  |"
+                },
+                {
+                  "block_id": "blk_29be4ff018f040daaa2000c0a3ebde08",
+                  "quote": "| 8Н.2 | ПУИ | 2,2 | B4 |"
+                },
+                {
+                  "block_id": "blk_29be4ff018f040daaa2000c0a3ebde08",
+                  "quote": "| 8Н.3 | C/у | 5,4 |  |"
+                }
+              ],
+              "area_sum_m2": "63.0"
+            }
+          ]
+        },
+        {
+          "claim": "При сохранении коэффициента 0,22 произведение площади 7Н по экспликации равно 23,782 кВт.",
+          "status": "supported",
+          "operation": "108.1 * 0.22 = 23.782",
+          "evidence": [
+            {
+              "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+              "quote": "| 7Н | ЩМ7 | 105,4 | 0,22 | 23,2 | 23,2 | 41,5 | 0,85 | 27,3 |"
+            }
+          ]
+        },
+        {
+          "claim": "Следует автоматически заменить расчётную нагрузку и считать минимум 20 кВт универсальным правилом.",
+          "status": "needs_data",
+          "reason": "Нужно согласовать актуальную площадь, метод назначения мощности и проектный минимум. Частное значение 20 кВт не является универсальным допуском."
+        }
+      ],
+      "recommendation": "Сохранить междокументное расхождение площадей; согласовать базу расчёта до изменения нагрузки.",
+      "engineer_decision": "Отдельное решение инженера по этой классической записи не установлено."
+    }
+  ],
+  "reviewed_findings": 3,
+  "automatic_application": false,
+  "runtime_pending_flags_unchanged": true,
+  "new_model_calls": 0
+}
