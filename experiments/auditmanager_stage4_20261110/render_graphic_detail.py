@@ -8,7 +8,7 @@ import fitz
 
 
 def render(pdf_path, blocks_path, block_id, expected_pdf_sha256, output_dir,
-           columns=4, scale=2.0, overlap=0.025):
+           columns=4, scale=2.0, overlap=0.025, padding=0.0):
     pdf_path, blocks_path, output_dir = map(Path, (pdf_path, blocks_path, output_dir))
     digest = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
     if digest != expected_pdf_sha256:
@@ -24,7 +24,7 @@ def render(pdf_path, blocks_path, block_id, expected_pdf_sha256, output_dir,
     if (len(n) != 4 or not all(0 <= x <= 1 for x in n)
             or n[0] >= n[2] or n[1] >= n[3]):
         raise ValueError('Invalid block geometry')
-    if not 1 <= columns <= 16 or not 0 < scale <= 4 or not 0 <= overlap <= 0.1:
+    if not 1 <= columns <= 16 or not 0 < scale <= 4 or not 0 <= overlap <= 0.1 or not 0 <= padding <= 0.05:
         raise ValueError('Invalid rendering budget')
     output_dir.mkdir(parents=True, exist_ok=False)
     receipts = []
@@ -32,6 +32,13 @@ def render(pdf_path, blocks_path, block_id, expected_pdf_sha256, output_dir,
         page = doc[block['page_index']]
         rect = fitz.Rect(n[0]*page.rect.width, n[1]*page.rect.height,
                          n[2]*page.rect.width, n[3]*page.rect.height)
+        original_rect = list(rect)
+        # Optional same-PDF graphical context, distinct from the original crop.
+        if padding:
+            rect = fitz.Rect(max(page.rect.x0, rect.x0-page.rect.width*padding),
+                max(page.rect.y0, rect.y0-page.rect.height*padding),
+                min(page.rect.x1, rect.x1+page.rect.width*padding),
+                min(page.rect.y1, rect.y1+page.rect.height*padding))
         for i in range(columns):
             clip = fitz.Rect(max(rect.x0, rect.x0+rect.width*(i/columns-overlap)),
                              rect.y0,
@@ -51,6 +58,8 @@ def render(pdf_path, blocks_path, block_id, expected_pdf_sha256, output_dir,
         'blocks_sha256': hashlib.sha256(blocks_path.read_bytes()).hexdigest(),
         'purpose': 'GRAPHIC-only higher resolution tiles; no TEXT re-extraction',
         'columns': columns, 'scale': scale, 'overlap': overlap, 'tiles': receipts,
+        'padding_page_fraction':padding,'original_crop_points':original_rect,
+        'expanded_crop_points':list(rect),'outside_original_crop':bool(padding),
         'model_call_performed': False, 'semantic_verified': False}
     (output_dir/'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
     return manifest
@@ -63,5 +72,6 @@ if __name__ == '__main__':
     parser.add_argument('--columns', type=int, default=4)
     parser.add_argument('--scale', type=float, default=2.0)
     parser.add_argument('--overlap', type=float, default=0.025)
+    parser.add_argument('--padding', type=float, default=0.0)
     result = render(**vars(parser.parse_args()))
     print(json.dumps({'tiles': len(result['tiles']), 'semantic_verified': False}))

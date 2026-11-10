@@ -165,7 +165,7 @@
     "restricted_features_probe": "codex_restricted_features_probe.json",
     "full_candidate_runs_started": false,
     "candidate_frozen": false,
-    "model_jobs_live": false,
+    "model_jobs_live": true,
     "live_job_observation_utc": "2026-11-10T16:52:33.111064+00:00",
     "live_job_pid": null,
     "live_job_scope": "KM source inventory completed 14/14; no active model jobs at this snapshot"
@@ -1024,5 +1024,19 @@
     "artifact": "KM_inventory_link_conflicts.json",
     "count": 2,
     "technical_project_defects": 0
+  },
+  "km_graphic_recovery_control": {
+    "status": "running",
+    "session_id": 48785,
+    "model": "codex/gpt-6-astra",
+    "packets": 2,
+    "source_blocks": 8,
+    "automatic_retries": 0,
+    "history_supplied": false
+  },
+  "km_clipped_axis_recovery": {
+    "artifact": "KM_clipped_axis_recovery.json",
+    "specific_axis_visually_recovered": true,
+    "whole_block_complete": false
   }
 }
