@@ -121,3 +121,25 @@ def test_refined_query_is_not_starved_by_previous_six_broad_queries():
     search=result['searches']['dimension_consistency']
     assert 'A 20' in search['query_hit_counts']
     assert old_queries[-1] in search['deferred_queries']
+
+
+@pytest.mark.parametrize('budget', [{'max_source_chars':3500}, {'max_message_chars':6000}])
+def test_exact_source_from_later_operation_precedes_broad_hits(budget):
+    request,response,sources,md,kwargs=case()
+    for bid,label in [('broad','GENERAL'),('target','COUNTERPART')]:
+        body=label+' '+('x'*3000)+'\n'
+        sources[bid]={'block_id':bid,'kind':'TEXT','content':body}
+        md+=f'### BLOCK #3 [TEXT]: {bid}\n'+body
+    packet=json.loads(request['messages'][-1]['content'])
+    packet['operations'].append({'operation':'document_links'})
+    request['messages'][-1]['content']=json.dumps(packet)
+    response['object_operation_results'][0]['context_queries']=['GENERAL']
+    response['object_operation_results'].append({'object_id':'obj','operation':'document_links',
+        'status':'needs_data','context_queries':['target']})
+    kwargs.update(expected_request_sha256=evidence_digest(request),expected_md_sha256=hashlib.sha256(md.encode()).hexdigest())
+    result=prepare_object_operation_continuation(request,response,sources,{},md,**kwargs,**budget)
+    assert result['new_source_ids']==['target']
+    next_packet=json.loads(result['request']['messages'][-1]['content'])
+    assert next_packet['source_context'][0]==sources['a']
+    assert any(r['block_id']=='broad' for r in result['omitted'])
+    assert not result['absence_proven']

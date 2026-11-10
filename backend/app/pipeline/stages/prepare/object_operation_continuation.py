@@ -59,6 +59,8 @@ def prepare_object_operation_continuation(original, response, sources, images, m
     if not pending or len({r['operation'] for r in pending}) != len(pending):
         raise ValueError('No unique pending operations')
     searches, candidate_ids = {}, []
+    exact_requested_ids = {q.strip() for op in pending
+        for q in op.get('context_queries', []) if isinstance(q, str) and q.strip() in sources}
     pending_names = {r['operation'] for r in pending}
     # Preserve primary sources cited by the original operation, including notes
     # which the first builder erroneously omitted from source_context.
@@ -81,6 +83,10 @@ def prepare_object_operation_continuation(original, response, sources, images, m
             prior_backlog_ids=prior_ids,source_graph=graph)
         candidate_ids.extend(b['block_id'] for b in search['hits'])
         searches[op['operation']] = {**search,'hits':[{k:v for k,v in b.items() if k!='content'} for b in search['hits']]}
+    # Rank across operations, not only within each individual search. Otherwise
+    # broad hits from the first operation consume the budget before an exact
+    # counterpart requested by a later operation. Original context stays intact.
+    candidate_ids = sorted(dict.fromkeys(candidate_ids), key=lambda bid: bid not in exact_requested_ids)
     context = {b['block_id']:b for b in packet['source_context']}
     original_context_ids = set(context)
     omitted = []
@@ -96,7 +102,7 @@ def prepare_object_operation_continuation(original, response, sources, images, m
         context[bid] = block
         size += len(block['content'])
     attached = list(packet['attached_image_ids_in_order'])
-    for bid in context:
+    for bid in sorted(context, key=lambda bid: bid not in exact_requested_ids):
         if context[bid]['kind'] not in ('IMAGE','GRAPHIC') or bid in attached:
             continue
         if bid not in images or len(attached)>=max_images:
