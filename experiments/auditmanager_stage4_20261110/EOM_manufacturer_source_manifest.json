@@ -15,5 +15,17 @@
       "sha256": "e8164d68112cf66bd3475dad6948aaa0ec429a7761ff621a4e8c0a1253f73d57"
     }
   ],
-  "scope": "Official manufacturer source only; not proof of actual project article or chosen manufacturer."
+  "scope": "Official manufacturer source only; not proof of actual project article or chosen manufacturer.",
+  "primary_page_review": {
+    "directly_viewed_pages": [
+      12,
+      13
+    ],
+    "observations": [
+      "Section 10 restricts the named RN-300-2P accessory to 2P VA-300 breakers.",
+      "Table 5 distinguishes VA-301 16A one-pole article 28002DEK from two-pole article 28003DEK."
+    ],
+    "applicability_limit": "Actual project manufacturer and articles must be established; series name or cable conductor count alone does not establish pole count. Do not apply this manual to VA-303 without its own documentation.",
+    "source_only_not_project_verdict": true
+  }
 }
