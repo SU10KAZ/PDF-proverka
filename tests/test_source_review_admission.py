@@ -149,3 +149,32 @@ def test_array_display_reviews_require_unique_original_hash_not_order():
     entries[0]['decision']['display_field_reviews']=rows+[deepcopy(rows[0])]
     out,receipts=apply_review_admissions(doc,entries,md)
     assert out==doc and receipts[0]['reason']=='ambiguous_display_field_review'
+
+
+def derived_case():
+    doc,entries,md=case('retain','supported');e=entries[0]
+    e['response']['claims'].append({'claim_id':'C2','claim':'Conditional consequence','status':'needs_data',
+        'reason':'No direct event observed','missing_data':['Event record'],'evidence':[]})
+    e['decision']['response_sha256']=evidence_digest(e['response'])
+    e['decision']['claim_reviews'].append({'claim_id':'C2','role':'context','verdict':'supported',
+        'same_scope_verified':True,'evidence_sufficiency_verified':True,
+        'reason':'Conditional inference from the checked premise, not observed event','supporting_claim_ids':['C1']})
+    return doc,entries,md
+
+
+def test_explicit_derived_context_keeps_evidence_trace():
+    doc,entries,md=derived_case();out,r=apply_review_admissions(doc,entries,md)
+    assert r[0]['status']=='applied'
+    assert out['source_review_history'][0]['decision']['claim_reviews'][1]['supporting_claim_ids']==['C1']
+
+
+@pytest.mark.parametrize('bad',['self','missing','unresolved','defect','refutation'])
+def test_derived_claim_cannot_replace_direct_defect_or_refutation_evidence(bad):
+    doc,entries,md=derived_case();reviews=entries[0]['decision']['claim_reviews']
+    if bad=='self':reviews[1]['supporting_claim_ids']=['C2']
+    if bad=='missing':reviews[1]['supporting_claim_ids']=['C9']
+    if bad=='unresolved':reviews[0]['verdict']='needs_data'
+    if bad=='defect':reviews[1]['role']='defect_basis'
+    if bad=='refutation':reviews[1]['verdict']='refuted'
+    out,r=apply_review_admissions(doc,entries,md)
+    assert out==doc and r[0]['status']=='not_applied'

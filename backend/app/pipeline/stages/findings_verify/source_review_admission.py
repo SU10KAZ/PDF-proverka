@@ -41,7 +41,23 @@ def _check_decision(response, decision):
             if r.get('same_scope_verified') is not True or r.get('evidence_sufficiency_verified') is not True:
                 raise ValueError('claim_scope_or_evidence_not_verified')
             if not claims[cid].get('evidence'):
-                raise ValueError('conclusive_claim_without_evidence')
+                # Conditional consequences/recommendations can be reasoned from
+                # directly evidenced premises. Require explicit one-hop links;
+                # this verifies traceability, not the truth of the inference.
+                refs = r.get('supporting_claim_ids', [])
+                if (r['verdict'] != 'supported' or r['role'] == 'defect_basis'
+                        or not isinstance(refs, list) or not refs
+                        or any(not isinstance(ref, str) for ref in refs)
+                        or len(set(refs)) != len(refs)):
+                    raise ValueError('conclusive_claim_without_evidence')
+                for ref in refs:
+                    matches = [p for p in reviews if p.get('claim_id') == ref]
+                    if (ref == cid or ref not in claims or len(matches) != 1
+                            or matches[0].get('verdict') != 'supported'
+                            or matches[0].get('same_scope_verified') is not True
+                            or matches[0].get('evidence_sufficiency_verified') is not True
+                            or not claims[ref].get('evidence')):
+                        raise ValueError('unverified_derived_claim_premise')
         if r['role']=='defect_basis':bases.append(r)
     if not bases:raise ValueError('defect_basis_required')
     action=decision.get('action')
