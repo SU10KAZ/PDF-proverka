@@ -1,0 +1,31 @@
+{
+  "control_id": "H03-P03",
+  "historical_id": "H-AR-35",
+  "purpose": "Evaluator-only source review; never include in independent discovery request.",
+  "source_image": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_eb6d781a540446879deec9e102cbd450.png",
+    "sha256": "100cbafee53ce2e6d021dca2627c73f0460fdff4fb79bd8e23d301e5443c38eb",
+    "directly_viewed": true
+  },
+  "authoritative_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+  "source_block": "blk_eb6d781a540446879deec9e102cbd450",
+  "observed_positive": "На листе 6 видны линейно заштрихованные участки без индивидуальных марок и отметок: четыре вдоль Г5₁ между В1₁–В5₁, один между В10₁–В11₁, один между Б9₁–Б10₁.",
+  "counterevidence": "Другие участки явно подписаны К-5 и +5,450; линейная штриховка присутствует и на иных периферийных элементах. TEXT легенды перечисляет типы К-3, К-4, К-5.",
+  "supported_output": "Вопрос о назначении адресных немаркированных участков, с условным запросом типа покрытия, если это технические ниши.",
+  "unsupported_outputs": [
+    "Шесть доказанных отсутствующих покрытий",
+    "Отсутствие линейной штриховки в графической легенде, которую этот просмотр не включает",
+    "Отсутствие решения во всём проекте",
+    "Шесть независимых дефектов вместо одного вопроса с адресами"
+  ],
+  "historical_evaluation": {
+    "path": "experiments/auditmanager_stage1_20261109/decisions/AR35_unlabelled_areas.json",
+    "sha256": "7274cc7e622df36e93d23f17add55aa23bfc3c85446d0eda662dae68c24a265e",
+    "engineer_decision": "Принято",
+    "engineer_comment": "вопрос поставлен верно, но модель не определила назначение ниш по смежному тому и поэтому оставила «требует уточнения»."
+  },
+  "model_result_reviewed": false,
+  "method_control_passed": false,
+  "independent_project_discovery": false,
+  "production_acceptance": false
+}

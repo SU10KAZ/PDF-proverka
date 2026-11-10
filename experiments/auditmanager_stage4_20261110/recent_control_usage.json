@@ -1,5 +1,5 @@
 {
-  "scope": "Recent EOM extraction/recovery, AR/KM deferred and AK cabinet controls only; not all stage4 work.",
+  "scope": "Recent EOM extraction/recovery, AR/KM deferred, AR unlabelled inventory and AK cabinet controls only; not all stage4 work.",
   "requests": [
     {
       "control": "EOM_initial",
@@ -9,14 +9,14 @@
         "status": "finished",
         "model_error": true
       },
+      "token_counters_incomplete": true,
       "result_sha256": "6543e3f10f8864f764a1b84cc961c46a44f49f852c93853b78322f045aed9ad3",
       "model": "codex/gpt-6-astra",
       "duration_ms": 900103,
       "input_tokens": 0,
       "output_tokens": 0,
       "cost_source": "subscription",
-      "error": "codex_exec_exit_-1; codex_json_not_found",
-      "token_counters_incomplete": true
+      "error": "codex_exec_exit_-1; codex_json_not_found"
     },
     {
       "control": "EOM_extraction_only",
@@ -26,14 +26,14 @@
         "status": "finished",
         "model_error": true
       },
+      "token_counters_incomplete": false,
       "result_sha256": "6cae2a0ca451f634f8948178ef0f60bc1d7aea22da6b5e97ca48ec9a058d9717",
       "model": "codex/gpt-6-astra",
       "duration_ms": 605786,
       "input_tokens": 40105,
       "output_tokens": 29983,
       "cost_source": "subscription",
-      "error": "codex_json_not_found",
-      "token_counters_incomplete": false
+      "error": "codex_json_not_found"
     },
     {
       "control": "EOM_split_0",
@@ -43,14 +43,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "fa5aa099a5f06ddfea009b7d4d1cf2f198383e4336b505321e60747bc8f64c8f",
       "model": "codex/gpt-6-astra",
       "duration_ms": 359961,
       "input_tokens": 15217,
       "output_tokens": 17646,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "EOM_split_1",
@@ -60,14 +60,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "71904018c0ee3e7b8e709a900ae4bc30c008437e8586fe37413eabfee78c32f5",
       "model": "codex/gpt-6-astra",
       "duration_ms": 336145,
       "input_tokens": 14385,
       "output_tokens": 16579,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "EOM_split_2",
@@ -77,14 +77,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "4f923c50e2393f7ec9ab52e6bf0d30e205d8e6bf1a276ab5d04c9a38432a909b",
       "model": "codex/gpt-6-astra",
       "duration_ms": 445877,
       "input_tokens": 18148,
       "output_tokens": 22026,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "EOM_split_3",
@@ -94,14 +94,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "04a188b5e3fa89c99dfce1f39f653e9dd999f4904b08d6e135e1a80f80865e19",
       "model": "codex/gpt-6-astra",
       "duration_ms": 221643,
       "input_tokens": 15114,
       "output_tokens": 10846,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "EOM_split_4",
@@ -111,14 +111,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "64a5d5675a0c0ca08b22796da356afdf2a15e7d07ba956afcb17dc081a6acd23",
       "model": "codex/gpt-6-astra",
       "duration_ms": 710096,
       "input_tokens": 18338,
       "output_tokens": 35207,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "EOM_graphic_strip",
@@ -128,14 +128,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "b19e47c47a674f531eacc2b470c3d018b353cd2fe32997682359f7033e05fa8a",
       "model": "codex/gpt-6-astra",
       "duration_ms": 429312,
       "input_tokens": 23428,
       "output_tokens": 21089,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "EOM_graphic_grid",
@@ -145,14 +145,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "88f490355ac55aacb68240b6db182099ba1876157dbf355b9b8df0bab522a436",
       "model": "codex/gpt-6-astra",
       "duration_ms": 626178,
       "input_tokens": 86405,
       "output_tokens": 30782,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "EOM_graphic_grid_claude",
@@ -162,14 +162,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "49f6b2ed2f1223b006708768a23b7efda58c4a72431e15094b44c5a8b756097b",
       "model": "claude/claude-sonnet-5-5",
       "duration_ms": 610458,
       "input_tokens": 108103,
       "output_tokens": 91826,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "EOM_prescan",
@@ -179,14 +179,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "ae4b39b66158da94fe5af40b8594debc47a080804947271765dbed02c00158e1",
       "model": "codex/gpt-6-astra",
       "duration_ms": 23769,
       "input_tokens": 65694,
       "output_tokens": 811,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "EOM_prescan_followup",
@@ -196,14 +196,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "9c6fcbbea912fc94dafb3dcb0fd3205205413a6410707c7da7b1a08ff21597bd",
       "model": "codex/gpt-6-astra",
       "duration_ms": 51871,
       "input_tokens": 100538,
       "output_tokens": 1588,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AR_recovery_0",
@@ -213,14 +213,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "40faae98994f20c5b64fc7a2881d17c2173dc536aeed50a9f83a694c8025bb39",
       "model": "codex/gpt-6-astra",
       "duration_ms": 16195,
       "input_tokens": 23275,
       "output_tokens": 420,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AR_recovery_1",
@@ -230,14 +230,43 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "946bd7d1cd82c933d26dd86c7934d77a9f65af0879a33930595a5c0077045df4",
       "model": "codex/gpt-6-astra",
       "duration_ms": 41146,
       "input_tokens": 37429,
       "output_tokens": 1351,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
+    },
+    {
+      "control": "AR_unlabelled_inventory",
+      "directory": "/tmp/auditmanager_ar_unlabelled_inventory_control_20261110/AR/execution/object_inventory_000",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "4ad55a2221b8300e738e70047d828536ad75924c45f1f6384ee9d3eeeda7075f",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 167490,
+      "input_tokens": 16057,
+      "output_tokens": 8128,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "AR_unlabelled_inventory_v2",
+      "directory": "/tmp/auditmanager_ar_unlabelled_inventory_control_20261110_regions_v2/AR/execution/object_inventory_000",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "acfe51ff9d18e3ff22baf9f30421449f30843cf77c6d03581b7798821a4161ee",
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high"
+      },
+      "token_counters_incomplete": true
     },
     {
       "control": "KM_recovery_0",
@@ -247,14 +276,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "9b0ce1c882151fd712a00f1ba1726905695652f2854167cb76b2511f639945e9",
       "model": "codex/gpt-6-astra",
       "duration_ms": 15804,
       "input_tokens": 30140,
       "output_tokens": 518,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "KM_recovery_1",
@@ -264,14 +293,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "38a1c02e62258edd49005ebdd2d87e52892dab426d156fcbb43e55dad7cc1f49",
       "model": "codex/gpt-6-astra",
       "duration_ms": 24410,
       "input_tokens": 65294,
       "output_tokens": 879,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "KM_node_navigation",
@@ -281,14 +310,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "1309ef63f5a40162a9106b4857bd953e655b2380329eb82b8ff536fc7563f221",
       "model": "codex/gpt-6-astra",
       "duration_ms": 24962,
       "input_tokens": 68396,
       "output_tokens": 873,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_inventory_0",
@@ -298,14 +327,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "7940479111f6be7b0d53d744c86938cf627c260386ac9ecd661cd71ad55af067",
       "model": "codex/gpt-6-astra",
       "duration_ms": 283165,
       "input_tokens": 13837,
       "output_tokens": 13901,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_inventory_1",
@@ -315,14 +344,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "6a22a9b1befbe23d319d9e4fccea9aae7653c8f99982d2d5dcb80e4bf8b44eaa",
       "model": "codex/gpt-6-astra",
       "duration_ms": 215420,
       "input_tokens": 13557,
       "output_tokens": 10503,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_inventory_2",
@@ -332,14 +361,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "54b2d90cfd9188489ffa07558d2bfe6d8d8682ae7824f59ba86c88d5bf3636e1",
       "model": "codex/gpt-6-astra",
       "duration_ms": 250219,
       "input_tokens": 14079,
       "output_tokens": 12190,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_inventory_3",
@@ -349,14 +378,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "3cbabb4341f91842ef49891160d8378be34f5c184632107afb1de6a28ae4c66f",
       "model": "codex/gpt-6-astra",
       "duration_ms": 203994,
       "input_tokens": 13600,
       "output_tokens": 9921,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_inventory_4",
@@ -366,14 +395,14 @@
         "status": "finished",
         "model_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "ab04f421990d6b24c9c810ee0b9fec021a46ed9f95cd5d971a7db656a255d8f0",
       "model": "codex/gpt-6-astra",
       "duration_ms": 347007,
       "input_tokens": 13427,
       "output_tokens": 17098,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_identity_0_v1",
@@ -383,14 +412,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "162361420755273aa00ac09187781e40976c4dd63e58f4c254eae9af6eca733f",
       "model": "codex/gpt-6-astra",
       "duration_ms": 38979,
       "input_tokens": 14264,
       "output_tokens": 1617,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_identity_0_v2",
@@ -400,14 +429,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "b11e0357ed554e75386ebd0d77381f14bca0ce9b09a7a2288b53eb31d0ec4bbb",
       "model": "codex/gpt-6-astra",
       "duration_ms": 42803,
       "input_tokens": 14385,
       "output_tokens": 1864,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_identity_1_v2",
@@ -417,14 +446,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "1a8a5de1d99919a8cccce2c8a1e336c09413724884e48d5c99994eb1345088d0",
       "model": "codex/gpt-6-astra",
       "duration_ms": 52927,
       "input_tokens": 14313,
       "output_tokens": 1962,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_identity_2_v2",
@@ -434,14 +463,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "88167575787e78ba5febadd53700b3e94290b0fbd3ce8ef0e767030a6ae065ab",
       "model": "codex/gpt-6-astra",
       "duration_ms": 57055,
       "input_tokens": 14555,
       "output_tokens": 2296,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_identity_3_v2",
@@ -476,14 +505,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "069f4eee62df0a31595f6372e35fa2ff4099aad0e15cafe942524653bb7bd44e",
       "model": "codex/gpt-6-astra",
       "duration_ms": 78362,
       "input_tokens": 15636,
       "output_tokens": 3113,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_identity_4_v3",
@@ -493,14 +522,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "c81b46f9be1255ad64dd5feba25b1769851bbe23aaa0f9891add23e63095aa6a",
       "model": "codex/gpt-6-astra",
       "duration_ms": 54980,
       "input_tokens": 15180,
       "output_tokens": 2238,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_identity_1_v4",
@@ -510,14 +539,14 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "2c73fce31b3b771c084866793ffe31642c98171bc8d7350a983e7acfd65ae4d9",
       "model": "codex/gpt-6-astra",
       "duration_ms": 71212,
       "input_tokens": 31946,
       "output_tokens": 3270,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     },
     {
       "control": "AK_identity_2_interrupted",
@@ -598,24 +627,24 @@
         "status": "finished",
         "is_error": false
       },
+      "token_counters_incomplete": false,
       "result_sha256": "f42f1958e556f8d259ca3e8cf4b4142ad47f6c27b767a4dd8fdebcddaabf99ab",
       "model": "codex/gpt-6-astra",
       "duration_ms": 339791,
       "input_tokens": 28979,
       "output_tokens": 16696,
       "cost_source": "subscription",
-      "error": "",
-      "token_counters_incomplete": false
+      "error": ""
     }
   ],
-  "completed_requests": 30,
-  "pending_results": 0,
+  "completed_requests": 31,
+  "pending_results": 1,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 947767,
-  "reported_output_tokens": 379093,
+  "reported_input_tokens": 963824,
+  "reported_output_tokens": 387221,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 124.66,
+  "completed_request_minutes_sum": 127.452,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

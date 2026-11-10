@@ -9,7 +9,7 @@ from backend.app.pipeline.stages.prepare.object_inventory_passes import build_ob
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
 from experiments.auditmanager_stage4_20261110 import run_whole_project_inventory as runner
 
-ROOT=Path('/tmp/auditmanager_ar_unlabelled_inventory_control_20261110')
+ROOT=Path('/tmp/auditmanager_ar_unlabelled_inventory_control_20261110_regions_v2')
 BASE=Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001')
 # Source selection is known-case evaluation, not blind project discovery.
 BLOCKS={'blk_eb6d781a540446879deec9e102cbd450','blk_0dc65bdd718344b78468a4d4cb3728de',
@@ -51,7 +51,7 @@ def prepare():
     p=root/'manifest.json'
     if p.exists():assert json.loads(p.read_text())==manifest
     else:p.write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
-    Path(__file__).with_name('AR_unlabelled_inventory_manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
+    Path(__file__).with_name('AR_unlabelled_inventory_v2_manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
     return manifest
 
 if __name__=='__main__':

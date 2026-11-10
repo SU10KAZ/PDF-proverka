@@ -141,6 +141,20 @@
         "AK_inventory_resume_process.json",
         "AK_operation_003_process.json"
       ]
+    },
+    {
+      "hypothesis": "H03",
+      "control": "AR unlabelled regions H03-P03",
+      "state": "v1_failed_granularity_v2_running",
+      "evidence": [
+        "AR_unlabelled_source_review.json",
+        "AR_unlabelled_inventory_v1_assessment.json",
+        "AR_unlabelled_inventory_v2_manifest.json"
+      ],
+      "detail": "First generic inventory groups target regions as background; zero findings. Generic spatial-region instruction added; identical source payload verified for v2. No historical expected count, axes or answer supplied.",
+      "root": "/tmp/auditmanager_ar_unlabelled_inventory_control_20261110_regions_v2/AR",
+      "process_receipt": "/tmp/auditmanager_ar_unlabelled_v2_process_20261110/process.json",
+      "production_acceptance": false
     }
   ]
 }

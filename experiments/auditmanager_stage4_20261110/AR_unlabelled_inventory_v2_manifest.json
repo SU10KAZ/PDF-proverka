@@ -1,0 +1,37 @@
+{
+  "source_md_sha256": "7b6bc60c57adbe6665a459c2934c12860c1b10e7b02e94c585c7362e7fa81ed0",
+  "blocks": 3,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_eb6d781a540446879deec9e102cbd450",
+        "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "message_chars": 8265,
+      "images": [
+        {
+          "block_id": "blk_eb6d781a540446879deec9e102cbd450",
+          "sha256": "100cbafee53ce2e6d021dca2627c73f0460fdff4fb79bd8e23d301e5443c38eb"
+        }
+      ]
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": true,
+  "semantic_inventory_complete": false,
+  "full_source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+  "source_selection": "One unchanged plan GRAPHIC and two same-page authoritative TEXT blocks, original page headers; no expected region counts or historical findings.",
+  "request_digests": [
+    "acfe51ff9d18e3ff22baf9f30421449f30843cf77c6d03581b7798821a4161ee"
+  ],
+  "requests": 1,
+  "known_source_selection": true,
+  "whole_project_control": false,
+  "independent_discovery": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}

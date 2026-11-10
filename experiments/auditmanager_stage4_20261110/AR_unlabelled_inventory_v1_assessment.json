@@ -1,0 +1,15 @@
+{
+  "control_id": "H03-P03",
+  "result_sha256": "4ad55a2221b8300e738e70047d828536ad75924c45f1f6384ee9d3eeeda7075f",
+  "objects": 30,
+  "findings": 0,
+  "method_control_passed": false,
+  "finding": "The known unlabelled regions are not individually registered. background_01 groups unknown background constructions; zone_01 is the different right red band. No target question emitted.",
+  "cause_boundary": "Observed loss at inventory granularity in this source-only run; not proof of the root cause in the historical classic run.",
+  "correct_restraint": "Graphic coverage remains needs_data; model does not claim absent coverings or absent legend.",
+  "next_change": "Generic region observation instruction, no expected count/axes/function. Same complete user payload and image as v1.",
+  "same_source_payload_verified": true,
+  "known_source_selection": true,
+  "blind_transfer": false,
+  "production_acceptance": false
+}

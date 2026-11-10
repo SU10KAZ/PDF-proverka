@@ -19,6 +19,8 @@ def summarize():
         ('EOM_prescan', Path('/tmp/auditmanager_eom_prescan_recovery_control_20261110')),
         ('EOM_prescan_followup', Path('/tmp/auditmanager_eom_prescan_recovery_control_20261110/followup')),
         *[(f'AR_recovery_{i}', Path('/tmp/auditmanager_ar_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
+        ('AR_unlabelled_inventory', Path('/tmp/auditmanager_ar_unlabelled_inventory_control_20261110/AR/execution/object_inventory_000')),
+        ('AR_unlabelled_inventory_v2', Path('/tmp/auditmanager_ar_unlabelled_inventory_control_20261110_regions_v2/AR/execution/object_inventory_000')),
         *[(f'KM_recovery_{i}', Path('/tmp/auditmanager_km_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
         ('KM_node_navigation', Path('/tmp/auditmanager_km_node_navigation_control_20261110')),
         *[(f'AK_inventory_{i}', Path('/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution') / f'object_inventory_{i:03d}') for i in range(5)],
@@ -47,6 +49,7 @@ def summarize():
             row.update(status='interrupted',token_counters_incomplete=True)
             continue
         row['status'] = 'result_pending'
+        row['token_counters_incomplete'] = True
         if not output.exists():
             continue
         raw = output.read_bytes(); result = json.loads(raw)
@@ -55,10 +58,11 @@ def summarize():
                    model=result.get('model'), duration_ms=result.get('duration_ms'),
                    input_tokens=result.get('input_tokens'), output_tokens=result.get('output_tokens'),
                    cost_source=result.get('cost_source'), error=result.get('error_message'))
-        row['token_counters_incomplete'] = bool(result.get('is_error') and not
-            (result.get('input_tokens') or result.get('output_tokens')))
+        row['token_counters_incomplete'] = any(
+            result.get(key) is None for key in ('input_tokens', 'output_tokens')) or bool(
+            result.get('is_error') and not (result.get('input_tokens') or result.get('output_tokens')))
     completed = [r for r in rows if 'result_sha256' in r]
-    return {'scope': 'Recent EOM extraction/recovery, AR/KM deferred and AK cabinet controls only; not all stage4 work.',
+    return {'scope': 'Recent EOM extraction/recovery, AR/KM deferred, AR unlabelled inventory and AK cabinet controls only; not all stage4 work.',
             'requests': rows, 'completed_requests': len(completed),
             'pending_results': sum(r['status'] == 'result_pending' for r in rows),
             'failed_requests': sum(r['status'] == 'failed' for r in rows),

@@ -1,0 +1,2219 @@
+{
+  "objects": [
+    {
+      "id": "view_01",
+      "identity": "План покрытия технических ниш на отм. +5.320, лист 6, ПД-00580716-АР6.2",
+      "scope": "Представленный вид",
+      "kind": "Чертёжный вид",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Название",
+          "value": "План покрытия технических ниш на отм. +5.320",
+          "unit": null,
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Название расположено над планом слева."
+        },
+        {
+          "name": "Масштаб",
+          "value": "1:100",
+          "unit": null,
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Под названием указано «1 : 100»."
+        },
+        {
+          "name": "Количество различимых участков с маркой К-5",
+          "value": 8,
+          "unit": "шт.",
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Три участка расположены вдоль левого наклонного крыла, четыре — вдоль верхней границы нижнего крыла, один — у нижней границы плана."
+        }
+      ]
+    },
+    {
+      "id": "k5_01",
+      "identity": "К-5, верхняя из трёх ниш вдоль левого наружного контура",
+      "scope": "Отдельный показанный участок покрытия",
+      "kind": "Физический участок покрытия",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка и отметка",
+          "value": "К-5; +5,450",
+          "unit": "м для отметки",
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Верхняя ниша у левого наклонного фасада выделена красной перекрёстной штриховкой; справа расположены подписи «К-5» и «+5,450»."
+        }
+      ]
+    },
+    {
+      "id": "k5_02",
+      "identity": "К-5, средняя из трёх ниш вдоль левого наружного контура",
+      "scope": "Отдельный показанный участок покрытия",
+      "kind": "Физический участок покрытия",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка и отметка",
+          "value": "К-5; +5,450",
+          "unit": "м для отметки",
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Ниже первого участка показана отдельная ниша с красной перекрёстной штриховкой и подписями «К-5», «+5,450»."
+        }
+      ]
+    },
+    {
+      "id": "k5_03",
+      "identity": "К-5, нижняя из трёх ниш вдоль левого наружного контура",
+      "scope": "Отдельный показанный участок покрытия",
+      "kind": "Физический участок покрытия",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка и отметка",
+          "value": "К-5; +5,450",
+          "unit": "м для отметки",
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Ниша ниже группы прямоугольных шахт у поворота здания имеет красную перекрёстную штриховку и подписи «К-5», «+5,450»."
+        }
+      ]
+    },
+    {
+      "id": "k5_04",
+      "identity": "К-5, первый слева участок вдоль верхней границы нижнего крыла",
+      "scope": "Отдельный показанный участок покрытия",
+      "kind": "Физический участок покрытия",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка и отметка",
+          "value": "К-5; +5,450",
+          "unit": "м для отметки",
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Первый слева красный перекрёстно заштрихованный участок на горизонтальной части плана подписан «К-5»; ниже указано «+5,450»."
+        }
+      ]
+    },
+    {
+      "id": "k5_05",
+      "identity": "К-5, второй слева участок вдоль верхней границы нижнего крыла",
+      "scope": "Отдельный показанный участок покрытия",
+      "kind": "Физический участок покрытия",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка и отметка",
+          "value": "К-5; +5,450",
+          "unit": "м для отметки",
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Соседний справа отдельный участок перед лестничным объёмом подписан «К-5» и «+5,450»."
+        }
+      ]
+    },
+    {
+      "id": "k5_06",
+      "identity": "К-5, третий слева участок вдоль верхней границы нижнего крыла",
+      "scope": "Отдельный показанный участок покрытия",
+      "kind": "Физический участок покрытия",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка и отметка",
+          "value": "К-5; +5,450",
+          "unit": "м для отметки",
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Участок справа от группы шахт в правой части плана имеет подпись «К-5» сверху и «+5,450» снизу."
+        }
+      ]
+    },
+    {
+      "id": "k5_07",
+      "identity": "К-5, крайний правый участок вдоль верхней границы нижнего крыла",
+      "scope": "Отдельный показанный участок покрытия",
+      "kind": "Физический участок покрытия",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка и отметка",
+          "value": "К-5; +5,450",
+          "unit": "м для отметки",
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Отдельная ниша непосредственно слева от правой красной полосы подписана «К-5» и «+5,450»."
+        }
+      ]
+    },
+    {
+      "id": "k5_08",
+      "identity": "К-5, участок у нижней границы плана между осями В7 и В8",
+      "scope": "Отдельный показанный участок покрытия",
+      "kind": "Физический участок покрытия",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка и отметка",
+          "value": "К-5; +5,450",
+          "unit": "м для отметки",
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Единственный красный перекрёстно заштрихованный участок вдоль нижнего фасада имеет подпись «К-5» сверху и отметку «+5,450» слева."
+        }
+      ]
+    },
+    {
+      "id": "stair_01",
+      "identity": "Лестничный объём у внутреннего поворота здания",
+      "scope": "Отдельный объём на плане; марка не установлена",
+      "kind": "Лестничная сборка",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Положение и изображение",
+          "value": "В левом наклонном крыле непосредственно над внутренним поворотом",
+          "unit": null,
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "В ограждённом стенами прямоугольном объёме различимы ступени и площадки. Связь с обозначением ЛП-1 не установлена."
+        }
+      ]
+    },
+    {
+      "id": "stair_02",
+      "identity": "Лестничный объём в нижнем крыле, около осей В7–В8",
+      "scope": "Отдельный объём на плане; марка не установлена",
+      "kind": "Лестничная сборка",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Положение и изображение",
+          "value": "Под верхней границей нижнего крыла, левее группы шахт",
+          "unit": null,
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "В вытянутом ограждённом объёме видны ступени, площадка и дверное открывание. Связь с обозначением ЛП-1 не установлена."
+        }
+      ]
+    },
+    {
+      "id": "background_01",
+      "identity": "Немаркированные стены, опоры, шахты и проёмы архитектурной подосновы",
+      "scope": "Контекст плана; индивидуальные экземпляры полностью не разрешены",
+      "kind": "Группа графически показанных конструкций",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Различимые элементы",
+          "value": "Наружные и внутренние стены, отдельные опоры, прямоугольные шахтные объёмы, дверные открывания",
+          "unit": null,
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "По контуру и внутри здания показаны штрихованные стены и опоры; группы прямоугольных ограждённых объёмов расположены у поворота здания и справа от второй лестницы."
+        },
+        {
+          "name": "Ограничение распознавания",
+          "value": "Назначение мелких символов, индивидуальные марки и полный состав фоновых конструкций не установлены",
+          "unit": null,
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Подоснова имеет низкую контрастность; особенно слабо читаются мелкие элементы в верхней части наклонного крыла. Немаркированные символы не отождествлены с воронками."
+        }
+      ]
+    },
+    {
+      "id": "zone_01",
+      "identity": "Красная штрихованная полоса у правой границы плана; подпись «Секция 1»",
+      "scope": "Графически выделенная зона",
+      "kind": "Зона с неустановленным конструктивным назначением",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Графическое выделение",
+          "value": "Продольная полоса с красной односторонней диагональной штриховкой",
+          "unit": null,
+          "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+          "graphic_observation": "Полоса проходит вдоль правой границы здания; над её верхним концом расположена красная подпись «Секция 1». Марка К-5 к полосе явно не привязана."
+        }
+      ]
+    },
+    {
+      "id": "type_k3",
+      "identity": "Тип К-3 — покрытие балконов/террас",
+      "scope": "Условные обозначения; размещение физических экземпляров не установлено",
+      "kind": "Тип покрытия",
+      "source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Назначение",
+          "value": "Покрытие балконов/террас",
+          "unit": null,
+          "source_ref": "blk_0dc65bdd718344b78468a4d4cb3728de",
+          "quote": "– Покрытие балконов/террас: Тип К-3"
+        },
+        {
+          "name": "Обозначение отделки",
+          "value": "Отделка покрытия балконов/террас типа К-3",
+          "unit": null,
+          "source_ref": "blk_0dc65bdd718344b78468a4d4cb3728de",
+          "quote": "– Покрытие балконов/террас (отделка): Тип К-3"
+        }
+      ]
+    },
+    {
+      "id": "type_k4",
+      "identity": "Тип К-4 — покрытие кровли",
+      "scope": "Тип из легенды и примечаний; физические участки в пакете не локализованы",
+      "kind": "Тип покрытия",
+      "source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Назначение",
+          "value": "Покрытие кровли",
+          "unit": null,
+          "source_ref": "blk_0dc65bdd718344b78468a4d4cb3728de",
+          "quote": "– Покрытие кровли: Тип К-4"
+        },
+        {
+          "name": "Обозначение отделки",
+          "value": "Отделка покрытия кровли типа К-4",
+          "unit": null,
+          "source_ref": "blk_0dc65bdd718344b78468a4d4cb3728de",
+          "quote": "– Покрытие кровли (отделка): Тип К-4"
+        },
+        {
+          "name": "Условно опущенные слои и ссылка",
+          "value": "Верхний/нижний слой финишного покрытия условно не показан; раскладка на листе 3",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "1. Финишное покрытие (верхний слой/нижний слой) типа кровли К-4 условно не показано. Раскладку финишного покрытия см. лист 3."
+        }
+      ]
+    },
+    {
+      "id": "type_k5",
+      "identity": "Тип К-5 — покрытие кровли",
+      "scope": "Тип из условных обозначений; отдельные видимые участки учтены самостоятельно",
+      "kind": "Тип покрытия",
+      "source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Назначение",
+          "value": "Покрытие кровли",
+          "unit": null,
+          "source_ref": "blk_0dc65bdd718344b78468a4d4cb3728de",
+          "quote": "– Покрытие кровли: Тип К-5"
+        }
+      ]
+    },
+    {
+      "id": "type_lp1",
+      "identity": "ЛП-1 — приставная металлическая лестница",
+      "scope": "Обозначение в легенде; конкретный экземпляр на плане не установлен",
+      "kind": "Марка изделия",
+      "source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Исполнение",
+          "value": "Лестница приставная, металлическая",
+          "unit": null,
+          "source_ref": "blk_0dc65bdd718344b78468a4d4cb3728de",
+          "quote": "– ЛП-1 (лестница приставная, металлическая)"
+        }
+      ]
+    },
+    {
+      "id": "family_lp",
+      "identity": "Металлические лестницы ЛП",
+      "scope": "Семейство конструкций, упомянутое в примечании",
+      "kind": "Ссылочная группа изделий",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Смежная документация",
+          "value": "КМ6.2 — конструкция, подробная спецификация, узлы и детали",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "2. Конструкцию металлических лестниц (ЛП), подробную спецификацию, узлы и детали см. раздел КМ6.2."
+        }
+      ]
+    },
+    {
+      "id": "type_v1",
+      "identity": "В-1 — водосточная воронка",
+      "scope": "Обозначение в легенде; количество и размещение не установлены",
+      "kind": "Марка изделия",
+      "source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Назначение и ссылка",
+          "value": "Водосточная воронка; раздел ВК",
+          "unit": null,
+          "source_ref": "blk_0dc65bdd718344b78468a4d4cb3728de",
+          "quote": "– В-1, водосточная воронка, см. раздел ВК"
+        }
+      ]
+    },
+    {
+      "id": "type_v2",
+      "identity": "В-2 — параллельная воронка",
+      "scope": "Обозначение в легенде; количество и размещение не установлены",
+      "kind": "Марка изделия",
+      "source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Наименование и ссылка",
+          "value": "Параллельная воронка; спецификация на листе 2",
+          "unit": null,
+          "source_ref": "blk_0dc65bdd718344b78468a4d4cb3728de",
+          "quote": "– В-2, параллельная воронка, спецификацию см. лист 2"
+        }
+      ]
+    },
+    {
+      "id": "overflow_01",
+      "identity": "Перелив в месте деформационного шва между террасами секции 1 и кровлей секции 2",
+      "scope": "Узел по примечанию; точное положение на представленном плане не установлено",
+      "kind": "Конструктивный узел",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Конструкция и направление перелива",
+          "value": "Вырез отверстия в вертикальных железобетонных стенах; переливной уклонообразующий слой из гидроизоляционных материалов; с террас секции 1 на неэксплуатируемую кровлю секции 2",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "3. Выполнить вырез отверстия в вертикальных ж/б стенах для устройства переливного уклонообразующего слоя из гидроизоляционных материалов в месте деформационного шва (с террас секции 1 на неэксплуатируемую кровлю секции 2, см. узел Ж лист 11)."
+        },
+        {
+          "name": "Ссылка на подробности",
+          "value": "Узел Ж, лист 11",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "см. узел Ж лист 11"
+        }
+      ]
+    },
+    {
+      "id": "terraces_01",
+      "identity": "Террасы секции 1",
+      "scope": "Сторона перелива, указанная в примечании; отдельные террасы не перечислены",
+      "kind": "Группа площадок",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Связь с соседней кровлей",
+          "value": "Перелив на неэксплуатируемую кровлю секции 2",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "с террас секции 1 на неэксплуатируемую кровлю секции 2"
+        }
+      ]
+    },
+    {
+      "id": "roof_02",
+      "identity": "Неэксплуатируемая кровля секции 2",
+      "scope": "Принимающая сторона перелива по примечанию",
+      "kind": "Кровля",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Назначение и связь",
+          "value": "Неэксплуатируемая кровля; принимает перелив с террас секции 1",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "с террас секции 1 на неэксплуатируемую кровлю секции 2"
+        }
+      ]
+    },
+    {
+      "id": "drain_node",
+      "identity": "Узел водосточной воронки и прилегающий участок кровли",
+      "scope": "Общие требования примечаний; привязка к конкретной марке и экземпляру не дана",
+      "kind": "Типовой узел",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Увеличенный уклон",
+          "value": 5,
+          "unit": "%",
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "4. Предусмотреть увеличение уклона до 5% в радиусе не менее 500 мм в радиусе вокруг водосточной воронки."
+        },
+        {
+          "name": "Минимальный радиус зоны увеличенного уклона",
+          "value": 500,
+          "unit": "мм",
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "в радиусе не менее 500 мм в радиусе вокруг водосточной воронки"
+        },
+        {
+          "name": "Заглубление относительно уровня кровли",
+          "value": "20–30",
+          "unit": "мм",
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "5. Предусмотреть заглубление водосточной воронки на 20-30 мм относительно уровня кровли."
+        }
+      ]
+    },
+    {
+      "id": "drain_extensions",
+      "identity": "Надставные элементы водосточных воронок",
+      "scope": "Компоненты по общему примечанию; марки и количество не указаны",
+      "kind": "Группа компонентов",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Требование к стыку",
+          "value": "Герметичное исполнение",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "6. Стык надставных элементов водосточных воронок выполнить герметичными."
+        }
+      ]
+    },
+    {
+      "id": "fence_ogn6",
+      "identity": "ОГН-6 — кровельное ограждение",
+      "scope": "Марка из примечания; размещение и число экземпляров не установлены",
+      "kind": "Марка ограждения",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Наличие анкерного крепления",
+          "value": "Указана анкерная группа кровельного ограждения",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "Места крепления анкерной группы кровельного ограждения ОГН-6"
+        }
+      ]
+    },
+    {
+      "id": "fence_anchor_node",
+      "identity": "Узел крепления анкерной группы ограждения ОГН-6",
+      "scope": "Узел по примечанию; геометрия и число креплений не указаны",
+      "kind": "Узел крепления и гидроизоляции",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Гидроизоляция",
+          "value": "Заведение гидроизоляции на металл",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "7. Места крепления анкерной группы кровельного ограждения ОГН-6 выполнить с заведением гидроизоляции на металл, а также произвести герметизацию стыков мастикой №71 ТЕХНОНИКОЛЬ (или её аналогом)."
+        },
+        {
+          "name": "Материал герметизации стыков",
+          "value": "Мастика №71 ТЕХНОНИКОЛЬ или аналог",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "герметизацию стыков мастикой №71 ТЕХНОНИКОЛЬ (или её аналогом)"
+        }
+      ]
+    },
+    {
+      "id": "screed_01",
+      "identity": "Стяжка из раствора ЦПС М100",
+      "scope": "Конструкция из примечания; принадлежность конкретному типу покрытия не указана",
+      "kind": "Слой конструкции",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Материал и армирование",
+          "value": "Раствор ЦПС М100; базальтовые сетки",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "После укладки стяжки из раствора ЦПС М100 армированной базальтовыми сетками с ячейкой 50х50"
+        },
+        {
+          "name": "Ячейка армирующей сетки",
+          "value": "50х50",
+          "unit": "В тексте не указана",
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "базальтовыми сетками с ячейкой 50х50"
+        }
+      ]
+    },
+    {
+      "id": "screed_joints",
+      "identity": "Термоусадочные швы стяжки ЦПС М100",
+      "scope": "Система швов по примечанию; раскладка и количество не представлены",
+      "kind": "Система конструктивных швов",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Срок выполнения после укладки стяжки",
+          "value": "10–30",
+          "unit": "ч",
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "через 10-30 часов выполнить термоусадочные швы"
+        },
+        {
+          "name": "Шаг",
+          "value": 3.6,
+          "unit": "м",
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "с шагом 3,6 метра"
+        },
+        {
+          "name": "Глубина",
+          "value": "1/2 толщины стяжки",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "глубиной 1/2 толщины стяжки"
+        }
+      ]
+    },
+    {
+      "id": "maf_01",
+      "identity": "Малые архитектурные формы на террасах",
+      "scope": "Ссылочная группа; состав, марки и размещение отдельных изделий не представлены",
+      "kind": "Группа изделий",
+      "source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Размещение и смежная документация",
+          "value": "Террасы; раздел АР7.2",
+          "unit": null,
+          "source_ref": "blk_d41410ac6a6b414799fd047ee093fbfc",
+          "quote": "9. Малые архитектурные формы (МАФ) размещённые на террасах см. раздел АР7.2"
+        }
+      ]
+    }
+  ],
+  "invalid_objects": [],
+  "operations": [
+    {
+      "object_id": "view_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "view_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "view_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "view_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "view_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_02",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_02",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_02",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_02",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_02",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_03",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_03",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_03",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_03",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_03",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_04",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_04",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_04",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_04",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_04",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_05",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_05",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_05",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_05",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_05",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_06",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_06",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_06",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_06",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_06",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_07",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_07",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_07",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_07",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_07",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_08",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_08",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_08",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_08",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "k5_08",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_02",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_02",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_02",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_02",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "stair_02",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "background_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "background_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "background_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "background_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "background_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "zone_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "zone_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "zone_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "zone_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "zone_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k3",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k3",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k3",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k3",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k3",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k4",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k4",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k4",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k4",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k4",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k5",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k5",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k5",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k5",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_k5",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_lp1",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_lp1",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_lp1",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_lp1",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_lp1",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "family_lp",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "family_lp",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "family_lp",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "family_lp",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "family_lp",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v1",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v1",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v1",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v1",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v1",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v2",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v2",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v2",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v2",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "type_v2",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "overflow_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "overflow_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "overflow_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "overflow_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "overflow_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "terraces_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "terraces_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "terraces_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "terraces_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "terraces_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "roof_02",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "roof_02",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "roof_02",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "roof_02",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "roof_02",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_node",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_node",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_node",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_node",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_node",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_extensions",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_extensions",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_extensions",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_extensions",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "drain_extensions",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_ogn6",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_ogn6",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_ogn6",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_ogn6",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_ogn6",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_anchor_node",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_anchor_node",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_anchor_node",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_anchor_node",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "fence_anchor_node",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_joints",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_joints",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_joints",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_joints",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "screed_joints",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "maf_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "maf_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "maf_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "maf_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "maf_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "reason": "missing_receipt"
+    }
+  ],
+  "unmatched_operations": [],
+  "source_inventory": [
+    {
+      "block_id": "blk_0dc65bdd718344b78468a4d4cb3728de",
+      "status": "reported_inventoried",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "status": "inventoried",
+        "object_ids": [
+          "type_k3",
+          "type_k4",
+          "type_k5",
+          "type_lp1",
+          "type_v1",
+          "type_v2"
+        ],
+        "reason": "Учтены все инженерные типы и марки из авторитетного текста легенды. Обозначения начала раскладки, направления уклона, номера вида, листа и маркировки фрагмента/узла являются графическими указателями, а не физическими экземплярами. Ссылки на ВК и лист 2 сохранены; наличие легенды не устанавливает количество изделий на плане."
+      }
+    },
+    {
+      "block_id": "blk_d41410ac6a6b414799fd047ee093fbfc",
+      "status": "reported_inventoried",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_d41410ac6a6b414799fd047ee093fbfc",
+        "status": "inventoried",
+        "object_ids": [
+          "type_k4",
+          "family_lp",
+          "overflow_01",
+          "terraces_01",
+          "roof_02",
+          "drain_node",
+          "drain_extensions",
+          "fence_ogn6",
+          "fence_anchor_node",
+          "screed_01",
+          "screed_joints",
+          "maf_01"
+        ],
+        "reason": "Все девять примечаний обработаны. Сохранены требования, компоненты и ссылки на лист 3, КМ6.2, узел Ж листа 11 и АР7.2. Условно не показанное финишное покрытие К-4 отмечено как опущенное изображение. Содержимое ссылочных листов и разделов не предоставлено; полнота относится только к данному текстовому блоку."
+      }
+    },
+    {
+      "block_id": "blk_eb6d781a540446879deec9e102cbd450",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_eb6d781a540446879deec9e102cbd450",
+        "status": "needs_data",
+        "object_ids": [
+          "view_01",
+          "k5_01",
+          "k5_02",
+          "k5_03",
+          "k5_04",
+          "k5_05",
+          "k5_06",
+          "k5_07",
+          "k5_08",
+          "stair_01",
+          "stair_02",
+          "background_01",
+          "zone_01"
+        ],
+        "reason": "Изображение просмотрено. Различимы восемь самостоятельных участков К-5, два лестничных объёма и архитектурная подоснова. Для полного поэкземплярного учёта немаркированных фоновых конструкций, идентификации мелких символов и назначения правой красной полосы данных недостаточно. Низкая контрастность особенно ограничивает чтение верхнего наклонного крыла. Графическое описание блока не использовано как замена изображения."
+      }
+    }
+  ],
+  "unknown_inventory_blocks": [],
+  "unresolved_operations": 150,
+  "unresolved_source_blocks": 1,
+  "coverage_complete": false,
+  "semantic_verified": false
+}
