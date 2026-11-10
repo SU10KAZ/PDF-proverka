@@ -104,3 +104,24 @@ def test_prescan_trigger_reaches_review_and_preserves_final_trace(tmp_path, monk
         assert receipt['not_checked'] == 0
         assert receipt['semantic_verified'] is False
     assert base == {'findings': [{'id': 'F-001', 'problem': 'Existing useful finding'}]}
+
+
+def test_source_refs_adapter_preserves_addresses_without_inventing_quotes():
+    from backend.app.pipeline.stages.prepare.codex_targeted_findings import CodexTargetedPass
+    packet = {'candidate': {'source_id': 'D-source', 'origin': 'graphic', 'pointer': '/block_analyses/0/deferred_findings/0'},
+              'attached_image_block_ids_in_order': ['g'], 'allowed_source_refs': ['g', 't'],
+              'existing_findings': []}
+    request = CodexTargetedPass('candidate_recovery_test', 'test.json',
+                               [{'role': 'user', 'content': json.dumps(packet)}], ())
+    finding = {'source_finding_ids': ['D-source'], 'source_refs': ['g', 't'],
+               'report_section': 'questions', 'finding': 'Locate the third item'}
+    result = validate_recovery_payload(request, {'findings': [finding]})
+    adapted, = result['findings']
+    assert [e['block_id'] for e in adapted['evidence']] == ['g', 't']
+    assert all('quote' not in e for e in adapted['evidence'])
+    assert adapted['recovery_semantic_verified'] is False
+    assert adapted['report_section'] == 'questions'
+    assert 'evidence' not in finding
+    rejected = validate_recovery_payload(request, {'findings': [{**finding, 'source_refs': ['g', 'unknown']}]})
+    assert rejected['findings'] == []
+    assert rejected['recovery_pending'][0]['reason'] == 'missing_inspected_source_reference'
