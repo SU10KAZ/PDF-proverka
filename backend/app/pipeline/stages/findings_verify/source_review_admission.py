@@ -13,7 +13,7 @@ from .source_review_results import validate_source_review
 from .source_review_evidence import evidence_digest
 
 
-def _check_decision(response, decision):
+def _check_decision(response, decision, original=None):
     if decision.get('response_sha256') != evidence_digest(response):
         raise ValueError('stale_semantic_decision')
     if decision.get('origin') != 'explicit_source_review':
@@ -79,7 +79,15 @@ def _check_decision(response, decision):
         raise ValueError('supported_core_must_be_preserved')
     if action=='question':
         if any(r['verdict']=='supported' for r in bases):
-            if (decision.get('question_basis') not in ('minor_confirmed','outside_profile')
+            existing_ambiguity = (isinstance(original, dict)
+                and original.get('report_section') == 'questions'
+                and original.get('question_basis') == 'actionable_source_ambiguity'
+                and decision.get('question_basis') == 'actionable_source_ambiguity'
+                and decision.get('context_search_completed') is True
+                and decision.get('engineer_action_required') is True
+                and all(isinstance(decision.get(k), str) and decision[k].strip()
+                        for k in ('context_search_boundary', 'decision_affected')))
+            if (not existing_ambiguity and decision.get('question_basis') not in ('minor_confirmed','outside_profile')
                     or not isinstance(decision.get('profile_reason'),str)
                     or not decision['profile_reason'].strip()):
                 raise ValueError('supported_core_requires_explicit_profile_decision')
@@ -153,7 +161,7 @@ def apply_review_admissions(document, entries, md):
             original=matches[0]
             validation=validate_source_review(response,entry['queue'],[original],md)
             if validation['errors']:raise ValueError('invalid_source_receipt: '+','.join(validation['errors']))
-            action=_check_decision(response,decision)
+            action=_check_decision(response,decision,original)
             display_updates=_review_display_fields(original,decision,action)
             history={'finding_id':fid,'original_finding':deepcopy(original),'decision':deepcopy(decision),
                      'response':deepcopy(response),'source_md_sha256':hashlib.sha256(md.encode()).hexdigest()}
@@ -166,8 +174,14 @@ def apply_review_admissions(document, entries, md):
             else:
                 if action in ('revise','question'):original.update(decision['approved_fields'])
                 original.update(display_updates)
-                original['report_section']='questions' if action=='question' else 'technical_findings'
-                original['source_evidence_review_status']='reviewed_question' if action=='question' else 'reviewed_supported'
+                is_question = action == 'question' or original.get('report_section') == 'questions'
+                original['report_section']='questions' if is_question else 'technical_findings'
+                original['source_evidence_review_status']='reviewed_question' if is_question else 'reviewed_supported'
+                if action == 'question':
+                    for key in ('question_basis', 'profile_reason', 'engineer_action_required',
+                                'context_search_boundary', 'decision_affected'):
+                        if key in decision:
+                            original[key] = deepcopy(decision[key])
                 original['source_review_response_sha256']=evidence_digest(response)
             receipts.append({'finding_id':fid,'status':'applied','action':action})
         except (KeyError,ValueError,TypeError,AttributeError) as exc:

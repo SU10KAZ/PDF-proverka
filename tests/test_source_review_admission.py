@@ -178,3 +178,51 @@ def test_derived_claim_cannot_replace_direct_defect_or_refutation_evidence(bad):
     if bad=='refutation':reviews[1]['verdict']='refuted'
     out,r=apply_review_admissions(doc,entries,md)
     assert out==doc and r[0]['status']=='not_applied'
+
+
+def question_case(action='question'):
+    doc, entries, md = case(action, 'supported')
+    finding = doc['findings'][0]
+    finding.update(report_section='questions', question_basis='actionable_source_ambiguity')
+    queue = build_source_review_queue([finding], md)
+    entries[0]['queue'] = queue
+    entries[0]['response']['finding_sha256'] = queue['packets'][0]['finding_sha256']
+    d = entries[0]['decision']
+    d.update(response_sha256=evidence_digest(entries[0]['response']),
+        question_basis='actionable_source_ambiguity', profile_reason='Clarify source applicability',
+        context_search_completed=True, engineer_action_required=True,
+        context_search_boundary='Published table and associated source notes reviewed; external documents unavailable.',
+        decision_affected='Confirm which total applies to this object before using it.',
+        approved_fields={'problem':'Clarify applicable total', 'description':'Published total is established; object applicability remains unclear.',
+                         'solution':'Confirm applicability to the specified object.'}, final_wording_verified=True)
+    return doc, entries, md
+
+
+@pytest.mark.parametrize('action', ['retain', 'revise', 'question'])
+def test_existing_question_does_not_become_technical_finding(action):
+    doc, entries, md = question_case(action)
+    out, receipts = apply_review_admissions(doc, entries, md)
+    assert receipts[0]['status'] == 'applied'
+    assert out['findings'][0]['report_section'] == 'questions'
+    assert out['findings'][0]['source_evidence_review_status'] == 'reviewed_question'
+    assert out['findings'][1] == doc['findings'][1]
+
+
+@pytest.mark.parametrize('missing', ['context_search_completed', 'engineer_action_required',
+    'context_search_boundary', 'decision_affected', 'profile_reason'])
+def test_supported_ambiguity_question_requires_explicit_scope_and_action(missing):
+    doc, entries, md = question_case()
+    entries[0]['decision'].pop(missing)
+    out, receipts = apply_review_admissions(doc, entries, md)
+    assert out == doc and receipts[0]['status'] == 'not_applied'
+
+
+def test_ambiguity_exception_cannot_demote_a_supported_technical_defect():
+    doc, entries, md = question_case()
+    doc['findings'][0]['report_section'] = 'technical_findings'
+    queue = build_source_review_queue([doc['findings'][0]], md)
+    entries[0]['queue'] = queue
+    entries[0]['response']['finding_sha256'] = queue['packets'][0]['finding_sha256']
+    entries[0]['decision']['response_sha256'] = evidence_digest(entries[0]['response'])
+    out, receipts = apply_review_admissions(doc, entries, md)
+    assert out == doc and receipts[0]['status'] == 'not_applied'
