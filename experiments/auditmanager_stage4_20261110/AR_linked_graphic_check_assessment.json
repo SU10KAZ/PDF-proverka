@@ -1,0 +1,29 @@
+{
+  "control": "H06-P03/N03",
+  "status": "partial_candidate_question_pending_cross_document_review_and_output",
+  "model": "codex/gpt-6-astra",
+  "question_found": true,
+  "history_or_engineer_answers_supplied": false,
+  "versions_compared_separately": [
+    "KM5.2 v001",
+    "KM5.2 v002"
+  ],
+  "model_comparison_status": [
+    "not_same_execution",
+    "not_same_execution"
+  ],
+  "images_reported": 11,
+  "unrecognized_or_unreported_images": false,
+  "preserved_limits": [
+    "No assertion of insufficient strength from decorative label",
+    "No assignment of tubular-railing anchors to glass-railing rope connection",
+    "No project-wide absence of calculations",
+    "Existing KM8 and KM9.2 reference routes preserved"
+  ],
+  "remaining_work": [
+    "Independently review candidate question with cross-document source identity and applicability",
+    "Route same justified question through actual finding review and Excel without losing linked evidence"
+  ],
+  "technical_defect_proven": false,
+  "full_acceptance_proven": false
+}

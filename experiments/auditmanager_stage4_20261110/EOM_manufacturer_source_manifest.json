@@ -1,0 +1,19 @@
+{
+  "url": "https://api.systeme.ru/product/media/download/990886",
+  "sha256": "ec735722d5005e1fa65c88757fd5aba59cd0a162679aeea9149f511540586eb7",
+  "bytes": 1685344,
+  "project_data_sent": false,
+  "images": [
+    {
+      "page_index": 11,
+      "path": "/tmp/auditmanager_eom_manufacturer_source_20261111/page_12.png",
+      "sha256": "cde4bed811f806cc857e7d4305d6a0a8b0e17ee20cf2816f95875fc5b7a9c23c"
+    },
+    {
+      "page_index": 12,
+      "path": "/tmp/auditmanager_eom_manufacturer_source_20261111/page_13.png",
+      "sha256": "e8164d68112cf66bd3475dad6948aaa0ec429a7761ff621a4e8c0a1253f73d57"
+    }
+  ],
+  "scope": "Official manufacturer source only; not proof of actual project article or chosen manufacturer."
+}
