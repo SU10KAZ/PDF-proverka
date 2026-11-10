@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {
+      "finding_id": "F-050",
+      "selection": "Tile references in current candidate evidence, not a historical expected label",
+      "tile_indices": [
+        1,
+        5
+      ],
+      "source_manifest_sha256": "3ec277965533284aa49f5d6275fb9970b0670a378eeb75fe23e0bbf33dd0e303"
+    },
+    {
+      "finding_id": "F-051",
+      "selection": "Tile references in current candidate evidence, not a historical expected label",
+      "tile_indices": [
+        6,
+        14
+      ],
+      "source_manifest_sha256": "42d238bcd13fabe6541dc9840c4d53684ec608232c658df1559e760bd7dc68db"
+    }
+  ],
+  "original_graphics_preserved": true,
+  "no_TEXT_raster": true
+}

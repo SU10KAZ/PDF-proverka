@@ -1,0 +1,65 @@
+{
+  "sha256": "793e768344f6a6564ac71c1de446e20e574b96ef53b6ecc8789dd759f99611db",
+  "request": {
+    "messages": [
+      {
+        "role": "system",
+        "content": "Review only the supplied claims, authoritative TEXT and attached images.\nDo not access files, tools, web, historical reviews or evaluation answers.\nSeparate each substantive claim and preserve uncertainty. Include substantive\nassertions from display_fields (risk, consequence, severity and normative text)\nin your review; these fields are not established facts or verified requirements. A source address or\nmatching quote does not prove the claim. Do not correct TEXT using raster.\nFor arithmetic enumerate source rows and reproduce the operation. Distinguish\nannotation conflicts from physical defects and operating-mode assumptions.\nReturn JSON: finding_id, finding_sha256, source_md_sha256, context_sha256, claims.\nEach claim: claim_id, claim, status (supported/refuted/needs_data), reason, evidence.\nTEXT evidence: {type:\"text\", block_id, quote}, an exact quote from supplied text.\nIMAGE evidence: {type:\"image\", block_id, image_sha256, bbox_norm_xyxy:[left,top,right,bottom], observation}.\nRegions use normalized coordinates 0..1 of the cited attached image, including detail crops.\nSeveral images can share a source block: distinguish them by image_sha256. Detail\ncrops supplement one original graphic and are not additional physical objects.\nCite only images actually attached.\nFor needs_data include missing_data (nonempty list) and optionally context_queries\n(specific object labels or literal phrases to search in prepared MD). Missing or\nbounded context never proves whole-project absence. Do not rewrite the finding.\n"
+      },
+      {
+        "role": "user",
+        "content": "{\"finding_id\": \"F-050\", \"finding_sha256\": \"0e79546289933803bc9939e387b14f5060c67b12f1d791cf2e81fbd499adafc6\", \"source_md_sha256\": \"49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac\", \"context_sha256\": null, \"final_claim\": {\"problem\": \"Кабель С2513 по схеме не представлен соответствующей позицией в разделе кабелей спецификации.\", \"description\": \"На листе 2.2 для действующей цепи С2513 к ЩУЛ-2.2 через стабилизатор 40 кВА указан ППГнг-FRHF 5×35,0 длиной 65 м. На листе 5 прилагаемой спецификации ЭОМ 2-1.СО перечислены сечения огнестойкого ППГнг(A)-FRHF, но 5×35 среди них отсутствует; далее начинается другая группа кабелей. Позиция 5×35 количеством 172 м находится в группе ППГнг(A)-HF и имеет другое исполнение. Таким образом, подтверждена локальная несогласованность номенклатуры схемы и спецификации. Нельзя считать 172 м HF покрытием потребности в FRHF или объявлять недостачу ровно 65 м: распределение количеств и возможный учет в другом документе не установлены.\", \"solution\": \"Согласовать схему С2513 с ее учетом в спецификации: установить фактическую позицию и комплект, где учтен огнестойкий кабель 5×35, либо внести соответствующую позицию после проверки ведомости длин. Зафиксировать привязку к С2513 и границы участка 65 м; исключить двойной учет. Не заменять FRHF на HF только на основании одинакового сечения.\"}, \"display_fields\": {\"severity\": \"medium\"}, \"original_claims\": [{\"source_finding_id\": \"O-99566630d28a82a9375c2e10\", \"source_claim\": \"problem: Кабель С2513 по схеме не представлен соответствующей позицией в разделе кабелей спецификации.\\ndescription: На листе 2.2 для действующей цепи С2513 к ЩУЛ-2.2 через стабилизатор 40 кВА указан ППГнг-FRHF 5×35,0 длиной 65 м. На листе 5 прилагаемой спецификации ЭОМ 2-1.СО перечислены сечения огнестойкого ППГнг(A)-FRHF, но 5×35 среди них отсутствует; далее начинается другая группа кабелей. Позиция 5×35 количеством 172 м находится в группе ППГнг(A)-HF и имеет другое исполнение. Таким образом, подтверждена локальная несогласованность номенклатуры схемы и спецификации. Нельзя считать 172 м HF покрытием потребности в FRHF или объявлять недостачу ровно 65 м: распределение количеств и возможный учет в другом документе не установлены.\\nsolution: Согласовать схему С2513 с ее учетом в спецификации: установить фактическую позицию и комплект, где учтен огнестойкий кабель 5×35, либо внести соответствующую позицию после проверки ведомости длин. Зафиксировать привязку к С2513 и границы участка 65 м; исключить двойной учет. Не заменять FRHF на HF только на основании одинакового сечения.\", \"block_ids\": [\"blk_8fac348a820c41aeb2d941339987da14\", \"blk_67c8cc82d7e24f738797d9b75ce14e97\", \"blk_b6605a23b38f4e00b2f8076b62b21532\"]}], \"authoritative_text\": [{\"block_id\": \"blk_67c8cc82d7e24f738797d9b75ce14e97\", \"authoritative_text\": \"\\n\\n> **Created:** 2026-10-20 12:14:52 UTC\\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/-eN3SErqUE3f2Ro0yImL)\\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 5 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\\n\\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\\n|---|---|---|---|---|---|---|---|---|\\n|  | 3. Кабели провода и трубы |  |  |  |  |  |  |  |\\n|  | Кабель силовой с медными жилами, с изоляцией и оболочкой из полимерных композиций не распространяющие горение при групповой прокладке и не выделяющие коррозионно-активных газообразных продуктов при горении и тлении, сечением: | ППГнг(A)-HF | ГОСТ 31996-2012 |  |  |  |  |  |\\n|  | 3x1,5 |  |  | АО «Завод «Энергокабель» | м | 360 |  |  |\\n|  | 3x2,5 |  |  | АО «Завод «Энергокабель» | м | 7709 |  |  |\\n|  | 3x4 |  |  | АО «Завод «Энергокабель» | м | 2070 |  |  |\\n|  | 3x10 |  |  | АО «Завод «Энергокабель» | м | 45 |  |  |\\n|  | 5x2,5 |  |  | АО «Завод «Энергокабель» | м | 261 |  |  |\\n|  | 5x4 |  |  | АО «Завод «Энергокабель» | м | 1505 |  |  |\\n|  | 5x6 |  |  | АО «Завод «Энергокабель» | м | 1550 |  |  |\\n|  | 5x16 |  |  | АО «Завод «Энергокабель» | м | 122 |  |  |\\n|  | 5x25 |  |  | АО «Завод «Энергокабель» | м | 849 |  |  |\\n|  | 5x35 |  |  | АО «Завод «Энергокабель» | м | 172 |  |  |\\n|  | 5x95 |  |  | АО «Завод «Энергокабель» | м | 680 |  |  |\\n|  | 1x35 |  |  | АО «Завод «Энергокабель» | м | 50 |  |  |\\n|  | 1x50 |  |  | АО «Завод «Энергокабель» | м | 75 |  |  |\\n|  | 1x70 |  |  | АО «Завод «Энергокабель» | м | 600 |  |  |\\n|  | 1x150 |  |  | АО «Завод «Энергокабель» | м | 3850 |  |  |\\n|  | Кабель огнестойкий силовой с медными жилами, с изоляцией и оболочкой из полимерных композиций не распространяющие горение при групповой прокладке и не выделяющие коррозионно-активных газообразных продуктов при горении и тлении, сечением: | ППГнг(A)-FRHF | ГОСТ 31996-2012 |  |  |  |  |  |\\n|  | 3x2,5 |  |  | АО «Завод «Энергокабель» | м | 1885 |  |  |\\n|  | 5x2,5 |  |  | АО «Завод «Энергокабель» | м | 35 |  |  |\\n|  | 5x6 |  |  | АО «Завод «Энергокабель» | м | 650 |  |  |\\n|  | 5x10 |  |  | АО «Завод «Энергокабель» | м | 360 |  |  |\\n|  | 5x16 |  |  | АО «Завод «Энергокабель» | м | 140 |  |  |\\n|  | 5x25 |  |  | АО «Завод «Энергокабель» | м | 195 |  |  |\\n|  | Кабель монтажный с оплеткой из медных луженых проволок, с изоляцией и оболочкой из полимерных безгалогеновой композиций МКЭШнг(а)-HF, сечением: |  |  |  |  |  |  |  |\\n|  | 2x1,5 |  |  | ОАО «Подольсккабель» | м | 4120 |  |  |\\n\\n\"}, {\"block_id\": \"blk_b6605a23b38f4e00b2f8076b62b21532\", \"authoritative_text\": \"\\n\\n> **Created:** 2026-10-20 12:13:57 UTC\\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/q2VTJ3LdC91eiStQRtEu)\\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Общие данные. | Organization: GLOBUS PROJECT | Revisions: Не указано\\n\\n#### ВЕДОМОСТЬ ССЫЛОЧНЫХ И ПРИЛАГАЕМЫХ ДОКУМЕНТОВ\\n\\n| Обозначение | Наименование | Примечание |\\n|---|---|---|\\n|  | Ссылочные документы |  |\\n| СП 256.1325800.2016 | Электроустановки жилых и общественных зданий. Правила проектирования и монтажа. |  |\\n| СП 253.1325800.2016 | Инженерные системы высотных зданий. |  |\\n| ГОСТ 21.101-2026 | Основные требования к проектной и рабочей документации» |  |\\n| ГОСТ Р 50571.5.54-2024 | Электроустановки зданий. Часть 5 «Выбор и монтаж электрооборудования. Глава 54. Заземляющие устройства и защитные проводники»; |  |\\n| ГОСТ 21.210-2014 | «Условные графические изображения электрооборудования и проводок на планах» |  |\\n| ПУЭ изд.6 и 7 | Правила устройства электроустановок. |  |\\n| СП 52.13330.2016 | Естественное и искусственное освещение. |  |\\n| СП 6.13130.2025 | Система обеспечения пожарной безопасности объекта защиты. ЭЛЕКТРОУСТАНОВКИ НИЗКОВОЛЬТНЫЕ. Требования пожарной безопасности. |  |\\n| СО 153-34.21.122-2003. | Инструкция по устройству молниезащиты зданий, сооружений и промышленных коммуникаций |  |\\n| РД 34.21.122-87 | Инструкция по устройству молниезащиты зданий, сооружений и промышленных коммуникаций |  |\\n|  | Прилагаемые документы |  |\\n| ПД-00580716-ЭОМ 2-1.СО | Спецификация оборудования, изделия и материалов |  |\\n\\n\"}], \"images_in_attachment_order\": [{\"block_id\": \"blk_8fac348a820c41aeb2d941339987da14\", \"sha256\": \"0eb4286aeca07a3e7755216036b8253b936d2fc12034dddca7f78fb0bd6879c7\", \"width\": 4141, \"height\": 2025}, {\"block_id\": \"blk_8fac348a820c41aeb2d941339987da14\", \"sha256\": \"bf618d03fa66ff42a2d4d884289c263d42760650d41b16045b79e90b5169ff67\", \"width\": 2684, \"height\": 2297, \"view_kind\": \"detail_of_original_graphic\", \"page_index\": 4, \"clip_rotated_page_points\": [724.9359684735537, 16.54869794845581, 1619.2400388866663, 781.9891661465168], \"source_pdf_sha256\": \"eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4\"}, {\"block_id\": \"blk_8fac348a820c41aeb2d941339987da14\", \"sha256\": \"7d0d17ce83d69ffe957bce2e532afa445dfeda06f3468017c9f35f31f51ee016\", \"width\": 2684, \"height\": 2297, \"view_kind\": \"detail_of_original_graphic\", \"page_index\": 4, \"clip_rotated_page_points\": [724.9359684735537, 709.0900739371776, 1619.2400388866663, 1474.5305421352386], \"source_pdf_sha256\": \"eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4\"}], \"unavailable_images\": [], \"context_search_boundary\": {\"query_hit_counts\": null, \"deferred_queries\": null, \"backlog\": null, \"absence_proven\": null}, \"missing_block_ids\": [], \"budgeted_text_block_ids\": []}"
+      }
+    ],
+    "image_paths": [
+      "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/graphics/block_blk_8fac348a820c41aeb2d941339987da14.png",
+      "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/graphics/detail_0_1.png",
+      "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/graphics/detail_0_5.png"
+    ],
+    "image_bindings": [
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "path": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/graphics/block_blk_8fac348a820c41aeb2d941339987da14.png",
+        "sha256": "0eb4286aeca07a3e7755216036b8253b936d2fc12034dddca7f78fb0bd6879c7",
+        "width": 4141,
+        "height": 2025
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "path": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/graphics/detail_0_1.png",
+        "sha256": "bf618d03fa66ff42a2d4d884289c263d42760650d41b16045b79e90b5169ff67",
+        "width": 2684,
+        "height": 2297,
+        "view_kind": "detail_of_original_graphic",
+        "page_index": 4,
+        "clip_rotated_page_points": [
+          724.9359684735537,
+          16.54869794845581,
+          1619.2400388866663,
+          781.9891661465168
+        ],
+        "source_pdf_sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4"
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "path": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/graphics/detail_0_5.png",
+        "sha256": "7d0d17ce83d69ffe957bce2e532afa445dfeda06f3468017c9f35f31f51ee016",
+        "width": 2684,
+        "height": 2297,
+        "view_kind": "detail_of_original_graphic",
+        "page_index": 4,
+        "clip_rotated_page_points": [
+          724.9359684735537,
+          709.0900739371776,
+          1619.2400388866663,
+          1474.5305421352386
+        ],
+        "source_pdf_sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4"
+      }
+    ],
+    "request_sha256": "012300a9f0c22f1b0a44c0fc7c07c6802b9428d0d8ea06f92721e0be1737f7d0",
+    "sent": false,
+    "automatic_dispatch": false,
+    "boundary": "Prepared input only; no model request or isolation guarantee."
+  }
+}

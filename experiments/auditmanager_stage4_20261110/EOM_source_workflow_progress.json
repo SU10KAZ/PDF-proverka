@@ -1,0 +1,255 @@
+{
+  "scope": "Known EOM cable source-review comparison; original and detailed-graphic variants.",
+  "reports": [
+    {
+      "variant": "source",
+      "finding_id": "F-050",
+      "status": "candidate_ready",
+      "completed_calls": [
+        {
+          "phase": "00_review",
+          "is_error": false,
+          "duration_ms": 42682,
+          "input_tokens": 7648,
+          "output_tokens": 5675,
+          "result_sha256": "66940f100c6bda871f6e4e43bf742b5f7d56bb92155af56fb6960d2666d0e1e7"
+        },
+        {
+          "phase": "01_review",
+          "is_error": false,
+          "duration_ms": 58433,
+          "input_tokens": 23420,
+          "output_tokens": 7709,
+          "result_sha256": "517b5ba407d72dd465adffc4dea51381b1d85696a147843d4dd723f0efd5786c"
+        },
+        {
+          "phase": "02_review",
+          "is_error": false,
+          "duration_ms": 54802,
+          "input_tokens": 50155,
+          "output_tokens": 6774,
+          "result_sha256": "60b54ffa40f7211da36b9d876f797c59260295c00d5da0dd02d7badee3f1e5ae"
+        },
+        {
+          "phase": "03_review",
+          "is_error": false,
+          "duration_ms": 64098,
+          "input_tokens": 54349,
+          "output_tokens": 7794,
+          "result_sha256": "fbe3e4cde19c237ffa79db826054303962b14265b5ccff88a9a36f2e5c9ac972"
+        },
+        {
+          "phase": "05_adjudication",
+          "is_error": false,
+          "duration_ms": 73882,
+          "input_tokens": 58519,
+          "output_tokens": 9814,
+          "result_sha256": "24b5fef278cce6b42a59a3f3301968ea9d23f2498ff5466405f27fb5daeba109"
+        }
+      ],
+      "semantic_acceptance": false,
+      "action": "revise",
+      "admission_receipts": [
+        {
+          "finding_id": "F-050",
+          "status": "applied",
+          "action": "revise"
+        }
+      ],
+      "candidate": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_source_review_evidence/source/F-050/candidate.json",
+      "completed_request_minutes_sum": 4.898
+    },
+    {
+      "variant": "source",
+      "finding_id": "F-051",
+      "status": "candidate_ready",
+      "completed_calls": [
+        {
+          "phase": "00_review",
+          "is_error": false,
+          "duration_ms": 33427,
+          "input_tokens": 12495,
+          "output_tokens": 4410,
+          "result_sha256": "a7be131e277c262ac1110038e60f6edd20bfdd7e58034c96a5a3319ac0deed43"
+        },
+        {
+          "phase": "01_review",
+          "is_error": false,
+          "duration_ms": 50625,
+          "input_tokens": 18889,
+          "output_tokens": 6779,
+          "result_sha256": "11ccccbf4e088e004464b47dd8601b61d2af247d0e9bd155fc89d87727e2ff73"
+        },
+        {
+          "phase": "02_review",
+          "is_error": false,
+          "duration_ms": 67431,
+          "input_tokens": 28198,
+          "output_tokens": 8959,
+          "result_sha256": "f05fb0f12b062a7709efd5a73c66873dde6d3ce9dbb080e45587f947740fef0e"
+        },
+        {
+          "phase": "03_review",
+          "is_error": false,
+          "duration_ms": 50940,
+          "input_tokens": 55072,
+          "output_tokens": 6088,
+          "result_sha256": "4bb3604195d97a122a13db013c06297e3346578f647644b8039988a2811f2d20"
+        },
+        {
+          "phase": "04_review",
+          "is_error": false,
+          "duration_ms": 58262,
+          "input_tokens": 59219,
+          "output_tokens": 7371,
+          "result_sha256": "f93565bc920ce228cdc8a93719f80b20710681b0a4419c096af682a2caab1cd8"
+        },
+        {
+          "phase": "05_adjudication",
+          "is_error": false,
+          "duration_ms": 54582,
+          "input_tokens": 63553,
+          "output_tokens": 7100,
+          "result_sha256": "1576fff8cebab1ac2b626de1409fef828590107acbd6c96539311320137a8c34"
+        }
+      ],
+      "semantic_acceptance": false,
+      "action": "defer",
+      "admission_receipts": [
+        {
+          "finding_id": "F-051",
+          "status": "applied",
+          "action": "defer"
+        }
+      ],
+      "candidate": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_source_review_evidence/source/F-051/candidate.json",
+      "completed_request_minutes_sum": 5.254
+    },
+    {
+      "variant": "detail_source",
+      "finding_id": "F-050",
+      "status": "candidate_ready",
+      "completed_calls": [
+        {
+          "phase": "00_review",
+          "is_error": false,
+          "duration_ms": 51722,
+          "input_tokens": 17201,
+          "output_tokens": 7000,
+          "result_sha256": "b0a5bc52e78518430b587bfc0319c7e2e74f42b50ac9d9493b83c7764acd2069"
+        },
+        {
+          "phase": "01_review",
+          "is_error": false,
+          "duration_ms": 84558,
+          "input_tokens": 36513,
+          "output_tokens": 11014,
+          "result_sha256": "02164b33efe56709a64ffd46c17f889e1d0bb54b9d78b2e1272cbebdc420abd0"
+        },
+        {
+          "phase": "02_review",
+          "is_error": false,
+          "duration_ms": 60811,
+          "input_tokens": 49354,
+          "output_tokens": 7650,
+          "result_sha256": "7a33c1d3175729e7b109680dbcf77640341ad28b3943b97e197fd4fdbf7180aa"
+        },
+        {
+          "phase": "03_review",
+          "is_error": false,
+          "duration_ms": 69471,
+          "input_tokens": 49179,
+          "output_tokens": 8687,
+          "result_sha256": "a911f3a37d1d12c593cdf1a4def6cc83eb0862873f6896ad8f0724f0caf7e95e"
+        },
+        {
+          "phase": "04_review",
+          "is_error": false,
+          "duration_ms": 64215,
+          "input_tokens": 50376,
+          "output_tokens": 8343,
+          "result_sha256": "dfce54d17bccb10cbd977ebecb193e0696e6abd6801f6c37f0af9920f24a4531"
+        },
+        {
+          "phase": "05_adjudication",
+          "is_error": false,
+          "duration_ms": 115014,
+          "input_tokens": 55036,
+          "output_tokens": 15398,
+          "result_sha256": "274e0619cdaa4fe67669a28a3f5c2228169115f1b1cb3d1629877c402ed984fc"
+        }
+      ],
+      "semantic_acceptance": false,
+      "action": "revise",
+      "admission_receipts": [
+        {
+          "finding_id": "F-050",
+          "status": "applied",
+          "action": "revise"
+        }
+      ],
+      "candidate": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_source_review_evidence/detail_source/F-050/candidate.json",
+      "completed_request_minutes_sum": 7.43
+    },
+    {
+      "variant": "detail_source",
+      "finding_id": "F-051",
+      "status": "candidate_ready",
+      "completed_calls": [
+        {
+          "phase": "00_review",
+          "is_error": false,
+          "duration_ms": 54638,
+          "input_tokens": 22633,
+          "output_tokens": 7354,
+          "result_sha256": "05982ffaf552f07afc671045a740c19000f770b5af554f35329f07b198aba436"
+        },
+        {
+          "phase": "01_review",
+          "is_error": false,
+          "duration_ms": 71157,
+          "input_tokens": 49638,
+          "output_tokens": 8859,
+          "result_sha256": "c7b00aad5fce941ae5de1df9a97608d4d68b87bd5ac9bb328c6f7c275dafe222"
+        },
+        {
+          "phase": "02_review",
+          "is_error": false,
+          "duration_ms": 73310,
+          "input_tokens": 49093,
+          "output_tokens": 9212,
+          "result_sha256": "f0fa627f545d824bb455dfa471378be08002aad1daab4eba172aa12cfad3358f"
+        },
+        {
+          "phase": "03_review",
+          "is_error": false,
+          "duration_ms": 60746,
+          "input_tokens": 50261,
+          "output_tokens": 7471,
+          "result_sha256": "862cc51829b188233b6e9376b91541b6a944089f986e8238a44ce34a9cd6ade9"
+        },
+        {
+          "phase": "05_adjudication",
+          "is_error": false,
+          "duration_ms": 91715,
+          "input_tokens": 54285,
+          "output_tokens": 12327,
+          "result_sha256": "505cb45806503870372bb5e1023ecd7309aebd16bea69c03af0e3ffe48219447"
+        }
+      ],
+      "semantic_acceptance": false,
+      "action": "revise",
+      "admission_receipts": [
+        {
+          "finding_id": "F-051",
+          "status": "applied",
+          "action": "revise"
+        }
+      ],
+      "candidate": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_source_review_evidence/detail_source/F-051/candidate.json",
+      "completed_request_minutes_sum": 5.859
+    }
+  ],
+  "boundary": "candidate_ready/applied denote structural workflow admission only. Original reviewer scope and every substantive conclusion still need independent checking. Pending result is not a liveness assertion.",
+  "full_acceptance_proven": false
+}

@@ -1,0 +1,34 @@
+{
+  "scope": "Known control: real source-review admission and Excel, using completed detailed-image Claude decisions without evaluator edits.",
+  "receipts": [
+    {
+      "finding_id": "F-050",
+      "status": "applied",
+      "action": "revise"
+    },
+    {
+      "finding_id": "F-051",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "classic_findings_preserved_exactly": 49,
+  "output_findings": 51,
+  "technical_cores_retained": 2,
+  "new_model_calls": 0,
+  "source_candidate_sha256": {
+    "F-050": "91c6050e28043e72ce4e611ab9cc36eb389bed161e0abac872ac7ff9fbd5e712",
+    "F-051": "a0cb5784350aee01c0e90fe771cc4a578909f3ea365b07107f428a580ebab4e0"
+  },
+  "xlsx_sha256": "7cdfdebe43c111980759fa3e48a3375e723885e77af3dfe4face221cbcce2833",
+  "limitations": [
+    "Structural application is not semantic approval of every assertion.",
+    "F-050 reviewer omitted sheet 2.2 because graphic stamp was not supplied. New metadata code has only local tests, not a new model comparison.",
+    "Prepared graphic stamp literally spells ЗОМ 2-1; retain this source spelling and do not silently normalize to ЭОМ or assert identical document codes.",
+    "F-051 review asserts literal С3510=СЗ510; prior independent review leaves graphic 3/З ambiguous. Final displayed stable circuit address is preserved, but that provenance assertion is not independently accepted.",
+    "Two cable addresses still form two rows of a shared specification issue. Autonomous grouping remains untested.",
+    "Reviewer-added global absence claim was not part of the original scoped finding; unnecessary context searches remain a quality/cost issue."
+  ],
+  "full_semantic_acceptance": false,
+  "full_stage4_acceptance": false
+}
