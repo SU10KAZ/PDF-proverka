@@ -8,6 +8,7 @@ OUT=Path(__file__).parent
 # Explicit evidence mappings only. Unmapped controls are review work, not proof
 # that no evidence exists anywhere in the historical research corpus.
 EVIDENCE={
+ ('H06','negative_controls_and_limits',2):('bounded_control_recorded',['AR_rope_strength_inference_pair.json','AR_rope_reviewed_question_replay.json']),
  ('H06','positive_controls',2):('bounded_control_recorded',['AR_rope_reviewed_question_replay.json','AR_linked_graphic_check_assessment.json','AR_rope_linked_document_availability.json']),
  ('H05','negative_controls_and_limits',1):('bounded_known_candidate_control',['KM_handrail_claim_check_assessment.json','KM_handrail_claim_check_result.json']),
  ('H05','positive_controls',2):('bounded_control_recorded',['AR_roof_reviewed_question_assessment.json','AR_roof_reviewed_question_replay.json','AR_roof_source_review_context_loss.json']),

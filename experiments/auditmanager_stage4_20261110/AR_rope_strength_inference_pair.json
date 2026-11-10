@@ -1,0 +1,50 @@
+{
+  "control": "H06-N03",
+  "positive_pair": "H06-P03",
+  "historical_case": {
+    "project": "ПД-00580716-АР6.2_V1",
+    "finding_id": "UNI-AR6.2-059",
+    "original_claim": "Канат альпинистов крепится к стойкам остеклённого ограждения индивидуального изготовления, пластина в стойке названа «декоративной», но на ней стоит фиксирующий элемент для карабина; расчётная нагрузка, материал, сечение и анкеровка в основание не заданы, ссылки на расчёт нет.\n\nОбоснование из отчёта: Лист 13: «Стойка ОГН-4 индивидуального изготовления», «Фиксирующий элемент на стойке», «Дополнительная пластина в стойке (декоративная функция)», «Обвязка каната вокруг стойки», размер парапета 400.",
+    "engineer_decision": "Принято",
+    "engineer_comment": null
+  },
+  "images": [
+    {
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_439fc9c2bc64c81d4a6a53cd_d16d639eb0bda53757f43a9a.png",
+      "sha256": "ada6f98bef863cfa58e17d4bf8c8fce8278e6964a8f678932897d883ded5d00b",
+      "source_origin": {
+        "namespace": "doc_439fc9c2bc64c81d4a6a53cd",
+        "original_block_id": "blk_c2c52346b94e41d082d3db11655d2706"
+      },
+      "directly_viewed_this_turn": true
+    },
+    {
+      "path": "/tmp/auditmanager_ar_rope_bundle_review_20261111/graphics/block_blk_doc_439fc9c2bc64c81d4a6a53cd_fbefe31bc050cff3c4caf4d9.png",
+      "sha256": "0da32f0c27ccd69266a321354d1c1f4a7ae5483c731f1b49f1850f362301b0bf",
+      "source_origin": {
+        "namespace": "doc_439fc9c2bc64c81d4a6a53cd",
+        "original_block_id": "blk_a904b495f6cc409eb97d93ceaa3cf274"
+      },
+      "directly_viewed_this_turn": true
+    }
+  ],
+  "source_observations": [
+    "Detailed ОГН-4 drawing labels the additional plate decorative, shows the rope around the upright and a fixing element.",
+    "Separate rope detail shows fixing elements and an additional plate but does not establish material, connection resistance or the complete force path.",
+    "The label decorative establishes no numerical load capacity and proves neither failure nor adequacy."
+  ],
+  "actual_decision": "Основание существующего вопроса подтверждено: АР показывает канатные крепления в составе индивидуальной стойки стеклянного ограждения ОГН-4, а обе представленные версии КМ5.2 раскрывают трубчатые ограждения Огр-1–Огр-4. Общая ссылка АР на КМ5.2 не устанавливает соответствие этих деталей рассматриваемому узлу; ведомости отдельно называют КМ9.2 для обслуживания фасада и КМ8 для расчетов. Проверены все 11 изображений и предоставленный авторитетный TEXT. Вопрос сохраняется как запрос адресного согласования решения, без утверждения о физическом дефекте или отсутствии решения во всем проекте.",
+  "approved_fields": {
+    "problem": "Какими комплектом, листом, маркой и согласованной с АР6.2 v001 версией задан канатный узел на индивидуальной стойке ОГН-4 кровли +41,280, рассматриваемый в замечании O27, и где приведено обоснование передачи усилий от каната через фиксатор и стойку в несущую конструкцию?",
+    "description": "В АР6.2 v001 на листе 12 показаны индивидуальная стойка стеклянного ограждения ОГН-4, обвязка канатом и фиксирующие элементы; на листе 14 — план креплений альпинистов на +41,280. Детали пластин и анкеров представленных КМ5.2 v001 и v002 относятся к трубчатым ограждениям Огр-1–Огр-4. В проверенном наборе не установлено адресное соответствие этих деталей канатному узлу ОГН-4. Общие ссылки АР на комплекты ограждений не определяют такое соответствие. Ведомости КМ отдельно называют КМ9.2 для обслуживания фасада секций С2, С3, а АР отсылает к КМ8 за конструктивными расчетами. Содержимое этих комплектов здесь не проверено. Применимые детали соединений, эксплуатационные воздействия и расчетное обоснование данной цепочки остаются неустановленными в пределах представленных материалов; отсутствие решения во всем проекте и физический дефект не утверждаются. O27 — идентификатор замечания, а не установленная проектная марка.",
+    "solution": "Указать применимые листы, марки и версии, согласованные с АР6.2 v001, и сопоставить их с узлами листа 12 и точками плана листа 14. Проверить адресные решения КМ9.2 и расчетные материалы КМ8 либо указать другой применимый документ, раскрывающий фиксатор, соединение со стойкой, крепление стойки к несущему основанию и принятые эксплуатационные воздействия. Если предполагается применение деталей КМ5.2, подтвердить его адресным документом с объяснением различий исполнения ОГН-4 и Огр-1–Огр-4; не переносить анкерное решение по сходству обозначений."
+  },
+  "paired_output_evidence": "AR_rope_reviewed_question_replay.json",
+  "negative_outcome": "Reviewed wording explicitly does not assert physical failure or project-wide absence of calculation. The supported request for an applicable connection and calculation is retained as F-025.",
+  "limits": [
+    "This is a bounded source-review and final-wording control, not a benchmark of rejecting an injected false strength claim.",
+    "Engineer acceptance is preserved separately and does not prove each original clause.",
+    "Do not suppress other strength findings when loads, material, connection and applicable calculation actually establish a defect."
+  ],
+  "full_acceptance_proven": false
+}

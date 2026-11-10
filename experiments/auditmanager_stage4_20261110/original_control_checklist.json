@@ -517,8 +517,17 @@
       "hypothesis": "H06",
       "kind": "negative_controls_and_limits",
       "original_control": "Декоративная пластина не доказывает недостаточную прочность.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_rope_strength_inference_pair.json",
+          "sha256": "10cc61643020de795274e88c208d0ba720cce53c3f34d3baa2488de79fc4ec6e"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_rope_reviewed_question_replay.json",
+          "sha256": "082a087710f6e6e64f5b720fcc538818e31f07613f74e4a43942ea569c4abbe7"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -579,14 +588,14 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 20,
+    "bounded_control_recorded": 21,
     "bounded_known_candidate_control": 1,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 2,
     "local_contract_verified": 2,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
-    "requires_explicit_evidence_review": 8,
+    "requires_explicit_evidence_review": 7,
     "synthetic_contract_only": 1
   },
   "boundaries": [
