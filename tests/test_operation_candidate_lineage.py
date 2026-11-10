@@ -115,3 +115,31 @@ def test_equal_titles_do_not_erase_different_cabinet_locations_or_claims():
         assert combined['findings'][0]==before['findings'][0]
         assert combined['findings'][1].get(field)==incoming.get(field)
         assert combined['findings'][1]['id']=='F-002'
+
+
+def test_systemic_merge_keeps_each_cabinet_description_and_solution_in_export(tmp_path):
+    from backend.app.pipeline.stages.findings_merge.runner import merge_similar_findings
+    from backend.app.pipeline.stages.report.generate_excel_report import build_project_sheet
+    from openpyxl import Workbook, load_workbook
+    items=[{'id':f'F-{i:03d}','problem':'Неоднозначные клеммные адреса',
+            'description':f'Шкаф TEST-{i}: цепь CIRCUIT-{i}, клеммы TERMINALS-{i}.',
+            'solution':f'Уточнить STRIP-{i}.','sheet':str(i),'page':i,
+            'severity':'medium','category':'documentation','report_section':'technical_findings',
+            'source_finding_ids':[f'O-{i}']} for i in (1,2)]
+    path=tmp_path/'03_findings.json';path.write_text(json.dumps({'findings':items}))
+    assert merge_similar_findings('test',output_dir=tmp_path)['merged_groups']==1
+    merged=json.loads(path.read_text());finding,=merged['findings']
+    for original in items:
+        assert original['description'] in finding['description']
+        assert original['solution'] in finding['description']
+        sub=next(s for s in finding['sub_findings'] if s['original_id']==original['id'])
+        assert sub['description']==original['description']
+        assert sub['solution']==original['solution']
+    wb=Workbook();build_project_sheet(wb,{'project_id':'test','sheet_name':'AK','findings_json':merged})
+    target=tmp_path/'report.xlsx';wb.save(target);wb.close()
+    saved=load_workbook(target)
+    text='\n'.join(str(cell) for row in saved['AK'].values for cell in row if cell is not None)
+    saved.close()
+    for original in items:
+        assert original['description'] in text
+        assert original['solution'] in text

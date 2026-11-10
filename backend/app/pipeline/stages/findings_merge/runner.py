@@ -496,11 +496,21 @@ def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> d
             leader["id"] = f"F-{new_id:03d}"
             new_id += 1
 
-            details_lines = [
-                f"{i}) " + (it.get("problem") or it.get("description")
-                           or it.get("finding") or "")
-                for i, it in enumerate(group_items, 1)
-            ]
+            details_lines = []
+            for i, member in enumerate(group_items, 1):
+                title = member.get("problem") or member.get("finding") or ""
+                description = member.get("description") or ""
+                parts = [str(title)] if title else []
+                if description and description != title:
+                    parts.append(str(description))
+                location = "; ".join(str(member[field]) for field in ("sheet", "page", "location")
+                                     if member.get(field) is not None and member.get(field) != "")
+                if location:
+                    parts.append("Место: " + location)
+                solution = member.get("solution") or member.get("recommendation")
+                if solution:
+                    parts.append("Рекомендация: " + str(solution))
+                details_lines.append(f"{i}) " + "\n".join(parts))
             leader_problem = leader.get("problem") or leader.get("description") or ""
             # Единая агрегация source-of-truth полей (reserc.md #92/#6/#27): sheet/
             # page/related_block_ids/source_block_ids/evidence_text_refs/evidence +
@@ -513,6 +523,8 @@ def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> d
                 {
                     "original_id": it.get("id", ""),
                     "problem": it.get("problem") or it.get("description") or "",
+                    "description": it.get("description", ""),
+                    "solution": it.get("solution") or it.get("recommendation") or "",
                     "sheet": it.get("sheet", ""),
                     "page": it.get("page"),
                     "source_finding_ids": it.get("source_finding_ids") or [],
