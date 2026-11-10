@@ -468,7 +468,7 @@
   "stage4_next_gate_audit": {
     "stage4_complete": false,
     "candidate_frozen": false,
-    "immediate_next_action": "Execute payload-approved initial-context ITP pilot, validate model-generated queries, retrieve sources locally and inspect a separately approved follow-up; complete semantic output integration before whole-project comparisons.",
+    "immediate_next_action": "Complete missing-context retrieval and final-wording checks, then close remaining H01-H07 controls before candidate freeze and full comparison.",
     "pilot_request_sha256": "977847d2595261161e3f2379df917ef7ea737765de8f63631100135b80639a1e",
     "pilot_attempt_exists": true,
     "permission_answer_received": true,
@@ -586,11 +586,43 @@
     "known_semantic_decisions_applied": 2,
     "model_query_followups_prepared": 1,
     "tests_initial_selected_unique": 86,
-    "automatic_semantic_decision_producer": "ITP adjudication pilot prepared on same sources plus prior model reply; auto-review rejected expanded payload, specific approval pending.",
+    "automatic_semantic_decision_producer": "Live Claude decision completed; actual admission and Excel replay pass. Semantic acceptance partial because K23 retrieval remains incomplete.",
     "absence_model_replayed": false,
     "new_model_calls": 0,
     "stage4_complete": false,
     "tests_latest_selected": 88,
     "remaining": "Live adjudication quality and admission controls; independent full six-project candidate audits not started. Structural/Excel replay is not proof of independent recall improvement."
+  },
+  "itp_semantic_adjudication_live_control": {
+    "status": "partial_pass",
+    "model": "claude/claude-sonnet-5-5",
+    "duration_ms": 35133,
+    "input_tokens": 32998,
+    "output_tokens": 4439,
+    "cost_source": "subscription",
+    "contract_admission_passed": true,
+    "actual_verifier_and_excel_passed": true,
+    "admission_receipts": [
+      {
+        "finding_id": "F-042",
+        "status": "applied",
+        "action": "revise"
+      }
+    ],
+    "supported_annotation_conflicts_preserved": [
+      "K22 1000/1500 litres",
+      "K23 100/200 litres"
+    ],
+    "C5_scope_error_corrected": true,
+    "physical_defect_not_claimed": true,
+    "other_findings_preserved": 52,
+    "semantic_acceptance": "Not complete: K23 calculation exists in source corpus but was omitted by bounded retrieval. Final recommendation still asks to confirm volume; must retrieve calculation before delegating this to engineer.",
+    "remaining_output_issue": "Admission revises only problem/description/solution. Original consequence and normative candidate remain in Excel; full substantive-field consistency is not established.",
+    "remaining_source_block": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+    "known_case_not_blind": true,
+    "absence_model_phase": "Explicit no-op in replay",
+    "production_changed": false,
+    "automatic_model_dispatch_integrated": false,
+    "output_dir": "/tmp/auditmanager_itp_adjudication_replay_y4ywksn1"
   }
 }

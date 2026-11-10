@@ -1,0 +1,32 @@
+{
+  "status": "partial_pass",
+  "model": "claude/claude-sonnet-5-5",
+  "duration_ms": 35133,
+  "input_tokens": 32998,
+  "output_tokens": 4439,
+  "cost_source": "subscription",
+  "contract_admission_passed": true,
+  "actual_verifier_and_excel_passed": true,
+  "admission_receipts": [
+    {
+      "finding_id": "F-042",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "supported_annotation_conflicts_preserved": [
+    "K22 1000/1500 litres",
+    "K23 100/200 litres"
+  ],
+  "C5_scope_error_corrected": true,
+  "physical_defect_not_claimed": true,
+  "other_findings_preserved": 52,
+  "semantic_acceptance": "Not complete: K23 calculation exists in source corpus but was omitted by bounded retrieval. Final recommendation still asks to confirm volume; must retrieve calculation before delegating this to engineer.",
+  "remaining_output_issue": "Admission revises only problem/description/solution. Original consequence and normative candidate remain in Excel; full substantive-field consistency is not established.",
+  "remaining_source_block": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+  "known_case_not_blind": true,
+  "absence_model_phase": "Explicit no-op in replay",
+  "production_changed": false,
+  "automatic_model_dispatch_integrated": false,
+  "output_dir": "/tmp/auditmanager_itp_adjudication_replay_y4ywksn1"
+}
