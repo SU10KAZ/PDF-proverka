@@ -492,5 +492,17 @@
     "new_independent_audit": false,
     "automatic_application": false,
     "remaining": "Graphic/context follow-up controls, semantic application integration and full six-project candidate audits remain incomplete."
+  },
+  "itp_astra_graphic_known_case_pilot": {
+    "status": "partial_pass",
+    "report": "experiments/auditmanager_stage4_20261110/ITP_astra_graphic_pilot_assessment.json",
+    "sha256": "3ad2550d61788b947f8b651f6733411ab60b15bdf66513e3489b187ec6c215e8",
+    "model": "codex/gpt-6-astra",
+    "duration_ms": 57726,
+    "supported_core_preserved": true,
+    "graphic_region_errors": 2,
+    "regions_checked": 8,
+    "automatic_application": false,
+    "model_driven_context_retrieval_proven": false
   }
 }

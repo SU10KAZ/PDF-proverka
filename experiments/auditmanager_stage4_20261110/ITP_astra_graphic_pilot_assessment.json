@@ -1,0 +1,157 @@
+{
+  "project": "ITP",
+  "finding_id": "F-042",
+  "request_sha256": "89c26fb9e833ede5875ce3e4c6cde60d200bc23c592e67fcbd7ff57b2663eeb9",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 57726,
+  "input_tokens": 31517,
+  "output_tokens": 2485,
+  "cached_tokens": 9728,
+  "cost_source": "subscription",
+  "monetary_cost_known": false,
+  "receipt_validation": "passed; hashes, exact TEXT quotes and bbox numeric shape only",
+  "semantic_outcome": "partial_pass",
+  "claim_assessment": {
+    "F-042-C1": "Supported annotation/specification conflict K22 1000 versus 1500 litres; quantity two agrees in specification and visible plan/axonometry. No demonstrated equipment undersizing.",
+    "F-042-C2": "Supported annotation/specification conflict K23 100 versus 200 litres. Plan and axonometry references support it, but section evidence bbox is wrong. Preserve supported core; reject this individual evidence location.",
+    "F-042-C3": "Needs_data is appropriate for the literal claim about unavailable sheet descriptions. Two K22 objects visible in axonometry, but drainage-plan bbox does not show both. Do not count repeated views as extra equipment or turn missing historical descriptions into an engineer task."
+  },
+  "visual_regions": [
+    {
+      "claim_id": "F-042-C1",
+      "evidence_index": 2,
+      "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+      "bbox_norm_xyxy": [
+        0.17,
+        0.73,
+        0.278,
+        0.846
+      ],
+      "observation": "В нижней левой части плана показаны два круглых бака; рядом подпись «К22 бак теплоснабжения 1000л».",
+      "visual_review": "supported_in_region",
+      "reason": "Current assistant inspected exact model-specified region; visible annotation or objects support observation."
+    },
+    {
+      "claim_id": "F-042-C1",
+      "evidence_index": 3,
+      "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+      "bbox_norm_xyxy": [
+        0.779,
+        0.392,
+        0.844,
+        0.89
+      ],
+      "observation": "Справа на разрезе 18–18 бак подписан «К22 бак теплоснабжения 1000л».",
+      "visual_review": "supported_in_region",
+      "reason": "Current assistant inspected exact model-specified region; visible annotation or objects support observation."
+    },
+    {
+      "claim_id": "F-042-C2",
+      "evidence_index": 2,
+      "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+      "bbox_norm_xyxy": [
+        0.793,
+        0.553,
+        0.871,
+        0.586
+      ],
+      "observation": "У круглого бака в правой части плана имеется подпись «К23 бак ДОО 100л».",
+      "visual_review": "supported_in_region",
+      "reason": "Current assistant inspected exact model-specified region; visible annotation or objects support observation."
+    },
+    {
+      "claim_id": "F-042-C2",
+      "evidence_index": 3,
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "bbox_norm_xyxy": [
+        0.633,
+        0.682,
+        0.682,
+        0.763
+      ],
+      "observation": "На аксонометрии у малого бака справа показана подпись «К23 бак ДОО 100л».",
+      "visual_review": "supported_in_region",
+      "reason": "Current assistant inspected exact model-specified region; visible annotation or objects support observation."
+    },
+    {
+      "claim_id": "F-042-C2",
+      "evidence_index": 4,
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "bbox_norm_xyxy": [
+        0.085,
+        0.527,
+        0.123,
+        0.824
+      ],
+      "observation": "На крайнем левом разрезе бак К23 обозначен как бак ДОО 100 л.",
+      "visual_review": "wrong_region",
+      "reason": "Specified region contains pipes and dimensions, not the K23 tank annotation. Full image has the annotation outside this box; underlying statement is not refuted by bad localization."
+    },
+    {
+      "claim_id": "F-042-C3",
+      "evidence_index": 0,
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "bbox_norm_xyxy": [
+        0.103,
+        0.655,
+        0.201,
+        0.825
+      ],
+      "observation": "Слева на аксонометрии показаны два отдельных вертикальных бака в зоне обозначения К22.",
+      "visual_review": "supported_in_region",
+      "reason": "Current assistant inspected exact model-specified region; visible annotation or objects support observation."
+    },
+    {
+      "claim_id": "F-042-C3",
+      "evidence_index": 1,
+      "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+      "bbox_norm_xyxy": [
+        0.178,
+        0.745,
+        0.251,
+        0.855
+      ],
+      "observation": "На плане дренажных трубопроводов в зоне К22 показаны два отдельных прямоугольных контура с общей подписью бака теплоснабжения.",
+      "visual_review": "incomplete_region",
+      "reason": "Box shows one tank contour and the K22 annotation; it does not encompass both tank contours asserted by the observation."
+    },
+    {
+      "claim_id": "F-042-C3",
+      "evidence_index": 2,
+      "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+      "bbox_norm_xyxy": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "observation": "Лист содержит разрезы 43–43, 28–28, 34–34 и 23–23 с насосами и трубопроводами; самостоятельного полного перечня баков на нём нет.",
+      "visual_review": "supported_broad_context_only",
+      "reason": "Whole-sheet box shows the named sections. It is not positive evidence of an equipment count or project-wide absence."
+    }
+  ],
+  "visual_summary": {
+    "checked_regions": 8,
+    "supported_specific_regions": 5,
+    "supported_broad_context_only": 1,
+    "wrong_regions": 1,
+    "incomplete_regions": 1
+  },
+  "additional_observation": "RM 1500 PN10 and RM 200 PN10 model labels are visible beside conflicting 1000/100 litre annotations in model-cited plan regions. Model did not explicitly report this stronger same-image corroboration.",
+  "recommended_behavior": [
+    "Keep K22/K23 annotation conflicts with valid evidence. Do not infer mandatory equipment replacement.",
+    "Validate the content of evidence regions, not only hash and numeric coordinate validity. Failed redundant evidence must not suppress a finding supported elsewhere.",
+    "A needs_data verdict about unavailable intermediate model descriptions must not automatically create a question for the engineer."
+  ],
+  "automatic_application": false,
+  "stage4_complete": false,
+  "independent_discovery": false,
+  "model_driven_context_retrieval_proven": false,
+  "limitations": [
+    "Known case with manually selected search queries and supplied linked documents",
+    "No complete design/calculation validation or engineer acceptance",
+    "One graphic case cannot establish population accuracy or general filter effectiveness",
+    "No OS-level proof of history isolation; not a blind audit"
+  ],
+  "next_acceptance_gate": "Semantic handling of invalid/partial graphic evidence while retaining supported claims; then independent model-driven context retrieval control."
+}
