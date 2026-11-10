@@ -10,6 +10,7 @@ from pathlib import Path
 
 def summarize():
     directories = [
+        ('AR_roof_inventory', Path('/tmp/auditmanager_ar_roof_inventory_control_20261111/AR/execution/object_inventory_000')),
         ('EOM_instance_inventory', Path('/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM/execution/object_inventory_000')),
         ('EOM_instance_graphic', Path('/tmp/auditmanager_eom_instance_graphic_control_20261110')),
         ('EOM_instance_identity', Path('/tmp/auditmanager_eom_instance_operations_20261110/hvac_32')),

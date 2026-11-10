@@ -1,0 +1,49 @@
+{
+  "source_md_sha256": "22b7937a9a8883a106b933bfff371b7d58dbb753e2c6085a4dea07e33f5720ef",
+  "blocks": 7,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_f3aec0b585f6435080a6caa87767ba7c",
+        "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+        "blk_086a84d1c3534d70aa25347a3af1c2bb",
+        "blk_4627d64c6a6c4e76a9abc5e278844a50",
+        "blk_602b484f088b4a029d3ba6e01df3f645",
+        "blk_507c287c56f04302a7ca1097e7af79ff",
+        "blk_d79ac3d31db644eea9b53e1860e4c51c"
+      ],
+      "message_chars": 20011,
+      "images": [
+        {
+          "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+          "sha256": "b2ea91738b345a61639775c648f0964f66fe8b9ca12db56a9d78c03d3f18c430"
+        },
+        {
+          "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+          "sha256": "4d019dccbfa7499d275343ed7a63cdcdc8c3b5a261c28ae2753845b6c0cb76b7"
+        },
+        {
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0"
+        }
+      ]
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": true,
+  "semantic_inventory_complete": false,
+  "full_source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+  "source_selection": "Three unchanged roof source blocks and all same-page authoritative TEXT/TABLE blocks; no expected levels, arithmetic, findings or engineer feedback.",
+  "request_digests": [
+    "f8b206647db6cbd2975e2878837b4ba103e58fe0d1a8d7b3023d55f3639b55aa"
+  ],
+  "requests": 1,
+  "known_source_selection": true,
+  "whole_project_control": false,
+  "independent_discovery": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}

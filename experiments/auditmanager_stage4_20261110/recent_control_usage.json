@@ -2,6 +2,18 @@
   "scope": "Recent EOM extraction/recovery, AR/KM deferred, AR unlabelled inventory and AK cabinet controls only; not all stage4 work.",
   "requests": [
     {
+      "control": "AR_roof_inventory",
+      "directory": "/tmp/auditmanager_ar_roof_inventory_control_20261111/AR/execution/object_inventory_000",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "f8b206647db6cbd2975e2878837b4ba103e58fe0d1a8d7b3023d55f3639b55aa",
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high"
+      },
+      "token_counters_incomplete": true
+    },
+    {
       "control": "EOM_instance_inventory",
       "directory": "/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM/execution/object_inventory_000",
       "status": "response_received",
@@ -225,47 +237,146 @@
     {
       "control": "EOM_cable_detail_source_F-050_2_review",
       "directory": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/F-050/02_review",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started",
-        "request_sha256": "946e20a14bc11e653a31c263765568513008707bc7f67f0fe931dfbe61d9418b"
+        "status": "finished",
+        "request_sha256": "946e20a14bc11e653a31c263765568513008707bc7f67f0fe931dfbe61d9418b",
+        "model_error": false
       },
-      "token_counters_incomplete": true
+      "token_counters_incomplete": false,
+      "result_sha256": "7a33c1d3175729e7b109680dbcf77640341ad28b3943b97e197fd4fdbf7180aa",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 60811,
+      "input_tokens": 49354,
+      "output_tokens": 7650,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_detail_source_F-050_3_review",
       "directory": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/F-050/03_review",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "ebbf8f67376cb59999b2e7d9ac120dbe9796433a31c2501e4bf5757da41b0ad4",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "a911f3a37d1d12c593cdf1a4def6cc83eb0862873f6896ad8f0724f0caf7e95e",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 69471,
+      "input_tokens": 49179,
+      "output_tokens": 8687,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_detail_source_F-050_4_review",
       "directory": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/F-050/04_review",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "e1613940a862d5b0901c85118c6f1ab144e953cddefb9789efcd93649c750d78",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "dfce54d17bccb10cbd977ebecb193e0696e6abd6801f6c37f0af9920f24a4531",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 64215,
+      "input_tokens": 50376,
+      "output_tokens": 8343,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_detail_source_F-050_5_adjudication",
       "directory": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/F-050/05_adjudication",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "3fdad63404c484114541b473ffdbde0219955dff7dadf9afefdaf2aa52d314e4",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "274e0619cdaa4fe67669a28a3f5c2228169115f1b1cb3d1629877c402ed984fc",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 115014,
+      "input_tokens": 55036,
+      "output_tokens": 15398,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_detail_source_F-051_0_review",
       "directory": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/F-051/00_review",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "b4bde90a58345670f3a1850a35bbe1716f4736f1e086302c2cbf7e5bdb448008",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "05982ffaf552f07afc671045a740c19000f770b5af554f35329f07b198aba436",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 54638,
+      "input_tokens": 22633,
+      "output_tokens": 7354,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_detail_source_F-051_1_review",
       "directory": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/F-051/01_review",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "ccb48865159cf04b511a7fc4c7943a77a62656315db0bb0ecc87bc7de7923ac7",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "c7b00aad5fce941ae5de1df9a97608d4d68b87bd5ac9bb328c6f7c275dafe222",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 71157,
+      "input_tokens": 49638,
+      "output_tokens": 8859,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_detail_source_F-051_2_review",
       "directory": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/F-051/02_review",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "4966f21b255840b2b37fbece1eaebd79664bd581b9e85ef72cc2ecd968c30d95",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "f0fa627f545d824bb455dfa471378be08002aad1daab4eba172aa12cfad3358f",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 73310,
+      "input_tokens": 49093,
+      "output_tokens": 9212,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_detail_source_F-051_3_review",
       "directory": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/F-051/03_review",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "47a554d68f1ad403902418252f0550f546c70335d48b6fba9d11756c32da85ee",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "862cc51829b188233b6e9376b91541b6a944089f986e8238a44ce34a9cd6ade9",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 60746,
+      "input_tokens": 50261,
+      "output_tokens": 7471,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_detail_source_F-051_4_review",
@@ -275,7 +386,20 @@
     {
       "control": "EOM_cable_detail_source_F-051_5_adjudication",
       "directory": "/tmp/auditmanager_eom_cable_detail_source_workflow_20261111/F-051/05_adjudication",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "0c5114a9f592d4e89b38fad39423d5e6e0e3b1ea12b1516740d447af5c8732e2",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "505cb45806503870372bb5e1023ecd7309aebd16bea69c03af0e3ffe48219447",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 91715,
+      "input_tokens": 54285,
+      "output_tokens": 12327,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_line_address",
@@ -446,22 +570,56 @@
     {
       "control": "EOM_cable_source_F-051_3_review",
       "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-051/03_review",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started",
-        "request_sha256": "1f42a847de938642222a22988a7c22f019ea6f977fe9c4817953723609a7fdbd"
+        "status": "finished",
+        "request_sha256": "1f42a847de938642222a22988a7c22f019ea6f977fe9c4817953723609a7fdbd",
+        "model_error": false
       },
-      "token_counters_incomplete": true
+      "token_counters_incomplete": false,
+      "result_sha256": "4bb3604195d97a122a13db013c06297e3346578f647644b8039988a2811f2d20",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 50940,
+      "input_tokens": 55072,
+      "output_tokens": 6088,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_source_F-051_4_review",
       "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-051/04_review",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "7857f4a68f7a5fc60da68e8edd4e1c094288b1ad7a49274777f3230d660859fa",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "f93565bc920ce228cdc8a93719f80b20710681b0a4419c096af682a2caab1cd8",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 58262,
+      "input_tokens": 59219,
+      "output_tokens": 7371,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_source_F-051_5_adjudication",
       "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-051/05_adjudication",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "request_sha256": "eba62f1fec764425a3656a384efe15874ae0ea701fdc98dc37799c5c880554d9",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "1576fff8cebab1ac2b626de1409fef828590107acbd6c96539311320137a8c34",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 54582,
+      "input_tokens": 63553,
+      "output_tokens": 7100,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_shared_primary_source",
@@ -1393,14 +1551,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 70,
-  "pending_results": 2,
+  "completed_requests": 82,
+  "pending_results": 1,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 2493151,
-  "reported_output_tokens": 637679,
+  "reported_input_tokens": 3100850,
+  "reported_output_tokens": 743539,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 199.571,
+  "completed_request_minutes_sum": 213.319,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [
