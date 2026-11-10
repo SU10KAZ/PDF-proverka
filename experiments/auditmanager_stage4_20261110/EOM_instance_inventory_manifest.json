@@ -1,0 +1,35 @@
+{
+  "source_md_sha256": "9d56876cc301547d3f9f4bab9d62ade528f3d319e0b873944bebab4da70845af",
+  "blocks": 1,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_4b5016856cc94ec088efe86a8ec2a925"
+      ],
+      "message_chars": 6438,
+      "images": [
+        {
+          "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "sha256": "2e0bd13fc244dcc5539122bfb527216b63c083db40abc0768c3eabecde126aa5"
+        }
+      ]
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": true,
+  "semantic_inventory_complete": false,
+  "full_source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "source_selection": "One unchanged original plan GRAPHIC block with page header. No expected device identifiers, counts or historical findings.",
+  "request_digests": [
+    "ee521e1a7b145a04b4ffdf94725b076ea77dab4f895a5a19e67d815da165c0fd"
+  ],
+  "requests": 1,
+  "known_source_selection": true,
+  "whole_project_control": false,
+  "independent_discovery": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}

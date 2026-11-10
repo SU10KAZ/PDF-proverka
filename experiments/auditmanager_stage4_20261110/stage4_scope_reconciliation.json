@@ -155,6 +155,19 @@
       "root": "/tmp/auditmanager_ar_unlabelled_inventory_control_20261110_regions_v2/AR",
       "process_receipt": "/tmp/auditmanager_ar_unlabelled_v2_process_20261110/process.json",
       "production_acceptance": false
+    },
+    {
+      "hypothesis": "H03",
+      "control": "EOM separate instances and repeated positional identifier H03-P02/N02",
+      "state": "generic_inventory_running",
+      "root": "/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM",
+      "process_receipt": "/tmp/auditmanager_eom_instance_process_20261110/process.json",
+      "evidence": [
+        "EOM_instance_inventory_manifest.json"
+      ],
+      "expected_answer_hidden": true,
+      "known_source_selection": true,
+      "production_acceptance": false
     }
   ]
 }

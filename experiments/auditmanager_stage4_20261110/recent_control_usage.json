@@ -2,6 +2,18 @@
   "scope": "Recent EOM extraction/recovery, AR/KM deferred, AR unlabelled inventory and AK cabinet controls only; not all stage4 work.",
   "requests": [
     {
+      "control": "EOM_instance_inventory",
+      "directory": "/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM/execution/object_inventory_000",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "ee521e1a7b145a04b4ffdf94725b076ea77dab4f895a5a19e67d815da165c0fd",
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high"
+      },
+      "token_counters_incomplete": true
+    },
+    {
       "control": "EOM_initial",
       "directory": "/tmp/auditmanager_eom_balance_inventory_control_20261110/EOM/execution/object_inventory_000",
       "status": "failed",
@@ -638,7 +650,7 @@
     }
   ],
   "completed_requests": 31,
-  "pending_results": 1,
+  "pending_results": 2,
   "failed_requests": 2,
   "interrupted_requests": 4,
   "reported_input_tokens": 963824,
