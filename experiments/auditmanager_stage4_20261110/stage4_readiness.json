@@ -401,5 +401,20 @@
     "query_origin": "Known-case visual review; not independently generated model queries.",
     "automatic_dispatch": false,
     "boundary": "One local context expansion and stale-context response protection implemented; model-driven follow-up integration remains."
+  },
+  "source_review_visual_receipt_validation": {
+    "tests_passed": 36,
+    "checks": [
+      "image was explicitly marked supplied by dispatcher",
+      "unique GRAPHIC/IMAGE MD block identity",
+      "response hash and current file match recorded image",
+      "finite normalized nonempty region",
+      "explicit visual observation",
+      "TEXT cannot be substituted with raster"
+    ],
+    "automatic_application": false,
+    "semantic_verified": false,
+    "actual_multimodal_pilot_executed": false,
+    "boundary": "Synthetic receipt validation only; not model graphic-reading accuracy. Actual graphic dispatch integration still required."
   }
 }

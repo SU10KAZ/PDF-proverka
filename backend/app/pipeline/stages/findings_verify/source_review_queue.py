@@ -97,6 +97,9 @@ def build_source_review_queue(findings, md, *, max_chars=100000):
             'A valid source ID is not proof. For arithmetic enumerate source rows and reproduce the operation. '
             'Do not infer absence from bounded context or correct TEXT from raster. '
             'Graphics and missing linked documents require additional evidence; preserve uncertainty. '
+            'For a graphic actually attached to this request, cite type=image, block_id, image_sha256, '
+            'bbox_norm_xyxy=[left,top,right,bottom] in [0,1], and a concrete observation. '
+            'A file listed as available but not attached is not visual evidence. '
             'Do not rewrite or remove the final finding in this review response.')
     return {'packets':packets,'pending_count':len(packets),'completed_count':0,
             'source_md_sha256':hashlib.sha256(md.encode()).hexdigest(),

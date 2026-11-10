@@ -1,7 +1,11 @@
 """Validate review receipts, never equate matching quotes with semantic truth."""
 import hashlib
 import json
+import math
+import re
+from collections import Counter
 from copy import deepcopy
+from pathlib import Path
 
 from backend.app.pipeline.stages.text_analysis.requirement_checks import authoritative_text_blocks
 
@@ -41,6 +45,11 @@ def validate_source_review(response, queue, findings, md):
     if packet.get('status') != 'pending' or candidates[0].get('source_evidence_review_status') != 'pending':
         errors.append('review_not_pending')
     blocks = authoritative_text_blocks(md)
+    headers = re.findall(r'^###[ \t]+BLOCK[^\n]*?\[([^]]+)\]:[ \t]*(\S+)[^\n]*$', md, re.M | re.I)
+    header_counts = Counter(bid for _, bid in headers)
+    graphic_ids = {bid for kind, bid in headers if kind.upper() in ('IMAGE', 'GRAPHIC') and header_counts[bid] == 1}
+    graphics = packet.get('graphic_attachments', [])
+    graphics = graphics if isinstance(graphics, list) else []
     sources = packet.get('sources')
     allowed = set()
     if not isinstance(sources, list):
@@ -86,6 +95,30 @@ def validate_source_review(response, queue, findings, md):
         for item in evidence:
             bid = item.get('block_id') if isinstance(item, dict) else None
             quote = item.get('quote') if isinstance(item, dict) else None
+            kind = item.get('type', 'text') if isinstance(item, dict) else None
+            if kind == 'image':
+                refs = [g for g in graphics if isinstance(g, dict) and g.get('block_id') == bid]
+                if not isinstance(bid, str) or bid not in graphic_ids or len(refs) != 1 or refs[0].get('attached_to_model') is not True:
+                    errors.append(prefix+'graphic_not_supplied')
+                    continue
+                ref = refs[0]
+                try:
+                    actual_hash = hashlib.sha256(Path(ref['path']).read_bytes()).hexdigest()
+                except (OSError, TypeError, KeyError, ValueError):
+                    actual_hash = None
+                if actual_hash is None or actual_hash != ref.get('sha256') or item.get('image_sha256') != actual_hash:
+                    errors.append(prefix+'graphic_version_mismatch')
+                bbox = item.get('bbox_norm_xyxy')
+                valid_box = (isinstance(bbox, list) and len(bbox) == 4
+                             and all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and 0 <= v <= 1 for v in bbox))
+                if not valid_box or not (bbox[0] < bbox[2] and bbox[1] < bbox[3]):
+                    errors.append(prefix+'invalid_graphic_region')
+                if not isinstance(item.get('observation'), str) or not item['observation'].strip():
+                    errors.append(prefix+'missing_graphic_observation')
+                continue
+            if kind != 'text':
+                errors.append(prefix+'unsupported_evidence_type')
+                continue
             if not isinstance(bid, str) or bid not in allowed:
                 errors.append(prefix+'source_not_in_packet')
             elif not isinstance(quote, str) or not quote.strip() or quote not in blocks[bid]:
