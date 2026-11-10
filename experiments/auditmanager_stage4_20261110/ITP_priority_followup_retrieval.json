@@ -1,0 +1,38 @@
+{
+  "status": "prepared",
+  "new_source_ids": [
+    "blk_0103a941fa5a4b0d9141a4149e927bff",
+    "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c",
+    "blk_3050f16afc994b889498a2535ea14a52",
+    "blk_5d085f4c917a4e568fd33327e6f8edea",
+    "blk_6496640ac5e44e98a89acc7af56d0509",
+    "blk_871a2c95697d4a93adb86dd3e2456614",
+    "blk_9a10a5131f3e467db9bd6e9cce76c59a",
+    "blk_b236e8ad38084811b7ae15386e293de5",
+    "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+    "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc"
+  ],
+  "omitted": [
+    {
+      "block_id": "blk_54235e84a8d648d19eaccce2040d5f65",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_049ee88c136045da9910995a4c44a1e8",
+      "reason": "message_budget"
+    },
+    {
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "reason": "message_budget"
+    }
+  ],
+  "automatic_dispatch": false,
+  "absence_proven": false,
+  "semantic_verified": false,
+  "next_stage": "object_operations_fa2ba56b8e8acf08_context_2",
+  "request_sha256": "03f2ca6fc5e58f3d90d0fadfd8267e08080a38693ca44a605219de5a65b118db"
+}

@@ -1,0 +1,55 @@
+{
+  "scope": "Deterministic replay of same source-bound request and model queries, no model response used to choose priority.",
+  "requested_exact_blocks": [
+    "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+    "blk_3050f16afc994b889498a2535ea14a52"
+  ],
+  "before_omitted": [
+    {
+      "block_id": "blk_54235e84a8d648d19eaccce2040d5f65",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_049ee88c136045da9910995a4c44a1e8",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+      "reason": "message_budget"
+    },
+    {
+      "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+      "reason": "message_budget"
+    }
+  ],
+  "after_omitted": [
+    {
+      "block_id": "blk_54235e84a8d648d19eaccce2040d5f65",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "reason": "image_unavailable_or_budget"
+    },
+    {
+      "block_id": "blk_049ee88c136045da9910995a4c44a1e8",
+      "reason": "message_budget"
+    },
+    {
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "reason": "message_budget"
+    }
+  ],
+  "original_source_context_preserved": true,
+  "new_provider_result_pending": true,
+  "test_result": "16 passed",
+  "full_acceptance_proven": false
+}
