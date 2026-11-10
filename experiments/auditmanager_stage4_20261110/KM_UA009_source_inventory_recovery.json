@@ -44,5 +44,13 @@
   "sources": {
     "historical_register": "experiments/auditmanager_stage1_20261109/register.json",
     "classic_matching": "experiments/auditmanager_stage2_20261110/historical_KM_matching.json"
+  },
+  "deterministic_output_retention_with_manual_formatting": {
+    "verified": true,
+    "evidence": "KM_UA009_output_retention.json",
+    "baseline_count": 26,
+    "candidate_count": 27,
+    "baseline_preserved": true,
+    "automatic_report_formatting_verified": false
   }
 }

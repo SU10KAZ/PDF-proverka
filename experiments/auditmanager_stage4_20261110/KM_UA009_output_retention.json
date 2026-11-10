@@ -1,0 +1,93 @@
+{
+  "scope": "Discovered source-only candidate manually formatted for output retention replay",
+  "baseline_count": 26,
+  "candidate_count": 27,
+  "all_baseline_findings_preserved": true,
+  "candidate_core_and_sources_preserved": true,
+  "excel_ids_unique_and_complete": true,
+  "candidate_visible_in_saved_excel": true,
+  "retained_candidate": {
+    "problem": "Для одной площадки ЛК5, общей для маршей с ограждениями ОГМ18 и ОГМ20, на плане указана отметка -2.350, а на разрезах 5-5 и 6-6 — -2,500. Расхождение составляет 150 мм.",
+    "description": "Одинаковые лестничная клетка, марки ограждений, смежность маршей и совпадающая горизонтальная цепочка позволяют сопоставить одну площадку в плане и разрезах. Установлено противоречие внутри представленных графических материалов. Правильная отметка, причина расхождения и необходимость изменения самого изделия по этому пакету не определены.",
+    "solution": "Уточнить базу отметок и согласовать обозначение этой площадки на плане и разрезах.",
+    "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+    "category": "coordination",
+    "report_section": "technical_findings",
+    "sheet": "7",
+    "page": 9,
+    "norm": "",
+    "norm_quote": "",
+    "risk": "",
+    "source_finding_ids": [
+      "object_inventory_006:F1"
+    ],
+    "source_block_ids": [
+      "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+      "blk_9e54c5e5fb6b4b28ae2304bd06c49949"
+    ],
+    "related_block_ids": [
+      "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+      "blk_9e54c5e5fb6b4b28ae2304bd06c49949"
+    ],
+    "evidence": [
+      {
+        "type": "image",
+        "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+        "observation": "Правая схема «ЛК 5 на отм.-0.150»: площадка у левого конца поперечного марша ОГМ20 и верхнего конца марша ОГМ18 подписана «-2.350». Противоположная площадка ОГМ20 подписана «-1.800». Размерная цепочка поперечного участка — 1340, 1345, 665."
+      },
+      {
+        "type": "image",
+        "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+        "observation": "Разрез 6-6: у верхнего ограждения ОГМ20 площадки подписаны «-1,800» и «-2,500», над участком стоят 665, 1345, 1340. Разрез 5-5 также показывает верхнюю площадку ОГМ18 на «-2,500»."
+      }
+    ],
+    "provenance": {
+      "origin": "source_inventory_candidate_manual_report_formatting",
+      "raw_result_sha256": "c572f28d5887f9fcc10c1758ffb5c749376206fb3fe9dbd6b43ee4414a370881",
+      "manual_fields": [
+        "solution",
+        "severity",
+        "category",
+        "report_section",
+        "sheet",
+        "page"
+      ],
+      "automatic_report_generation_verified": false
+    },
+    "id": "F-027",
+    "source_stage": "known_source_inventory_retention"
+  },
+  "verifier_stats": [
+    {
+      "findings_total": 26,
+      "deterministic_issues": 0,
+      "critic_error": null,
+      "phantom_cleaned": 0,
+      "page_fixed": 0,
+      "downgraded": 0,
+      "flagged_human": 0,
+      "corrector_error": null,
+      "source_reviews_pending": 0,
+      "source_review_queue_error": null
+    },
+    {
+      "findings_total": 27,
+      "deterministic_issues": 0,
+      "critic_error": null,
+      "phantom_cleaned": 0,
+      "page_fixed": 0,
+      "downgraded": 0,
+      "flagged_human": 0,
+      "corrector_error": null,
+      "source_reviews_pending": 0,
+      "source_review_queue_error": null
+    }
+  ],
+  "excel_path": "/tmp/auditmanager_km_ua009_output_retention_20261110/KM_candidate.xlsx",
+  "excel_sha256": "b1b70a43a9869a0b31b5a44f1e0f4c2ed77d361e1186fb900ab679687c0903df",
+  "new_model_calls": 0,
+  "automatic_report_generation_verified": false,
+  "full_semantic_and_absence_model_passes_executed": false,
+  "whole_project_quality_acceptance": false,
+  "limits": "Tests merge, deterministic verifier/corrector and saved Excel only. Does not prove automatic formatting, complete audit or release readiness."
+}
