@@ -5,6 +5,7 @@ contains separate semantic adjudication, including scope and defect-basis roles.
 Unreviewed findings stay unchanged; deferred/suppressed originals remain in the
 same document for traceability. No provider calls occur here.
 """
+from backend.app.pipeline.stages.report.severity_categories import is_report_severity
 from copy import deepcopy
 import hashlib
 import json
@@ -149,6 +150,8 @@ def _review_display_fields(original, decision, action):
             raise ValueError('explicit_display_field_value_required')
         if key == 'severity' and not value.strip():
             raise ValueError('severity_cannot_be_empty')
+        if key == 'severity' and not is_report_severity(value):
+            raise ValueError('invalid_report_severity')
         if action == 'retain' and value != original[key]:
             raise ValueError('changed_display_field_requires_revision')
         updates[key] = value

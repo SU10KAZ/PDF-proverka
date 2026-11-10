@@ -256,3 +256,25 @@ def test_search_boundary_source_list_requires_explicit_review(sources, review, a
     out, receipts = apply_review_admissions(doc, entries, md)
     assert (receipts[0]['status'] == 'applied') is accepted
     if not accepted:assert out == doc
+
+
+@pytest.mark.parametrize('severity,accepted', [
+    ('Требует устранения до закупки кабеля.', False),
+    ('question', False), ('medium', False),
+    ('ЭКСПЛУАТАЦИОННОЕ', True), ('CHECK_RELATED', True),
+])
+def test_review_severity_uses_report_vocabulary(severity, accepted):
+    doc, entries, md = display_case()
+    f = doc['findings'][0]
+    entries[0]['decision']['display_field_reviews'] = {
+        k: {'original_value_sha256': evidence_digest(f[k]),
+            'consistent_with_final_claim': True, 'reason': 'Reviewed against final claim',
+            'value': severity if k == 'severity' else f[k]}
+        for k in ('risk', 'norm', 'severity')}
+    out, receipts = apply_review_admissions(doc, entries, md)
+    if accepted:
+        assert receipts[0]['status'] == 'applied'
+        assert out['findings'][0]['severity'] == severity
+    else:
+        assert out == doc
+        assert receipts[0]['reason'] == 'invalid_report_severity'

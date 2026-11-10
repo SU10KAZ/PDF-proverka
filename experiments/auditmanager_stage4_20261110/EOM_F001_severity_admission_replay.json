@@ -1,0 +1,13 @@
+{
+  "source_candidate": "/tmp/auditmanager_eom_classic_semantics_control_20261111/F-001/candidate.json",
+  "receipts": [
+    {
+      "finding_id": "F-001",
+      "status": "not_applied",
+      "reason": "invalid_report_severity"
+    }
+  ],
+  "original_preserved": true,
+  "raw_candidate_unchanged": true,
+  "requires_new_adjudication": true
+}
