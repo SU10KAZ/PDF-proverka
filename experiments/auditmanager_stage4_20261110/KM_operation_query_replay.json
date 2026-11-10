@@ -1,0 +1,127 @@
+{
+  "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "queries": [
+    "Размерный общий вид ОГМ 5."
+  ],
+  "expansion": {
+    "queries": [
+      "ОГМ 5",
+      "Размерный общий вид ОГМ 5."
+    ],
+    "derivations": [
+      {
+        "original_query": "Размерный общий вид ОГМ 5.",
+        "search_key": "ОГМ 5",
+        "kind": "explicit_mark"
+      }
+    ],
+    "identity_verified": false,
+    "absence_proven": false
+  },
+  "original_hit_count": 0,
+  "expanded_hits": [
+    {
+      "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+      "kind": "IMAGE",
+      "page": 5,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 361
+    },
+    {
+      "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+      "kind": "IMAGE",
+      "page": 5,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 377
+    },
+    {
+      "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+      "kind": "IMAGE",
+      "page": 5,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 393
+    },
+    {
+      "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+      "kind": "IMAGE",
+      "page": 5,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 418
+    },
+    {
+      "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+      "kind": "IMAGE",
+      "page": 6,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 547
+    },
+    {
+      "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+      "kind": "IMAGE",
+      "page": 7,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 728
+    },
+    {
+      "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+      "kind": "IMAGE",
+      "page": 7,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 777
+    },
+    {
+      "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+      "kind": "IMAGE",
+      "page": 7,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 795
+    },
+    {
+      "block_id": "blk_e3630afbd9f64adfa84ce0d6b68ec184",
+      "kind": "IMAGE",
+      "page": 7,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 811
+    },
+    {
+      "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+      "kind": "IMAGE",
+      "page": 8,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 1001
+    },
+    {
+      "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+      "kind": "TEXT",
+      "page": 8,
+      "queries": [
+        "ОГМ 5"
+      ],
+      "start_line": 1041
+    }
+  ],
+  "backlog": [],
+  "identity_verified": false,
+  "semantic_verified": false,
+  "note": "Explicit mark retrieves candidate sources; graphic navigation summaries are not evidence."
+}

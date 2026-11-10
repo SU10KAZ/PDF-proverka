@@ -5,6 +5,33 @@ import re
 from pathlib import Path
 
 
+def expand_operation_queries(queries):
+    """Extract navigation keys explicitly present in a model's context request.
+
+    No guessed synonym, corrected OCR, or inferred object identity is introduced.
+    The original queries and the derivation of each search key stay auditable.
+    """
+    expanded, derivations = [], []
+    for query in queries if isinstance(queries, list) else []:
+        if not isinstance(query, str) or not 2 <= len(query.strip()) <= 160:
+            expanded.append(query)
+            continue
+        keys = []
+        for match in re.finditer(r'(?<!\w)[A-ZА-ЯЁ]{2,8}[ -]?\d+(?:[./-]\d+)*(?!\w)', query):
+            keys.append((match.start(), match.group(), 'explicit_mark'))
+        for match in re.finditer(r'\bлист(?:е|а|ы|ах|ов)?\s+(\d+)(?:\s*[-–—]\s*(\d+))?', query, re.I):
+            key = 'Лист '+match[1] if match[2] is None else 'Листы '+match[1]+'–'+match[2]
+            keys.append((match.start(), key, 'explicit_sheet_reference'))
+        for _, key, kind in sorted(keys):
+            derivations.append({'original_query': query, 'search_key': key, 'kind': kind})
+            if key not in expanded:
+                expanded.append(key)
+        if query not in expanded:
+            expanded.append(query)
+    return {'queries': expanded, 'derivations': derivations,
+            'identity_verified': False, 'absence_proven': False}
+
+
 def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_block_ids=(), prior_backlog_ids=(), source_graph=None):
     sheet_pages = {}
     if source_graph is not None:

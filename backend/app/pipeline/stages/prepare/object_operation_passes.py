@@ -35,7 +35,7 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
         if len(passes)>=max_requests:
             backlog.append({'object_id':obj['id'],'operations':operations,'status':'not_checked','reason':'request_budget'})
             continue
-        from .recovery_context import search_md_context
+        from .recovery_context import search_md_context, expand_operation_queries
         source_ids = list(obj['source_refs'])
         searches, new_by_operation = {}, {}
         eligible = []
@@ -44,7 +44,9 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
                 eligible.append(operation)
                 continue
             queries = operation.get('receipt', {}).get('context_queries', [])
-            search = search_md_context(md, queries, exclude_block_ids=set(obj['source_refs']), source_graph=graph)
+            expansion = expand_operation_queries(queries)
+            search = search_md_context(md, expansion['queries'], exclude_block_ids=set(obj['source_refs']), source_graph=graph)
+            search['query_expansion'] = expansion
             searches[operation['operation']] = search
             new_ids = [h['block_id'] for h in search['hits'] if h['block_id'] in blocks]
             if not new_ids:
