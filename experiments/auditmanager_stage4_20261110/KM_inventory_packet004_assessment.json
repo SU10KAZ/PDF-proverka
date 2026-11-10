@@ -1,0 +1,46 @@
+{
+  "packet": "object_inventory_004",
+  "objects": 19,
+  "findings": 0,
+  "duration_ms": 409378,
+  "unresolved_source_blocks": 2,
+  "unresolved_source_block_receipts": [
+    {
+      "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+        "status": "needs_data",
+        "object_ids": [
+          "p4_12",
+          "p4_13",
+          "p4_14",
+          "p4_15"
+        ],
+        "reason": "Все четыре графические области осмотрены: узел А, его сечение 1–1, узлы Б и В. Зарегистрированы узлы, анкер и видимые компоненты в составе узлов. Правая нижняя анкерная выноска обрезана; для полного состава крепления нужен её отсутствующий конец."
+      }
+    },
+    {
+      "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+        "status": "needs_data",
+        "object_ids": [
+          "p4_16",
+          "p4_17",
+          "p4_18",
+          "p4_19"
+        ],
+        "reason": "Осмотрены все четыре панели ОГМ 1–ОГМ 4. Марки, форма и основные читаемые размеры зарегистрированы. Разрешение недостаточно для полного инвентаря мелких позиций деталей, всех узловых обозначений и перекрытых размеров; нужны отдельные изображения панелей с большей детализацией."
+      }
+    }
+  ],
+  "unresolved_operation_count": 85,
+  "text_quote_receipts": [],
+  "quote_mismatches": 0,
+  "semantic_acceptance": false,
+  "result_sha256": "acc697d473d22e3253326d275a83226da7ab7803748ffcb10d4c8df77b3c504e"
+}

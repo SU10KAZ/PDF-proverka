@@ -1,0 +1,74 @@
+{
+  "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+  "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+  "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+  "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+  "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+  "columns": 4,
+  "scale": 2.0,
+  "overlap": 0.025,
+  "tiles": [
+    {
+      "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+      "page_index": 7,
+      "pdf_rotation": 270,
+      "clip_rotated_page_points": [
+        76.17102265357971,
+        29.35399866104126,
+        835.1489519625903,
+        572.2234692573547
+      ],
+      "path": "/tmp/auditmanager_km_graphic_recovery_packet004_20261110/detail_tile_0.png",
+      "width": 1519,
+      "height": 1087,
+      "sha256": "2ac5caa91afee36e5b73305d635ad86765bcce31ea46751b589a00aba25a51bd"
+    },
+    {
+      "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+      "page_index": 7,
+      "pdf_rotation": 270,
+      "clip_rotated_page_points": [
+        697.1529648154974,
+        29.35399866104126,
+        1525.1288876980543,
+        572.2234692573547
+      ],
+      "path": "/tmp/auditmanager_km_graphic_recovery_packet004_20261110/detail_tile_1.png",
+      "width": 1657,
+      "height": 1087,
+      "sha256": "75ae8d00276782ce29bd30df154ef069fd697fa88a4ed9bcd9d285303133fe23"
+    },
+    {
+      "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+      "page_index": 7,
+      "pdf_rotation": 270,
+      "clip_rotated_page_points": [
+        1387.1329005509615,
+        29.35399866104126,
+        2215.1088234335184,
+        572.2234692573547
+      ],
+      "path": "/tmp/auditmanager_km_graphic_recovery_packet004_20261110/detail_tile_2.png",
+      "width": 1657,
+      "height": 1087,
+      "sha256": "452f11b192f77e0c10112fc85a38b61e53a360646df00343093601becc30e8e4"
+    },
+    {
+      "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+      "page_index": 7,
+      "pdf_rotation": 270,
+      "clip_rotated_page_points": [
+        2077.1128362864256,
+        29.35399866104126,
+        2836.090765595436,
+        572.2234692573547
+      ],
+      "path": "/tmp/auditmanager_km_graphic_recovery_packet004_20261110/detail_tile_3.png",
+      "width": 1519,
+      "height": 1087,
+      "sha256": "22d7a0e6c90e20718a04ab61d2e470aedc82c64ec5337437179cce1902eedeab"
+    }
+  ],
+  "model_call_performed": false,
+  "semantic_verified": false
+}
