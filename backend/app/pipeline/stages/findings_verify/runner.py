@@ -88,6 +88,21 @@ def _run_deterministic_phase(output_dir: Path, project_id: str) -> dict:
     corr = asyncio.run(run_deterministic_corrector(
         output_dir, project_id=project_id, on_log=None, write=True,
     ))
+    from .source_review_queue import build_source_review_queue
+    from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+    queue_error, pending = None, None
+    try:
+        # Never leave a previous run's review inputs available after a failed rebuild.
+        (output_dir / '03_source_review_queue.json').unlink(missing_ok=True)
+        current = json.loads((output_dir / '03_findings.json').read_text(encoding='utf-8'))
+        md_path = resolve_document_markdown(output_dir)
+        md = md_path.read_text(encoding='utf-8') if md_path else ''
+        queue = build_source_review_queue(current.get('findings', []) if isinstance(current, dict) else current, md)
+        (output_dir / '03_source_review_queue.json').write_text(
+            json.dumps(queue, ensure_ascii=False, indent=2), encoding='utf-8')
+        pending = queue['pending_count']
+    except (OSError, ValueError, TypeError) as exc:
+        queue_error = str(exc)
     return {
         "findings_total": crit.findings_total,
         "deterministic_issues": crit.deterministic_issues,
@@ -97,6 +112,8 @@ def _run_deterministic_phase(output_dir: Path, project_id: str) -> dict:
         "downgraded": corr.downgraded,
         "flagged_human": corr.flagged_human,
         "corrector_error": corr.error,
+        "source_reviews_pending": pending,
+        "source_review_queue_error": queue_error,
     }
 
 

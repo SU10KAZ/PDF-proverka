@@ -8,7 +8,9 @@
     "page_fixed": 0,
     "downgraded": 0,
     "flagged_human": 19,
-    "corrector_error": null
+    "corrector_error": null,
+    "source_reviews_pending": 19,
+    "source_review_queue_error": null
   },
   "pending_count": 19,
   "pending_requests": [
@@ -285,8 +287,8 @@
   "claims_and_severity_unchanged": true,
   "semantic_review_completed": false,
   "automatic_dispatch_implemented": false,
-  "gap": "The current corrector flags human review and stores source_review_requests. Recovery pass selection handles unlinked/deferred candidates, not these linked pending final claims.",
-  "required_next_behavior": "Build source-bounded final-claim review packets from these requests, preserve original and merged claims, and record supported/refuted/needs_data separately. Validate source relevance before any release or removal.",
+  "gap": "The verifier now prepares source-bounded review packets. Semantic review dispatch and validated decisions remain unimplemented.",
+  "required_next_behavior": "Review packets and record supported/refuted/needs_data separately. Validate source relevance before any release or removal.",
   "known_negative_control": "F-040 is source-refuted by EOM_F040_semantic_refutation.json; do not treat its pending status as support.",
   "new_model_calls": 0
 }

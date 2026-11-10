@@ -222,5 +222,17 @@
     "project_data_sent": false,
     "sandbox_disabled": false,
     "next_action": "Use a supported browser environment to render the actual portal question section; do not count the existing Node computed-list tests as visual acceptance."
+  },
+  "source_review_queue_validation": {
+    "artifact": "experiments/auditmanager_stage4_20261110/EOM_source_review_queue.json",
+    "sha256": "360ab913e71781147737d8b6c15518e4d8a25ae2ebfde3eb5288ed7e8ca8de15",
+    "pending_packets": 19,
+    "packets_with_all_referenced_text_blocks": 19,
+    "eom_findings_preserved": 49,
+    "tests_passed": 14,
+    "automatic_dispatch": false,
+    "semantic_reviews_completed": 0,
+    "scope": "Real saved EOM findings through deterministic verifier with authoritative document.md; referenced text availability does not establish sufficient context or claim validity.",
+    "next_action": "Review each substantive claim with source evidence; obtain additional graphics or linked documents where needed. Validate source and finding hashes before consuming any review."
   }
 }
