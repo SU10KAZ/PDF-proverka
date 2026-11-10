@@ -1,0 +1,101 @@
+{
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 91599,
+  "input_tokens": 69230,
+  "output_tokens": 3706,
+  "request_sha256": "50fd281c6afedeae00b34b9be8599acb38551f15c2c93eeacbbdc92d052a49bc",
+  "result_sha256": "edc7459bc54fbff23ed38ad063f0e1f2ffacef8985e641dc4cc131ad7a64d862",
+  "operation_statuses": {
+    "identity_across_views": "not_checked",
+    "quantity_balance": "not_checked",
+    "dimension_consistency": "needs_data",
+    "requirement_applicability": "needs_data",
+    "document_links": "reported_checked"
+  },
+  "raw_questions": 3,
+  "technical_findings": 0,
+  "candidate_questions_retained": 2,
+  "internal_context_tasks": 1,
+  "quote_checks": [
+    {
+      "finding_index": 1,
+      "block_id": "blk_02786cefba4641928c7e149eda44f872",
+      "exact_quote": true
+    },
+    {
+      "finding_index": 1,
+      "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "exact_quote": false
+    },
+    {
+      "finding_index": 2,
+      "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+      "exact_quote": false
+    },
+    {
+      "finding_index": 2,
+      "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "exact_quote": true
+    },
+    {
+      "finding_index": 2,
+      "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote": true
+    },
+    {
+      "finding_index": 3,
+      "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+      "exact_quote": false
+    },
+    {
+      "finding_index": 3,
+      "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote": true
+    }
+  ],
+  "semantic_verified": false,
+  "bounded_source_checks": [
+    {
+      "finding_index": 1,
+      "verdict": "annotation_reference_conflict_supported",
+      "evidence": "Authoritative note points to sheet 4; authoritative drawing register assigns the location scheme to sheet 3 and construction views to sheet 4.",
+      "limit": "Editorial question; does not establish a construction defect. Composite table quote is not verbatim."
+    },
+    {
+      "finding_index": 2,
+      "verdict": "standard_designation_conflict_supported",
+      "graphic_block": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+      "graphic_observation": "Root inspected original graphic: node Е and section 4-4 label pipe Ø40x3 with ГОСТ 8732-78. MD register and specification state ГОСТ 8732-2025.",
+      "limit": "No conclusion on legal applicability, material suitability or required standard edition. Position-1 quote is paraphrased."
+    },
+    {
+      "finding_index": 3,
+      "verdict": "insufficient_context_not_refuted",
+      "classic_overlap": [
+        "F-003",
+        "F-022"
+      ],
+      "action": "Preserve as internal retrieval task; bounded missing context does not establish whole-project absence or a need to burden engineer yet.",
+      "limit": "Classic findings are not suppressed or altered. Underlying applicability remains unresolved."
+    }
+  ],
+  "routing_control_pair": {
+    "retain": [
+      1,
+      2
+    ],
+    "defer_for_internal_retrieval": [
+      3
+    ],
+    "all_original_candidates_preserved": true,
+    "engineer_decisions": "not_available_for_these_live_candidates",
+    "acceptance": "Local source-grounded routing control only; not a confirmed historical engineer pair or production acceptance."
+  },
+  "remaining": [
+    "Dimensions: 648 versus 650 has unverified physical basis; no universal tolerance.",
+    "Requirement applicability needs calculation and anchor/base conditions.",
+    "Document links checked by model within this packet; revision consistency unresolved.",
+    "Three graphic blocks remain omitted; no whole-project completeness claim.",
+    "Three non-verbatim quotes need source-addressed wording review before final admission."
+  ]
+}

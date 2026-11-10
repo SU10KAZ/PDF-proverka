@@ -123,3 +123,26 @@ def test_operation_requirement_source_survives_context_recovery(tmp_path):
     assert 'notes' in packet['allowed_source_refs']
     assert any(b['block_id']=='notes' and 'сварные соединения' in b['content'] for b in packet['source_context'])
     assert 'unknown' not in packet['allowed_source_refs']
+
+
+def test_missing_context_question_stays_internal_but_bounded_editorial_question_survives(tmp_path):
+    md=tmp_path/'document.md';md.write_text('## Page 1\n### BLOCK #1 [TEXT]: b\nReference to sheet 4\n')
+    obj={'id':'A','identity':'A','scope':'sheet 4','kind':'assembly','source_refs':['b']}
+    (tmp_path/'02_text_analysis.json').write_text(json.dumps({'object_registry':[obj]}))
+    request=build_object_operation_passes(tmp_path,md)[0]
+    receipts=[{'object_id':'A','operation':op,'status':status,'reason':'Source check','source_refs':['b']}
+        for op,status in [('document_links','checked'),('requirement_applicability','needs_data')]]
+    editorial={'object_id':'A','operation':'document_links','problem':'Wrong sheet reference',
+        'report_section':'questions','evidence':[{'block_id':'b'}]}
+    missing={'object_id':'A','operation':'requirement_applicability','problem':'Need calculation',
+        'report_section':'questions','evidence':[{'block_id':'b'}], 'context_search_completed':True}
+    result=validate_object_operation_payload(request,{'object_operation_results':receipts,'findings':[editorial,missing]})
+    assert [f['problem'] for f in result['findings']]==['Wrong sheet reference']
+    assert result['operation_pending'][0]['finding']==missing
+    assert result['operation_pending'][0]['reason']=='context_search_incomplete'
+    assert not result['operation_pending'][0]['suppressed_as_false']
+    # A model's assertion that search is complete cannot authorize engineer routing.
+    assert missing['context_search_completed']
+    reviewed=validate_object_operation_payload(request,{'object_operation_results':receipts,'findings':[missing]},context_search_exhausted=True)
+    assert reviewed['findings'][0]['problem']=='Need calculation'
+    assert not reviewed['findings'][0]['operation_semantic_verified']

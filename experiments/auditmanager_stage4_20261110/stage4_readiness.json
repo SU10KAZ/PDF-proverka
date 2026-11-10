@@ -127,18 +127,7 @@
     "scope": "Combined stage4 unit/integration suites, classic dedup, Excel import and question routing; no model calls.",
     "boundary": "Not full six-project candidate execution, independent discovery, semantic adjudication or production acceptance."
   },
-  "external_permission_pending": {
-    "pilot": "KM OGM5 expanded continuation",
-    "provider": "Codex CLI",
-    "model": "gpt-6-astra",
-    "payload_chars": 102331,
-    "images": 16,
-    "image_bytes": 4548875,
-    "request_sha256": "50fd281c6afedeae00b34b9be8599acb38551f15c2c93eeacbbdc92d052a49bc",
-    "sent": false,
-    "reason": "Automatic approval review rejected expanded payload; specific user question pending",
-    "manifest": "KM_OGM5_continuation_manifest.json"
-  },
+  "external_permission_pending": null,
   "excel_roundtrip_validation": {
     "tests": [
       "tests/test_import_decisions_excel.py",
@@ -177,9 +166,9 @@
     "full_candidate_runs_started": false,
     "candidate_frozen": false,
     "model_jobs_live": true,
-    "live_job_observation_utc": "2026-11-10T16:22:35.440916+00:00",
+    "live_job_observation_utc": "2026-11-10T16:52:33.111064+00:00",
     "live_job_pid": 3228866,
-    "live_job_scope": "KM source-only inventory; this snapshot is not a live monitor"
+    "live_job_scope": "KM source-only inventory; snapshot not a live monitor"
   },
   "next_required_checks": [
     {
@@ -866,7 +855,16 @@
     },
     "semantic_verified": false,
     "context_loss_fixed": "Operation receipt source_refs are now retained, including general notes. Verified locally; expanded model followup not yet sent.",
-    "continuation_manifest": "KM_OGM5_continuation_manifest.json"
+    "continuation_manifest": "KM_OGM5_continuation_manifest.json",
+    "expanded_continuation": {
+      "status": "completed_once_partial",
+      "assessment": "KM_OGM5_continuation_assessment.json",
+      "duration_ms": 91599,
+      "new_technical_findings": 0,
+      "question_candidates": 2,
+      "internal_context_tasks": 1,
+      "semantic_verified": false
+    }
   },
   "latest_consolidated_execution_snapshot": {
     "stage": 4,
@@ -880,10 +878,50 @@
     "operation_retrieval_diagnosis": "KM_operation_retrieval_diagnosis.json",
     "remaining": [
       "Finish all 14 KM source inventory packets and validate object/source coverage.",
-      "Execute source-bound cross-packet comparisons; do not count retrieved blocks or checked labels as correct conclusions.",
-      "Validate graphic detail recovery and positive/negative controls across hypotheses and disciplines.",
-      "Complete reusable continuation handling for object operation searches, including image budget backlog.",
-      "Freeze the accepted candidate, compare model contribution and output retention, then run six known projects plus new projects before production acceptance."
-    ]
+      "Recover unreadable GRAPHIC details and execute source-bound cross-packet comparisons; model checked labels are not semantic acceptance.",
+      "Connect and test reusable object-operation continuation across the candidate runtime; injected workflow and source-only inventory integration are implemented.",
+      "Resolve pending technical context and wording evidence; preserve confirmed questions separately from internal retrieval tasks.",
+      "Freeze accepted candidate, compare model contribution and output retention, then run six known projects plus new projects before production acceptance."
+    ],
+    "observed_at_utc": "2026-11-10T16:52:33.111064+00:00",
+    "inventory_packets_completed": 11,
+    "inventory_packets_total": 14,
+    "inventory_live_pid": 3228866
+  },
+  "historical_versions": [
+    {
+      "superseded_at": "2026-11-10T16:52:33.096879+00:00",
+      "external_permission_pending": {
+        "pilot": "KM OGM5 expanded continuation",
+        "provider": "Codex CLI",
+        "model": "gpt-6-astra",
+        "payload_chars": 102331,
+        "images": 16,
+        "image_bytes": 4548875,
+        "request_sha256": "50fd281c6afedeae00b34b9be8599acb38551f15c2c93eeacbbdc92d052a49bc",
+        "sent": false,
+        "reason": "Automatic approval review rejected expanded payload; specific user question pending",
+        "manifest": "KM_OGM5_continuation_manifest.json"
+      },
+      "reason": "User approved exact expanded OGM5 package; single request completed."
+    }
+  ],
+  "object_operation_workflow": {
+    "implementation": "backend/app/pipeline/stages/prepare/object_operation_workflow.py",
+    "control": "KM_OGM5_workflow_replay.json",
+    "local_tests_passed": 18,
+    "prepared_exact_same_expanded_request": true,
+    "default_provider": null,
+    "runtime_automatic_dispatch_integrated": false
+  },
+  "inventory_enrichment_integration": {
+    "implementation": "backend/app/pipeline/stages/text_analysis/inventory_enrichment.py",
+    "entrypoint": "backend/app/pipeline/stages/text_analysis/runner.py::run_text_analysis",
+    "default_enabled": false,
+    "local_tests_passed": 19,
+    "real_replay": "KM_inventory_enrichment_replay.json",
+    "classic_text_candidates_preserved": 10,
+    "inventory_candidates_added": 4,
+    "full_candidate_audit_executed": false
   }
 }

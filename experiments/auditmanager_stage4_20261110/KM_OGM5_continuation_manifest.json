@@ -111,12 +111,15 @@
   "new_calls": 1,
   "automatic_retries": 0,
   "history_or_engineer_answers_sent": false,
-  "request_sent": false,
+  "request_sent": true,
   "cost": "Codex subscription quota; monetary maximum unknown",
-  "dispatch_status": "automatic_approval_rejected_specific_expanded_payload_confirmation_pending",
+  "dispatch_status": "completed_once",
   "previous_context_preserved": true,
   "previous_images_preserved": true,
   "all_previous_omitted_images_now_attached": true,
   "missing_notes_now_supplied": true,
-  "prepared_request_path": "/tmp/auditmanager_km_ogm5_continuation_20261110/request.json"
+  "prepared_request_path": "/tmp/auditmanager_km_ogm5_continuation_20261110/request.json",
+  "model_error": false,
+  "user_approval": "Разрешаю расширенный пакет ОГМ 5",
+  "assessment": "KM_OGM5_continuation_assessment.json"
 }

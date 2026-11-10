@@ -113,6 +113,11 @@ page/sheet when established, evidence with exact block_id, and report_section:
 technical_findings for confirmed technical conflicts, questions for conditional,
 minor editorial or out-of-profile clarifications. Separate questions
 from proven conflicts in the wording; never invent a norm or universal tolerance.
+Missing context in this bounded packet is an internal retrieval task, not by itself
+an engineer question. Return needs_data and context_queries. A confirmed minor or
+out-of-profile question during an unresolved operation must state question_basis
+(minor_confirmed/outside_profile) and profile_reason grounded in supplied sources.
+Use quote only for an exact source substring; describe paraphrases as description.
 Preserve all listed operations, even those that remain unresolved. Do not declare
 whole-project coverage or silently add an operation outside the supplied list.'''
         passes.append(CodexTargetedPass('object_operations_'+key,'03_object_operations_'+key+'.json',
@@ -125,7 +130,7 @@ whole-project coverage or silently add an operation outside the supplied list.''
     return passes
 
 
-def validate_object_operation_payload(request,payload):
+def validate_object_operation_payload(request,payload, *, context_search_exhausted=False):
     packet=json.loads(request.messages[-1]['content'])
     obj=packet['object']; allowed=packet['allowed_source_refs']
     operations={r['operation'] for r in packet['operations']}
@@ -149,12 +154,20 @@ def validate_object_operation_payload(request,payload):
     coverage=reconcile_object_registry({'object_registry':[obj],'object_operation_results':receipts},
                                        set(obj['source_refs'])|set(allowed))
     accepted,pending=[],[]
+    statuses={r['operation']:r['status'] for r in coverage['operations']}
     items=payload.get('findings',[])
     for finding in items if isinstance(items,list) else []:
         valid=isinstance(finding,dict) and finding.get('object_id')==obj['id'] and isinstance(finding.get('operation'),str) and finding['operation'] in operations
         evidence=finding.get('evidence') if isinstance(finding,dict) else None
         if not valid or not isinstance(evidence,list) or not any(isinstance(e,dict) and e.get('block_id') in allowed for e in evidence):
             pending.append({'finding':finding,'reason':'unaddressed_operation_or_evidence'})
+        elif (finding.get('report_section')=='questions'
+              and statuses.get(finding['operation']) in ('needs_data','not_checked')
+              and not context_search_exhausted
+              and not (finding.get('question_basis') in ('minor_confirmed','outside_profile')
+                       and isinstance(finding.get('profile_reason'),str) and finding['profile_reason'].strip())):
+            pending.append({'finding':finding,'reason':'context_search_incomplete',
+                            'next_action':'retrieve_sources_then_review','suppressed_as_false':False})
         else:
             accepted.append({**finding,'operation_semantic_verified':False})
     return {**payload,'object_operation_results':receipts,'findings':accepted,'operation_pending':pending,'operation_coverage':coverage,
