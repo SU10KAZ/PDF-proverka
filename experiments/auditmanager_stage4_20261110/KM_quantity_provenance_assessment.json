@@ -1,0 +1,173 @@
+{
+  "scope": "Same-context known-control comparison; one request per variant, not blind or full-audit acceptance.",
+  "previous_failure": "KM_LK6_quantity_assessment.json",
+  "new_status": "bounded_negative_control_passed",
+  "source_rows_checked": [
+    {
+      "source_block": "blk_b2ea5b80b2d4480e907cb019c19a01f0",
+      "column_index_zero_based": 9,
+      "column_header": "Количество",
+      "literal_cell": "24",
+      "source_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10x90",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "24"
+      ],
+      "model_cell_matches_MD": true
+    },
+    {
+      "source_block": "blk_a691961445f147298f9cdc1cb0d29fce",
+      "column_index_zero_based": 9,
+      "column_header": "Количество",
+      "literal_cell": "24",
+      "source_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10х90",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "24"
+      ],
+      "model_cell_matches_MD": true
+    },
+    {
+      "source_block": "blk_4e4e96f61e414814a73cc4d46c2d0ffa",
+      "column_index_zero_based": 9,
+      "column_header": "Количество",
+      "literal_cell": "32",
+      "source_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10x90",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "32"
+      ],
+      "model_cell_matches_MD": true
+    },
+    {
+      "source_block": "blk_ba972bbe49b944208eba2b5a9161faa9",
+      "column_index_zero_based": 9,
+      "column_header": "Количество",
+      "literal_cell": "",
+      "source_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10x90",
+        "",
+        "",
+        "",
+        "28",
+        "",
+        ""
+      ],
+      "model_cell_matches_MD": true
+    },
+    {
+      "source_block": "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+      "column_index_zero_based": 9,
+      "column_header": "Количество",
+      "literal_cell": "12",
+      "source_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10x90",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "12"
+      ],
+      "model_cell_matches_MD": true
+    },
+    {
+      "source_block": "blk_40c82b814ff7491eae9f712e2b0c108f",
+      "column_index_zero_based": 9,
+      "column_header": "Количество",
+      "literal_cell": "12",
+      "source_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10x90",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "12"
+      ],
+      "model_cell_matches_MD": true
+    },
+    {
+      "source_block": "blk_e587f49a7bce4c7bac350d00c17ba616",
+      "column_index_zero_based": 9,
+      "column_header": "Количество",
+      "literal_cell": "",
+      "source_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10x90",
+        "",
+        "",
+        "28",
+        "",
+        "",
+        ""
+      ],
+      "model_cell_matches_MD": true
+    },
+    {
+      "source_block": "blk_1ab59db7d11b4521a1cd065b1ff8812b",
+      "column_index_zero_based": 9,
+      "column_header": "Количество",
+      "literal_cell": "28",
+      "source_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10x90",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "28"
+      ],
+      "model_cell_matches_MD": true
+    }
+  ],
+  "known_anchor_subtotal": 172,
+  "unknown_anchor_terms": [
+    "blk_ba972bbe49b944208eba2b5a9161faa9",
+    "blk_e587f49a7bce4c7bac350d00c17ba616"
+  ],
+  "false_confirmed_228_removed": true,
+  "repeated_OGM22_25_instances_retained": true,
+  "useful_marking_conflict_retained": true,
+  "quantity_clarification_emitted": false,
+  "remaining_positive_control_work": "Resolve applicable anchor detail or preserve a justified quantity clarification; final output path still pending.",
+  "new_geometry_candidate": "50 mm plan/section level difference: literal values visually checked, common surface basis/applicability and classic duplication not yet established.",
+  "enforcement_boundary": "Prompt instruction plus this source-cell evaluation; no general deterministic semantic enforcement for all quantities.",
+  "causal_boundary": "Same source context and model, changed generic quantity instruction; single stochastic observation.",
+  "full_acceptance_proven": false
+}
