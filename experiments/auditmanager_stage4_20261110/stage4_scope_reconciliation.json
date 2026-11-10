@@ -72,8 +72,8 @@
       "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM",
       "session": 60228,
       "expected_answer_hidden": true,
-      "detail": "3/5 extraction packets completed. Table extracted, target graphic still unreadable. Same-source four-tile recovery running without expected circuit marks.",
-      "graphic_recovery_session": 28612
+      "detail": "4/5 inventory packets completed. First four-tile recovery completed51objects but no required circuit marks; source balance not proved. New8x3grid covers entire same graphic; branch extraction running without expected marks.",
+      "graphic_recovery_session": 38419
     },
     {
       "hypothesis": "H06",
@@ -101,6 +101,12 @@
       ],
       "detail": "Two live Astra calls completed. Actual source links reviewed;49classic findings preserved,0newfindings. Final needs_data receipt survives export accounting. TEXT УЧ/graphic У4 correspondence remains unresolved; no automatic rename or suppression. Historical positive/negative filter pair unproved.",
       "session": null
+    },
+    {
+      "hypothesis": "H02",
+      "state": "real_AR_context_hop_and_question_candidate_preserved",
+      "evidence": "AR_deferred_assessment.json",
+      "detail": "Required upper roof found by model queries and attached;2Astra calls completed. Source_refs/evidence mismatch repaired and replayed without calls;22baseline preserved plus1question candidate. Not proof of excess third aerator; final verifier/export acceptance pending."
     }
   ]
 }
