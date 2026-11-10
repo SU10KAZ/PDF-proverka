@@ -14,7 +14,7 @@ from ..findings_verify.source_review_evidence import evidence_digest
 
 def prepare_object_operation_continuation(original, response, sources, images, md, *,
         expected_request_sha256, expected_md_sha256, original_image_hashes,
-        graph=None, max_images=16, max_source_chars=95000,
+        original_image_bindings=None, graph=None, max_images=16, max_source_chars=95000,
         max_message_chars=120000, max_image_bytes=24000000, max_revisions=3):
     if evidence_digest(original)!=expected_request_sha256:
         raise ValueError('Original request changed')
@@ -29,10 +29,19 @@ def prepare_object_operation_continuation(original, response, sources, images, m
     old_ids=packet['attached_image_ids_in_order']
     if len(old_ids)!=len(original['image_paths']) or len(old_ids)>max_images:
         raise ValueError('Cannot preserve original graphics')
-    for bid,path in zip(old_ids,original['image_paths'],strict=True):
-        if bid not in images or str(Path(images[bid]['path']).resolve())!=str(Path(path).resolve()):
+    # Ordered executor-owned bindings preserve several detail tiles of one block.
+    # Block IDs remain evidence IDs; a tile never becomes another physical object.
+    old_bindings = original_image_bindings
+    if old_bindings is None:
+        old_bindings = [dict(images.get(bid, {}), block_id=bid,
+                             sha256=original_image_hashes.get(bid)) for bid in old_ids]
+    if len(old_bindings) != len(old_ids):
+        raise ValueError('Original image binding count changed')
+    for bid,path,bound in zip(old_ids,original['image_paths'],old_bindings,strict=True):
+        if (bid not in images or bound.get('block_id') != bid
+                or str(Path(bound.get('path', '')).resolve()) != str(Path(path).resolve())):
             raise ValueError('Original image binding changed')
-        if hashlib.sha256(Path(path).read_bytes()).hexdigest()!=original_image_hashes.get(bid):
+        if hashlib.sha256(Path(path).read_bytes()).hexdigest()!=bound.get('sha256'):
             raise ValueError('Original image bytes changed')
     headers=list(re.finditer(r'^###[ \t]+BLOCK[^\n]*?\[([^]]+)\]:[ \t]*(\S+)[^\n]*$',md,re.M|re.I))
     if len({h.group(2) for h in headers})!=len(headers):
@@ -93,7 +102,7 @@ def prepare_object_operation_continuation(original, response, sources, images, m
         if bid not in images or len(attached)>=max_images:
             omitted.append({'block_id':bid,'reason':'image_unavailable_or_budget'});continue
         attached.append(bid)
-    bindings = [images[bid] for bid in attached]
+    bindings = list(old_bindings) + [images[bid] for bid in attached[len(old_ids):]]
     for im in bindings:
         if hashlib.sha256(Path(im['path']).read_bytes()).hexdigest()!=im['sha256']:
             raise ValueError('Graphic version changed')
@@ -116,7 +125,7 @@ def prepare_object_operation_continuation(original, response, sources, images, m
         packet['allowed_source_refs'] = sorted(
             {bid for bid,b in context.items() if b['kind'] in ('TEXT','TABLE')} | set(attached))
         packet['omitted'] = omitted
-        bindings = [images[bid] for bid in attached]
+        bindings = list(old_bindings) + [images[bid] for bid in attached[len(old_ids):]]
         request={'messages':[original['messages'][0],{'role':'user','content':json.dumps(packet,ensure_ascii=False)}],
                  'image_paths':[im['path'] for im in bindings]}
         chars=sum(len(m['content']) for m in request['messages'])

@@ -12,16 +12,33 @@ from ..findings_verify.source_review_evidence import evidence_digest
 from .object_operation_continuation import prepare_object_operation_continuation
 
 
-def freeze_operation_sources(md_path, crops, files, graph):
+def freeze_operation_sources(md_path, crops, files, graph, *, detail_tiles=()):
     images={};base=Path(crops).resolve()
     for bid,name in files.items():
         if not isinstance(bid,str) or not isinstance(name,str):continue
         path=(base/name).resolve()
         if path.is_relative_to(base) and path.is_file():
             images[bid]={'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+    details = []
+    for tile in detail_tiles:
+        path = Path(tile['path']).resolve()
+        if tile['block_id'] not in images:
+            raise ValueError('Detail tile has no bound source block')
+        if hashlib.sha256(path.read_bytes()).hexdigest() != tile['sha256']:
+            raise ValueError('Detail tile bytes changed')
+        details.append({'block_id':tile['block_id'], 'path':str(path), 'sha256':tile['sha256']})
     path=Path(md_path).resolve()
     return {'md_path':str(path),'md_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
-        'images':images,'graph':graph}
+        'images':images,'graph':graph, **({'detail_images':details} if details else {})}
+
+
+
+def _bound_attachment(binding, bid, path):
+    canonical = binding['images'][bid]
+    for image in [dict(canonical, block_id=bid), *binding.get('detail_images', [])]:
+        if image['block_id'] == bid and Path(path).resolve() == Path(image['path']).resolve():
+            return image
+    raise ValueError('image_path_changed')
 
 
 def verify_operation_source_binding(request):
@@ -33,8 +50,10 @@ def verify_operation_source_binding(request):
             return 'md_version_changed'
         packet=json.loads(request.messages[-1]['content'])
         for bid,path in zip(packet['attached_image_ids_in_order'],request.image_paths,strict=True):
-            image=binding['images'][bid]
-            if Path(path).resolve()!=Path(image['path']).resolve():return 'image_path_changed'
+            try:
+                image=_bound_attachment(binding,bid,path)
+            except ValueError:
+                return 'image_path_changed'
             if hashlib.sha256(Path(path).read_bytes()).hexdigest()!=image['sha256']:return 'image_bytes_changed'
     except (OSError,ValueError,KeyError,TypeError):
         return 'source_binding_unusable'
@@ -59,10 +78,12 @@ def build_object_operation_followup(request, raw_payload):
             'content':md[h.start():headers[i+1].start() if i+1<len(headers) else len(md)]}
             for i,h in enumerate(headers)}
         original={'messages':request.messages,'image_paths':[str(p) for p in request.image_paths]}
+        old_images=[_bound_attachment(binding,bid,path) for bid,path in
+            zip(packet['attached_image_ids_in_order'],request.image_paths,strict=True)]
         hashes={bid:binding['images'][bid]['sha256'] for bid in packet['attached_image_ids_in_order']}
         prepared=prepare_object_operation_continuation(original,raw_payload,sources,binding['images'],md,
             expected_request_sha256=evidence_digest(original),expected_md_sha256=binding['md_sha256'],
-            original_image_hashes=hashes,graph=binding['graph'])
+            original_image_hashes=hashes,original_image_bindings=old_images,graph=binding['graph'])
         receipt={k:v for k,v in prepared.items() if k not in ('request','images','searches')}
         if prepared['status']!='prepared':return None,receipt
         next_request=prepared['request'];next_packet=json.loads(next_request['messages'][-1]['content'])

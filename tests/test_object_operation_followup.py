@@ -82,3 +82,55 @@ def test_dispatch_binding_checks_text_and_image_bytes(tmp_path):
     assert verify_operation_source_binding(request)=='image_bytes_changed'
     md.write_text(md.read_text()+'changed')
     assert verify_operation_source_binding(request)=='md_version_changed'
+
+
+def test_tiled_graphic_followup_preserves_each_frozen_tile_and_adds_sources(tmp_path):
+    from dataclasses import replace
+    import hashlib
+    from backend.app.pipeline.stages.prepare.object_operation_followup import (
+        freeze_operation_sources, verify_operation_source_binding)
+    request, payload, md = setup_case(tmp_path)
+    graphic = '### BLOCK #3 [GRAPHIC]: g\nPrimary diagram\n'
+    md.write_text(md.read_text() + graphic + '### BLOCK #4 [GRAPHIC]: h\nCounterpart view\n')
+    paths = {}
+    for name in ('g', 'h', 'tile1', 'tile2'):
+        paths[name] = tmp_path/(name+'.png')
+        paths[name].write_bytes(name.encode())
+    tiles = [{'block_id':'g', 'path':str(paths[name]),
+              'sha256':hashlib.sha256(paths[name].read_bytes()).hexdigest()}
+             for name in ('tile1', 'tile2')]
+    binding = freeze_operation_sources(md, tmp_path, {'g':'g.png', 'h':'h.png'}, None,
+                                      detail_tiles=tiles)
+    packet = json.loads(request.messages[-1]['content'])
+    packet['source_context'].append({'block_id':'g', 'kind':'GRAPHIC', 'content':graphic})
+    packet['allowed_source_refs'].append('g')
+    packet['attached_image_ids_in_order'] = ['g', 'g']
+    request = replace(request, messages=[request.messages[0], {'role':'user','content':json.dumps(packet)}],
+                      image_paths=(paths['tile1'], paths['tile2']), continuation_source=binding)
+    assert verify_operation_source_binding(request) is None
+    followup, receipt = build_object_operation_followup(request, payload)
+    assert receipt['status'] == 'prepared'
+    assert [str(p) for p in followup.image_paths] == [str(paths[n]) for n in ('tile1','tile2','h')]
+    next_packet = json.loads(followup.messages[-1]['content'])
+    assert next_packet['attached_image_ids_in_order'] == ['g','g','h']
+    assert set(next_packet['allowed_source_refs']) == {'a','b','g','h'}
+    assert verify_operation_source_binding(followup) is None
+    assert build_object_operation_followup(followup, payload)[1]['status'] == 'no_additional_sources'
+    paths['tile2'].write_bytes(b'changed tile')
+    assert verify_operation_source_binding(followup) == 'image_bytes_changed'
+    blocked, receipt = build_object_operation_followup(request, payload)
+    assert blocked is None and 'image bytes changed' in receipt['reason']
+
+
+def test_detail_tiles_require_existing_source_and_expected_bytes(tmp_path):
+    import hashlib
+    import pytest
+    from backend.app.pipeline.stages.prepare.object_operation_followup import freeze_operation_sources
+    md = tmp_path/'document.md'; md.write_text('source')
+    image = tmp_path/'image.png'; image.write_bytes(b'original')
+    tile = {'block_id':'g', 'path':str(image), 'sha256':hashlib.sha256(b'original').hexdigest()}
+    with pytest.raises(ValueError, match='no bound source block'):
+        freeze_operation_sources(md, tmp_path, {}, None, detail_tiles=[tile])
+    tile['sha256'] = 'wrong'
+    with pytest.raises(ValueError, match='bytes changed'):
+        freeze_operation_sources(md, tmp_path, {'g':'image.png'}, None, detail_tiles=[tile])
