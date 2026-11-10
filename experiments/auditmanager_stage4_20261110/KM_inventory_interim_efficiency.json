@@ -1,0 +1,92 @@
+{
+  "scope": "First five KM packets only; unfinished known-project control, not blind comparative acceptance",
+  "packets": [
+    {
+      "packet": "object_inventory_000",
+      "result_sha256": "ea3b192a606eaac93544a3a813ba4dce8e897a2a4522da8a457b7efade534821",
+      "objects": 22,
+      "operation_rows": 110,
+      "unresolved_operations": 89,
+      "findings": 3,
+      "duration_ms": 590802,
+      "input_tokens": 27976,
+      "output_tokens": 29235
+    },
+    {
+      "packet": "object_inventory_001",
+      "result_sha256": "775b5bd25add143a64fc6e6b79f43417c8b5551009953a4eddb54049d8a7cafc",
+      "objects": 16,
+      "operation_rows": 80,
+      "unresolved_operations": 62,
+      "findings": 0,
+      "duration_ms": 419315,
+      "input_tokens": 23942,
+      "output_tokens": 20669
+    },
+    {
+      "packet": "object_inventory_002",
+      "result_sha256": "b4479cd0d375f7766c60cec7d7569b6401a972740201443d518881575840872a",
+      "objects": 37,
+      "operation_rows": 185,
+      "unresolved_operations": 161,
+      "findings": 0,
+      "duration_ms": 695683,
+      "input_tokens": 21314,
+      "output_tokens": 34544
+    },
+    {
+      "packet": "object_inventory_003",
+      "result_sha256": "6d7b7a4776d5d514cf77aeaf48730987e108f4f76c98ca266cb8e50083333ea9",
+      "objects": 17,
+      "operation_rows": 85,
+      "unresolved_operations": 68,
+      "findings": 0,
+      "duration_ms": 392135,
+      "input_tokens": 20683,
+      "output_tokens": 19298
+    },
+    {
+      "packet": "object_inventory_004",
+      "result_sha256": "acc697d473d22e3253326d275a83226da7ab7803748ffcb10d4c8df77b3c504e",
+      "objects": 19,
+      "operation_rows": 95,
+      "unresolved_operations": 85,
+      "findings": 0,
+      "duration_ms": 409378,
+      "input_tokens": 20844,
+      "output_tokens": 20143
+    }
+  ],
+  "totals": {
+    "objects": 111,
+    "operation_rows": 555,
+    "unresolved_operations": 465,
+    "findings": 3,
+    "duration_ms": 2507313,
+    "input_tokens": 114759,
+    "output_tokens": 123889
+  },
+  "unresolved_operation_share": 0.8378378378378378,
+  "observations": [
+    "111 packet-local object records are not 111 unique objects.",
+    "465 of 555 operation rows remain unresolved; reported checked rows are not semantically certified.",
+    "Three raw findings occur in packet000; two overlap known classic KM findings F-012/F-021, third has unresolved usefulness. No incremental technical recall is established.",
+    "Measured durations are provider-call durations; subscription monetary cost unknown. Actual hidden transient retry count in the running process is not proven."
+  ],
+  "next_design_hypothesis": {
+    "proposal": "Separate source inventory from cross-source operations: extract objects/evidence first, initialize required operation ledger deterministically, then evaluate operations using retrieved counterparts.",
+    "reason": "Repeated five-operation responses per object in small packets mostly report missing counterparts.",
+    "not_authorized_as_acceptance_shortcut": "Must retain every object and required operation, recover actual graphic detail, execute comparisons, and prove output retention. Do not count deterministic ledger initialization as performed checks.",
+    "verification": "Compare same frozen sources and operation obligations with current full inventory baseline; measure recovered useful findings, source coverage, errors, unclosed checks, tokens and time.",
+    "implemented": false,
+    "current_run_changed": false
+  },
+  "regression": {
+    "tested_commit": "ad3427fa734a61d60963f3b486a0c3eae0a11b08",
+    "passed": 136,
+    "scope": "Object registry, inventory, identity, operations, recovery, source review, requirement/quantity checks and report question section",
+    "quality_acceptance": false
+  },
+  "stage4_complete": false,
+  "stage5_complete": false
+}
