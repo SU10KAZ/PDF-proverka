@@ -6,7 +6,7 @@
     {
       "id": "H01",
       "status": "partial",
-      "verified_or_implemented_scope": "One AK defect recovered and survives deterministic verifier; eight duplicate links restored.",
+      "verified_or_implemented_scope": "One AK defect recovered and survives deterministic verifier; eight duplicate links restored. Corrected six-project lineage replay with full runtime block index resolves all 308 candidate block-reference occurrences; previous replay falsely classified TEXT IDs as unresolved. Semantic claim review remains pending.",
       "remaining": "Source-evidence semantic review for EOM and coverage of every unresolved candidate remain incomplete.",
       "evidence": [
         {
@@ -20,6 +20,10 @@
         {
           "path": "experiments/auditmanager_stage4_20261110/duplicate_link_repair_pilot.json",
           "sha256": "02c18f7b5f817dc5858041d4462eebfe31774995a5c6e1ddfda20f64e70d8b02"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/complete_source_lineage_replay.json",
+          "sha256": "724c184364b9feea99b7c1a4b162cd8ed5a58368822b2eedf701107f1efafb7d"
         }
       ]
     },
