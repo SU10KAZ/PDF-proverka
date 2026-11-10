@@ -10,6 +10,11 @@ from pathlib import Path
 
 def summarize():
     directories = [
+        ('KM_bent_handrail_detail', Path('/tmp/auditmanager_km_bent_handrail_detail_20261111')),
+        ('AR_rope_operation', Path('/tmp/auditmanager_ar_rope_operations_20261111/O27')),
+        ('AR_rope_context1', Path('/tmp/auditmanager_ar_rope_operations_20261111/O27/context_1')),
+        ('KM_bent_handrail', Path('/tmp/auditmanager_km_geometry_operations_20261110/p4_19')),
+        *[(f'AR_roof_source_{step}_{phase}', Path('/tmp/auditmanager_ar_roof_question_source_workflow_20261111/F-024') / f'{step:02d}_{phase}') for step,phase in [*[(i,'review') for i in range(5)],(5,'adjudication')]],
         ('AR_source_navigation', Path('/tmp/auditmanager_ar_source_navigation_20261111')),
         ('AR_selected_sources', Path('/tmp/auditmanager_ar_selected_source_operations_20261111')),
         ('AR_terminal_navigation_v2', Path('/tmp/auditmanager_ar_roof_disposition_navigation_v2_20261111')),
