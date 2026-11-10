@@ -159,6 +159,9 @@ out-of-profile question during an unresolved operation must state question_basis
 Use quote only for an exact source substring; describe paraphrases as description.
 Preserve all listed operations, even those that remain unresolved. Do not declare
 whole-project coverage or silently add an operation outside the supplied list.'''
+        if any(operation['operation'] == 'quantity_balance' for operation in operations):
+            from .quantity_provenance import QUANTITY_PROVENANCE_INSTRUCTIONS
+            instructions += QUANTITY_PROVENANCE_INSTRUCTIONS
         passes.append(CodexTargetedPass('object_operations_'+key,'03_object_operations_'+key+'.json',
             [{'role':'system','content':instructions},{'role':'user','content':json.dumps(packet,ensure_ascii=False)}],tuple(images),continuation_source=continuation_source))
         planned.append({'object_id':obj['id'],'stage':passes[-1].stage,'operations':[r['operation'] for r in operations],'omitted':omitted})
