@@ -10,6 +10,8 @@ from backend.app.pipeline.stages.text_analysis.requirement_checks import authori
 
 
 def prepare_source_review_request(queue, finding, md, *, max_images=8):
+    from .source_review_bundle import verify_source_review_bundle
+    verify_source_review_bundle(queue)
     md_hash = hashlib.sha256(md.encode()).hexdigest()
     if md_hash != queue.get('source_md_sha256'):
         raise ValueError('source_version_changed')
@@ -65,6 +67,9 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
                'display_fields': {k: finding.get(k) for k in ('risk', 'consequence', 'severity', 'norm', 'norm_quote') if finding.get(k) not in (None, '')},
                'finding_purpose': {k:finding.get(k) for k in ('report_section','question_basis','profile_reason','engineer_action_required')},
                'upstream_operation_contexts': packet.get('upstream_operation_contexts', []),
+               'source_catalogue': queue.get('source_catalogue', []),
+               'source_origins': {bid: origin for bid, origin in queue.get('source_origins', {}).items()
+                                  if bid in {s['block_id'] for s in packet['sources']} | {im['block_id'] for im in images}},
                'original_claims': claims, 'authoritative_text': packet['sources'],
                'graphic_metadata': metadata,
                'images_in_attachment_order': [{k: v for k, v in im.items() if k != 'path'} for im in images],
@@ -75,6 +80,9 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
     instruction = '''Review only the supplied claims, authoritative TEXT and attached images.
 Do not access files, tools, web, historical reviews or evaluation answers.
 Separate each substantive claim and preserve uncertainty.
+When source_catalogue is present, source_origins maps each scoped block ID to its
+original document and version. Cite the scoped IDs. Keep document versions and
+physical executions separate; shared names or marks do not prove applicability.
 Preserve the finding's purpose and modality. A question about an actionable source
 ambiguity is not an assertion of a proven physical defect. Check the factual
 premises, conditional calculation, decision affected, and remaining uncertainty.
