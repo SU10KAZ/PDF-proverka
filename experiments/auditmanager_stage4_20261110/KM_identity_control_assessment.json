@@ -1,0 +1,57 @@
+{
+  "request_sha256": "665dcf9461cbfa1a429f1d32f4095b39d750c544a6521a998ba2e0a48ac04b73",
+  "model": "claude/claude-sonnet-5-5",
+  "duration_ms": 456480,
+  "input_tokens": 34318,
+  "output_tokens": 60644,
+  "returned_pairs": 14,
+  "pairs_with_contract_errors": [
+    "P002",
+    "P004",
+    "P009",
+    "P010",
+    "P013",
+    "P014"
+  ],
+  "pairs_without_contract_errors": 8,
+  "semantic_verified": false,
+  "automatic_merges": 0,
+  "technical_findings_reported": 0,
+  "questions_reported": 3,
+  "raw_response_preserved": true,
+  "model_hashes_repaired": false,
+  "findings_assessment": [
+    {
+      "index": 0,
+      "status": "known_overlap_not_new_unique",
+      "classic_finding": "KM F-012",
+      "scope": "Discrepant level lists; no claim of physically absent railing. Prior packet000 local graphic control verifies the narrow conflict. Full new wording and routing remain unaccepted."
+    },
+    {
+      "index": 1,
+      "status": "question_needs_profile_review",
+      "reason": "Range notation versus sheet title; bounded absence of OGM7 does not prove missing project execution."
+    },
+    {
+      "index": 2,
+      "status": "editorial_question",
+      "reason": "Exact authoritative MD stamp values differ; no technical defect or quantity consequence proven."
+    }
+  ],
+  "ogm6_scope_review": {
+    "claude_claim": "Earlier inventory statement that OGM6 was not placed on plans is wrong.",
+    "original_object": "object_inventory_001:A6",
+    "original_scope": "Исполнение без размещения в предоставленных планах",
+    "typical_plan_block": "blk_9dbddaba8e334be3ab857afe48df76ec",
+    "typical_plan_supplied_to_packet001": false,
+    "typical_plan_supplied_to_packet000": true,
+    "visual_check": "OGM6 leader present at lower left of the typical plan.",
+    "conclusion": "Additional cross-packet context, not a demonstrated error in the original bounded statement. Do not score this as a corrected Astra false negative.",
+    "repair": "Future identity requests include original extraction source boundaries; existing authorized request unchanged."
+  },
+  "next_steps": [
+    "Review remaining relationship semantics with matching endpoints and scope.",
+    "Preserve invalid evidence as unresolved; do not auto-correct copied hashes or merge objects.",
+    "Repeat only a prepared necessary follow-up under applicable permissions; no call automatically scheduled."
+  ]
+}

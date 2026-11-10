@@ -20,7 +20,11 @@
   "automatic_retries": 0,
   "cost": "Subscription quota; monetary maximum unknown",
   "scope": "All lexical candidates from first two KM inventory packets; not full-project acceptance",
-  "dispatch_status": "automatic_approval_rejected_specific_payload_confirmation_pending",
-  "request_sent": false,
-  "attempt_exists": false
+  "dispatch_status": "completed_after_specific_user_approval",
+  "request_sent": true,
+  "attempt_exists": true,
+  "model_error": false,
+  "duration_ms": 456480,
+  "contract_accepted": false,
+  "semantic_verified": false
 }

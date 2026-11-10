@@ -7,9 +7,19 @@ import re
 
 def prepare_object_identity_request(objects, pairs, source_requests, *, max_images=8, max_chars=120000):
     objects={o['id']:o for o in objects}
-    blocks={};images={}
+    blocks={};images={};boundaries={}
     for request in source_requests:
         payload=json.loads(request['messages'][1]['content'])
+        packet_index=payload.get('packet_index')
+        if isinstance(packet_index,int) and not isinstance(packet_index,bool) and packet_index>=0:
+            packet_id=f'object_inventory_{packet_index:03d}'
+            boundary={'packet_id':packet_id,
+                'supplied_block_ids':[b['block_id'] for b in payload['source_blocks']],
+                'supplied_graphic_block_ids':[b['block_id'] for b in payload['images_in_attachment_order']],
+                'whole_project_context_supplied':False}
+            if packet_id in boundaries and boundaries[packet_id]!=boundary:
+                raise ValueError('conflicting_extraction_boundaries')
+            boundaries[packet_id]=boundary
         for block in payload['source_blocks']:
             bid=block['block_id']
             if bid in blocks and blocks[bid]!=block:raise ValueError('conflicting_source_blocks')
@@ -30,10 +40,14 @@ def prepare_object_identity_request(objects, pairs, source_requests, *, max_imag
     omitted=[bid for bid in sorted(source_ids) if blocks[bid]['kind'] in ('IMAGE','GRAPHIC') and bid not in images]
     if len(required_images)>max_images:raise ValueError('pair_image_budget_exceeded_split_request')
     payload={'candidate_objects_untrusted':[objects[oid] for oid in sorted(object_ids)],'requested_pairs':requested,
+        'candidate_extraction_boundaries':[
+            {'object_id':oid,'boundary':boundaries.get(oid.split(':',1)[0]),
+             'boundary_known':oid.split(':',1)[0] in boundaries} for oid in sorted(object_ids)],
         'source_blocks':[blocks[bid] for bid in sorted(source_ids)],
         'images_in_attachment_order':[{k:v for k,v in im.items() if k!='path'} for im in required_images],
         'unavailable_graphics':omitted,'whole_project_context_supplied':False}
     instructions='''Check every requested pair against supplied source blocks and images. The object registry is an untrusted extraction, not evidence. No tools, files, web, historical findings or engineer answers. TEXT/TABLE is authoritative; graphic summaries are navigation only. Inspect actual attached graphics.
+Each object's extraction boundary records only sources available to its original inventory pass. A statement about missing context in that bounded pass is not a project-wide absence claim. New context may resolve it without proving the earlier extraction wrong. Boundary IDs are navigation metadata, not additional source evidence; do not claim to have inspected blocks not supplied here. Unknown boundaries remain unknown.
 Return JSON: pair_reviews and findings. Every pair_review: pair_id, relation (same_instance/type_instance/same_type/different/unresolved), reason, evidence, checks. Evidence TEXT: {type:"text",block_id,quote}; exact supplied quote. Evidence IMAGE: {type:"image",block_id,image_sha256,bbox_norm_xyxy:[left,top,right,bottom],observation}. Each check: operation (identity/quantity/dimensions/document_links), status (consistent/conflict/needs_data/not_applicable), reason, evidence. Preserve unknowns and missing counterpart data; do not infer absence from this bounded packet. If needed add context_queries with literal marks, short phrases or exact sheet references.
 Match section, location, elevation, instance, type and revision before comparing. A type-to-instance relation is not identity of two physical objects. Similar marks in different sections do not prove identity. Compare dimensions only with matching endpoints and physical meaning, and do not count repeated views as additional pieces. Describe explicit operations and observations. Do not merge registry entries.
 Findings must have problem,description,solution,report_section (technical_findings/questions),pair_ids,evidence. Only source-supported discrepancies are technical findings; missing context remains an internal task. Keep minor verified editorial questions separate. Norms, geometric interpretation and universal tolerances must not be invented. Return all requested pairs even if unresolved; do not produce findings just to fill the list.

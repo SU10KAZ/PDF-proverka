@@ -1,0 +1,30 @@
+{
+  "errors": [
+    "pair_1:missing_left_object_id_evidence",
+    "pair_1:check_2:evidence_required",
+    "pair_3:missing_left_object_id_evidence",
+    "pair_8:missing_left_object_id_evidence",
+    "pair_9:evidence_0:image_not_supplied_or_hash_changed",
+    "pair_9:missing_left_object_id_evidence",
+    "pair_9:missing_right_object_id_evidence",
+    "pair_9:check_0:evidence_0:image_not_supplied_or_hash_changed",
+    "pair_9:check_0:evidence_1:image_not_supplied_or_hash_changed",
+    "pair_9:check_1:evidence_0:image_not_supplied_or_hash_changed",
+    "pair_9:check_2:evidence_0:image_not_supplied_or_hash_changed",
+    "pair_12:evidence_0:image_not_supplied_or_hash_changed",
+    "pair_12:missing_right_object_id_evidence",
+    "pair_12:check_0:evidence_0:image_not_supplied_or_hash_changed",
+    "pair_12:check_1:evidence_0:image_not_supplied_or_hash_changed",
+    "pair_12:check_2:evidence_0:image_not_supplied_or_hash_changed",
+    "pair_12:check_2:evidence_1:image_not_supplied_or_hash_changed",
+    "pair_13:missing_left_object_id_evidence",
+    "pair_13:check_1:evidence_required",
+    "pair_13:check_2:evidence_required"
+  ],
+  "requested_pairs": 14,
+  "returned_pairs": 14,
+  "reported_findings": 3,
+  "unreported_checks": [],
+  "semantic_verified": false,
+  "automatic_merges": 0
+}

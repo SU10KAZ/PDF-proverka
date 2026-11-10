@@ -1,0 +1,1627 @@
+{
+  "text": "{\"pair_reviews\": [{\"pair_id\": \"P001\", \"relation\": \"type_instance\", \"reason\": \"obj_15 — размещение ОГМ 1 на марше +0,550→+1,910 (разрез и план +1,910), A1 — сборочное исполнение ОГМ 1 (лист 4, ведомость 1 шт.). Марка совпадает, но это исполнение (тип) и его размещение, а не два физических объекта.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.33, 0.87, 0.62, 0.935], \"observation\": \"Выноска ОГМ 1 у нижнего марша от +0,550 вверх вправо; рядом размеры 630 и 900.\"}, {\"type\": \"text\", \"block_id\": \"blk_ec977eb41e834dc8b7b332a66932a777\", \"quote\": \"Ведомость элементов ограждения ОГМ 1 (1 шт.)\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"consistent\", \"reason\": \"Одинаковая марка ОГМ 1 на разрезе/плане (лист 3) и в ведомости и чертеже (лист 4). Размещение относится к секции 2, марш +0,550→+1,910.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_613b3bfe91c246e68bf7705cb59ba72f\", \"image_sha256\": \"4429ca0cbcb06e05bd24ac6ab97339e2b91b27340068ba3f22f3aaae63784191\", \"bbox_norm_xyxy\": [0.33, 0.72, 0.47, 0.755], \"observation\": \"На плане +1.910 выноска ОГМ 1 у левой линии центрального ограждения.\"}, {\"type\": \"image\", \"block_id\": \"blk_b6c5ef9df6c74b21b52b5a9379ff0481\", \"image_sha256\": \"073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018\", \"bbox_norm_xyxy\": [0.12, 0.1, 0.15, 0.16], \"observation\": \"Заголовок панели чертежа «ОГМ 1».\"}]}, {\"operation\": \"quantity\", \"status\": \"consistent\", \"reason\": \"Ведомость задаёт 1 шт.; на разрезе в пределах пакета показано одно размещение ОГМ 1. Повторная выноска на плане не считается отдельным изделием.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_ec977eb41e834dc8b7b332a66932a777\", \"quote\": \"Ведомость элементов ограждения ОГМ 1 (1 шт.)\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.33, 0.87, 0.62, 0.935], \"observation\": \"Одна выноска ОГМ 1 на разрезе.\"}]}, {\"operation\": \"dimensions\", \"status\": \"needs_data\", \"reason\": \"На разрезе у нижнего конца даны 900 и 630, в ведомости — стойки 0,955 и 0,950 и поз. 8 L=0,630м. Изометрия ОГМ 1 нарисована с наклоном в другую сторону, чем марш на разрезе, и концы размеров не сопоставлены. Физический смысл 900 (высота ограждения) и 950 (длина стойки) может отличаться. Конфликт не утверждается.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_ec977eb41e834dc8b7b332a66932a777\", \"quote\": \"L=0,630м\"}, {\"type\": \"text\", \"block_id\": \"blk_ec977eb41e834dc8b7b332a66932a777\", \"quote\": \"L=0,950м\"}, {\"type\": \"image\", \"block_id\": \"blk_b6c5ef9df6c74b21b52b5a9379ff0481\", \"image_sha256\": \"073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018\", \"bbox_norm_xyxy\": [0.03, 0.12, 0.21, 0.95], \"observation\": \"Изометрия ОГМ 1: справа размер 950, наклонный элемент 648, интервалы 600.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Примечание листа 3 отсылает к л.4, где расположены исполнение и ведомость ОГМ 1.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}, {\"type\": \"text\", \"block_id\": \"blk_ec977eb41e834dc8b7b332a66932a777\", \"quote\": \"Sheet: 4\"}]}]}, {\"pair_id\": \"P002\", \"relation\": \"different\", \"reason\": \"R1 — документальная ссылка на диапазон марок (примечание листа 3), а не изделие и не его размещение. Марка ОГМ 1 попадает в диапазон, но это не идентичность объектов.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"not_applicable\", \"reason\": \"Ссылка не является физическим размещением; сопоставляется только охват марки.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}, {\"operation\": \"quantity\", \"status\": \"not_applicable\", \"reason\": \"Ссылка не задаёт количество; диапазон не означает восемь экземпляров.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}, {\"operation\": \"dimensions\", \"status\": \"not_applicable\", \"reason\": \"У ссылки нет размеров.\", \"evidence\": []}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"ОГМ 1 входит в диапазон ОГМ 1...ОГМ 8, лист 4 носит название с ОГМ 1 и содержит ведомость ОГМ 1.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_ec977eb41e834dc8b7b332a66932a777\", \"quote\": \"Наименование листа: Ограждения ОГМ 1...6, 8\"}, {\"type\": \"text\", \"block_id\": \"blk_ec977eb41e834dc8b7b332a66932a777\", \"quote\": \"Ведомость элементов ограждения ОГМ 1 (1 шт.)\"}]}]}, {\"pair_id\": \"P003\", \"relation\": \"type_instance\", \"reason\": \"obj_16 — два раздельных размещения ОГМ 2 на разрезе, A2 — единое исполнение ОГМ 2 с ведомостью на 2 шт. Это тип и его размещения.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"Ведомость элементов ограждения ОГМ 2 (2 шт.)\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.53, 0.8, 0.72, 0.885], \"observation\": \"Две выноски ОГМ 2 у разных наклонных ограждений нижней части разреза.\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"consistent\", \"reason\": \"Одинаковая марка ОГМ 2, секция 2; размещения +1,910→+3,350 и +4,630→+6,070 различимы по уровням.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.53, 0.8, 0.72, 0.885], \"observation\": \"Две выноски ОГМ 2.\"}, {\"type\": \"image\", \"block_id\": \"blk_b6c5ef9df6c74b21b52b5a9379ff0481\", \"image_sha256\": \"073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018\", \"bbox_norm_xyxy\": [0.355, 0.1, 0.38, 0.16], \"observation\": \"Заголовок панели «ОГМ 2».\"}]}, {\"operation\": \"quantity\", \"status\": \"consistent\", \"reason\": \"В заголовке ведомости 2 шт.; на разрезе в пределах пакета два раздельных размещения. Выноски ОГМ 2 на планах +1.910, +4.630, +7.270 в счёт не идут.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"Ведомость элементов ограждения ОГМ 2 (2 шт.)\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.53, 0.8, 0.72, 0.885], \"observation\": \"Два отдельных ограждения с маркой ОГМ 2.\"}]}, {\"operation\": \"dimensions\", \"status\": \"needs_data\", \"reason\": \"У правых концов двух размещений привязки разные: 1770 и 2070. На плане +4.630 нижний размер площадки 2030. Исполнение ОГМ 2 привязок к стене не содержит. Совпадение концов размеров 2070 (разрез) и 2030 (план) не доказано, поэтому конфликт не утверждается.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.6, 0.81, 0.78, 0.835], \"observation\": \"Размер 2070 у правого конца верхнего ОГМ 2.\"}, {\"type\": \"image\", \"block_id\": \"blk_767432a366864283851be4a9092d0909\", \"image_sha256\": \"006a8146299cae52dd585a79c91467e218657d4891da3d2b850d1e13b8b141c9\", \"bbox_norm_xyxy\": [0.04, 0.76, 0.12, 0.88], \"observation\": \"Размер 2030 у нижней площадки плана +4.630.\"}, {\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"L=2,740м\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Ссылка «см. л.4» ведёт на лист с исполнением и ведомостью ОГМ 2.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}, {\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"Sheet: 4\"}]}]}, {\"pair_id\": \"P004\", \"relation\": \"type_instance\", \"reason\": \"I1 — выноска ОГМ 2 на плане +7.270, obj_16 — марка с двумя размещениями на разрезе. Марка совпадает, но к какому именно размещению (+1,910→+3,350 или +4,630→+6,070) относится выноска, план не указывает.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.57, 0.335, 0.7, 0.365], \"observation\": \"Выноска ОГМ 2 вверху справа, у правой линии центрального ограждения.\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"needs_data\", \"reason\": \"Марка одна, но выноска не содержит признака размещения. Верхняя площадка плана +6.070 допускает связь с размещением +4,630→+6,070, однако это не доказано. Связь с нижним размещением не исключена.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.375, 0.25, 0.57, 0.3], \"observation\": \"Подпись «Отм. Ж/Б плиты +6.070» у верхней площадки.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.53, 0.8, 0.72, 0.885], \"observation\": \"Два размещения ОГМ 2 с разными уровнями.\"}]}, {\"operation\": \"quantity\", \"status\": \"needs_data\", \"reason\": \"Одна выноска на плане количество не задаёт, количество 2 шт. приведено только для сборочного исполнения (A2).\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.57, 0.335, 0.7, 0.365], \"observation\": \"Единственная выноска ОГМ 2 на плане.\"}]}, {\"operation\": \"dimensions\", \"status\": \"needs_data\", \"reason\": \"Размеры плана 1470/2860/1770 относятся к площадкам +6.070 и +7.270. Для ОГМ 2 на разрезе привязок у этих концов нет (1470 и 1770 даны у ОГМ 4 и ОГМ 5), сопоставить нечего.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.08, 0.26, 0.14, 0.86], \"observation\": \"Размерная цепь 1470, 2860, 1770.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Выноска плана и марка в исполнении связаны примечанием «см. л.4».\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}]}, {\"pair_id\": \"P005\", \"relation\": \"type_instance\", \"reason\": \"obj_17 — размещение ОГМ 3 на марше +3,350→+4,630, A3 — панель исполнения ОГМ 3 на листе 4. Ведомость ОГМ 3 в пакете не представлена.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_767432a366864283851be4a9092d0909\", \"image_sha256\": \"006a8146299cae52dd585a79c91467e218657d4891da3d2b850d1e13b8b141c9\", \"bbox_norm_xyxy\": [0.28, 0.69, 0.45, 0.725], \"observation\": \"Выноска ОГМ 3 слева внизу центрального ограждения на плане +4.630.\"}, {\"type\": \"image\", \"block_id\": \"blk_b6c5ef9df6c74b21b52b5a9379ff0481\", \"image_sha256\": \"073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018\", \"bbox_norm_xyxy\": [0.625, 0.1, 0.65, 0.16], \"observation\": \"Заголовок панели «ОГМ 3».\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"consistent\", \"reason\": \"На плане, разрезе и чертеже читается одна и та же марка ОГМ 3.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.38, 0.82, 0.52, 0.86], \"observation\": \"Выноска ОГМ 3 у марша между +3,350 и +4,630.\"}]}, {\"operation\": \"quantity\", \"status\": \"needs_data\", \"reason\": \"Ведомости ОГМ 3 (количество) в пакете нет. Одно размещение на разрезе не заменяет данных ведомости.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.38, 0.82, 0.52, 0.86], \"observation\": \"Одна выноска ОГМ 3 на разрезе.\"}]}, {\"operation\": \"dimensions\", \"status\": \"needs_data\", \"reason\": \"На разрезе у ОГМ 3 даны 940, 75 и 1770, в панели исполнения этих привязок нет; общая длина поручня и состав без ведомости не проверяемы.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_b6c5ef9df6c74b21b52b5a9379ff0481\", \"image_sha256\": \"073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018\", \"bbox_norm_xyxy\": [0.555, 0.2, 0.7, 0.97], \"observation\": \"Панель ОГМ 3: интервалы 600 ×3, шаг 150, 800, 955.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.38, 0.82, 0.52, 0.86], \"observation\": \"Размеры 940, 75, 1770 у левого конца.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Примечание ссылается на л.4, где название листа охватывает ОГМ 3.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}, {\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"Наименование листа: Ограждения ОГМ 1...6, 8\"}]}]}, {\"pair_id\": \"P006\", \"relation\": \"type_instance\", \"reason\": \"obj_18 — размещение ОГМ 4 на марше +6,070→+7,270, A4 — исполнение ОГМ 4 с ведомостью 1 шт.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_e0e6bcff961f41f3ad9620d662bd7b43\", \"quote\": \"Ведомость элементов ограждения ОГМ 4 (1 шт.)\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.77, 0.58, 0.82], \"observation\": \"Выноска ОГМ 4 над площадкой +6,070, размеры 1470, 940, 75.\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"consistent\", \"reason\": \"Марка ОГМ 4 совпадает; на разрезе одно размещение, исполнение на листе 4 с горизонтальным участком 700.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_b6c5ef9df6c74b21b52b5a9379ff0481\", \"image_sha256\": \"073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018\", \"bbox_norm_xyxy\": [0.79, 0.12, 0.98, 0.85], \"observation\": \"Панель ОГМ 4 с горизонтальным участком слева (700) и размером 795.\"}]}, {\"operation\": \"quantity\", \"status\": \"consistent\", \"reason\": \"Ведомость задаёт 1 шт., на разрезе в пакете одно размещение ОГМ 4.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_e0e6bcff961f41f3ad9620d662bd7b43\", \"quote\": \"Ведомость элементов ограждения ОГМ 4 (1 шт.)\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.77, 0.58, 0.82], \"observation\": \"Одна выноска ОГМ 4.\"}]}, {\"operation\": \"dimensions\", \"status\": \"needs_data\", \"reason\": \"Размеры разреза (1470, 940, 75) и исполнения (700, 795, ведомость L=3,100м) относятся к разным элементам. Ориентация изометрии на листе 4 не сопоставлена с маршем разреза, концы размеров не совпадают.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_e0e6bcff961f41f3ad9620d662bd7b43\", \"quote\": \"L=3,100м\"}, {\"type\": \"image\", \"block_id\": \"blk_b6c5ef9df6c74b21b52b5a9379ff0481\", \"image_sha256\": \"073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018\", \"bbox_norm_xyxy\": [0.79, 0.12, 0.98, 0.85], \"observation\": \"Размеры 700, 795, 220, 25, 40.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Ссылка «см. л.4» ведёт на лист с ведомостью ОГМ 4.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}, {\"type\": \"text\", \"block_id\": \"blk_e0e6bcff961f41f3ad9620d662bd7b43\", \"quote\": \"Sheet: 4\"}]}]}, {\"pair_id\": \"P007\", \"relation\": \"same_instance\", \"reason\": \"Один и тот же участок ограждения в двух видах: разрез (+6,070→+7,270) и план с подписанными плитами +6.070 и +7.270. Марка ОГМ 4 совпадает, привязка 1470 у площадки +6.070 совпадает. Вывод ограничен пределами пакета.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.3, 0.735, 0.42, 0.76], \"observation\": \"Выноска ОГМ 4 у левой линии центрального ограждения.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.77, 0.58, 0.82], \"observation\": \"Выноска ОГМ 4, размер 1470.\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"consistent\", \"reason\": \"Секция 2, одинаковая марка и уровни. Положение выноски на плане (внизу слева) не означает конец ограждения: линия охватывает весь марш.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.375, 0.25, 0.57, 0.3], \"observation\": \"Подпись плиты +6.070 сверху.\"}, {\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.38, 0.755, 0.57, 0.805], \"observation\": \"Подпись плиты +7.270 снизу.\"}]}, {\"operation\": \"quantity\", \"status\": \"consistent\", \"reason\": \"На плане одна выноска, на разрезе одно размещение ОГМ 4; обе показывают одно ограждение (в пределах пакета).\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.3, 0.735, 0.42, 0.76], \"observation\": \"Одна выноска ОГМ 4.\"}]}, {\"operation\": \"dimensions\", \"status\": \"consistent\", \"reason\": \"Верхняя привязка плана 1470 (площадка +6.070, от стены до контура ограждения) равна размеру 1470 у конца ОГМ 4 на площадке +6,070 на разрезе. Точность совпадения концов оценена по виду чертежа.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.08, 0.26, 0.14, 0.34], \"observation\": \"Размер 1470.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.33, 0.78, 0.5, 0.8], \"observation\": \"Размер 1470 у конца ОГМ 4.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Оба вида на листе 3, ссылка на исполнение на л.4 общая.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}]}, {\"pair_id\": \"P008\", \"relation\": \"type_instance\", \"reason\": \"obj_19 — десять раздельных размещений ОГМ 5 на разрезе, A5 — одно исполнение ОГМ 5 на листе 4. Это тип и его размещения.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.75, 0.8, 0.8], \"observation\": \"Первая выноска ОГМ 5 и размеры 900, 115, 1770 у правого конца.\"}, {\"type\": \"image\", \"block_id\": \"blk_ddc4b49561b745ffab319ae7f3b20860\", \"image_sha256\": \"a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62\", \"bbox_norm_xyxy\": [0.145, 0.08, 0.17, 0.12], \"observation\": \"Заголовок панели «ОГМ 5».\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"consistent\", \"reason\": \"Одинаковая марка ОГМ 5; ориентация исполнения (верх слева, нижний конец справа) согласуется с маршами ОГМ 5, поднимающимися справа налево.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_ddc4b49561b745ffab319ae7f3b20860\", \"image_sha256\": \"a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62\", \"bbox_norm_xyxy\": [0.05, 0.12, 0.29, 0.88], \"observation\": \"Панель ОГМ 5: интервалы 600 ×4, 320 ×4, 648, 955.\"}]}, {\"operation\": \"quantity\", \"status\": \"needs_data\", \"reason\": \"Ведомость ОГМ 5 в пакете отсутствует. Десять размещений на разрезе есть, количество по ведомости неизвестно.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.2, 0.8, 0.8], \"observation\": \"Повторяющиеся выноски ОГМ 5 на нескольких маршах.\"}]}, {\"operation\": \"dimensions\", \"status\": \"needs_data\", \"reason\": \"Привязки разреза (900, 115, 1770) и размеры исполнения (955, 648, 600, 320) несопоставимы без ведомости и без согласованных концов.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_ddc4b49561b745ffab319ae7f3b20860\", \"image_sha256\": \"a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62\", \"bbox_norm_xyxy\": [0.05, 0.12, 0.29, 0.88], \"observation\": \"Размеры исполнения ОГМ 5.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Ссылка «см. л.4» охватывает ОГМ 5, исполнение — на листе 4.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}]}, {\"pair_id\": \"P009\", \"relation\": \"type_instance\", \"reason\": \"I3 — выноска ОГМ 5 на плане +7.270, obj_19 — марка с десятью размещениями. План допускает связь с первым размещением +7,270→+9,110, но прямо это не указано.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.58, 0.735, 0.7, 0.76], \"observation\": \"Выноска ОГМ 5 внизу справа.\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"needs_data\", \"reason\": \"Марка совпадает, нижняя площадка плана +7.270 соответствует началу первого размещения ОГМ 5. Однако в плане нет признака номера размещения из десяти, привязка к конкретному размещению не доказана.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.38, 0.755, 0.57, 0.805], \"observation\": \"Подпись плиты +7.270 внизу.\"}]}, {\"operation\": \"quantity\", \"status\": \"needs_data\", \"reason\": \"Одна выноска на плане количество не задаёт. Десять размещений на разрезе к этой выноске не добавляются.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.58, 0.735, 0.7, 0.76], \"observation\": \"Единственная выноска ОГМ 5.\"}]}, {\"operation\": \"dimensions\", \"status\": \"consistent\", \"reason\": \"Нижняя привязка плана 1770 у площадки +7.270 совпадает с привязкой 1770 у нижнего (правого) конца ОГМ 5 на разрезе. Размер повторяется для всех размещений ОГМ 5.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_2f7923b916294bdcac3dd9b3d5589665\", \"image_sha256\": \"4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f\", \"bbox_norm_xyxy\": [0.08, 0.78, 0.14, 0.86], \"observation\": \"Размер 1770 внизу плана.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.62, 0.755, 0.78, 0.795], \"observation\": \"Размеры 900, 115, 1770 у правого конца ОГМ 5.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Связь через общее примечание листа 3 с л.4.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}]}, {\"pair_id\": \"P010\", \"relation\": \"type_instance\", \"reason\": \"I4 — выноска ОГМ 5 на плане с плитами +37.510, +39.350, +41.190, obj_19 — марка с десятью размещениями. Совпадение уровней указывает на последнее размещение +37,510→+39,350, но номер размещения на плане прямо не указан. I3 и I4 не объединяются.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.5, 0.215, 0.62, 0.245], \"observation\": \"Выноска ОГМ 5 у верхнего конца центрального ограждения.\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"needs_data\", \"reason\": \"Уровни плиты +39.350 и +37.510 согласуются с последним размещением, но обозначения размещения на плане нет; идентификация остаётся вероятной, не подтверждённой.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.33, 0.16, 0.5, 0.22], \"observation\": \"Подпись «Отм. Ж/Б плиты +39.350».\"}, {\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.75, 0.7, 0.95, 0.76], \"observation\": \"Подпись «Отм. Ж/Б плиты +37.510» с точкой-указателем.\"}]}, {\"operation\": \"quantity\", \"status\": \"needs_data\", \"reason\": \"Выноска на плане количество не задаёт.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.5, 0.215, 0.62, 0.245], \"observation\": \"Одна выноска ОГМ 5.\"}]}, {\"operation\": \"dimensions\", \"status\": \"needs_data\", \"reason\": \"План даёт 1170, 3460, 1470. У нижнего (правого) конца ОГМ 5 привязки 1770 (разрез) на плане нет. Размер 1170 у площадки +39,350 на разрезе дан у левого конца ОГМ 8, не ОГМ 5.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.08, 0.19, 0.14, 0.88], \"observation\": \"Размерная цепь 1170, 3460, 1470.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Связь через примечание листа 3 с л.4.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}]}, {\"pair_id\": \"P011\", \"relation\": \"type_instance\", \"reason\": \"obj_20 — девять раздельных размещений ОГМ 6, A6 — исполнение ОГМ 6 (листе 4). Замечание реестра, что ОГМ 6 не размещена на планах, неверно: выноска ОГМ 6 есть на типовом плане.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_9dbddaba8e334be3ab857afe48df76ec\", \"image_sha256\": \"6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b\", \"bbox_norm_xyxy\": [0.2, 0.715, 0.36, 0.745], \"observation\": \"Выноска ОГМ 6 внизу слева на типовом плане.\"}, {\"type\": \"image\", \"block_id\": \"blk_ddc4b49561b745ffab319ae7f3b20860\", \"image_sha256\": \"a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62\", \"bbox_norm_xyxy\": [0.47, 0.13, 0.5, 0.18], \"observation\": \"Заголовок панели «ОГМ 6».\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"consistent\", \"reason\": \"Одинаковая марка ОГМ 6; в исполнении виден горизонтальный участок 400 и 795.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_ddc4b49561b745ffab319ae7f3b20860\", \"image_sha256\": \"a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62\", \"bbox_norm_xyxy\": [0.365, 0.15, 0.62, 0.93], \"observation\": \"Панель ОГМ 6.\"}]}, {\"operation\": \"quantity\", \"status\": \"needs_data\", \"reason\": \"Ведомость ОГМ 6 в пакете отсутствует; девять размещений на разрезе нельзя подтвердить количеством из ведомости.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.2, 0.6, 0.75], \"observation\": \"Повторяющиеся выноски ОГМ 6 на маршах, поднимающихся слева направо.\"}]}, {\"operation\": \"dimensions\", \"status\": \"needs_data\", \"reason\": \"Привязка 1170 у левого конца ОГМ 6 совпадает с верхним размером 1170 типового плана, но размеры исполнения (400, 795, 648, 600) без ведомости с разрезом не сопоставимы. Связанные таблицы отметок плит на типовом плане неполны (см. findings).\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_9dbddaba8e334be3ab857afe48df76ec\", \"image_sha256\": \"6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b\", \"bbox_norm_xyxy\": [0.05, 0.19, 0.14, 0.3], \"observation\": \"Размер 1170 в цепи плана.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.33, 0.7, 0.5, 0.73], \"observation\": \"Размеры 1170, 940, 75 у левого конца ОГМ 6.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Название листа 4 охватывает ОГМ 6; ссылка с листа 3 на л.4.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"Наименование листа: Ограждения ОГМ 1...6, 8\"}, {\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}]}, {\"pair_id\": \"P012\", \"relation\": \"type_instance\", \"reason\": \"obj_21 — размещение ОГМ 8 на марше +39,350→+41,190, A8 — исполнение ОГМ 8 на листе 4.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.075, 0.82, 0.15], \"observation\": \"Выноска ОГМ 8 у верхнего марша; 1170 слева, 1470 справа вверху.\"}, {\"type\": \"image\", \"block_id\": \"blk_ddc4b49561b745ffab319ae7f3b20860\", \"image_sha256\": \"a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62\", \"bbox_norm_xyxy\": [0.83, 0.13, 0.85, 0.18], \"observation\": \"Заголовок панели «ОГМ 8».\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"consistent\", \"reason\": \"Марка ОГМ 8 одинакова; единственное размещение у верхней площадки.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_ddc4b49561b745ffab319ae7f3b20860\", \"image_sha256\": \"a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62\", \"bbox_norm_xyxy\": [0.69, 0.15, 0.98, 0.97], \"observation\": \"Панель ОГМ 8: интервалы 600 ×5, короткий участок 100, 795.\"}]}, {\"operation\": \"quantity\", \"status\": \"needs_data\", \"reason\": \"Ведомости ОГМ 8 в пакете нет, сравнить количество нельзя.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.075, 0.82, 0.15], \"observation\": \"Одна выноска ОГМ 8 на разрезе.\"}]}, {\"operation\": \"dimensions\", \"status\": \"needs_data\", \"reason\": \"Привязки разреза (1170, 940, 75, 900, 1470) и размеры исполнения (600 ×5, 320 ×5, 100, 795, 955) без ведомости и без совпадающих концов не сопоставляются.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_ddc4b49561b745ffab319ae7f3b20860\", \"image_sha256\": \"a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62\", \"bbox_norm_xyxy\": [0.69, 0.15, 0.98, 0.97], \"observation\": \"Размеры исполнения ОГМ 8.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Название листа 4 включает ОГМ 8, ссылка с листа 3 на л.4.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"Наименование листа: Ограждения ОГМ 1...6, 8\"}, {\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}]}, {\"pair_id\": \"P013\", \"relation\": \"same_instance\", \"reason\": \"Один и тот же участок ограждения в двух видах: разрез (+39,350→+41,190) и план с плитами +39.350 и +41.190. Совпадают марка ОГМ 8 и привязки 1170 и 1470 у соответствующих площадок. Вывод ограничен пределами пакета.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.25, 0.76, 0.37, 0.795], \"observation\": \"Выноска ОГМ 8 у левой линии центрального ограждения.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.075, 0.82, 0.15], \"observation\": \"Выноска ОГМ 8, размеры 1170 и 1470.\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"consistent\", \"reason\": \"Секция 2, марка ОГМ 8, уровни +39.350 и +41.190 на плане совпадают с границами размещения на разрезе. Положение выноски (внизу слева) не определяет конец ограждения.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.33, 0.755, 0.5, 0.82], \"observation\": \"Подпись «Отм. Ж/Б плиты +41.190».\"}]}, {\"operation\": \"quantity\", \"status\": \"consistent\", \"reason\": \"Одна выноска на плане и одно размещение на разрезе; изображения не дают количества сверх этого.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.25, 0.76, 0.37, 0.795], \"observation\": \"Одна выноска ОГМ 8.\"}]}, {\"operation\": \"dimensions\", \"status\": \"consistent\", \"reason\": \"Верхний размер плана 1170 (площадка +39.350) совпадает с 1170 у левого конца ОГМ 8 на разрезе; нижний 1470 (площадка +41.190) совпадает с 1470 у правого верхнего конца.\", \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.08, 0.19, 0.14, 0.3], \"observation\": \"Размер 1170 на плане.\"}, {\"type\": \"image\", \"block_id\": \"blk_d2963ae2ab2841cd95de9c28e8cac089\", \"image_sha256\": \"bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.08, 0.78, 0.14, 0.88], \"observation\": \"Размер 1470 на плане.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.3, 0.075, 0.82, 0.15], \"observation\": \"Размеры 1170 слева и 1470 справа вверху.\"}]}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"Оба вида на листе 3 с общей ссылкой на л.4.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}]}, {\"pair_id\": \"P014\", \"relation\": \"different\", \"reason\": \"R1 — документальная ссылка на диапазон ОГМ 1...ОГМ 8, а не размещение ОГМ 8. Марка входит в диапазон, но ссылка не является объектом.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}], \"checks\": [{\"operation\": \"identity\", \"status\": \"not_applicable\", \"reason\": \"Ссылка — не физическое размещение.\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}, {\"operation\": \"quantity\", \"status\": \"not_applicable\", \"reason\": \"Ссылка количества не задаёт.\", \"evidence\": []}, {\"operation\": \"dimensions\", \"status\": \"not_applicable\", \"reason\": \"У ссылки нет размеров.\", \"evidence\": []}, {\"operation\": \"document_links\", \"status\": \"consistent\", \"reason\": \"ОГМ 8 входит в диапазон ссылки и в название листа 4 (ОГМ 1...6, 8). Диапазон ссылки при этом включает ОГМ 7, которого нет в названии листа 4 (см. findings).\", \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"Наименование листа: Ограждения ОГМ 1...6, 8\"}, {\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}]}]}], \"findings\": [{\"problem\": \"Таблицы отметок Ж/Б плит на типовой схеме ограждений неполны и разной длины\", \"description\": \"На типовой схеме (заголовок: отм. +10.630 ... +37.510, девять уровней) нижняя таблица «Ж/Б плита на отметках» содержит 9 отметок: +10.630, +13.990, +17.350, +20.710, +24.070, +27.430, +30.790, +34.150, +37.510. Верхняя таблица содержит 8 отметок: +9.110, +12.470, +15.830, +19.190, +25.910, +29.270, +35.990, +39.350. В ней нет +22.550 и +32.630, хотя эти уровни есть на разрезе 1-1 и являются верхними площадками маршей ОГМ 5 (+20.710→+22.550, +30.790→+32.630) и нижними для ОГМ 6. Отметка +39.350 в верхней таблице не имеет пары в нижней.\", \"solution\": \"Уточнить у разработчика состав отметок и привести обе таблицы типовой схемы в соответствие с разрезом 1-1 (добавить +22.550 и +32.630, проверить +39.350).\", \"report_section\": \"questions\", \"pair_ids\": [\"P008\", \"P011\"], \"evidence\": [{\"type\": \"image\", \"block_id\": \"blk_9dbddaba8e334be3ab857afe48df76ec\", \"image_sha256\": \"6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b\", \"bbox_norm_xyxy\": [0.77, 0.2, 0.92, 0.43], \"observation\": \"Верхняя таблица: +9.110, +12.470, +15.830, +19.190, +25.910, +29.270, +35.990, +39.350 (8 строк, без +22.550 и +32.630).\"}, {\"type\": \"image\", \"block_id\": \"blk_9dbddaba8e334be3ab857afe48df76ec\", \"image_sha256\": \"6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b\", \"bbox_norm_xyxy\": [0.77, 0.52, 0.92, 0.77], \"observation\": \"Нижняя таблица: 9 отметок от +10.630 до +37.510.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.05, 0.485, 0.25, 0.505], \"observation\": \"На разрезе отмечен уровень +22,550.\"}, {\"type\": \"image\", \"block_id\": \"blk_8e8d4c0218c6473ab7885f5aed70bafd\", \"image_sha256\": \"a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58\", \"bbox_norm_xyxy\": [0.05, 0.268, 0.25, 0.29], \"observation\": \"На разрезе отмечен уровень +32,630.\"}]}, {\"problem\": \"Ссылка на ОГМ 1...ОГМ 8 охватывает ОГМ 7, которого нет в названии листа 4\", \"description\": \"Примечание листа 3 отсылает к л.4 для ограждений «ОГМ 1...ОГМ 8». Лист 4 называется «Ограждения ОГМ 1...6, 8», в пакете нет чертежа ОГМ 7, на разрезе марки ОГМ 7 нет. Остальные представленные материалы ОГМ 7 не упоминают. Наличие ОГМ 7 в проекте в пакете не подтверждено и не исключено.\", \"solution\": \"Уточнить, существует ли марка ОГМ 7. Если нет — скорректировать примечание на «ОГМ 1...6, 8»; если есть — показать её исполнение и размещение.\", \"report_section\": \"questions\", \"pair_ids\": [\"P002\", \"P014\"], \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"1. Ограждения ОГМ 1...ОГМ 8 см. л.4.\"}, {\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"Наименование листа: Ограждения ОГМ 1...6, 8\"}]}, {\"problem\": \"Разные значения стадии в штампах листов 3 и 4 при одном шифре\", \"description\": \"Штамп листа 3 (шифр ПД-00580716-КМ1.2) содержит «Stage: Р», штамп листа 4 с тем же шифром — «Stage: П». В штампах также различается написание организации (GLOBUS PROJECT / GLOBUS ПРОЕКТ). Редакционный вопрос, на размеры и количество не влияет, но касается документальной связи листа 3 с л.4.\", \"solution\": \"Проверить стадию и написание организации в штампах листов 3 и 4 и привести к единому значению.\", \"report_section\": \"questions\", \"pair_ids\": [\"P002\", \"P014\"], \"evidence\": [{\"type\": \"text\", \"block_id\": \"blk_6ffe5ad972834d309b921eb28548ac98\", \"quote\": \"Stage: Р | Sheet: 3\"}, {\"type\": \"text\", \"block_id\": \"blk_addaa8965de54d218095d13652f30388\", \"quote\": \"Stage: П | Sheet: 4\"}]}], \"context_queries\": [\"Ведомость элементов ограждения ОГМ 3\", \"Ведомость элементов ограждения ОГМ 5\", \"Ведомость элементов ограждения ОГМ 6\", \"Ведомость элементов ограждения ОГМ 8\", \"ОГМ 7\", \"2070\", \"2030\"]}",
+  "json_data": {
+    "pair_reviews": [
+      {
+        "pair_id": "P001",
+        "relation": "type_instance",
+        "reason": "obj_15 — размещение ОГМ 1 на марше +0,550→+1,910 (разрез и план +1,910), A1 — сборочное исполнение ОГМ 1 (лист 4, ведомость 1 шт.). Марка совпадает, но это исполнение (тип) и его размещение, а не два физических объекта.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.33,
+              0.87,
+              0.62,
+              0.935
+            ],
+            "observation": "Выноска ОГМ 1 у нижнего марша от +0,550 вверх вправо; рядом размеры 630 и 900."
+          },
+          {
+            "type": "text",
+            "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+            "quote": "Ведомость элементов ограждения ОГМ 1 (1 шт.)"
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "consistent",
+            "reason": "Одинаковая марка ОГМ 1 на разрезе/плане (лист 3) и в ведомости и чертеже (лист 4). Размещение относится к секции 2, марш +0,550→+1,910.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+                "image_sha256": "4429ca0cbcb06e05bd24ac6ab97339e2b91b27340068ba3f22f3aaae63784191",
+                "bbox_norm_xyxy": [
+                  0.33,
+                  0.72,
+                  0.47,
+                  0.755
+                ],
+                "observation": "На плане +1.910 выноска ОГМ 1 у левой линии центрального ограждения."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+                "image_sha256": "073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018",
+                "bbox_norm_xyxy": [
+                  0.12,
+                  0.1,
+                  0.15,
+                  0.16
+                ],
+                "observation": "Заголовок панели чертежа «ОГМ 1»."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "consistent",
+            "reason": "Ведомость задаёт 1 шт.; на разрезе в пределах пакета показано одно размещение ОГМ 1. Повторная выноска на плане не считается отдельным изделием.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+                "quote": "Ведомость элементов ограждения ОГМ 1 (1 шт.)"
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.33,
+                  0.87,
+                  0.62,
+                  0.935
+                ],
+                "observation": "Одна выноска ОГМ 1 на разрезе."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "needs_data",
+            "reason": "На разрезе у нижнего конца даны 900 и 630, в ведомости — стойки 0,955 и 0,950 и поз. 8 L=0,630м. Изометрия ОГМ 1 нарисована с наклоном в другую сторону, чем марш на разрезе, и концы размеров не сопоставлены. Физический смысл 900 (высота ограждения) и 950 (длина стойки) может отличаться. Конфликт не утверждается.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+                "quote": "L=0,630м"
+              },
+              {
+                "type": "text",
+                "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+                "quote": "L=0,950м"
+              },
+              {
+                "type": "image",
+                "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+                "image_sha256": "073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018",
+                "bbox_norm_xyxy": [
+                  0.03,
+                  0.12,
+                  0.21,
+                  0.95
+                ],
+                "observation": "Изометрия ОГМ 1: справа размер 950, наклонный элемент 648, интервалы 600."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Примечание листа 3 отсылает к л.4, где расположены исполнение и ведомость ОГМ 1.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              },
+              {
+                "type": "text",
+                "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+                "quote": "Sheet: 4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P002",
+        "relation": "different",
+        "reason": "R1 — документальная ссылка на диапазон марок (примечание листа 3), а не изделие и не его размещение. Марка ОГМ 1 попадает в диапазон, но это не идентичность объектов.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+            "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "not_applicable",
+            "reason": "Ссылка не является физическим размещением; сопоставляется только охват марки.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "not_applicable",
+            "reason": "Ссылка не задаёт количество; диапазон не означает восемь экземпляров.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "not_applicable",
+            "reason": "У ссылки нет размеров.",
+            "evidence": []
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "ОГМ 1 входит в диапазон ОГМ 1...ОГМ 8, лист 4 носит название с ОГМ 1 и содержит ведомость ОГМ 1.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+                "quote": "Наименование листа: Ограждения ОГМ 1...6, 8"
+              },
+              {
+                "type": "text",
+                "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+                "quote": "Ведомость элементов ограждения ОГМ 1 (1 шт.)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P003",
+        "relation": "type_instance",
+        "reason": "obj_16 — два раздельных размещения ОГМ 2 на разрезе, A2 — единое исполнение ОГМ 2 с ведомостью на 2 шт. Это тип и его размещения.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_addaa8965de54d218095d13652f30388",
+            "quote": "Ведомость элементов ограждения ОГМ 2 (2 шт.)"
+          },
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.53,
+              0.8,
+              0.72,
+              0.885
+            ],
+            "observation": "Две выноски ОГМ 2 у разных наклонных ограждений нижней части разреза."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "consistent",
+            "reason": "Одинаковая марка ОГМ 2, секция 2; размещения +1,910→+3,350 и +4,630→+6,070 различимы по уровням.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.53,
+                  0.8,
+                  0.72,
+                  0.885
+                ],
+                "observation": "Две выноски ОГМ 2."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+                "image_sha256": "073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018",
+                "bbox_norm_xyxy": [
+                  0.355,
+                  0.1,
+                  0.38,
+                  0.16
+                ],
+                "observation": "Заголовок панели «ОГМ 2»."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "consistent",
+            "reason": "В заголовке ведомости 2 шт.; на разрезе в пределах пакета два раздельных размещения. Выноски ОГМ 2 на планах +1.910, +4.630, +7.270 в счёт не идут.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_addaa8965de54d218095d13652f30388",
+                "quote": "Ведомость элементов ограждения ОГМ 2 (2 шт.)"
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.53,
+                  0.8,
+                  0.72,
+                  0.885
+                ],
+                "observation": "Два отдельных ограждения с маркой ОГМ 2."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "needs_data",
+            "reason": "У правых концов двух размещений привязки разные: 1770 и 2070. На плане +4.630 нижний размер площадки 2030. Исполнение ОГМ 2 привязок к стене не содержит. Совпадение концов размеров 2070 (разрез) и 2030 (план) не доказано, поэтому конфликт не утверждается.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.6,
+                  0.81,
+                  0.78,
+                  0.835
+                ],
+                "observation": "Размер 2070 у правого конца верхнего ОГМ 2."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_767432a366864283851be4a9092d0909",
+                "image_sha256": "006a8146299cae52dd585a79c91467e218657d4891da3d2b850d1e13b8b141c9",
+                "bbox_norm_xyxy": [
+                  0.04,
+                  0.76,
+                  0.12,
+                  0.88
+                ],
+                "observation": "Размер 2030 у нижней площадки плана +4.630."
+              },
+              {
+                "type": "text",
+                "block_id": "blk_addaa8965de54d218095d13652f30388",
+                "quote": "L=2,740м"
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Ссылка «см. л.4» ведёт на лист с исполнением и ведомостью ОГМ 2.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              },
+              {
+                "type": "text",
+                "block_id": "blk_addaa8965de54d218095d13652f30388",
+                "quote": "Sheet: 4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P004",
+        "relation": "type_instance",
+        "reason": "I1 — выноска ОГМ 2 на плане +7.270, obj_16 — марка с двумя размещениями на разрезе. Марка совпадает, но к какому именно размещению (+1,910→+3,350 или +4,630→+6,070) относится выноска, план не указывает.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+            "bbox_norm_xyxy": [
+              0.57,
+              0.335,
+              0.7,
+              0.365
+            ],
+            "observation": "Выноска ОГМ 2 вверху справа, у правой линии центрального ограждения."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "needs_data",
+            "reason": "Марка одна, но выноска не содержит признака размещения. Верхняя площадка плана +6.070 допускает связь с размещением +4,630→+6,070, однако это не доказано. Связь с нижним размещением не исключена.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.375,
+                  0.25,
+                  0.57,
+                  0.3
+                ],
+                "observation": "Подпись «Отм. Ж/Б плиты +6.070» у верхней площадки."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.53,
+                  0.8,
+                  0.72,
+                  0.885
+                ],
+                "observation": "Два размещения ОГМ 2 с разными уровнями."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "needs_data",
+            "reason": "Одна выноска на плане количество не задаёт, количество 2 шт. приведено только для сборочного исполнения (A2).",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.57,
+                  0.335,
+                  0.7,
+                  0.365
+                ],
+                "observation": "Единственная выноска ОГМ 2 на плане."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "needs_data",
+            "reason": "Размеры плана 1470/2860/1770 относятся к площадкам +6.070 и +7.270. Для ОГМ 2 на разрезе привязок у этих концов нет (1470 и 1770 даны у ОГМ 4 и ОГМ 5), сопоставить нечего.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.08,
+                  0.26,
+                  0.14,
+                  0.86
+                ],
+                "observation": "Размерная цепь 1470, 2860, 1770."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Выноска плана и марка в исполнении связаны примечанием «см. л.4».",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P005",
+        "relation": "type_instance",
+        "reason": "obj_17 — размещение ОГМ 3 на марше +3,350→+4,630, A3 — панель исполнения ОГМ 3 на листе 4. Ведомость ОГМ 3 в пакете не представлена.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_767432a366864283851be4a9092d0909",
+            "image_sha256": "006a8146299cae52dd585a79c91467e218657d4891da3d2b850d1e13b8b141c9",
+            "bbox_norm_xyxy": [
+              0.28,
+              0.69,
+              0.45,
+              0.725
+            ],
+            "observation": "Выноска ОГМ 3 слева внизу центрального ограждения на плане +4.630."
+          },
+          {
+            "type": "image",
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "image_sha256": "073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018",
+            "bbox_norm_xyxy": [
+              0.625,
+              0.1,
+              0.65,
+              0.16
+            ],
+            "observation": "Заголовок панели «ОГМ 3»."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "consistent",
+            "reason": "На плане, разрезе и чертеже читается одна и та же марка ОГМ 3.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.38,
+                  0.82,
+                  0.52,
+                  0.86
+                ],
+                "observation": "Выноска ОГМ 3 у марша между +3,350 и +4,630."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "needs_data",
+            "reason": "Ведомости ОГМ 3 (количество) в пакете нет. Одно размещение на разрезе не заменяет данных ведомости.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.38,
+                  0.82,
+                  0.52,
+                  0.86
+                ],
+                "observation": "Одна выноска ОГМ 3 на разрезе."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "needs_data",
+            "reason": "На разрезе у ОГМ 3 даны 940, 75 и 1770, в панели исполнения этих привязок нет; общая длина поручня и состав без ведомости не проверяемы.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+                "image_sha256": "073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018",
+                "bbox_norm_xyxy": [
+                  0.555,
+                  0.2,
+                  0.7,
+                  0.97
+                ],
+                "observation": "Панель ОГМ 3: интервалы 600 ×3, шаг 150, 800, 955."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.38,
+                  0.82,
+                  0.52,
+                  0.86
+                ],
+                "observation": "Размеры 940, 75, 1770 у левого конца."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Примечание ссылается на л.4, где название листа охватывает ОГМ 3.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              },
+              {
+                "type": "text",
+                "block_id": "blk_addaa8965de54d218095d13652f30388",
+                "quote": "Наименование листа: Ограждения ОГМ 1...6, 8"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P006",
+        "relation": "type_instance",
+        "reason": "obj_18 — размещение ОГМ 4 на марше +6,070→+7,270, A4 — исполнение ОГМ 4 с ведомостью 1 шт.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+            "quote": "Ведомость элементов ограждения ОГМ 4 (1 шт.)"
+          },
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.3,
+              0.77,
+              0.58,
+              0.82
+            ],
+            "observation": "Выноска ОГМ 4 над площадкой +6,070, размеры 1470, 940, 75."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "consistent",
+            "reason": "Марка ОГМ 4 совпадает; на разрезе одно размещение, исполнение на листе 4 с горизонтальным участком 700.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+                "image_sha256": "073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018",
+                "bbox_norm_xyxy": [
+                  0.79,
+                  0.12,
+                  0.98,
+                  0.85
+                ],
+                "observation": "Панель ОГМ 4 с горизонтальным участком слева (700) и размером 795."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "consistent",
+            "reason": "Ведомость задаёт 1 шт., на разрезе в пакете одно размещение ОГМ 4.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+                "quote": "Ведомость элементов ограждения ОГМ 4 (1 шт.)"
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.3,
+                  0.77,
+                  0.58,
+                  0.82
+                ],
+                "observation": "Одна выноска ОГМ 4."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "needs_data",
+            "reason": "Размеры разреза (1470, 940, 75) и исполнения (700, 795, ведомость L=3,100м) относятся к разным элементам. Ориентация изометрии на листе 4 не сопоставлена с маршем разреза, концы размеров не совпадают.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+                "quote": "L=3,100м"
+              },
+              {
+                "type": "image",
+                "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+                "image_sha256": "073cc3f8c2fc61d78bbc88cebe4507ddf4fc56ae0362e0acd5b126d3a721b018",
+                "bbox_norm_xyxy": [
+                  0.79,
+                  0.12,
+                  0.98,
+                  0.85
+                ],
+                "observation": "Размеры 700, 795, 220, 25, 40."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Ссылка «см. л.4» ведёт на лист с ведомостью ОГМ 4.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              },
+              {
+                "type": "text",
+                "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+                "quote": "Sheet: 4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P007",
+        "relation": "same_instance",
+        "reason": "Один и тот же участок ограждения в двух видах: разрез (+6,070→+7,270) и план с подписанными плитами +6.070 и +7.270. Марка ОГМ 4 совпадает, привязка 1470 у площадки +6.070 совпадает. Вывод ограничен пределами пакета.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+            "bbox_norm_xyxy": [
+              0.3,
+              0.735,
+              0.42,
+              0.76
+            ],
+            "observation": "Выноска ОГМ 4 у левой линии центрального ограждения."
+          },
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.3,
+              0.77,
+              0.58,
+              0.82
+            ],
+            "observation": "Выноска ОГМ 4, размер 1470."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "consistent",
+            "reason": "Секция 2, одинаковая марка и уровни. Положение выноски на плане (внизу слева) не означает конец ограждения: линия охватывает весь марш.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.375,
+                  0.25,
+                  0.57,
+                  0.3
+                ],
+                "observation": "Подпись плиты +6.070 сверху."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.38,
+                  0.755,
+                  0.57,
+                  0.805
+                ],
+                "observation": "Подпись плиты +7.270 снизу."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "consistent",
+            "reason": "На плане одна выноска, на разрезе одно размещение ОГМ 4; обе показывают одно ограждение (в пределах пакета).",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.3,
+                  0.735,
+                  0.42,
+                  0.76
+                ],
+                "observation": "Одна выноска ОГМ 4."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "consistent",
+            "reason": "Верхняя привязка плана 1470 (площадка +6.070, от стены до контура ограждения) равна размеру 1470 у конца ОГМ 4 на площадке +6,070 на разрезе. Точность совпадения концов оценена по виду чертежа.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.08,
+                  0.26,
+                  0.14,
+                  0.34
+                ],
+                "observation": "Размер 1470."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.33,
+                  0.78,
+                  0.5,
+                  0.8
+                ],
+                "observation": "Размер 1470 у конца ОГМ 4."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Оба вида на листе 3, ссылка на исполнение на л.4 общая.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P008",
+        "relation": "type_instance",
+        "reason": "obj_19 — десять раздельных размещений ОГМ 5 на разрезе, A5 — одно исполнение ОГМ 5 на листе 4. Это тип и его размещения.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.3,
+              0.75,
+              0.8,
+              0.8
+            ],
+            "observation": "Первая выноска ОГМ 5 и размеры 900, 115, 1770 у правого конца."
+          },
+          {
+            "type": "image",
+            "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "image_sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+            "bbox_norm_xyxy": [
+              0.145,
+              0.08,
+              0.17,
+              0.12
+            ],
+            "observation": "Заголовок панели «ОГМ 5»."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "consistent",
+            "reason": "Одинаковая марка ОГМ 5; ориентация исполнения (верх слева, нижний конец справа) согласуется с маршами ОГМ 5, поднимающимися справа налево.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "image_sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+                "bbox_norm_xyxy": [
+                  0.05,
+                  0.12,
+                  0.29,
+                  0.88
+                ],
+                "observation": "Панель ОГМ 5: интервалы 600 ×4, 320 ×4, 648, 955."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "needs_data",
+            "reason": "Ведомость ОГМ 5 в пакете отсутствует. Десять размещений на разрезе есть, количество по ведомости неизвестно.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.3,
+                  0.2,
+                  0.8,
+                  0.8
+                ],
+                "observation": "Повторяющиеся выноски ОГМ 5 на нескольких маршах."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "needs_data",
+            "reason": "Привязки разреза (900, 115, 1770) и размеры исполнения (955, 648, 600, 320) несопоставимы без ведомости и без согласованных концов.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "image_sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+                "bbox_norm_xyxy": [
+                  0.05,
+                  0.12,
+                  0.29,
+                  0.88
+                ],
+                "observation": "Размеры исполнения ОГМ 5."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Ссылка «см. л.4» охватывает ОГМ 5, исполнение — на листе 4.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P009",
+        "relation": "type_instance",
+        "reason": "I3 — выноска ОГМ 5 на плане +7.270, obj_19 — марка с десятью размещениями. План допускает связь с первым размещением +7,270→+9,110, но прямо это не указано.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+            "bbox_norm_xyxy": [
+              0.58,
+              0.735,
+              0.7,
+              0.76
+            ],
+            "observation": "Выноска ОГМ 5 внизу справа."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "needs_data",
+            "reason": "Марка совпадает, нижняя площадка плана +7.270 соответствует началу первого размещения ОГМ 5. Однако в плане нет признака номера размещения из десяти, привязка к конкретному размещению не доказана.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.38,
+                  0.755,
+                  0.57,
+                  0.805
+                ],
+                "observation": "Подпись плиты +7.270 внизу."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "needs_data",
+            "reason": "Одна выноска на плане количество не задаёт. Десять размещений на разрезе к этой выноске не добавляются.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.58,
+                  0.735,
+                  0.7,
+                  0.76
+                ],
+                "observation": "Единственная выноска ОГМ 5."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "consistent",
+            "reason": "Нижняя привязка плана 1770 у площадки +7.270 совпадает с привязкой 1770 у нижнего (правого) конца ОГМ 5 на разрезе. Размер повторяется для всех размещений ОГМ 5.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "image_sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+                "bbox_norm_xyxy": [
+                  0.08,
+                  0.78,
+                  0.14,
+                  0.86
+                ],
+                "observation": "Размер 1770 внизу плана."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.62,
+                  0.755,
+                  0.78,
+                  0.795
+                ],
+                "observation": "Размеры 900, 115, 1770 у правого конца ОГМ 5."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Связь через общее примечание листа 3 с л.4.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P010",
+        "relation": "type_instance",
+        "reason": "I4 — выноска ОГМ 5 на плане с плитами +37.510, +39.350, +41.190, obj_19 — марка с десятью размещениями. Совпадение уровней указывает на последнее размещение +37,510→+39,350, но номер размещения на плане прямо не указан. I3 и I4 не объединяются.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.5,
+              0.215,
+              0.62,
+              0.245
+            ],
+            "observation": "Выноска ОГМ 5 у верхнего конца центрального ограждения."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "needs_data",
+            "reason": "Уровни плиты +39.350 и +37.510 согласуются с последним размещением, но обозначения размещения на плане нет; идентификация остаётся вероятной, не подтверждённой.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.33,
+                  0.16,
+                  0.5,
+                  0.22
+                ],
+                "observation": "Подпись «Отм. Ж/Б плиты +39.350»."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.75,
+                  0.7,
+                  0.95,
+                  0.76
+                ],
+                "observation": "Подпись «Отм. Ж/Б плиты +37.510» с точкой-указателем."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "needs_data",
+            "reason": "Выноска на плане количество не задаёт.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.5,
+                  0.215,
+                  0.62,
+                  0.245
+                ],
+                "observation": "Одна выноска ОГМ 5."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "needs_data",
+            "reason": "План даёт 1170, 3460, 1470. У нижнего (правого) конца ОГМ 5 привязки 1770 (разрез) на плане нет. Размер 1170 у площадки +39,350 на разрезе дан у левого конца ОГМ 8, не ОГМ 5.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.08,
+                  0.19,
+                  0.14,
+                  0.88
+                ],
+                "observation": "Размерная цепь 1170, 3460, 1470."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Связь через примечание листа 3 с л.4.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P011",
+        "relation": "type_instance",
+        "reason": "obj_20 — девять раздельных размещений ОГМ 6, A6 — исполнение ОГМ 6 (листе 4). Замечание реестра, что ОГМ 6 не размещена на планах, неверно: выноска ОГМ 6 есть на типовом плане.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "image_sha256": "6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b",
+            "bbox_norm_xyxy": [
+              0.2,
+              0.715,
+              0.36,
+              0.745
+            ],
+            "observation": "Выноска ОГМ 6 внизу слева на типовом плане."
+          },
+          {
+            "type": "image",
+            "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "image_sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+            "bbox_norm_xyxy": [
+              0.47,
+              0.13,
+              0.5,
+              0.18
+            ],
+            "observation": "Заголовок панели «ОГМ 6»."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "consistent",
+            "reason": "Одинаковая марка ОГМ 6; в исполнении виден горизонтальный участок 400 и 795.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "image_sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+                "bbox_norm_xyxy": [
+                  0.365,
+                  0.15,
+                  0.62,
+                  0.93
+                ],
+                "observation": "Панель ОГМ 6."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "needs_data",
+            "reason": "Ведомость ОГМ 6 в пакете отсутствует; девять размещений на разрезе нельзя подтвердить количеством из ведомости.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.3,
+                  0.2,
+                  0.6,
+                  0.75
+                ],
+                "observation": "Повторяющиеся выноски ОГМ 6 на маршах, поднимающихся слева направо."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "needs_data",
+            "reason": "Привязка 1170 у левого конца ОГМ 6 совпадает с верхним размером 1170 типового плана, но размеры исполнения (400, 795, 648, 600) без ведомости с разрезом не сопоставимы. Связанные таблицы отметок плит на типовом плане неполны (см. findings).",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+                "image_sha256": "6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b",
+                "bbox_norm_xyxy": [
+                  0.05,
+                  0.19,
+                  0.14,
+                  0.3
+                ],
+                "observation": "Размер 1170 в цепи плана."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.33,
+                  0.7,
+                  0.5,
+                  0.73
+                ],
+                "observation": "Размеры 1170, 940, 75 у левого конца ОГМ 6."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Название листа 4 охватывает ОГМ 6; ссылка с листа 3 на л.4.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_addaa8965de54d218095d13652f30388",
+                "quote": "Наименование листа: Ограждения ОГМ 1...6, 8"
+              },
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P012",
+        "relation": "type_instance",
+        "reason": "obj_21 — размещение ОГМ 8 на марше +39,350→+41,190, A8 — исполнение ОГМ 8 на листе 4.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.3,
+              0.075,
+              0.82,
+              0.15
+            ],
+            "observation": "Выноска ОГМ 8 у верхнего марша; 1170 слева, 1470 справа вверху."
+          },
+          {
+            "type": "image",
+            "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "image_sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+            "bbox_norm_xyxy": [
+              0.83,
+              0.13,
+              0.85,
+              0.18
+            ],
+            "observation": "Заголовок панели «ОГМ 8»."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "consistent",
+            "reason": "Марка ОГМ 8 одинакова; единственное размещение у верхней площадки.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "image_sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+                "bbox_norm_xyxy": [
+                  0.69,
+                  0.15,
+                  0.98,
+                  0.97
+                ],
+                "observation": "Панель ОГМ 8: интервалы 600 ×5, короткий участок 100, 795."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "needs_data",
+            "reason": "Ведомости ОГМ 8 в пакете нет, сравнить количество нельзя.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.3,
+                  0.075,
+                  0.82,
+                  0.15
+                ],
+                "observation": "Одна выноска ОГМ 8 на разрезе."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "needs_data",
+            "reason": "Привязки разреза (1170, 940, 75, 900, 1470) и размеры исполнения (600 ×5, 320 ×5, 100, 795, 955) без ведомости и без совпадающих концов не сопоставляются.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "image_sha256": "a81cbe4ddc1e4aaa73ad00a96a336e5f38a606c55cef829f2aff2f0c7cf9db62",
+                "bbox_norm_xyxy": [
+                  0.69,
+                  0.15,
+                  0.98,
+                  0.97
+                ],
+                "observation": "Размеры исполнения ОГМ 8."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Название листа 4 включает ОГМ 8, ссылка с листа 3 на л.4.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_addaa8965de54d218095d13652f30388",
+                "quote": "Наименование листа: Ограждения ОГМ 1...6, 8"
+              },
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P013",
+        "relation": "same_instance",
+        "reason": "Один и тот же участок ограждения в двух видах: разрез (+39,350→+41,190) и план с плитами +39.350 и +41.190. Совпадают марка ОГМ 8 и привязки 1170 и 1470 у соответствующих площадок. Вывод ограничен пределами пакета.",
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.25,
+              0.76,
+              0.37,
+              0.795
+            ],
+            "observation": "Выноска ОГМ 8 у левой линии центрального ограждения."
+          },
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.3,
+              0.075,
+              0.82,
+              0.15
+            ],
+            "observation": "Выноска ОГМ 8, размеры 1170 и 1470."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "consistent",
+            "reason": "Секция 2, марка ОГМ 8, уровни +39.350 и +41.190 на плане совпадают с границами размещения на разрезе. Положение выноски (внизу слева) не определяет конец ограждения.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.33,
+                  0.755,
+                  0.5,
+                  0.82
+                ],
+                "observation": "Подпись «Отм. Ж/Б плиты +41.190»."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "consistent",
+            "reason": "Одна выноска на плане и одно размещение на разрезе; изображения не дают количества сверх этого.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.25,
+                  0.76,
+                  0.37,
+                  0.795
+                ],
+                "observation": "Одна выноска ОГМ 8."
+              }
+            ]
+          },
+          {
+            "operation": "dimensions",
+            "status": "consistent",
+            "reason": "Верхний размер плана 1170 (площадка +39.350) совпадает с 1170 у левого конца ОГМ 8 на разрезе; нижний 1470 (площадка +41.190) совпадает с 1470 у правого верхнего конца.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.08,
+                  0.19,
+                  0.14,
+                  0.3
+                ],
+                "observation": "Размер 1170 на плане."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "image_sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.08,
+                  0.78,
+                  0.14,
+                  0.88
+                ],
+                "observation": "Размер 1470 на плане."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+                "bbox_norm_xyxy": [
+                  0.3,
+                  0.075,
+                  0.82,
+                  0.15
+                ],
+                "observation": "Размеры 1170 слева и 1470 справа вверху."
+              }
+            ]
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "Оба вида на листе 3 с общей ссылкой на л.4.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pair_id": "P014",
+        "relation": "different",
+        "reason": "R1 — документальная ссылка на диапазон ОГМ 1...ОГМ 8, а не размещение ОГМ 8. Марка входит в диапазон, но ссылка не является объектом.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+            "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+          }
+        ],
+        "checks": [
+          {
+            "operation": "identity",
+            "status": "not_applicable",
+            "reason": "Ссылка — не физическое размещение.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          },
+          {
+            "operation": "quantity",
+            "status": "not_applicable",
+            "reason": "Ссылка количества не задаёт.",
+            "evidence": []
+          },
+          {
+            "operation": "dimensions",
+            "status": "not_applicable",
+            "reason": "У ссылки нет размеров.",
+            "evidence": []
+          },
+          {
+            "operation": "document_links",
+            "status": "consistent",
+            "reason": "ОГМ 8 входит в диапазон ссылки и в название листа 4 (ОГМ 1...6, 8). Диапазон ссылки при этом включает ОГМ 7, которого нет в названии листа 4 (см. findings).",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_addaa8965de54d218095d13652f30388",
+                "quote": "Наименование листа: Ограждения ОГМ 1...6, 8"
+              },
+              {
+                "type": "text",
+                "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+                "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "problem": "Таблицы отметок Ж/Б плит на типовой схеме ограждений неполны и разной длины",
+        "description": "На типовой схеме (заголовок: отм. +10.630 ... +37.510, девять уровней) нижняя таблица «Ж/Б плита на отметках» содержит 9 отметок: +10.630, +13.990, +17.350, +20.710, +24.070, +27.430, +30.790, +34.150, +37.510. Верхняя таблица содержит 8 отметок: +9.110, +12.470, +15.830, +19.190, +25.910, +29.270, +35.990, +39.350. В ней нет +22.550 и +32.630, хотя эти уровни есть на разрезе 1-1 и являются верхними площадками маршей ОГМ 5 (+20.710→+22.550, +30.790→+32.630) и нижними для ОГМ 6. Отметка +39.350 в верхней таблице не имеет пары в нижней.",
+        "solution": "Уточнить у разработчика состав отметок и привести обе таблицы типовой схемы в соответствие с разрезом 1-1 (добавить +22.550 и +32.630, проверить +39.350).",
+        "report_section": "questions",
+        "pair_ids": [
+          "P008",
+          "P011"
+        ],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "image_sha256": "6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b",
+            "bbox_norm_xyxy": [
+              0.77,
+              0.2,
+              0.92,
+              0.43
+            ],
+            "observation": "Верхняя таблица: +9.110, +12.470, +15.830, +19.190, +25.910, +29.270, +35.990, +39.350 (8 строк, без +22.550 и +32.630)."
+          },
+          {
+            "type": "image",
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "image_sha256": "6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b",
+            "bbox_norm_xyxy": [
+              0.77,
+              0.52,
+              0.92,
+              0.77
+            ],
+            "observation": "Нижняя таблица: 9 отметок от +10.630 до +37.510."
+          },
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.05,
+              0.485,
+              0.25,
+              0.505
+            ],
+            "observation": "На разрезе отмечен уровень +22,550."
+          },
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "image_sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+            "bbox_norm_xyxy": [
+              0.05,
+              0.268,
+              0.25,
+              0.29
+            ],
+            "observation": "На разрезе отмечен уровень +32,630."
+          }
+        ]
+      },
+      {
+        "problem": "Ссылка на ОГМ 1...ОГМ 8 охватывает ОГМ 7, которого нет в названии листа 4",
+        "description": "Примечание листа 3 отсылает к л.4 для ограждений «ОГМ 1...ОГМ 8». Лист 4 называется «Ограждения ОГМ 1...6, 8», в пакете нет чертежа ОГМ 7, на разрезе марки ОГМ 7 нет. Остальные представленные материалы ОГМ 7 не упоминают. Наличие ОГМ 7 в проекте в пакете не подтверждено и не исключено.",
+        "solution": "Уточнить, существует ли марка ОГМ 7. Если нет — скорректировать примечание на «ОГМ 1...6, 8»; если есть — показать её исполнение и размещение.",
+        "report_section": "questions",
+        "pair_ids": [
+          "P002",
+          "P014"
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+            "quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4."
+          },
+          {
+            "type": "text",
+            "block_id": "blk_addaa8965de54d218095d13652f30388",
+            "quote": "Наименование листа: Ограждения ОГМ 1...6, 8"
+          }
+        ]
+      },
+      {
+        "problem": "Разные значения стадии в штампах листов 3 и 4 при одном шифре",
+        "description": "Штамп листа 3 (шифр ПД-00580716-КМ1.2) содержит «Stage: Р», штамп листа 4 с тем же шифром — «Stage: П». В штампах также различается написание организации (GLOBUS PROJECT / GLOBUS ПРОЕКТ). Редакционный вопрос, на размеры и количество не влияет, но касается документальной связи листа 3 с л.4.",
+        "solution": "Проверить стадию и написание организации в штампах листов 3 и 4 и привести к единому значению.",
+        "report_section": "questions",
+        "pair_ids": [
+          "P002",
+          "P014"
+        ],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+            "quote": "Stage: Р | Sheet: 3"
+          },
+          {
+            "type": "text",
+            "block_id": "blk_addaa8965de54d218095d13652f30388",
+            "quote": "Stage: П | Sheet: 4"
+          }
+        ]
+      }
+    ],
+    "context_queries": [
+      "Ведомость элементов ограждения ОГМ 3",
+      "Ведомость элементов ограждения ОГМ 5",
+      "Ведомость элементов ограждения ОГМ 6",
+      "Ведомость элементов ограждения ОГМ 8",
+      "ОГМ 7",
+      "2070",
+      "2030"
+    ]
+  },
+  "input_tokens": 34318,
+  "output_tokens": 60644,
+  "cost_usd": 0.0,
+  "duration_ms": 456480,
+  "model": "claude/claude-sonnet-5-5",
+  "is_error": false,
+  "error_message": "",
+  "cached_tokens": 0,
+  "cache_write_tokens": 34316,
+  "reasoning_tokens": 38807,
+  "cost_source": "subscription",
+  "response_id": "49cab780-cad6-4fea-b6c5-141d537d30c2",
+  "finish_reason": "images_resized=0"
+}

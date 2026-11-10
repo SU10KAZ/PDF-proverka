@@ -51,3 +51,29 @@ def test_forged_quote_and_missing_pair_cannot_pass():
     assert any('quote_not_in_source' in e for e in validate_object_identity_response(req,response)['errors'])
     response['pair_reviews']=[]
     assert 'incomplete_or_duplicate_pair_coverage' in validate_object_identity_response(req,response)['errors']
+
+
+def test_cross_packet_review_retains_original_exposure_boundary():
+    objects,pairs,requests=case()
+    objects[0]['id']='object_inventory_000:a'
+    objects[1]['id']='object_inventory_001:b'
+    pairs[0].update(left_object_id=objects[0]['id'],right_object_id=objects[1]['id'])
+    source=json.loads(requests[0]['messages'][1]['content'])
+    split=[]
+    for i,block in enumerate(source['source_blocks']):
+        payload={'packet_index':i,'source_blocks':[block],'images_in_attachment_order':[]}
+        split.append({'messages':[{'role':'system','content':'inventory'},
+            {'role':'user','content':json.dumps(payload)}],'image_paths':[]})
+    result=prepare_object_identity_request(objects,pairs,split)
+    payload=json.loads(result['messages'][1]['content'])
+    boundaries=payload['candidate_extraction_boundaries']
+    assert boundaries[0]['boundary']['supplied_block_ids']==['t1']
+    assert boundaries[1]['boundary']['supplied_block_ids']==['t2']
+    assert all(b['boundary_known'] for b in boundaries)
+    assert len(payload['source_blocks'])==2
+
+
+def test_unknown_extraction_boundary_is_not_guessed_from_cited_sources():
+    objects,pairs,requests=case()
+    payload=json.loads(prepare_object_identity_request(objects,pairs,requests)['messages'][1]['content'])
+    assert all(b['boundary'] is None and not b['boundary_known'] for b in payload['candidate_extraction_boundaries'])
