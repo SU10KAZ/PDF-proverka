@@ -1,0 +1,87 @@
+{
+  "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+  "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+  "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+  "tiles": [
+    {
+      "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+      "page_index": 5,
+      "pdf_rotation": 270,
+      "clip_rotated_page_points": [
+        67.80649185180664,
+        23.72056210041046,
+        834.6438250541688,
+        547.3685430288315
+      ],
+      "path": "/tmp/auditmanager_km_graphic_recovery_20261110/detail_tile_0.png",
+      "width": 1535,
+      "height": 1048,
+      "sha256": "59f2c6b87450236d9bc31e1bb6172358ba24fffef2bb3c3a7d7a57875cfe9ee9"
+    },
+    {
+      "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+      "page_index": 5,
+      "pdf_rotation": 270,
+      "clip_rotated_page_points": [
+        695.218855381012,
+        23.72056210041046,
+        1531.7686734199524,
+        547.3685430288315
+      ],
+      "path": "/tmp/auditmanager_km_graphic_recovery_20261110/detail_tile_1.png",
+      "width": 1674,
+      "height": 1048,
+      "sha256": "afded94105f788e3ebfd081f2f6b02bbf84f39b99d5a2ded468d3ed2e6187529"
+    },
+    {
+      "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+      "page_index": 5,
+      "pdf_rotation": 270,
+      "clip_rotated_page_points": [
+        1392.3437037467957,
+        23.72056210041046,
+        2228.893521785736,
+        547.3685430288315
+      ],
+      "path": "/tmp/auditmanager_km_graphic_recovery_20261110/detail_tile_2.png",
+      "width": 1674,
+      "height": 1048,
+      "sha256": "67ca008aba70795be322b9f211dec0f90be7d475c5f651af11e3ba2450daa660"
+    },
+    {
+      "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+      "page_index": 5,
+      "pdf_rotation": 270,
+      "clip_rotated_page_points": [
+        2089.4685521125793,
+        23.72056210041046,
+        2856.3058853149414,
+        547.3685430288315
+      ],
+      "path": "/tmp/auditmanager_km_graphic_recovery_20261110/detail_tile_3.png",
+      "width": 1535,
+      "height": 1048,
+      "sha256": "e5dca30656c3881fa065e2d922530ae1a40cc01acf4e761c22442c50a8e3bce5"
+    }
+  ],
+  "inspection": {
+    "viewed_tiles": [
+      0,
+      1,
+      3
+    ],
+    "observations": [
+      "ОГМ1: видны выноски позиций 1–8, размер 2720, концевые размеры 240 и 130.",
+      "ОГМ2: видны размер 2740, три пролета 600 между стойками и выноски позиций.",
+      "ОГМ4: видны горизонтальный участок 700, наклонный размер 2400 и выноски позиций."
+    ],
+    "limit": "Локальная визуальная проверка читаемости; независимый повторный ответ модели на фрагментах пока не получен. Согласованность конструкции и спецификации этим не доказана.",
+    "text_reextracted": false,
+    "production_change": false
+  },
+  "reproduction": {
+    "script": "experiments/auditmanager_stage4_20261110/render_graphic_detail.py",
+    "tile_hashes_match": true,
+    "manifest": "/tmp/auditmanager_km_graphic_recovery_reproduced_20261110/manifest.json"
+  }
+}
