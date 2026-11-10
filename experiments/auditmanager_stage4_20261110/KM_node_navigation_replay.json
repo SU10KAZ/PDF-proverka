@@ -1,0 +1,14 @@
+{
+  "target_node_attached": true,
+  "target_provenance": {
+    "code": "ПД-00580716-КМ1.2",
+    "stage": "П",
+    "sheet": "4",
+    "revisions": "Не указано"
+  },
+  "applicability_verified": false,
+  "initial_response_reused": true,
+  "request_sha256": "de8d90873f20aeb8add6f6b3874889abbc5e1e1e36d87c987ad97e3831c059eb",
+  "chars": 119903,
+  "images": 8
+}

@@ -73,9 +73,22 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
         # fragments (e.g. 'по А' inside 'по адресу'). Source text is unchanged.
         body = re.sub(r'^>[ \t]*\*\*(?:Created|Crop|Stamp):\*\*[^\n]*$', '', content,
                       flags=re.M | re.I)
+        stamp_match = re.search(r'^>[ \t]*\*\*Stamp:\*\*([^\n]*)', content, re.M)
+        stamp = stamp_match.group(1) if stamp_match else ''
+        provenance = {}
+        for field in ('Code', 'Stage', 'Sheet', 'Revisions'):
+            value = re.search(r'(?:^|\|)\s*' + field + r':\s*([^|]+)', stamp)
+            if value:
+                provenance[field.lower()] = value.group(1).strip()
         match_kinds = {}
         for q in valid:
-            if page_num in requested_sheet_pages(q):
+            # A compact drawing reference is a navigation hypothesis, not proof
+            # that a same-numbered sheet from another stage is applicable.
+            node_ref = re.fullmatch(r'(?:по\s+)?([А-ЯЁA-Z])\s*\((\d+)\)', q, re.I)
+            if (node_ref and provenance.get('sheet') == node_ref[2]
+                    and re.search(r'(?<!\w)' + re.escape(node_ref[1]) + r'(?!\w)', body, re.I)):
+                match_kinds[q] = 'node_sheet_navigation'
+            elif page_num in requested_sheet_pages(q):
                 match_kinds[q] = 'sheet_reference'
             elif q.casefold() in content.casefold():
                 pattern = r'(?<!\w)' + re.escape(q.casefold()) + r'(?!\w)'
@@ -93,7 +106,8 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
         preceding = [p for p in pages if p.start() < h.start()]
         row = {'block_id': h.group(2), 'kind': h.group(1).upper(),
                'page': int(preceding[-1].group(1)) if preceding else None,
-               'queries': matches, 'query_match_kinds': match_kinds, 'start_line': md.count('\n', 0, h.start())+1}
+               'queries': matches, 'query_match_kinds': match_kinds, 'start_line': md.count('\n', 0, h.start())+1,
+               'source_provenance': provenance, 'reference_applicability_verified': False}
         if row['block_id'] in exclude_block_ids:
             already_supplied.append(row)
             continue
@@ -101,7 +115,7 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
     # Round-robin across queries prevents common phrases from starving exact
     # marks that occur later in the document. Source order remains stable within
     # each query; no text is truncated or synthesized.
-    priorities = {'sheet_reference': 0, 'body_token': 0, 'metadata_token': 1, 'substring': 2}
+    priorities = {'node_sheet_navigation': -1, 'sheet_reference': 0, 'body_token': 0, 'metadata_token': 1, 'substring': 2}
     queues = [sorted((i for i, hit in enumerate(matches_all) if q in hit['queries']),
                      key=lambda i: priorities[matches_all[i]['query_match_kinds'][q]]) for q in valid]
     order, seen = [], set()
@@ -171,6 +185,12 @@ def build_context_followup(request, payload):
     packet['candidate'] = unresolved[0]
     packet['retrieved_context'] = new
     packet['context_search_receipt'] = report
+    packet['reference_navigation_boundary'] = (
+        'Retrieved references are navigation candidates, not established applicability. '
+        'Compare source Code, Stage, Sheet and Revisions with the original candidate. '
+        'A matching node/sheet number does not establish that a different stage or '
+        'revision applies. If the relationship is unproved, retain needs_data; '
+        'do not use it to confirm or refute the claim.')
     packet['previous_decisions'] = decisions
     # Attach only local, explicitly indexed crops from the same frozen index.
     # A summary or an unavailable crop never becomes graphic evidence.

@@ -162,3 +162,28 @@ def test_metadata_and_morphological_matches_are_preserved_with_original_text():
     all_rows=search_md_context(md,['КМ8','бетон'],max_blocks=10)['hits']
     for row in all_rows:assert row['content'] in md
     assert all_rows[1]['query_match_kinds']=={'КМ8':'metadata_token'}
+
+
+def test_compact_node_reference_finds_target_not_only_referring_views():
+    md = ('## Page 11\n### BLOCK #1 [GRAPHIC]: view\n'
+          '> **Stamp:** Code: КМ | Stage: Р | Sheet: 9 | Revisions: 2\nОГМ11 по Б(4)\n'
+          '## Page 6\n### BLOCK #2 [GRAPHIC]: node\n'
+          '> **Stamp:** Code: КМ | Stage: П | Sheet: 4 | Revisions: 1\nУзлы Б, В, Г, Д\n'
+          '## Page 4\n### BLOCK #3 [GRAPHIC]: wrong_sheet\n'
+          '> **Stamp:** Code: КМ | Stage: Р | Sheet: 2\nУзел Б\n')
+    report = search_md_context(md, ['ОГМ11', 'Б(4)', 'Д(4)'], max_blocks=1)
+    hit, = report['hits']
+    assert hit['block_id'] == 'node'
+    assert hit['content'] in md
+    assert hit['source_provenance'] == {'code':'КМ', 'stage':'П', 'sheet':'4', 'revisions':'1'}
+    assert hit['query_match_kinds'] == {'Б(4)':'node_sheet_navigation', 'Д(4)':'node_sheet_navigation'}
+    assert hit['reference_applicability_verified'] is False
+    assert [r['block_id'] for r in report['backlog']] == ['view']
+    assert not report['absence_proven']
+
+
+def test_node_reference_does_not_infer_node_from_metadata_or_other_sheet():
+    md = ('## Page 4\n### BLOCK #1 [GRAPHIC]: wrong\n'
+          '> **Stamp:** Code: Б | Stage: Р | Sheet: 4\nУзел В\n')
+    assert not search_md_context(md, ['Б(4)'])['hits']
+    assert not search_md_context(md, ['В(9)'])['hits']
