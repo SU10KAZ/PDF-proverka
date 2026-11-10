@@ -63,5 +63,27 @@
     }
   ],
   "no_scope_reduction": true,
-  "production_changed": false
+  "production_changed": false,
+  "specific_open_controls": [
+    {
+      "hypothesis": "H04",
+      "state": "running",
+      "control": "EOM 17 source blocks, one unchanged generic packet",
+      "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110",
+      "session": 45645,
+      "expected_answer_hidden": true
+    },
+    {
+      "hypothesis": "H06",
+      "state": "missing_positive_control",
+      "evidence": "ITP_requirement_claude_assessment.json",
+      "detail": "Existing requirement response proves preservation of unknown applicability, not a valid positive applicability comparison. REQ-01 has unresolved document linkage; REQ-07 is an analogue permission, not a proved defect."
+    },
+    {
+      "hypothesis": "H03",
+      "state": "relationship_semantics_unaccepted",
+      "evidence": "KM_identity_control_assessment.json",
+      "detail": "6 of 14 returned links have contract errors; automatic merges remain disabled. Acceptance of selected relation handling needs a real valid positive/negative pair or an explicitly diagnostic-only configuration."
+    }
+  ]
 }
