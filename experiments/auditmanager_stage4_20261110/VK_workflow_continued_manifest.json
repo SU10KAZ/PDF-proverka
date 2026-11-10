@@ -1,0 +1,15 @@
+{
+  "inputs_sha256": "34d0cf312072a97f204595d31db50d2fe79d9a124a262b5f2dc5e127488fb74a",
+  "model": "claude/claude-sonnet-5-5",
+  "source_run": "/tmp/auditmanager_vk_source_workflow_control_20261110",
+  "initial_request_sha256": "7c5018ce428d9e0a246d6ad239e8594e7b8fd3bd6f5501541b07d94e5f818623",
+  "initial_message_chars": 11588,
+  "initial_images": 1,
+  "initial_image_bytes": 242973,
+  "max_model_calls": 4,
+  "automatic_retries": 0,
+  "history_or_engineer_answers_sent": false,
+  "context_boundary": "Same frozen VK MD and graphics; continue recorded queries only",
+  "known_saved_finding_not_blind": true,
+  "cost": "Subscription quota; monetary maximum unknown"
+}

@@ -56,7 +56,31 @@ async def execute(digest):
         invoke=logged,executor_id=c['executor_id'])
     print(json.dumps({k:v for k,v in result.items() if k!='entry'},ensure_ascii=False,indent=2))
 
+def prepare_continuation(previous):
+    if (ROOT/'manifest.json').exists():raise RuntimeError('Already prepared')
+    previous=Path(previous)
+    c=json.loads((previous/'inputs.json').read_text())
+    followup=json.loads((previous/'corrected_followup.json').read_text())
+    if followup['status']!='prepared_awaiting_dispatch_authorization':raise ValueError('No prepared continuation')
+    c['queue']=followup['expanded_queue'];c['executor_id']='claude/claude-sonnet-5-5:high:workflow-v2'
+    request=prepare_source_review_request(c['queue'],c['finding'],Path(c['md_path']).read_text())
+    ROOT.mkdir(exist_ok=True)
+    (ROOT/'inputs.json').write_text(json.dumps(c,ensure_ascii=False,indent=2))
+    manifest={'inputs_sha256':evidence_digest(c),'model':c['model'],'source_run':str(previous),
+        'initial_request_sha256':request['request_sha256'],
+        'initial_message_chars':sum(len(m['content']) for m in request['messages']),
+        'initial_images':len(request['image_paths']),
+        'initial_image_bytes':sum(Path(p).stat().st_size for p in request['image_paths']),
+        'max_model_calls':4,'automatic_retries':0,'history_or_engineer_answers_sent':False,
+        'context_boundary':'Same frozen VK MD and graphics; continue recorded queries only',
+        'known_saved_finding_not_blind':True,'cost':'Subscription quota; monetary maximum unknown'}
+    (ROOT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
+    print(json.dumps(manifest,ensure_ascii=False,indent=2))
+
+
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--execute');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--execute');p.add_argument('--root',type=Path);p.add_argument('--continue-from',type=Path);a=p.parse_args()
+    if a.root:ROOT=a.root
     if a.execute:asyncio.run(execute(a.execute))
+    elif a.continue_from:prepare_continuation(a.continue_from)
     else:prepare()

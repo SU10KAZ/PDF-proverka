@@ -1,0 +1,29 @@
+{
+  "status": "contract_pass_semantic_partial",
+  "real_model_calls": 2,
+  "model": "claude/claude-sonnet-5-5",
+  "durations_ms": [
+    46776,
+    79690
+  ],
+  "candidate_admission_receipts": [
+    {
+      "finding_id": "F-013",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "source_and_diagram_checked": true,
+  "useful_narrow_core": "Empty fields in supplied specification row; drawing names model and component identities.",
+  "not_established": "Incomplete physical supply, hydraulic inadequacy, universal specification absence, normative violation.",
+  "remaining": "Model requested hydraulic appendix and other specification pages. Running process used earlier follow-up logic; current local continuation now searches new queries. Do not accept whole-document absence or transfer missing-context work to engineer.",
+  "corrected_followup_status": "prepared_awaiting_dispatch_authorization",
+  "new_source_blocks": [
+    "blk_8406a049b70d4dbeb1611ed0a11840b3",
+    "blk_334d3e8c9b564950a954792eea9787c8",
+    "blk_d2571e41e76d4f328298d074001845db"
+  ],
+  "new_context_sent": false,
+  "original_finding_mutated": false,
+  "production_changed": false
+}
