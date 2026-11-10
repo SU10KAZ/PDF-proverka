@@ -1,0 +1,260 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "p4_19",
+      "operation": "identity_across_views",
+      "status": "checked",
+      "reason": "Осмотрены общий блок и все четыре увеличенных изображения ОГМ 1–ОГМ 4. Панели обозначают разные марки изделий, а увеличенные изображения повторяют соответствующие панели. ОГМ 4 однозначно сопоставляется с ведомостью элементов ограждения ОГМ 4: верхний горизонтальный участок входит в эту марку, отдельного обозначения изделия для него нет. Позиции 1–9 на изображении относятся к ведомости ОГМ 4; повторение номеров позиций у других марок не является конфликтом идентичности. Проверка ограничена представленными изображениями и ведомостями.",
+      "source_refs": [
+        "blk_eff2811805d64c26b34d72e41ecbb194",
+        "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+        "blk_4b49406098054a4da822e4286031df67",
+        "blk_5f00d7d0be874b0ead4105aad66a03ed",
+        "blk_2b31bb21c613499ea1bea845105e296f"
+      ]
+    },
+    {
+      "object_id": "p4_19",
+      "operation": "dimension_consistency",
+      "status": "needs_data",
+      "reason": "На увеличенном изображении ОГМ 4 прочитаны горизонтальный участок 400, наклонный размер 2730, нижняя цепь 600+600+600+450, размеры 800 и 955, три участка 648 у позиции 5 и участок 478 у позиции 9. Самостоятельная запись 4,00 не подтверждается: сверху и снизу горизонтальной части показано 400. Размеры 800 и 955 согласуются с длинами 0,800 м позиции 4 и 0,955 м позиции 2 в ведомости. Для позиции 1 ведомость задаёт 3,640 м, однако размер 2730 относится к наклонному участку, а сумма 2730+400 не устанавливает полную развёрнутую длину пространственно изогнутой детали. Для позиций 7 и 8 также отсутствует полная размерная развёртка. У позиции 5 размер между показанными границами составляет 648 мм при табличной длине 650 мм, у позиции 9 — 478 мм при табличной длине 480 мм; без определения базы длины заготовки, обработки торцов и сопряжений эти различия нельзя признать подтверждённым техническим конфликтом или допустимым отклонением. Для завершения проверки нужны относящиеся к ОГМ 4 виды и деталировка, устанавливающие полные длины и базы сравнения.",
+      "source_refs": [
+        "blk_eff2811805d64c26b34d72e41ecbb194",
+        "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+        "blk_9d85769870054701b8f16e3f8d203864"
+      ],
+      "missing_context": [
+        "План или дополнительный вид ОГМ 4 с размерами участков поручня позиции 1, не раскрытых данным видом, и геометрией изгибов.",
+        "Деталировка позиций 7 и 8 ОГМ 4 с полной развёрнутой длиной.",
+        "Узлы и указания, определяющие соотношение размеров между границами элементов на сборочном виде и длин заготовок позиций 5 и 9."
+      ],
+      "context_queries": [
+        "ОГМ 4",
+        "Схему расположения ограждений",
+        "по А",
+        "по Е",
+        "L=3,640м",
+        "L=0,850м"
+      ]
+    }
+  ],
+  "findings": [],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "p4_19",
+        "identity": "ОГМ 4, ограждение с наклонной и верхней горизонтальной частями",
+        "scope": "Самостоятельная марка сборочного изделия; верхняя горизонтальная часть входит в изображённое исполнение.",
+        "kind": "Тип сборочного изделия",
+        "source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Марка и форма",
+            "value": "ОГМ 4, наклонное ограждение с горизонтальным участком слева сверху",
+            "unit": null,
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Четвёртая панель озаглавлена «ОГМ 4»; верхняя левая часть горизонтальна."
+          },
+          {
+            "name": "Нижняя горизонтальная размерная цепь",
+            "value": [
+              600,
+              600,
+              600,
+              450
+            ],
+            "unit": "мм",
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Внизу показаны три размера 600 и крайний правый размер 450."
+          },
+          {
+            "name": "Горизонтальный участок",
+            "value": 400,
+            "unit": "мм",
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Под верхней горизонтальной частью читается размер 400; самостоятельная запись «4,00» по изображению не подтверждается."
+          },
+          {
+            "name": "Размеры заполнения",
+            "value": "Повторяющийся шаг 150; вертикальный размер 800 в наклонной части",
+            "unit": "мм",
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "В верхних размерных цепях повторяется 150; внутри наклонной части читается 800."
+          },
+          {
+            "name": "Ссылки и детализация",
+            "value": "Узловые обозначения у опор, перехода и окончания",
+            "unit": null,
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Показаны выноски и позиции деталей; полное чтение мелких обозначений по этому изображению невозможно."
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "p4_19",
+        "operation": "identity_across_views",
+        "status": "reported_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "receipt": {
+          "object_id": "p4_19",
+          "operation": "identity_across_views",
+          "status": "checked",
+          "reason": "Осмотрены общий блок и все четыре увеличенных изображения ОГМ 1–ОГМ 4. Панели обозначают разные марки изделий, а увеличенные изображения повторяют соответствующие панели. ОГМ 4 однозначно сопоставляется с ведомостью элементов ограждения ОГМ 4: верхний горизонтальный участок входит в эту марку, отдельного обозначения изделия для него нет. Позиции 1–9 на изображении относятся к ведомости ОГМ 4; повторение номеров позиций у других марок не является конфликтом идентичности. Проверка ограничена представленными изображениями и ведомостями.",
+          "source_refs": [
+            "blk_eff2811805d64c26b34d72e41ecbb194",
+            "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "blk_4b49406098054a4da822e4286031df67",
+            "blk_5f00d7d0be874b0ead4105aad66a03ed",
+            "blk_2b31bb21c613499ea1bea845105e296f"
+          ]
+        }
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "quantity_balance",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "receipt": {
+          "object_id": "p4_19",
+          "operation": "dimension_consistency",
+          "status": "needs_data",
+          "reason": "На увеличенном изображении ОГМ 4 прочитаны горизонтальный участок 400, наклонный размер 2730, нижняя цепь 600+600+600+450, размеры 800 и 955, три участка 648 у позиции 5 и участок 478 у позиции 9. Самостоятельная запись 4,00 не подтверждается: сверху и снизу горизонтальной части показано 400. Размеры 800 и 955 согласуются с длинами 0,800 м позиции 4 и 0,955 м позиции 2 в ведомости. Для позиции 1 ведомость задаёт 3,640 м, однако размер 2730 относится к наклонному участку, а сумма 2730+400 не устанавливает полную развёрнутую длину пространственно изогнутой детали. Для позиций 7 и 8 также отсутствует полная размерная развёртка. У позиции 5 размер между показанными границами составляет 648 мм при табличной длине 650 мм, у позиции 9 — 478 мм при табличной длине 480 мм; без определения базы длины заготовки, обработки торцов и сопряжений эти различия нельзя признать подтверждённым техническим конфликтом или допустимым отклонением. Для завершения проверки нужны относящиеся к ОГМ 4 виды и деталировка, устанавливающие полные длины и базы сравнения.",
+          "source_refs": [
+            "blk_eff2811805d64c26b34d72e41ecbb194",
+            "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "blk_9d85769870054701b8f16e3f8d203864"
+          ],
+          "missing_context": [
+            "План или дополнительный вид ОГМ 4 с размерами участков поручня позиции 1, не раскрытых данным видом, и геометрией изгибов.",
+            "Деталировка позиций 7 и 8 ОГМ 4 с полной развёрнутой длиной.",
+            "Узлы и указания, определяющие соотношение размеров между границами элементов на сборочном виде и длин заготовок позиций 5 и 9."
+          ],
+          "context_queries": [
+            "ОГМ 4",
+            "Схему расположения ограждений",
+            "по А",
+            "по Е",
+            "L=3,640м",
+            "L=0,850м"
+          ]
+        }
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "document_links",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_2b31bb21c613499ea1bea845105e296f",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_4b49406098054a4da822e4286031df67",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_9d85769870054701b8f16e3f8d203864",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 4,
+    "unresolved_source_blocks": 10,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "dimension_consistency",
+    "identity_across_views"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}

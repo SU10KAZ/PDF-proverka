@@ -1,0 +1,16 @@
+{
+  "request_sha256": "895db6cda8b6ce070795cb0df9356b3c68d098ce5953fe32e904e3f026d85dc3",
+  "inventory_result_sha256": "acc697d473d22e3253326d275a83226da7ab7803748ffcb10d4c8df77b3c504e",
+  "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_eff2811805d64c26b34d72e41ecbb194.png",
+      "sha256": "f6907f70f3d50ece52d1b7a4bb65b98f13d1a7edd9fc138fc7f48575a6c983e7"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0,
+  "known_source_control": true,
+  "expected_answers_supplied": false
+}

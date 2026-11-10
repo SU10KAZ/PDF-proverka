@@ -1,0 +1,254 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "p4_19",
+      "operation": "identity_across_views",
+      "status": "needs_data",
+      "reason": "Осмотрены все четыре панели изображения: ОГМ 1, ОГМ 2, ОГМ 3 и ОГМ 4 обозначают самостоятельные исполнения, поэтому различия между ними не являются противоречиями одного изделия. В правой панели ОГМ 4 показана верхняя горизонтальная часть; марка соответствует ведомости ОГМ 4 (1шт.). Для проверки идентичности с установленным ограждением необходима схема расположения на листе 5, прямо указанная в примечании 5, с привязкой ОГМ 4 и изображением его примыканий. Эта схема в пакете отсутствует.",
+      "source_refs": [
+        "blk_eff2811805d64c26b34d72e41ecbb194",
+        "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+        "blk_9d85769870054701b8f16e3f8d203864"
+      ],
+      "context_queries": [
+        "ОГМ 4",
+        "ОГМ4",
+        "Схему расположения ограждений",
+        "л.5"
+      ]
+    },
+    {
+      "object_id": "p4_19",
+      "operation": "dimension_consistency",
+      "status": "needs_data",
+      "reason": "В панели ОГМ 4 осмотрены верхняя горизонтальная часть, наклонная часть, нижняя размерная цепь и правое окончание. Читаются нижние размеры 600 + 600 + 600 + 450 мм, дающие горизонтальную проекцию 2250 мм, размер 400 у верхней горизонтальной части, шаг 150 и вертикальный размер заполнения 800. Самостоятельная запись «4,00» изображением не подтверждается; утверждение о ней в графическом описании не является доказательством размерного конфликта. Размер 800 согласуется с L=0,800м позиции 4 ведомости. Длину поручня позиции 1 L=3,640м нельзя непосредственно сравнивать с горизонтальной проекцией: поручень включает наклонную и горизонтальную части. Для завершения проверки нужны читаемая детализация перехода и окончаний, привязка размеров к осям либо граням деталей и геометрия поручня, позволяющая определить его полную длину. Для сопоставления наклонных размеров на схеме с заготовочными длинами ведомости также нужны условия сопряжений. Подтвержденный размерный конфликт по представленным данным не установлен.",
+      "source_refs": [
+        "blk_eff2811805d64c26b34d72e41ecbb194",
+        "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+        "blk_9d85769870054701b8f16e3f8d203864"
+      ],
+      "context_queries": [
+        "ОГМ 4",
+        "Ведомость элементов ограждения ОГМ 4",
+        "L=3,640м",
+        "Ограждения ОГМ1...ОГМ8"
+      ]
+    }
+  ],
+  "findings": [],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "p4_19",
+        "identity": "ОГМ 4, ограждение с наклонной и верхней горизонтальной частями",
+        "scope": "Самостоятельная марка сборочного изделия; верхняя горизонтальная часть входит в изображённое исполнение.",
+        "kind": "Тип сборочного изделия",
+        "source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Марка и форма",
+            "value": "ОГМ 4, наклонное ограждение с горизонтальным участком слева сверху",
+            "unit": null,
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Четвёртая панель озаглавлена «ОГМ 4»; верхняя левая часть горизонтальна."
+          },
+          {
+            "name": "Нижняя горизонтальная размерная цепь",
+            "value": [
+              600,
+              600,
+              600,
+              450
+            ],
+            "unit": "мм",
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Внизу показаны три размера 600 и крайний правый размер 450."
+          },
+          {
+            "name": "Горизонтальный участок",
+            "value": 400,
+            "unit": "мм",
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Под верхней горизонтальной частью читается размер 400; самостоятельная запись «4,00» по изображению не подтверждается."
+          },
+          {
+            "name": "Размеры заполнения",
+            "value": "Повторяющийся шаг 150; вертикальный размер 800 в наклонной части",
+            "unit": "мм",
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "В верхних размерных цепях повторяется 150; внутри наклонной части читается 800."
+          },
+          {
+            "name": "Ссылки и детализация",
+            "value": "Узловые обозначения у опор, перехода и окончания",
+            "unit": null,
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Показаны выноски и позиции деталей; полное чтение мелких обозначений по этому изображению невозможно."
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "p4_19",
+        "operation": "identity_across_views",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "receipt": {
+          "object_id": "p4_19",
+          "operation": "identity_across_views",
+          "status": "needs_data",
+          "reason": "Осмотрены все четыре панели изображения: ОГМ 1, ОГМ 2, ОГМ 3 и ОГМ 4 обозначают самостоятельные исполнения, поэтому различия между ними не являются противоречиями одного изделия. В правой панели ОГМ 4 показана верхняя горизонтальная часть; марка соответствует ведомости ОГМ 4 (1шт.). Для проверки идентичности с установленным ограждением необходима схема расположения на листе 5, прямо указанная в примечании 5, с привязкой ОГМ 4 и изображением его примыканий. Эта схема в пакете отсутствует.",
+          "source_refs": [
+            "blk_eff2811805d64c26b34d72e41ecbb194",
+            "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "blk_9d85769870054701b8f16e3f8d203864"
+          ],
+          "context_queries": [
+            "ОГМ 4",
+            "ОГМ4",
+            "Схему расположения ограждений",
+            "л.5"
+          ]
+        }
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "quantity_balance",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "receipt": {
+          "object_id": "p4_19",
+          "operation": "dimension_consistency",
+          "status": "needs_data",
+          "reason": "В панели ОГМ 4 осмотрены верхняя горизонтальная часть, наклонная часть, нижняя размерная цепь и правое окончание. Читаются нижние размеры 600 + 600 + 600 + 450 мм, дающие горизонтальную проекцию 2250 мм, размер 400 у верхней горизонтальной части, шаг 150 и вертикальный размер заполнения 800. Самостоятельная запись «4,00» изображением не подтверждается; утверждение о ней в графическом описании не является доказательством размерного конфликта. Размер 800 согласуется с L=0,800м позиции 4 ведомости. Длину поручня позиции 1 L=3,640м нельзя непосредственно сравнивать с горизонтальной проекцией: поручень включает наклонную и горизонтальную части. Для завершения проверки нужны читаемая детализация перехода и окончаний, привязка размеров к осям либо граням деталей и геометрия поручня, позволяющая определить его полную длину. Для сопоставления наклонных размеров на схеме с заготовочными длинами ведомости также нужны условия сопряжений. Подтвержденный размерный конфликт по представленным данным не установлен.",
+          "source_refs": [
+            "blk_eff2811805d64c26b34d72e41ecbb194",
+            "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "blk_9d85769870054701b8f16e3f8d203864"
+          ],
+          "context_queries": [
+            "ОГМ 4",
+            "Ведомость элементов ограждения ОГМ 4",
+            "L=3,640м",
+            "Ограждения ОГМ1...ОГМ8"
+          ]
+        }
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "document_links",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_2b31bb21c613499ea1bea845105e296f",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_4b49406098054a4da822e4286031df67",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_9d85769870054701b8f16e3f8d203864",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 5,
+    "unresolved_source_blocks": 10,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "dimension_consistency",
+    "identity_across_views"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}
