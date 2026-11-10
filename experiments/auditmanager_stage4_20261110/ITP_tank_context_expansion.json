@@ -1,0 +1,219 @@
+{
+  "finding_id": "F-042",
+  "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+  "context_sha256": "055c34c73d218a96d5555fa05982122704599167b458c0fe2031e0932e687fc2",
+  "queries": [
+    "K22",
+    "К22",
+    "K23",
+    "К23",
+    "RM 1500",
+    "RM 200"
+  ],
+  "query_origin": "Manual known-case graphic review ITP_F042_graphic_text_control.json; not independent model recovery.",
+  "search_receipt": {
+    "hits": [
+      {
+        "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+        "kind": "TEXT",
+        "page": 9,
+        "queries": [
+          "K22",
+          "K23",
+          "RM 1500",
+          "RM 200"
+        ],
+        "start_line": 401
+      },
+      {
+        "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+        "kind": "IMAGE",
+        "page": 17,
+        "queries": [
+          "К23",
+          "RM 200"
+        ],
+        "start_line": 855
+      },
+      {
+        "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+        "kind": "TEXT",
+        "page": 25,
+        "queries": [
+          "RM 1500",
+          "RM 200"
+        ],
+        "start_line": 1086
+      },
+      {
+        "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+        "kind": "IMAGE",
+        "page": 17,
+        "queries": [
+          "RM 200"
+        ],
+        "start_line": 831
+      },
+      {
+        "block_id": "blk_72bd74f01146432880a289b071f70238",
+        "kind": "TEXT",
+        "page": 107,
+        "queries": [
+          "RM 1500"
+        ],
+        "start_line": 5763
+      },
+      {
+        "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+        "kind": "TEXT",
+        "page": 106,
+        "queries": [
+          "RM 200"
+        ],
+        "start_line": 5684
+      }
+    ],
+    "backlog": [],
+    "query_hit_counts": {
+      "K22": 3,
+      "К22": 3,
+      "K23": 2,
+      "К23": 2,
+      "RM 1500": 3,
+      "RM 200": 5
+    },
+    "rejected_queries": [],
+    "deferred_queries": [],
+    "already_supplied": [
+      {
+        "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+        "kind": "IMAGE",
+        "page": 10,
+        "queries": [
+          "К22"
+        ],
+        "start_line": 473
+      },
+      {
+        "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+        "kind": "IMAGE",
+        "page": 16,
+        "queries": [
+          "K22",
+          "К22"
+        ],
+        "start_line": 723
+      },
+      {
+        "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+        "kind": "IMAGE",
+        "page": 18,
+        "queries": [
+          "K22",
+          "K23"
+        ],
+        "start_line": 883
+      },
+      {
+        "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+        "kind": "IMAGE",
+        "page": 23,
+        "queries": [
+          "К22",
+          "К23"
+        ],
+        "start_line": 1035
+      }
+    ],
+    "absence_proven": false,
+    "boundary": "Literal MD search only; zero matches do not establish absence.",
+    "added_block_ids": [
+      "blk_11981549aceb463ba84c7c0de619d2fc",
+      "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+      "blk_d0a62bc2e56f4d07bb33a73622429881",
+      "blk_72bd74f01146432880a289b071f70238",
+      "blk_7e913f6c32cb4db7aa9d9b8688b6e979"
+    ],
+    "rejected_ambiguous_block_ids": []
+  },
+  "text_block_ids": [
+    "blk_11981549aceb463ba84c7c0de619d2fc",
+    "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+    "blk_72bd74f01146432880a289b071f70238",
+    "blk_7e913f6c32cb4db7aa9d9b8688b6e979"
+  ],
+  "graphic_receipts": [
+    {
+      "block_id": "blk_cc80e7962a094791b984d8fb5391e886",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_cc80e7962a094791b984d8fb5391e886.png",
+      "sha256": "df5eab1b75e59001cf78cb3cded3596c55d5726badde250c456889c012e1a3b3",
+      "bytes": 4721429,
+      "width": 3250,
+      "height": 4669,
+      "mime_type": "image/png",
+      "attached_to_model": false,
+      "visually_reviewed": false
+    },
+    {
+      "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+      "sha256": "9ae3ec6ff303ff8f3b6317bd8cfa1b49ab22653581184818e10d9f0393bf4c7a",
+      "bytes": 756564,
+      "width": 3216,
+      "height": 880,
+      "mime_type": "image/png",
+      "attached_to_model": false,
+      "visually_reviewed": false
+    },
+    {
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+      "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af",
+      "bytes": 4289446,
+      "width": 4549,
+      "height": 2899,
+      "mime_type": "image/png",
+      "attached_to_model": false,
+      "visually_reviewed": false
+    },
+    {
+      "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+      "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c",
+      "bytes": 2766345,
+      "width": 3235,
+      "height": 4662,
+      "mime_type": "image/png",
+      "attached_to_model": false,
+      "visually_reviewed": false
+    },
+    {
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+      "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+      "bytes": 996249,
+      "width": 4040,
+      "height": 783,
+      "mime_type": "image/png",
+      "attached_to_model": false,
+      "visually_reviewed": false
+    },
+    {
+      "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_d0a62bc2e56f4d07bb33a73622429881.png",
+      "sha256": "813ec783eeaea997e75b97ece66d75b1bc6508fd8aaf1f02adf4e3dbed719013",
+      "bytes": 1128110,
+      "width": 4694,
+      "height": 721,
+      "mime_type": "image/png",
+      "attached_to_model": false,
+      "visually_reviewed": false
+    }
+  ],
+  "tests_passed": 28,
+  "finding_core_unchanged": true,
+  "new_model_calls": 0,
+  "automatic_dispatch": false,
+  "boundary": "Retrieval and attachment preparation only. Actual model requests for context and response quality remain untested."
+}

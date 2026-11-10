@@ -30,6 +30,8 @@ def validate_source_review(response, queue, findings, md):
         errors.append('missing_or_ambiguous_finding_or_packet')
         return result
     packet = matches[0]
+    if packet.get('context_sha256') and response.get('context_sha256') != packet['context_sha256']:
+        errors.append('stale_review_context')
     digest = hashlib.sha256(json.dumps(candidates[0], sort_keys=True, ensure_ascii=False).encode()).hexdigest()
     if response.get('finding_sha256') != digest or packet.get('finding_sha256') != digest:
         errors.append('stale_finding')

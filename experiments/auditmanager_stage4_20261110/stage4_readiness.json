@@ -392,5 +392,14 @@
     "finding_core": "supported_annotation_conflict",
     "equipment_inadequacy": "not_established",
     "new_external_model_calls": 0
+  },
+  "source_review_context_expansion": {
+    "artifact": "ITP_tank_context_expansion.json",
+    "tests_passed": 28,
+    "retrieved_authoritative_text_blocks": 4,
+    "graphic_files_ready": 6,
+    "query_origin": "Known-case visual review; not independently generated model queries.",
+    "automatic_dispatch": false,
+    "boundary": "One local context expansion and stale-context response protection implemented; model-driven follow-up integration remains."
   }
 }
