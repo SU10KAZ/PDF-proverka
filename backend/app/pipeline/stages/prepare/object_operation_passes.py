@@ -18,6 +18,10 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
     headers = list(re.finditer(r'^###[ \t]+BLOCK[^\n]*?\[([^]]+)\]:[ \t]*(\S+)[^\n]*$',md,re.M|re.I))
     blocks = {h.group(2): {'kind':h.group(1).upper(), 'content':md[h.start():headers[i+1].start() if i+1<len(headers) else len(md)]}
               for i,h in enumerate(headers)}
+    graph_path = output_dir/'document_graph.json'
+    graph = json.loads(graph_path.read_text()) if graph_path.is_file() else None
+    if graph is not None and graph.get('source_md_sha256') != hashlib.sha256(md.encode()).hexdigest():
+        graph = None  # Unbound legacy graphs cannot interpret sheet-number queries.
     coverage = reconcile_object_registry(data, set(blocks))
     crops = resolve_blocks_dir(output_dir)
     index_path = crops/'index.json'
@@ -40,7 +44,7 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
                 eligible.append(operation)
                 continue
             queries = operation.get('receipt', {}).get('context_queries', [])
-            search = search_md_context(md, queries, exclude_block_ids=set(obj['source_refs']))
+            search = search_md_context(md, queries, exclude_block_ids=set(obj['source_refs']), source_graph=graph)
             searches[operation['operation']] = search
             new_ids = [h['block_id'] for h in search['hits'] if h['block_id'] in blocks]
             if not new_ids:

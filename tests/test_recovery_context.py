@@ -117,3 +117,20 @@ def test_resume_backlog_order_without_injecting_unmatched_sources():
     assert resumed['hits'][0]['block_id'] == prior[0]
     assert all(h['block_id'] != 'unrelated' for h in resumed['hits'])
     assert resumed['absence_proven'] is False
+
+
+def test_sheet_lookup_uses_bound_sheet_numbers_not_pdf_pages():
+    import hashlib
+    import pytest
+    from backend.app.pipeline.stages.prepare.recovery_context import search_md_context
+    md='## Page 9\n### BLOCK #1 [TEXT]: a\nMember schedule\n## Page 10\n### BLOCK #2 [TEXT]: b\nDimensions\n'
+    graph={'source_md_sha256':hashlib.sha256(md.encode()).hexdigest(),
+        'pages':[{'page':9,'sheet_no':'7'},{'page':10,'sheet_no':'8'}]}
+    result=search_md_context(md,['Листы 7–8.'],source_graph=graph)
+    assert [h['block_id'] for h in result['hits']]==['a','b']
+    assert [h['page'] for h in result['hits']]==[9,10]
+    assert not search_md_context(md,['Лист 9'],source_graph=graph)['hits']
+    assert not search_md_context(md,['Листы 7–8.'])['hits']
+    assert not result['absence_proven']
+    with pytest.raises(ValueError,match='graph_version_changed'):
+        search_md_context(md+'changed',['Лист 7'],source_graph=graph)

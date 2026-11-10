@@ -5,7 +5,20 @@ import re
 from pathlib import Path
 
 
-def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_block_ids=(), prior_backlog_ids=()):
+def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_block_ids=(), prior_backlog_ids=(), source_graph=None):
+    sheet_pages = {}
+    if source_graph is not None:
+        if source_graph.get('source_md_sha256') != hashlib.sha256(md.encode()).hexdigest():
+            raise ValueError('context_graph_version_changed')
+        from .graph_builder import build_page_sheet_map
+        for page, sheet in build_page_sheet_map(source_graph).items():
+            if sheet.isdigit():sheet_pages.setdefault(int(sheet), []).append(page)
+    def requested_sheet_pages(query):
+        match = re.fullmatch(r'листы?\s+(\d+)(?:\s*[-–—]\s*(\d+))?\.?', query, re.I)
+        if not match:return set()
+        first=int(match.group(1));last=int(match.group(2) or first)
+        if last<first or last-first>100:return set()
+        return {page for sheet in range(first,last+1) for page in sheet_pages.get(sheet, [])}
     valid, rejected = [], []
     for query in queries if isinstance(queries, list) else []:
         if isinstance(query, str) and 2 <= len(query.strip()) <= 160:
@@ -26,7 +39,9 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
         if following_pages:
             end = min(following_pages)
         content = md[h.start():end]
-        matches = [q for q in valid if q.casefold() in content.casefold()]
+        preceding = [p for p in pages if p.start() < h.start()]
+        page_num = int(preceding[-1].group(1)) if preceding else None
+        matches = [q for q in valid if q.casefold() in content.casefold() or page_num in requested_sheet_pages(q)]
         if not matches:
             continue
         for q in matches:
@@ -63,7 +78,7 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
         used += len(row['content'])
     return {'hits': hits, 'backlog': backlog, 'query_hit_counts': query_hits,
             'rejected_queries': rejected, 'deferred_queries': deferred_queries,
-            'already_supplied': already_supplied, 'absence_proven': False, 'boundary': 'Literal MD search only; zero matches do not establish absence.'}
+            'already_supplied': already_supplied, 'absence_proven': False, 'sheet_lookup_enabled':source_graph is not None, 'boundary': 'Literal MD search and optional same-version sheet lookup; zero matches do not establish absence.'}
 
 
 def build_context_followup(request, payload):

@@ -762,6 +762,20 @@
     "engineer_answers_sent": false,
     "new_project_blind_test": false,
     "whole_project_comparative_audit": false,
-    "remaining": "Complete inventory, validate source coverage and identities, link objects across packets, execute unresolved operations, and assess discoveries against frozen controls afterwards."
+    "remaining": "Complete inventory, validate source coverage and identities, link objects across packets, execute unresolved operations, and assess discoveries against frozen controls afterwards.",
+    "first_packet_assessment": "KM_inventory_packet000_assessment.json",
+    "first_packet_reported_objects": 22,
+    "first_packet_duration_ms": 590802,
+    "whole_project_complete": false
+  },
+  "object_operation_sheet_queries": {
+    "status": "implemented_and_actual_query_replayed",
+    "report": "KM_sheet_query_replay.json",
+    "literal_search_hits": 0,
+    "mapped_hits": 12,
+    "remaining_budgeted_hits": 47,
+    "source_version_bound": true,
+    "new_model_calls": 0,
+    "semantic_acceptance": false
   }
 }

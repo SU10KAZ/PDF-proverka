@@ -1,0 +1,293 @@
+{
+  "packet": "object_inventory_000",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 590802,
+  "input_tokens": 27976,
+  "output_tokens": 29235,
+  "objects": 22,
+  "reported_source_blocks": 13,
+  "unresolved_source_blocks": 2,
+  "unresolved_operations": 89,
+  "reported_findings": 3,
+  "graphic_check": {
+    "independently_viewed_blocks": [
+      "blk_9dbddaba8e334be3ab857afe48df76ec",
+      "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+    ],
+    "supported_narrow_core": "Repeated plan upper level list omits +22.550 and +32.630 and includes +39.350; section places OGM6 at omitted levels and OGM8 above +39.350.",
+    "physical_absence_proven": false,
+    "classic_overlap": "KM F-012; recovery of known useful finding, not a new unique finding."
+  },
+  "arithmetic_checks": [
+    {
+      "label": "Всего масса металла",
+      "terms": [
+        "0.388",
+        "0.479",
+        "0.476",
+        "0.484",
+        "0.645",
+        "1.657",
+        "1.669"
+      ],
+      "sum": "5.798",
+      "published": "5.796",
+      "difference": "0.002",
+      "technical_defect_proven": false,
+      "reason": "Displayed rounded operands only; no universal tolerance or supply-shortage conclusion."
+    },
+    {
+      "label": "Масса конструкций",
+      "terms": [
+        "0.404",
+        "0.498",
+        "0.495",
+        "0.503",
+        "0.671",
+        "1.724",
+        "1.736"
+      ],
+      "sum": "6.031",
+      "published": "6.029",
+      "difference": "0.002",
+      "technical_defect_proven": false,
+      "reason": "Displayed rounded operands only; no universal tolerance or supply-shortage conclusion."
+    }
+  ],
+  "arithmetic_classic_overlap": "KM F-021; rounding explanation remains open.",
+  "parameter_quote_receipts": [
+    {
+      "object_id": "obj_01",
+      "parameter_index": 0,
+      "source_ref": "blk_e32648e76bae476f840c5cf12bfe3003",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_01",
+      "parameter_index": 1,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_01",
+      "parameter_index": 2,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_01",
+      "parameter_index": 3,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_02",
+      "parameter_index": 0,
+      "source_ref": "blk_f3f0332f544a4ca493442513059a154d",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_02",
+      "parameter_index": 1,
+      "source_ref": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_02",
+      "parameter_index": 2,
+      "source_ref": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_02",
+      "parameter_index": 3,
+      "source_ref": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_02",
+      "parameter_index": 4,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_03",
+      "parameter_index": 0,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_04",
+      "parameter_index": 0,
+      "source_ref": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_04",
+      "parameter_index": 1,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_05",
+      "parameter_index": 0,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_06",
+      "parameter_index": 0,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_07",
+      "parameter_index": 0,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_08",
+      "parameter_index": 0,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_09",
+      "parameter_index": 0,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_10",
+      "parameter_index": 0,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_10",
+      "parameter_index": 1,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_10",
+      "parameter_index": 2,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_10",
+      "parameter_index": 3,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_10",
+      "parameter_index": 4,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_11",
+      "parameter_index": 0,
+      "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_11",
+      "parameter_index": 1,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_11",
+      "parameter_index": 2,
+      "source_ref": "blk_f63af88de2a840e49ca709d736eaa225",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_12",
+      "parameter_index": 0,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_13",
+      "parameter_index": 0,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_13",
+      "parameter_index": 1,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_13",
+      "parameter_index": 2,
+      "source_ref": "blk_f63af88de2a840e49ca709d736eaa225",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_14",
+      "parameter_index": 0,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_14",
+      "parameter_index": 1,
+      "source_ref": "blk_531e843c117243a3b1582cb3399f4681",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    },
+    {
+      "object_id": "obj_14",
+      "parameter_index": 2,
+      "source_ref": "blk_f63af88de2a840e49ca709d736eaa225",
+      "exact_quote_matches": true,
+      "value_semantically_verified": false
+    }
+  ],
+  "quote_error_count": 0,
+  "new_findings_vs_classic": "Not established: first two overlap classic; third unit-label observation needs usefulness/profile review.",
+  "output_volume_chars": {
+    "object_registry": 27695,
+    "object_inventory_coverage": 3663,
+    "object_operation_results": 34799,
+    "text_findings": 3186
+  },
+  "acceptance": "Partial source review only; registry completeness and graphic quantities not fully checked."
+}

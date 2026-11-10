@@ -1,0 +1,124 @@
+{
+  "query_origin": "Actual Astra packet000 operation context queries; no expected finding input",
+  "query": "Листы 7–10.",
+  "literal_hits": 0,
+  "mapped_hits": 12,
+  "retrieved_pdf_pages": [
+    9,
+    10
+  ],
+  "backlog": 47,
+  "absence_proven": false,
+  "new_model_calls": 0,
+  "source_graph_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "hits": [
+    {
+      "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+      "kind": "TEXT",
+      "page": 9,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1147
+    },
+    {
+      "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+      "kind": "IMAGE",
+      "page": 9,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1191
+    },
+    {
+      "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+      "kind": "IMAGE",
+      "page": 9,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1215
+    },
+    {
+      "block_id": "blk_a454c3538d6d4b3eafc59261d7229c42",
+      "kind": "IMAGE",
+      "page": 9,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1231
+    },
+    {
+      "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+      "kind": "IMAGE",
+      "page": 9,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1247
+    },
+    {
+      "block_id": "blk_09df648d1b4d4cc097ea6f0e25ceef52",
+      "kind": "IMAGE",
+      "page": 9,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1263
+    },
+    {
+      "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+      "kind": "IMAGE",
+      "page": 9,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1279
+    },
+    {
+      "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+      "kind": "IMAGE",
+      "page": 10,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1305
+    },
+    {
+      "block_id": "blk_c39bd325354f41b2837e3a7527ff4854",
+      "kind": "IMAGE",
+      "page": 10,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1321
+    },
+    {
+      "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+      "kind": "IMAGE",
+      "page": 10,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1337
+    },
+    {
+      "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+      "kind": "TEXT",
+      "page": 10,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1354
+    },
+    {
+      "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+      "kind": "TEXT",
+      "page": 10,
+      "queries": [
+        "Листы 7–10."
+      ],
+      "start_line": 1374
+    }
+  ]
+}
