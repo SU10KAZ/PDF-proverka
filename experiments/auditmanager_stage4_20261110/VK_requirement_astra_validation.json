@@ -1,0 +1,449 @@
+{
+  "checks": [
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_DISCHARGE",
+        "object_id": "O_K2",
+        "applicability": "applies",
+        "reason": "Требование прямо относится к К2; схема выпусков в пакете отсутствует.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+            "quote": "###### 4. Система внутренних водостоков (K2)"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_DISCHARGE",
+      "object_id": "O_K2",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_FUNNELS",
+        "object_id": "O_K2_FUNNELS",
+        "applicability": "applies",
+        "reason": "Электроподогрев указан. Вертикальный выпуск, листоуловитель и комплект присоединения строкой спецификации не раскрыты.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "quote": "| 1 | Водосточная воронка с электроподогревом ф110 |  |  |  | к-т | 12 |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_FUNNELS",
+      "object_id": "O_K2_FUNNELS",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_FLOW",
+        "object_id": "O_K2",
+        "applicability": "applies",
+        "reason": "Нужны расчетные расходы и пропускные способности выбранных воронок и участков. Количество воронок и диаметры сами по себе расчет не заменяют.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+            "quote": "Водосточные воронки и диаметры трубопроводов водостока принимаются с учётом пропуска дополнительно 25% расчётного расхода."
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_FLOW",
+      "object_id": "O_K2",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_RESERVE",
+        "object_id": "O_K2",
+        "applicability": "applies",
+        "reason": "Схемы основных и резервных стояков с перемычками не представлены.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+            "quote": "Рядом с основным водосточным стояком предусмотрено устройство резервного стояка с устройством перемычек с основным стояком на верхнем и нижнем жилых этажах."
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_RESERVE",
+      "object_id": "O_K2",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_TRANSITION",
+        "object_id": "O_K2_TRANSITIONS",
+        "applicability": "applies",
+        "reason": "Указаны элементы PN10 и переходники SML, но давление полной сборки и ее привязка не установлены.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "quote": "| 15 | Патрубок гладкий с металлическим фланцем PN10 для напорной канализации 110 x DN100 | НПВХ, SDR26 | 2181092 | Хэмкор | шт. | 4 |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_TRANSITION",
+      "object_id": "O_K2_TRANSITIONS",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_TURN",
+        "object_id": "O_K2_TURNS",
+        "applicability": "unknown",
+        "reason": "Принадлежность деталей к К2 известна, но неизвестно, образуют ли они переход стояка в горизонтальную плоскость или горизонтальный поворот магистрали.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "quote": "| 9 | Отвод двухраструбный для напорной канализации 90¹ 160 | НПВХ |  | Хэмкор | шт. | 1 |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_TURN",
+      "object_id": "O_K2_TURNS"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_SUPPORT",
+        "object_id": "O_K2_SUPPORTS",
+        "applicability": "applies",
+        "reason": "Крепления К2 перечислены, но узлы основания стояков и наличие именно резиновых прокладок не раскрыты. Резьбовой уплотнитель нельзя без подтверждения считать резиновой прокладкой.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_5a8674f9dc2343498ae3b666f20e67c9",
+            "quote": "|  | а) хомут стальной с гайкой и резьбовым уплотнителем |  |  |  |  |  |  |  |"
+          },
+          {
+            "block_id": "blk_5a8674f9dc2343498ae3b666f20e67c9",
+            "quote": "| K2 |  |  |  |  |  |  |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_SUPPORT",
+      "object_id": "O_K2_SUPPORTS",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_NPVC",
+        "object_id": "O_K2_NPVC",
+        "applicability": "applies",
+        "reason": "Материал НПВХ и SDR26 совпадают. Рабочее давление и исполнение всех соединений по строкам труб полностью не подтверждаются; стадия листа 04 не указана.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| 1 | Труба канализационная напорная из НПВХ SDR26 ϕ110х4,2 | ГОСТ Р 51613-2000 |  | Хэмкор | м | 104 |  |  |"
+          },
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| 2 | Труба канализационная напорная из НПВХ SDR26 ϕ160х6,2 | ГОСТ Р 51613-2000 |  | Хэмкор | м | 96,9 |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_NPVC",
+      "object_id": "O_K2_NPVC",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_NPVC",
+        "object_id": "O_K2_TURNS",
+        "applicability": "unknown",
+        "reason": "Для четырех отводов Polytron Stilte Plus не приведено назначение. Нельзя ни подтвердить их соответствие исполнению НПВХ PN10, ни признать нарушение без привязки к требуемому участку.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "quote": "| 10 | Отвод канализационный 45¹ 110 | Polytron Stilte Plus | STPL1011045 | Pro Aqua | шт. | 4 |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_NPVC",
+      "object_id": "O_K2_TURNS"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_SML",
+        "object_id": "O_K2_JOINTS",
+        "applicability": "applies",
+        "reason": "Обе группы находятся в разделе К2. Количества Rapid и Kralle расходятся по DN100 и DN150; тождество Kralle и Kombi Kralle, комплектность и актуальность редакций требуют подтверждения.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "quote": "| 19 | Соединитель-хомут с блокирующей затяжкой DN150 | Rapid | 310150 | \"AVF\" | шт. | 33 | 0,32 |  |"
+          },
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| 35 | Хомут усиливающий DN150 | Kralle | 330150 | \"AVF\" | шт. | 18 | 1,23 |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K2_JOINTS",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_SML",
+        "object_id": "O_K21_JOINTS",
+        "applicability": "does_not_apply",
+        "reason": "К2.1 имеет собственное требование Ру=0,5 Бар. Требование К2 об усилении всех соединений и давлении 10 Бар на К2.1 не переносится.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| К2.1; Арматура трубопроводов |  |  |  |  |  |  |  |  |"
+          },
+          {
+            "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+            "quote": "- магистральные трубопроводы в тех. пространстве (отм. +5,320) и стояки для блоков кондиционеров – из чугунных безраструбных труб SML, на соединительных хомутах Rapid, с рабочим давлением Ру=0,5 Бар."
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K21_JOINTS",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_SML",
+        "object_id": "O_K1",
+        "applicability": "does_not_apply",
+        "reason": "Другая система; общие требования К1 не предоставлены.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_1d17a25462884606ae486c345090fe20",
+            "quote": "| К1 Арматура трубопроводов |  |  |  |  |  |  |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K1",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_SML",
+        "object_id": "O_K11",
+        "applicability": "does_not_apply",
+        "reason": "Отдельный раздел К1.1; основания переносить требования К2 нет.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+            "quote": "| К1.1 |  |  |  |  |  |  |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K11",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_SML",
+        "object_id": "O_K23",
+        "applicability": "unknown",
+        "reason": "К2.3 выделена отдельным разделом, назначение неизвестно. Сходство обозначений не доказывает распространение требований К2.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| К2.3; Соединительные детали трубопроводов |  |  |  |  |  |  |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K23"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_INSULATION",
+        "object_id": "O_K2",
+        "applicability": "applies",
+        "reason": "Требование явно задано для К2. В представленном разделе спецификации К2 отдельная позиция такой изоляции не обнаружена; это не доказывает ее отсутствие во всем проекте.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+            "quote": "Для предотвращения образования конденсата предусмотрена теплоизоляция трубопроводов системы внутреннего водостока (К2), по всей длине, теплоизоляционными трубками из вспененного полиэтилена толщиной 9мм, группа горючести Г1."
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_INSULATION",
+      "object_id": "O_K2",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K2_INSULATION",
+        "object_id": "O_K21_INSULATION",
+        "applicability": "does_not_apply",
+        "reason": "Позиция ϕ100х40 мм, 1,1 м3 относится к К2.1. Она не подтверждает обеспечение К2 и не образует установленного противоречия толщине 9 мм для К2.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| К2.1; Арматура трубопроводов |  |  |  |  |  |  |  |  |"
+          },
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| 1 | Трубки теплоизоляционные ϕ100х40 мм |  |  |  | м3 | 1,1 |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K2_INSULATION",
+      "object_id": "O_K21_INSULATION",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_FIRE",
+        "object_id": "O_K2_FIRE",
+        "applicability": "applies",
+        "reason": "Муфты предусмотрены для К2, но достаточность количества и размещение устанавливаются по полимерным проходкам, а не по общей длине труб.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "quote": "| 2 | Муфта противопожарная 110/50 |  |  | Огнеза | шт. | 21 |  |  |"
+          },
+          {
+            "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+            "quote": "| 3 | Муфта противопожарная 160/90 |  |  | Огнеза | шт. | 20 |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_FIRE",
+      "object_id": "O_K2_FIRE",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_FIRE",
+        "object_id": "O_K21_FIRE",
+        "applicability": "applies",
+        "reason": "Позиция относится к К2.1; ведомость полимерных проходок и характеристика вкладыша не представлены.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| 1 | Муфта противопожарная 110/50 |  |  | Огнеза | шт. | 62 |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_FIRE",
+      "object_id": "O_K21_FIRE",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K21_DRAINAGE",
+        "object_id": "O_K21",
+        "applicability": "applies",
+        "reason": "32 трапа перечислены, но их поэтажная привязка, запахозапирающее устройство и распределение стояков конденсата по секциям не подтверждены.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| 1 | Трап ф100 | HL310NPr | 9003076004676 | HL | шт. | 32 | 0,75 |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K21_DRAINAGE",
+      "object_id": "O_K21",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K21_PP",
+        "object_id": "O_K21",
+        "applicability": "applies",
+        "reason": "Полипропиленовые трубы указаны; соответствие конкретных участков и соединений требует схем и данных изделий. Требование не охватывает отдельно выделенные стояки кондиционеров SML.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| 1 | Труба канализационная полипропиленовая бесшумная ϕ110х5,3 | ГОСТ 32414-2013 |  | Pro Aqua | м | 156.9 |  |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K21_PP",
+      "object_id": "O_K21",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "R_K21_SML",
+        "object_id": "O_K21_JOINTS",
+        "applicability": "applies",
+        "reason": "Для позиции Rapid W2 указанное давление 0,05 МПа численно равно требуемым 0,5 Бар. Это частичное документальное соответствие; давление остальных исполнений и собранных соединений неизвестно.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+            "quote": "| 14 | Соединитель-хомут с блокирующей затяжкой, Рy=0,05МПа DN100 | Rapid, исполнение W2 | 210427 | \"AVF\" | шт. | 8 | 0,18 |  |"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "R_K21_SML",
+      "object_id": "O_K21_JOINTS",
+      "reason": "incomplete_requirement_identity_or_scope"
+    }
+  ],
+  "unresolved": 21,
+  "requirements_without_checks": [],
+  "coverage_complete": false,
+  "semantic_verified": false
+}

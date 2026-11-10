@@ -1,0 +1,21 @@
+{
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "source_md_sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+  "request_sha256": "faad9c0b2b569a4b4aa7d92c78bc1201e7b3064197fe057cf15b87e15444461c",
+  "block_ids": [
+    "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+    "blk_1d17a25462884606ae486c345090fe20",
+    "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+    "blk_9b1d774c2f6c4127b2f8618e3792a647",
+    "blk_2832f2bda58d416ab8c388c81c339b02",
+    "blk_8a30696159964429a9b51a5b81e5cb7e",
+    "blk_0bcb4172b9fc465ca64fe8ab4aafdc27",
+    "blk_5a8674f9dc2343498ae3b666f20e67c9"
+  ],
+  "message_chars": 29504,
+  "automatic_retries": 0,
+  "history_or_engineer_answers_sent": false,
+  "selection_known_case": true,
+  "max_calls": 1
+}

@@ -1,0 +1,118 @@
+{
+  "status": "source_scope_control_pass_full_output_not_accepted",
+  "historical_case": "B-VK-F-003",
+  "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 294074,
+  "input_tokens": 25404,
+  "output_tokens": 14408,
+  "cost_source": "subscription",
+  "new_independent_project_discovery": false,
+  "history_or_answers_supplied": false,
+  "exact_quotes_checked": 63,
+  "exact_quotes_match": true,
+  "quote_failures": [],
+  "positive_control": {
+    "source_fact": "K2 Rapid/Kralle 7/4 and33/18 with project all-SML-joints reinforcement instruction.",
+    "conditional_differences": [
+      3,
+      15
+    ],
+    "model_preserved": true,
+    "physical_shortage_proven": false
+  },
+  "negative_controls": {
+    "DN200_26_26_not_reported_as_shortage": true,
+    "K21_requirement_not_transferred_from_K2": true,
+    "K21_six_clamps_not_used_to_offset_K2": true
+  },
+  "scope_receipts": [
+    {
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K2_JOINTS",
+      "applicability": "applies",
+      "reason": "Обе группы находятся в разделе К2. Количества Rapid и Kralle расходятся по DN100 и DN150; тождество Kralle и Kombi Kralle, комплектность и актуальность редакций требуют подтверждения.",
+      "scope_evidence": [
+        {
+          "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "quote": "| 19 | Соединитель-хомут с блокирующей затяжкой DN150 | Rapid | 310150 | \"AVF\" | шт. | 33 | 0,32 |  |"
+        },
+        {
+          "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+          "quote": "| 35 | Хомут усиливающий DN150 | Kralle | 330150 | \"AVF\" | шт. | 18 | 1,23 |  |"
+        }
+      ],
+      "comparison": "unknown"
+    },
+    {
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K21_JOINTS",
+      "applicability": "does_not_apply",
+      "reason": "К2.1 имеет собственное требование Ру=0,5 Бар. Требование К2 об усилении всех соединений и давлении 10 Бар на К2.1 не переносится.",
+      "scope_evidence": [
+        {
+          "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+          "quote": "| К2.1; Арматура трубопроводов |  |  |  |  |  |  |  |  |"
+        },
+        {
+          "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "quote": "- магистральные трубопроводы в тех. пространстве (отм. +5,320) и стояки для блоков кондиционеров – из чугунных безраструбных труб SML, на соединительных хомутах Rapid, с рабочим давлением Ру=0,5 Бар."
+        }
+      ],
+      "comparison": "unknown"
+    },
+    {
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K1",
+      "applicability": "does_not_apply",
+      "reason": "Другая система; общие требования К1 не предоставлены.",
+      "scope_evidence": [
+        {
+          "block_id": "blk_1d17a25462884606ae486c345090fe20",
+          "quote": "| К1 Арматура трубопроводов |  |  |  |  |  |  |  |  |"
+        }
+      ],
+      "comparison": "unknown"
+    },
+    {
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K11",
+      "applicability": "does_not_apply",
+      "reason": "Отдельный раздел К1.1; основания переносить требования К2 нет.",
+      "scope_evidence": [
+        {
+          "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+          "quote": "| К1.1 |  |  |  |  |  |  |  |  |"
+        }
+      ],
+      "comparison": "unknown"
+    },
+    {
+      "requirement_id": "R_K2_SML",
+      "object_id": "O_K23",
+      "applicability": "unknown",
+      "reason": "К2.3 выделена отдельным разделом, назначение неизвестно. Сходство обозначений не доказывает распространение требований К2.",
+      "scope_evidence": [
+        {
+          "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+          "quote": "| К2.3; Соединительные детали трубопроводов |  |  |  |  |  |  |  |  |"
+        }
+      ],
+      "comparison": "unknown"
+    }
+  ],
+  "requirement_gate": {
+    "checks": 21,
+    "all_needs_data": true,
+    "reason": "Unknown revisions and other context leave complete applicability unresolved; scope matching and quoted quantities remain separate facts.",
+    "no_forced_metadata_repair": true
+  },
+  "findings_admission": {
+    "F_K2_CLAMP_BALANCE": "Retain bounded document quantity mismatch and assumptions; overlaps classic F-003, not a new unique defect.",
+    "other_five_rows": "Not accepted as final questions: internal retrieval and mixed claims require further context."
+  },
+  "control_pair_kind": "Real source component controls, not engineer-confirmed independent historical false/true pair.",
+  "automatic_model_application": false,
+  "full_six_project_acceptance": false,
+  "production_changed": false
+}
