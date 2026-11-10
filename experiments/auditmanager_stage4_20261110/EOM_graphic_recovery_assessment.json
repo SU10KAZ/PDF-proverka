@@ -1,0 +1,11 @@
+{
+  "duration_ms": 429312,
+  "objects": 51,
+  "model_reported_status": "inventoried",
+  "validated_unresolved_blocks": 1,
+  "reason": "unreadable_regions retained despite model inventoried status",
+  "target_circuit_marks_extracted": false,
+  "model_derived_set_balance_ready": false,
+  "next_action": "Finer whole-graphic tiles and explicit extraction of branch marks, roles and endpoints without expected circuit numbers. Do not replace model output with manual control inventory.",
+  "production_changed": false
+}
