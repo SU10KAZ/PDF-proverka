@@ -1,0 +1,12 @@
+{
+  "navigation_model": "codex/gpt-6-astra",
+  "model_duration_ms": 38263,
+  "text_blocks_supplied": 34,
+  "graphic_catalogue_entries": 42,
+  "selected_source_count": 8,
+  "general_calculation_reference_recovered": true,
+  "historical_engineer_answers_supplied": false,
+  "limit": "Reference discovery only. Applicability to O27 and presence of an actual rope-load calculation are not established. Next source-operation run is separate.",
+  "semantic_acceptance": false,
+  "full_acceptance_proven": false
+}
