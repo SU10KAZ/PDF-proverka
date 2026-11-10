@@ -1,0 +1,17 @@
+{
+  "packet": 3,
+  "receipt": {
+    "candidate_block_ids": [
+      "blk_bcea3caf8104407b919f6960e2c12274",
+      "blk_5f225d064b374b92ae7ca74da9a29218"
+    ],
+    "supplied_block_ids": [
+      "blk_bcea3caf8104407b919f6960e2c12274",
+      "blk_5f225d064b374b92ae7ca74da9a29218"
+    ],
+    "applicability_verified": false
+  },
+  "manufacturer_note_supplied": true,
+  "new_model_calls": 0,
+  "semantic_applicability_verified": false
+}

@@ -18,6 +18,12 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable
     headers = list(re.finditer(r'^###[ \t]+BLOCK[^\n]*?\[([^]]+)\]:[ \t]*(\S+)[^\n]*$',md,re.M|re.I))
     blocks = {h.group(2): {'kind':h.group(1).upper(), 'content':md[h.start():headers[i+1].start() if i+1<len(headers) else len(md)]}
               for i,h in enumerate(headers)}
+    page_headers = list(re.finditer(r'^##[ \t]+(?:Page|СТРАНИЦА)[ \t]+(\d+)\b[^\n]*$', md, re.M | re.I))
+    block_pages = {}
+    for header in headers:
+        preceding = [p for p in page_headers if p.start() < header.start()]
+        if preceding:
+            block_pages[header.group(2)] = int(preceding[-1].group(1))
     graph_path = output_dir/'document_graph.json'
     graph = json.loads(graph_path.read_text()) if graph_path.is_file() else None
     if graph is not None and graph.get('source_md_sha256') != hashlib.sha256(md.encode()).hexdigest():
@@ -41,6 +47,14 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable
             continue
         from .recovery_context import search_md_context, expand_operation_queries
         source_ids = list(obj['source_refs'])
+        # Local notes can qualify a graphic claim even when extraction assigned
+        # the object only to its drawing block. Supply authoritative same-page
+        # TEXT/TABLE explicitly; never obtain it by reading a graphic summary.
+        object_pages = {block_pages[bid] for bid in source_ids if bid in block_pages}
+        page_context_ids = [bid for bid, block in blocks.items()
+                            if block['kind'] in ('TEXT', 'TABLE')
+                            and block_pages.get(bid) in object_pages and bid not in source_ids]
+        source_ids.extend(page_context_ids)
         # An operation may cite a requirement or counterpart not listed among
         # the object's own extraction sources. Keep those primary references.
         for operation in operations:
@@ -101,7 +115,10 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable
             continue
         packet={'object':obj,'operations':operations,'source_context':context,'context_searches':searches,
                 'attached_image_ids_in_order':image_ids,'allowed_source_refs':allowed,'omitted':omitted,
-                'scope_complete':False}
+                'scope_complete':False,
+                'same_page_text_context':{'candidate_block_ids':page_context_ids,
+                    'supplied_block_ids':[bid for bid in page_context_ids if bid in allowed],
+                    'applicability_verified':False}}
         key=hashlib.sha256(obj['id'].encode()).hexdigest()[:16]
         instructions='''Perform the listed unresolved operations for this object from current project sources.
 MD TEXT/TABLE is authoritative. GRAPHIC summaries are navigation only; inspect the

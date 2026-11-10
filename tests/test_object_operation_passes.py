@@ -146,3 +146,19 @@ def test_missing_context_question_stays_internal_but_bounded_editorial_question_
     reviewed=validate_object_operation_payload(request,{'object_operation_results':receipts,'findings':[missing]},context_search_exhausted=True)
     assert reviewed['findings'][0]['problem']=='Need calculation'
     assert not reviewed['findings'][0]['operation_semantic_verified']
+
+
+def test_graphic_operation_receives_same_page_authoritative_notes_not_other_pages(tmp_path):
+    md=tmp_path/'document.md'
+    md.write_text('## Page 32\n### BLOCK #1 [GRAPHIC]: drawing\nCabinet graphic\n'
+                  '### BLOCK #2 [TEXT]: note\nНумерацию клемм уточнить у изготовителя.\n'
+                  '## Page 33\n### BLOCK #3 [TEXT]: other\nUnrelated exception\n')
+    obj={'id':'A','identity':'Cabinet A','scope':'drawing','kind':'cabinet','source_refs':['drawing']}
+    (tmp_path/'02_text_analysis.json').write_text(json.dumps({'object_registry':[obj]}))
+    packet=json.loads(build_object_operation_passes(tmp_path,md)[0].messages[-1]['content'])
+    assert packet['same_page_text_context']['supplied_block_ids']==['note']
+    assert not packet['same_page_text_context']['applicability_verified']
+    assert 'note' in packet['allowed_source_refs']
+    assert 'other' not in packet['allowed_source_refs']
+    assert any('Нумерацию клемм' in b['content'] for b in packet['source_context'])
+    assert 'drawing' not in packet['allowed_source_refs']  # No image: notes do not certify graphic.

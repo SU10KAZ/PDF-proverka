@@ -63,5 +63,5 @@ async def main(args):
     print('COMPLETE',flush=True)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--packet',type=int,required=True);p.add_argument('--object-id',required=True);p.add_argument('--execute',action='store_true');p.add_argument('--revision',choices=['local_claim_v2'],default='local_claim_v2')
+    p=argparse.ArgumentParser();p.add_argument('--packet',type=int,required=True);p.add_argument('--object-id',required=True);p.add_argument('--execute',action='store_true');p.add_argument('--revision',choices=['local_claim_v2','page_context_v3'],default='page_context_v3')
     asyncio.run(main(p.parse_args()))
