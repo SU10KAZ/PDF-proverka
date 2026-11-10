@@ -75,15 +75,20 @@
     },
     {
       "hypothesis": "H06",
-      "state": "missing_positive_control",
+      "state": "running_positive_control",
       "evidence": "ITP_requirement_claude_assessment.json",
-      "detail": "Existing requirement response proves preservation of unknown applicability, not a valid positive applicability comparison. REQ-01 has unresolved document linkage; REQ-07 is an analogue permission, not a proved defect."
+      "detail": "Existing requirement response proves preservation of unknown applicability, not a valid positive applicability comparison. REQ-01 has unresolved document linkage; REQ-07 is an analogue permission, not a proved defect.",
+      "control": "VK project requirement and eight source TEXT blocks; no expected findings in request",
+      "root": "/tmp/auditmanager_vk_requirement_control_20261110",
+      "session": 14753,
+      "expected_answer_hidden": true
     },
     {
       "hypothesis": "H03",
       "state": "relationship_semantics_unaccepted",
       "evidence": "KM_identity_control_assessment.json",
-      "detail": "6 of 14 returned links have contract errors; automatic merges remain disabled. Acceptance of selected relation handling needs a real valid positive/negative pair or an explicitly diagnostic-only configuration."
+      "detail": "P007 relation checked against both drawings; P002 reference is not an instance but raw model receipt remains contract-invalid. No automatic merges; remaining relation semantics unresolved.",
+      "additional_evidence": "KM_identity_known_relation_pair.json"
     }
   ]
 }
