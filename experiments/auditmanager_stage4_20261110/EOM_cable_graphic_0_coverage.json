@@ -1,0 +1,2689 @@
+{
+  "objects": [
+    {
+      "id": "circuit_01",
+      "identity": "С251",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С251",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение лестничной клетки в 2 секции С2 с 2–10 этаж",
+            "protective_device_label": "QF5.1",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_0 вертикальная линия соединена с ответвлениями к светильникам лестничной клетки. В перекрытии с detail_tile_4 та же линия проходит через подписи С251, ППГнг-FRHF 3×2,5, 65 м и далее к QF5.1."
+        }
+      ]
+    },
+    {
+      "id": "circuit_02",
+      "identity": "С252",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С252",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение лифтового холла №1 и №2 в 2 секции С2",
+            "protective_device_label": "QF5.2",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_0 светильники в полосах 6–10 и 2–5 этажей соединены с общей вертикальной линией под подписью лифтового холла. Продолжение на detail_tile_4 несёт С252 и кабельную подпись и подключено к QF5.2."
+        }
+      ]
+    },
+    {
+      "id": "circuit_03",
+      "identity": "С253",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С253",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение квартирного коридора МОП в 2 секции С2",
+            "consumer_graphic_level": "Светильник в полосе 2–5 этаж",
+            "protective_device_label": "QF5.3",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Линия от светильника квартирного коридора в полосе 2–5 этаж на detail_tile_0 прослеживается вниз до С253 и QF5.3 на detail_tile_4. Кабель и длина подписаны вдоль этой линии."
+        }
+      ]
+    },
+    {
+      "id": "circuit_04",
+      "identity": "С254",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С254",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение квартирного коридора МОП в 2 секции С2",
+            "consumer_graphic_level": "Светильник в полосе 6–10 этаж",
+            "protective_device_label": "QF5.4",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Отдельная вертикальная линия от светильника квартирного коридора в полосе 6–10 этаж на detail_tile_0 продолжается к С254 и QF5.4 на detail_tile_4."
+        }
+      ]
+    },
+    {
+      "id": "circuit_05",
+      "identity": "С255",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С255",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение 10 технического этажа",
+            "protective_device_label": "QF5.5",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_0 линия от светильника под подписью освещения 10 технического этажа идёт вниз без смены цепи; на detail_tile_4 вдоль неё видны С255, кабель, длина и QF5.5."
+        }
+      ]
+    },
+    {
+      "id": "circuit_06",
+      "identity": "С256",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С256",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение таблички ПК в коридорах МОП в 2 секции С2",
+            "protective_device_label": "QF5.6",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_0 два ответвления к светильникам под подписью таблички ПК подключены к общей вертикальной линии. С256 и QF5.6 видны на detail_tile_4; край этой же цепи повторён на detail_tile_5."
+        }
+      ]
+    },
+    {
+      "id": "circuit_07",
+      "identity": "С257",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С257",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение, светильники на входом в здание на кровле",
+            "protective_device_label": "QF5.7",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Цепь светильника на кровле повторяется в перекрытии detail_tile_0 и detail_tile_1. Её продолжение с С257, кабельной подписью и QF5.7 повторяется в перекрытии detail_tile_4 и detail_tile_5; учтена один раз. Формулировка потребителя сохранена по видимой надписи."
+        }
+      ]
+    },
+    {
+      "id": "circuit_08",
+      "identity": "С258",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С258",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение, светильники на входом в здание",
+            "protective_device_label": "QF5.8",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_1 линия от светильника под подписью входа в здание спускается к кабельной подписи. На detail_tile_5 эта же линия обозначена С258 и проходит к QF5.8 через аппарат управления К5.8."
+        }
+      ]
+    },
+    {
+      "id": "circuit_09",
+      "identity": "С259",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С259",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение в управляющей компании",
+            "protective_device_label": "QF5.9",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Вертикальная линия от светильника управляющей компании на detail_tile_1 продолжается на detail_tile_5 к маркировке С259 и QF5.9; кабель и длина стоят вдоль этой линии."
+        }
+      ]
+    },
+    {
+      "id": "circuit_10",
+      "identity": "С2510",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2510",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение электрощитовой в С2 секции на −1 этаже",
+            "protective_device_label": "QF5.10",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_1 светильник электрощитовой соединён с вертикальной линией через показанный рядом выключатель. Продолжение на detail_tile_5 имеет подписи С2510 и QF5.10."
+        }
+      ]
+    },
+    {
+      "id": "circuit_11",
+      "identity": "С2511",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2511",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Аварийное освещение помещения СС в С2 секции на −1 этаже",
+            "protective_device_label": "QF5.11",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Отдельная линия от светильника помещения СС на detail_tile_1 прослеживается вниз к кабельной подписи, С2511 и QF5.11 на detail_tile_5."
+        }
+      ]
+    },
+    {
+      "id": "circuit_12",
+      "identity": "С2512",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2512",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "АПС СОУЭ",
+            "protective_device_label": "QF5.12",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Прямоугольный символ с подписью АПС СОУЭ на detail_tile_1 подключён к вертикальной линии. На detail_tile_5 эта линия имеет С2512, кабельную подпись и QF5.12."
+        }
+      ]
+    },
+    {
+      "id": "circuit_13",
+      "identity": "С2513",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2513",
+            "full_cable_designation": "ППГнг-FRHF 5×35,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 35,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 65,
+              "unit": "м"
+            },
+            "consumer": "Щит управления пассажирским лифтом перемещения пож. бригад ЩУЛ-2.2",
+            "connected_equipment": "Стабилизатор напряжения 40 кВА",
+            "protective_device_label": "QF5.13",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_1 вертикальная линия последовательно соединена со стабилизатором напряжения 40 кВА и щитом ЩУЛ-2.2. На detail_tile_5 её продолжение подписано С2513, ППГнг-FRHF 5×35,0 и подключено к QF5.13."
+        }
+      ]
+    },
+    {
+      "id": "circuit_14",
+      "identity": "С2514",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2514",
+            "full_cable_designation": "ППГнг-FRHF 5×2,5",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 35,
+              "unit": "м"
+            },
+            "consumer": "1.ЩАО — щит аварийного освещения, 1 этаж, вестибюль МОП",
+            "protective_device_label": "QF5.14",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Символ щита 1.ЩАО на detail_tile_1 соединён с отдельной вертикальной линией. Вдоль неё читаются 35 м и кабель 5×2,5; на detail_tile_5 линия продолжается через С2514 к QF5.14."
+        }
+      ]
+    },
+    {
+      "id": "circuit_15",
+      "identity": "С2515",
+      "scope": "Резервная отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2515",
+            "full_cable_designation": null,
+            "conductor_count": null,
+            "cross_section": null,
+            "length": null,
+            "consumer": null,
+            "protective_device_label": "QF5.15",
+            "reserve_status": "Резерв",
+            "missing_data_reason": "Марка, сечение, длина кабеля и внешний потребитель не подписаны"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_5 над коротким отходящим участком QF5.15 стоит надпись «Резерв», у верхней границы РП5 — С2515. Продолжение к внешнему потребителю не показано."
+        }
+      ]
+    },
+    {
+      "id": "circuit_16",
+      "identity": "С2516",
+      "scope": "Резервная отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2516",
+            "full_cable_designation": null,
+            "conductor_count": null,
+            "cross_section": null,
+            "length": null,
+            "consumer": null,
+            "protective_device_label": "QF5.16",
+            "reserve_status": "Резерв",
+            "missing_data_reason": "Марка, сечение, длина кабеля и внешний потребитель не подписаны"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "С2516, «Резерв» и QF5.16 относятся к одному короткому отходящему участку на detail_tile_5. Эта цепь повторена у левого края detail_tile_6 и учтена один раз."
+        }
+      ]
+    },
+    {
+      "id": "circuit_17_1",
+      "identity": "С2517-1",
+      "scope": "Резервная отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2517-1",
+            "full_cable_designation": null,
+            "conductor_count": null,
+            "cross_section": null,
+            "length": null,
+            "consumer": null,
+            "protective_device_label": "QF5.17-1",
+            "reserve_status": "Резерв",
+            "missing_data_reason": "Марка, сечение, длина кабеля и внешний потребитель не подписаны"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На перекрывающихся detail_tile_5 и detail_tile_6 видны маркировка С2517-1 с переносом конечной цифры, надпись «Резерв» и аппарат QF5.17-1. Это одна цепь."
+        }
+      ]
+    },
+    {
+      "id": "circuit_17_2",
+      "identity": "С2517-2",
+      "scope": "Резервная отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2517-2",
+            "full_cable_designation": null,
+            "conductor_count": null,
+            "cross_section": null,
+            "length": null,
+            "consumer": null,
+            "protective_device_label": "QF5.17-2",
+            "reserve_status": "Резерв",
+            "missing_data_reason": "Марка, сечение, длина кабеля и внешний потребитель не подписаны"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Цепь, обрезанная правым краем detail_tile_5, полностью различима на detail_tile_6: С2517-2, «Резерв», QF5.17-2. Внешний кабель и потребитель не показаны."
+        }
+      ]
+    },
+    {
+      "id": "circuit_18",
+      "identity": "С2518",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2518",
+            "full_cable_designation": "ППГнг-FRHF 3×2,5",
+            "conductor_count": 3,
+            "cross_section": {
+              "value": 2.5,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 210,
+              "unit": "м"
+            },
+            "consumer": "Клапана ОЗК и ДУ",
+            "protective_device_label": "QF5.18",
+            "reserve_status": "Не обозначена резервной; показаны потребители"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_2 несколько символов клапанов ответвляются от одной общей вертикальной линии. Вдоль её нижней части указано 210 м; продолжение на detail_tile_6 имеет С2518, ППГнг-FRHF 3×2,5 и QF5.18. Ответвления не выделены в самостоятельные отходящие цепи."
+        }
+      ]
+    },
+    {
+      "id": "circuit_19",
+      "identity": "С2519",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2519",
+            "full_cable_designation": "ППГнг-FRHF 5×16,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 16,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 140,
+              "unit": "м"
+            },
+            "consumer": "ДУ2.1 — системы противодымной вентиляции",
+            "connected_equipment": "ШУ",
+            "protective_device_label": "QF5.19",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_2 двигатель ДУ2.1 подключён через ШУ к вертикальной линии. Она продолжается на detail_tile_6 к С2519 и QF5.19; вдоль неё указаны 140 м и ППГнг-FRHF 5×16,0."
+        }
+      ]
+    },
+    {
+      "id": "circuit_20",
+      "identity": "С2520",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2520",
+            "full_cable_designation": "ППГнг-FRHF 5×10,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 10,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 120,
+              "unit": "м"
+            },
+            "consumer": "ПД2.1 — системы противодымной вентиляции",
+            "connected_equipment": "ШУ",
+            "protective_device_label": "QF5.20",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Вертикальная линия двигателя ПД2.1 через ШУ на detail_tile_2 прослеживается к С2520 и QF5.20 на detail_tile_6. На этой линии подписаны 120 м и ППГнг-FRHF 5×10,0."
+        }
+      ]
+    },
+    {
+      "id": "circuit_21",
+      "identity": "С2521",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2521",
+            "full_cable_designation": "ППГнг-FRHF 5×10,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 10,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 120,
+              "unit": "м"
+            },
+            "consumer": "ПД2.2 — системы противодымной вентиляции",
+            "connected_equipment": "ШУ",
+            "protective_device_label": "QF5.21",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_2 двигатель ПД2.2 и ШУ лежат на одной соединённой вертикальной линии. Её продолжение на detail_tile_6 подписано С2521 и QF5.21; длина 120 м и кабель 5×10,0 относятся к этой линии."
+        }
+      ]
+    },
+    {
+      "id": "circuit_22",
+      "identity": "С2522",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2522",
+            "full_cable_designation": "ППГнг-FRHF 5×10,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 10,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 120,
+              "unit": "м"
+            },
+            "consumer": "ПД2.3.1 — системы противодымной вентиляции",
+            "connected_equipment": "ШУ",
+            "protective_device_label": "QF5.22",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "ПД2.3.1 на detail_tile_2 соединён через ШУ с вертикальной линией, продолжающейся на detail_tile_6 к С2522 и QF5.22. Вдоль неё стоят подписи 120 м и ППГнг-FRHF 5×10,0."
+        }
+      ]
+    },
+    {
+      "id": "circuit_23",
+      "identity": "С2523",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2523",
+            "full_cable_designation": "ППГнг-FRHF 5×25,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 25,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 130,
+              "unit": "м"
+            },
+            "consumer": "ПД2.3.2 — системы противодымной вентиляции",
+            "connected_equipment": "ШУ; в общей рамке потребителя также показан прямоугольный элемент с подписью Рр=22,5 кВт",
+            "protective_device_label": "QF5.23",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_2 одна вертикальная питающая линия через ШУ подходит к рамке с ПД2.3.2 и дополнительным элементом. Её продолжение на detail_tile_6 имеет С2523, ППГнг-FRHF 5×25,0, 130 м и QF5.23. Элементы внутри рамки не посчитаны отдельными отходящими цепями."
+        }
+      ]
+    },
+    {
+      "id": "circuit_24",
+      "identity": "С2524",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2524",
+            "full_cable_designation": "ППГнг-FRHF 5×6,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 6,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 95,
+              "unit": "м"
+            },
+            "consumer": "ПД2.4.1 — системы противодымной вентиляции",
+            "connected_equipment": "ШУ",
+            "protective_device_label": "QF5.24",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Линия ПД2.4.1 через ШУ видна на detail_tile_2 и частично повторена на detail_tile_3. На detail_tile_6 видны её С2524, кабель 5×6,0, 95 м и QF5.24; край цепи повторяется на detail_tile_7."
+        }
+      ]
+    },
+    {
+      "id": "circuit_25",
+      "identity": "С2525",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2525",
+            "full_cable_designation": "ППГнг-FRHF 5×6,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 6,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 95,
+              "unit": "м"
+            },
+            "consumer": "ПД2.4.2 — системы противодымной вентиляции",
+            "connected_equipment": "ШУ",
+            "protective_device_label": "QF5.25",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "ПД2.4.2 и ШУ повторяются в перекрытии detail_tile_2 и detail_tile_3. Та же вертикальная линия с С2525, 95 м, кабелем 5×6,0 и QF5.25 повторяется в detail_tile_6 и detail_tile_7; учтена один раз."
+        }
+      ]
+    },
+    {
+      "id": "circuit_26",
+      "identity": "С2526",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2526",
+            "full_cable_designation": "ППГнг-FRHF 5×6,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 6,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 45,
+              "unit": "м"
+            },
+            "consumer": "ПД2.4.3 — системы противодымной вентиляции",
+            "connected_equipment": "ШУ",
+            "protective_device_label": "QF5.26",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_3 показаны ПД2.4.3 и ШУ с общей вертикальной линией. Она продолжается на detail_tile_7 к С2526 и QF5.26; кабель 5×6,0 и 45 м подписаны вдоль неё."
+        }
+      ]
+    },
+    {
+      "id": "circuit_27",
+      "identity": "С2527",
+      "scope": "Отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2527",
+            "full_cable_designation": "ППГнг-FRHF 5×6,0",
+            "conductor_count": 5,
+            "cross_section": {
+              "value": 6,
+              "unit": "мм²"
+            },
+            "length": {
+              "value": 45,
+              "unit": "м"
+            },
+            "consumer": "ПД2.4.4 — системы противодымной вентиляции",
+            "connected_equipment": "ШУ",
+            "protective_device_label": "QF5.27",
+            "reserve_status": "Не обозначена резервной; показан потребитель"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Линия от ПД2.4.4 через ШУ на detail_tile_3 продолжается к С2527 и QF5.27 на detail_tile_7. Вдоль линии видны ППГнг-FRHF 5×6,0 и 45 м."
+        }
+      ]
+    },
+    {
+      "id": "circuit_28",
+      "identity": "С2528",
+      "scope": "Резервная отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2528",
+            "full_cable_designation": null,
+            "conductor_count": null,
+            "cross_section": null,
+            "length": null,
+            "consumer": null,
+            "protective_device_label": "QF5.27",
+            "reserve_status": "Резерв",
+            "missing_data_reason": "Марка, сечение, длина кабеля и внешний потребитель не подписаны",
+            "label_note": "Сохранена видимая подпись QF5.27; она повторяет подпись аппарата соседней цепи С2527"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_7 справа от линии С2527 расположен самостоятельный короткий отходящий участок с маркировкой С2528 и надписью «Резерв». У его аппарата отчётливо напечатано QF5.27, а не QF5.28."
+        }
+      ]
+    },
+    {
+      "id": "circuit_29",
+      "identity": "С2529",
+      "scope": "Резервная отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2529",
+            "full_cable_designation": null,
+            "conductor_count": null,
+            "cross_section": null,
+            "length": null,
+            "consumer": null,
+            "protective_device_label": "QF5.29",
+            "reserve_status": "Резерв",
+            "missing_data_reason": "Марка, сечение, длина кабеля и внешний потребитель не подписаны"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_7 одному короткому отходящему участку соответствуют С2529 у границы РП5, надпись «Резерв» и QF5.29."
+        }
+      ]
+    },
+    {
+      "id": "circuit_30",
+      "identity": "С2530",
+      "scope": "Резервная отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2530",
+            "full_cable_designation": null,
+            "conductor_count": null,
+            "cross_section": null,
+            "length": null,
+            "consumer": null,
+            "protective_device_label": "QF5.30",
+            "reserve_status": "Резерв",
+            "missing_data_reason": "Марка, сечение, длина кабеля и внешний потребитель не подписаны"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "На detail_tile_7 видны С2530, надпись «Резерв» и QF5.30, относящиеся к одному короткому отходящему участку."
+        }
+      ]
+    },
+    {
+      "id": "circuit_31",
+      "identity": "С2531",
+      "scope": "Резервная отходящая цепь РП5",
+      "kind": "outgoing_circuit",
+      "source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Маркировка и подключение цепи",
+          "value": {
+            "line_identifier": "С2531",
+            "full_cable_designation": null,
+            "conductor_count": null,
+            "cross_section": null,
+            "length": null,
+            "consumer": null,
+            "protective_device_label": "QF5.31",
+            "reserve_status": "Резерв",
+            "missing_data_reason": "Марка, сечение, длина кабеля и внешний потребитель не подписаны"
+          },
+          "unit": null,
+          "source_ref": "blk_8fac348a820c41aeb2d941339987da14",
+          "graphic_observation": "Крайний правый отходящий участок внутри границы РП5 на detail_tile_7 подписан С2531, «Резерв» и QF5.31. Внешнее продолжение к потребителю не показано."
+        }
+      ]
+    }
+  ],
+  "invalid_objects": [],
+  "operations": [
+    {
+      "object_id": "circuit_01",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_01",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_01",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_01",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_01",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_02",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_02",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_02",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_02",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_02",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_03",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_03",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_03",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_03",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_03",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_04",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_04",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_04",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_04",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_04",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_05",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_05",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_05",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_05",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_05",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_06",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_06",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_06",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_06",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_06",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_07",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_07",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_07",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_07",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_07",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_08",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_08",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_08",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_08",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_08",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_09",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_09",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_09",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_09",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_09",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_10",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_10",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_10",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_10",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_10",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_11",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_11",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_11",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_11",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_11",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_12",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_12",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_12",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_12",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_12",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_13",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_13",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_13",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_13",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_13",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_14",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_14",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_14",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_14",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_14",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_15",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_15",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_15",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_15",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_15",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_16",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_16",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_16",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_16",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_16",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_1",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_1",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_1",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_1",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_1",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_2",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_2",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_2",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_2",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_17_2",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_18",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_18",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_18",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_18",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_18",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_19",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_19",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_19",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_19",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_19",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_20",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_20",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_20",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_20",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_20",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_21",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_21",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_21",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_21",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_21",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_22",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_22",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_22",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_22",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_22",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_23",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_23",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_23",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_23",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_23",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_24",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_24",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_24",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_24",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_24",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_25",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_25",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_25",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_25",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_25",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_26",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_26",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_26",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_26",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_26",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_27",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_27",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_27",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_27",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_27",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_28",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_28",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_28",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_28",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_28",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_29",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_29",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_29",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_29",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_29",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_30",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_30",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_30",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_30",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_30",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_31",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_31",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_31",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_31",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "circuit_31",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_8fac348a820c41aeb2d941339987da14"
+      ],
+      "reason": "missing_receipt"
+    }
+  ],
+  "unmatched_operations": [],
+  "source_inventory": [
+    {
+      "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+      "status": "reported_inventoried",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "status": "inventoried",
+        "object_ids": [
+          "circuit_01",
+          "circuit_02",
+          "circuit_03",
+          "circuit_04",
+          "circuit_05",
+          "circuit_06",
+          "circuit_07",
+          "circuit_08",
+          "circuit_09",
+          "circuit_10",
+          "circuit_11",
+          "circuit_12",
+          "circuit_13",
+          "circuit_14",
+          "circuit_15",
+          "circuit_16",
+          "circuit_17_1",
+          "circuit_17_2",
+          "circuit_18",
+          "circuit_19",
+          "circuit_20",
+          "circuit_21",
+          "circuit_22",
+          "circuit_23",
+          "circuit_24",
+          "circuit_25",
+          "circuit_26",
+          "circuit_27",
+          "circuit_28",
+          "circuit_29",
+          "circuit_30",
+          "circuit_31"
+        ],
+        "reason": "Просмотрены все восемь фрагментов одного графического блока. По соединённым линиям и перекрытиям зарегистрированы 32 различимые отходящие цепи РП5: 24 с показанными потребителями и кабельными подписями, 8 с надписью «Резерв». Повторы в перекрытиях объединены. Обрезанные нижние части кабельных подписей верхнего ряда восстановлены по соответствующему нижнему ряду. Для резервных цепей отсутствие кабельных подписей сохранено как отсутствие данных, без предположения о наличии кабеля. Покрытие ограничено маркировкой отходящих цепей; аппараты, вводы и прочие элементы не инвентаризированы как самостоятельные объекты. Длины перенесены из подписей отдельных цепей, не измерены по геометрии и не суммированы.",
+        "unreadable_regions": []
+      }
+    }
+  ],
+  "unknown_inventory_blocks": [],
+  "unresolved_operations": 160,
+  "unresolved_source_blocks": 0,
+  "coverage_complete": false,
+  "semantic_verified": false
+}

@@ -1,0 +1,26 @@
+{
+  "scope": "Bounded literal recovery of one circuit diagram, not full audit acceptance",
+  "objects": 32,
+  "invalid_objects": 0,
+  "model_reported_unreadable_regions": [],
+  "independent_source_review": {
+    "object_id": "circuit_13",
+    "line": "С2513",
+    "designation": "ППГнг-FRHF 5×35,0",
+    "length_m": 65,
+    "protective_device": "QF5.13",
+    "viewed_tile": "detail_tile_5.png",
+    "sha256": "7d0d17ce83d69ffe957bce2e532afa445dfeda06f3468017c9f35f31f51ee016",
+    "consumer_not_yet_independently_verified": true
+  },
+  "new_candidate_queue": {
+    "count": 1,
+    "candidate": "Repeated QF5.27 label on С2527 and С2528",
+    "status": "requires_source_review_and_classic_duplicate_check",
+    "retained_in": "EOM_cable_graphic_0_result.json"
+  },
+  "positive_change": "Initial whole-image cable inventory failed to extract С2513; tiled focused recovery extracted literal line, execution, cross-section and length.",
+  "causal_limit": "Image resolution and extraction scope changed together; separate effects are not isolated.",
+  "specification_reconciliation": "not_checked",
+  "full_acceptance_proven": false
+}
