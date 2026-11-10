@@ -441,5 +441,13 @@
     "cost_and_duration": "Unmeasured; character counts exclude image tokenization, output and reasoning. Pilot timing and quota measurement needed.",
     "scope": "Known saved-claim verification requests; not independent discovery or new whole-project audit.",
     "artifact": "six_source_review_requests_preflight.json"
+  },
+  "source_review_missing_reference_validation": {
+    "tests_passed": 42,
+    "behavior": "Keep unresolved source-candidate block references, including candidates with no resolved blocks, as explicit needs_data review inputs.",
+    "six_project_pending_count": 127,
+    "six_project_findings_preserved": 244,
+    "real_prepared_request_volume_unchanged": true,
+    "new_model_calls": 0
   }
 }

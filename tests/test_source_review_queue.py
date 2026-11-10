@@ -88,8 +88,23 @@ def test_direct_evidence_does_not_bypass_lineage_review_and_stale_links_are_igno
     assert attach_pending_source_reviews([f], {'t'}) == 1
     assert attach_pending_source_reviews([f], {'t'}) == 0
     assert all(f[k] == v for k, v in before.items())
-    assert f['source_review_requests'] == [{'source_finding_id': 'T-1', 'source_claim': 'Original claim', 'block_ids': ['t']}]
-    assert build_source_review_queue([f], MD)['pending_count'] == 1
+    assert f['source_review_requests'] == [{'source_finding_id': 'T-1', 'source_claim': 'Original claim',
+                                           'block_ids': ['t', 'missing'], 'unresolved_index_block_ids': ['missing']}]
+    queue = build_source_review_queue([f], MD)
+    assert queue['pending_count'] == 1
+    assert queue['packets'][0]['source_context_status'] == 'needs_data'
+    assert queue['packets'][0]['missing_or_ambiguous_block_ids'] == ['missing']
+
+
+def test_all_unresolved_candidate_references_remain_in_review_queue():
+    f = {'id': 'F-1', 'source_finding_ids': ['T-1'], 'source_candidate_lineage': [
+        {'source_finding_id': 'T-1', 'status': 'requires_semantic_review', 'source_claim': 'Claim',
+         'existing_block_ids': [], 'unresolved_block_ids': ['missing']} ]}
+    assert attach_pending_source_reviews([f], set()) == 1
+    packet = build_source_review_queue([f], MD)['packets'][0]
+    assert packet['sources'] == []
+    assert packet['missing_or_ambiguous_block_ids'] == ['missing']
+    assert packet['source_context_status'] == 'needs_data'
 
 
 def test_structural_phantom_cleanup_still_runs_before_queue_attachment(tmp_path):

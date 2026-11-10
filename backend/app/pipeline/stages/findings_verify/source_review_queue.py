@@ -30,11 +30,18 @@ def attach_pending_source_reviews(findings, known_block_ids):
             sid = receipt.get('source_finding_id')
             if not isinstance(sid, str) or sid not in source_ids:
                 continue
-            refs = receipt.get('existing_block_ids', [])
-            existing = list(dict.fromkeys(b for b in refs if isinstance(b, str) and b in known_block_ids)) if isinstance(refs, list) else []
-            if existing:
-                requests.append({'source_finding_id': sid, 'source_claim': receipt.get('source_claim'),
-                                 'block_ids': existing})
+            refs = []
+            for key in ('existing_block_ids', 'unresolved_block_ids'):
+                values = receipt.get(key, [])
+                if isinstance(values, list):
+                    refs.extend(b for b in values if isinstance(b, str) and b)
+            refs = list(dict.fromkeys(refs))
+            if refs:
+                request = {'source_finding_id': sid, 'source_claim': receipt.get('source_claim'), 'block_ids': refs}
+                missing = [bid for bid in refs if bid not in known_block_ids]
+                if missing:
+                    request['unresolved_index_block_ids'] = missing
+                requests.append(request)
         if not requests:
             continue
         updates = {'requires_human_review': True, 'source_evidence_review_status': 'pending',
