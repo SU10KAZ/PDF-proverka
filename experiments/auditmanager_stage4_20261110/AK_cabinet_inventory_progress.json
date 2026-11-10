@@ -1,0 +1,50 @@
+{
+  "scope": "Five original AK14 source drawings; known-source selection, no answers in model request.",
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "source_blocks": [
+        "blk_96ed7d88fb23414bb14d93191a89365a"
+      ],
+      "state": "result_not_saved"
+    },
+    {
+      "stage": "object_inventory_001",
+      "source_blocks": [
+        "blk_cd9d763d198246859c3df42c18b5c3d8"
+      ],
+      "state": "result_not_saved"
+    },
+    {
+      "stage": "object_inventory_002",
+      "source_blocks": [
+        "blk_f784be4786274e8c84f32d874ed99969"
+      ],
+      "state": "result_not_saved"
+    },
+    {
+      "stage": "object_inventory_003",
+      "source_blocks": [
+        "blk_127bea47b93f4214ac6430c54b21517a"
+      ],
+      "state": "result_not_saved"
+    },
+    {
+      "stage": "object_inventory_004",
+      "source_blocks": [
+        "blk_47163e69651c48528b3e054d5a5db095"
+      ],
+      "state": "result_not_saved"
+    }
+  ],
+  "completed_responses": 0,
+  "total_packets": 5,
+  "semantic_verified": false,
+  "stage4_complete": false,
+  "next_checks": [
+    "Inspect actual terminal addressing and circuit boundaries against graphics.",
+    "Run identity operation; inventory response does not establish that this check ran.",
+    "Preserve all five addresses when combining a systemic finding; do not count detector/view duplicates.",
+    "No general suppression of repeated terminals without a confirmed negative control."
+  ]
+}

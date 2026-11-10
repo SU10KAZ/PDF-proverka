@@ -110,6 +110,15 @@ units and physical basis before comparing. Never infer compliance from a missing
 comparison. If a counterpart, calculation or applicability source is absent, return
 needs_data with exact missing context and context_queries (up to six literal
 object marks or short phrases for MD search), not a refuted or confirmed defect.
+For identity_across_views, also check whether the supplied designations distinguish
+different instances within the object's scope. On electrical/control connection
+diagrams inspect the full address (cabinet, terminal strip, terminal number) and
+the connected circuit separately. Do not include the circuit in the uniqueness
+key merely to hide a repeated terminal address. Conversely, repeated numbers in
+different cabinets/strips, common PE/N, bridges and repeated views are not defects
+by themselves: establish the actual connection and addressing convention. Record
+each inspected location and any unresolved address component. A manufacturer
+clarification note is context, not proof that an observed ambiguity is resolved.
 Return JSON with object_operation_results (object_id, operation, status checked/
 not_applicable/needs_data/not_checked, reason in Russian, source_refs) and findings.
 Each finding must have object_id, operation, severity, problem, description, solution,
