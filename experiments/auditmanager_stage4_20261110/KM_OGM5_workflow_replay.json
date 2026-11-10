@@ -1,0 +1,11 @@
+{
+  "status": "awaiting_dispatch",
+  "imported_result_sha256": "12eaa427fd68d225debd60d610919cb1039d4c13c7356375b73cea285567a895",
+  "workflow_dir": "/tmp/auditmanager_km_ogm5_workflow_replay_20261110",
+  "next_request_sha256": "50fd281c6afedeae00b34b9be8599acb38551f15c2c93eeacbbdc92d052a49bc",
+  "matches_previously_prepared_continuation": true,
+  "new_model_calls": 0,
+  "initial_result_reused": true,
+  "semantic_verified": false,
+  "scope": "Actual saved OGM5 response through reusable executor, stopped before pending expanded dispatch."
+}
