@@ -15,6 +15,7 @@ def summarize():
         *[(f'EOM_split_{i}', Path('/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM/execution') / f'object_inventory_{i:03d}') for i in range(5)],
         ('EOM_graphic_strip', Path('/tmp/auditmanager_eom_graphic_recovery_20261110')),
         ('EOM_graphic_grid', Path('/tmp/auditmanager_eom_graphic_recovery_20261110_grid')),
+        ('EOM_graphic_grid_claude', Path('/tmp/auditmanager_eom_graphic_grid_claude_control_20261110')),
         ('EOM_prescan', Path('/tmp/auditmanager_eom_prescan_recovery_control_20261110')),
         ('EOM_prescan_followup', Path('/tmp/auditmanager_eom_prescan_recovery_control_20261110/followup')),
         *[(f'AR_recovery_{i}', Path('/tmp/auditmanager_ar_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
