@@ -1,0 +1,15 @@
+{
+  "scope": "Local receipt validation using actual EOM source controls; no inference or claim acceptance.",
+  "F036_valid_receipt_status": "recorded_pending_semantic_acceptance",
+  "invented_quote_errors": [
+    "claim_0:quote_not_in_source"
+  ],
+  "F044_unprovided_recovered_source_errors": [
+    "claim_0:source_not_in_packet"
+  ],
+  "required_next_step": "Explicitly expand and freeze review context before citing recovered sources. Wire dispatch and response persistence after approved model execution.",
+  "tests_passed": 12,
+  "semantic_verified": false,
+  "new_model_calls": 0,
+  "runtime_dispatch_integrated": false
+}
