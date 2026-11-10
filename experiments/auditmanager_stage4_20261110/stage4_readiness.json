@@ -245,5 +245,41 @@
     "source_arithmetic_negative_control": "F-040 (prior separate review)",
     "automatic_application": false,
     "boundary": "Known-case local evidence review; F-003 operating mode/cause and normative applicability unresolved. Runtime pending flags not cleared. No independent discovery or full stage acceptance."
+  },
+  "source_supply_review": {
+    "artifact": "experiments/auditmanager_stage4_20261110/EOM_supply_claim_reviews.json",
+    "sha256": "cf5e50691cb4f43d7402784c4be4ade0d87e5d63c57f8d51f871344d3a34e042",
+    "reviewed_findings": 5,
+    "source_facts_confirmed": true,
+    "supply_excess_or_shortage_proven": false,
+    "automatic_application": false,
+    "new_model_calls": 0
+  },
+  "eom_source_review_coverage": {
+    "claim_level_review_records": [
+      "F-001",
+      "F-003",
+      "F-034",
+      "F-035",
+      "F-037",
+      "F-038",
+      "F-039",
+      "F-044",
+      "F-045",
+      "F-046"
+    ],
+    "separate_arithmetic_refutation": "F-040",
+    "pending_packet_count": 19,
+    "not_yet_in_these_review_records": [
+      "F-030",
+      "F-031",
+      "F-032",
+      "F-033",
+      "F-036",
+      "F-041",
+      "F-042",
+      "F-043"
+    ],
+    "boundary": "Review coverage does not mean all claims resolved; engineering questions and external applicability remain. Runtime pending flags unchanged."
   }
 }

@@ -1,0 +1,877 @@
+{
+  "source": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "scope": "Known-case assistant review with reproducible source-row checks, not independent discovery.",
+  "reviews": [
+    {
+      "finding_id": "F-034",
+      "finding_sha256": "980d267f9ba287afc136b077d8e5a7b0d5d54d81a89449d9a2418ea9c171b816",
+      "final_finding": {
+        "id": "F-034",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "documentation",
+        "sheet": "Лист 6",
+        "page": 42,
+        "problem": "Гофрированная труба 32 мм повторена в спецификации",
+        "description": "Одинаковая безгалогенная гофрированная труба диаметром 32 мм указана дважды по 190 м, что даёт суммарно 380 м без разделения участков.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить количество и недублирование позиций спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить повтор и удалить дублирующую строку либо указать назначение каждой позиции.",
+        "risk": "Избыточная закупка 190 м трубы.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-013",
+            "status": "requires_semantic_review",
+            "source_claim": "Труба безгалогенная гофрированная диаметром 32 мм включена дважды с одинаковым описанием и количеством 190 м. Два ряда дают 380 м без разграничения участков. Проверить повтор и исключить двойной учёт либо указать назначение каждой строки.",
+            "source_location": "МД стр. 42, спецификация труб и креплений.",
+            "existing_block_ids": [
+              "blk_1da24da5ad594599aa59defe9fde265b"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-013",
+            "source_claim": "Труба безгалогенная гофрированная диаметром 32 мм включена дважды с одинаковым описанием и количеством 190 м. Два ряда дают 380 м без разграничения участков. Проверить повтор и исключить двойной учёт либо указать назначение каждой строки.",
+            "block_ids": [
+              "blk_1da24da5ad594599aa59defe9fde265b"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Две одинаковые строки трубы Ø32мм по 190 м дают 380 м.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+              "line_in_block": 12,
+              "quote": "|  | Труба ПЛЛ гибкая гофр. не содержит галогенов Ø32мм, ПВ-0, с протяжкой, цвет белый |  |  | АО ДКС | м | 190 |  |  |",
+              "cells": [
+                "",
+                "Труба ПЛЛ гибкая гофр. не содержит галогенов Ø32мм, ПВ-0, с протяжкой, цвет белый",
+                "",
+                "",
+                "АО ДКС",
+                "м",
+                "190",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+              "line_in_block": 14,
+              "quote": "|  | Труба ПЛЛ гибкая гофр. не содержит галогенов Ø32мм, ПВ-0, с протяжкой, цвет белый |  |  | АО ДКС | м | 190 |  |  |",
+              "cells": [
+                "",
+                "Труба ПЛЛ гибкая гофр. не содержит галогенов Ø32мм, ПВ-0, с протяжкой, цвет белый",
+                "",
+                "",
+                "АО ДКС",
+                "м",
+                "190",
+                "",
+                ""
+              ]
+            }
+          ],
+          "operation": {
+            "sum_m": "380"
+          }
+        },
+        {
+          "claim": "Доказан ли двойной учёт одного участка, либо строки относятся к разным участкам?",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Сохранить вопрос о назначении строк; не удалять 190 м автоматически без ведомости участков.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "recommended_section": "questions_and_clarifications",
+      "automatic_application": false
+    },
+    {
+      "finding_id": "F-035",
+      "finding_sha256": "2334bafdb6e9244d3a097df73e1ed7253e0f356f10b36c2e7443a8c5f2be74c9",
+      "final_finding": {
+        "id": "F-035",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "documentation",
+        "sheet": "Лист 8",
+        "page": 44,
+        "problem": "Соединители и винты ВРУ-2 повторены в перечне",
+        "description": "Последовательно дважды записаны соединитель LG1000 по 96 шт. и винт СМ010620 по 768 шт. Итоги становятся 192 соединителя и 1536 винтов.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить количество изделий и исключение дублей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-014"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить принадлежность повторных строк; при отсутствии отдельных участков удалить повтор.",
+        "risk": "Избыточная закупка крепежа.",
+        "source_finding_ids": [
+          "T-014"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-014",
+            "status": "requires_semantic_review",
+            "source_claim": "В пределах одного перечня дважды последовательно записаны соединитель LG1000 по 96 шт. и винт СМ010620 по 768 шт. В результате получается 192 соединителя и 1536 винтов. Проверить, относятся ли повторные строки к самостоятельным участкам; при отсутствии такого основания удалить повтор.",
+            "source_location": "МД стр. 44, спецификация лотков помещения ВРУ-2.",
+            "existing_block_ids": [
+              "blk_0779457166304b91a87d7b7902f8359f"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-014",
+            "source_claim": "В пределах одного перечня дважды последовательно записаны соединитель LG1000 по 96 шт. и винт СМ010620 по 768 шт. В результате получается 192 соединителя и 1536 винтов. Проверить, относятся ли повторные строки к самостоятельным участкам; при отсутствии такого основания удалить повтор.",
+            "block_ids": [
+              "blk_0779457166304b91a87d7b7902f8359f"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "В одном фрагменте до следующего заголовка дважды повторены соединители и винты.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+              "line_in_block": 17,
+              "quote": "|  | Соединитель усиленный горизонтальный, GTO 100 L |  | LG1000 | АО ДКС | шт. | 96 |  |  |",
+              "cells": [
+                "",
+                "Соединитель усиленный горизонтальный, GTO 100 L",
+                "",
+                "LG1000",
+                "АО ДКС",
+                "шт.",
+                "96",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+              "line_in_block": 19,
+              "quote": "|  | Соединитель усиленный горизонтальный, GTO 100 L |  | LG1000 | АО ДКС | шт. | 96 |  |  |",
+              "cells": [
+                "",
+                "Соединитель усиленный горизонтальный, GTO 100 L",
+                "",
+                "LG1000",
+                "АО ДКС",
+                "шт.",
+                "96",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+              "line_in_block": 18,
+              "quote": "|  | Винт с гладкой головкой и квадратным подголовником М6x20 |  | СМ010620 | АО ДКС | шт. | 768 |  |  |",
+              "cells": [
+                "",
+                "Винт с гладкой головкой и квадратным подголовником М6x20",
+                "",
+                "СМ010620",
+                "АО ДКС",
+                "шт.",
+                "768",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+              "line_in_block": 20,
+              "quote": "|  | Винт с гладкой головкой и квадратным подголовником М6x20 |  | СМ010620 | АО ДКС | шт. | 768 |  |  |",
+              "cells": [
+                "",
+                "Винт с гладкой головкой и квадратным подголовником М6x20",
+                "",
+                "СМ010620",
+                "АО ДКС",
+                "шт.",
+                "768",
+                "",
+                ""
+              ]
+            }
+          ],
+          "operation": {
+            "connectors_total": "192",
+            "screws_total": "1536"
+          }
+        },
+        {
+          "claim": "Относятся ли повторы к самостоятельным участкам или к одному и тому же объёму?",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Сохранить условную проверку повторов; одинаковые артикулы и количества сами по себе не доказывают лишнюю поставку.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "recommended_section": "questions_and_clarifications",
+      "automatic_application": false
+    },
+    {
+      "finding_id": "F-037",
+      "finding_sha256": "e03dd78f83cc1efc27c241c738fb886c41dfdc757642cd11224b5332f25bfe46",
+      "final_finding": {
+        "id": "F-037",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "documentation",
+        "sheet": "Листы 17, 18",
+        "page": [
+          53,
+          54
+        ],
+        "problem": "Крышек для лотков предусмотрено на 7 м меньше",
+        "description": "На отметках +38,690, +41,290 и +44,650 указано соответственно 126 м крышек на 130 м лотков, 55 м на 57 м и 40 м на 41 м.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить количественную согласованность комплектующих.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-016"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать участки без крышек либо дополнить спецификацию на 7 м.",
+        "risk": "Недокомплект крышек при монтаже.",
+        "source_finding_ids": [
+          "T-016"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-016",
+            "status": "requires_semantic_review",
+            "source_claim": "Метраж крышек меньше метража лотков, для которых предусмотрены крышки: на отметке +38,690 — 126 м против 130 м, на +41,290 — 55 м против 57 м, на +44,650 — 40 м против 41 м. Суммарная разница составляет 7 м. Уточнить участки без крышек либо увеличить их количество.",
+            "source_location": "МД стр. 53–54, спецификация технических пространств.",
+            "existing_block_ids": [
+              "blk_79370c7a344c44559b2d828291b6a1b6",
+              "blk_f3f718605a024394b9026b08fa4c9b20"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-016",
+            "source_claim": "Метраж крышек меньше метража лотков, для которых предусмотрены крышки: на отметке +38,690 — 126 м против 130 м, на +41,290 — 55 м против 57 м, на +44,650 — 40 м против 41 м. Суммарная разница составляет 7 м. Уточнить участки без крышек либо увеличить их количество.",
+            "block_ids": [
+              "blk_79370c7a344c44559b2d828291b6a1b6",
+              "blk_f3f718605a024394b9026b08fa4c9b20"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "В трёх указанных технических пространствах разность метража лотков и крышек равна 4+2+1=7 м.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+              "line_in_block": 17,
+              "quote": "|  | Техпространство на отм.+38.690 |  |  |  |  |  |  |  |",
+              "cells": [
+                "",
+                "Техпространство на отм.+38.690",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+              "line_in_block": 30,
+              "quote": "|  | Техпространство на отм.+41.290 |  |  |  |  |  |  |  |",
+              "cells": [
+                "",
+                "Техпространство на отм.+41.290",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+              "line_in_block": 18,
+              "quote": "|  | Лоток неперфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 130 |  |  |",
+              "cells": [
+                "",
+                "Лоток неперфорированный 200х80 L3000 толщина 1,0 мм",
+                "",
+                "3530410",
+                "АО ДКС",
+                "м.",
+                "130",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+              "line_in_block": 31,
+              "quote": "|  | Лоток неперфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 57 |  |  |",
+              "cells": [
+                "",
+                "Лоток неперфорированный 200х80 L3000 толщина 1,0 мм",
+                "",
+                "3530410",
+                "АО ДКС",
+                "м.",
+                "57",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+              "line_in_block": 21,
+              "quote": "|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 126 |  |  |",
+              "cells": [
+                "",
+                "Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм",
+                "",
+                "3552410",
+                "АО ДКС",
+                "м.",
+                "126",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+              "line_in_block": 34,
+              "quote": "|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 55 |  |  |",
+              "cells": [
+                "",
+                "Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм",
+                "",
+                "3552410",
+                "АО ДКС",
+                "м.",
+                "55",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+              "line_in_block": 20,
+              "quote": "|  | Техпространство на отм.+44.650 |  |  |  |  |  |  |  |",
+              "cells": [
+                "",
+                "Техпространство на отм.+44.650",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+              "line_in_block": 21,
+              "quote": "|  | Лоток неперфорированный 200x80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 41 |  |  |",
+              "cells": [
+                "",
+                "Лоток неперфорированный 200x80 L3000 толщина 1,0 мм",
+                "",
+                "3530410",
+                "АО ДКС",
+                "м.",
+                "41",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+              "line_in_block": 24,
+              "quote": "|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 40 |  |  |",
+              "cells": [
+                "",
+                "Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм",
+                "",
+                "3552410",
+                "АО ДКС",
+                "м.",
+                "40",
+                "",
+                ""
+              ]
+            }
+          ],
+          "operation": {
+            "differences_m": [
+              "4",
+              "2",
+              "1"
+            ],
+            "total_m": "7"
+          }
+        },
+        {
+          "claim": "Требуются ли крышки по всей длине этих лотков и не предусмотрены ли открытые участки?",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Сохранить вопрос о покрытии участков; не назначать дополнительную поставку 7 м без требования и трассировки.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "recommended_section": "questions_and_clarifications",
+      "automatic_application": false
+    },
+    {
+      "finding_id": "F-038",
+      "finding_sha256": "28f4c21596e09a6977a0ddf5375bd2f96ee14997303d43b256b42e5a0057d734",
+      "final_finding": {
+        "id": "F-038",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "sheet": "Лист 6",
+        "page": 42,
+        "problem": "Количество клипс для труб указано в метрах",
+        "description": "Клипсы для труб 25 и 32 мм учтены соответственно как 2345 и 190 м; эти числа совпадают с метражом труб и не определяют количество штучных креплений.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить единицы измерения и количество изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать единицу «шт.» и вычислить количество по принятому шагу крепления.",
+        "risk": "Неправильная закупка держателей.",
+        "source_finding_ids": [
+          "T-018"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-018",
+            "status": "requires_semantic_review",
+            "source_claim": "Клипсы для труб диаметром 25 и 32 мм учтены в метрах, соответственно 2345 и 190, с совпадением чисел с метражом труб. Для штучных держателей количество креплений этим не определено. Указать единицу «шт.» и рассчитать количество по принятому шагу крепления.",
+            "source_location": "МД стр. 42, спецификация креплений труб.",
+            "existing_block_ids": [
+              "blk_1da24da5ad594599aa59defe9fde265b"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-018",
+            "source_claim": "Клипсы для труб диаметром 25 и 32 мм учтены в метрах, соответственно 2345 и 190, с совпадением чисел с метражом труб. Для штучных держателей количество креплений этим не определено. Указать единицу «шт.» и рассчитать количество по принятому шагу крепления.",
+            "block_ids": [
+              "blk_1da24da5ad594599aa59defe9fde265b"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "В спецификации обе позиции клипс выражены в метрах: 2345 и 190.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+              "line_in_block": 15,
+              "quote": "|  | Клипса с замком держатель двухкомпонентный для труб Ø25мм |  |  | АО ДКС | м | 2345 |  |  |",
+              "cells": [
+                "",
+                "Клипса с замком держатель двухкомпонентный для труб Ø25мм",
+                "",
+                "",
+                "АО ДКС",
+                "м",
+                "2345",
+                "",
+                ""
+              ]
+            },
+            {
+              "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+              "line_in_block": 16,
+              "quote": "|  | Клипса с замком держатель двухкомпонентный для труб Ø32мм |  |  | АО ДКС | м | 190 |  |  |",
+              "cells": [
+                "",
+                "Клипса с замком держатель двухкомпонентный для труб Ø32мм",
+                "",
+                "",
+                "АО ДКС",
+                "м",
+                "190",
+                "",
+                ""
+              ]
+            }
+          ],
+          "operation": {
+            "unit": "м",
+            "quantities": [
+              "2345",
+              "190"
+            ]
+          }
+        },
+        {
+          "claim": "Какова принятая база учёта креплений и требуемое количество штук с учётом шага?",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Запросить единицу поставки и расчёт креплений. Не заменять метры на штуки с сохранением чисел.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "recommended_section": "questions_and_clarifications",
+      "automatic_application": false
+    },
+    {
+      "finding_id": "F-039",
+      "finding_sha256": "4e439c4e11fc7bb887d3bc3d85e3222097e0ceb0b8e7b2a36a04645db667b4ce",
+      "final_finding": {
+        "id": "F-039",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "sheet": "Лист 4",
+        "page": 40,
+        "problem": "Количество рамок не согласовано с количеством розеток",
+        "description": "Для 56 розеток предусмотрены 51 однопостовая и 5 двухпостовых рамок, всего 61 посадочное место. При пяти парах розеток потребовались бы 46 однопостовых рамок.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.75,
+            "reason": "Проверить комплектность электроустановочных изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-019"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-019"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить распределение механизмов по рамкам и обозначить предусмотренный запас.",
+        "risk": "Избыточная либо неполная комплектация.",
+        "source_finding_ids": [
+          "T-019"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 53,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-019",
+            "status": "requires_semantic_review",
+            "source_claim": "Для 56 карбоновых розеток предусмотрены 51 однопостовая и 5 двухпостовых рамок, то есть 61 посадочное место. При размещении пяти пар розеток потребовались бы 46 однопостовых рамок. Уточнить комплектацию рамок и подрозетников; возможный запас или размещение других механизмов обозначить явно.",
+            "source_location": "МД стр. 40, спецификация электроустановочных изделий.",
+            "existing_block_ids": [
+              "blk_99cc8bf95861437186be76b36e9d446b"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-019",
+            "source_claim": "Для 56 карбоновых розеток предусмотрены 51 однопостовая и 5 двухпостовых рамок, то есть 61 посадочное место. При размещении пяти пар розеток потребовались бы 46 однопостовых рамок. Уточнить комплектацию рамок и подрозетников; возможный запас или размещение других механизмов обозначить явно.",
+            "block_ids": [
+              "blk_99cc8bf95861437186be76b36e9d446b"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Для указанных 56 розеток перечислены рамки на 61 посадочное место.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+              "line_in_block": 12,
+              "quote": "|  | Розетка одноместная с зазем. контактом, с защит. шторками, IP20, 16А, встраиваемая, карбон. |  | ATN001043 | DEKraft | шт. | 56 |  | Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF) |",
+              "cells": [
+                "",
+                "Розетка одноместная с зазем. контактом, с защит. шторками, IP20, 16А, встраиваемая, карбон.",
+                "",
+                "ATN001043",
+                "DEKraft",
+                "шт.",
+                "56",
+                "",
+                "Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF)"
+              ]
+            },
+            {
+              "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+              "line_in_block": 13,
+              "quote": "|  | Рамка однопостовая, карбон. |  | ATN001001 | DEKraft | шт. | 51 |  | Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF) |",
+              "cells": [
+                "",
+                "Рамка однопостовая, карбон.",
+                "",
+                "ATN001001",
+                "DEKraft",
+                "шт.",
+                "51",
+                "",
+                "Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF)"
+              ]
+            },
+            {
+              "block_id": "blk_99cc8bf95861437186be76b36e9d446b",
+              "line_in_block": 14,
+              "quote": "|  | Рамка двухпостовая, карбон. |  | ATN440102 | DEKraft | шт. | 5 |  | Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF) |",
+              "cells": [
+                "",
+                "Рамка двухпостовая, карбон.",
+                "",
+                "ATN440102",
+                "DEKraft",
+                "шт.",
+                "5",
+                "",
+                "Модель, цвет, в соответствии с разделами АИ и Листами согласования (MAF)"
+              ]
+            }
+          ],
+          "operation": {
+            "seats": "61",
+            "difference": "5",
+            "conditional_single_frames_if_only_these_sockets_and_no_spares": "46"
+          }
+        },
+        {
+          "claim": "Предусмотрены ли другие механизмы, запас или иная комплектация по АИ и MAF?",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Сохранить вопрос о комплектации с учётом прямой ссылки в строках на АИ/MAF; не объявлять пять рамок лишними.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "recommended_section": "questions_and_clarifications",
+      "automatic_application": false
+    }
+  ],
+  "reviewed_findings": 5,
+  "automatic_application": false,
+  "new_model_calls": 0,
+  "filter_control_pair_status": "No confirmed same-scope technical excess/shortage pair established; do not deploy blanket suppression of repeated rows or count mismatches.",
+  "runtime_pending_flags_unchanged": true
+}
