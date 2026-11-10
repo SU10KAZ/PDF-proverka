@@ -1,0 +1,26 @@
+{
+  "completed_inventory_packets": 11,
+  "inventory_result_sha256": {
+    "object_inventory_000": "ea3b192a606eaac93544a3a813ba4dce8e897a2a4522da8a457b7efade534821",
+    "object_inventory_001": "775b5bd25add143a64fc6e6b79f43417c8b5551009953a4eddb54049d8a7cafc",
+    "object_inventory_002": "b4479cd0d375f7766c60cec7d7569b6401a972740201443d518881575840872a",
+    "object_inventory_003": "6d7b7a4776d5d514cf77aeaf48730987e108f4f76c98ca266cb8e50083333ea9",
+    "object_inventory_004": "acc697d473d22e3253326d275a83226da7ab7803748ffcb10d4c8df77b3c504e",
+    "object_inventory_005": "22d1c94a833385e0835e55d3d94529a9fed10c78723b7db4a6a89bd987eaaaff",
+    "object_inventory_006": "c572f28d5887f9fcc10c1758ffb5c749376206fb3fe9dbd6b43ee4414a370881",
+    "object_inventory_007": "1c6586a4e9dc6a520d520298f264180077c72e1296edbafae34c5ff117c6cd1b",
+    "object_inventory_008": "4610f51ba2798fa105f846df95132ebe39cc91e4b808f50df2dcb2701bfc5cd6",
+    "object_inventory_009": "62cefd85014dffa715594dc720b590dff5fd414b20533335e381cf10306bfa39",
+    "object_inventory_010": "0d3a15200afaf8ba5b0febd59182b2bdbb598c3a54494e1ce0cadc4e2beefb85"
+  },
+  "baseline_sha256": "77df990dfd1235194e0c597dfe4cc1720f793e3cb8594bf78b2d0294c58b1363",
+  "classic_text_candidates_unchanged": 10,
+  "added_candidates": 4,
+  "registered_packet_local_objects": 240,
+  "ua009_source_lineage_preserved": true,
+  "output_path": "/tmp/auditmanager_km_inventory_enrichment_replay_20261110.json",
+  "output_sha256": "323945b5da75125f78b881288c1f7068a3a4135c738dce6aaf92b365e623f92a",
+  "semantic_verified": false,
+  "full_candidate_audit_executed": false,
+  "scope": "Saved real source inventory merged into saved classic text analysis; no model calls or final report generation."
+}

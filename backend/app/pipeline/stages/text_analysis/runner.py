@@ -283,6 +283,39 @@ async def run_text_analysis(
     except Exception as exc:
         await ctx.log(f"Text pre-scan skipped: {exc}", "warn")
 
+    # Experimental source-only inventory complements, never replaces, classic
+    # text analysis. No callback means no extra model calls or behavior change.
+    if getattr(ctx, 'inventory_invoke', None) is not None:
+        try:
+            from .inventory_enrichment import run_inventory_enrichment
+            from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+            from backend.app.pipeline.stages.block_context.contract import resolve_blocks_dir
+            inventory_md = resolve_document_markdown(output_dir)
+            if inventory_md is None:
+                raise ValueError('inventory_md_unavailable')
+            baseline = json.loads(output_path.read_text(encoding='utf-8'))
+            enriched = await run_inventory_enrichment(
+                baseline, inventory_md, resolve_blocks_dir(output_dir),
+                output_dir / 'object_inventory_workflow',
+                invoke=ctx.inventory_invoke,
+                executor_id=getattr(ctx, 'inventory_executor_id', None),
+                max_packets=getattr(ctx, 'inventory_max_packets', 0),
+                is_cancelled=ctx.is_cancelled,
+            )
+            receipt = enriched['inventory_enrichment']
+            if receipt['status'] == 'cancelled':
+                return StageResult.cancel()
+            (output_dir / '02_text_analysis_before_inventory.json').write_text(
+                json.dumps(baseline, ensure_ascii=False, indent=2), encoding='utf-8')
+            output_path.write_text(json.dumps(enriched, ensure_ascii=False, indent=2), encoding='utf-8')
+            await ctx.log(
+                f"Object inventory: {receipt['completed_packets']}/{receipt['total_packets']} packets, "
+                f"+{receipt['added_candidates']} candidates; semantic verification pending", 'info')
+        except Exception as exc:
+            error = f"Object inventory enrichment incomplete: {exc}"
+            ctx.update_pipeline_log(log_stage, 'error', error=error)
+            return StageResult.fail(error)
+
     # Execute source-addressed comparisons; missing inventories are not a pass.
     from .object_balance import evaluate_object_balances
     from .quantity_checks import evaluate_quantity_checks

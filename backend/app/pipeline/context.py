@@ -105,3 +105,9 @@ class PipelineStageContext:
     source_review_invoke: Optional[Callable[..., Awaitable[dict]]] = field(default=None)
     source_review_executor_id: Optional[str] = field(default=None)
     source_review_max_findings: int = field(default=0)
+
+    # Source-only object discovery, explicitly enabled for candidate trials.
+    # The injected executor owns authorization; classic findings are not sent.
+    inventory_invoke: Optional[Callable[..., Awaitable[dict]]] = field(default=None)
+    inventory_executor_id: Optional[str] = field(default=None)
+    inventory_max_packets: int = field(default=0)

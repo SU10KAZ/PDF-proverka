@@ -209,3 +209,40 @@ def test_runner_recomputes_quantity_results_without_publishing_findings(monkeypa
         assert checks['operations'][0]['reason'] == 'unresolved_sources'
     assert saved['text_findings'] == []
     assert checks['coverage_complete'] is False
+
+
+def test_opt_in_inventory_runs_through_text_stage_and_preserves_classic_candidate(monkeypatch, tmp_path):
+    import json
+    import backend.app.pipeline.stages.prepare.graph_builder as graph_builder
+    import backend.app.pipeline.stages.block_context.contract as block_contract
+    import backend.app.pipeline.stages.prepare.task_builder as task_builder
+    out = _mk_output(tmp_path)
+    md = tmp_path / 'document.md'
+    md.write_text('## Page 1\n### BLOCK #1 [TEXT]: a\nProject source\n')
+    graphics = tmp_path / 'graphics'
+    graphics.mkdir()
+    (graphics / 'index.json').write_text('{"blocks":[]}')
+    baseline = {'id': 'T-005', 'finding': 'CLASSIC SECRET'}
+    (out / '02_text_analysis.json').write_text(json.dumps({'text_findings': [baseline]}))
+    _patch_runner(monkeypatch, [(0, 'ok')])
+    monkeypatch.setattr(graph_builder, 'resolve_document_markdown', lambda _: md)
+    monkeypatch.setattr(block_contract, 'resolve_blocks_dir', lambda _: graphics)
+    monkeypatch.setattr(task_builder, '_get_md_file_path', lambda *args: md)
+    calls = []
+    async def invoke(request, phase):
+        assert 'CLASSIC SECRET' not in json.dumps(request)
+        calls.append(phase)
+        return {'is_error': False, 'json_data': {'text_findings': [
+            {'statement': 'New bounded claim', 'source_refs': ['a']}]}}
+    ctx = FakeCtx(out, wait_returns=[])
+    ctx.inventory_invoke = invoke
+    ctx.inventory_executor_id = 'test-only'
+    ctx.inventory_max_packets = 1
+    result = asyncio.run(runner.run_text_analysis(ctx))
+    assert result.success
+    combined = json.loads((out / '02_text_analysis.json').read_text())
+    assert combined['text_findings'][0] == baseline
+    assert combined['text_findings'][1]['finding'] == 'New bounded claim'
+    assert combined['text_findings'][1]['id'] == 'T-006'
+    assert calls == ['object_inventory_000']
+    assert combined['inventory_enrichment']['classic_findings_preserved'] == 1
