@@ -57,7 +57,7 @@ def build_recovery_passes(output_dir, md_path):
         item = candidate['candidate']
         refs = [candidate.get('block_id')]
         for member in group:
-            for field in ('related_block_ids', 'source_block_ids'):
+            for field in ('related_block_ids', 'source_block_ids', 'source_block_hints'):
                 values = member['candidate'].get(field)
                 if isinstance(values, list):
                     refs.extend(values)
@@ -99,10 +99,13 @@ def build_recovery_passes(output_dir, md_path):
 Candidates sharing a graphic are reviewed together: emit one finding per distinct
 problem, preserving every supporting source_finding_id. Different defects in one
 graphic must remain distinct. Return one decision for each candidate in the group.
-Deferred candidates (deferred=true, stable D-ID) were withheld for insufficient
+Deferred candidates (deferred=true, stable D-ID or P-ID) were withheld for insufficient
 context. Preserve their gate reasons and required_context; they are not confirmed
 findings. Inspect the requested scope before deciding; if unavailable, return
 needs_data with literal context_queries, not a defect or refutation.
+Prescan candidates (origin=prescan, stable P-ID) are lexical triggers, not defects.
+A designation change requires an evidenced identity conflict or applicable requirement;
+co-occurring words or marks alone do not establish a need to rename equipment.
 Earlier detector claims, summaries and ID links are not independent evidence.
 MD TEXT is authoritative: never correct its recognition from images. Inspect attached
 images for GRAPHIC claims. The context is bounded; missing context means needs_data,

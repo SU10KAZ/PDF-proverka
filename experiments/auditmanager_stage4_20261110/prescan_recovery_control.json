@@ -1,0 +1,17 @@
+{
+  "change": "Prescan review requests enter existing source-backed candidate recovery with stable P-IDs and source_block_hints navigation.",
+  "prior_gap": "Queue had a producer but no recovery consumer.",
+  "validation": {
+    "tests_passed": 19,
+    "tests": [
+      "test_candidate_recovery.py",
+      "test_candidate_coverage.py",
+      "test_candidate_decisions.py",
+      "test_recovery_links.py",
+      "test_text_analysis_md_prescan.py"
+    ],
+    "integration_fixture": "Synthetic source selection, retained/refuted receipts and final linkage; existing findings unchanged."
+  },
+  "boundary": "Structural integration tested. Synthetic decisions do not prove model accuracy or provide a historical engineering control pair. Candidates are not auto-published; admitted recovery output still requires semantic review.",
+  "production_changed": false
+}

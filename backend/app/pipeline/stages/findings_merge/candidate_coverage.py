@@ -11,6 +11,9 @@ from backend.app.services.storage.stage_artifacts import (
 
 def candidate_source_id(row):
     item = row['candidate']
+    if row.get('origin') == 'prescan' and isinstance(item, dict):
+        identity = json.dumps(item, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        return "P-" + hashlib.sha256(identity.encode()).hexdigest()[:24]
     if row.get('deferred') and isinstance(item, dict):
         # Same identity contract as the Stage 01 compact context-request queue.
         identity = json.dumps([row.get('block_id'), item], ensure_ascii=False,
@@ -23,6 +26,9 @@ def build_candidate_coverage(text, blocks, final):
     candidates = []
     for i, item in enumerate(text.get('text_findings', [])):
         candidates.append({'origin': 'text', 'pointer': f'/text_findings/{i}', 'candidate': item})
+    for i, item in enumerate(text.get('prescan_review_requests', [])):
+        candidates.append({'origin': 'prescan', 'pointer': f'/prescan_review_requests/{i}',
+                           'deferred': True, 'candidate': item})
     for i, block in enumerate(blocks.get('block_analyses', [])):
         for field in ('findings', 'deferred_findings'):
             for j, item in enumerate(block.get(field, [])):

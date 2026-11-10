@@ -55,3 +55,49 @@ def test_deferred_graphic_request_is_scheduled_without_becoming_a_finding(tmp_pa
     result = validate_recovery_payload(requests[0],{'findings': [{
         'source_finding_ids':[packet['candidate']['source_id']], 'evidence':[{'block_id':'g'}]}]})
     assert result['findings'] == []
+
+
+def test_prescan_trigger_reaches_review_and_preserves_final_trace(tmp_path, monkeypatch):
+    from backend.app.pipeline.stages.findings_merge.candidate_coverage import build_candidate_coverage
+    from backend.app.pipeline.stages.findings_merge.candidate_decisions import reconcile_candidate_decisions
+    from backend.app.pipeline.stages.prepare.codex_targeted_findings import combine_findings_with_targeted
+    import backend.app.pipeline.stages.prepare.candidate_recovery as recovery
+    monkeypatch.setattr(recovery, 'resolve_blocks_dir', lambda _: tmp_path / 'missing_crops')
+    trigger = {'rule_key': 'air_curtain_u_designation', 'status': 'not_checked',
+               'claim': 'Check equipment identity', 'source_block_hints': ['t2'],
+               'origin': 'deterministic/md_prescan', 'semantic_verified': False}
+    text = {'text_findings': [], 'prescan_review_requests': [trigger]}
+    base = {'findings': [{'id': 'F-001', 'problem': 'Existing useful finding'}]}
+    for name, data in {'02_text_analysis.json': text,
+                       '01_blocks_analysis.json': {}, '03_findings.json': base}.items():
+        (tmp_path / name).write_text(json.dumps(data))
+    md = tmp_path / 'document.md'
+    md.write_text('## Page 1\n### BLOCK [TEXT]: t1\nunrelated source\n'
+                  '## Page 2\n### BLOCK [TEXT]: t2\nEquipment schedule\n')
+    request, = build_recovery_passes(tmp_path, md)
+    packet = json.loads(request.messages[-1]['content'])
+    candidate = packet['candidate']
+    sid = candidate['source_id']
+    assert sid.startswith('P-')
+    assert candidate['candidate'] == trigger
+    assert packet['selected_md_pages'] == [2]
+    assert packet['allowed_source_refs'] == ['t2']
+    assert 'unrelated source' not in packet['authoritative_md']
+    assert json.loads((tmp_path / '03_findings.json').read_text()) == base
+    assert build_candidate_coverage(text, {}, base)['candidates'][0]['source_id'] == sid
+    for action in ('refuted', 'retained'):
+        decision = {'origin': 'prescan', 'pointer': candidate['pointer'],
+                    'decision': action, 'reason': 'Source-based decision', 'source_refs': ['t2']}
+        payload = {'candidate_decisions': [decision], 'findings': []}
+        if action == 'retained':
+            payload['findings'] = [{'problem': 'Supported identity conflict',
+                'source_finding_ids': [sid], 'evidence': [{'block_id': 't2'}]}]
+        validated = validate_recovery_payload(request, payload)
+        combined = combine_findings_with_targeted(base, [(request.stage, validated)])
+        assert combined['findings'][0] == base['findings'][0]
+        assert len(combined['findings']) == (2 if action == 'retained' else 1)
+        coverage = build_candidate_coverage(text, {}, combined)
+        receipt = reconcile_candidate_decisions(coverage, [decision], {'t2'})
+        assert receipt['not_checked'] == 0
+        assert receipt['semantic_verified'] is False
+    assert base == {'findings': [{'id': 'F-001', 'problem': 'Existing useful finding'}]}
