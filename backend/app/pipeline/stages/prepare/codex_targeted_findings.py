@@ -56,7 +56,17 @@ def _canonical_finding_key(item: dict[str, Any]) -> str:
     if not normalized:
         return ""
     from backend.app.services.findings.report_routing import report_section_key
-    return report_section_key(item) + "||" + normalized
+    # Equal titles do not prove equal claims: a later cabinet, location or
+    # supported clause must not disappear from the displayed finding. Automatic
+    # folding is deliberately exact; semantic grouping needs an explicit review.
+    content = {field: item.get(field) for field in (
+        "description", "solution", "risk", "consequence", "norm", "norm_quote",
+        "page", "sheet", "location", "category", "severity", "object_id",
+        "evidence", "source_block_ids", "related_block_ids", "evidence_text_refs",
+        "highlight_regions", "norm_references", "candidate_norm_references",
+    )}
+    return report_section_key(item) + "||" + normalized + "||" + json.dumps(
+        content, ensure_ascii=False, sort_keys=True, default=str)
 
 
 TARGETED_KEYWORDS = (

@@ -29,14 +29,13 @@ def test_operation_candidates_remain_accounted_and_enter_semantic_review_after_d
     source_id=validated['findings'][0]['source_finding_ids'][0]
     assert source_id.startswith('O-')
     assert validate_object_operation_payload(request,response)['findings'][0]['source_finding_ids']==[source_id]
-    baseline={'findings':[{'id':'F-001','problem':'Wrong sheet reference','description':'Classic wording',
-        'report_section':'questions','source_finding_ids':['G-001']}]}
+    baseline={'findings':[{**deepcopy(response['findings'][0]),'id':'F-001','source_finding_ids':['G-001']}]}
     unchanged=deepcopy(baseline)
     combined=combine_findings_with_targeted(baseline,[('object_operations_test',validated)])
     assert baseline==unchanged and response==original
     assert len(combined['findings'])==1
     finding=combined['findings'][0]
-    assert finding['description']=='Classic wording'
+    assert finding['description']=='Source claim'
     assert finding['source_finding_ids']==['G-001',source_id]
     # Normal T-ID backfill must not erase executor-owned operation lineage.
     text_candidate_lineage(combined['findings'],{'text_findings':[]},{'t'})
@@ -100,3 +99,19 @@ def test_merge_does_not_mutate_frozen_base_metadata_or_nested_evidence():
     assert second['findings'][0]['evidence'][0]['quote']=='original'
     assert second['meta']['nested']['status']=='original'
     assert second['object_operation_reports'][0]['candidate_ledger']
+
+
+def test_equal_titles_do_not_erase_different_cabinet_locations_or_claims():
+    request,response=case()
+    validated=validate_object_operation_payload(request,response)
+    incoming=validated['findings'][0]
+    for field,value in [('description','Other supported claim'),('sheet','Other sheet'),
+                        ('evidence',[{'block_id':'other_cabinet'}]),('solution','Different correction')]:
+        baseline={'findings':[{**deepcopy(incoming),'id':'F-001',field:value}]}
+        before=deepcopy(baseline)
+        combined=combine_findings_with_targeted(baseline,[('object_operations_test',validated)])
+        assert baseline==before
+        assert len(combined['findings'])==2
+        assert combined['findings'][0]==before['findings'][0]
+        assert combined['findings'][1].get(field)==incoming.get(field)
+        assert combined['findings'][1]['id']=='F-002'

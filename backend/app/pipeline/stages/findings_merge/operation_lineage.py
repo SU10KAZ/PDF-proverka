@@ -21,7 +21,7 @@ def operation_candidate(request_messages, raw, index, allowed_refs):
 
 
 def preserve_operation_lineage(target, incoming):
-    """Keep candidate linkage when an exact-title/section duplicate is folded."""
+    """Keep candidate linkage when an exact-content duplicate is folded."""
     receipts=incoming.get('operation_candidate_lineage',[])
     if not isinstance(receipts,list) or not receipts:
         return
