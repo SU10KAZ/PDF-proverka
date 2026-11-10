@@ -1,0 +1,51 @@
+{
+  "scope": "Actual two model-produced candidates with bounded source-reviewed address adapter through real combine/deterministic/Excel functions.",
+  "baseline_preserved": 49,
+  "output_findings": 51,
+  "recovered_ids": [
+    "F-050",
+    "F-051"
+  ],
+  "both_line_descriptions_preserved": true,
+  "incorrect_literal_not_rendered": true,
+  "MD_spelling_preserved": true,
+  "ambiguous_graphic_character_kept_in_provenance": true,
+  "all_excel_ids_unique": true,
+  "verifier_stats": {
+    "findings_total": 51,
+    "deterministic_issues": 19,
+    "critic_error": null,
+    "phantom_cleaned": 0,
+    "page_fixed": 0,
+    "downgraded": 16,
+    "flagged_human": 3,
+    "corrector_error": null,
+    "source_reviews_pending": 2,
+    "source_review_queue_error": null
+  },
+  "xlsx_path": "/tmp/auditmanager_eom_cable_output_20261111/report.xlsx",
+  "xlsx_sha256": "38158e8e2485ab472df836f40a22aa1d64b88389fd57ad6e14b0966b3004fba6",
+  "source_bindings": [
+    {
+      "path": "/tmp/auditmanager_eom_cable_operations_20261110/block_000/circuit_13/context_2/validated.json",
+      "sha256": "17c39c529e0ea458bb95df59d79eaead022dfc23656039f9468ee12756152585"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_shared_source_control_20261111/validated.json",
+      "sha256": "1abc2d77560252a81406d8dc003ff168c056a4f1e9ae6bc6340e44abe8619a5f"
+    },
+    {
+      "path": "/tmp/auditmanager_eom_line_address_control_20261111/result.json",
+      "sha256": "4cda202fa103e4f0971212f9f389ebd5a602234e84fdb2df08b0cf2841efcf7d"
+    }
+  ],
+  "full_semantic_gate_complete": false,
+  "autonomous_grouping_proven": false,
+  "remaining_work": [
+    "Two rows express one shared specification issue; semantic grouping/workload acceptance remains open.",
+    "Address adapter is control-specific and needs generic integration before full audits.",
+    "Model absence verifier and pending source review queue are not completed by this export."
+  ],
+  "new_model_calls": 0,
+  "full_acceptance_proven": false
+}

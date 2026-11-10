@@ -1,0 +1,19 @@
+{
+  "scope": "Bounded address resolution by an independent source-only Astra request, followed by known-control output adapter.",
+  "raw_original_label": "СЭ510",
+  "independent_graphic_reading": "С[3/З]510",
+  "authoritative_MD": "СЗ510",
+  "stable_address": "ВРУ-3 / РП5 / QF5.10 / стабилизатор 40 кВА / ЩУ/Л-3.2",
+  "earlier_evaluator_reading": "Earlier visual assessment recorded С3510; subsequent source-only check preserves 3/З glyph ambiguity. No MD text changed.",
+  "literal_character_fully_resolved": false,
+  "stable_connection_sufficient_for_finding_location": true,
+  "wrong_literal_removed_from_display": true,
+  "old_source_claim_retained_for_review": true,
+  "address_result": "EOM_line_address_result.json",
+  "output_proof": "EOM_cable_output_replay.json",
+  "remaining_limits": [
+    "Control-specific correction adapter, not generic production identity resolution.",
+    "Source review workflow and semantic grouping pending."
+  ],
+  "full_acceptance_proven": false
+}

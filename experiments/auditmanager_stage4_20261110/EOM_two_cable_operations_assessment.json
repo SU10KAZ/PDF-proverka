@@ -30,5 +30,7 @@
     "Carry both actual candidates through duplicate grouping and final questions/technical output without loss.",
     "Integrate current-run source reuse and exercise it in frozen full audits."
   ],
-  "full_acceptance_proven": false
+  "full_acceptance_proven": false,
+  "subsequent_address_review": "EOM_line_address_assessment.json",
+  "subsequent_output_check": "EOM_cable_output_replay.json"
 }

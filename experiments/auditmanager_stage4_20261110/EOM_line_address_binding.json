@@ -1,0 +1,56 @@
+{
+  "request_sha256": "ea5539b9995db94cc3d5260be8bbaf1223e511d2e89ca726b25971a24023406e",
+  "images": [
+    {
+      "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+      "page_index": 5,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        3946.5530793319417,
+        12.444805285601264,
+        4890.162212943633,
+        881.4033343527097
+      ],
+      "grid_row": 0,
+      "grid_column": 6,
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_001/tiles/detail_tile_6.png",
+      "width": 2832,
+      "height": 2608,
+      "sha256": "07eb45b2166f9f4d0b1e08b42fbcdbe718623aa693d5238ff154004cd971c73c"
+    },
+    {
+      "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+      "page_index": 5,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        3946.5530793319417,
+        798.6453792034612,
+        4890.162212943633,
+        1667.6039082705695
+      ],
+      "grid_row": 1,
+      "grid_column": 6,
+      "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_001/tiles/detail_tile_14.png",
+      "width": 2832,
+      "height": 2608,
+      "sha256": "286707fe6e8910f2085bcbc1f39d555f97d983e3adf76dc2dd5745ef1e9cb965"
+    },
+    {
+      "block_id": "blk_bbe9060267e84022afbb7bccfc8749b2",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_bbe9060267e84022afbb7bccfc8749b2.png",
+      "sha256": "66bb27cbf045525e23e09aa9ba3e37799eb67afe092f70826776958bc4620d61"
+    },
+    {
+      "block_id": "blk_9246c510169f4ad6bc11932a046cdd17",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_9246c510169f4ad6bc11932a046cdd17.png",
+      "sha256": "a6264ff3ac541c9b0e450d22fe782541ba3332a9a439b2d1e5cf9420a679202f"
+    }
+  ],
+  "source_request_sha256": "1610fe217da3ff7a811f33d44c170ed05abf96cad60fe27d9df36ec1e2974bd1",
+  "md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "previous_line_identifier_supplied": false
+}
