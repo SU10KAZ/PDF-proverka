@@ -1,0 +1,52 @@
+{
+  "scope": "Known-source review of relationship claims; no model rerun and no automatic registry merges.",
+  "positive": {
+    "pair_id": "P007",
+    "relation": "same_instance",
+    "review": "supported_within_supplied_section_and_views",
+    "evidence": [
+      {
+        "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+        "observation": "Plan +7.270 shows slabs +6.070 and +7.270, OGM4 on left central railing, dimension1470 by upper landing."
+      },
+      {
+        "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+        "observation": "Section1-1 shows OGM4 between +6.070 and +7.270 with1470 landing dimension."
+      }
+    ],
+    "consequence": "Two views of one scoped placement must not count as two independent pieces.",
+    "live_response_contract_errors": []
+  },
+  "negative": {
+    "pair_id": "P002",
+    "relation": "different",
+    "review": "Document reference is not a physical placement.",
+    "authoritative_quote": "1. Ограждения ОГМ 1...ОГМ 8 см. л.4.",
+    "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+    "consequence": "Do not count a note naming OGM1 as a second OGM1 assembly.",
+    "live_response_admission": "rejected_missing_left_object_evidence",
+    "raw_response_repaired": false,
+    "manual_review_not_model_admission": true
+  },
+  "directly_viewed_graphics": [
+    {
+      "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+      "sha256": "4cfa356d945860741cecee1d95174c87afcd592ed460ccf6c97d6e53ed5bfd6f",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_2f7923b916294bdcac3dd9b3d5589665.png"
+    },
+    {
+      "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+      "sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_8e8d4c0218c6473ab7885f5aed70bafd.png"
+    }
+  ],
+  "limits": [
+    "This is not an engineer-accepted defect pair or proof of whole-project identity accuracy.",
+    "P002 semantic reason is supported, but its model evidence contract remains failed; do not silently repair receipts.",
+    "P001 type-to-instance relation spans differing stage stamps R/P and remains distinct from proof that editions are jointly applicable.",
+    "Eight contract-valid pairs are not eight semantically accepted links."
+  ],
+  "all_14_pairs_accepted": false,
+  "automatic_merges": 0,
+  "production_changed": false
+}
