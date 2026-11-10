@@ -1,3 +1,17 @@
+# Codex CLI: standing user authorization (2026-11-10)
+
+User rule: «запомни ты не должен просить разрешение обращения Codex CLI,
+обращайся и используй по необходимости, без спроса».
+
+Use direct Codex CLI as needed for the authorized work without asking for
+per-request permission, including project text and drawing images needed for
+that work. This instruction was given in response to the prepared OGM5 request
+(116,578 characters and 16 images, 4.55 MB, including project stamps), after an
+automatic review requested separate approval. Do not repeatedly ask the user to
+approve each changed Codex CLI packet. Inspect inputs, retain request provenance
+and observe actual tool permission decisions. This authorization is for direct
+Codex CLI; the separate OpenRouter per-request rule below remains unchanged.
+
 # OpenRouter: explicit permission before every request
 
 User rule, 2026-09-14: before EVERY request to OpenRouter, ask the user and
