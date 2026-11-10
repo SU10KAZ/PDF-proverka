@@ -339,5 +339,20 @@
       "regression control expectations"
     ],
     "limitation": "No OS-level proof of read isolation; must not count as blind independent audit."
+  },
+  "eom_pilot_local_execution_tests": {
+    "passed": 18,
+    "provider": "mock only",
+    "scenarios": [
+      "one invocation and no re-entry",
+      "terminal timeout persisted",
+      "retry environment restored",
+      "duplicate or malformed finding IDs rejected",
+      "provider-error response not accepted",
+      "changed payload rejected before invocation"
+    ],
+    "real_request_sent": false,
+    "prepared_request_unchanged": true,
+    "boundary": "Does not demonstrate actual Astra response quality or independent discovery."
   }
 }

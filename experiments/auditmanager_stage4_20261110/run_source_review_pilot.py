@@ -87,13 +87,24 @@ async def execute(approved_digest):
         assert entry['source_md_sha256'] == queue['source_md_sha256']
     with (ROOT/'attempt.json').open('x') as f:
         json.dump({'request_sha256': approved_digest, 'status': 'started'}, f)
+    previous_retries = os.environ.get('CODEX_TRANSIENT_RETRIES')
     os.environ['CODEX_TRANSIENT_RETRIES'] = '0'
-    result = await run_codex_json_messages(request['messages'], model=request['model'], timeout=900,
-                                           stage='source_review_pilot', project_id='EOM-known-verifier-controls')
+    try:
+        result = await run_codex_json_messages(request['messages'], model=request['model'], timeout=900,
+                                               stage='source_review_pilot', project_id='EOM-known-verifier-controls')
+    except BaseException as exc:
+        (ROOT/'attempt.json').write_text(json.dumps({'request_sha256': approved_digest,
+                                                   'status': 'failed', 'error_type': type(exc).__name__}))
+        raise
+    finally:
+        if previous_retries is None:
+            os.environ.pop('CODEX_TRANSIENT_RETRIES', None)
+        else:
+            os.environ['CODEX_TRANSIENT_RETRIES'] = previous_retries
     (ROOT/'result.json').write_text(json.dumps(asdict(result), ensure_ascii=False, indent=2))
     reviews = result.json_data.get('reviews', []) if isinstance(result.json_data, dict) else []
     valid_list = isinstance(reviews, list) and all(isinstance(v, dict) and isinstance(v.get('finding_id'), str) for v in reviews)
-    complete = valid_list and len(reviews) == len(IDS) and {v.get('finding_id') for v in reviews} == set(IDS)
+    complete = not result.is_error and valid_list and len(reviews) == len(IDS) and {v.get('finding_id') for v in reviews} == set(IDS)
     validation = {'response_finding_set_matches': complete,
                   'receipts': [validate_source_review(v, queue, findings, md) for v in reviews] if complete else [],
                   'semantic_verified': False, 'automatic_application': False}
