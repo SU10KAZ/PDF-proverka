@@ -73,7 +73,9 @@
       "session": null,
       "expected_answer_hidden": true,
       "detail": "5/5packets completed;345records;4unresolved source blocks. Not345instances or findings. Await finer graphic marks before model-derived set balance.",
-      "graphic_recovery_session": 38419
+      "graphic_recovery_session": 38419,
+      "claude_grid_session": 23387,
+      "model_comparison_boundary": "Same frozen source task and source files; Claude resized18/24images to its2000px many-image limit, recorded encoded hashes. Neither model gets other model answer. Bounded reading control, not full model-selection acceptance."
     },
     {
       "hypothesis": "H06",
