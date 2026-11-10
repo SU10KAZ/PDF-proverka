@@ -1,0 +1,25 @@
+{
+  "request_sha256": "9aad75496b3eff6860b9b8b6685df51e08735af2cb5a7cd7367d65d6fca7263e",
+  "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_513e35c4f8a7432986e9a498d4573996.png",
+      "sha256": "a01102c8349160a0b2f4a2f050c1821c1a185575010318cdbc589a1a80b09798"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_134b321ecf0f4e92adb35318a327be75.png",
+      "sha256": "d9cae4fd7d32a6aa663c9e17aa97e30472127f66212ecc8abf2826c3fc546d92"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/blocks_stage02_100/block_blk_093ddb2393604f25acc1035ea56fb849.png",
+      "sha256": "931f1c92e6962808fda59c5a722b2a0590482ac89d38d7df27299e59a79585b0"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0,
+  "message_chars": 107500,
+  "history_supplied": false,
+  "expected_verdict_supplied": false,
+  "known_source_control_not_blind": true
+}
