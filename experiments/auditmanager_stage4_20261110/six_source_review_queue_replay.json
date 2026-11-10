@@ -4190,5 +4190,5 @@
   "lineage_not_queued_total": 0,
   "new_model_calls": 0,
   "semantic_reviews_completed": 0,
-  "boundary": "Saved-output replay after provenance recovery, not new audit. Queue covers only findings marked pending by the deterministic critic; other findings are not thereby semantically verified."
+  "boundary": "Saved-output replay after provenance recovery, not new audit. Queue covers pending explicit candidate lineage; other findings are not thereby semantically verified."
 }

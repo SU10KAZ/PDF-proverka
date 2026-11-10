@@ -9,12 +9,16 @@ import tempfile
 from backend.app.pipeline.stages.findings_merge.source_lineage import text_candidate_lineage
 from backend.app.pipeline.stages.findings_verify.runner import _run_deterministic_phase
 from backend.app.pipeline.stages.prepare.graph_builder import build_block_page_index
+from backend.app.pipeline.stages.findings_verify.source_review_graphics import attach_graphic_receipts
+from backend.app.pipeline.stages.findings_verify.source_review_request import prepare_source_review_request
 
 
 def main():
     root = Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control')
     projects = json.loads((root/'input_manifest.json').read_text())
     reports = []
+    preparation = []
+    prepared_root = Path(tempfile.mkdtemp(prefix='auditmanager_known_source_reviews_'))
     for project in projects:
         source = Path(project['output_dir'])
         md_path = Path(project['version_dir'])/'02_work/document.md'
@@ -39,6 +43,26 @@ def main():
             queue = json.loads((out/'03_source_review_queue.json').read_text())
         before = {f['id']: f for f in original['findings']}
         current = {f['id']: f for f in after['findings']}
+        attach_graphic_receipts(queue, md.decode('utf-8'), source/'blocks_stage02_100')
+        project_requests = []
+        destination = prepared_root/project['discipline']
+        destination.mkdir()
+        for packet in queue['packets']:
+            request = prepare_source_review_request(queue, current[packet['finding_id']], md.decode('utf-8'))
+            target = destination/(packet['finding_id']+'.json')
+            target.write_text(json.dumps(request, ensure_ascii=False, indent=2)+'\n')
+            payload = json.loads(request['messages'][1]['content'])
+            project_requests.append({'finding_id': packet['finding_id'], 'path': str(target),
+                                     'request_sha256': request['request_sha256'],
+                                     'message_chars': sum(len(m['content']) for m in request['messages']),
+                                     'images': len(request['image_paths']),
+                                     'omitted_images': payload['unavailable_images'],
+                                     'budgeted_text_blocks': payload['budgeted_text_block_ids'],
+                                     'missing_block_ids': payload['missing_block_ids'], 'sent': False})
+        preparation.append({'discipline': project['discipline'], 'requests': project_requests,
+                            'total_message_chars': sum(q['message_chars'] for q in project_requests),
+                            'largest_request_chars': max((q['message_chars'] for q in project_requests), default=0),
+                            'image_attachments': sum(q['images'] for q in project_requests)})
         assert len(before) == len(original['findings']) and len(current) == len(after['findings'])
         assert set(before) == set(current)
         changes = [{'finding_id': fid, 'field': key, 'before': before[fid].get(key), 'after': current[fid].get(key)}
@@ -76,8 +100,19 @@ def main():
               'pending_total': sum(r['pending'] for r in reports),
               'lineage_not_queued_total': sum(len(r['lineage_not_queued_ids']) for r in reports),
               'new_model_calls': 0, 'semantic_reviews_completed': 0,
-              'boundary': 'Saved-output replay after provenance recovery, not new audit. Queue covers only findings marked pending by the deterministic critic; other findings are not thereby semantically verified.'}
+              'boundary': 'Saved-output replay after provenance recovery, not new audit. Queue covers pending explicit candidate lineage; other findings are not thereby semantically verified.'}
     Path(__file__).with_name('six_source_review_queue_replay.json').write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n')
+    preflight = {'prepared_root': str(prepared_root), 'projects': preparation,
+                 'total_requests': sum(len(p['requests']) for p in preparation),
+                 'total_message_chars': sum(p['total_message_chars'] for p in preparation),
+                 'total_image_attachments': sum(p['image_attachments'] for p in preparation),
+                 'requests_with_omitted_inputs': sum(bool(q['omitted_images'] or q['budgeted_text_blocks'] or q['missing_block_ids'])
+                                                     for p in preparation for q in p['requests']),
+                 'automatic_dispatch': False, 'new_model_calls': 0,
+                 'cost_and_duration': 'Unmeasured; character counts exclude image tokenization, output and reasoning. Pilot timing and quota measurement needed.',
+                 'scope': 'Known saved-claim verification requests; not independent discovery or new whole-project audit.'}
+    Path(__file__).with_name('six_source_review_requests_preflight.json').write_text(json.dumps(preflight, ensure_ascii=False, indent=2)+'\n')
+    print('Prepared', preflight['total_requests'], 'requests, chars', preflight['total_message_chars'], 'images', preflight['total_image_attachments'])
 
 
 if __name__ == '__main__':

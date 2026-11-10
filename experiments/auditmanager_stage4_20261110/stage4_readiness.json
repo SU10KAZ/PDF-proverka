@@ -430,5 +430,16 @@
     "excluded_fields": "Engineer decisions, detector comparison and control outcomes omitted by allow-list; only original/final claims and sources included.",
     "automatic_dispatch": false,
     "boundary": "Known-case manually selected context; not blind model retrieval or completed model review."
+  },
+  "six_source_review_preparation": {
+    "total_requests": 127,
+    "total_message_chars": 1237002,
+    "total_image_attachments": 49,
+    "requests_with_omitted_inputs": 0,
+    "automatic_dispatch": false,
+    "new_model_calls": 0,
+    "cost_and_duration": "Unmeasured; character counts exclude image tokenization, output and reasoning. Pilot timing and quota measurement needed.",
+    "scope": "Known saved-claim verification requests; not independent discovery or new whole-project audit.",
+    "artifact": "six_source_review_requests_preflight.json"
   }
 }
