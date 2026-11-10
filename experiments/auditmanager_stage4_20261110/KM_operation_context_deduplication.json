@@ -1,0 +1,232 @@
+{
+  "source_preflight": {
+    "input_packets": [
+      {
+        "path": "/tmp/auditmanager_whole_project_inventory_20261110/KM/execution/object_inventory_000/result.json",
+        "sha256": "ea3b192a606eaac93544a3a813ba4dce8e897a2a4522da8a457b7efade534821"
+      },
+      {
+        "path": "/tmp/auditmanager_whole_project_inventory_20261110/KM/execution/object_inventory_001/result.json",
+        "sha256": "775b5bd25add143a64fc6e6b79f43417c8b5551009953a4eddb54049d8a7cafc"
+      },
+      {
+        "path": "/tmp/auditmanager_whole_project_inventory_20261110/KM/execution/object_inventory_002/result.json",
+        "sha256": "b4479cd0d375f7766c60cec7d7569b6401a972740201443d518881575840872a"
+      },
+      {
+        "path": "/tmp/auditmanager_whole_project_inventory_20261110/KM/execution/object_inventory_003/result.json",
+        "sha256": "6d7b7a4776d5d514cf77aeaf48730987e108f4f76c98ca266cb8e50083333ea9"
+      }
+    ],
+    "objects": 92,
+    "prepared_requests": 8,
+    "backlog_entries": 91,
+    "dispatch_performed": false,
+    "semantic_verified": false,
+    "scope": "First four sealed packets only; full-source lookup; no whole-project completion",
+    "requests": [
+      {
+        "stage": "object_operations_1e7ef58348d38eed",
+        "object_id": "object_inventory_000:obj_02",
+        "identity": "ПД-00580716-КМ1.2 «Ограждения лестниц. Секции С2, С3.»",
+        "operations": [
+          "quantity_balance"
+        ],
+        "images": 7,
+        "message_chars": 80991,
+        "omitted": []
+      },
+      {
+        "stage": "object_operations_d61753ea0796bb4c",
+        "object_id": "object_inventory_000:obj_03",
+        "identity": "Ограждения лестницы секции 2, комплект изделий",
+        "operations": [
+          "quantity_balance",
+          "document_links"
+        ],
+        "images": 8,
+        "message_chars": 86775,
+        "omitted": [
+          {
+            "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_60fce78600474a06989f2253821f34f2",
+            "reason": "image_unavailable_or_budget"
+          }
+        ]
+      },
+      {
+        "stage": "object_operations_50ddc4b8cad6b437",
+        "object_id": "object_inventory_000:obj_04",
+        "identity": "Ограждения лестницы секции 3, комплект изделий",
+        "operations": [
+          "identity_across_views",
+          "document_links"
+        ],
+        "images": 8,
+        "message_chars": 79555,
+        "omitted": [
+          {
+            "block_id": "blk_6451cc830d2b45f5bf19bbc352d4a419",
+            "reason": "image_unavailable_or_budget"
+          }
+        ]
+      },
+      {
+        "stage": "object_operations_68631340dfbc1a28",
+        "object_id": "object_inventory_000:obj_05",
+        "identity": "Ограждения лестницы LK1.1 / ЛК1.1",
+        "operations": [
+          "identity_across_views",
+          "quantity_balance",
+          "dimension_consistency",
+          "requirement_applicability",
+          "document_links"
+        ],
+        "images": 8,
+        "message_chars": 184624,
+        "omitted": [
+          {
+            "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+            "reason": "image_unavailable_or_budget"
+          }
+        ]
+      },
+      {
+        "stage": "object_operations_d44e243d4c10713f",
+        "object_id": "object_inventory_000:obj_06",
+        "identity": "Ограждения лестницы LK3.1 / ЛК3.1",
+        "operations": [
+          "identity_across_views",
+          "quantity_balance",
+          "dimension_consistency",
+          "requirement_applicability",
+          "document_links"
+        ],
+        "images": 8,
+        "message_chars": 184126,
+        "omitted": [
+          {
+            "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+            "reason": "image_unavailable_or_budget"
+          }
+        ]
+      },
+      {
+        "stage": "object_operations_4bb36c8f1704f5b7",
+        "object_id": "object_inventory_000:obj_07",
+        "identity": "Ограждения лестницы LK4.1 / ЛК4.1",
+        "operations": [
+          "identity_across_views",
+          "quantity_balance",
+          "dimension_consistency",
+          "requirement_applicability",
+          "document_links"
+        ],
+        "images": 8,
+        "message_chars": 167160,
+        "omitted": [
+          {
+            "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+            "reason": "image_unavailable_or_budget"
+          }
+        ]
+      },
+      {
+        "stage": "object_operations_3ef310e6c28a8382",
+        "object_id": "object_inventory_000:obj_08",
+        "identity": "Ограждения лестницы LK5 / ЛК5",
+        "operations": [
+          "identity_across_views",
+          "quantity_balance",
+          "dimension_consistency",
+          "requirement_applicability",
+          "document_links"
+        ],
+        "images": 8,
+        "message_chars": 167031,
+        "omitted": [
+          {
+            "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+            "reason": "image_unavailable_or_budget"
+          }
+        ]
+      },
+      {
+        "stage": "object_operations_e54e04694f43ffaa",
+        "object_id": "object_inventory_000:obj_09",
+        "identity": "Ограждения лестницы LK6 / ЛК6",
+        "operations": [
+          "identity_across_views",
+          "quantity_balance",
+          "dimension_consistency",
+          "requirement_applicability",
+          "document_links"
+        ],
+        "images": 8,
+        "message_chars": 167030,
+        "omitted": [
+          {
+            "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+            "reason": "image_unavailable_or_budget"
+          }
+        ]
+      }
+    ]
+  },
+  "packet_comparison": [
+    {
+      "stage": "object_operations_1e7ef58348d38eed",
+      "before_chars": 80991,
+      "after_chars": 59528,
+      "sources_and_operations_identical": true
+    },
+    {
+      "stage": "object_operations_d61753ea0796bb4c",
+      "before_chars": 86775,
+      "after_chars": 45323,
+      "sources_and_operations_identical": true
+    },
+    {
+      "stage": "object_operations_50ddc4b8cad6b437",
+      "before_chars": 79555,
+      "after_chars": 42191,
+      "sources_and_operations_identical": true
+    },
+    {
+      "stage": "object_operations_68631340dfbc1a28",
+      "before_chars": 184624,
+      "after_chars": 67503,
+      "sources_and_operations_identical": true
+    },
+    {
+      "stage": "object_operations_d44e243d4c10713f",
+      "before_chars": 184126,
+      "after_chars": 67005,
+      "sources_and_operations_identical": true
+    },
+    {
+      "stage": "object_operations_4bb36c8f1704f5b7",
+      "before_chars": 167160,
+      "after_chars": 58712,
+      "sources_and_operations_identical": true
+    },
+    {
+      "stage": "object_operations_3ef310e6c28a8382",
+      "before_chars": 167031,
+      "after_chars": 58583,
+      "sources_and_operations_identical": true
+    },
+    {
+      "stage": "object_operations_e54e04694f43ffaa",
+      "before_chars": 167030,
+      "after_chars": 58582,
+      "sources_and_operations_identical": true
+    }
+  ],
+  "dispatch_performed": false,
+  "new_model_quality_measured": false,
+  "source_text_removed_only_from_search_receipts": true
+}

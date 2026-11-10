@@ -70,3 +70,22 @@ def test_query_expansion_preserves_original_text_and_does_not_invent_marks():
     result=expand_operation_queries(['Схема на листе 4.', 'Общий вид ограждения.', 'ОГМ З'])
     assert result['queries']==['Лист 4','Схема на листе 4.','Общий вид ограждения.','ОГМ З']
     assert 'ОГМ 3' not in result['queries']
+
+
+def test_shared_context_is_supplied_once_across_operation_searches(tmp_path):
+    md=tmp_path/'document.md'
+    marker='SOURCE_BODY_ONLY_ONCE'
+    md.write_text('## Page 1\n### BLOCK #1 [TEXT]: b\nОГМ 5: ведомость\n## Page 2\n### BLOCK #2 [TEXT]: other\nОГМ 5 '+marker+'\n')
+    obj={'id':'A','identity':'ОГМ 5','scope':'sheet 4','kind':'assembly','source_refs':['b']}
+    receipts=[{'object_id':'A','operation':op,'status':'needs_data','reason':'view needed',
+               'source_refs':['b'],'context_queries':['ОГМ 5']} for op in ('quantity_balance','dimension_consistency')]
+    (tmp_path/'02_text_analysis.json').write_text(json.dumps({'object_registry':[obj],'object_operation_results':receipts}))
+    request=build_object_operation_passes(tmp_path,md)[0]
+    payload=request.messages[-1]['content']
+    assert payload.count(marker)==1
+    packet=json.loads(payload)
+    assert len(packet['operations'])==5  # Three unreported operations also remain open.
+    for search in packet['context_searches'].values():
+        assert search['hits'][0]['block_id']=='other'
+        assert 'content' not in search['hits'][0]
+    assert any(marker in b['content'] for b in packet['source_context'])

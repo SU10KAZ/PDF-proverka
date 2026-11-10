@@ -47,7 +47,10 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
             expansion = expand_operation_queries(queries)
             search = search_md_context(md, expansion['queries'], exclude_block_ids=set(obj['source_refs']), source_graph=graph)
             search['query_expansion'] = expansion
-            searches[operation['operation']] = search
+            # Sources are supplied once in source_context. Search receipts keep
+            # navigation/provenance only, including hits omitted by the budget.
+            searches[operation['operation']] = {**search, 'hits':[
+                {k:v for k,v in hit.items() if k!='content'} for hit in search['hits']]}
             new_ids = [h['block_id'] for h in search['hits'] if h['block_id'] in blocks]
             if not new_ids:
                 backlog.append({'object_id':obj['id'],'operations':[operation], 'status':'needs_data',
