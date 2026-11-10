@@ -21,24 +21,36 @@
     {
       "control": "EOM_instance_graphic",
       "directory": "/tmp/auditmanager_eom_instance_graphic_control_20261110",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started",
-        "request_sha256": "81979232d98c86cc5751ffa0d0b9b9859b1629be3d155cfc8338ddef480e0b85"
+        "status": "finished",
+        "is_error": false
       },
-      "token_counters_incomplete": true
+      "token_counters_incomplete": false,
+      "result_sha256": "9b895b4905178eaefaccc21ce948d1174a9116a2e0b5bd1c054ae47e2586f981",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 270436,
+      "input_tokens": 38919,
+      "output_tokens": 13055,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_cable_inventory",
       "directory": "/tmp/auditmanager_eom_cable_inventory_control_20261110/EOM/execution/object_inventory_000",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started",
-        "request_sha256": "6e1ca6fd31ba126a082d23bfdc07e404b8727d8cac7060f5785e9a4dc8c1d879",
-        "model": "codex/gpt-6-astra",
-        "reasoning_effort": "high"
+        "status": "finished",
+        "model_error": false
       },
-      "token_counters_incomplete": true
+      "token_counters_incomplete": false,
+      "result_sha256": "10866cfd89c0c888ae491249e5c9789f4819c748d21f711329fac98b6609f631",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 615651,
+      "input_tokens": 32754,
+      "output_tokens": 30305,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "EOM_initial",
@@ -500,6 +512,40 @@
       "error": ""
     },
     {
+      "control": "KM_OGM20_geometry",
+      "directory": "/tmp/auditmanager_km_geometry_operations_20261110/E7",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "2b07ee0d20ac8096b006df368cd2138cc4fa3c830c461e8dae2dedc9e7d131b9",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 29075,
+      "input_tokens": 19862,
+      "output_tokens": 1168,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "KM_adjacent_flights",
+      "directory": "/tmp/auditmanager_km_geometry_operations_20261110/mark_ogm_6",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "2aa89a27eba7b78142937a4bbfa2bce311b686db3b6fac0ba2f46e66cb7861cf",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 37827,
+      "input_tokens": 16190,
+      "output_tokens": 1278,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
       "control": "AK_inventory_0",
       "directory": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_000",
       "status": "response_received",
@@ -817,14 +863,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 41,
-  "pending_results": 2,
+  "completed_requests": 45,
+  "pending_results": 0,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 1217680,
-  "reported_output_tokens": 445825,
+  "reported_input_tokens": 1325405,
+  "reported_output_tokens": 491631,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 148.208,
+  "completed_request_minutes_sum": 164.092,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

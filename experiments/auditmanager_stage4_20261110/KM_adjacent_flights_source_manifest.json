@@ -1,0 +1,97 @@
+{
+  "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+  "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+  "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+  "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+  "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+  "columns": 1,
+  "rows": 4,
+  "scale": 3,
+  "overlap": 0.025,
+  "tiles": [
+    {
+      "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+      "page_index": 6,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        777.185165181756,
+        15.78916621208191,
+        1172.6469135135412,
+        395.94451649189
+      ],
+      "grid_row": 0,
+      "grid_column": 0,
+      "path": "/tmp/auditmanager_km_adjacent_flights_source_20261110/detail_tile_0.png",
+      "width": 1187,
+      "height": 1141,
+      "sha256": "9e14ea683a6e7519e31d576d8232858e584bd06b84ccb8ee9d380e55f8fc30cd"
+    },
+    {
+      "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+      "page_index": 6,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        777.185165181756,
+        326.82536189556123,
+        1172.6469135135412,
+        741.5402894735337
+      ],
+      "grid_row": 1,
+      "grid_column": 0,
+      "path": "/tmp/auditmanager_km_adjacent_flights_source_20261110/detail_tile_1.png",
+      "width": 1187,
+      "height": 1245,
+      "sha256": "ab448212f104545b0cf4e93643db3c1256bd5af7fad9dbb212d7a85314efc002"
+    },
+    {
+      "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+      "page_index": 6,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        777.185165181756,
+        672.4211348772048,
+        1172.6469135135412,
+        1087.1360624551774
+      ],
+      "grid_row": 2,
+      "grid_column": 0,
+      "path": "/tmp/auditmanager_km_adjacent_flights_source_20261110/detail_tile_2.png",
+      "width": 1187,
+      "height": 1245,
+      "sha256": "04c16a18e5af55781e777d3b6967975ee796b02da393605c6977dfee956be85e"
+    },
+    {
+      "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+      "page_index": 6,
+      "pdf_rotation": 0,
+      "clip_rotated_page_points": [
+        777.185165181756,
+        1018.0169078588485,
+        1172.6469135135412,
+        1398.1722581386566
+      ],
+      "grid_row": 3,
+      "grid_column": 0,
+      "path": "/tmp/auditmanager_km_adjacent_flights_source_20261110/detail_tile_3.png",
+      "width": 1187,
+      "height": 1141,
+      "sha256": "b93a757c4bd7764393d8e697849311c9c6066f1c83ea1b984c4ff3be7a43341c"
+    }
+  ],
+  "padding_page_fraction": 0.0,
+  "original_crop_points": [
+    777.185165181756,
+    15.78916621208191,
+    1172.6469135135412,
+    1398.1722581386566
+  ],
+  "expanded_crop_points": [
+    777.185165181756,
+    15.78916621208191,
+    1172.6469135135412,
+    1398.1722581386566
+  ],
+  "outside_original_crop": false,
+  "model_call_performed": false,
+  "semantic_verified": false
+}

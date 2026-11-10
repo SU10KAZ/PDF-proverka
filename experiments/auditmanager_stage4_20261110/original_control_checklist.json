@@ -298,8 +298,17 @@
       "hypothesis": "H05",
       "kind": "positive_controls",
       "original_control": "КМ: одна площадкаОГМ20 с−2.350/−2.500.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_OGM20_geometry_assessment.json",
+          "sha256": "14f4c184719ed453ca7d793150bca3b3beb2bb2b88920368df94090413107963"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_OGM20_geometry_validated.json",
+          "sha256": "393dde5f0c29f0a362f31e832d3fb38a5386d0578ef1ccc7f29bb71bac359dd3"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -325,8 +334,17 @@
       "hypothesis": "H05",
       "kind": "negative_controls_and_limits",
       "original_control": "КМ F014: разные последовательные марши не одна деталь.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "disputed_requires_readjudication",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
+          "sha256": "9ea0f95a566037b7c4deb7eea75b109cbfb0c6df7f54a247da35c55a09880df5"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_adjacent_flights_validated.json",
+          "sha256": "6d2a7cdfafefb80c6043592c1c8603fa212be43a3a8cc218cb84150c07970655"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -464,10 +482,11 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 14,
+    "bounded_control_recorded": 15,
+    "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 1,
     "local_contract_verified": 2,
-    "requires_explicit_evidence_review": 19,
+    "requires_explicit_evidence_review": 17,
     "synthetic_contract_only": 1
   },
   "boundaries": [

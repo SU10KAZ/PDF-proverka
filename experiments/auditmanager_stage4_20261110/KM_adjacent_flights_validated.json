@@ -1,0 +1,190 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "mark_ogm_6",
+      "operation": "identity_across_views",
+      "status": "needs_data",
+      "reason": "Осмотрены оба изображения. На разрезе 1-1 выноски ОГМ 6 повторяются у левых площадок от +9,110 до +32,630; это разные места установки одной марки. На плане +9.110 выноска ОГМ 6 указывает на верхнюю линию центрального ограждения возле левого торца; далее справа к этой стороне подведена выноска ОГМ 5. Обозначения различают марки изделий, но не задают границы отдельных изделий и соответствие конкретного экземпляра ОГМ 6 между проекциями. Поэтому совместное присутствие выносок ОГМ 5 и ОГМ 6 само по себе не доказывает ошибку маркировки. Для завершения проверки требуется деталировка ОГМ 6 с границами изделия, исполнением и привязкой к смежным ограждениям. В переданном TEXT указан переход к листу 6 с ограждениями ОГМ1...ОГМ8, но сама деталировка отсутствует.",
+      "source_refs": [
+        "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+        "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+        "blk_6e38e7f2d8ae4bae9cbf4deb442c7742"
+      ],
+      "context_queries": [
+        "ОГМ 6",
+        "ОГМ6",
+        "Ограждения ОГМ1...ОГМ8",
+        "Схема расположения ограждений лестницы"
+      ]
+    },
+    {
+      "object_id": "mark_ogm_6",
+      "operation": "dimension_consistency",
+      "status": "needs_data",
+      "reason": "Осмотрены размеры на обоих изображениях. На плане показаны продольная цепочка 1270–3160–1170, поперечная цепочка 1095–310–1095 и два размера 80 у центрального ограждения. На разрезе возле повторяющихся выносок ОГМ 6 показаны размеры 1170, 940 и 75; у противоположных площадок средней части лестницы — 1270 и 900. Плановые размеры площадок 1170 на уровне +9,110 и 1270 на уровне +7,270 согласуются с соответствующими размерами разреза. Однако эти размеры не устанавливают полный габарит именно изделия ОГМ 6. Размеры 80 на плане и вертикальные размеры разреза имеют разную физическую основу и непосредственно не сопоставляются. Для проверки длины, высоты и состава ОГМ 6 нужна его деталировка на листе 6 с размерными базами, границами и узлами сопряжения. Подтвержденного размерного противоречия в предоставленных фрагментах не установлено; полная проверка остается незавершенной.",
+      "source_refs": [
+        "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+        "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+        "blk_6e38e7f2d8ae4bae9cbf4deb442c7742"
+      ],
+      "context_queries": [
+        "ОГМ 6",
+        "ОГМ6",
+        "Ограждения ОГМ1...ОГМ8"
+      ]
+    }
+  ],
+  "findings": [],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "mark_ogm_6",
+        "identity": "ОГМ 6",
+        "scope": "Повторяющаяся марка ограждения средней части лестницы, также показанная на плане +9.110.",
+        "kind": "марка изделия",
+        "source_refs": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+        ],
+        "observed_parameters": [
+          {
+            "name": "повторяемость на разрезе",
+            "value": "ОГМ 6 повторяется в средней части лестницы",
+            "unit": null,
+            "source_ref": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "graphic_observation": "Несколько самостоятельных выносок ОГМ 6 по высоте; границы и состав каждого изделия требуют деталировки."
+          },
+          {
+            "name": "положение на плане +9.110",
+            "value": "Верхняя линия у левого торца центрального ограждения",
+            "unit": null,
+            "source_ref": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "graphic_observation": "Стрелка ОГМ 6 направлена к линии ограждения возле его левого конца."
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "mark_ogm_6",
+        "operation": "identity_across_views",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+        ],
+        "receipt": {
+          "object_id": "mark_ogm_6",
+          "operation": "identity_across_views",
+          "status": "needs_data",
+          "reason": "Осмотрены оба изображения. На разрезе 1-1 выноски ОГМ 6 повторяются у левых площадок от +9,110 до +32,630; это разные места установки одной марки. На плане +9.110 выноска ОГМ 6 указывает на верхнюю линию центрального ограждения возле левого торца; далее справа к этой стороне подведена выноска ОГМ 5. Обозначения различают марки изделий, но не задают границы отдельных изделий и соответствие конкретного экземпляра ОГМ 6 между проекциями. Поэтому совместное присутствие выносок ОГМ 5 и ОГМ 6 само по себе не доказывает ошибку маркировки. Для завершения проверки требуется деталировка ОГМ 6 с границами изделия, исполнением и привязкой к смежным ограждениям. В переданном TEXT указан переход к листу 6 с ограждениями ОГМ1...ОГМ8, но сама деталировка отсутствует.",
+          "source_refs": [
+            "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "blk_6e38e7f2d8ae4bae9cbf4deb442c7742"
+          ],
+          "context_queries": [
+            "ОГМ 6",
+            "ОГМ6",
+            "Ограждения ОГМ1...ОГМ8",
+            "Схема расположения ограждений лестницы"
+          ]
+        }
+      },
+      {
+        "object_id": "mark_ogm_6",
+        "operation": "quantity_balance",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "mark_ogm_6",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+        ],
+        "receipt": {
+          "object_id": "mark_ogm_6",
+          "operation": "dimension_consistency",
+          "status": "needs_data",
+          "reason": "Осмотрены размеры на обоих изображениях. На плане показаны продольная цепочка 1270–3160–1170, поперечная цепочка 1095–310–1095 и два размера 80 у центрального ограждения. На разрезе возле повторяющихся выносок ОГМ 6 показаны размеры 1170, 940 и 75; у противоположных площадок средней части лестницы — 1270 и 900. Плановые размеры площадок 1170 на уровне +9,110 и 1270 на уровне +7,270 согласуются с соответствующими размерами разреза. Однако эти размеры не устанавливают полный габарит именно изделия ОГМ 6. Размеры 80 на плане и вертикальные размеры разреза имеют разную физическую основу и непосредственно не сопоставляются. Для проверки длины, высоты и состава ОГМ 6 нужна его деталировка на листе 6 с размерными базами, границами и узлами сопряжения. Подтвержденного размерного противоречия в предоставленных фрагментах не установлено; полная проверка остается незавершенной.",
+          "source_refs": [
+            "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "blk_6e38e7f2d8ae4bae9cbf4deb442c7742"
+          ],
+          "context_queries": [
+            "ОГМ 6",
+            "ОГМ6",
+            "Ограждения ОГМ1...ОГМ8"
+          ]
+        }
+      },
+      {
+        "object_id": "mark_ogm_6",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "mark_ogm_6",
+        "operation": "document_links",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+        ],
+        "reason": "missing_receipt"
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_6e38e7f2d8ae4bae9cbf4deb442c7742",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 5,
+    "unresolved_source_blocks": 3,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "dimension_consistency",
+    "identity_across_views"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}

@@ -1,0 +1,22 @@
+{
+  "control_id": "H05-P01",
+  "historical_id": "H-KM-9",
+  "source_images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.png",
+      "sha256": "337026cb8604094fb374e3e777ccdac9d2e3013652099b49d2829dac397309a6",
+      "directly_viewed": true
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_fe7bfb2c1c0b469ca1c3e2cb30686758.png",
+      "sha256": "dacc03a022080c2ab7c14f78e90ade3c013510bfc9a995fc847d5a17aadfccd2",
+      "directly_viewed": true
+    }
+  ],
+  "result": "One actual model candidate preserves -2.350/-2.500 at the same OGM20 landing, common -1.800 endpoint and reversed 665/1345/1340 chain. 150mm local discrepancy confirmed; correct elevation and physical consequences remain unproved.",
+  "bounded_positive_control_passed": true,
+  "negative_control": "H05-N01 cannot be accepted as refuted using the old benchmark explanation; see benchmark_errata.json.",
+  "new_universal_tolerance": false,
+  "final_output_verified": false,
+  "production_acceptance": false
+}

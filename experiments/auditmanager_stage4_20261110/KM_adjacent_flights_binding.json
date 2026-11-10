@@ -1,0 +1,20 @@
+{
+  "request_sha256": "bf79f1d82e3f3111e8c98f9ca6345b9ed159f15cace96b150edd2e79705662d5",
+  "inventory_result_sha256": "6d7b7a4776d5d514cf77aeaf48730987e108f4f76c98ca266cb8e50083333ea9",
+  "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+      "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_262b1bd1d76146e7a8e45b529a38ac2e.png",
+      "sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0,
+  "known_source_control": true,
+  "expected_answers_supplied": false
+}

@@ -1,0 +1,29 @@
+{
+  "frozen_release_unchanged": "AM-SIX-BENCHMARK-1",
+  "entries": [
+    {
+      "target_id": "KM_F014_adjacent_flights_identity:b731dff3b4f369ab5f8b",
+      "candidate_id": "B-KM-F-014",
+      "control_id": "H05-N01",
+      "status": "disputed_prior_refutation_basis_contradicted",
+      "original_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F014_adjacent_flights_identity.json",
+        "sha256": "857bb51fbcda52cbe45356bedd45240cc052c6a5c9a0b10d0dbe639c0492ebfc"
+      },
+      "prior_claim": "ОГМ6 начинается на +7.270 и идёт к +9.110.",
+      "source_observation": "На увеличенном разрезе 1-1 у марша +7.270→+9.110 выноска ОГМ5. ОГМ4 относится к +6.070→+7.270. Прежнее объяснение через ОГМ6 на следующем марше не подтверждается.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/KM_adjacent_flights_source_detail.png",
+        "sha256": "b93a757c4bd7764393d8e697849311c9c6066f1c83ea1b984c4ff3be7a43341c",
+        "render_manifest": "experiments/auditmanager_stage4_20261110/KM_adjacent_flights_source_manifest.json",
+        "directly_viewed": true
+      },
+      "current_model_result": "Separate current source-only operation returns needs_data for mark_ogm_6; no confirmed contradiction and no definitive refutation.",
+      "evaluation_action": "Exclude this target from scored true/false claims and filter acceptance until source identity is re-adjudicated. Preserve original text and frozen release as historical evidence.",
+      "requires_engineer_or_source_resolution": "Установить по выноскам и деталировке границы ОГМ4/ОГМ5/ОГМ6 на схеме +9.110; ошибка основания снятия сама по себе не подтверждает исходное замечание.",
+      "historical_engineer_decision": null,
+      "full_claim_now_confirmed": false
+    }
+  ],
+  "required_before_comparison": "Apply these evaluator holds and freeze a corrected evaluation release before acceptance metrics; never send errata to independent audit executors."
+}

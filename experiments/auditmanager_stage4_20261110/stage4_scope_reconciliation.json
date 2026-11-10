@@ -188,6 +188,17 @@
       "known_source_selection": true,
       "expected_answer_hidden": true,
       "production_acceptance": false
+    },
+    {
+      "hypothesis": "H05",
+      "control": "OGM20 matching landing / adjacent-flight negative",
+      "state": "positive_bounded_pass_negative_benchmark_disputed",
+      "evidence": [
+        "KM_OGM20_geometry_assessment.json",
+        "benchmark_errata.json"
+      ],
+      "remaining": "Re-adjudicate incorrect negative explanation; do not use for filter acceptance. Final candidate delivery remains stage6.",
+      "production_acceptance": false
     }
   ]
 }

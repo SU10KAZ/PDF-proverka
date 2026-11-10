@@ -28,6 +28,8 @@ def summarize():
         *[(f'AR_region05_context_{i}', Path('/tmp/auditmanager_ar_region_operations_20261110/region_05') / f'context_{i}') for i in (1, 2)],
         *[(f'KM_recovery_{i}', Path('/tmp/auditmanager_km_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
         ('KM_node_navigation', Path('/tmp/auditmanager_km_node_navigation_control_20261110')),
+        ('KM_OGM20_geometry', Path('/tmp/auditmanager_km_geometry_operations_20261110/E7')),
+        ('KM_adjacent_flights', Path('/tmp/auditmanager_km_geometry_operations_20261110/mark_ogm_6')),
         *[(f'AK_inventory_{i}', Path('/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution') / f'object_inventory_{i:03d}') for i in range(5)],
         ('AK_identity_0_v1', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/packet_000')),
         *[(f'AK_identity_{i}_v2', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2') / f'packet_{i:03d}') for i in range(5)],

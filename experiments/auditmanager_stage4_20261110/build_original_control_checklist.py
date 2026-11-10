@@ -24,6 +24,8 @@ EVIDENCE={
  ('H03','positive_controls',2):('bounded_control_recorded',['AR_unlabelled_inventory_v2_assessment.json','AR_region_operation_status.json','AR_region05_context2_validated.json']),
  ('H04','positive_controls',1):('bounded_control_recorded',['EOM_model_extracted_balance_control.json','EOM_model_extracted_balance_claude_control.json']),
  ('H04','negative_controls_and_limits',0):('bounded_control_recorded',['EOM_model_extracted_balance_control.json']),
+ ('H05','positive_controls',0):('bounded_control_recorded',['KM_OGM20_geometry_assessment.json','KM_OGM20_geometry_validated.json']),
+ ('H05','negative_controls_and_limits',0):('disputed_requires_readjudication',['benchmark_errata.json','KM_adjacent_flights_validated.json']),
  ('H06','positive_controls',0):('bounded_control_recorded',['ITP_requirement_claude_assessment.json']),
  ('H07','positive_controls',1):('bounded_control_recorded',['EOM_prescan_recovery_assessment.json']),
 }
