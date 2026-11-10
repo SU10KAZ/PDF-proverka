@@ -354,5 +354,15 @@
     "real_request_sent": false,
     "prepared_request_unchanged": true,
     "boundary": "Does not demonstrate actual Astra response quality or independent discovery."
+  },
+  "six_source_queue_coverage": {
+    "artifact": "six_source_review_queue_replay.json",
+    "total_findings": 244,
+    "pending_total": 19,
+    "lineage_not_queued_total": 108,
+    "core_field_changes": 0,
+    "gap": "deterministic_verdict checks source lineage only when direct image/text refs are absent; direct ref presence does not verify semantic relevance.",
+    "next_action": "Evaluate and test queue coverage for linked findings without treating existing direct references as semantic acceptance.",
+    "new_model_calls": 0
   }
 }
