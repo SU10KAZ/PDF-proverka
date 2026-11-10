@@ -418,8 +418,17 @@
       "hypothesis": "H05",
       "kind": "negative_controls_and_limits",
       "original_control": "КМ:3240 не доказанная полная развёртка гнутого поручня.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_known_candidate_control",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_handrail_claim_check_assessment.json",
+          "sha256": "7bb4eb71f493fe7a1d56baefb0332a1ff791a39633f19d5be07bf5cbd9c1ff4b"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_handrail_claim_check_result.json",
+          "sha256": "35d8d9323d96b70cba93b9556413a7a7564afc39dfd3cf464c7082d5c052d752"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -558,12 +567,13 @@
   ],
   "counts": {
     "bounded_control_recorded": 19,
+    "bounded_known_candidate_control": 1,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 2,
     "local_contract_verified": 2,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
-    "requires_explicit_evidence_review": 10,
+    "requires_explicit_evidence_review": 9,
     "synthetic_contract_only": 1
   },
   "boundaries": [

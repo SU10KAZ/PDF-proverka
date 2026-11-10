@@ -1,0 +1,26 @@
+{
+  "control": "H05-N02",
+  "status": "bounded_known_candidate_negative_control_recorded",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 92532,
+  "known_candidate_supplied": true,
+  "engineer_answers_or_later_labels_supplied": false,
+  "independent_discovery": false,
+  "original_claim_checked": "2730+400+110=3240 vs position 1 length 3640 mm",
+  "observed_dimensions_verified": true,
+  "arithmetic_verified": true,
+  "full_developed_length_proven": false,
+  "excess_material_proven": false,
+  "model_verdict_on_complete_length": "needs_data",
+  "raw_findings_count": 0,
+  "text_quotes_verified": true,
+  "primary_graphic_review": {
+    "path": "/tmp/auditmanager_km_graphic_recovery_packet004_20261110/detail_tile_3.png",
+    "sha256": "22d7a0e6c90e20718a04ab61d2e470aedc82c64ec5337437179cce1902eedeab",
+    "directly_viewed": true,
+    "observation": "2730 is aligned with inclined segment; 400 at upper horizontal segment and 110 at lower/right ending are visible. This single view does not establish the complete spatial developed length."
+  },
+  "preserved_uncertainty": "Neither excess 400 mm nor a particular extra spatial segment is established. Do not infer a universal tolerance or suppress other straight-bar discrepancies.",
+  "remaining_scope": "Independent source-only extraction omitted 110; missing views and question usefulness remain separate work. This known-candidate negative control is not proof of improved full audit.",
+  "full_acceptance_proven": false
+}

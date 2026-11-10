@@ -1,0 +1,482 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "p4_19",
+      "operation": "dimension_consistency",
+      "status": "needs_data",
+      "reason": "На изображении ОГМ 4 листа 6 подтверждены размеры 2730 вдоль наклонного участка поручня, 400 у верхнего горизонтального участка и 110 у правого окончания. В ведомости для позиции 1 указано L=3,640м. Арифметически 2730+400+110=3240 мм, а 3640−3240=400 мм. Однако полнота этой суммы как развёрнутой длины всей детали не установлена: вид не раскрывает полностью пространственные окончания и сопряжения поручня. Поэтому превышение табличной длины над полной длиной изображённой детали на 400 мм не доказано. Размеры 800 и 955 соответствуют табличным длинам позиций 4 и 2. Различия 648/650 для позиции 5 и 478/480 для позиции 9 требуют определения размерных баз и обработки торцов; признать их ошибкой или допустимым отклонением по пакету нельзя. Другие изображения ОГМ 4 относятся к другим листам и исполнениям и не восполняют автоматически геометрию рассматриваемой детали.",
+      "source_refs": [
+        "blk_eff2811805d64c26b34d72e41ecbb194",
+        "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+        "blk_9d85769870054701b8f16e3f8d203864",
+        "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+        "blk_ae8f7849e07147388fc213cff1fbb43f",
+        "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+        "blk_2f7923b916294bdcac3dd9b3d5589665"
+      ],
+      "missing_context": [
+        "План и дополнительные виды именно ОГМ 4 листа 6, связанные со схемой расположения на листе 5 и раскрывающие пространственные окончания поручня позиции 1.",
+        "Деталировка позиции 1 с полной развёрнутой длиной, границами участков 2730, 400 и 110, геометрией поворотов и правилом определения L в ведомости.",
+        "Деталировка позиций 7 и 8 для сопоставления их полной длины с ведомостью.",
+        "Указания о размерных базах и обработке торцов позиций 5 и 9 для сравнения размеров 648 и 478 с длинами 650 и 480 мм."
+      ],
+      "context_queries": [
+        "ОГМ 4",
+        "Схема расположения ограждений лестницы секции 3",
+        "L=3,640м",
+        "L=0,850м",
+        "L=0,380м",
+        "по Е"
+      ]
+    }
+  ],
+  "candidate_claim_checks": [
+    {
+      "claim": "Рассматривается поручень позиции 1 ОГМ 4 на листе 6, PDF 8.",
+      "verdict": "supported",
+      "evidence": [
+        {
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "description": "Четвёртая панель обозначена ОГМ 4; выноски позиции 1 указывают на верхний горизонтальный и наклонный участки поручня. Метаданные блока указывают лист 6, метаданные увеличений — page_index 7."
+        },
+        {
+          "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+          "description": "На том же листе приведена ведомость элементов ОГМ 4 с позицией 1."
+        }
+      ],
+      "reason": "Марка, позиция и лист сопоставлены непосредственно; индекс страницы 7 соответствует восьмой странице PDF."
+    },
+    {
+      "claim": "Это исполнение ОГМ 4 относится к секции С3.",
+      "verdict": "needs_data",
+      "evidence": [
+        {
+          "block_id": "blk_9d85769870054701b8f16e3f8d203864",
+          "quote": "5. Схему расположения ограждений см. л.5."
+        },
+        {
+          "block_id": "blk_02786cefba4641928c7e149eda44f872",
+          "description": "В конце предоставленного текста имеется заголовок страницы листа 5 со схемой лестницы секции 3."
+        }
+      ],
+      "reason": "Связь листа 6 с листом схемы секции 3 прослеживается по тексту, но сама схема листа 5 с привязкой данного ОГМ 4 не предоставлена. Приложенные план и разрез листа 3 относятся к секции 2."
+    },
+    {
+      "claim": "Размер 2730 мм относится к наклонной части, а не к её горизонтальной проекции.",
+      "verdict": "supported",
+      "evidence": [
+        {
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "description": "На увеличении ОГМ 4 размерная линия 2730 идёт параллельно наклонному поручню, от верхнего перехода с горизонтального участка до нижнего перехода у правого окончания."
+        }
+      ],
+      "reason": "Направление размерной линии и её границы соответствуют наклонному участку. Нижняя горизонтальная цепь 600+600+600+450 имеет другие границы и не заменяет этот размер."
+    },
+    {
+      "claim": "На эскизе присутствует верхний горизонтальный размер 400 мм.",
+      "verdict": "supported",
+      "evidence": [
+        {
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "description": "Сверху ОГМ 4 размер 400 нанесён между левым окончанием изображённого горизонтального участка и его переходом в наклонный поручень. Ниже горизонтальной части также показан размер 400."
+        }
+      ],
+      "reason": "Читается 400. Самостоятельная запись 4,00, указанная в навигационном описании, изображением не подтверждается."
+    },
+    {
+      "claim": "У правого окончания поручня показан размер 110 мм.",
+      "verdict": "supported",
+      "evidence": [
+        {
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "description": "Размер 110 расположен под коротким правым окончанием поручня, между выносными линиями от зоны окончания наклонного участка и крайнего торца."
+        }
+      ],
+      "reason": "Число и локальная привязка читаются. Само наличие этого размера не доказывает, что он вместе с 2730 и 400 исчерпывает всю развёртку позиции 1."
+    },
+    {
+      "claim": "В ведомости позиции 1 указаны труба Ø40×3, длина 3,640 м и количество 1.",
+      "verdict": "supported",
+      "evidence": [
+        {
+          "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+          "quote": "| ОГМ 4 |  | 1 | φ40x3 | Конструктивно |  |  | C245 | L=3,640м | 1 |",
+          "description": "Строка позиции 1 ведомости ОГМ 4; длина находится в графе «Примеча- ние», число 1 — в графе «Количество»."
+        }
+      ],
+      "reason": "Авторитетный MD непосредственно подтверждает параметры строки; 3,640 м соответствует 3640 мм."
+    },
+    {
+      "claim": "2730+400+110=3240 мм; разность с 3640 мм составляет 400 мм.",
+      "verdict": "supported",
+      "evidence": [
+        {
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "description": "На ОГМ 4 прочитаны числовые значения 2730, 400 и 110."
+        },
+        {
+          "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+          "quote": "L=3,640м"
+        }
+      ],
+      "reason": "Арифметика верна. Это проверка суммы выбранных значений, а не подтверждение полноты геометрической модели поручня."
+    },
+    {
+      "claim": "Сумма 2730+400+110 является полной длиной поручня, поэтому ведомость завышает его длину на 400 мм.",
+      "verdict": "needs_data",
+      "evidence": [
+        {
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "description": "Показаны наклонный участок, верхняя горизонтальная часть и окончания с торцевыми изображениями. Полная пространственная развёртка позиции 1 этим видом не задана."
+        },
+        {
+          "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+          "description": "Ведомость задаёт L=3,640м, но не содержит расчёта этой длины или развёртки детали."
+        },
+        {
+          "block_id": "blk_9d85769870054701b8f16e3f8d203864",
+          "description": "Примечания отсылают к схеме расположения на листе 5; соответствующая схема в пакете отсутствует."
+        }
+      ],
+      "reason": "Не установлено, что выбранные три размера охватывают все участки одной полной детали и измерены на той же базе, что табличная длина. Нельзя ни подтвердить завышение, ни объяснить разность конкретным дополнительным участком без его изображения и размеров."
+    }
+  ],
+  "inspected_images": [
+    {
+      "image_numbers": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+      "description": "Осмотрены общий блок и все четыре увеличения. У ОГМ 1 показаны наклонный размер 2720 и правое окончание 240; у ОГМ 2 — 2740; у ОГМ 3 — 2400. Это самостоятельные марки, их геометрия не определяет скрытые участки ОГМ 4. На увеличении ОГМ 4 прочитаны размеры и границы, использованные в проверке кандидата."
+    },
+    {
+      "image_numbers": [
+        6
+      ],
+      "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+      "description": "На разрезе ОГМ 4 обозначено на марше между уровнями +6,070 и +7,270. По метаданным это секция 2, лист 3; полная развёртка поручня ОГМ 4 листа 6 здесь не установлена."
+    },
+    {
+      "image_numbers": [
+        7
+      ],
+      "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+      "description": "Осмотрены четыре панели листа 8. У показанного здесь ОГМ4 нет верхнего горизонтального участка 400 рассматриваемого исполнения; нижняя цепь содержит 600×4=2400. Использовать его размеры для детали листа 6 без связи исполнений нельзя."
+    },
+    {
+      "image_numbers": [
+        8
+      ],
+      "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+      "description": "План на отметке +7,270 содержит выноски ОГМ 2, ОГМ 4 и ОГМ 5. По метаданным относится к секции 2, листу 3; размеры 1095, 310 и 80 не устанавливают полную длину позиции 1 рассматриваемого ОГМ 4."
+    },
+    {
+      "image_numbers": [
+        9
+      ],
+      "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+      "description": "Изображено ОГМ9 с наклонным поручнем 3400; это другая марка, не деталировка ОГМ 4."
+    },
+    {
+      "image_numbers": [
+        10
+      ],
+      "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+      "description": "Осмотрены панели ОГМ 1–4 листа 4. У ОГМ 4 верхняя горизонтальная часть имеет размер 700 и нижняя цепь отличается от исполнения листа 6. Переносить его геометрию на проверяемую деталь нельзя."
+    },
+    {
+      "image_numbers": [
+        11
+      ],
+      "block_id": "blk_26d908d359d14584917702c046803793",
+      "description": "Изображено ОГМ13 с наклонным размером 3550 и правым горизонтальным участком 520. Эта другая марка не подтверждает ни полноту суммы кандидата, ни наличие дополнительного участка у ОГМ 4."
+    }
+  ],
+  "findings": [],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "p4_19",
+        "identity": "ОГМ 4, ограждение с наклонной и верхней горизонтальной частями",
+        "scope": "Самостоятельная марка сборочного изделия; верхняя горизонтальная часть входит в изображённое исполнение.",
+        "kind": "Тип сборочного изделия",
+        "source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Марка и форма",
+            "value": "ОГМ 4, наклонное ограждение с горизонтальным участком слева сверху",
+            "unit": null,
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Четвёртая панель озаглавлена «ОГМ 4»; верхняя левая часть горизонтальна."
+          },
+          {
+            "name": "Нижняя горизонтальная размерная цепь",
+            "value": [
+              600,
+              600,
+              600,
+              450
+            ],
+            "unit": "мм",
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Внизу показаны три размера 600 и крайний правый размер 450."
+          },
+          {
+            "name": "Горизонтальный участок",
+            "value": 400,
+            "unit": "мм",
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Под верхней горизонтальной частью читается размер 400; самостоятельная запись «4,00» по изображению не подтверждается."
+          },
+          {
+            "name": "Размеры заполнения",
+            "value": "Повторяющийся шаг 150; вертикальный размер 800 в наклонной части",
+            "unit": "мм",
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "В верхних размерных цепях повторяется 150; внутри наклонной части читается 800."
+          },
+          {
+            "name": "Ссылки и детализация",
+            "value": "Узловые обозначения у опор, перехода и окончания",
+            "unit": null,
+            "source_ref": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "graphic_observation": "Показаны выноски и позиции деталей; полное чтение мелких обозначений по этому изображению невозможно."
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "p4_19",
+        "operation": "identity_across_views",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "quantity_balance",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "receipt": {
+          "object_id": "p4_19",
+          "operation": "dimension_consistency",
+          "status": "needs_data",
+          "reason": "На изображении ОГМ 4 листа 6 подтверждены размеры 2730 вдоль наклонного участка поручня, 400 у верхнего горизонтального участка и 110 у правого окончания. В ведомости для позиции 1 указано L=3,640м. Арифметически 2730+400+110=3240 мм, а 3640−3240=400 мм. Однако полнота этой суммы как развёрнутой длины всей детали не установлена: вид не раскрывает полностью пространственные окончания и сопряжения поручня. Поэтому превышение табличной длины над полной длиной изображённой детали на 400 мм не доказано. Размеры 800 и 955 соответствуют табличным длинам позиций 4 и 2. Различия 648/650 для позиции 5 и 478/480 для позиции 9 требуют определения размерных баз и обработки торцов; признать их ошибкой или допустимым отклонением по пакету нельзя. Другие изображения ОГМ 4 относятся к другим листам и исполнениям и не восполняют автоматически геометрию рассматриваемой детали.",
+          "source_refs": [
+            "blk_eff2811805d64c26b34d72e41ecbb194",
+            "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "blk_9d85769870054701b8f16e3f8d203864",
+            "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "blk_2f7923b916294bdcac3dd9b3d5589665"
+          ],
+          "missing_context": [
+            "План и дополнительные виды именно ОГМ 4 листа 6, связанные со схемой расположения на листе 5 и раскрывающие пространственные окончания поручня позиции 1.",
+            "Деталировка позиции 1 с полной развёрнутой длиной, границами участков 2730, 400 и 110, геометрией поворотов и правилом определения L в ведомости.",
+            "Деталировка позиций 7 и 8 для сопоставления их полной длины с ведомостью.",
+            "Указания о размерных базах и обработке торцов позиций 5 и 9 для сравнения размеров 648 и 478 с длинами 650 и 480 мм."
+          ],
+          "context_queries": [
+            "ОГМ 4",
+            "Схема расположения ограждений лестницы секции 3",
+            "L=3,640м",
+            "L=0,850м",
+            "L=0,380м",
+            "по Е"
+          ]
+        }
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "p4_19",
+        "operation": "document_links",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eff2811805d64c26b34d72e41ecbb194"
+        ],
+        "reason": "missing_receipt"
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_02786cefba4641928c7e149eda44f872",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_26d908d359d14584917702c046803793",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_2b31bb21c613499ea1bea845105e296f",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_4b49406098054a4da822e4286031df67",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_5de20e336f994591bdd8c56c0f1e4183",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_86391202bd4d44b79d72ea0d02397531",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_9d85769870054701b8f16e3f8d203864",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_a7a7a6260e93456e98307050fde64c31",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 5,
+    "unresolved_source_blocks": 22,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "dimension_consistency"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}
