@@ -1,0 +1,18 @@
+{
+  "status": "linked_source_routes_recovered_applicability_unresolved",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 94421,
+  "source_versions_separate": true,
+  "literal_quotes_verified": true,
+  "recovered_reference": "ПД-00580716-КМ9.2",
+  "calculation_reference": "ПД-00580716-КМ8",
+  "identity_limit": "Огр-4 in KM5.2 is not proven identical to ОГН-4 in AR. Neither KM5.2 version is established as coordinated with AR v001.",
+  "next_available_internal_step": "Inspect sheet 3 graphics separately for both available KM5.2 versions; do not substitute KM4 for KM4.2 or KM8.",
+  "unavailable_local_documents": [
+    "ПД-00580716-КМ8",
+    "ПД-00580716-КМ9.2"
+  ],
+  "absence_scope": "Current listed local object directory only, not project or historical audit date.",
+  "full_acceptance_proven": false,
+  "technical_question_emitted": false
+}

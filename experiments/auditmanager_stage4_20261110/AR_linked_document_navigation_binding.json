@@ -1,0 +1,28 @@
+{
+  "request_sha256": "476a1ab456dd8a762c754bfec65ee79b80875bc0fb6b4337c2cfc2fa0fccae72",
+  "source_bindings": [
+    {
+      "version": "v001",
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/_system/destructive_backups/20260914T143051948760Z_00580716-_5.2_V1_v001__delete_project/01_input/ПД-00580716-КМ5.2_V1_results.md",
+      "sha256": "d6afcd65ad5a59cb929992d590fdf108d1a596dcb3c015c1305e83fed7406a04"
+    },
+    {
+      "version": "v002",
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ5.2/versions/v002/02_work/document.md",
+      "sha256": "4fdc67b25c893810b94e2723efad501cf3430c25394fb3866f5a805f6b419e39"
+    }
+  ],
+  "previous_result_sha256": "10e6d13db8a1e0ff732fff560f510feca11be35e0b425d9e362682868dfe2a2f",
+  "local_document_index": [
+    "ПД-00580716-КМ1.2",
+    "ПД-00580716-КМ10.2",
+    "ПД-00580716-КМ2",
+    "ПД-00580716-КМ4",
+    "ПД-00580716-КМ5.2",
+    "ПД-00580716-КМ6.2"
+  ],
+  "model": "codex/gpt-6-astra",
+  "history_or_engineer_answers_supplied": false,
+  "automatic_retries": 0,
+  "message_chars": 68605
+}
