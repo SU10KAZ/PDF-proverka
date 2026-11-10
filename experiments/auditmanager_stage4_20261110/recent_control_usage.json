@@ -187,6 +187,88 @@
       "status": "not_started"
     },
     {
+      "control": "EOM_line_address",
+      "directory": "/tmp/auditmanager_eom_line_address_control_20261111",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "4cda202fa103e4f0971212f9f389ebd5a602234e84fdb2df08b0cf2841efcf7d",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 39104,
+      "input_tokens": 24972,
+      "output_tokens": 1489,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "EOM_cable_source_F-050_0_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-050/00_review",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "79b2ea10c663f14ed5e8fc41527a13e4d4c0d88ac42485bd9809f13c11e9cc3e"
+      },
+      "token_counters_incomplete": true
+    },
+    {
+      "control": "EOM_cable_source_F-050_1_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-050/01_review",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-050_2_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-050/02_review",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-050_3_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-050/03_review",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-050_4_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-050/04_review",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-050_5_adjudication",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-050/05_adjudication",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-051_0_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-051/00_review",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-051_1_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-051/01_review",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-051_2_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-051/02_review",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-051_3_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-051/03_review",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-051_4_review",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-051/04_review",
+      "status": "not_started"
+    },
+    {
+      "control": "EOM_cable_source_F-051_5_adjudication",
+      "directory": "/tmp/auditmanager_eom_cable_source_workflow_20261111/F-051/05_adjudication",
+      "status": "not_started"
+    },
+    {
       "control": "EOM_shared_primary_source",
       "directory": "/tmp/auditmanager_eom_shared_source_control_20261111",
       "status": "response_received",
@@ -1116,14 +1198,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 59,
-  "pending_results": 0,
+  "completed_requests": 60,
+  "pending_results": 1,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 2160792,
-  "reported_output_tokens": 560262,
+  "reported_input_tokens": 2185764,
+  "reported_output_tokens": 561751,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 189.225,
+  "completed_request_minutes_sum": 189.877,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [
