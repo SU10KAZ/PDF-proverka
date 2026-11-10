@@ -1,0 +1,10 @@
+{
+  "object": "O27",
+  "model": "codex/gpt-6-astra",
+  "new_graphic": "blk_8bd7a6b225e346a281ff4479e6d353f8",
+  "reported_result": "New node D links KM4.2 but concerns OGN6 at other levels; it cannot establish the document address for OGN4/O27.",
+  "technical_question_recovered": false,
+  "next_step": "Inspect linked-document context with explicit source-version boundaries; local availability recorded separately.",
+  "no_project_absence_claim": true,
+  "full_acceptance_proven": false
+}
