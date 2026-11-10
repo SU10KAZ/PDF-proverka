@@ -15,7 +15,30 @@
     "C5 uses 0.27 without identifying derivation from pressure data versus displayed 0.3; selection 200 litres is explicit but arithmetic precision needs qualification.",
     "Risk and severity/norm recognized as uncertain; separate final decision still required."
   ],
-  "graphic_regions_independently_rechecked_this_pass": false,
+  "graphic_regions_independently_rechecked_this_pass": true,
   "known_case_not_blind": true,
-  "production_changed": false
+  "production_changed": false,
+  "graphic_region_review": {
+    "regions": 8,
+    "wrong_region": [
+      {
+        "claim_id": "C4",
+        "evidence_index": 1,
+        "reason": "Region shows piping and item 23, not K23 100 litre annotation."
+      }
+    ],
+    "partial_regions": [
+      {
+        "claim_id": "C1",
+        "evidence_index": 1,
+        "reason": "RM1500 labels visible; parts of tank outlines and annotation clipped."
+      },
+      {
+        "claim_id": "C2",
+        "evidence_index": 1,
+        "reason": "K22 and 1000 litre label visible; part of word clipped."
+      }
+    ],
+    "scope_limit": "C7 image supports two local K22 tank symbols, not a refutation about all text descriptions."
+  }
 }

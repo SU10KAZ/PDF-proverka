@@ -136,3 +136,16 @@ def test_explicit_display_revision_reaches_excel_and_preserves_original():
     entries[0]['decision']['display_field_reviews']['risk']['original_value_sha256']='stale'
     unchanged,receipts=apply_review_admissions(doc,entries,md)
     assert unchanged==doc and receipts[0]['reason']=='stale_display_field_review'
+
+
+def test_array_display_reviews_require_unique_original_hash_not_order():
+    doc,entries,md=display_case();f=doc['findings'][0]
+    rows=[{'original_value_sha256':evidence_digest(f[k]),'consistent_with_final_claim':True,
+        'reason':'Explicitly reviewed field','value':f[k]} for k in ('norm','severity','risk')]
+    entries[0]['decision']['display_field_reviews']=rows
+    out,receipts=apply_review_admissions(doc,entries,md)
+    assert receipts[0]['status']=='applied'
+    assert out['findings'][0]['risk']==f['risk']
+    entries[0]['decision']['display_field_reviews']=rows+[deepcopy(rows[0])]
+    out,receipts=apply_review_admissions(doc,entries,md)
+    assert out==doc and receipts[0]['reason']=='ambiguous_display_field_review'

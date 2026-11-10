@@ -81,6 +81,18 @@ def _review_display_fields(original, decision, action):
         return {}
     required = {k for k in DISPLAY_REVIEW_FIELDS if original.get(k) not in (None, '')}
     reviews = decision.get('display_field_reviews', {})
+    if isinstance(reviews, list):
+        # Some providers emit entries as an array. Bind only by the exact,
+        # unique original-value hash; never guess by order or revised wording.
+        bound = {}
+        for row in reviews:
+            if not isinstance(row, dict):
+                raise ValueError('ambiguous_display_field_review')
+            matches = [k for k in required if evidence_digest(original[k]) == row.get('original_value_sha256')]
+            if len(matches) != 1 or matches[0] in bound:
+                raise ValueError('ambiguous_display_field_review')
+            bound[matches[0]] = row
+        reviews = bound
     if not isinstance(reviews, dict) or set(reviews) != required:
         raise ValueError('incomplete_display_field_review')
     updates = {}
