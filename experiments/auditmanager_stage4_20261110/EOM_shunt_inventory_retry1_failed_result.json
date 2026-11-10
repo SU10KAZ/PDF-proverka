@@ -1,0 +1,17 @@
+{
+  "text": "{\"type\":\"thread.started\",\"thread_id\":\"01a1c7b0-b989-70b3-a810-dad22d712c07\"}\n{\"type\":\"turn.started\"}",
+  "json_data": null,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "cost_usd": 0.0,
+  "duration_ms": 900096,
+  "model": "codex/gpt-6-astra",
+  "is_error": true,
+  "error_message": "codex_exec_exit_-1; codex_json_not_found",
+  "cached_tokens": 0,
+  "cache_write_tokens": 0,
+  "reasoning_tokens": 0,
+  "cost_source": "subscription",
+  "response_id": "01a1c7b0-b989-70b3-a810-dad22d712c07",
+  "finish_reason": "error"
+}

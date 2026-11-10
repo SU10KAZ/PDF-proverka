@@ -1,0 +1,55 @@
+{
+  "source_md_sha256": "92ff7e858caa1413d37309e9aba4e956267a4280ce85f3f688be19b690293f12",
+  "blocks": 8,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "blk_c5f0556f94c14503bfe178ef5941c077",
+        "blk_7d22e811017e4e969b2d732e9e30c50d",
+        "blk_54ee6784647e49ae86ad9fd46e7082e3",
+        "blk_5b30188592764230a7cd894838a60430"
+      ],
+      "message_chars": 23732,
+      "images": [
+        {
+          "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+          "sha256": "a5b8b99f7c248661b1a326103a59062fb9691488c4e6c7f2c5f6275e166e3bf5"
+        }
+      ]
+    },
+    {
+      "stage": "object_inventory_001",
+      "block_ids": [
+        "blk_513e35c4f8a7432986e9a498d4573996",
+        "blk_7ca68a936c85428dbd4b60b2893398a2",
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "message_chars": 23265,
+      "images": [
+        {
+          "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+          "sha256": "a01102c8349160a0b2f4a2f050c1821c1a185575010318cdbc589a1a80b09798"
+        }
+      ]
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": true,
+  "semantic_inventory_complete": false,
+  "full_source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "source_selection": "Two unchanged circuit source blocks and all same-page authoritative TEXT/TABLE blocks; no expected findings, device identity or compatibility conclusions or engineer feedback.",
+  "request_digests": [
+    "b023bc1832c7d89eace639f8df8b875ece592f8120a86f85f9d12f84b7d5aad9",
+    "d5f8b8e1a771ffa835d67d2fcea661cca480d218f197e6136223604a864f0a52"
+  ],
+  "requests": 2,
+  "known_source_selection": true,
+  "whole_project_control": false,
+  "independent_discovery": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}

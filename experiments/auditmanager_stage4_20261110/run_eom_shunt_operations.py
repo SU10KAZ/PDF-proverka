@@ -48,6 +48,9 @@ def prepare(object_id, packet_index=0):
     return root, request, binding
 
 async def main(args):
+    global INVENTORY, ROOT
+    INVENTORY = Path(args.inventory_root)
+    ROOT = Path(args.output_root)
     os.environ['CODEX_TRANSIENT_RETRIES'] = '0'
     for object_id in args.objects:
         root, request, binding = prepare(object_id, args.packet)
@@ -74,6 +77,8 @@ async def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--objects', nargs='+', required=True)
+    parser.add_argument('--inventory-root', default=str(INVENTORY))
+    parser.add_argument('--output-root', default=str(ROOT))
     parser.add_argument('--packet', type=int, default=0)
     parser.add_argument('--execute', action='store_true')
     asyncio.run(main(parser.parse_args()))
