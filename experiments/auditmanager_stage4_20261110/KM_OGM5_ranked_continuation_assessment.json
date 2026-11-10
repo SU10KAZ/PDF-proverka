@@ -1,0 +1,81 @@
+{
+  "request_sha256": "5cd3bc373c26fd8208541c236610f5e8449bd4da75219b5dd4f9f5480ae05719",
+  "result_sha256": "82defa16736234a5370700a436eddcd61598d237bae0e1fe1298acb94b2938ff",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 110000,
+  "input_tokens": 75883,
+  "output_tokens": 4125,
+  "new_model_calls": 1,
+  "raw_candidates": 4,
+  "retained_question_candidates": 2,
+  "internal_context_candidates": 2,
+  "baseline_findings_preserved": 26,
+  "combined_findings": 28,
+  "exact_quote_checks": [
+    {
+      "finding_index": 0,
+      "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+      "quote": "|  | □ | 5 | 25х3 |  |  |  | C245 | L=0,650м | 4 |",
+      "exact": true
+    },
+    {
+      "finding_index": 2,
+      "block_id": "blk_02786cefba4641928c7e149eda44f872",
+      "quote": "5. Схему расположения ограждений см. л.4.",
+      "exact": true
+    },
+    {
+      "finding_index": 3,
+      "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "quote": "| ГОСТ 8732-2025 | Трубы стальные бесшовные горячедеформированные. Сортамент |  |",
+      "exact": true
+    }
+  ],
+  "operation_states": {
+    "dimension_consistency": "needs_data",
+    "requirement_applicability": "needs_data",
+    "document_links": "checked"
+  },
+  "bounded_source_review": [
+    {
+      "claim": "Sheet reference 4 versus drawing register sheet 3",
+      "status": "previously_source_confirmed_and_retained",
+      "prior_assessment": "KM_OGM5_continuation_assessment.json"
+    },
+    {
+      "claim": "ГОСТ 8732-78 on node В versus ГОСТ 8732-2025 in MD reference register",
+      "status": "source_confirmed_designation_conflict_only",
+      "graphic_block": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+      "graphic_visually_inspected": true,
+      "legal_applicability_verified": false
+    },
+    {
+      "claim": "648 versus 650",
+      "status": "unresolved_measurement_basis",
+      "technical_defect_proven": false
+    },
+    {
+      "claim": "Anchor applicability",
+      "status": "missing_calculation_and_base_context",
+      "whole_project_absence_proven": false
+    }
+  ],
+  "comparison_to_prior_response": {
+    "prior_raw_questions": 3,
+    "current_raw_questions": 4,
+    "confirmed_question_categories_before": 2,
+    "confirmed_question_categories_after": 2,
+    "new_technical_defects": 0,
+    "prior_nonverbatim_quotes": 3,
+    "current_nonverbatim_quotes": 0,
+    "conclusion": "No demonstrated increase in confirmed findings in this known-case followup. Exact quotations improved in this sample; model variability is not controlled by one comparison."
+  },
+  "production_accepted": false,
+  "semantic_coverage_complete": false,
+  "limits": [
+    "Fresh response to changed context; engineer answers not supplied, but known project and prior model response are used.",
+    "This is a contextual followup, not blind independent discovery or a full candidate audit.",
+    "Quantity statements inside dimension receipt were not separately accepted as a completed quantity operation.",
+    "Final source-review gate stays pending; no automatic production admission."
+  ]
+}

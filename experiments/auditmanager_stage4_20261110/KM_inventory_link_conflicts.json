@@ -1,0 +1,203 @@
+{
+  "records": [
+    {
+      "packet": "object_inventory_011",
+      "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+      "raw_result_sha256": "4aae1e63d2db9ba7ba4853308ee646f1dabf22a2d1e3c8d6af34a45e8adedef4",
+      "coverage_receipt": {
+        "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+        "status": "inventoried",
+        "object_ids": [
+          "ogm16",
+          "view_ogm16"
+        ],
+        "reason": "Изображение просмотрено; зарегистрированы марка, позиции, размерные цепи и ссылочные обозначения."
+      },
+      "objects_citing_block": [
+        "ogm16",
+        "view_7_7",
+        "view_ogm16"
+      ],
+      "declared_without_object_source_link": [],
+      "object_links_omitted_from_coverage": [
+        "view_7_7"
+      ],
+      "conflicting_objects": [
+        {
+          "id": "view_7_7",
+          "identity": "Сечение 7-7, лист 9; связано с обозначением сечения на ОГМ16",
+          "scope": "Дополнительный вид сборки ogm16. Количество физических деталей по одному сечению не определяется.",
+          "kind": "сечение",
+          "source_refs": [
+            "blk_32bc47a039c54d7e9eb7cc9d7abbc8fb",
+            "blk_0baef9435e014790ad7708e6e4cd256a"
+          ],
+          "observed_parameters": [
+            {
+              "name": "Размеры сечения",
+              "value": {
+                "upper_span": 280,
+                "upper_chain": [
+                  65,
+                  150,
+                  65
+                ],
+                "upper_element_height": 40,
+                "vertical_infill_dimension": 1015,
+                "lower_span": 305,
+                "lower_element_height": 25
+              },
+              "unit": "мм",
+              "source_ref": "blk_32bc47a039c54d7e9eb7cc9d7abbc8fb",
+              "graphic_observation": "На изображении 7-7 верхний размер 280, цепь 65–150–65, вертикальные размеры 40, 1015 и 25, нижний размер 305."
+            },
+            {
+              "name": "Позиционные выноски",
+              "value": {
+                "upper_element": "2",
+                "vertical_infill": "5а",
+                "lower_element": "3а"
+              },
+              "unit": null,
+              "source_ref": "blk_32bc47a039c54d7e9eb7cc9d7abbc8fb",
+              "graphic_observation": "Выноска 2 направлена на верхний элемент, общая линия позиции 5а — на два вертикальных элемента, выноска 3а — на нижний элемент. Надпись 5а является позицией, а не высотной отметкой. Круглые очертания на концах верхнего элемента не обозначены как болты или отверстия."
+            }
+          ]
+        }
+      ],
+      "failure_stage": "inventory_link_reconciliation",
+      "disposition": "requires_source_link_review",
+      "automatic_object_merge": false,
+      "technical_project_defect": false,
+      "coverage_marked_complete": false
+    },
+    {
+      "packet": "object_inventory_000",
+      "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "raw_result_sha256": "ea3b192a606eaac93544a3a813ba4dce8e897a2a4522da8a457b7efade534821",
+      "coverage_receipt": {
+        "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "status": "inventoried",
+        "object_ids": [
+          "obj_02",
+          "obj_03",
+          "obj_04",
+          "obj_05",
+          "obj_06",
+          "obj_07",
+          "obj_08",
+          "obj_09"
+        ],
+        "reason": "Сохранены области действия листов, группы марок, ссылки на стандарты и смежные комплекты. Упомянутые смежные комплекты не приняты за обследованные физические конструкции."
+      },
+      "objects_citing_block": [
+        "obj_02",
+        "obj_04",
+        "obj_05",
+        "obj_06",
+        "obj_07",
+        "obj_08",
+        "obj_09"
+      ],
+      "declared_without_object_source_link": [
+        "obj_03"
+      ],
+      "object_links_omitted_from_coverage": [],
+      "conflicting_objects": [
+        {
+          "id": "obj_03",
+          "identity": "Ограждения лестницы секции 2, комплект изделий",
+          "scope": "Секция 2, отметки +0,550…+41,190; марки относятся только к этой секции",
+          "kind": "система ограждений",
+          "source_refs": [
+            "blk_7b0802767f0147c197b0a35334b4a7ae",
+            "blk_613b3bfe91c246e68bf7705cb59ba72f",
+            "blk_767432a366864283851be4a9092d0909",
+            "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "blk_9dbddaba8e334be3ab857afe48df76ec"
+          ],
+          "observed_parameters": [
+            {
+              "name": "Материалы по столбцу секции 2",
+              "value": {
+                "труба_круглая_40х3_т": 0.228,
+                "труба_квадратная_40х3_т": 0.422,
+                "труба_квадратная_25х3_т": 0.88,
+                "лист_10_т": 0.127,
+                "анкеры": 448,
+                "масса_металла_т": 1.657,
+                "масса_конструкций_т": 1.724
+              },
+              "unit": null,
+              "source_ref": "blk_7b0802767f0147c197b0a35334b4a7ae",
+              "quote": "|  |  |  |  | ОГМ лестницы LK1.1 | ОГМ лестницы LK3.1 | ОГМ лестницы LK4.1 | ОГМ лестницы LK5 | ОГМ лестницы LK6 | ОГМ лестницы секции 2 | ОГМ лестницы секции 3 | Общая масса, т | Общая длина, м |"
+            },
+            {
+              "name": "Виды, а не дополнительные физические комплекты",
+              "value": [
+                "План на +1,910",
+                "План на +4,630",
+                "Разрез 1-1",
+                "Повторяемая схема планов на девяти отметках +10,630…+37,510"
+              ],
+              "unit": null,
+              "source_ref": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+              "graphic_observation": "Разрез 1-1 показывает лестничные марши и ограждения ОГМ 1, 2, 3, 4, 5, 6, 8. Остальные три изображения являются планами лестницы с указателями разреза 1."
+            },
+            {
+              "name": "Поперечная размерная цепь планов",
+              "value": [
+                1095,
+                310,
+                1095
+              ],
+              "unit": "мм",
+              "source_ref": "blk_9dbddaba8e334be3ab857afe48df76ec",
+              "graphic_observation": "На плане горизонтально нанесены 1095, 310, 1095; у центральных линий ограждений нанесено по 80 с каждой стороны. Размер 310 не является высотой элемента."
+            },
+            {
+              "name": "Перечень верхних площадок на повторяемой схеме",
+              "value": [
+                9.11,
+                12.47,
+                15.83,
+                19.19,
+                25.91,
+                29.27,
+                35.99,
+                39.35
+              ],
+              "unit": "м",
+              "source_ref": "blk_9dbddaba8e334be3ab857afe48df76ec",
+              "graphic_observation": "В верхней правой рамке «Ж/Б плита на отметках» читаются восемь перечисленных отметок."
+            },
+            {
+              "name": "Перечень нижних площадок и отметки в заголовке повторяемой схемы",
+              "value": [
+                10.63,
+                13.99,
+                17.35,
+                20.71,
+                24.07,
+                27.43,
+                30.79,
+                34.15,
+                37.51
+              ],
+              "unit": "м",
+              "source_ref": "blk_9dbddaba8e334be3ab857afe48df76ec",
+              "graphic_observation": "Заголовок и нижняя правая рамка содержат одинаковые девять отметок."
+            }
+          ]
+        }
+      ],
+      "failure_stage": "inventory_link_reconciliation",
+      "disposition": "requires_source_link_review",
+      "automatic_object_merge": false,
+      "technical_project_defect": false,
+      "coverage_marked_complete": false
+    }
+  ],
+  "new_model_calls": 0,
+  "conclusion": "These two unresolved entries are model ledger disagreements, not evidence that source graphics are unreadable or that the engineering project is defective. Preserve both versions until source links are reviewed."
+}

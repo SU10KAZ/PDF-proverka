@@ -1,0 +1,1287 @@
+{
+  "project": "KM",
+  "coverage_path": "/tmp/auditmanager_whole_project_inventory_20261110/KM/execution/aggregate_coverage.json",
+  "coverage_sha256": "58a72975d62d7ea702a204056a033e75dbacc1e5b9df3e0f4bf02b4aa7d6d61e",
+  "graphic_blocks": 13,
+  "tiles": 52,
+  "image_bytes": 6396399,
+  "records": [
+    {
+      "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+      "previous_coverage": {
+        "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_004:p4_12",
+            "object_inventory_004:p4_13",
+            "object_inventory_004:p4_14",
+            "object_inventory_004:p4_15"
+          ],
+          "reason": "Все четыре графические области осмотрены: узел А, его сечение 1–1, узлы Б и В. Зарегистрированы узлы, анкер и видимые компоненты в составе узлов. Правая нижняя анкерная выноска обрезана; для полного состава крепления нужен её отсутствующий конец."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2867.273434922099,
+              21.252098083496094,
+              2995.913221474737,
+              520.6791024720237
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_00eaf91abb0f48a38267e99e757644a1/detail_tile_0.png",
+            "width": 387,
+            "height": 1500,
+            "sha256": "7aae11979856f283a6404c20ad5ef1070af7c885298eba58cac759d5fed3a8a5"
+          },
+          {
+            "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2972.5241693742573,
+              21.252098083496094,
+              3112.858481977135,
+              520.6791024720237
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_00eaf91abb0f48a38267e99e757644a1/detail_tile_1.png",
+            "width": 422,
+            "height": 1500,
+            "sha256": "fc1d73c989775970aebec19cc100d43c70dcbda3ecb1687852ba3573095de16b"
+          },
+          {
+            "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              3089.4694298766553,
+              21.252098083496094,
+              3229.803742479533,
+              520.6791024720237
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_00eaf91abb0f48a38267e99e757644a1/detail_tile_2.png",
+            "width": 422,
+            "height": 1500,
+            "sha256": "a315fcab959e37f84b82ea7b6b5fd2d2348082305e76882d9ad7ea5dc8a0d260"
+          },
+          {
+            "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              3206.4146903790534,
+              21.252098083496094,
+              3335.054476931691,
+              520.6791024720237
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_00eaf91abb0f48a38267e99e757644a1/detail_tile_3.png",
+            "width": 387,
+            "height": 1500,
+            "sha256": "c4e122fc24fb670b5f75fe0ed4a11849706e1f633e4f613886c5389b4e8e28b6"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+      "previous_coverage": {
+        "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+          "status": "inventoried",
+          "object_ids": [
+            "object_inventory_011:ogm16",
+            "object_inventory_011:view_ogm16"
+          ],
+          "reason": "Изображение просмотрено; зарегистрированы марка, позиции, размерные цепи и ссылочные обозначения."
+        },
+        "reason": "inventory_conflicts_with_registered_objects"
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+            "page_index": 10,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2243.317993655801,
+              1061.8813260793686,
+              2469.917838651687,
+              1488.6242300271988
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_0baef9435e014790ad7708e6e4cd256a/detail_tile_0.png",
+            "width": 681,
+            "height": 1281,
+            "sha256": "1d6b07aec3eb6d933b42a3b1e008c6672a649a4acdaac94569adc7f6f30f3d7e"
+          },
+          {
+            "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+            "page_index": 10,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2428.717866834253,
+              1061.8813260793686,
+              2675.917697738856,
+              1488.6242300271988
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_0baef9435e014790ad7708e6e4cd256a/detail_tile_1.png",
+            "width": 742,
+            "height": 1281,
+            "sha256": "210db374faef8e3fcd00874fdef6974c2f36fe242beef4f3ba8af1f40446df21"
+          },
+          {
+            "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+            "page_index": 10,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2634.7177259214222,
+              1061.8813260793686,
+              2881.9175568260252,
+              1488.6242300271988
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_0baef9435e014790ad7708e6e4cd256a/detail_tile_2.png",
+            "width": 742,
+            "height": 1281,
+            "sha256": "ddcde3524c0f3804233c282ba681276d027576d098b992f3af1dce11bae8921b"
+          },
+          {
+            "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+            "page_index": 10,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2840.7175850085914,
+              1061.8813260793686,
+              3067.3174300044775,
+              1488.6242300271988
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_0baef9435e014790ad7708e6e4cd256a/detail_tile_3.png",
+            "width": 680,
+            "height": 1281,
+            "sha256": "ae502875de77b94e174fa78cc9d901fa9d026948711202004b0ff64a7736bfe1"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+      "previous_coverage": {
+        "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_003:stair_01",
+            "object_inventory_003:mark_ogm_5",
+            "object_inventory_003:mark_ogm_6",
+            "object_inventory_003:pos_9110_ogm5_upper",
+            "object_inventory_003:pos_9110_ogm5_lower",
+            "object_inventory_003:pos_9110_ogm6"
+          ],
+          "reason": "Основной план +9.110 просмотрен и инвентаризирован; две позиции ОГМ 5 сохранены раздельно. Внизу присутствует обрезанный заголовок следующей схемы с неполным перечнем отметок; её геометрия не представлена, поэтому покрытие этого нижнего фрагмента не подтверждено."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "page_index": 6,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              59.9148805886507,
+              686.9641099572182,
+              197.3253301151097,
+              1018.1138743758202
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_262b1bd1d76146e7a8e45b529a38ac2e/detail_tile_0.png",
+            "width": 413,
+            "height": 995,
+            "sha256": "78b23d705e06dc3c646084eb4bec25429a79120620015c05226aa660e08b53f5"
+          },
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "page_index": 6,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              172.34161201938986,
+              686.9641099572182,
+              322.24392059370876,
+              1018.1138743758202
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_262b1bd1d76146e7a8e45b529a38ac2e/detail_tile_1.png",
+            "width": 450,
+            "height": 995,
+            "sha256": "7ec599f7ac0251419b2acd865306d6e8310cc48949d3c10bf1d65a7d8c360624"
+          },
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "page_index": 6,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              297.2602024979889,
+              686.9641099572182,
+              447.16251107230784,
+              1018.1138743758202
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_262b1bd1d76146e7a8e45b529a38ac2e/detail_tile_2.png",
+            "width": 451,
+            "height": 995,
+            "sha256": "5accab320866c1f114dfe01ce269ae53a7fe87f0502163c41bfd25b36fcf02cf"
+          },
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "page_index": 6,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              422.178792976588,
+              686.9641099572182,
+              559.589242503047,
+              1018.1138743758202
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_262b1bd1d76146e7a8e45b529a38ac2e/detail_tile_3.png",
+            "width": 413,
+            "height": 995,
+            "sha256": "bda7ad994c6c09f83fc6c9233667c7c282435c1667f7d61cbd910d2c2a6bc843"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+      "previous_coverage": {
+        "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_005:ОГМ5_ведомость",
+            "object_inventory_005:ОГМ6_ведомость",
+            "object_inventory_005:ОГМ7_ведомость",
+            "object_inventory_005:ОГМ8_ведомость"
+          ],
+          "reason": "Все четыре панели просмотрены и сопоставлены по маркам. Мелкие позиции, часть наклонных размеров и узловых выносок недостаточно разборчивы для полного поэлементного учета и сравнения; требуется более четкий графический фрагмент."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              139.54451345755695,
+              1025.533773595757,
+              887.4743622664625,
+              1594.9660113057018
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_2f6153fc7d8243798ccea08249042194/detail_tile_0.png",
+            "width": 2245,
+            "height": 1709,
+            "sha256": "6d01d1a770cec2d195c2279d288c5feee3ea4d1e7643bb8bf4f35ba177c886dd"
+          },
+          {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              751.4871170284797,
+              1025.533773595757,
+              1567.4105884563764,
+              1594.9660113057018
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_2f6153fc7d8243798ccea08249042194/detail_tile_1.png",
+            "width": 2449,
+            "height": 1709,
+            "sha256": "0eb787c1e80fb8aac7fd9f177329c99b096cbc85e88ec0c3f0e8d8ad3281c09d"
+          },
+          {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              1431.4233432183937,
+              1025.533773595757,
+              2247.346814646291,
+              1594.9660113057018
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_2f6153fc7d8243798ccea08249042194/detail_tile_2.png",
+            "width": 2449,
+            "height": 1709,
+            "sha256": "2f25f9958ade7d3f0db5a3ba172646413b4cd846e783d9ba51c21e2c770c7761"
+          },
+          {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2111.359569408308,
+              1025.533773595757,
+              2859.2894182172136,
+              1594.9660113057018
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_2f6153fc7d8243798ccea08249042194/detail_tile_3.png",
+            "width": 2244,
+            "height": 1709,
+            "sha256": "9a8c446937ea8d5aa57ad3b97f020856132b7127db6541208ac5a05dee00c00e"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+      "previous_coverage": {
+        "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_000:obj_03",
+            "object_inventory_000:obj_15",
+            "object_inventory_000:obj_16",
+            "object_inventory_000:obj_22"
+          ],
+          "reason": "Изображение просмотрено; основной план, марки и размеры инвентаризированы. Мелкий немаркированный элемент у верхнего левого края и обрезанное нижнее обозначение оси не позволяют полностью идентифицировать периферийную графику."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+            "page_index": 4,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              505.71832336485386,
+              17.61763322353363,
+              581.031441474706,
+              511.34302282333374
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_613b3bfe91c246e68bf7705cb59ba72f/detail_tile_0.png",
+            "width": 227,
+            "height": 1483,
+            "sha256": "c90a43140369a068e08bbf0a4bd0016881f0104e903c5b8868d6ba8eda076215"
+          },
+          {
+            "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+            "page_index": 4,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              567.3381472729146,
+              17.61763322353363,
+              649.4979124836624,
+              511.34302282333374
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_613b3bfe91c246e68bf7705cb59ba72f/detail_tile_1.png",
+            "width": 247,
+            "height": 1483,
+            "sha256": "c7b5e73c5bf17d0d6f129e16a86f78e9b7eebdda3895294f96c28df14c466553"
+          },
+          {
+            "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+            "page_index": 4,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              635.8046182818711,
+              17.61763322353363,
+              717.9643834926188,
+              511.34302282333374
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_613b3bfe91c246e68bf7705cb59ba72f/detail_tile_2.png",
+            "width": 247,
+            "height": 1483,
+            "sha256": "715145f4e9dc15d596194d137f4ff6b80b402eb1642961db66f63950a4e7f29e"
+          },
+          {
+            "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+            "page_index": 4,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              704.2710892908275,
+              17.61763322353363,
+              779.5842074006796,
+              511.34302282333374
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_613b3bfe91c246e68bf7705cb59ba72f/detail_tile_3.png",
+            "width": 227,
+            "height": 1483,
+            "sha256": "c4cd026ab4e9b0b2722ef556205cdcd279b634eae78ee0fdfeee7e421a7a3dae"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+      "previous_coverage": {
+        "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_013:p13_ogm19",
+            "object_inventory_013:p13_ogm20",
+            "object_inventory_013:p13_ogm22",
+            "object_inventory_013:p13_ogm23",
+            "object_inventory_013:p13_ogm25",
+            "object_inventory_013:p13_node_a"
+          ],
+          "reason": "Изображение осмотрено целиком; обнаружены все пять марочных сборок и ссылки на узлы. Часть мелких размеров, позиционных обозначений и пересекающихся выносок не читается достаточно надежно для полной инвентаризации графических параметров."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+            "page_index": 11,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              44.15372312068939,
+              1034.6658934337074,
+              930.5847894698383,
+              1552.315710067749
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_6bb0b4fa825241f087dbf06ba2178a0c/detail_tile_0.png",
+            "width": 2660,
+            "height": 1554,
+            "sha256": "b6debe82f78edb735f0890c0e7c2131ea160127ff9df38c60cd7ab30ba10a9bc"
+          },
+          {
+            "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+            "page_index": 11,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              769.4155046790838,
+              1034.6658934337074,
+              1736.4312134236097,
+              1552.315710067749
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_6bb0b4fa825241f087dbf06ba2178a0c/detail_tile_1.png",
+            "width": 2902,
+            "height": 1554,
+            "sha256": "e9533c8ed64957b29b84a82f3ae670dc8206ef7ff3a716f016cfa85b4b18dce1"
+          },
+          {
+            "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+            "page_index": 11,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              1575.2619286328554,
+              1034.6658934337074,
+              2542.2776373773813,
+              1552.315710067749
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_6bb0b4fa825241f087dbf06ba2178a0c/detail_tile_2.png",
+            "width": 2902,
+            "height": 1554,
+            "sha256": "6a6cd7657a7a5ca4a7625c5f665360937409c5efccb479b5374f758827f35941"
+          },
+          {
+            "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+            "page_index": 11,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2381.108352586627,
+              1034.6658934337074,
+              3267.5394189357758,
+              1552.315710067749
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_6bb0b4fa825241f087dbf06ba2178a0c/detail_tile_3.png",
+            "width": 2660,
+            "height": 1554,
+            "sha256": "654f2e52209c6c58dafde9c3a747549371532247e87906660799dd4b71299e5f"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+      "previous_coverage": {
+        "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_012:OGM17",
+            "object_inventory_012:OGM18",
+            "object_inventory_012:OGM21",
+            "object_inventory_012:OGM24"
+          ],
+          "reason": "Все четыре панели просмотрены, марки и основные конструкции учтены. Разрешение не позволяет надёжно прочитать все мелкие размеры, выноски позиций и выполнить полный поэлементный подсчёт; требуется более читаемая графика этих панелей."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+            "page_index": 11,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              98.21855753660202,
+              42.141172647476196,
+              890.805311009288,
+              635.2838056087494
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_93f2455360ea4a65b5cd536a83c00668/detail_tile_0.png",
+            "width": 2379,
+            "height": 1780,
+            "sha256": "44cf66e95929e237ee242300deb35f61a3e438ff0eb33c29109c8fd1afaab8ae"
+          },
+          {
+            "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+            "page_index": 11,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              746.6986285597086,
+              42.141172647476196,
+              1611.338723257184,
+              635.2838056087494
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_93f2455360ea4a65b5cd536a83c00668/detail_tile_1.png",
+            "width": 2595,
+            "height": 1780,
+            "sha256": "27035530f416b2e3c8e2704a1dd0f002b1dc07dda9ff5e9afa46ae540f6c8d2a"
+          },
+          {
+            "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+            "page_index": 11,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              1467.2320408076048,
+              42.141172647476196,
+              2331.87213550508,
+              635.2838056087494
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_93f2455360ea4a65b5cd536a83c00668/detail_tile_2.png",
+            "width": 2595,
+            "height": 1780,
+            "sha256": "e44597e161f20e230dd2f583d4515412f0c9694bd6e45d10dc0dfe7871d6b416"
+          },
+          {
+            "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+            "page_index": 11,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2187.765453055501,
+              42.141172647476196,
+              2980.352206528187,
+              635.2838056087494
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_93f2455360ea4a65b5cd536a83c00668/detail_tile_3.png",
+            "width": 2379,
+            "height": 1780,
+            "sha256": "e206f854e740b9305c35b301a5ca8d0b7aa76fdbcf322f45927ce35d16a12370"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+      "previous_coverage": {
+        "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_007:p7_22",
+            "object_inventory_007:p7_23",
+            "object_inventory_007:p7_24",
+            "object_inventory_007:p7_25"
+          ],
+          "reason": "Осмотрены все четыре изображения, выявлены сборки ограждений ОГМ1–ОГМ4, основные размерные цепочки и ссылки. Часть мелких позиционных обозначений, концевых размеров и привязок выносок нельзя надёжно разобрать в представленном разрешении; для полного учёта деталей и узлов нужен более читаемый фрагмент. Изображения не интерпретированы как самостоятельные конструкции лестничных маршей."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "page_index": 9,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              154.7388353157244,
+              10.629689322637699,
+              926.54325171951,
+              644.867818906687
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_ae8f7849e07147388fc213cff1fbb43f/detail_tile_0.png",
+            "width": 2316,
+            "height": 1904,
+            "sha256": "578598c09c0da42951a09aa296db11c9d85e8ce85a2626a4dfe11192e79334a4"
+          },
+          {
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "page_index": 9,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              786.2151760097307,
+              10.629689322637699,
+              1628.1836302684058,
+              644.867818906687
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_ae8f7849e07147388fc213cff1fbb43f/detail_tile_1.png",
+            "width": 2527,
+            "height": 1904,
+            "sha256": "b1fc03ee8ae3fda49dc7ff7dc6005c1e654dce39ce1765575143c1a7f207897f"
+          },
+          {
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "page_index": 9,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              1487.8555545586266,
+              10.629689322637699,
+              2329.8240088173015,
+              644.867818906687
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_ae8f7849e07147388fc213cff1fbb43f/detail_tile_2.png",
+            "width": 2527,
+            "height": 1904,
+            "sha256": "0f387320034789a567a8b9460cf935ca5258cfa1e19546b94d3faac238cd6129"
+          },
+          {
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "page_index": 9,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2189.4959331075224,
+              10.629689322637699,
+              2961.300349511308,
+              644.867818906687
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_ae8f7849e07147388fc213cff1fbb43f/detail_tile_3.png",
+            "width": 2316,
+            "height": 1904,
+            "sha256": "0a20bcfffa094027f1e2383d1834967d36658872cca11a76945120907ed1ace9"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+      "previous_coverage": {
+        "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_001:A1",
+            "object_inventory_001:A2",
+            "object_inventory_001:A3",
+            "object_inventory_001:A4"
+          ],
+          "reason": "Все четыре панели просмотрены, марки и основные размеры зарегистрированы. Часть мелких позиционных выносок и концевых размеров недостаточно разборчива для полной проверки состава и размерных цепей; требуются более читаемые графические фрагменты."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "page_index": 5,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              67.80649185180664,
+              23.72056210041046,
+              834.6438250541688,
+              547.3685430288315
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_b6c5ef9df6c74b21b52b5a9379ff0481/detail_tile_0.png",
+            "width": 2301,
+            "height": 1572,
+            "sha256": "da9e600628242903002683bbffde1d2bb1ebc1f947554d7d5c691d879c0cb80c"
+          },
+          {
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "page_index": 5,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              695.218855381012,
+              23.72056210041046,
+              1531.7686734199524,
+              547.3685430288315
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_b6c5ef9df6c74b21b52b5a9379ff0481/detail_tile_1.png",
+            "width": 2511,
+            "height": 1572,
+            "sha256": "10221cd43c06badcae3c88ea22fff2a62b1a9fcd9bb699745479392a318bd15e"
+          },
+          {
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "page_index": 5,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              1392.3437037467957,
+              23.72056210041046,
+              2228.893521785736,
+              547.3685430288315
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_b6c5ef9df6c74b21b52b5a9379ff0481/detail_tile_2.png",
+            "width": 2510,
+            "height": 1572,
+            "sha256": "3f1d0e96fc2c7f8feff553efa19d17de0689b84c09e5f08ad5966cf7f027c2b3"
+          },
+          {
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "page_index": 5,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2089.4685521125793,
+              23.72056210041046,
+              2856.3058853149414,
+              547.3685430288315
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_b6c5ef9df6c74b21b52b5a9379ff0481/detail_tile_3.png",
+            "width": 2301,
+            "height": 1572,
+            "sha256": "c5b313aabce554e5fd342be9d5d895222defb65e634c187baea09955f6dd9201"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+      "previous_coverage": {
+        "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_008:p8_ogm5",
+            "object_inventory_008:p8_ogm6",
+            "object_inventory_008:p8_ogm7",
+            "object_inventory_008:p8_ogm8",
+            "object_inventory_008:p8_node_a"
+          ],
+          "reason": "Все четыре схемы осмотрены и марки зарегистрированы. Мелкие наклонные размеры поручней и часть концевых размерных привязок недостаточно надёжно читаются для полного сопоставления длин и подсчёта заполнения."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+            "page_index": 9,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              119.27079319953918,
+              991.684161901474,
+              887.9459147751332,
+              1551.0790712833405
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_bed91bec458a466db84aaae236ff05a4/detail_tile_0.png",
+            "width": 2307,
+            "height": 1679,
+            "sha256": "e77ad0f6ed2123f8d0f7130601a05307772f041e09c203d31a8f4d760f0e5f1c"
+          },
+          {
+            "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+            "page_index": 9,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              748.1868017613888,
+              991.684161901474,
+              1586.741479843855,
+              1551.0790712833405
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_bed91bec458a466db84aaae236ff05a4/detail_tile_1.png",
+            "width": 2517,
+            "height": 1679,
+            "sha256": "04baaf7166d481a6b1dd7d1f697be08e5a4d1a0c213bd6eb05109814528316f7"
+          },
+          {
+            "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+            "page_index": 9,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              1446.9823668301105,
+              991.684161901474,
+              2285.5370449125767,
+              1551.0790712833405
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_bed91bec458a466db84aaae236ff05a4/detail_tile_2.png",
+            "width": 2517,
+            "height": 1679,
+            "sha256": "603aeeece6c00c9b4b677c1f83ca1c38a64b24cae5d3e9b5f1f24859ba308ae5"
+          },
+          {
+            "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+            "page_index": 9,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2145.7779318988323,
+              991.684161901474,
+              2914.4530534744263,
+              1551.0790712833405
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_bed91bec458a466db84aaae236ff05a4/detail_tile_3.png",
+            "width": 2307,
+            "height": 1679,
+            "sha256": "bc21ae1c6799a0f3ba4ebb32a722166b35263ef9379b687b9cb5c76c1c92fcbb"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+      "previous_coverage": {
+        "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_001:V2",
+            "object_inventory_001:I4",
+            "object_inventory_001:I5"
+          ],
+          "reason": "Изображение просмотрено и доступные объекты зарегистрированы. Нижнее левое обозначение оси обрезано; для полной координатной идентификации нужен необрезанный фрагмент. Графика показывает план, несмотря на навигационное описание как разреза."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "page_index": 4,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              493.8942493200302,
+              1061.4878089427948,
+              587.2783368945122,
+              1514.8115787235738
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_d2963ae2ab2841cd95de9c28e8cac089/detail_tile_0.png",
+            "width": 281,
+            "height": 1361,
+            "sha256": "0babce9010b09116773934b51b47544268cf29ff6746c6c0eaca3e5a6ff10757"
+          },
+          {
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "page_index": 4,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              570.29941188097,
+              1061.4878089427948,
+              672.1729619622231,
+              1514.8115787235738
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_d2963ae2ab2841cd95de9c28e8cac089/detail_tile_1.png",
+            "width": 307,
+            "height": 1361,
+            "sha256": "ebc91f9db4649982c3e9801333f7780f488c735a27da19f15412475e4e2e3cfa"
+          },
+          {
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "page_index": 4,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              655.1940369486808,
+              1061.4878089427948,
+              757.067587029934,
+              1514.8115787235738
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_d2963ae2ab2841cd95de9c28e8cac089/detail_tile_2.png",
+            "width": 307,
+            "height": 1361,
+            "sha256": "2f14894fcd003c0782f9cd773bfe157f664ec463d0a73f45b17f0fc5b9a7c2fc"
+          },
+          {
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "page_index": 4,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              740.0886620163917,
+              1061.4878089427948,
+              833.4727495908737,
+              1514.8115787235738
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_d2963ae2ab2841cd95de9c28e8cac089/detail_tile_3.png",
+            "width": 281,
+            "height": 1361,
+            "sha256": "b8f61c7ff497b0eb05dab8554ca23251131a269a6e91a3e23a2b68f76ac70051"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+      "previous_coverage": {
+        "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_002:detail_a"
+          ],
+          "reason": "Изображения А, 1-1 и 5-5 осмотрены; узел, позиции и анкеры выявлены. Для полного учета размерных связей нужны однозначно читаемые границы стесненных цепей 40 в 1-1. Описание изображения не использовано для подмены графических данных."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "page_index": 5,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2236.3885898815934,
+              1051.063997962237,
+              2379.5410387513457,
+              1297.709383265586
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_d986c7bfb02a433b975de506295fd0f9/detail_tile_0.png",
+            "width": 430,
+            "height": 741,
+            "sha256": "9633a32ea344937102f1e9cf848ed01f21dc2e071376bb458f9e535d747c6935"
+          },
+          {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "page_index": 5,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2353.5133207750273,
+              1051.063997962237,
+              2509.6796286329386,
+              1297.709383265586
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_d986c7bfb02a433b975de506295fd0f9/detail_tile_1.png",
+            "width": 470,
+            "height": 741,
+            "sha256": "a07ebdd6f383372c4c607639ac7d924a13415faa061fb200fcdf5811cf6fe8a0"
+          },
+          {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "page_index": 5,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2483.65191065662,
+              1051.063997962237,
+              2639.8182185145315,
+              1297.709383265586
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_d986c7bfb02a433b975de506295fd0f9/detail_tile_2.png",
+            "width": 470,
+            "height": 741,
+            "sha256": "ea20f44806434436a55de40e4a186fc48a5634f794c3969a6625f543afce4e01"
+          },
+          {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "page_index": 5,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2613.790500538213,
+              1051.063997962237,
+              2756.9429494079654,
+              1297.709383265586
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_d986c7bfb02a433b975de506295fd0f9/detail_tile_3.png",
+            "width": 430,
+            "height": 741,
+            "sha256": "7caef6953b2cd0009a2d10bcabd0468e2b324f6ecebeeeab7ffe38aca8d1905a"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    },
+    {
+      "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+      "previous_coverage": {
+        "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "receipt": {
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "status": "needs_data",
+          "object_ids": [
+            "object_inventory_004:p4_16",
+            "object_inventory_004:p4_17",
+            "object_inventory_004:p4_18",
+            "object_inventory_004:p4_19"
+          ],
+          "reason": "Осмотрены все четыре панели ОГМ 1–ОГМ 4. Марки, форма и основные читаемые размеры зарегистрированы. Разрешение недостаточно для полного инвентаря мелких позиций деталей, всех узловых обозначений и перекрытых размеров; нужны отдельные изображения панелей с большей детализацией."
+        }
+      },
+      "manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 4,
+        "scale": 3,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              76.17102265357971,
+              29.35399866104126,
+              835.1489519625903,
+              572.2234692573547
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_eff2811805d64c26b34d72e41ecbb194/detail_tile_0.png",
+            "width": 2278,
+            "height": 1629,
+            "sha256": "c74ad6aca45d5afa6bb0d60e78a510bbae4d8851354aeb75ff649a9c2346b486"
+          },
+          {
+            "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              697.1529648154974,
+              29.35399866104126,
+              1525.1288876980543,
+              572.2234692573547
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_eff2811805d64c26b34d72e41ecbb194/detail_tile_1.png",
+            "width": 2485,
+            "height": 1629,
+            "sha256": "47e449ebc07e5de04eb5954a37acc970fa1f423e7d11e7a9325449a92efae815"
+          },
+          {
+            "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              1387.1329005509615,
+              29.35399866104126,
+              2215.1088234335184,
+              572.2234692573547
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_eff2811805d64c26b34d72e41ecbb194/detail_tile_2.png",
+            "width": 2485,
+            "height": 1629,
+            "sha256": "b0a2d9b8775ab24c5a113030eb09e375b4e4c7b9b7fdbb85936e917fde332892"
+          },
+          {
+            "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2077.1128362864256,
+              29.35399866104126,
+              2836.090765595436,
+              572.2234692573547
+            ],
+            "path": "/tmp/auditmanager_km_unresolved_graphics_20261110/blk_eff2811805d64c26b34d72e41ecbb194/detail_tile_3.png",
+            "width": 2278,
+            "height": 1629,
+            "sha256": "03389a268a7d338103160b30dc653e0c5a15fb19516227eb9232dd07d54a73f7"
+          }
+        ],
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "recovery_status": "tiles_prepared_not_rechecked",
+      "same_crop_limits_preserved": true
+    }
+  ],
+  "non_graphic_unresolved": [
+    {
+      "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "status": "inventoried",
+        "object_ids": [
+          "object_inventory_000:obj_02",
+          "object_inventory_000:obj_03",
+          "object_inventory_000:obj_04",
+          "object_inventory_000:obj_05",
+          "object_inventory_000:obj_06",
+          "object_inventory_000:obj_07",
+          "object_inventory_000:obj_08",
+          "object_inventory_000:obj_09"
+        ],
+        "reason": "Сохранены области действия листов, группы марок, ссылки на стандарты и смежные комплекты. Упомянутые смежные комплекты не приняты за обследованные физические конструкции."
+      },
+      "reason": "unresolved_inventory_objects"
+    }
+  ],
+  "new_model_calls": 0,
+  "semantic_coverage_complete": false,
+  "limits": [
+    "Resolution improves legibility; it does not recover content outside the original crop.",
+    "Inventory linkage conflicts require reconciliation, not just rendering.",
+    "No authoritative TEXT was re-extracted or corrected.",
+    "Prepared tiles are not proof that model reading or engineering checks are complete."
+  ],
+  "root_visual_sample": {
+    "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+    "tile": 0,
+    "observed_readable": [
+      "ОГМ25",
+      "3925",
+      "600х5=3000",
+      "position 2 leader"
+    ],
+    "limits": "One tile visually inspected; not verification of all 52 tiles or all five views. Original top clipping remains."
+  }
+}

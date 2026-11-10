@@ -1,0 +1,740 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "object_inventory_002:ogm5",
+      "operation": "dimension_consistency",
+      "status": "needs_data",
+      "reason": "Осмотрены все 16 приложенных изображений. Для объекта использован размерный вид ОГМ 5 именно листа 4 и узлы этого листа. Размеры 3420, 955, 800 и 500 мм на виде согласуются с указанными в ведомости длинами позиций 1, 2, 4 и 3 соответственно. Пластина позиции 6 имеет в плане габарит 25+70+25=120 мм, согласующийся с ведомостью. Пять опорных пластин и четыре анкера на пластину согласуются с 20 анкерами на сборку. Однако наклонные участки позиции 5 обозначены размером 648 мм, тогда как ведомость задаёт L=0,650 м. Для признания этих значений противоречием необходимо установить, обозначают ли они одну длину между одинаковыми границами или монтажный размер и длину заготовки с обработкой концов. Узлы не раскрывают это однозначно. Полная совместимость размеров сборки поэтому не установлена. Размеры ОГМ других марок и исполнений на листах 6 и 8 не подставлялись вместо размеров объекта листа 4.",
+      "source_refs": [
+        "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+        "blk_ddc4b49561b745ffab319ae7f3b20860",
+        "blk_d986c7bfb02a433b975de506295fd0f9",
+        "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+        "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+        "blk_60fce78600474a06989f2253821f34f2"
+      ],
+      "context_queries": [
+        "ОГМ 5",
+        "648",
+        "L=0,650",
+        "КМД",
+        "Размеры заготовок",
+        "обработка концов"
+      ]
+    },
+    {
+      "object_id": "object_inventory_002:ogm5",
+      "operation": "requirement_applicability",
+      "status": "needs_data",
+      "reason": "Общие указания и изображения узлов теперь представлены. Для ОГМ 5 установлены сталь С245, анкерное крепление HSA-M10х90 по узлу А и концевое сопряжение по узлу В. Указания листа 4 о сварке и условной установке заглушек относятся к этой сборке. Общие данные предписывают проверять соединения в КМД по расчётным усилиям и отсылают за нагрузками к КЖ. В переданном контексте нет расчётной нагрузки на ОГМ 5, усилий в креплениях, характеристик бетона, толщины основания, условий трещинообразования, глубины заделки и привязки анкеров к краям железобетона. Нет и расчётного обоснования выбранного крепления. Поэтому применимость конкретного анкерного решения и достаточность соединений остаются непроверенными. Указание «Конструктивно» не доказывает ни достаточность крепления, ни нарушение. Положения общих данных о стремянках не переносились на лестничное ограждение.",
+      "source_refs": [
+        "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+        "blk_ddc4b49561b745ffab319ae7f3b20860",
+        "blk_d986c7bfb02a433b975de506295fd0f9",
+        "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+        "blk_02786cefba4641928c7e149eda44f872",
+        "blk_531e843c117243a3b1582cb3399f4681"
+      ],
+      "context_queries": [
+        "ОГМ 5",
+        "HSA-M10",
+        "расчетные усилия",
+        "нагрузки",
+        "бетон",
+        "КМД"
+      ]
+    },
+    {
+      "object_id": "object_inventory_002:ogm5",
+      "operation": "document_links",
+      "status": "checked",
+      "reason": "Точная ссылка теперь доступна: пункт 5 примечаний листа 4 направляет за схемой расположения на лист 4. По ведомости рабочих чертежей и приложенным изображениям схема секции 2 находится на листе 3, а лист 4 содержит конструкции и ведомости ограждений. Обнаружена ошибочная адресация ссылки. Общий вид ОГМ 5 и применяемые узлы листа 4 найдены. Листы 5–6 относятся к секции 3 и не заменяют адрес ссылки для рассматриваемого объекта. Дополнительно установлено различие обозначения стандарта на круглую трубу: в узлах листа 4 указан ГОСТ 8732-78, в ведомости ссылочных документов — ГОСТ 8732-2025. Это требует согласования ссылок, но само по себе не подтверждает техническую непригодность трубы.",
+      "source_refs": [
+        "blk_02786cefba4641928c7e149eda44f872",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+        "blk_9dbddaba8e334be3ab857afe48df76ec",
+        "blk_2f7923b916294bdcac3dd9b3d5589665",
+        "blk_d2963ae2ab2841cd95de9c28e8cac089",
+        "blk_ddc4b49561b745ffab319ae7f3b20860",
+        "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+        "blk_2a44dd3981b94cc2bc63d79e8d2f2264"
+      ],
+      "context_queries": []
+    }
+  ],
+  "findings": [
+    {
+      "object_id": "object_inventory_002:ogm5",
+      "operation": "document_links",
+      "severity": "low",
+      "problem": "В примечаниях листа 4 неверно указан лист схемы расположения.",
+      "description": "Пункт 5 направляет за схемой расположения ограждений на лист 4. По ведомости рабочих чертежей лист 4 содержит ограждения ОГМ 1…6, 8, а схема секции 2 расположена на листе 3. Приложенные разрез и планы листа 3 действительно содержат ОГМ 5. Это подтверждённая ошибка ссылки, а не доказательство неправильного размещения ограждений.",
+      "solution": "Исправить в пункте 5 адрес схемы секции 2 на лист 3.",
+      "page": 6,
+      "sheet": "4",
+      "evidence": [
+        {
+          "block_id": "blk_02786cefba4641928c7e149eda44f872",
+          "quote": "5. Схему расположения ограждений см. л.4."
+        },
+        {
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "description": "Ведомость рабочих чертежей относит схему секции 2 к листу 3, а ограждения ОГМ 1…6, 8 — к листу 4."
+        },
+        {
+          "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+          "description": "На разрезе 1-1 листа 3 показаны места установки ОГМ 5 секции 2."
+        }
+      ],
+      "report_section": "questions",
+      "operation_semantic_verified": false,
+      "source_finding_ids": [
+        "O-b073a9ae6383c60b12d50c37"
+      ],
+      "operation_candidate_lineage": [
+        {
+          "source_finding_id": "O-b073a9ae6383c60b12d50c37",
+          "status": "requires_semantic_review",
+          "source_claim": "problem: В примечаниях листа 4 неверно указан лист схемы расположения.\ndescription: Пункт 5 направляет за схемой расположения ограждений на лист 4. По ведомости рабочих чертежей лист 4 содержит ограждения ОГМ 1…6, 8, а схема секции 2 расположена на листе 3. Приложенные разрез и планы листа 3 действительно содержат ОГМ 5. Это подтверждённая ошибка ссылки, а не доказательство неправильного размещения ограждений.\nsolution: Исправить в пункте 5 адрес схемы секции 2 на лист 3.",
+          "existing_block_ids": [
+            "blk_02786cefba4641928c7e149eda44f872",
+            "blk_5e4c3725456d4cafa74220f8a1fad14c",
+            "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+          ],
+          "unresolved_block_ids": []
+        }
+      ]
+    },
+    {
+      "object_id": "object_inventory_002:ogm5",
+      "operation": "document_links",
+      "severity": "low",
+      "problem": "Различаются редакции стандарта на круглую трубу в узлах и ведомости ссылочных документов.",
+      "description": "В узле В листа 4, на который ссылается вид ОГМ 5, для трубы Ø40х3 указан ГОСТ 8732-78. В ведомости ссылочных документов комплекта приведён ГОСТ 8732-2025. Применимая редакция однозначно не согласована. Вывод о нарушении требований к сортаменту или о недопустимости трубы на основании одного различия годов не сделан.",
+      "solution": "Уточнить принятую редакцию стандарта для трубы ОГМ 5 и согласовать обозначения в узлах и ведомости ссылочных документов.",
+      "sheet": "1, 4",
+      "evidence": [
+        {
+          "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+          "description": "У нижнего конца поручня ОГМ 5 имеется выноска узла В."
+        },
+        {
+          "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "description": "В узле В труба Ø40х3 обозначена по ГОСТ 8732-78."
+        },
+        {
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "quote": "| ГОСТ 8732-2025 | Трубы стальные бесшовные горячедеформированные. Сортамент |  |"
+        }
+      ],
+      "report_section": "questions",
+      "operation_semantic_verified": false,
+      "source_finding_ids": [
+        "O-b9b734a25d973d13cbdac0a7"
+      ],
+      "operation_candidate_lineage": [
+        {
+          "source_finding_id": "O-b9b734a25d973d13cbdac0a7",
+          "status": "requires_semantic_review",
+          "source_claim": "problem: Различаются редакции стандарта на круглую трубу в узлах и ведомости ссылочных документов.\ndescription: В узле В листа 4, на который ссылается вид ОГМ 5, для трубы Ø40х3 указан ГОСТ 8732-78. В ведомости ссылочных документов комплекта приведён ГОСТ 8732-2025. Применимая редакция однозначно не согласована. Вывод о нарушении требований к сортаменту или о недопустимости трубы на основании одного различия годов не сделан.\nsolution: Уточнить принятую редакцию стандарта для трубы ОГМ 5 и согласовать обозначения в узлах и ведомости ссылочных документов.",
+          "existing_block_ids": [
+            "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "blk_5e4c3725456d4cafa74220f8a1fad14c"
+          ],
+          "unresolved_block_ids": []
+        }
+      ]
+    }
+  ],
+  "operation_pending": [
+    {
+      "finding": {
+        "object_id": "object_inventory_002:ogm5",
+        "operation": "dimension_consistency",
+        "severity": "info",
+        "problem": "Требуется установить физический смысл размеров 648 и 650 мм для позиции 5.",
+        "description": "На общем виде ОГМ 5 наклонные участки позиции 5 обозначены размером 648 мм; в ведомости для четырёх деталей этой позиции задано L=0,650 м, то есть 650 мм. Разность составляет 2 мм. Без определения границ измерения и правил обработки заготовок это не является доказанным конфликтом. Универсальный допуск или припуск для объяснения разности не принят.",
+        "solution": "Представить деталировку позиции 5 или пояснить связь размера на сборочном виде с длиной заготовки. Если оба значения задают одну готовую длину, согласовать вид и ведомость.",
+        "sheet": "4",
+        "evidence": [
+          {
+            "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "description": "На размерном виде ОГМ 5 вдоль нижних наклонных элементов позиции 5 нанесены размеры 648."
+          },
+          {
+            "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "quote": "|  | □ | 5 | 25х3 |  |  |  | C245 | L=0,650м | 4 |"
+          }
+        ],
+        "report_section": "questions"
+      },
+      "source_candidate_id": "O-bc9cff7297edf1c02f6f51a3",
+      "reason": "context_search_incomplete",
+      "next_action": "retrieve_sources_then_review",
+      "suppressed_as_false": false
+    },
+    {
+      "finding": {
+        "object_id": "object_inventory_002:ogm5",
+        "operation": "requirement_applicability",
+        "severity": "info",
+        "problem": "Недостаточно исходных данных для проверки применимости крепления ОГМ 5.",
+        "description": "Анкеры HSA-M10х90 и принципиальный узел крепления представлены. Однако переданный пакет не содержит нагрузки на ограждение, расчётных усилий в креплениях и характеристик железобетонного основания, необходимых для проверки выбранного решения. Общие данные предусматривают проверку соединений в КМД по расчётным усилиям. Недостаточность крепления не установлена; отсутствие расчёта во всём проекте не утверждается.",
+        "solution": "Предоставить относящиеся к ОГМ 5 листа 4 нагрузки и расчёт соединений, данные КЖ об основании и параметры установки анкеров; проверить решение по этим данным.",
+        "sheet": "4",
+        "evidence": [
+          {
+            "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "description": "В графе усилия указано «Конструктивно»; предусмотрено 20 анкеров HSA-M10х90 на сборку."
+          },
+          {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "description": "Узел А и сечения 1-1, 5-5 показывают крепление стойки через пластину анкерами HSA-M10х90."
+          },
+          {
+            "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+            "description": "Пункт 1.6 отсылает за нагрузками к КЖ; пункт 3.1 предусматривает определение или проверку параметров соединений в КМД по расчётным усилиям."
+          }
+        ],
+        "report_section": "questions"
+      },
+      "source_candidate_id": "O-043343678e47f1787c07ac91",
+      "reason": "context_search_incomplete",
+      "next_action": "retrieve_sources_then_review",
+      "suppressed_as_false": false
+    }
+  ],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "object_inventory_002:ogm5",
+        "identity": "ОГМ 5, ПД-00580716-КМ1.2, лист 4",
+        "scope": "Марка сборочного ограждения; 10 экземпляров по заголовку ведомости, индивидуальные места установки не представлены",
+        "kind": "сборка",
+        "source_refs": [
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Количество ограждений",
+            "value": 10,
+            "unit": "шт.",
+            "source_ref": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "quote": "Ведомость элементов ограждения ОГМ 5 (10 шт.)"
+          },
+          {
+            "name": "Усилие для прикрепления",
+            "value": "Конструктивно",
+            "unit": null,
+            "source_ref": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "quote": "| ОГМ 5 | ⊙ | 1 | φ40х3 | Конструктивно |  |  | C245 | L=3,420м | 1 |"
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "object_inventory_002:ogm5",
+        "operation": "identity_across_views",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "object_inventory_002:ogm5",
+        "operation": "quantity_balance",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "object_inventory_002:ogm5",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+        ],
+        "receipt": {
+          "object_id": "object_inventory_002:ogm5",
+          "operation": "dimension_consistency",
+          "status": "needs_data",
+          "reason": "Осмотрены все 16 приложенных изображений. Для объекта использован размерный вид ОГМ 5 именно листа 4 и узлы этого листа. Размеры 3420, 955, 800 и 500 мм на виде согласуются с указанными в ведомости длинами позиций 1, 2, 4 и 3 соответственно. Пластина позиции 6 имеет в плане габарит 25+70+25=120 мм, согласующийся с ведомостью. Пять опорных пластин и четыре анкера на пластину согласуются с 20 анкерами на сборку. Однако наклонные участки позиции 5 обозначены размером 648 мм, тогда как ведомость задаёт L=0,650 м. Для признания этих значений противоречием необходимо установить, обозначают ли они одну длину между одинаковыми границами или монтажный размер и длину заготовки с обработкой концов. Узлы не раскрывают это однозначно. Полная совместимость размеров сборки поэтому не установлена. Размеры ОГМ других марок и исполнений на листах 6 и 8 не подставлялись вместо размеров объекта листа 4.",
+          "source_refs": [
+            "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "blk_d986c7bfb02a433b975de506295fd0f9",
+            "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+            "blk_60fce78600474a06989f2253821f34f2"
+          ],
+          "context_queries": [
+            "ОГМ 5",
+            "648",
+            "L=0,650",
+            "КМД",
+            "Размеры заготовок",
+            "обработка концов"
+          ]
+        }
+      },
+      {
+        "object_id": "object_inventory_002:ogm5",
+        "operation": "requirement_applicability",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+        ],
+        "receipt": {
+          "object_id": "object_inventory_002:ogm5",
+          "operation": "requirement_applicability",
+          "status": "needs_data",
+          "reason": "Общие указания и изображения узлов теперь представлены. Для ОГМ 5 установлены сталь С245, анкерное крепление HSA-M10х90 по узлу А и концевое сопряжение по узлу В. Указания листа 4 о сварке и условной установке заглушек относятся к этой сборке. Общие данные предписывают проверять соединения в КМД по расчётным усилиям и отсылают за нагрузками к КЖ. В переданном контексте нет расчётной нагрузки на ОГМ 5, усилий в креплениях, характеристик бетона, толщины основания, условий трещинообразования, глубины заделки и привязки анкеров к краям железобетона. Нет и расчётного обоснования выбранного крепления. Поэтому применимость конкретного анкерного решения и достаточность соединений остаются непроверенными. Указание «Конструктивно» не доказывает ни достаточность крепления, ни нарушение. Положения общих данных о стремянках не переносились на лестничное ограждение.",
+          "source_refs": [
+            "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "blk_d986c7bfb02a433b975de506295fd0f9",
+            "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "blk_02786cefba4641928c7e149eda44f872",
+            "blk_531e843c117243a3b1582cb3399f4681"
+          ],
+          "context_queries": [
+            "ОГМ 5",
+            "HSA-M10",
+            "расчетные усилия",
+            "нагрузки",
+            "бетон",
+            "КМД"
+          ]
+        }
+      },
+      {
+        "object_id": "object_inventory_002:ogm5",
+        "operation": "document_links",
+        "status": "reported_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+        ],
+        "receipt": {
+          "object_id": "object_inventory_002:ogm5",
+          "operation": "document_links",
+          "status": "checked",
+          "reason": "Точная ссылка теперь доступна: пункт 5 примечаний листа 4 направляет за схемой расположения на лист 4. По ведомости рабочих чертежей и приложенным изображениям схема секции 2 находится на листе 3, а лист 4 содержит конструкции и ведомости ограждений. Обнаружена ошибочная адресация ссылки. Общий вид ОГМ 5 и применяемые узлы листа 4 найдены. Листы 5–6 относятся к секции 3 и не заменяют адрес ссылки для рассматриваемого объекта. Дополнительно установлено различие обозначения стандарта на круглую трубу: в узлах листа 4 указан ГОСТ 8732-78, в ведомости ссылочных документов — ГОСТ 8732-2025. Это требует согласования ссылок, но само по себе не подтверждает техническую непригодность трубы.",
+          "source_refs": [
+            "blk_02786cefba4641928c7e149eda44f872",
+            "blk_5e4c3725456d4cafa74220f8a1fad14c",
+            "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "blk_2a44dd3981b94cc2bc63d79e8d2f2264"
+          ],
+          "context_queries": []
+        }
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_02786cefba4641928c7e149eda44f872",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_2b31bb21c613499ea1bea845105e296f",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_4b49406098054a4da822e4286031df67",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_60fce78600474a06989f2253821f34f2",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_7f0ce580e06f44f78c0b85f92efb82c7",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_984efa22a06d4fe7be4733e2ffe26c5c",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_addaa8965de54d218095d13652f30388",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_e3630afbd9f64adfa84ce0d6b68ec184",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_ef276d1030da49b48f4bb057ebafe685",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_f3f0332f544a4ca493442513059a154d",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 4,
+    "unresolved_source_blocks": 38,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "dimension_consistency",
+    "document_links",
+    "requirement_applicability"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": [
+    {
+      "candidate": {
+        "id": "O-bc9cff7297edf1c02f6f51a3",
+        "finding": "problem: Требуется установить физический смысл размеров 648 и 650 мм для позиции 5.\ndescription: На общем виде ОГМ 5 наклонные участки позиции 5 обозначены размером 648 мм; в ведомости для четырёх деталей этой позиции задано L=0,650 м, то есть 650 мм. Разность составляет 2 мм. Без определения границ измерения и правил обработки заготовок это не является доказанным конфликтом. Универсальный допуск или припуск для объяснения разности не принят.\nsolution: Представить деталировку позиции 5 или пояснить связь размера на сборочном виде с длиной заготовки. Если оба значения задают одну готовую длину, согласовать вид и ведомость.",
+        "raw_candidate": {
+          "object_id": "object_inventory_002:ogm5",
+          "operation": "dimension_consistency",
+          "severity": "info",
+          "problem": "Требуется установить физический смысл размеров 648 и 650 мм для позиции 5.",
+          "description": "На общем виде ОГМ 5 наклонные участки позиции 5 обозначены размером 648 мм; в ведомости для четырёх деталей этой позиции задано L=0,650 м, то есть 650 мм. Разность составляет 2 мм. Без определения границ измерения и правил обработки заготовок это не является доказанным конфликтом. Универсальный допуск или припуск для объяснения разности не принят.",
+          "solution": "Представить деталировку позиции 5 или пояснить связь размера на сборочном виде с длиной заготовки. Если оба значения задают одну готовую длину, согласовать вид и ведомость.",
+          "sheet": "4",
+          "evidence": [
+            {
+              "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+              "description": "На размерном виде ОГМ 5 вдоль нижних наклонных элементов позиции 5 нанесены размеры 648."
+            },
+            {
+              "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+              "quote": "|  | □ | 5 | 25х3 |  |  |  | C245 | L=0,650м | 4 |"
+            }
+          ],
+          "report_section": "questions"
+        },
+        "related_block_ids": [
+          "blk_ddc4b49561b745ffab319ae7f3b20860",
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+        ]
+      },
+      "status": "pending_review",
+      "semantic_verified": false,
+      "reason": "context_search_incomplete"
+    },
+    {
+      "candidate": {
+        "id": "O-043343678e47f1787c07ac91",
+        "finding": "problem: Недостаточно исходных данных для проверки применимости крепления ОГМ 5.\ndescription: Анкеры HSA-M10х90 и принципиальный узел крепления представлены. Однако переданный пакет не содержит нагрузки на ограждение, расчётных усилий в креплениях и характеристик железобетонного основания, необходимых для проверки выбранного решения. Общие данные предусматривают проверку соединений в КМД по расчётным усилиям. Недостаточность крепления не установлена; отсутствие расчёта во всём проекте не утверждается.\nsolution: Предоставить относящиеся к ОГМ 5 листа 4 нагрузки и расчёт соединений, данные КЖ об основании и параметры установки анкеров; проверить решение по этим данным.",
+        "raw_candidate": {
+          "object_id": "object_inventory_002:ogm5",
+          "operation": "requirement_applicability",
+          "severity": "info",
+          "problem": "Недостаточно исходных данных для проверки применимости крепления ОГМ 5.",
+          "description": "Анкеры HSA-M10х90 и принципиальный узел крепления представлены. Однако переданный пакет не содержит нагрузки на ограждение, расчётных усилий в креплениях и характеристик железобетонного основания, необходимых для проверки выбранного решения. Общие данные предусматривают проверку соединений в КМД по расчётным усилиям. Недостаточность крепления не установлена; отсутствие расчёта во всём проекте не утверждается.",
+          "solution": "Предоставить относящиеся к ОГМ 5 листа 4 нагрузки и расчёт соединений, данные КЖ об основании и параметры установки анкеров; проверить решение по этим данным.",
+          "sheet": "4",
+          "evidence": [
+            {
+              "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+              "description": "В графе усилия указано «Конструктивно»; предусмотрено 20 анкеров HSA-M10х90 на сборку."
+            },
+            {
+              "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+              "description": "Узел А и сечения 1-1, 5-5 показывают крепление стойки через пластину анкерами HSA-M10х90."
+            },
+            {
+              "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+              "description": "Пункт 1.6 отсылает за нагрузками к КЖ; пункт 3.1 предусматривает определение или проверку параметров соединений в КМД по расчётным усилиям."
+            }
+          ],
+          "report_section": "questions"
+        },
+        "related_block_ids": [
+          "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+          "blk_d986c7bfb02a433b975de506295fd0f9",
+          "blk_531e843c117243a3b1582cb3399f4681"
+        ]
+      },
+      "status": "pending_review",
+      "semantic_verified": false,
+      "reason": "context_search_incomplete"
+    },
+    {
+      "candidate": {
+        "id": "O-b073a9ae6383c60b12d50c37",
+        "finding": "problem: В примечаниях листа 4 неверно указан лист схемы расположения.\ndescription: Пункт 5 направляет за схемой расположения ограждений на лист 4. По ведомости рабочих чертежей лист 4 содержит ограждения ОГМ 1…6, 8, а схема секции 2 расположена на листе 3. Приложенные разрез и планы листа 3 действительно содержат ОГМ 5. Это подтверждённая ошибка ссылки, а не доказательство неправильного размещения ограждений.\nsolution: Исправить в пункте 5 адрес схемы секции 2 на лист 3.",
+        "raw_candidate": {
+          "object_id": "object_inventory_002:ogm5",
+          "operation": "document_links",
+          "severity": "low",
+          "problem": "В примечаниях листа 4 неверно указан лист схемы расположения.",
+          "description": "Пункт 5 направляет за схемой расположения ограждений на лист 4. По ведомости рабочих чертежей лист 4 содержит ограждения ОГМ 1…6, 8, а схема секции 2 расположена на листе 3. Приложенные разрез и планы листа 3 действительно содержат ОГМ 5. Это подтверждённая ошибка ссылки, а не доказательство неправильного размещения ограждений.",
+          "solution": "Исправить в пункте 5 адрес схемы секции 2 на лист 3.",
+          "page": 6,
+          "sheet": "4",
+          "evidence": [
+            {
+              "block_id": "blk_02786cefba4641928c7e149eda44f872",
+              "quote": "5. Схему расположения ограждений см. л.4."
+            },
+            {
+              "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+              "description": "Ведомость рабочих чертежей относит схему секции 2 к листу 3, а ограждения ОГМ 1…6, 8 — к листу 4."
+            },
+            {
+              "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+              "description": "На разрезе 1-1 листа 3 показаны места установки ОГМ 5 секции 2."
+            }
+          ],
+          "report_section": "questions"
+        },
+        "related_block_ids": [
+          "blk_02786cefba4641928c7e149eda44f872",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+        ]
+      },
+      "status": "candidate_for_merge",
+      "semantic_verified": false
+    },
+    {
+      "candidate": {
+        "id": "O-b9b734a25d973d13cbdac0a7",
+        "finding": "problem: Различаются редакции стандарта на круглую трубу в узлах и ведомости ссылочных документов.\ndescription: В узле В листа 4, на который ссылается вид ОГМ 5, для трубы Ø40х3 указан ГОСТ 8732-78. В ведомости ссылочных документов комплекта приведён ГОСТ 8732-2025. Применимая редакция однозначно не согласована. Вывод о нарушении требований к сортаменту или о недопустимости трубы на основании одного различия годов не сделан.\nsolution: Уточнить принятую редакцию стандарта для трубы ОГМ 5 и согласовать обозначения в узлах и ведомости ссылочных документов.",
+        "raw_candidate": {
+          "object_id": "object_inventory_002:ogm5",
+          "operation": "document_links",
+          "severity": "low",
+          "problem": "Различаются редакции стандарта на круглую трубу в узлах и ведомости ссылочных документов.",
+          "description": "В узле В листа 4, на который ссылается вид ОГМ 5, для трубы Ø40х3 указан ГОСТ 8732-78. В ведомости ссылочных документов комплекта приведён ГОСТ 8732-2025. Применимая редакция однозначно не согласована. Вывод о нарушении требований к сортаменту или о недопустимости трубы на основании одного различия годов не сделан.",
+          "solution": "Уточнить принятую редакцию стандарта для трубы ОГМ 5 и согласовать обозначения в узлах и ведомости ссылочных документов.",
+          "sheet": "1, 4",
+          "evidence": [
+            {
+              "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+              "description": "У нижнего конца поручня ОГМ 5 имеется выноска узла В."
+            },
+            {
+              "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+              "description": "В узле В труба Ø40х3 обозначена по ГОСТ 8732-78."
+            },
+            {
+              "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+              "quote": "| ГОСТ 8732-2025 | Трубы стальные бесшовные горячедеформированные. Сортамент |  |"
+            }
+          ],
+          "report_section": "questions"
+        },
+        "related_block_ids": [
+          "blk_ddc4b49561b745ffab319ae7f3b20860",
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c"
+        ]
+      },
+      "status": "candidate_for_merge",
+      "semantic_verified": false
+    }
+  ]
+}

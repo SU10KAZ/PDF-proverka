@@ -998,5 +998,31 @@
     "new_model_calls": 0,
     "engineering_improvement_verified": false,
     "remaining": "Run a fresh response against the changed source packet; never relabel a cached old response as new-context validation."
+  },
+  "codex_cli_standing_authorization": "AGENTS.md: user instruction 2026-11-10; direct Codex CLI as needed without per-request questions; OpenRouter unchanged.",
+  "km_ranked_context_control": {
+    "status": "completed_once",
+    "session_id": null,
+    "model": "codex/gpt-6-astra",
+    "request_sha256": "5cd3bc373c26fd8208541c236610f5e8449bd4da75219b5dd4f9f5480ae05719",
+    "message_chars": 116578,
+    "images": 16,
+    "automatic_retries": 0,
+    "duration_ms": 110000,
+    "assessment": "KM_OGM5_ranked_continuation_assessment.json",
+    "new_technical_defects": 0,
+    "retained_question_candidates": 2,
+    "internal_context_candidates": 2
+  },
+  "km_unresolved_graphics": {
+    "artifact": "KM_unresolved_graphics_preparation.json",
+    "blocks": 13,
+    "tiles": 52,
+    "semantic_coverage_complete": false
+  },
+  "km_inventory_link_conflicts": {
+    "artifact": "KM_inventory_link_conflicts.json",
+    "count": 2,
+    "technical_project_defects": 0
   }
 }
