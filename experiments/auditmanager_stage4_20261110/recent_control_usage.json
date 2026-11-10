@@ -272,15 +272,32 @@
       "cost_source": "subscription",
       "error": "",
       "token_counters_incomplete": false
+    },
+    {
+      "control": "KM_node_navigation",
+      "directory": "/tmp/auditmanager_km_node_navigation_control_20261110",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "1309ef63f5a40162a9106b4857bd953e655b2380329eb82b8ff536fc7563f221",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 24962,
+      "input_tokens": 68396,
+      "output_tokens": 873,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
     }
   ],
-  "completed_requests": 16,
+  "completed_requests": 17,
   "pending_results": 0,
   "failed_requests": 2,
-  "reported_input_tokens": 661613,
-  "reported_output_tokens": 281551,
+  "reported_input_tokens": 730009,
+  "reported_output_tokens": 282424,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 90.313,
+  "completed_request_minutes_sum": 90.729,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

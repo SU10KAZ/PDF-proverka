@@ -115,9 +115,13 @@
     },
     {
       "hypothesis": "H02/H05",
-      "state": "KM_deferred_bounded_run_complete_context_gap",
-      "evidence": "KM_deferred_assessment.json",
-      "detail": "26classic preserved,0new rows. Reference search missed node block; available sheet4 has stage П versus OGM11 stage Р, applicability unproved. No dimensional defect or universal allowance accepted."
+      "state": "KM_reference_navigation_fixed_applicability_unresolved",
+      "evidence": [
+        "KM_deferred_assessment.json",
+        "KM_node_navigation_replay.json",
+        "KM_node_navigation_summary.json"
+      ],
+      "detail": "Actual target node attached after compact-reference navigation fix. Astra explicitly retained needs_data because stage П applicability to stage Р and physical cut-length boundaries remain unproved.26classic preserved,0new rows.15focused tests passed; no automatic suppression rule accepted."
     }
   ]
 }

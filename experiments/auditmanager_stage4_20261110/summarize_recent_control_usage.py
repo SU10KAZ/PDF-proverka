@@ -20,6 +20,7 @@ def summarize():
         ('EOM_prescan_followup', Path('/tmp/auditmanager_eom_prescan_recovery_control_20261110/followup')),
         *[(f'AR_recovery_{i}', Path('/tmp/auditmanager_ar_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
         *[(f'KM_recovery_{i}', Path('/tmp/auditmanager_km_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
+        ('KM_node_navigation', Path('/tmp/auditmanager_km_node_navigation_control_20261110')),
     ]
     rows = []
     seen = set()
