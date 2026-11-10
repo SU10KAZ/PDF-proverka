@@ -1,0 +1,39 @@
+{
+  "source_result_sha256": "88f490355ac55aacb68240b6db182099ba1876157dbf355b9b8df0bab522a436",
+  "raw_model_records": 79,
+  "previous_valid_records": 75,
+  "retained_record_addresses": 79,
+  "record_identity_repairs": [
+    {
+      "original_model_id": "rp3_c2321",
+      "record_id": "record-3d58dfec7c33a3a040ca76c15400ed4697d136a9bf64ee7015bb5ebb8f27865b",
+      "source_row_index": 13,
+      "physical_identity_resolved": false
+    },
+    {
+      "original_model_id": "rp3_c2322",
+      "record_id": "record-56044686b8ab0b364e4916e54a6b05000e8716d59ac7e7ac86fb0bbef2a6d797",
+      "source_row_index": 14,
+      "physical_identity_resolved": false
+    },
+    {
+      "original_model_id": "rp3_c2321",
+      "record_id": "record-b3c1dfc2c3c0db249f7d29ab9dc9140371f8b9320c570e5f61fd074533621b54",
+      "source_row_index": 34,
+      "physical_identity_resolved": false
+    },
+    {
+      "original_model_id": "rp3_c2322",
+      "record_id": "record-f81b89155ffbac267ad135995fad00abd5d7d351416bef92fab2cecc4d7b14ac",
+      "source_row_index": 35,
+      "physical_identity_resolved": false
+    }
+  ],
+  "physical_identities_resolved": false,
+  "unresolved_source_blocks": 1,
+  "unresolved_operations": 395,
+  "classic_text_findings_preserved": 24,
+  "source_reading": "Root viewed tiles9and13: same visibleC2321/C2322on separate branches QF3.2.1/QF3.2.2versusQF3.21/QF3.22. No project mark renamed.",
+  "new_model_calls": 0,
+  "boundary": "Opaque record IDs are not proof of distinct physical instances. Original model IDs and raw payload retained; ambiguous receipts are not reattributed."
+}

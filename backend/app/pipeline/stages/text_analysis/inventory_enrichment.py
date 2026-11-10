@@ -8,6 +8,7 @@ from ..findings_verify.source_review_evidence import evidence_digest
 from ..prepare.object_inventory_passes import build_object_inventory_passes
 from .inventory_candidates import inventory_text_candidates
 from .object_registry import reconcile_object_registry
+from .inventory_record_ids import separate_colliding_record_ids
 
 
 def merge_inventory_analysis(base, packets, known_blocks):
@@ -24,7 +25,8 @@ def merge_inventory_analysis(base, packets, known_blocks):
         if not isinstance(pid,str) or not pid or pid in seen:
             raise ValueError('duplicate_inventory_packet')
         seen.add(pid)
-        data=packet['payload'];local=set(packet['block_ids'])
+        data, record_repairs = separate_colliding_record_ids(packet['payload'])
+        local=set(packet['block_ids'])
         if not local.issubset(known_blocks):
             raise ValueError('inventory_source_version_mismatch')
         packet_blocks[pid]=local
@@ -47,7 +49,8 @@ def merge_inventory_analysis(base, packets, known_blocks):
                     'object_ids':[prefix+oid if isinstance(oid,str) else oid for oid in record['object_ids']]})
         candidates.append({'packet_id':pid,'findings':data.get('text_findings',[])})
         reports.append({'packet_id':pid,'block_ids':sorted(local),
-            'raw_payload':deepcopy(data),'coverage':coverage})
+            'raw_payload':deepcopy(packet['payload']),'record_identity_repairs':record_repairs,
+            'coverage':coverage})
     adapted=inventory_text_candidates(candidates,known_blocks,
         reserved_ids=[f.get('id') for f in base['text_findings'] if isinstance(f,dict) and isinstance(f.get('id'),str)])
     for candidate in adapted['text_findings']:
