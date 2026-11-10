@@ -1,0 +1,30 @@
+{
+  "request_sha256": "689907025316fa371dca40c77950d68c38ccfdfb3e1c8f1be874e4e731da63e3",
+  "candidate_result_sha256": "553c86080df667f844943bb5fcee2316cf564d4a70b90502df062f39f0171c14",
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "message_chars": 109164,
+  "image_count": 11,
+  "source_documents": [
+    {
+      "namespace": "doc_439fc9c2bc64c81d4a6a53cd",
+      "document_code": "ПД-00580716-АР6.2",
+      "version": "v001",
+      "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+    },
+    {
+      "namespace": "doc_1c01212194ad933933ea6808",
+      "document_code": "ПД-00580716-КМ5.2",
+      "version": "v001",
+      "source_md_sha256": "d6afcd65ad5a59cb929992d590fdf108d1a596dcb3c015c1305e83fed7406a04"
+    },
+    {
+      "namespace": "doc_c007f6bb47214b8ee40de364",
+      "document_code": "ПД-00580716-КМ5.2",
+      "version": "v002",
+      "source_md_sha256": "4fdc67b25c893810b94e2723efad501cf3430c25394fb3866f5a805f6b419e39"
+    }
+  ],
+  "semantic_acceptance": false
+}

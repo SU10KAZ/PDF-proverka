@@ -477,15 +477,15 @@
       "hypothesis": "H06",
       "kind": "positive_controls",
       "original_control": "АР: запросить расчёт функции крепления каната по существующей ссылкеКМ8.",
-      "evidence_state": "partial_candidate_question_pending_cross_document_output",
+      "evidence_state": "bounded_control_recorded",
       "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_rope_reviewed_question_replay.json",
+          "sha256": "082a087710f6e6e64f5b720fcc538818e31f07613f74e4a43942ea569c4abbe7"
+        },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_linked_graphic_check_assessment.json",
           "sha256": "0df62cbdecbe16cca07b6d8d30a678c95cead83f4d7467cfde74a09afb07b1c3"
-        },
-        {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_linked_graphic_check_result.json",
-          "sha256": "79fffabd41b47d36ac650d745387defcb4d58231a7b223cdf1415a955a45f2ca"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_rope_linked_document_availability.json",
@@ -579,12 +579,11 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 19,
+    "bounded_control_recorded": 20,
     "bounded_known_candidate_control": 1,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 2,
     "local_contract_verified": 2,
-    "partial_candidate_question_pending_cross_document_output": 1,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
     "requires_explicit_evidence_review": 8,

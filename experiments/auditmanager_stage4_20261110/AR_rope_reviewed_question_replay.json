@@ -1,0 +1,32 @@
+{
+  "sealed_candidate_sha256": "1e94ff8202449b04c23bf31b38ea1de64db72c6d31a45ab065336ffe2fc2540a",
+  "baseline_sha256": "2e1d151ea61d9c2de5ec836a8fc4f78320f13e2df5515f91aa39a8d762e20d58",
+  "raw_candidate_status": "candidate_rejected",
+  "raw_receipts": [
+    {
+      "finding_id": "AR-O27-crossdoc",
+      "status": "not_applied",
+      "reason": "supported_core_requires_explicit_profile_decision"
+    }
+  ],
+  "local_admission_receipts": [
+    {
+      "finding_id": "AR-O27-crossdoc",
+      "status": "applied",
+      "action": "question"
+    }
+  ],
+  "new_model_calls": 0,
+  "prior_findings_unchanged": 24,
+  "final_findings": 25,
+  "final_question_id": "F-025",
+  "question_exported_separately": true,
+  "source_catalogue_preserved": true,
+  "full_acceptance_proven": false,
+  "limitations": [
+    "Known-source bounded control, not a blind whole-project audit.",
+    "The reviewed wording retains internal O27 with explicit explanation; editorial cleanup remains before product release.",
+    "No physical defect or project-wide missing calculation is established.",
+    "Experimental composition of real admission, merge and export functions; production dispatcher integration remains pending."
+  ]
+}
