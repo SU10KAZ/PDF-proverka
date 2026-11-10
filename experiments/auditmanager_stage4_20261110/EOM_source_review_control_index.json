@@ -1,0 +1,186 @@
+{
+  "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "queue_sha256": "360ab913e71781147737d8b6c15518e4d8a25ae2ebfde3eb5288ed7e8ca8de15",
+  "review_coverage": 19,
+  "supported_core_controls": 6,
+  "question_controls": 12,
+  "refuted_arithmetic_controls": 1,
+  "controls": [
+    {
+      "finding_id": "F-001",
+      "finding_sha256": "216dd57be97976a1d6ba27498c3ee51bc804f71f3e0eafa3aa9b1d89742a5152",
+      "control_expectation": "retain_supported_core_with_limits",
+      "review_evidence": {
+        "artifact": "EOM_source_claim_review_first5.json",
+        "sha256": "e9840feac88d147967665e7f0ab68341d1802adb247049d4929512ca5a2b6da6"
+      }
+    },
+    {
+      "finding_id": "F-003",
+      "finding_sha256": "28ac6d88d03e66a762d20ccd65358539f6cefceab6d35dff33f3fdeb7104e12a",
+      "control_expectation": "retain_supported_core_with_limits",
+      "review_evidence": {
+        "artifact": "EOM_source_claim_review_first5.json",
+        "sha256": "e9840feac88d147967665e7f0ab68341d1802adb247049d4929512ca5a2b6da6"
+      }
+    },
+    {
+      "finding_id": "F-030",
+      "finding_sha256": "55621b9a25f7a0f2b0d5a2566fed49899c1e5196be2b44a607cc3df6050d106b",
+      "control_expectation": "retain_supported_core_with_limits",
+      "review_evidence": {
+        "artifact": "EOM_calculation_claim_reviews.json",
+        "sha256": "5530695209fcea48e47ebac64b496f694381dda812971ee8fa822899711c7bcf"
+      }
+    },
+    {
+      "finding_id": "F-031",
+      "finding_sha256": "bbe211b5692c848618df4084ce9a0ce094fccb9c48af009abfbb8f77477db0b6",
+      "control_expectation": "retain_supported_core_with_limits",
+      "review_evidence": {
+        "artifact": "EOM_calculation_claim_reviews.json",
+        "sha256": "5530695209fcea48e47ebac64b496f694381dda812971ee8fa822899711c7bcf"
+      }
+    },
+    {
+      "finding_id": "F-032",
+      "finding_sha256": "f60872c8742286efd4dddc9591887e00eb37e760f3c7354d839e77535f0a402d",
+      "control_expectation": "retain_supported_core_with_limits",
+      "review_evidence": {
+        "artifact": "EOM_calculation_claim_reviews.json",
+        "sha256": "5530695209fcea48e47ebac64b496f694381dda812971ee8fa822899711c7bcf"
+      }
+    },
+    {
+      "finding_id": "F-033",
+      "finding_sha256": "6773240dcd3a0394edc1a1fd0b66080b69de0a3cf27dc021709ba27783018dce",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_remaining_claim_reviews.json",
+        "sha256": "368382ebf0937b5a55fa410ecd045cf5e3c5f0f12f07129bf253599a7c9dc0d1"
+      }
+    },
+    {
+      "finding_id": "F-034",
+      "finding_sha256": "980d267f9ba287afc136b077d8e5a7b0d5d54d81a89449d9a2418ea9c171b816",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_supply_claim_reviews.json",
+        "sha256": "cf5e50691cb4f43d7402784c4be4ade0d87e5d63c57f8d51f871344d3a34e042"
+      }
+    },
+    {
+      "finding_id": "F-035",
+      "finding_sha256": "2334bafdb6e9244d3a097df73e1ed7253e0f356f10b36c2e7443a8c5f2be74c9",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_supply_claim_reviews.json",
+        "sha256": "cf5e50691cb4f43d7402784c4be4ade0d87e5d63c57f8d51f871344d3a34e042"
+      }
+    },
+    {
+      "finding_id": "F-036",
+      "finding_sha256": "59b251c21911297612dd9e52b30fa18f6fbf7531ed9d483e96b0709a1143aa49",
+      "control_expectation": "retain_supported_core_with_limits",
+      "review_evidence": {
+        "artifact": "EOM_remaining_claim_reviews.json",
+        "sha256": "368382ebf0937b5a55fa410ecd045cf5e3c5f0f12f07129bf253599a7c9dc0d1"
+      }
+    },
+    {
+      "finding_id": "F-037",
+      "finding_sha256": "e03dd78f83cc1efc27c241c738fb886c41dfdc757642cd11224b5332f25bfe46",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_supply_claim_reviews.json",
+        "sha256": "cf5e50691cb4f43d7402784c4be4ade0d87e5d63c57f8d51f871344d3a34e042"
+      }
+    },
+    {
+      "finding_id": "F-038",
+      "finding_sha256": "28f4c21596e09a6977a0ddf5375bd2f96ee14997303d43b256b42e5a0057d734",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_supply_claim_reviews.json",
+        "sha256": "cf5e50691cb4f43d7402784c4be4ade0d87e5d63c57f8d51f871344d3a34e042"
+      }
+    },
+    {
+      "finding_id": "F-039",
+      "finding_sha256": "4e439c4e11fc7bb887d3bc3d85e3222097e0ceb0b8e7b2a36a04645db667b4ce",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_supply_claim_reviews.json",
+        "sha256": "cf5e50691cb4f43d7402784c4be4ade0d87e5d63c57f8d51f871344d3a34e042"
+      }
+    },
+    {
+      "finding_id": "F-040",
+      "finding_sha256": "f325d77e40768aabb0d1ee75ebb5938f569c3a02aeaf99d62491db2d97d6dbda",
+      "control_expectation": "reject_refuted_arithmetic",
+      "review_evidence": {
+        "artifact": "EOM_F040_semantic_refutation.json",
+        "sha256": "02796c967ed58a0b28c51960881d10a8dcc7064cbf32165406bace2c8dc5e878"
+      }
+    },
+    {
+      "finding_id": "F-041",
+      "finding_sha256": "641a6ee9b945a0a3f8caa98ee28051c0a125473561c901fefdc7b6fe534b8228",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_remaining_claim_reviews.json",
+        "sha256": "368382ebf0937b5a55fa410ecd045cf5e3c5f0f12f07129bf253599a7c9dc0d1"
+      }
+    },
+    {
+      "finding_id": "F-042",
+      "finding_sha256": "0f14b0ac7abca2fa97530bbc6cd2a024f35d9d8616aadce466575db5233f83d8",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_remaining_claim_reviews.json",
+        "sha256": "368382ebf0937b5a55fa410ecd045cf5e3c5f0f12f07129bf253599a7c9dc0d1"
+      }
+    },
+    {
+      "finding_id": "F-043",
+      "finding_sha256": "679b4d888b2b3fb8d12740ca2bc2733189b52559f4b2fdbfb6c037797f139330",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_remaining_claim_reviews.json",
+        "sha256": "368382ebf0937b5a55fa410ecd045cf5e3c5f0f12f07129bf253599a7c9dc0d1"
+      }
+    },
+    {
+      "finding_id": "F-044",
+      "finding_sha256": "222184834de848cc2bfb7eebcfc37770d73774b91a42dc45ef506f3f9fcde3ab",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_source_claim_review_first5.json",
+        "sha256": "e9840feac88d147967665e7f0ab68341d1802adb247049d4929512ca5a2b6da6"
+      }
+    },
+    {
+      "finding_id": "F-045",
+      "finding_sha256": "0c912fc2454b0ac62bdd52b2df16dc85826ac690c06338f23b4764c5322d8c6f",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_source_claim_review_first5.json",
+        "sha256": "e9840feac88d147967665e7f0ab68341d1802adb247049d4929512ca5a2b6da6"
+      }
+    },
+    {
+      "finding_id": "F-046",
+      "finding_sha256": "2a9380651f7a87fddb5beef0f2deccd110bde01071473f21d7b1f49dfc556f39",
+      "control_expectation": "retain_question_or_clarification",
+      "review_evidence": {
+        "artifact": "EOM_source_claim_review_first5.json",
+        "sha256": "e9840feac88d147967665e7f0ab68341d1802adb247049d4929512ca5a2b6da6"
+      }
+    }
+  ],
+  "scope": "Known-case regression expectations from source review; not a new independent audit or engineer acceptance. Composite findings must be assessed claim by claim.",
+  "unresolved": "Normative applicability, catalogues, certified execution, supply boundaries, graphic routing and calculation operating modes remain partly unverified.",
+  "automatic_application": false,
+  "runtime_pending_flags_unchanged": true,
+  "stage4_complete": false
+}

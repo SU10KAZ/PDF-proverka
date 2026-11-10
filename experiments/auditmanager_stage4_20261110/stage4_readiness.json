@@ -262,25 +262,26 @@
       "F-030",
       "F-031",
       "F-032",
+      "F-033",
       "F-034",
       "F-035",
+      "F-036",
       "F-037",
       "F-038",
       "F-039",
+      "F-041",
+      "F-042",
+      "F-043",
       "F-044",
       "F-045",
       "F-046"
     ],
     "separate_arithmetic_refutation": "F-040",
     "pending_packet_count": 19,
-    "not_yet_in_these_review_records": [
-      "F-033",
-      "F-036",
-      "F-041",
-      "F-042",
-      "F-043"
-    ],
-    "boundary": "Review coverage does not mean all claims resolved; engineering questions and external applicability remain. Runtime pending flags unchanged."
+    "not_yet_in_these_review_records": [],
+    "control_index": "EOM_source_review_control_index.json",
+    "boundary": "Known-case regression expectations from source review; not a new independent audit or engineer acceptance. Composite findings must be assessed claim by claim. Normative applicability, catalogues, certified execution, supply boundaries, graphic routing and calculation operating modes remain partly unverified.",
+    "runtime_pending_flags_unchanged": true
   },
   "source_calculation_review": {
     "artifact": "experiments/auditmanager_stage4_20261110/EOM_calculation_claim_reviews.json",
@@ -289,5 +290,11 @@
     "source_facts": "Wrong minimum-current operands; inconsistent maximum-current inputs; room-area differences reproduced.",
     "boundary": "Equipment compliance, normative thresholds and automatic load changes not established.",
     "automatic_application": false
+  },
+  "source_remaining_review": {
+    "artifact": "EOM_remaining_claim_reviews.json",
+    "reviewed_findings": 5,
+    "external_normative_check": "not_checked",
+    "new_model_calls": 0
   }
 }

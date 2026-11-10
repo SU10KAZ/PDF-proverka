@@ -1,0 +1,732 @@
+{
+  "source": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "scope": "Known-case assistant review of textual facts; unresolved catalogue, normative and graphic questions remain explicit.",
+  "reviews": [
+    {
+      "finding_id": "F-033",
+      "finding_sha256": "6773240dcd3a0394edc1a1fd0b66080b69de0a3cf27dc021709ba27783018dce",
+      "final_finding": {
+        "id": "F-033",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "sheet": "Листы 1, 9, 10, 11, 2",
+        "page": [
+          3,
+          12,
+          13,
+          14,
+          38
+        ],
+        "problem": "Назначение 90 квартирных щитов в поставке не определено однозначно",
+        "description": "Общие указания относят установку внутриквартирных щитов к собственникам, примечания предусматривают временные щиты на период отделки, а спецификация содержит 90 квартирных щитов учёта с автоматикой.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить состав и границу поставки оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить, являются ли щиты временными или постоянными, и согласовать границу поставки.",
+        "risk": "Ошибки комплектации и распределения ответственности.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-012",
+            "status": "requires_semantic_review",
+            "source_claim": "Общие указания относят установку внутриквартирных щитов к собственникам, примечания предусматривают временные щиты механизации на период отделки, но спецификация содержит 90 квартирных щитов учёта с автоматикой. Количество соответствует числу квартир, однако назначение поставляемых щитов не определено однозначно. Уточнить, являются ли эти позиции временными щитами, и согласовать границу поставки.",
+            "source_location": "МД стр. 3, описание квартирного электроснабжения; стр. 12–14, примечания; стр. 38, спецификация.",
+            "existing_block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957",
+              "blk_16237a8ebd10423194e4a2b0f4b82c26",
+              "blk_73536f4c222b401e8da714ed88d23fce",
+              "blk_17ebeac60c9b497cb8c124a8e3b66068",
+              "blk_7170586af51c43f79c96734a40269d7d"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-012",
+            "source_claim": "Общие указания относят установку внутриквартирных щитов к собственникам, примечания предусматривают временные щиты механизации на период отделки, но спецификация содержит 90 квартирных щитов учёта с автоматикой. Количество соответствует числу квартир, однако назначение поставляемых щитов не определено однозначно. Уточнить, являются ли эти позиции временными щитами, и согласовать границу поставки.",
+            "block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957",
+              "blk_16237a8ebd10423194e4a2b0f4b82c26",
+              "blk_73536f4c222b401e8da714ed88d23fce",
+              "blk_17ebeac60c9b497cb8c124a8e3b66068",
+              "blk_7170586af51c43f79c96734a40269d7d"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "В спецификации 63+27=90 квартирных щитов, общие указания относят внутриквартирный щит к собственнику, примечания предусматривают временный щит.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+              "quote": "|  | Щит квартирный учета электроэнергии навесной 3ЩКВ | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 63 |  |  |"
+            },
+            {
+              "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+              "quote": "|  | Щит квартирный учета электроэнергии навесной 2ЩКВ | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 27 |  |  |"
+            },
+            {
+              "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+              "quote": "Для электроснабжения квартир предусматриваются щитовые устройства этажные распределительные навесные на каждом жилом этаже питающиеся от ВРУ своей секции. Внутриквартирный щит устанавливается силами собственника. Все распределительные щиты применены настенного исполнения. Степень защиты IP соответствует месту установки."
+            },
+            {
+              "block_id": "blk_16237a8ebd10423194e4a2b0f4b82c26",
+              "quote": "На период отделки вместо квартирного щита установить временный щит механизации."
+            },
+            {
+              "block_id": "blk_73536f4c222b401e8da714ed88d23fce",
+              "quote": "На период отделки вместо квартирного щита установить временный щит механизации."
+            },
+            {
+              "block_id": "blk_17ebeac60c9b497cb8c124a8e3b66068",
+              "quote": "На период отделки вместо квартирного щита установить временный щит механизации."
+            }
+          ]
+        },
+        {
+          "claim": "Отождествлены ли позиции 3ЩКВ/2ЩКВ с временными или постоянными щитами; какова граница поставки?",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Сохранить вопрос о назначении позиций; не объявлять 90 щитов лишними. Полное соответствие числа щитов числу квартир здесь не проверено.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено."
+    },
+    {
+      "finding_id": "F-036",
+      "finding_sha256": "59b251c21911297612dd9e52b30fa18f6fbf7531ed9d483e96b0709a1143aa49",
+      "final_finding": {
+        "id": "F-036",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "sheet": "Листы 13, 15, 16, 17, 18",
+        "page": [
+          49,
+          51,
+          52,
+          53,
+          54
+        ],
+        "problem": "Один артикул лотка указан для двух исполнений",
+        "description": "Артикул ДКС 3530410 назначен перфорированному и неперфорированному лотку 200×80 мм на разных этажах.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить однозначность обозначения изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-015"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить каталог производителя и указать правильные артикулы для каждого исполнения.",
+        "risk": "Поставка лотков с неверной перфорацией.",
+        "source_finding_ids": [
+          "T-015"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-015",
+            "status": "requires_semantic_review",
+            "source_claim": "Один артикул ДКС 3530410 указан для перфорированного лотка 200×80 на первом и жилых этажах и для неперфорированного лотка того же размера в технических пространствах. Заказ по одинаковому артикулу не обеспечивает два разных исполнения. Уточнить требуемую перфорацию и исправить артикулы по каталогу.",
+            "source_location": "МД стр. 49, 51–54, спецификация лотков.",
+            "existing_block_ids": [
+              "blk_448a82ffb63145aa96b55305485c4ee5",
+              "blk_7d46590ad5b64af08f435cadad0053cd",
+              "blk_e106d0b41bf9480aaf187ef2259994db",
+              "blk_79370c7a344c44559b2d828291b6a1b6",
+              "blk_f3f718605a024394b9026b08fa4c9b20"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-015",
+            "source_claim": "Один артикул ДКС 3530410 указан для перфорированного лотка 200×80 на первом и жилых этажах и для неперфорированного лотка того же размера в технических пространствах. Заказ по одинаковому артикулу не обеспечивает два разных исполнения. Уточнить требуемую перфорацию и исправить артикулы по каталогу.",
+            "block_ids": [
+              "blk_448a82ffb63145aa96b55305485c4ee5",
+              "blk_7d46590ad5b64af08f435cadad0053cd",
+              "blk_e106d0b41bf9480aaf187ef2259994db",
+              "blk_79370c7a344c44559b2d828291b6a1b6",
+              "blk_f3f718605a024394b9026b08fa4c9b20"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Один артикул 3530410 указан в строках с двумя различными описаниями перфорации.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+              "quote": "|  | Лоток перфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 46 |  |  |"
+            },
+            {
+              "block_id": "blk_7d46590ad5b64af08f435cadad0053cd",
+              "quote": "|  | Лоток перфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 108 |  |  |"
+            },
+            {
+              "block_id": "blk_e106d0b41bf9480aaf187ef2259994db",
+              "quote": "|  | Лоток перфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 252 |  |  |"
+            },
+            {
+              "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+              "quote": "|  | Лоток неперфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 130 |  |  |"
+            },
+            {
+              "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+              "quote": "|  | Лоток неперфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 57 |  |  |"
+            },
+            {
+              "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+              "quote": "|  | Лоток неперфорированный 200x80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 41 |  |  |"
+            }
+          ]
+        },
+        {
+          "claim": "Какое исполнение требуется на каждом участке и каковы корректные артикулы по каталогу?",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Сохранить внутреннее противоречие спецификации; не подставлять исправленный артикул без каталога и проектного назначения.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "external_catalogue_checked": false
+    },
+    {
+      "finding_id": "F-041",
+      "finding_sha256": "641a6ee9b945a0a3f8caa98ee28051c0a125473561c901fefdc7b6fe534b8228",
+      "final_finding": {
+        "id": "F-041",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "normative_refs",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Ссылка на стандарт идентификации проводников устарела",
+        "description": "В общих указаниях приведён ГОСТ Р 50462-2009, имеющий статус «заменён» согласно предоставленному перечню нормативных ссылок.",
+        "norm": "ГОСТ Р 50462-2009 (норматив-кандидат), пункт не подтверждён; ГОСТ 33542-2015 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 50462-2009",
+            "cited_designation": "ГОСТ Р 50462-2009",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить статус документа, на который ссылается проект.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 33542-2015",
+            "cited_designation": "ГОСТ 33542-2015",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить актуальные правила идентификации проводников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Актуализировать ссылку и согласовать указания по цветовой маркировке.",
+        "risk": "Неоднозначное применение требований к идентификации проводников.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 21,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "formal_reference_category",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-021",
+            "status": "requires_semantic_review",
+            "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+            "source_location": "МД стр. 3, лист 1, раздел 4.",
+            "existing_block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-021",
+            "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+            "block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "В общих указаниях действительно приведена ссылка ГОСТ Р 50462-2009.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+              "quote": "Для цветового и цифрового обозначения отдельных изолированных или неизолированных проводников должны быть использованы цвета и цифры в соответствии с ГОСТ Р 50462-2009 \"Базовые принципы и принципы безопасности для интерфейса «человек-машина», выполнение и идентификация. Идентификация проводников посредством цветов и буквенно-цифровых обозначений\" (ПУЭ п.1.1.29)."
+            }
+          ]
+        },
+        {
+          "claim": "Официальный статус, дата замены и применимость к этому проекту отдельно не проверены.",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Не подтверждать устаревание только по пересказу модели. До официальной проверки оставить вопрос о ссылке.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "external_normative_check_status": "not_checked",
+      "supplied_norm_list_verification_status": "not_checked_in_this_review"
+    },
+    {
+      "finding_id": "F-042",
+      "finding_sha256": "0f14b0ac7abca2fa97530bbc6cd2a024f35d9d8616aadce466575db5233f83d8",
+      "final_finding": {
+        "id": "F-042",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "fire_safety",
+        "sheet": "Листы 1, 15, 18, 19, 20, 21",
+        "page": [
+          3,
+          18,
+          20,
+          21,
+          22,
+          23
+        ],
+        "problem": "Обозначение трасс СПЗ и остальных потребителей I категории неоднозначно",
+        "description": "Общие указания запрещают совместную прокладку кабелей СПЗ с другими кабелями на одном лотке, но повторяющиеся легенды объединяют «СПЗ и нагрузки I категории» в одно обозначение. Фактическая совместная прокладка по переданным данным не установлена.",
+        "norm": "ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён; СП 6.13130.2025 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к электроснабжению систем противопожарной защиты.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-022"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 6.13130.2025",
+            "cited_designation": "СП 6.13130.2025",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к трассам кабелей СПЗ в применённой редакции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-022"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Разделить в легендах обозначения трасс СПЗ и прочих сетей I категории; проверить фактические трассы.",
+        "risk": "Монтаж кабелей с нарушением принятого разделения трасс.",
+        "source_finding_ids": [
+          "T-022"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-022",
+            "status": "requires_semantic_review",
+            "source_claim": "Общие указания запрещают совместную прокладку СПЗ с другими кабелями на одном лотке, но повторяющиеся примечания и легенды объединяют «СПЗ и нагрузки I категории» в одно обозначение лотка. Потребители I категории включают также оборудование, не относящееся к СПЗ. Уточнить указания так, чтобы отдельная трасса СПЗ была однозначно отделена от прочих сетей; фактическое нарушение прокладки по тексту не установлено.",
+            "source_location": "МД стр. 3, раздел 4; стр. 18, 20–23, примечания к планам и условные обозначения.",
+            "existing_block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957",
+              "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+              "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+              "blk_628818db493e46e7bdccc75b01afbd16"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-022",
+            "source_claim": "Общие указания запрещают совместную прокладку СПЗ с другими кабелями на одном лотке, но повторяющиеся примечания и легенды объединяют «СПЗ и нагрузки I категории» в одно обозначение лотка. Потребители I категории включают также оборудование, не относящееся к СПЗ. Уточнить указания так, чтобы отдельная трасса СПЗ была однозначно отделена от прочих сетей; фактическое нарушение прокладки по тексту не установлено.",
+            "block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957",
+              "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+              "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+              "blk_628818db493e46e7bdccc75b01afbd16"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "В общих указаниях запрещена совместная прокладка СПЗ, а примечания и легенда используют объединённую формулировку.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+              "quote": "Не допускается совместная прокладка кабельных линий СПЗ с другими кабелями и проводами в одном коробе, трубе, жгуте, замкнутом канале строительной конструкции или на одном лотке."
+            },
+            {
+              "block_id": "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+              "quote": "8. Кабельные линии нагрузки I-категории и нагрузки СПЗ (систем противопожарной защиты) проложить в отдельном лотке. Кабельные линии СПЗ должны быть выполнены сертифицированной огнестойкой кабельной линией (ОКЛ)."
+            },
+            {
+              "block_id": "blk_397b5080da9f400ea3bd03c1c1bfea5e",
+              "quote": "|  | Кабель проложенный в лотке СПЗ и нагрузок I категории |  |"
+            },
+            {
+              "block_id": "blk_628818db493e46e7bdccc75b01afbd16",
+              "quote": "8. Кабельные линии нагрузки I-категории и нагрузки СПЗ (систем противопожарной защиты) проложить в отдельном лотке. Кабельные линии СПЗ должны быть выполнены сертифицированной огнестойкой кабельной линией (ОКЛ)."
+            }
+          ]
+        },
+        {
+          "claim": "Проходят ли на одном физическом лотке СПЗ и прочие сети; как распределены потребители и трассы?",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Сохранить уточнение легенды и указаний. Фактическую совместную прокладку по тексту не объявлять установленной.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "graphic_route_review_status": "not_checked_in_this_review"
+    },
+    {
+      "finding_id": "F-043",
+      "finding_sha256": "679b4d888b2b3fb8d12740ca2bc2733189b52559f4b2fdbfb6c037797f139330",
+      "final_finding": {
+        "id": "F-043",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "fire_safety",
+        "sheet": "Листы 25, 19, 20",
+        "page": [
+          27,
+          55,
+          56
+        ],
+        "problem": "Материал защиты подвесов ОСК-180 отсутствует в общей спецификации",
+        "description": "Локальный состав ОСК-180 предусматривает МБОР толщиной 10 мм для защиты подвесов, но в общей спецификации отдельная позиция МБОР и её количество не приведены.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён; ФЗ 123-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить полноту общей спецификации материалов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ФЗ 123-ФЗ",
+            "cited_designation": "ФЗ 123-ФЗ",
+            "candidate_relevance": 0.7,
+            "reason": "Проверить подтверждённое огнестойкое исполнение конструкции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-023"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-023"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить подтверждённый состав ОСК-180 и включить защиту подвесов в комплект поставки.",
+        "risk": "Неполное исполнение огнезащитной конструкции.",
+        "source_finding_ids": [
+          "T-023"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 41,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-023",
+            "status": "requires_semantic_review",
+            "source_claim": "В локальном составе ОСК-180 предусмотрен огнезащитный материал МБОР толщиной 10 мм для защиты подвесов. В общей спецификации приведены плиты ФК-10, решётки, минераловатный утеплитель и герметик, но отдельная позиция МБОР и её количество отсутствуют. Уточнить комплектность поставки и учесть защиту подвесов в соответствии с подтверждённым исполнением ОСК-180.",
+            "source_location": "МД стр. 27, спецификация материалов ОСК-180; стр. 55–56, заключительные листы общей спецификации.",
+            "existing_block_ids": [
+              "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+              "blk_82bd0b6201d04037beca3195d87933ce",
+              "blk_8a5db6616dac4b8bbe73c13b7c54a140"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-023",
+            "source_claim": "В локальном составе ОСК-180 предусмотрен огнезащитный материал МБОР толщиной 10 мм для защиты подвесов. В общей спецификации приведены плиты ФК-10, решётки, минераловатный утеплитель и герметик, но отдельная позиция МБОР и её количество отсутствуют. Уточнить комплектность поставки и учесть защиту подвесов в соответствии с подтверждённым исполнением ОСК-180.",
+            "block_ids": [
+              "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+              "blk_82bd0b6201d04037beca3195d87933ce",
+              "blk_8a5db6616dac4b8bbe73c13b7c54a140"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Локальная спецификация требует МБОР 10 мм для подвесов; в двух приведённых блоках общей спецификации отдельной строки с этим названием нет.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+              "quote": "| 5 | Огнезащитный материал для защиты подвесов - МБОР (толщина 10 мм, плотность 80-100 кг/м³, негорючий, без покрытия) |  |"
+            },
+            {
+              "block_id": "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+              "quote": "|  | Плита огнестойкая 1200х1200мм |  | ФК-10 | 2Ф | шт. | 250 |  |  |"
+            },
+            {
+              "block_id": "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+              "quote": "|  | Утеплитель ТЕХНОВЕНТ СТАНДАРТ, 1200х600х50 мм 80кг/м3 |  |  | Технониколь | шт. | 500 |  |  |"
+            },
+            {
+              "block_id": "blk_8a5db6616dac4b8bbe73c13b7c54a140",
+              "quote": "|  | Герметик ОГ-20 |  |  | 2Ф | шт. | 15 |  |  |"
+            }
+          ]
+        },
+        {
+          "claim": "Не учтён ли материал в комплекте или под другим обозначением; каков подтверждённый состав системы и объём защиты подвесов?",
+          "status": "needs_data"
+        }
+      ],
+      "recommendation": "Сохранить вопрос о комплектности. Отсутствие отдельного названия не доказывает отсутствие защиты или непригодность системы.",
+      "engineer_decision": "Отдельное решение инженера по классической записи не установлено.",
+      "literal_md_search": {
+        "term": "мбор (case insensitive)",
+        "scope": "all unique authoritative TEXT/TABLE blocks",
+        "matches": [
+          {
+            "block_id": "blk_c995ba0cdd7f4f6fa9cffb30c05b8c27",
+            "quote": "| 5 | Огнезащитный материал для защиты подвесов - МБОР (толщина 10 мм, плотность 80-100 кг/м³, негорючий, без покрытия) |  |"
+          }
+        ],
+        "limit": "Literal search cannot rule out synonyms, kit inclusion or linked documents."
+      },
+      "system_identity_and_certified_execution": "not_verified_in_this_review"
+    }
+  ],
+  "reviewed_findings": 5,
+  "automatic_application": false,
+  "runtime_pending_flags_unchanged": true,
+  "new_model_calls": 0
+}
