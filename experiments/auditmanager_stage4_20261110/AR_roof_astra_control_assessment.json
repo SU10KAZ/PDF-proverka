@@ -15,7 +15,7 @@
   "source_review": "AR_roof_primary_source_review.json",
   "actual_failure_stage": "Object and levels found; local arithmetic performed in context1; ambiguity remained internal and no question reached output.",
   "qualification": "Negative behaviour alone is not improvement: useful bounded clarification from the historical case has not been recovered. Internal unresolved is not a refutation.",
-  "next_step": "Same-input Claude terminal disposition; no Astra terminal result or evaluator answer supplied.",
+  "next_step": "Same-input Claude completed: no finding, internal_unresolved. See AR_roof_same_input_model_comparison.json; positive control remains unrecovered.",
   "generic_disposition_tests": {
     "passed": 28,
     "command": "pytest tests/test_object_operation_disposition.py tests/test_object_operation_followup.py tests/test_object_operation_continuation.py tests/test_object_operation_passes.py"

@@ -4,11 +4,19 @@
     {
       "control": "AR_roof_terminal_claude",
       "directory": "/tmp/auditmanager_ar_roof_disposition_claude_20261111",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started"
+        "status": "finished",
+        "is_error": false
       },
-      "token_counters_incomplete": true
+      "token_counters_incomplete": false,
+      "result_sha256": "31d73abc5f546224fe333a4ea311978aff3021346161421abf8588bc99480689",
+      "model": "claude/claude-sonnet-5-5",
+      "duration_ms": 28102,
+      "input_tokens": 54029,
+      "output_tokens": 3152,
+      "cost_source": "subscription",
+      "error": ""
     },
     {
       "control": "AR_roof_terminal_disposition",
@@ -1650,14 +1658,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 88,
-  "pending_results": 1,
+  "completed_requests": 89,
+  "pending_results": 0,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 3283721,
-  "reported_output_tokens": 781259,
+  "reported_input_tokens": 3337750,
+  "reported_output_tokens": 784411,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 226.911,
+  "completed_request_minutes_sum": 227.38,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

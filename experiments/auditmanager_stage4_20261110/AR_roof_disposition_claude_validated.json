@@ -1,0 +1,259 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "P03",
+      "operation": "dimension_consistency",
+      "status": "needs_data",
+      "reason": "Осмотрены все восемь изображений. Локальных арифметических противоречий в размерных цепочках не найдено. Нижний и верхний планы Ф.1 совпадают: В1₁–В6₁ = 3500+3500+3600+3400+3500 = 17500, а по Б8₁–Б10₁ 3650+3500 = 7150. Размеров самого углового участка P03 (закругление ниже Б10₁ до В1₁) в пакете нет: нет радиуса, длин участков с уклонами 10,8% и 1,5%, привязки отметок +20,840, +20,875, +20,870, +20,910 к точкам стрелок уклона. По плану Ф.1 они читаются на нижнем плане, отметка К-3 +20,990 стоит на финишном плане. Из ведомости К-3 известны плитка 40 мм и опоры/зазор 25–50 мм (65–90 мм вместе). Разности +20,990 с нижними отметками, 80–150 мм, пока нельзя сопоставлять с этим диапазоном. Не установлено, к какой поверхности относятся нижние отметки (плита, стяжка, гидроизоляция или верх покрытия). Нет и локального разреза К-3 для P03. Применимость примечаний 4–5 листа 5 о воронках к парапетной В-2 также не установлена. Заключения о конфликте отметок, толщин или уклонов сделать нельзя, но и согласованность не подтверждена. Повторный поиск по тем же запросам новых источников не дал; это не доказывает отсутствия данных в проекте.",
+      "source_refs": [
+        "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+        "blk_f3aec0b585f6435080a6caa87767ba7c",
+        "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+        "blk_602b484f088b4a029d3ba6e01df3f645",
+        "blk_086a84d1c3534d70aa25347a3af1c2bb",
+        "blk_4627d64c6a6c4e76a9abc5e278844a50"
+      ],
+      "context_queries": [
+        "Ф.1",
+        "К-3",
+        "Б10₁",
+        "+20,840",
+        "+20,990",
+        "В-2"
+      ]
+    }
+  ],
+  "findings": [],
+  "terminal_dispositions": [
+    {
+      "operation": "dimension_consistency",
+      "disposition": "internal_unresolved",
+      "reason": "Конкретного расхождения, подтверждённого самими источниками, нет. Сопоставимо только то, что размерные цепочки Ф.1 внутренне согласованы. Остальные величины зависят от данных, которых в пакете нет и которые могут быть найдены внутренним поиском или осмотром увеличенных фрагментов: геометрия P03, поверхности отсчёта отметок, локальный разрез К-3, узел В-2. Вопрос инженеру сейчас был бы необоснованным: условное превышение диапазона 65–90 мм основано на неустановленной поверхности отсчёта.",
+      "confirmed_observations": [
+        "Размерные цепочки Ф.1 сходятся: В1₁–В6₁ даёт 17500 (3500+3500+3600+3400+3500), а 3650+3500 = 7150 по Б8₁–Б10₁ (нижний и верхний планы совпадают).",
+        "На нижнем плане Ф.1 читаются уклоны 10,8% у В-2 и 1,5% на прямом участке и закруглении. Отметки +20,840, +20,875, +20,870 и +20,910 указаны на нижнем плане, отметка К-3 +20,990 стоит на финишном плане.",
+        "Ведомость К-3: плитка 40 мм и опоры/воздушный зазор 25–50 мм, вместе 65–90 мм, общая толщина от 250 мм.",
+        "Красные угловые символы на финишном плане по условным обозначениям означают начало раскладки, а не уклоны.",
+        "Планы на отметках +41,280 и +44,870, схема крепления альпинистов и общий план 6 этажа не содержат размеров P03 для проверки уклонов."
+      ],
+      "remaining_unknowns": [
+        "Горизонтальные проекции участков с уклонами 10,8% и 1,5%, радиус и расчётный путь на закруглении.",
+        "К какой поверхности относятся отметки +20,840…+20,910 и какая высота опор принята под финишом +20,990.",
+        "Применимость примечаний 4–5 листа 5 к парапетной воронке В-2 и отметка её приёмной части."
+      ],
+      "proposed_next_action": "Внутренне: перечитать увеличенные фрагменты Ф.1 листа 5 в зоне Б10₁–В1₁ на предмет невыведенных размеров и привязки отметок к стрелкам. Найти разрез или узел К-3 и узел В-2 (другие листы раздела АР6.2, при необходимости ссылки на узлы). Если такие источники будут найдены и покажут, что нижние отметки относятся к основанию под опоры, вернуться к сравнению разностей с 65–90 мм. До этого вопрос инженеру не формулировать."
+    }
+  ],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "P03",
+        "identity": "К-3 — угловая область покрытия",
+        "scope": "VIEW_BASE; ниже Б10₁, закругление до В1₁",
+        "kind": "маркированная область вида",
+        "source_refs": [
+          "blk_7542a26ddb2e4317bf9a1c3e1e239b62"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Графика и уклоны",
+            "value": "Серая непрерывная полоса с поворотом; 10,8% у верхней воронки; 1,5% на прямом участке и на закруглении",
+            "unit": "%",
+            "source_ref": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+            "graphic_observation": "У продольной стрелки и у стрелки на повороте видна десятичная запятая: 1,5%."
+          },
+          {
+            "name": "Локальные отметки",
+            "value": [
+              "+20,840",
+              "+20,875",
+              "+20,870",
+              "+20,910"
+            ],
+            "unit": "м",
+            "source_ref": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+            "graphic_observation": "Выноски расположены вдоль внутренней стороны угловой области и у перехода к В1₁; точные точки привязки следует сохранять по графике."
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "P03",
+        "operation": "identity_across_views",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7542a26ddb2e4317bf9a1c3e1e239b62"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "P03",
+        "operation": "quantity_balance",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7542a26ddb2e4317bf9a1c3e1e239b62"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "P03",
+        "operation": "dimension_consistency",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7542a26ddb2e4317bf9a1c3e1e239b62"
+        ],
+        "receipt": {
+          "object_id": "P03",
+          "operation": "dimension_consistency",
+          "status": "needs_data",
+          "reason": "Осмотрены все восемь изображений. Локальных арифметических противоречий в размерных цепочках не найдено. Нижний и верхний планы Ф.1 совпадают: В1₁–В6₁ = 3500+3500+3600+3400+3500 = 17500, а по Б8₁–Б10₁ 3650+3500 = 7150. Размеров самого углового участка P03 (закругление ниже Б10₁ до В1₁) в пакете нет: нет радиуса, длин участков с уклонами 10,8% и 1,5%, привязки отметок +20,840, +20,875, +20,870, +20,910 к точкам стрелок уклона. По плану Ф.1 они читаются на нижнем плане, отметка К-3 +20,990 стоит на финишном плане. Из ведомости К-3 известны плитка 40 мм и опоры/зазор 25–50 мм (65–90 мм вместе). Разности +20,990 с нижними отметками, 80–150 мм, пока нельзя сопоставлять с этим диапазоном. Не установлено, к какой поверхности относятся нижние отметки (плита, стяжка, гидроизоляция или верх покрытия). Нет и локального разреза К-3 для P03. Применимость примечаний 4–5 листа 5 о воронках к парапетной В-2 также не установлена. Заключения о конфликте отметок, толщин или уклонов сделать нельзя, но и согласованность не подтверждена. Повторный поиск по тем же запросам новых источников не дал; это не доказывает отсутствия данных в проекте.",
+          "source_refs": [
+            "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+            "blk_f3aec0b585f6435080a6caa87767ba7c",
+            "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+            "blk_602b484f088b4a029d3ba6e01df3f645",
+            "blk_086a84d1c3534d70aa25347a3af1c2bb",
+            "blk_4627d64c6a6c4e76a9abc5e278844a50"
+          ],
+          "context_queries": [
+            "Ф.1",
+            "К-3",
+            "Б10₁",
+            "+20,840",
+            "+20,990",
+            "В-2"
+          ]
+        }
+      },
+      {
+        "object_id": "P03",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7542a26ddb2e4317bf9a1c3e1e239b62"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "P03",
+        "operation": "document_links",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_7542a26ddb2e4317bf9a1c3e1e239b62"
+        ],
+        "reason": "missing_receipt"
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_000cf32a4e3b4a12974ea5fb7b608c39",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_086a84d1c3534d70aa25347a3af1c2bb",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_092e358681fc45ada6058a3f894b2582",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_43ba3b4bee434762829a4599c645e859",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_4627d64c6a6c4e76a9abc5e278844a50",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_7542a26ddb2e4317bf9a1c3e1e239b62",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_a89f9cfd753e412fa2177ba8cb560ab8",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_d1465109f2c843cd8d4190cde8e9b75d",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_d84a19bcb0fd4084a6ef27c7a6ebf020",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_f2425907b04848fa875228c27e181eb3",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_f3aec0b585f6435080a6caa87767ba7c",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 5,
+    "unresolved_source_blocks": 15,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "dimension_consistency"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}

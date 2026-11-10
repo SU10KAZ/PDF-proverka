@@ -378,15 +378,19 @@
       "hypothesis": "H05",
       "kind": "positive_controls",
       "original_control": "АР: остаток75мм на угловом участке сопоставить с проектным диапазоном опор.",
-      "evidence_state": "actual_control_not_recovered_pending_model_comparison",
+      "evidence_state": "actual_control_not_recovered_by_both_models",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_astra_control_assessment.json",
-          "sha256": "8ab6f98777141f2043264ed831108993a876bd8555125ac791d733cd28ab9eef"
+          "sha256": "290a20bf7054584bdccc69d959adc0bf59a91cdfab1706495d126dc9e07fa4dd"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_primary_source_review.json",
           "sha256": "4ce3b8f7010eae3700a969307a20c2ea5ca28463b2c06dc273b9804a1add81d6"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_same_input_model_comparison.json",
+          "sha256": "ce94eebc5c94c686873b6ace055c5c5d4125368071b0a6e1156a76360ae5b495"
         }
       ],
       "full_acceptance_proven": false
@@ -427,7 +431,7 @@
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_astra_control_assessment.json",
-          "sha256": "8ab6f98777141f2043264ed831108993a876bd8555125ac791d733cd28ab9eef"
+          "sha256": "290a20bf7054584bdccc69d959adc0bf59a91cdfab1706495d126dc9e07fa4dd"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_disposition_astra_result.json",
@@ -553,7 +557,7 @@
     }
   ],
   "counts": {
-    "actual_control_not_recovered_pending_model_comparison": 1,
+    "actual_control_not_recovered_by_both_models": 1,
     "bounded_control_recorded": 18,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 2,
