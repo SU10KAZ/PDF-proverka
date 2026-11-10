@@ -39,3 +39,25 @@ def test_widely_separated_exponents_preserve_small_difference():
 def test_empty_operation_id_is_not_a_traceable_check():
     op = {'id': ' ', 'kind': 'compare', 'terms': [value('3')], 'target': value('3')}
     assert evaluate_quantity_checks([op], {'b'})['not_checked'] == 1
+
+
+def test_declared_inventory_detects_omitted_and_repeated_rows():
+    op = {'id':'sum', 'kind':'sum', 'expected_term_ids':['row1','row2'],
+          'terms':[value('2',term_id='row1'),value('3',term_id='row2')], 'target':value('5')}
+    row = evaluate_quantity_checks([op], {'b'})['operations'][0]
+    assert row['numerically_equal']
+    assert row['term_ids'] == ['row1','row2'] and row['term_values'] == ['2','3']
+    assert not row['source_interpretation_verified']
+    op['terms'].pop()
+    row = evaluate_quantity_checks([op], {'b'})['operations'][0]
+    assert row['status'] == 'not_checked' and row['missing_term_ids'] == ['row2']
+    op['terms'].append(value('3',term_id='row1'))
+    assert evaluate_quantity_checks([op], {'b'})['operations'][0]['reason'] == 'duplicate_term_identity'
+
+
+def test_invalid_or_extra_inventory_members_do_not_pass():
+    op = {'id':'sum','kind':'sum','terms':[value('2',term_id='unexpected')],
+          'expected_term_ids':['row1'],'target':value('2')}
+    assert evaluate_quantity_checks([op], {'b'})['operations'][0]['unexpected_term_ids'] == ['unexpected']
+    op['expected_term_ids'] = ['row1', {}]
+    assert evaluate_quantity_checks([op], {'b'})['operations'][0]['reason'] == 'invalid_term_inventory'

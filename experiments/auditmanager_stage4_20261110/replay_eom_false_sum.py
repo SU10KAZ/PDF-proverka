@@ -32,10 +32,16 @@ if __name__ == '__main__':
             return {'object':'Опубликованные строки экспликации 1501–1589','parameter':'площадь',
                     'unit':'м²','basis':'Площадь каждой строки один раз, включая групповые строки',
                     'regime':'проект','source_refs':[bid],'value':value}
-        operation = {'id':'parking_'+bid,'kind':'sum','terms':[operand(r['value']) for r in rows],
+        operation = {'id':'parking_'+bid,'kind':'sum',
+                     'expected_term_ids':[r['id'] for r in rows],
+                     'terms':[{**operand(r['value']), 'term_id':r['id']} for r in rows],
                      'target':operand('1636.5')}
         execution = evaluate_quantity_checks([operation],set(blocks))
         assert execution['operations'][0]['numerically_equal']
+        omitted = {**operation, 'terms': operation['terms'][:-1]}
+        omitted_result = evaluate_quantity_checks([omitted],set(blocks))['operations'][0]
+        assert omitted_result['reason'] == 'term_inventory_mismatch'
+        assert omitted_result['missing_term_ids'] == ['1589']
         checks.append({'block_id':bid,'rows':rows,'total_quote':total_quote,'execution':execution})
     result = {'finding_id':'F-040','candidate_id':'T-020','source':case['source_md'],
               'engineer_decision':case['engineer_decision'],'checks':checks,

@@ -143,6 +143,13 @@ Include `quantity_check_operations` for applicable same-basis comparisons and su
 Each has unique `id`, `kind` (`compare` or `sum`), `terms` (one for compare), and
 `target`. Every operand has `object`, `parameter`, `unit`, `basis`, `regime`,
 `value` (decimal string with a dot), and `source_refs` (exact block IDs).
+For a table sum, list `expected_term_ids` for the entire explicitly bounded source
+subsection and put the matching `term_id` on each term. Use source row identities,
+including a discriminator where the source repeats a label. Exclude subtotals
+from the addends and count grouped rows once at their stated aggregate value.
+Declare the inventory before summing; do not shrink it to hide a missing row.
+The runner checks omissions and duplicates against that declared inventory;
+agreement does not independently establish completeness of source extraction.
 All operands must describe the SAME object/aggregate and physical basis. Preserve
 original quantities in source evidence; never relabel incompatible values simply
 to make the computation run. Convert units explicitly before comparison and retain

@@ -28,6 +28,23 @@ def evaluate_quantity_checks(operations, known_blocks: set[str]) -> dict:
                 or (op['kind'] == 'compare' and len(terms) != 1)):
             row['reason'] = 'invalid_operands'
             continue
+        expected = op.get('expected_term_ids')
+        row['term_inventory_status'] = 'not_supplied'
+        if expected is not None:
+            actual = [term.get('term_id') if isinstance(term, dict) else None for term in terms]
+            if (not isinstance(expected, list) or not expected
+                    or any(not isinstance(x, str) or not x.strip() for x in expected + actual)):
+                row['reason'] = 'invalid_term_inventory'
+                continue
+            if len(set(expected)) != len(expected) or len(set(actual)) != len(actual):
+                row['reason'] = 'duplicate_term_identity'
+                continue
+            row['missing_term_ids'] = sorted(set(expected) - set(actual))
+            row['unexpected_term_ids'] = sorted(set(actual) - set(expected))
+            if row['missing_term_ids'] or row['unexpected_term_ids']:
+                row['reason'] = 'term_inventory_mismatch'
+                continue
+            row['term_inventory_status'] = 'matches_declared_inventory_not_source_verified'
         values = []
         error = None
         for operand in terms + [target]:
@@ -69,6 +86,8 @@ def evaluate_quantity_checks(operations, known_blocks: set[str]) -> dict:
         row.update(status='computed', kind=op['kind'],
                    comparison_basis={k: target[k] for k in _DIMENSIONS},
                    term_sources=[list(term['source_refs']) for term in terms],
+                   term_values=[term['value'] for term in terms],
+                   term_ids=[term.get('term_id') for term in terms],
                    target_sources=list(target['source_refs']),
                    calculated=str(total), stated=str(values[-1]), difference=str(difference),
                    numerically_equal=difference == 0,
