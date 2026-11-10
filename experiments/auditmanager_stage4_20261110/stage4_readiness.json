@@ -982,5 +982,21 @@
     "regression_tests_passed": 182,
     "original_context_preserved_at_budget": true,
     "remaining": "Continuation is replayed locally with real responses. Full candidate runtime and source relevance remain unaccepted."
+  },
+  "operation_search_ranking": {
+    "artifact": "KM_operation_search_ranking_replay.json",
+    "tests_passed": 51,
+    "source_set_preserved": true,
+    "substring_only_selected_before": [
+      5,
+      3
+    ],
+    "substring_only_selected_after": [
+      0,
+      0
+    ],
+    "new_model_calls": 0,
+    "engineering_improvement_verified": false,
+    "remaining": "Run a fresh response against the changed source packet; never relabel a cached old response as new-context validation."
   }
 }

@@ -134,3 +134,31 @@ def test_sheet_lookup_uses_bound_sheet_numbers_not_pdf_pages():
     assert not result['absence_proven']
     with pytest.raises(ValueError,match='graph_version_changed'):
         search_md_context(md+'changed',['Лист 7'],source_graph=graph)
+
+
+def test_node_token_precedes_address_substrings_even_in_resumed_backlog():
+    md=('### BLOCK #1 [TEXT]: title\n> **Stamp:** по адресу Москва\nАдрес объекта\n'
+        '### BLOCK #2 [TEXT]: other\n> **Stamp:** по адресу Москва\nОГМ50\n'
+        '### BLOCK #3 [GRAPHIC]: node\nУзел по А; ОГМ5\n')
+    result=search_md_context(md,['по А'],max_blocks=1,prior_backlog_ids=['title','other'])
+    assert [h['block_id'] for h in result['hits']]==['node']
+    assert {h['block_id'] for h in result['backlog']}=={'title','other'}
+    assert result['query_hit_counts']['по А']==3
+    assert result['hits'][0]['query_match_kinds']['по А']=='body_token'
+    assert all(h['query_match_kinds']['по А']=='substring' for h in result['backlog'])
+    mark=search_md_context(md,['ОГМ5'],max_blocks=1)
+    assert mark['hits'][0]['block_id']=='node'
+    assert mark['backlog'][0]['block_id']=='other'
+    assert not result['absence_proven']
+
+
+def test_metadata_and_morphological_matches_are_preserved_with_original_text():
+    md=('### BLOCK #1 [TEXT]: stamp\n> **Stamp:** Code: КМ8\nTitle\n'
+        '### BLOCK #2 [TEXT]: stem\nХарактеристики бетона\n'
+        '### BLOCK #3 [TEXT]: body\nКМ8: бетон\n')
+    result=search_md_context(md,['КМ8','бетон'],max_blocks=1)
+    assert result['hits'][0]['block_id']=='body'
+    assert {r['block_id'] for r in result['backlog']}=={'stamp','stem'}
+    all_rows=search_md_context(md,['КМ8','бетон'],max_blocks=10)['hits']
+    for row in all_rows:assert row['content'] in md
+    assert all_rows[1]['query_match_kinds']=={'КМ8':'metadata_token'}

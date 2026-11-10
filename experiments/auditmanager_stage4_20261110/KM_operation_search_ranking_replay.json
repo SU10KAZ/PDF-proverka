@@ -1,0 +1,290 @@
+{
+  "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "baseline_commit": "63fcd145",
+  "rows": [
+    {
+      "operation": "dimension_consistency",
+      "queries": [
+        "ОГМ 5",
+        "по А",
+        "по Е",
+        "2-2",
+        "3-3",
+        "4-4"
+      ],
+      "query_hit_counts": {
+        "ОГМ 5": 12,
+        "по А": 111,
+        "по Е": 7,
+        "2-2": 10,
+        "3-3": 5,
+        "4-4": 7
+      },
+      "candidate_source_set_unchanged": true,
+      "candidate_source_count": 111,
+      "before_selected": [
+        "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+        "blk_00eaf91abb0f48a38267e99e757644a1",
+        "blk_613b3bfe91c246e68bf7705cb59ba72f",
+        "blk_e4b1c3dd3043481db86f87c923f0a173",
+        "blk_6451cc830d2b45f5bf19bbc352d4a419",
+        "blk_c35486f85bac42b799c61a10c630a793",
+        "blk_49d947c318c3478582a39740abda8658",
+        "blk_ef276d1030da49b48f4bb057ebafe685",
+        "blk_26d908d359d14584917702c046803793",
+        "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+        "blk_9243af20ea504c1c8f940705d31f1f32",
+        "blk_f4e8aa99af0048148949bd81155997fe"
+      ],
+      "after_selected": [
+        {
+          "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "по Е": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_6451cc830d2b45f5bf19bbc352d4a419",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "2-2": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_c35486f85bac42b799c61a10c630a793",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "3-3": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_49d947c318c3478582a39740abda8658",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "4-4": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_26d908d359d14584917702c046803793",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "по Е": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "2-2": "body_token",
+            "3-3": "body_token",
+            "4-4": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_f4e8aa99af0048148949bd81155997fe",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "по Е": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "2-2": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_07bceef658074a22a028d29f7493e678",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "3-3": "body_token",
+            "4-4": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "4-4": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "по Е": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_ddecc5c2c49a4deb8a4156af444dfcd9",
+          "kind": "IMAGE",
+          "query_match_kinds": {
+            "по А": "substring",
+            "2-2": "body_token"
+          }
+        }
+      ],
+      "backlog_count": 64,
+      "selected_substring_only_before": 5,
+      "selected_substring_only_after": 0
+    },
+    {
+      "operation": "requirement_applicability",
+      "queries": [
+        "ОГМ 5",
+        "HSA-M10",
+        "Конструктивно",
+        "Общие указания",
+        "нагрузки",
+        "бетон"
+      ],
+      "query_hit_counts": {
+        "ОГМ 5": 12,
+        "HSA-M10": 46,
+        "Конструктивно": 40,
+        "Общие указания": 1,
+        "нагрузки": 1,
+        "бетон": 8
+      },
+      "candidate_source_set_unchanged": true,
+      "candidate_source_count": 59,
+      "before_selected": [
+        "blk_00eaf91abb0f48a38267e99e757644a1",
+        "blk_6361593a2045407a94dff35af62ca5c3",
+        "blk_32a409cc3ad1431a9b93259722f9a866",
+        "blk_c314777ec1714d25b4d7f16f26513258",
+        "blk_e3a065c965414cc9a95c5488f8e41108",
+        "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+        "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+        "blk_9da5632926f24581897a4eaebfd14c09",
+        "blk_5de20e336f994591bdd8c56c0f1e4183",
+        "blk_4412076f7a7349f587fb211ff8b4af08",
+        "blk_18bd9bc412d24963af5f2334bad9aa33",
+        "blk_0359ba1d16b44cfb9ad1781c770c02c1"
+      ],
+      "after_selected": [
+        {
+          "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_5de20e336f994591bdd8c56c0f1e4183",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_4412076f7a7349f587fb211ff8b4af08",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_18bd9bc412d24963af5f2334bad9aa33",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_0359ba1d16b44cfb9ad1781c770c02c1",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_4f196780d3d74b9a9eab9e8baed67f12",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_767f34cdd83944c9bfffd5deab397aee",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        },
+        {
+          "block_id": "blk_f8cad33a4f74403cb982ba27beeb20fc",
+          "kind": "TEXT",
+          "query_match_kinds": {
+            "HSA-M10": "substring",
+            "Конструктивно": "body_token"
+          }
+        }
+      ],
+      "backlog_count": 20,
+      "selected_substring_only_before": 3,
+      "selected_substring_only_after": 0
+    }
+  ],
+  "new_model_calls": 0,
+  "old_response_reused_for_changed_prompt": false,
+  "semantic_quality_improvement_proven": false,
+  "limits": [
+    "Ordering comparison on known OGM5 context requests, not a blind audit.",
+    "All literal candidates remain available; ranking does not establish relevance or object identity.",
+    "GRAPHIC hit requires image attachment and reading; its summary alone is not evidence.",
+    "Changed prepared requests require a new response, never a cached answer to the old prompt."
+  ]
+}

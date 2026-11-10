@@ -68,7 +68,24 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
         content = md[h.start():end]
         preceding = [p for p in pages if p.start() < h.start()]
         page_num = int(preceding[-1].group(1)) if preceding else None
-        matches = [q for q in valid if q.casefold() in content.casefold() or page_num in requested_sheet_pages(q)]
+        # Ranking only: retain substring matches, including metadata, in the
+        # complete candidate set. Exact node/mark tokens should precede address
+        # fragments (e.g. 'по А' inside 'по адресу'). Source text is unchanged.
+        body = re.sub(r'^>[ \t]*\*\*(?:Created|Crop|Stamp):\*\*[^\n]*$', '', content,
+                      flags=re.M | re.I)
+        match_kinds = {}
+        for q in valid:
+            if page_num in requested_sheet_pages(q):
+                match_kinds[q] = 'sheet_reference'
+            elif q.casefold() in content.casefold():
+                pattern = r'(?<!\w)' + re.escape(q.casefold()) + r'(?!\w)'
+                if re.search(pattern, body.casefold()):
+                    match_kinds[q] = 'body_token'
+                elif re.search(pattern, content.casefold()):
+                    match_kinds[q] = 'metadata_token'
+                else:
+                    match_kinds[q] = 'substring'
+        matches = list(match_kinds)
         if not matches:
             continue
         for q in matches:
@@ -76,7 +93,7 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
         preceding = [p for p in pages if p.start() < h.start()]
         row = {'block_id': h.group(2), 'kind': h.group(1).upper(),
                'page': int(preceding[-1].group(1)) if preceding else None,
-               'queries': matches, 'start_line': md.count('\n', 0, h.start())+1}
+               'queries': matches, 'query_match_kinds': match_kinds, 'start_line': md.count('\n', 0, h.start())+1}
         if row['block_id'] in exclude_block_ids:
             already_supplied.append(row)
             continue
@@ -84,7 +101,9 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
     # Round-robin across queries prevents common phrases from starving exact
     # marks that occur later in the document. Source order remains stable within
     # each query; no text is truncated or synthesized.
-    queues = [[i for i, hit in enumerate(matches_all) if q in hit['queries']] for q in valid]
+    priorities = {'sheet_reference': 0, 'body_token': 0, 'metadata_token': 1, 'substring': 2}
+    queues = [sorted((i for i, hit in enumerate(matches_all) if q in hit['queries']),
+                     key=lambda i: priorities[matches_all[i]['query_match_kinds'][q]]) for q in valid]
     order, seen = [], set()
     for depth in range(max((len(q) for q in queues), default=0)):
         for queue in queues:
@@ -94,8 +113,11 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
     # Resume previously found hits in their recorded order before new matches.
     # IDs only reorder literal matches; they cannot introduce unmatching sources.
     prior_rank = {bid: rank for rank, bid in enumerate(prior_backlog_ids)}
-    if prior_rank:
-        order.sort(key=lambda i: prior_rank.get(matches_all[i]['block_id'], len(prior_rank)))
+    # Resume within each relevance tier, never let an address-only backlog
+    # displace a newly found exact node. No matching source is discarded.
+    order.sort(key=lambda i: (
+        min(priorities[k] for k in matches_all[i]['query_match_kinds'].values()),
+        prior_rank.get(matches_all[i]['block_id'], len(prior_rank))))
     for i in order:
         row = matches_all[i]
         if used + len(row['content']) > max_chars or len(hits) >= max_blocks:
