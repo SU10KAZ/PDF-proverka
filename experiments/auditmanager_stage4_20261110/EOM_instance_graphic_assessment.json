@@ -1,0 +1,110 @@
+{
+  "control_id": "H03-P02/N02",
+  "result_sha256": "9b895b4905178eaefaccc21ce948d1174a9116a2e0b5bd1c054ae47e2586f981",
+  "literal_reading_corrected": true,
+  "reviewed_objects": [
+    {
+      "id": "hvac_32",
+      "identity": "Верхняя выноска AJ068TXJ3KH/EA — К3.2.406 к наружному узлу возле ЛК4",
+      "scope": "Отдельная выноска и ее графическая цель; самостоятельность физического экземпляра в наложенном узле не установлена",
+      "kind": "outdoor_unit_target_unresolved",
+      "source_refs": [
+        "blk_4b5016856cc94ec088efe86a8ec2a925"
+      ],
+      "observed_parameters": [
+        {
+          "name": "model_literal",
+          "value": "AJ068TXJ3KH/EA",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Полная верхняя надпись видна внизу тайла 1; ее продолжение и лидер видны на тайле 4. Лидер идет к верхней части тесно наложенного синего наружного узла справа от ЛК4."
+        },
+        {
+          "name": "positional_designation_literal",
+          "value": "К3.2.406",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Под верхней моделью буквально указано «К3.2.406», затем «Наружный блок». Не заменено другим номером."
+        },
+        {
+          "name": "physical_symbol_resolution",
+          "value": "Границы отдельного экземпляра относительно целей hvac_33 и hvac_34 неразличимы уверенно",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Тайл 4: три выноски сходятся к узкому вертикальному наружному узлу с близкими или наложенными контурами. Три выноски сами по себе не приняты за подтвержденное количество физических блоков."
+        }
+      ]
+    },
+    {
+      "id": "hvac_33",
+      "identity": "Средняя выноска AJ068TXJ3KH/EA — К3.2.406 к наружному узлу возле ЛК4",
+      "scope": "Отдельная выноска и ее графическая цель; самостоятельность физического экземпляра в наложенном узле не установлена",
+      "kind": "outdoor_unit_target_unresolved",
+      "source_refs": [
+        "blk_4b5016856cc94ec088efe86a8ec2a925"
+      ],
+      "observed_parameters": [
+        {
+          "name": "model_literal",
+          "value": "AJ068TXJ3KH/EA",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Надпись видна внизу тайла 1 и полностью в верхней части тайла 4. От нее идет отдельный лидер к тому же тесно наложенному наружному узлу справа от ЛК4, ниже цели верхней выноски."
+        },
+        {
+          "name": "positional_designation_literal",
+          "value": "К3.2.406",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Повторно буквально указано «К3.2.406», затем «Наружный блок». Повтор сохранен; обозначение не исправлено по последовательности."
+        },
+        {
+          "name": "physical_symbol_resolution",
+          "value": "Отдельная выноска различима; отдельный физический контур относительно hvac_32 и hvac_34 не установлен",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Тайл 4: наконечник и контуры находятся в компактной зоне наложения линий наружного узла."
+        }
+      ]
+    },
+    {
+      "id": "hvac_34",
+      "identity": "Нижняя выноска AJ080TXJ4KH/EA — К3.2.403 к наружному узлу возле ЛК4",
+      "scope": "Отдельная выноска и ее графическая цель; самостоятельность физического экземпляра в наложенном узле не установлена",
+      "kind": "outdoor_unit_target_unresolved",
+      "source_refs": [
+        "blk_4b5016856cc94ec088efe86a8ec2a925"
+      ],
+      "observed_parameters": [
+        {
+          "name": "model_literal",
+          "value": "AJ080TXJ4KH/EA",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Тайл 4: нижняя из трех выносок над наружным узлом справа от ЛК4. Ее лидер заканчивается в нижней части наложенных вертикальных синих контуров."
+        },
+        {
+          "name": "positional_designation_literal",
+          "value": "К3.2.403",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Под моделью читаются «К3.2.403» и «Наружный блок»."
+        },
+        {
+          "name": "physical_symbol_resolution",
+          "value": "Графическая цель локализована в общем наружном узле; ее самостоятельный контур не выделен уверенно",
+          "unit": null,
+          "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "graphic_observation": "Лидер отличим от двух соседних; близость и наложение синих линий не позволяют надежно установить границы всех физических блоков."
+        }
+      ]
+    }
+  ],
+  "source_review": "EOM_instance_inventory_assessment.json",
+  "physical_instance_identity_resolved": false,
+  "technical_defect_confirmed": false,
+  "assessment": "Two406 labels and third403 preserved literally. Model does not resolve separate physical contours in the overlapping node. Same-model repetition is not treated as a defect. Operation control now running from actual extracted hvac_32.",
+  "no_expected_answer_supplied": true,
+  "separate_effect_of_resolution_and_prompt_measured": false,
+  "production_acceptance": false
+}

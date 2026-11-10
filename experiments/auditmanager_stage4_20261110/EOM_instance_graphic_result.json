@@ -1,0 +1,911 @@
+{
+  "text": "{\n  \"object_registry\": [\n    {\n      \"id\": \"hvac_01\",\n      \"identity\": \"Внутренний блок у помещения 3 в верхней левой части плана\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 0: выноска слева сверху заканчивается у верхнего торца вертикального синего прямоугольного символа возле двери помещения 3.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_02\",\n      \"identity\": \"Внутренний блок справа ниже hvac_01\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 0: выноска от надписи справа направлена к верхнему торцу отдельного вертикального синего символа у помещения 1. Это другой символ, чем hvac_01.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_03\",\n      \"identity\": \"Внутренний блок ниже hvac_02 у дверного проема\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 0: наклонный участок выноски заканчивается на правой стороне вертикального синего символа, расположенного ниже hvac_02, возле двери между зонами помещений 1 и 2.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_04\",\n      \"identity\": \"Внутренний блок над помещением 7 в верхней части плана\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 0: выноска справа сверху указывает на горизонтальный синий символ вдоль верхней стены помещения 7.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_05\",\n      \"identity\": \"Внутренний блок возле помещения 6 у верхнего правого фасада\",\n      \"scope\": \"Один физический символ в перекрытии тайлов\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 0 справа и тайл 1 слева показывают один горизонтальный синий символ возле двери помещения 6. На тайле 1 надпись видна полностью; стрелка заканчивается на верхней стороне символа.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_06\",\n      \"identity\": \"Внутренний блок в помещении 1 рядом с подписью квартиры 409\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 1, нижняя левая часть: выноска указывает на горизонтальный синий символ на нижней стене помещения 1, ниже подписи квартиры 409.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_07\",\n      \"identity\": \"Внутренний блок у помещения 3 ниже hvac_06\",\n      \"scope\": \"Один физический символ в перекрытии тайлов\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Символ обрезан снизу на тайле 1 и полностью виден в верхней левой части тайла 4. Выноска указывает на правую сторону вертикального синего прямоугольника рядом с дверью помещения 3.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_08\",\n      \"identity\": \"Внутренний блок у помещения 4 ниже hvac_07\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4, верхняя левая часть: выноска справа сверху заканчивается на правой стороне отдельного вертикального синего символа у левой стены помещения 4.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_09\",\n      \"identity\": \"Внутренний блок у левого фасада между осями Б4₁ и Б5₁\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AR12TXHQASINUA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 3: длинная выноска от надписи слева заканчивается у левого торца горизонтального синего символа на внутренней стороне стены. Наружный символ расположен отдельно, левее и ниже.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_10\",\n      \"identity\": \"Верхний внутренний блок первой близкой горизонтальной пары на тайле 3\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 3, между осями Б5₁ и Б6₁: выноска слева сверху указывает на верхний из двух близких горизонтальных синих символов по разные стороны линии стены.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_11\",\n      \"identity\": \"Нижний внутренний блок первой близкой горизонтальной пары на тайле 3\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 3: выноска от надписи слева снизу заканчивается на нижней стороне нижнего символа пары, рядом с дверной дугой. Верхний символ зарегистрирован отдельно как hvac_10.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_12\",\n      \"identity\": \"Верхний внутренний блок второй близкой горизонтальной пары на тайле 3\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 3, между осями Б7₁ и Б8₁: выноска слева сверху указывает на верхний горизонтальный синий символ пары возле двери.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_13\",\n      \"identity\": \"Нижний внутренний блок второй близкой горизонтальной пары на тайле 3\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 3: выноска снизу заканчивается на нижнем горизонтальном синем символе пары над областью подписи квартиры 405. Символ отличим от hvac_12.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_14\",\n      \"identity\": \"Внутренний блок у двери в верхней правой части тайла 6\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 6: выноска слева направлена к левой стороне вертикального синего символа у дверного проема, выше области подписи квартиры 404.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_15\",\n      \"identity\": \"Левый внутренний блок вертикальной пары у квартиры 404\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ050FEADKF/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 6: длинная выноска снизу слева заканчивается у нижнего торца левого из двух близких вертикальных синих символов по разные стороны стены.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_16\",\n      \"identity\": \"Правый внутренний блок вертикальной пары рядом с hvac_15\",\n      \"scope\": \"Один физический символ в перекрытии тайлов\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 6 справа и тайл 7 слева: выноска справа указывает на правый вертикальный символ пары, возле дверной дуги помещения 2. Полная надпись видна на тайле 7.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_17\",\n      \"identity\": \"Верхний горизонтальный внутренний блок возле подписи квартиры 403\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 7: выноска слева сверху указывает на верхний горизонтальный синий символ пары, справа от помещения 1 и выше подписи квартиры 403.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_18\",\n      \"identity\": \"Нижний горизонтальный внутренний блок рядом с hvac_17\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 7: наклонный участок выноски от надписи слева снизу заканчивается на нижнем горизонтальном символе пары у дверной дуги.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_19\",\n      \"identity\": \"Внутренний блок возле помещения 5 справа от ядра секции 3\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4, нижняя центральная часть: выноска от надписи справа снизу указывает на горизонтальный синий символ над дверной дугой помещения 5. Рядом слева расположен отдельный символ щита.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_20\",\n      \"identity\": \"Внутренний блок у помещения 2 слева от подписи квартиры 378\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4: выноска слева сверху заканчивается на горизонтальном синем символе у нижней границы помещения 2, слева от подписи квартиры 378.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_21\",\n      \"identity\": \"Внутренний блок справа от подписи квартиры 378\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4: выноска справа сверху указывает на вертикальный синий символ на стене слева от лестничного ядра и справа от подписи квартиры 378.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_22\",\n      \"identity\": \"Внутренний блок у помещения 5 в центральной части тайла 7\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 7: выноска слева снизу заканчивается на нижней стороне горизонтального синего символа справа от помещения 5, рядом с дверью.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_23\",\n      \"identity\": \"Внутренний блок у помещения 3 возле подписи квартиры 377\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 7: длинная выноска слева указывает на вертикальный синий символ у правой стены помещения 3, ниже области подписи квартиры 377.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_24\",\n      \"identity\": \"Горизонтальный внутренний блок у правого края тайла 7\",\n      \"scope\": \"Один физический символ в перекрытии тайлов\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 7 справа и тайл 8 слева показывают один горизонтальный синий символ над дверной дугой. На тайле 8 полная выноска от надписи справа снизу заканчивается на его нижней стороне.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_25\",\n      \"identity\": \"Вертикальный внутренний блок справа от hvac_24\",\n      \"scope\": \"Один физический символ в перекрытии тайлов\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 7 у правого края и тайл 8 слева: отдельный вертикальный синий символ возле двери, справа и выше hvac_24. На тайле 8 выноска справа снизу указывает на его правую сторону.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_26\",\n      \"identity\": \"Внутренний блок в нижней части тайла 5 возле помещения 7\",\n      \"scope\": \"Один физический символ; подпись повторно попадает в верхнее перекрытие тайла 8\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 5, нижняя часть: выноска справа снизу указывает на горизонтальный синий символ над дверью возле помещения 7. Слева ниже находится отдельный символ щита. На тайле 8 сверху видна относящаяся к этому месту надпись.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_27\",\n      \"identity\": \"Внутренний блок возле помещения 6 на тайле 8\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ035TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 8: выноска слева сверху заканчивается на левой стороне вертикального синего символа справа от помещения 6, рядом с дверной дугой.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_28\",\n      \"identity\": \"Внутренний блок возле помещения 1 и подписи квартиры 376\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"indoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ025TNAPKH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 8: выноска справа снизу заканчивается у правого торца горизонтального синего символа над дверью, ниже hvac_27 и слева от помещения 1.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_29\",\n      \"identity\": \"Наружный блок с обозначением К3.2.408\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"outdoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ080TXJ4KH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 0, нижняя левая часть: выноска от надписи слева заканчивается у верхней части вертикального наружного синего символа за линией фасада.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К3.2.408\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Обозначение находится под моделью в той же выноске; следующая строка — «Наружный блок».\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_30\",\n      \"identity\": \"Наружный блок с обозначением К3.2.409\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"outdoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ080TXJ4KH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 1: выноска справа сверху указывает на правую сторону вертикального наружного синего символа за фасадом, рядом с помещением 6.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К3.2.409\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Под моделью видны отдельные строки «К3.2.409» и «Наружный блок».\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_31\",\n      \"identity\": \"Наружный блок с обозначением К3.2.407\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"outdoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AR12TXHQASIXUA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 3, слева между осями Б4₁ и Б5₁: выноска снизу слева заканчивается на левой стороне вертикального наружного синего символа. Внутренний блок hvac_09 имеет отдельную выноску.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К3.2.407\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Обозначение расположено под моделью, над строкой «Наружный блок».\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_32\",\n      \"identity\": \"Верхняя выноска AJ068TXJ3KH/EA — К3.2.406 к наружному узлу возле ЛК4\",\n      \"scope\": \"Отдельная выноска и ее графическая цель; самостоятельность физического экземпляра в наложенном узле не установлена\",\n      \"kind\": \"outdoor_unit_target_unresolved\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ068TXJ3KH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Полная верхняя надпись видна внизу тайла 1; ее продолжение и лидер видны на тайле 4. Лидер идет к верхней части тесно наложенного синего наружного узла справа от ЛК4.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К3.2.406\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Под верхней моделью буквально указано «К3.2.406», затем «Наружный блок». Не заменено другим номером.\"\n        },\n        {\n          \"name\": \"physical_symbol_resolution\",\n          \"value\": \"Границы отдельного экземпляра относительно целей hvac_33 и hvac_34 неразличимы уверенно\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4: три выноски сходятся к узкому вертикальному наружному узлу с близкими или наложенными контурами. Три выноски сами по себе не приняты за подтвержденное количество физических блоков.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_33\",\n      \"identity\": \"Средняя выноска AJ068TXJ3KH/EA — К3.2.406 к наружному узлу возле ЛК4\",\n      \"scope\": \"Отдельная выноска и ее графическая цель; самостоятельность физического экземпляра в наложенном узле не установлена\",\n      \"kind\": \"outdoor_unit_target_unresolved\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ068TXJ3KH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Надпись видна внизу тайла 1 и полностью в верхней части тайла 4. От нее идет отдельный лидер к тому же тесно наложенному наружному узлу справа от ЛК4, ниже цели верхней выноски.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К3.2.406\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Повторно буквально указано «К3.2.406», затем «Наружный блок». Повтор сохранен; обозначение не исправлено по последовательности.\"\n        },\n        {\n          \"name\": \"physical_symbol_resolution\",\n          \"value\": \"Отдельная выноска различима; отдельный физический контур относительно hvac_32 и hvac_34 не установлен\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4: наконечник и контуры находятся в компактной зоне наложения линий наружного узла.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_34\",\n      \"identity\": \"Нижняя выноска AJ080TXJ4KH/EA — К3.2.403 к наружному узлу возле ЛК4\",\n      \"scope\": \"Отдельная выноска и ее графическая цель; самостоятельность физического экземпляра в наложенном узле не установлена\",\n      \"kind\": \"outdoor_unit_target_unresolved\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ080TXJ4KH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4: нижняя из трех выносок над наружным узлом справа от ЛК4. Ее лидер заканчивается в нижней части наложенных вертикальных синих контуров.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К3.2.403\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Под моделью читаются «К3.2.403» и «Наружный блок».\"\n        },\n        {\n          \"name\": \"physical_symbol_resolution\",\n          \"value\": \"Графическая цель локализована в общем наружном узле; ее самостоятельный контур не выделен уверенно\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Лидер отличим от двух соседних; близость и наложение синих линий не позволяют надежно установить границы всех физических блоков.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_35\",\n      \"identity\": \"Наружный блок с обозначением К2.2.378\",\n      \"scope\": \"Один физический символ в перекрытии тайлов\",\n      \"kind\": \"outdoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ068TXJ3KH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4 справа показывает горизонтальный наружный символ слева от hvac_36. На тайле 5 этот символ обрезан левым краем, но видна полная надпись и лидер, идущий к нему.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К2.2.378\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 5: под моделью буквально указаны «К2.2.378» и «Наружный блок».\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_36\",\n      \"identity\": \"Наружный блок с обозначением К2.2.377\",\n      \"scope\": \"Один физический символ в перекрытии тайлов\",\n      \"kind\": \"outdoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ080TXJ4KH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4 справа и тайл 5 слева: отдельный горизонтальный наружный символ справа от hvac_35. На тайле 5 лидер от надписи сверху заканчивается на его верхней стороне.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К2.2.377\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 5: под моделью видны «К2.2.377» и «Наружный блок».\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_37\",\n      \"identity\": \"Наружный блок с обозначением К2.2.376\",\n      \"scope\": \"Отдельный символ оборудования на плане\",\n      \"kind\": \"outdoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ068TXJ3KH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 5: выноска сверху справа заканчивается на верхней стороне горизонтального наружного синего символа над лестничным ядром, заметно правее hvac_36.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К2.2.376\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Под моделью находятся строки «К2.2.376» и «Наружный блок».\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_38\",\n      \"identity\": \"Наружный блок с обозначением К3.2.404\",\n      \"scope\": \"Один физический символ; частичная выноска в соседнем тайле не является дополнительным экземпляром\",\n      \"kind\": \"outdoor_unit\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AJ068TXJ3KH/EA\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 7, нижняя левая часть: выноска снизу слева заканчивается на нижней стороне горизонтального наружного синего символа у фасада возле оси В3₁. Начало этой надписи также попадает на правый край тайла 6.\"\n        },\n        {\n          \"name\": \"positional_designation_literal\",\n          \"value\": \"К3.2.404\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Под моделью буквально читается «К3.2.404», затем «Наружный блок». Обозначение сохранено независимо от соседних фоновых подписей квартир.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_39\",\n      \"identity\": \"Фанкойл рядом с ЛК4 в верхней части коридора секции 3\",\n      \"scope\": \"Один физический символ в перекрытии тайлов\",\n      \"kind\": \"fan_coil\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AM017KNLDEH/EU\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 3 справа: выноска справа заканчивается на правой стороне крупного квадратного синего символа в коридоре возле ЛК4. Под моделью написано «Фанкойл». На левом крае тайла 4 повторяется часть этой выноски.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_40\",\n      \"identity\": \"Фанкойл у нижнего поворота коридора секции 3\",\n      \"scope\": \"Один физический символ в перекрытии тайлов\",\n      \"kind\": \"fan_coil\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AM017KNLDEH/EU\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Тайл 4, нижняя левая часть: выноска слева сверху указывает на крупный квадратный синий символ у поворота коридора, ниже области помещения 322. Под моделью написано «Фанкойл». Этот же узел частично попадает на правый нижний край тайла 3 и верхний левый участок тайла 7.\"\n        }\n      ]\n    },\n    {\n      \"id\": \"hvac_41\",\n      \"identity\": \"Фанкойл в коридоре секции 2\",\n      \"scope\": \"Один физический символ в перекрытии четырех тайлов\",\n      \"kind\": \"fan_coil\",\n      \"source_refs\": [\"blk_4b5016856cc94ec088efe86a8ec2a925\"],\n      \"observed_parameters\": [\n        {\n          \"name\": \"model_literal\",\n          \"value\": \"AM017KNLDEH/EU\",\n          \"unit\": null,\n          \"source_ref\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n          \"graphic_observation\": \"Один крупный квадратный синий символ виден в нижней правой части тайла 4, нижней левой части тайла 5, верхней правой части тайла 7 и верхней левой части тайла 8. Полная выноска на тайлах 4 и 7 указывает на его левую сторону; под моделью написано «Фанкойл».\"\n        }\n      ]\n    }\n  ],\n  \"object_inventory_coverage\": [\n    {\n      \"block_id\": \"blk_4b5016856cc94ec088efe86a8ec2a925\",\n      \"status\": \"needs_data\",\n      \"object_ids\": [\n        \"hvac_01\",\n        \"hvac_02\",\n        \"hvac_03\",\n        \"hvac_04\",\n        \"hvac_05\",\n        \"hvac_06\",\n        \"hvac_07\",\n        \"hvac_08\",\n        \"hvac_09\",\n        \"hvac_10\",\n        \"hvac_11\",\n        \"hvac_12\",\n        \"hvac_13\",\n        \"hvac_14\",\n        \"hvac_15\",\n        \"hvac_16\",\n        \"hvac_17\",\n        \"hvac_18\",\n        \"hvac_19\",\n        \"hvac_20\",\n        \"hvac_21\",\n        \"hvac_22\",\n        \"hvac_23\",\n        \"hvac_24\",\n        \"hvac_25\",\n        \"hvac_26\",\n        \"hvac_27\",\n        \"hvac_28\",\n        \"hvac_29\",\n        \"hvac_30\",\n        \"hvac_31\",\n        \"hvac_32\",\n        \"hvac_33\",\n        \"hvac_34\",\n        \"hvac_35\",\n        \"hvac_36\",\n        \"hvac_37\",\n        \"hvac_38\",\n        \"hvac_39\",\n        \"hvac_40\",\n        \"hvac_41\"\n      ],\n      \"reason\": \"Просмотрены все девять тайлов единого блока. Зарегистрированы различимые символы оборудования на плане и отдельные выноски к наложенному наружному узлу. Перекрытия тайлов объединены. Записи hvac_32–hvac_34 представляют три различимые выноски с неопределенным разделением физических контуров, поэтому число записей не является подтвержденным количеством оборудования. Повторное обозначение К3.2.406 сохранено буквально. У внутренних блоков и фанкойлов отдельные позиционные обозначения в их выносках не видны; модели не использованы как идентификаторы экземпляров. На тайле 2 оборудования рассматриваемого плана нет: схема подключения, таблица и фрагменты типовых узлов находятся вне этого прохода. Иллюстрации оборудования на схеме подключения тайлов 1–2 не засчитаны как физические экземпляры. Таблицы, примечания, электрические щиты и типовые строительные узлы не инвентаризировались.\",\n      \"unreadable_regions\": [\n        {\n          \"location\": \"Тайл 4, наружный узел справа от ЛК4, куда сходятся три выноски из верхней части изображения\",\n          \"reason\": \"Близкие и наложенные синие контуры и наконечники лидеров не позволяют уверенно разделить физические символы, соответствующие hvac_32, hvac_33 и hvac_34. Для окончательного разделения экземпляров нужен более подробный вид этого участка.\"\n        },\n        {\n          \"location\": \"Границы тайлов 0–1, 1–4, 3–4, 4–5, 6–7 и 7–8\",\n          \"reason\": \"Некоторые символы и надписи обрезаны отдельными тайлами; где продолжение видно в соседнем тайле, записи объединены. Обрезанные части не восстановлены по последовательности обозначений или предполагаемому количеству.\"\n        }\n      ]\n    }\n  ],\n  \"object_operation_results\": [],\n  \"text_findings\": []\n}",
+  "json_data": {
+    "object_registry": [
+      {
+        "id": "hvac_01",
+        "identity": "Внутренний блок у помещения 3 в верхней левой части плана",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 0: выноска слева сверху заканчивается у верхнего торца вертикального синего прямоугольного символа возле двери помещения 3."
+          }
+        ]
+      },
+      {
+        "id": "hvac_02",
+        "identity": "Внутренний блок справа ниже hvac_01",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 0: выноска от надписи справа направлена к верхнему торцу отдельного вертикального синего символа у помещения 1. Это другой символ, чем hvac_01."
+          }
+        ]
+      },
+      {
+        "id": "hvac_03",
+        "identity": "Внутренний блок ниже hvac_02 у дверного проема",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 0: наклонный участок выноски заканчивается на правой стороне вертикального синего символа, расположенного ниже hvac_02, возле двери между зонами помещений 1 и 2."
+          }
+        ]
+      },
+      {
+        "id": "hvac_04",
+        "identity": "Внутренний блок над помещением 7 в верхней части плана",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 0: выноска справа сверху указывает на горизонтальный синий символ вдоль верхней стены помещения 7."
+          }
+        ]
+      },
+      {
+        "id": "hvac_05",
+        "identity": "Внутренний блок возле помещения 6 у верхнего правого фасада",
+        "scope": "Один физический символ в перекрытии тайлов",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 0 справа и тайл 1 слева показывают один горизонтальный синий символ возле двери помещения 6. На тайле 1 надпись видна полностью; стрелка заканчивается на верхней стороне символа."
+          }
+        ]
+      },
+      {
+        "id": "hvac_06",
+        "identity": "Внутренний блок в помещении 1 рядом с подписью квартиры 409",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 1, нижняя левая часть: выноска указывает на горизонтальный синий символ на нижней стене помещения 1, ниже подписи квартиры 409."
+          }
+        ]
+      },
+      {
+        "id": "hvac_07",
+        "identity": "Внутренний блок у помещения 3 ниже hvac_06",
+        "scope": "Один физический символ в перекрытии тайлов",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Символ обрезан снизу на тайле 1 и полностью виден в верхней левой части тайла 4. Выноска указывает на правую сторону вертикального синего прямоугольника рядом с дверью помещения 3."
+          }
+        ]
+      },
+      {
+        "id": "hvac_08",
+        "identity": "Внутренний блок у помещения 4 ниже hvac_07",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4, верхняя левая часть: выноска справа сверху заканчивается на правой стороне отдельного вертикального синего символа у левой стены помещения 4."
+          }
+        ]
+      },
+      {
+        "id": "hvac_09",
+        "identity": "Внутренний блок у левого фасада между осями Б4₁ и Б5₁",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AR12TXHQASINUA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 3: длинная выноска от надписи слева заканчивается у левого торца горизонтального синего символа на внутренней стороне стены. Наружный символ расположен отдельно, левее и ниже."
+          }
+        ]
+      },
+      {
+        "id": "hvac_10",
+        "identity": "Верхний внутренний блок первой близкой горизонтальной пары на тайле 3",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 3, между осями Б5₁ и Б6₁: выноска слева сверху указывает на верхний из двух близких горизонтальных синих символов по разные стороны линии стены."
+          }
+        ]
+      },
+      {
+        "id": "hvac_11",
+        "identity": "Нижний внутренний блок первой близкой горизонтальной пары на тайле 3",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 3: выноска от надписи слева снизу заканчивается на нижней стороне нижнего символа пары, рядом с дверной дугой. Верхний символ зарегистрирован отдельно как hvac_10."
+          }
+        ]
+      },
+      {
+        "id": "hvac_12",
+        "identity": "Верхний внутренний блок второй близкой горизонтальной пары на тайле 3",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 3, между осями Б7₁ и Б8₁: выноска слева сверху указывает на верхний горизонтальный синий символ пары возле двери."
+          }
+        ]
+      },
+      {
+        "id": "hvac_13",
+        "identity": "Нижний внутренний блок второй близкой горизонтальной пары на тайле 3",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 3: выноска снизу заканчивается на нижнем горизонтальном синем символе пары над областью подписи квартиры 405. Символ отличим от hvac_12."
+          }
+        ]
+      },
+      {
+        "id": "hvac_14",
+        "identity": "Внутренний блок у двери в верхней правой части тайла 6",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 6: выноска слева направлена к левой стороне вертикального синего символа у дверного проема, выше области подписи квартиры 404."
+          }
+        ]
+      },
+      {
+        "id": "hvac_15",
+        "identity": "Левый внутренний блок вертикальной пары у квартиры 404",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ050FEADKF/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 6: длинная выноска снизу слева заканчивается у нижнего торца левого из двух близких вертикальных синих символов по разные стороны стены."
+          }
+        ]
+      },
+      {
+        "id": "hvac_16",
+        "identity": "Правый внутренний блок вертикальной пары рядом с hvac_15",
+        "scope": "Один физический символ в перекрытии тайлов",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 6 справа и тайл 7 слева: выноска справа указывает на правый вертикальный символ пары, возле дверной дуги помещения 2. Полная надпись видна на тайле 7."
+          }
+        ]
+      },
+      {
+        "id": "hvac_17",
+        "identity": "Верхний горизонтальный внутренний блок возле подписи квартиры 403",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 7: выноска слева сверху указывает на верхний горизонтальный синий символ пары, справа от помещения 1 и выше подписи квартиры 403."
+          }
+        ]
+      },
+      {
+        "id": "hvac_18",
+        "identity": "Нижний горизонтальный внутренний блок рядом с hvac_17",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 7: наклонный участок выноски от надписи слева снизу заканчивается на нижнем горизонтальном символе пары у дверной дуги."
+          }
+        ]
+      },
+      {
+        "id": "hvac_19",
+        "identity": "Внутренний блок возле помещения 5 справа от ядра секции 3",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4, нижняя центральная часть: выноска от надписи справа снизу указывает на горизонтальный синий символ над дверной дугой помещения 5. Рядом слева расположен отдельный символ щита."
+          }
+        ]
+      },
+      {
+        "id": "hvac_20",
+        "identity": "Внутренний блок у помещения 2 слева от подписи квартиры 378",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4: выноска слева сверху заканчивается на горизонтальном синем символе у нижней границы помещения 2, слева от подписи квартиры 378."
+          }
+        ]
+      },
+      {
+        "id": "hvac_21",
+        "identity": "Внутренний блок справа от подписи квартиры 378",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4: выноска справа сверху указывает на вертикальный синий символ на стене слева от лестничного ядра и справа от подписи квартиры 378."
+          }
+        ]
+      },
+      {
+        "id": "hvac_22",
+        "identity": "Внутренний блок у помещения 5 в центральной части тайла 7",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 7: выноска слева снизу заканчивается на нижней стороне горизонтального синего символа справа от помещения 5, рядом с дверью."
+          }
+        ]
+      },
+      {
+        "id": "hvac_23",
+        "identity": "Внутренний блок у помещения 3 возле подписи квартиры 377",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 7: длинная выноска слева указывает на вертикальный синий символ у правой стены помещения 3, ниже области подписи квартиры 377."
+          }
+        ]
+      },
+      {
+        "id": "hvac_24",
+        "identity": "Горизонтальный внутренний блок у правого края тайла 7",
+        "scope": "Один физический символ в перекрытии тайлов",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 7 справа и тайл 8 слева показывают один горизонтальный синий символ над дверной дугой. На тайле 8 полная выноска от надписи справа снизу заканчивается на его нижней стороне."
+          }
+        ]
+      },
+      {
+        "id": "hvac_25",
+        "identity": "Вертикальный внутренний блок справа от hvac_24",
+        "scope": "Один физический символ в перекрытии тайлов",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 7 у правого края и тайл 8 слева: отдельный вертикальный синий символ возле двери, справа и выше hvac_24. На тайле 8 выноска справа снизу указывает на его правую сторону."
+          }
+        ]
+      },
+      {
+        "id": "hvac_26",
+        "identity": "Внутренний блок в нижней части тайла 5 возле помещения 7",
+        "scope": "Один физический символ; подпись повторно попадает в верхнее перекрытие тайла 8",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 5, нижняя часть: выноска справа снизу указывает на горизонтальный синий символ над дверью возле помещения 7. Слева ниже находится отдельный символ щита. На тайле 8 сверху видна относящаяся к этому месту надпись."
+          }
+        ]
+      },
+      {
+        "id": "hvac_27",
+        "identity": "Внутренний блок возле помещения 6 на тайле 8",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ035TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 8: выноска слева сверху заканчивается на левой стороне вертикального синего символа справа от помещения 6, рядом с дверной дугой."
+          }
+        ]
+      },
+      {
+        "id": "hvac_28",
+        "identity": "Внутренний блок возле помещения 1 и подписи квартиры 376",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "indoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ025TNAPKH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 8: выноска справа снизу заканчивается у правого торца горизонтального синего символа над дверью, ниже hvac_27 и слева от помещения 1."
+          }
+        ]
+      },
+      {
+        "id": "hvac_29",
+        "identity": "Наружный блок с обозначением К3.2.408",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "outdoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ080TXJ4KH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 0, нижняя левая часть: выноска от надписи слева заканчивается у верхней части вертикального наружного синего символа за линией фасада."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К3.2.408",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Обозначение находится под моделью в той же выноске; следующая строка — «Наружный блок»."
+          }
+        ]
+      },
+      {
+        "id": "hvac_30",
+        "identity": "Наружный блок с обозначением К3.2.409",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "outdoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ080TXJ4KH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 1: выноска справа сверху указывает на правую сторону вертикального наружного синего символа за фасадом, рядом с помещением 6."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К3.2.409",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Под моделью видны отдельные строки «К3.2.409» и «Наружный блок»."
+          }
+        ]
+      },
+      {
+        "id": "hvac_31",
+        "identity": "Наружный блок с обозначением К3.2.407",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "outdoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AR12TXHQASIXUA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 3, слева между осями Б4₁ и Б5₁: выноска снизу слева заканчивается на левой стороне вертикального наружного синего символа. Внутренний блок hvac_09 имеет отдельную выноску."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К3.2.407",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Обозначение расположено под моделью, над строкой «Наружный блок»."
+          }
+        ]
+      },
+      {
+        "id": "hvac_32",
+        "identity": "Верхняя выноска AJ068TXJ3KH/EA — К3.2.406 к наружному узлу возле ЛК4",
+        "scope": "Отдельная выноска и ее графическая цель; самостоятельность физического экземпляра в наложенном узле не установлена",
+        "kind": "outdoor_unit_target_unresolved",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ068TXJ3KH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Полная верхняя надпись видна внизу тайла 1; ее продолжение и лидер видны на тайле 4. Лидер идет к верхней части тесно наложенного синего наружного узла справа от ЛК4."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К3.2.406",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Под верхней моделью буквально указано «К3.2.406», затем «Наружный блок». Не заменено другим номером."
+          },
+          {
+            "name": "physical_symbol_resolution",
+            "value": "Границы отдельного экземпляра относительно целей hvac_33 и hvac_34 неразличимы уверенно",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4: три выноски сходятся к узкому вертикальному наружному узлу с близкими или наложенными контурами. Три выноски сами по себе не приняты за подтвержденное количество физических блоков."
+          }
+        ]
+      },
+      {
+        "id": "hvac_33",
+        "identity": "Средняя выноска AJ068TXJ3KH/EA — К3.2.406 к наружному узлу возле ЛК4",
+        "scope": "Отдельная выноска и ее графическая цель; самостоятельность физического экземпляра в наложенном узле не установлена",
+        "kind": "outdoor_unit_target_unresolved",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ068TXJ3KH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Надпись видна внизу тайла 1 и полностью в верхней части тайла 4. От нее идет отдельный лидер к тому же тесно наложенному наружному узлу справа от ЛК4, ниже цели верхней выноски."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К3.2.406",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Повторно буквально указано «К3.2.406», затем «Наружный блок». Повтор сохранен; обозначение не исправлено по последовательности."
+          },
+          {
+            "name": "physical_symbol_resolution",
+            "value": "Отдельная выноска различима; отдельный физический контур относительно hvac_32 и hvac_34 не установлен",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4: наконечник и контуры находятся в компактной зоне наложения линий наружного узла."
+          }
+        ]
+      },
+      {
+        "id": "hvac_34",
+        "identity": "Нижняя выноска AJ080TXJ4KH/EA — К3.2.403 к наружному узлу возле ЛК4",
+        "scope": "Отдельная выноска и ее графическая цель; самостоятельность физического экземпляра в наложенном узле не установлена",
+        "kind": "outdoor_unit_target_unresolved",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ080TXJ4KH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4: нижняя из трех выносок над наружным узлом справа от ЛК4. Ее лидер заканчивается в нижней части наложенных вертикальных синих контуров."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К3.2.403",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Под моделью читаются «К3.2.403» и «Наружный блок»."
+          },
+          {
+            "name": "physical_symbol_resolution",
+            "value": "Графическая цель локализована в общем наружном узле; ее самостоятельный контур не выделен уверенно",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Лидер отличим от двух соседних; близость и наложение синих линий не позволяют надежно установить границы всех физических блоков."
+          }
+        ]
+      },
+      {
+        "id": "hvac_35",
+        "identity": "Наружный блок с обозначением К2.2.378",
+        "scope": "Один физический символ в перекрытии тайлов",
+        "kind": "outdoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ068TXJ3KH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4 справа показывает горизонтальный наружный символ слева от hvac_36. На тайле 5 этот символ обрезан левым краем, но видна полная надпись и лидер, идущий к нему."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К2.2.378",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 5: под моделью буквально указаны «К2.2.378» и «Наружный блок»."
+          }
+        ]
+      },
+      {
+        "id": "hvac_36",
+        "identity": "Наружный блок с обозначением К2.2.377",
+        "scope": "Один физический символ в перекрытии тайлов",
+        "kind": "outdoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ080TXJ4KH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4 справа и тайл 5 слева: отдельный горизонтальный наружный символ справа от hvac_35. На тайле 5 лидер от надписи сверху заканчивается на его верхней стороне."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К2.2.377",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 5: под моделью видны «К2.2.377» и «Наружный блок»."
+          }
+        ]
+      },
+      {
+        "id": "hvac_37",
+        "identity": "Наружный блок с обозначением К2.2.376",
+        "scope": "Отдельный символ оборудования на плане",
+        "kind": "outdoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ068TXJ3KH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 5: выноска сверху справа заканчивается на верхней стороне горизонтального наружного синего символа над лестничным ядром, заметно правее hvac_36."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К2.2.376",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Под моделью находятся строки «К2.2.376» и «Наружный блок»."
+          }
+        ]
+      },
+      {
+        "id": "hvac_38",
+        "identity": "Наружный блок с обозначением К3.2.404",
+        "scope": "Один физический символ; частичная выноска в соседнем тайле не является дополнительным экземпляром",
+        "kind": "outdoor_unit",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AJ068TXJ3KH/EA",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 7, нижняя левая часть: выноска снизу слева заканчивается на нижней стороне горизонтального наружного синего символа у фасада возле оси В3₁. Начало этой надписи также попадает на правый край тайла 6."
+          },
+          {
+            "name": "positional_designation_literal",
+            "value": "К3.2.404",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Под моделью буквально читается «К3.2.404», затем «Наружный блок». Обозначение сохранено независимо от соседних фоновых подписей квартир."
+          }
+        ]
+      },
+      {
+        "id": "hvac_39",
+        "identity": "Фанкойл рядом с ЛК4 в верхней части коридора секции 3",
+        "scope": "Один физический символ в перекрытии тайлов",
+        "kind": "fan_coil",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AM017KNLDEH/EU",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 3 справа: выноска справа заканчивается на правой стороне крупного квадратного синего символа в коридоре возле ЛК4. Под моделью написано «Фанкойл». На левом крае тайла 4 повторяется часть этой выноски."
+          }
+        ]
+      },
+      {
+        "id": "hvac_40",
+        "identity": "Фанкойл у нижнего поворота коридора секции 3",
+        "scope": "Один физический символ в перекрытии тайлов",
+        "kind": "fan_coil",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AM017KNLDEH/EU",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Тайл 4, нижняя левая часть: выноска слева сверху указывает на крупный квадратный синий символ у поворота коридора, ниже области помещения 322. Под моделью написано «Фанкойл». Этот же узел частично попадает на правый нижний край тайла 3 и верхний левый участок тайла 7."
+          }
+        ]
+      },
+      {
+        "id": "hvac_41",
+        "identity": "Фанкойл в коридоре секции 2",
+        "scope": "Один физический символ в перекрытии четырех тайлов",
+        "kind": "fan_coil",
+        "source_refs": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "observed_parameters": [
+          {
+            "name": "model_literal",
+            "value": "AM017KNLDEH/EU",
+            "unit": null,
+            "source_ref": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "graphic_observation": "Один крупный квадратный синий символ виден в нижней правой части тайла 4, нижней левой части тайла 5, верхней правой части тайла 7 и верхней левой части тайла 8. Полная выноска на тайлах 4 и 7 указывает на его левую сторону; под моделью написано «Фанкойл»."
+          }
+        ]
+      }
+    ],
+    "object_inventory_coverage": [
+      {
+        "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+        "status": "needs_data",
+        "object_ids": [
+          "hvac_01",
+          "hvac_02",
+          "hvac_03",
+          "hvac_04",
+          "hvac_05",
+          "hvac_06",
+          "hvac_07",
+          "hvac_08",
+          "hvac_09",
+          "hvac_10",
+          "hvac_11",
+          "hvac_12",
+          "hvac_13",
+          "hvac_14",
+          "hvac_15",
+          "hvac_16",
+          "hvac_17",
+          "hvac_18",
+          "hvac_19",
+          "hvac_20",
+          "hvac_21",
+          "hvac_22",
+          "hvac_23",
+          "hvac_24",
+          "hvac_25",
+          "hvac_26",
+          "hvac_27",
+          "hvac_28",
+          "hvac_29",
+          "hvac_30",
+          "hvac_31",
+          "hvac_32",
+          "hvac_33",
+          "hvac_34",
+          "hvac_35",
+          "hvac_36",
+          "hvac_37",
+          "hvac_38",
+          "hvac_39",
+          "hvac_40",
+          "hvac_41"
+        ],
+        "reason": "Просмотрены все девять тайлов единого блока. Зарегистрированы различимые символы оборудования на плане и отдельные выноски к наложенному наружному узлу. Перекрытия тайлов объединены. Записи hvac_32–hvac_34 представляют три различимые выноски с неопределенным разделением физических контуров, поэтому число записей не является подтвержденным количеством оборудования. Повторное обозначение К3.2.406 сохранено буквально. У внутренних блоков и фанкойлов отдельные позиционные обозначения в их выносках не видны; модели не использованы как идентификаторы экземпляров. На тайле 2 оборудования рассматриваемого плана нет: схема подключения, таблица и фрагменты типовых узлов находятся вне этого прохода. Иллюстрации оборудования на схеме подключения тайлов 1–2 не засчитаны как физические экземпляры. Таблицы, примечания, электрические щиты и типовые строительные узлы не инвентаризировались.",
+        "unreadable_regions": [
+          {
+            "location": "Тайл 4, наружный узел справа от ЛК4, куда сходятся три выноски из верхней части изображения",
+            "reason": "Близкие и наложенные синие контуры и наконечники лидеров не позволяют уверенно разделить физические символы, соответствующие hvac_32, hvac_33 и hvac_34. Для окончательного разделения экземпляров нужен более подробный вид этого участка."
+          },
+          {
+            "location": "Границы тайлов 0–1, 1–4, 3–4, 4–5, 6–7 и 7–8",
+            "reason": "Некоторые символы и надписи обрезаны отдельными тайлами; где продолжение видно в соседнем тайле, записи объединены. Обрезанные части не восстановлены по последовательности обозначений или предполагаемому количеству."
+          }
+        ]
+      }
+    ],
+    "object_operation_results": [],
+    "text_findings": []
+  },
+  "input_tokens": 38919,
+  "output_tokens": 13055,
+  "cost_usd": 0.0,
+  "duration_ms": 270436,
+  "model": "codex/gpt-6-astra",
+  "is_error": false,
+  "error_message": "",
+  "cached_tokens": 10240,
+  "cache_write_tokens": 0,
+  "reasoning_tokens": 2445,
+  "cost_source": "subscription",
+  "response_id": "01a1c72f-7885-7b93-810c-960f02ae6d50",
+  "finish_reason": "stop"
+}

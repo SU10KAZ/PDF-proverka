@@ -36,6 +36,23 @@
       "error": ""
     },
     {
+      "control": "EOM_instance_identity",
+      "directory": "/tmp/auditmanager_eom_instance_operations_20261110/hvac_32",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "6bffae35059f481abee2fd59d388b907930a1e7529ba730c4e9c91bcf7d2771f",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 44902,
+      "input_tokens": 45612,
+      "output_tokens": 1565,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
       "control": "EOM_cable_inventory",
       "directory": "/tmp/auditmanager_eom_cable_inventory_control_20261110/EOM/execution/object_inventory_000",
       "status": "response_received",
@@ -863,14 +880,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 45,
+  "completed_requests": 46,
   "pending_results": 0,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 1325405,
-  "reported_output_tokens": 491631,
+  "reported_input_tokens": 1371017,
+  "reported_output_tokens": 493196,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 164.092,
+  "completed_request_minutes_sum": 164.84,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

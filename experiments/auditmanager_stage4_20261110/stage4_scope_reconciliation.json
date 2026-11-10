@@ -163,13 +163,14 @@
     {
       "hypothesis": "H03",
       "control": "EOM separate instances and repeated positional identifier H03-P02/N02",
-      "state": "inventory_label_error_detail_control_running",
+      "state": "literal_labels_recovered_identity_operation_running",
       "root": "/tmp/auditmanager_eom_instance_inventory_control_20261110/EOM",
-      "process_receipt": "/tmp/auditmanager_eom_instance_graphic_process_20261110/process.json",
+      "process_receipt": "/tmp/auditmanager_eom_instance_operations_process_20261110/process.json",
       "evidence": [
         "EOM_instance_inventory_manifest.json",
         "EOM_instance_inventory_assessment.json",
-        "EOM_instance_graphic_manifest.json"
+        "EOM_instance_graphic_manifest.json",
+        "EOM_instance_graphic_assessment.json"
       ],
       "expected_answer_hidden": true,
       "known_source_selection": true,
@@ -179,11 +180,12 @@
     {
       "hypothesis": "H04",
       "control": "EOM cable full execution H04-P01 and bounded shortage limitation H04-N02",
-      "state": "source_inventory_running",
+      "state": "graphic_line_extraction_incomplete",
       "root": "/tmp/auditmanager_eom_cable_inventory_control_20261110/EOM",
-      "process_receipt": "/tmp/auditmanager_eom_cable_process_20261110/process.json",
+      "process_receipt": null,
       "evidence": [
-        "EOM_cable_inventory_manifest.json"
+        "EOM_cable_inventory_manifest.json",
+        "EOM_cable_inventory_assessment.json"
       ],
       "known_source_selection": true,
       "expected_answer_hidden": true,

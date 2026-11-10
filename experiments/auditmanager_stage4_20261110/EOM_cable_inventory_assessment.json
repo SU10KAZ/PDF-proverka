@@ -1,0 +1,12 @@
+{
+  "control_id": "H04-P01/N02",
+  "objects": 131,
+  "findings": 0,
+  "target_line_ids_present": false,
+  "graphic_source_status": "Both drawings needs_data; branch cable labels not resolved.",
+  "text_source_status": "Two specification TEXT blocks reported inventoried; not yet independently verified row by row.",
+  "control_passed": false,
+  "next_step": "Recover literal branch IDs, cable execution/section/length and consumer from enlarged GRAPHIC blocks, then compare actual model-extracted lines to authoritative specification.",
+  "no_shortage_proven": true,
+  "production_acceptance": false
+}
