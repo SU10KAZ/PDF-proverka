@@ -1,0 +1,14 @@
+{
+  "model": "claude/claude-sonnet-5-5",
+  "request_sha256": "5b10f033c10d7c20dac070362f5d613481a0dd9b1e88a5108598c15d669e143d",
+  "message_chars": 66760,
+  "images": 8,
+  "image_bytes": 16055739,
+  "text_blocks": 25,
+  "source_search_revision": 4,
+  "engineer_answers_or_evaluation_outcomes_included": false,
+  "new_calls": 1,
+  "automatic_retries": 0,
+  "cost": "Claude subscription quota; monetary maximum unknown",
+  "known_case_not_blind": true
+}
