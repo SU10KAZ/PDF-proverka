@@ -483,5 +483,14 @@
     },
     "later_stages": "Quality/cost, preservation acceptance, six-project regression plus new-project transfer and production release remain unaccepted.",
     "rule": "Do not count additional preparation tests as demonstrated audit-quality improvement."
+  },
+  "eom_astra_known_pair_pilot": {
+    "status": "passed_bounded_control_pair",
+    "report": "experiments/auditmanager_stage4_20261110/EOM_astra_pilot_assessment.json",
+    "model": "codex/gpt-6-astra",
+    "duration_ms": 150245,
+    "new_independent_audit": false,
+    "automatic_application": false,
+    "remaining": "Graphic/context follow-up controls, semantic application integration and full six-project candidate audits remain incomplete."
   }
 }

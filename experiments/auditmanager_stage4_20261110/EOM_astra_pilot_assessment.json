@@ -1,0 +1,56 @@
+{
+  "scope": "Known-fragment verifier pilot; not independent discovery or six-project acceptance",
+  "request_sha256": "977847d2595261161e3f2379df917ef7ea737765de8f63631100135b80639a1e",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 150245,
+  "input_tokens": 26496,
+  "output_tokens": 7315,
+  "cached_tokens": 9728,
+  "cost_source": "subscription",
+  "monetary_cost_known": false,
+  "all_exact_quotes_verified": true,
+  "arithmetic_checks": [
+    {
+      "finding_id": "F-003",
+      "claim_id": "C1",
+      "source_rows": 24,
+      "all_model_operands_match_source": true,
+      "sum": "94.5"
+    },
+    {
+      "finding_id": "F-003",
+      "claim_id": "C2",
+      "source_rows": 24,
+      "all_model_operands_match_source": true,
+      "sum": "89.9"
+    },
+    {
+      "finding_id": "F-040",
+      "block_id": "blk_99098cf6f63347aca6b7e76e43ab3336",
+      "source_rows": 89,
+      "all_model_operands_match_source": true,
+      "sum": "1636.5"
+    },
+    {
+      "finding_id": "F-040",
+      "block_id": "blk_53e5d0ecb2fe4e9480416db361afefda",
+      "source_rows": 89,
+      "all_model_operands_match_source": true,
+      "sum": "1636.5"
+    }
+  ],
+  "control_pair_passed": true,
+  "semantic_assessment": {
+    "F-003": "Retain arithmetic discrepancy 0.4 kW. Cause, fire simultaneity and VRU-2 identity remain unproven. Model correctly separates these claims. C6 combines justified checking with unproven mandatory changes; do not suppress the supported core because C6 is needs_data.",
+    "F-040": "Reject alleged sum mismatch: both full 89-row inventories sum to 1636.5. Missing plan is not evidence of a new defect and must not automatically create an engineer question."
+  },
+  "automatic_application": false,
+  "stage4_complete": false,
+  "limitations": [
+    "One request, two known cases, one discipline, no graphics",
+    "No demonstrated independent finding recall",
+    "No proof of OS-level history isolation",
+    "Receipt validation alone does not accept semantics",
+    "No extrapolation of single-call duration to whole-project audits"
+  ]
+}
