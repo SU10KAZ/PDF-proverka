@@ -108,3 +108,18 @@ def test_response_cannot_close_operation_that_was_not_requested(tmp_path):
     assert statuses['quantity_balance']=='not_checked'
     assert result['object_operation_results']==receipts[:1]
     assert result['unverified_operation_receipts']==receipts[1:]
+
+
+def test_operation_requirement_source_survives_context_recovery(tmp_path):
+    md=tmp_path/'document.md'
+    md.write_text('## Page 1\n### BLOCK #1 [TEXT]: b\nОГМ 5 ведомость\n'
+                  '### BLOCK #2 [TEXT]: notes\nОбщие указания: сварные соединения\n'
+                  '### BLOCK #3 [TEXT]: counterpart\nОГМ 5 узлы\n')
+    obj={'id':'A','identity':'ОГМ 5','scope':'sheet 4','kind':'assembly','source_refs':['b']}
+    receipt={'object_id':'A','operation':'requirement_applicability','status':'needs_data',
+             'reason':'Need nodes','source_refs':['b','notes','unknown'], 'context_queries':['ОГМ 5']}
+    (tmp_path/'02_text_analysis.json').write_text(json.dumps({'object_registry':[obj],'object_operation_results':[receipt]}))
+    packet=json.loads(build_object_operation_passes(tmp_path,md)[0].messages[-1]['content'])
+    assert 'notes' in packet['allowed_source_refs']
+    assert any(b['block_id']=='notes' and 'сварные соединения' in b['content'] for b in packet['source_context'])
+    assert 'unknown' not in packet['allowed_source_refs']

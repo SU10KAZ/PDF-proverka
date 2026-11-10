@@ -78,6 +78,9 @@
   "automatic_retries": 0,
   "historical_answers_sent": false,
   "cost": "Codex subscription quota; monetary maximum unknown",
-  "dispatch_status": "started_after_specific_user_approval",
-  "request_sent": true
+  "dispatch_status": "finished_after_specific_user_approval",
+  "request_sent": true,
+  "model_error": false,
+  "duration_ms": 66393,
+  "semantic_verified": false
 }

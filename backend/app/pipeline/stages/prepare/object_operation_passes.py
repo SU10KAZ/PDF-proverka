@@ -37,6 +37,12 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8):
             continue
         from .recovery_context import search_md_context, expand_operation_queries
         source_ids = list(obj['source_refs'])
+        # An operation may cite a requirement or counterpart not listed among
+        # the object's own extraction sources. Keep those primary references.
+        for operation in operations:
+            refs = operation.get('receipt', {}).get('source_refs', [])
+            if isinstance(refs,list):
+                source_ids.extend(ref for ref in refs if isinstance(ref,str) and ref in blocks)
         searches, new_by_operation = {}, {}
         eligible = []
         for operation in operations:

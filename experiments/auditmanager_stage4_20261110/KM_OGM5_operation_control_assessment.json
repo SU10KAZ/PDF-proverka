@@ -1,0 +1,30 @@
+{
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 66393,
+  "input_tokens": 45039,
+  "output_tokens": 2135,
+  "findings": 0,
+  "operation_statuses": {
+    "identity_across_views": "reported_checked",
+    "quantity_balance": "not_checked",
+    "dimension_consistency": "needs_data",
+    "requirement_applicability": "needs_data",
+    "document_links": "needs_data"
+  },
+  "semantic_verified": false,
+  "notes_recovery": {
+    "block_id": "blk_02786cefba4641928c7e149eda44f872",
+    "present_in_original_packet002": true,
+    "omitted_from_executed_followup": true,
+    "cause": "Builder used object source_refs, omitted additional operation receipt source_refs.",
+    "present_in_repaired_request": true,
+    "repaired_request_dispatched": false
+  },
+  "limits": [
+    "Identity is model-reported, not independently certified here.",
+    "Quantity was not requested in this follow-up; not_checked in its local ledger does not overwrite the earlier bounded receipt.",
+    "Dimensions remain needs_data: 648 versus 650 cannot be compared without endpoints and nodes.",
+    "Requirements and document links remain needs_data; omitted graphics and revision applicability unresolved."
+  ],
+  "result_sha256": "12eaa427fd68d225debd60d610919cb1039d4c13c7356375b73cea285567a895"
+}
