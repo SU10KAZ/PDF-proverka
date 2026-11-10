@@ -504,5 +504,16 @@
     "regions_checked": 8,
     "automatic_application": false,
     "model_driven_context_retrieval_proven": false
+  },
+  "evidence_level_disposition_control": {
+    "status": "passed_local_replay",
+    "report": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_evidence_disposition_replay.json",
+    "claims_preserved": 3,
+    "wrong_or_incomplete_regions_excluded": 2,
+    "broad_context_not_counted_as_support": 1,
+    "tests_passed": 24,
+    "automatic_visual_detection": false,
+    "production_output_integration": false,
+    "remaining": "Independent visual validation and claim sufficiency, model-driven context retrieval, and final-output integration remain unproven."
   }
 }
