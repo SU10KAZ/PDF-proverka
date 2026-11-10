@@ -7,6 +7,42 @@ from copy import deepcopy
 from backend.app.pipeline.stages.text_analysis.requirement_checks import authoritative_text_blocks
 
 
+def attach_pending_source_reviews(findings, known_block_ids):
+    """Queue lineage relevance independently of direct-reference structural checks.
+
+    Called after the corrector, so page repairs and phantom-reference cleanup
+    still run. This adds review metadata only, never rewrites a claim or severity.
+    """
+    changed = 0
+    for finding in findings if isinstance(findings, list) else []:
+        if not isinstance(finding, dict):
+            continue
+        lineage = finding.get('source_candidate_lineage', [])
+        source_ids = finding.get('source_finding_ids', [])
+        if not isinstance(lineage, list) or not isinstance(source_ids, list):
+            continue
+        requests = []
+        for receipt in lineage:
+            if not isinstance(receipt, dict) or receipt.get('status') != 'requires_semantic_review':
+                continue
+            sid = receipt.get('source_finding_id')
+            if not isinstance(sid, str) or sid not in source_ids:
+                continue
+            refs = receipt.get('existing_block_ids', [])
+            existing = list(dict.fromkeys(b for b in refs if isinstance(b, str) and b in known_block_ids)) if isinstance(refs, list) else []
+            if existing:
+                requests.append({'source_finding_id': sid, 'source_claim': receipt.get('source_claim'),
+                                 'block_ids': existing})
+        if not requests:
+            continue
+        updates = {'requires_human_review': True, 'source_evidence_review_status': 'pending',
+                   'source_review_requests': requests}
+        if any(finding.get(k) != v for k, v in updates.items()):
+            finding.update(updates)
+            changed += 1
+    return changed
+
+
 def build_source_review_queue(findings, md, *, max_chars=100000):
     findings = findings if isinstance(findings, list) else []
     counts = Counter(f.get('id') for f in findings if isinstance(f, dict) and isinstance(f.get('id'), str))

@@ -1,6 +1,8 @@
 from copy import deepcopy
+import json
 
 from backend.app.pipeline.stages.findings_verify.source_review_queue import build_source_review_queue
+from backend.app.pipeline.stages.findings_verify.source_review_queue import attach_pending_source_reviews
 
 
 MD = '## Page 1\n### BLOCK #1 [TEXT]: t\nExact source 12\n### BLOCK #2 [GRAPHIC]: g\nModel summary\n'
@@ -47,3 +49,38 @@ def test_ambiguous_finding_or_block_identity_cannot_be_ready():
     packet = build_source_review_queue([finding()], duplicate)['packets'][0]
     assert packet['unresolved_block_ids'] == ['t']
     assert packet['sources'] == []
+
+
+def test_direct_evidence_does_not_bypass_lineage_review_and_stale_links_are_ignored():
+    f = {'id': 'F-1', 'problem': 'Final claim', 'severity': 'critical', 'related_block_ids': ['t'],
+         'source_finding_ids': ['T-1'], 'source_candidate_lineage': [
+             {'source_finding_id': 'T-1', 'status': 'requires_semantic_review',
+              'source_claim': 'Original claim', 'existing_block_ids': ['t', 'missing']},
+             {'source_finding_id': 'T-2', 'status': 'requires_semantic_review',
+              'source_claim': 'Stale claim', 'existing_block_ids': ['t']} ]}
+    before = deepcopy(f)
+    assert attach_pending_source_reviews([f], {'t'}) == 1
+    assert attach_pending_source_reviews([f], {'t'}) == 0
+    assert all(f[k] == v for k, v in before.items())
+    assert f['source_review_requests'] == [{'source_finding_id': 'T-1', 'source_claim': 'Original claim', 'block_ids': ['t']}]
+    assert build_source_review_queue([f], MD)['pending_count'] == 1
+
+
+def test_structural_phantom_cleanup_still_runs_before_queue_attachment(tmp_path):
+    from backend.app.pipeline.stages.findings_verify.runner import _run_deterministic_phase
+    f = {'id': 'F-1', 'problem': 'Claim', 'severity': 'КРИТИЧЕСКОЕ', 'related_block_ids': ['phantom'],
+         'source_finding_ids': ['T-1'], 'source_candidate_lineage': [
+             {'source_finding_id': 'T-1', 'status': 'requires_semantic_review',
+              'source_claim': 'Source claim', 'existing_block_ids': ['t']}]}
+    (tmp_path/'03_findings.json').write_text(json.dumps({'findings': [f]}))
+    (tmp_path/'01_blocks_analysis.json').write_text(json.dumps({'block_analyses': [{'block_id': 't', 'page': 1}]}))
+    (tmp_path/'02_work').mkdir()
+    (tmp_path/'02_work/document.md').write_text(MD)
+    stats = _run_deterministic_phase(tmp_path, 'synthetic-queue-test')
+    assert not stats['source_review_queue_error']
+    assert stats['phantom_cleaned'] == 1
+    after = json.loads((tmp_path/'03_findings.json').read_text())['findings'][0]
+    assert after['related_block_ids'] == []
+    assert after['severity'] == f['severity'] and after['problem'] == f['problem']
+    assert after['source_evidence_review_status'] == 'pending'
+    assert stats['source_reviews_pending'] == 1

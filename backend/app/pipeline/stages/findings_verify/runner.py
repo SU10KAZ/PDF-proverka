@@ -88,16 +88,26 @@ def _run_deterministic_phase(output_dir: Path, project_id: str) -> dict:
     corr = asyncio.run(run_deterministic_corrector(
         output_dir, project_id=project_id, on_log=None, write=True,
     ))
-    from .source_review_queue import build_source_review_queue
+    from .source_review_queue import build_source_review_queue, attach_pending_source_reviews
     from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+    from backend.app.pipeline.stages.findings_review.deterministic_critic import build_index, iter_findings
     queue_error, pending = None, None
     try:
         # Never leave a previous run's review inputs available after a failed rebuild.
         (output_dir / '03_source_review_queue.json').unlink(missing_ok=True)
         current = json.loads((output_dir / '03_findings.json').read_text(encoding='utf-8'))
+        findings = iter_findings(current)
+        graph_path = output_dir / 'document_graph.json'
+        blocks_path = output_dir / '01_blocks_analysis.json'
+        graph = json.loads(graph_path.read_text(encoding='utf-8')) if graph_path.exists() else {}
+        block_data = json.loads(blocks_path.read_text(encoding='utf-8')) if blocks_path.exists() else {}
+        index = build_index(block_data, graph)
+        known = index.image_block_ids | index.text_block_ids
+        if attach_pending_source_reviews(findings, known):
+            (output_dir / '03_findings.json').write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding='utf-8')
         md_path = resolve_document_markdown(output_dir)
         md = md_path.read_text(encoding='utf-8') if md_path else ''
-        queue = build_source_review_queue(current.get('findings', []) if isinstance(current, dict) else current, md)
+        queue = build_source_review_queue(findings, md)
         (output_dir / '03_source_review_queue.json').write_text(
             json.dumps(queue, ensure_ascii=False, indent=2), encoding='utf-8')
         pending = queue['pending_count']
