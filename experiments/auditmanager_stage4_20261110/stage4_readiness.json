@@ -165,7 +165,7 @@
     "restricted_features_probe": "codex_restricted_features_probe.json",
     "full_candidate_runs_started": false,
     "candidate_frozen": false,
-    "model_jobs_live": true,
+    "model_jobs_live": false,
     "live_job_observation_utc": "2026-11-10T16:52:33.111064+00:00",
     "live_job_pid": null,
     "live_job_scope": "KM source inventory completed 14/14; no active model jobs at this snapshot"
@@ -1031,25 +1031,55 @@
     "technical_project_defects": 0
   },
   "km_graphic_recovery_control": {
-    "status": "running",
-    "session_id": 48785,
+    "status": "completed",
+    "session_id": null,
     "model": "codex/gpt-6-astra",
     "packets": 2,
     "source_blocks": 8,
     "automatic_retries": 0,
     "history_supplied": false,
-    "completed_packets": 1,
+    "completed_packets": 2,
     "total_packets": 2,
     "first_packet_reported_inventoried_after_validation": 2,
     "first_packet_still_unresolved": 2,
     "first_packet_source_confirmed_annotation_conflicts": 2,
     "first_packet_engineer_accepted_new_findings": 0,
-    "assessment": "KM_graphic_recovery_assessment.json"
+    "assessment": "KM_graphic_recovery_assessment.json",
+    "source_blocks_reported_inventoried": 5,
+    "source_blocks_still_unresolved": 3,
+    "objects": 29,
+    "observed_parameters": 165,
+    "duration_minutes": 9.8426,
+    "confirmed_arithmetic_annotation_conflicts": 2,
+    "engineer_accepted_new_findings": 0
   },
   "km_clipped_axis_recovery": {
     "artifact": "KM_clipped_axis_recovery.json",
     "specific_axis_visually_recovered": true,
     "whole_block_complete": false
   },
-  "km_clipped_graphic_context_review": "KM_clipped_graphic_context_review.json"
+  "km_clipped_graphic_context_review": "KM_clipped_graphic_context_review.json",
+  "object_operation_followup_runtime": {
+    "implementation": "backend/app/pipeline/stages/prepare/object_operation_followup.py",
+    "runtime_caller": "backend/app/services/llm/claude_runner.py::_run_codex_targeted_findings_merge",
+    "enabled_by": "AUDIT_OBJECT_CONTEXT_FOLLOWUPS=1",
+    "default_enabled": false,
+    "max_followup_revisions": 3,
+    "source_bindings": "Executor-owned MD and image hashes, separate from model messages; verified before and after dispatch.",
+    "behavior": [
+      "Preserve original context and all previous candidate payloads.",
+      "Continue only on scoped needs_data with additional source context.",
+      "Keep explicit omitted-source backlog and unresolved statuses.",
+      "Source mutation prevents dispatch or admission; classic base retained.",
+      "Per-pass files and all candidate provenance retained by existing targeted executor."
+    ],
+    "tests_passed": 40,
+    "test_mode": "Fake provider through actual targeted executor; no live run of integrated opt-in path yet.",
+    "provider_bridge_changed": false,
+    "limits": [
+      "Provider bridge executes only frozen planned roles; no extra unplanned continuation calls added there.",
+      "A flag and local tests do not constitute candidate freeze, quality acceptance or production rollout.",
+      "Standalone live OGM5 workflow and real response retention are separate evidence from this runtime integration."
+    ]
+  }
 }

@@ -1,11 +1,9 @@
 {
   "manifest_sha256": "8272e4586f32da58ea0ab762a20f15b1c2d916e2977d0e68009fab5cefba2e46",
   "baseline_coverage_sha256": "58a72975d62d7ea702a204056a033e75dbacc1e5b9df3e0f4bf02b4aa7d6d61e",
-  "completed_packets": 1,
+  "completed_packets": 2,
   "total_packets": 2,
-  "pending_packets": [
-    1
-  ],
+  "pending_packets": [],
   "packets": [
     {
       "packet": 0,
@@ -203,10 +201,174 @@
         }
       ],
       "semantic_verified": false
+    },
+    {
+      "packet": 1,
+      "status": "response_assessed_structurally",
+      "result_sha256": "b45df745939d1df83796694d924e0e7b43697df4a0ad26731ba9d36c5aea3258",
+      "duration_ms": 273451,
+      "input_tokens": 53619,
+      "output_tokens": 13220,
+      "objects": 12,
+      "invalid_objects": [],
+      "observed_parameters": 70,
+      "parameter_provenance_issues": [],
+      "unexpected_operation_receipts": [],
+      "source_changes": [
+        {
+          "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+          "before": {
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+              "status": "needs_data",
+              "object_ids": [
+                "object_inventory_001:A1",
+                "object_inventory_001:A2",
+                "object_inventory_001:A3",
+                "object_inventory_001:A4"
+              ],
+              "reason": "Все четыре панели просмотрены, марки и основные размеры зарегистрированы. Часть мелких позиционных выносок и концевых размеров недостаточно разборчива для полной проверки состава и размерных цепей; требуются более читаемые графические фрагменты."
+            }
+          },
+          "after": {
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "status": "reported_inventoried",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+              "status": "inventoried",
+              "object_ids": [
+                "view_ogm1",
+                "view_ogm2",
+                "view_ogm3",
+                "view_ogm4_block_b6"
+              ],
+              "reason": "Просмотрены все четыре плитки. Зарегистрированы четыре различимых общих вида ОГМ1–ОГМ4, размеры, позиции и ссылки на узлы. Узловые кружки на общих видах являются ссылками, а не отдельными детальными видами.",
+              "unreadable_regions": []
+            }
+          }
+        },
+        {
+          "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+          "before": {
+            "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+              "status": "needs_data",
+              "object_ids": [
+                "object_inventory_008:p8_ogm5",
+                "object_inventory_008:p8_ogm6",
+                "object_inventory_008:p8_ogm7",
+                "object_inventory_008:p8_ogm8",
+                "object_inventory_008:p8_node_a"
+              ],
+              "reason": "Все четыре схемы осмотрены и марки зарегистрированы. Мелкие наклонные размеры поручней и часть концевых размерных привязок недостаточно надёжно читаются для полного сопоставления длин и подсчёта заполнения."
+            }
+          },
+          "after": {
+            "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+            "status": "reported_inventoried",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+              "status": "inventoried",
+              "object_ids": [
+                "view_ogm5",
+                "view_ogm6",
+                "view_ogm7",
+                "view_ogm8"
+              ],
+              "reason": "Просмотрены все четыре плитки. Зарегистрированы ОГМ5–ОГМ8. Части соседних видов в перекрытиях не посчитаны повторно. Ссылки на узлы листа 4 и сечение 3 сохранены без реконструкции отсутствующих деталей.",
+              "unreadable_regions": []
+            }
+          }
+        },
+        {
+          "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+          "before": {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+              "status": "needs_data",
+              "object_ids": [
+                "object_inventory_002:detail_a"
+              ],
+              "reason": "Изображения А, 1-1 и 5-5 осмотрены; узел, позиции и анкеры выявлены. Для полного учета размерных связей нужны однозначно читаемые границы стесненных цепей 40 в 1-1. Описание изображения не использовано для подмены графических данных."
+            }
+          },
+          "after": {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+              "status": "inventoried",
+              "object_ids": [
+                "node_a",
+                "view_section_1_1",
+                "view_section_5_5"
+              ],
+              "reason": "Четыре перекрывающиеся плитки рассмотрены совместно: они показывают один узел А и два его сечения. Обрезанные на границах отдельных плиток надписи и виды сопоставлены с соседними плитками.",
+              "unreadable_regions": [
+                {
+                  "region": "Сечение 5–5, верхняя размерная линия с надписями 80 и 60",
+                  "reason": "Числа читаются, но наложение выносных линий около стойки не позволяет уверенно различить привязку каждого конца к грани или оси. Значения сохранены без назначения точных физических концов."
+                }
+              ]
+            },
+            "reason": "declared_unreadable_regions"
+          }
+        },
+        {
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "before": {
+            "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+              "status": "needs_data",
+              "object_ids": [
+                "object_inventory_004:p4_16",
+                "object_inventory_004:p4_17",
+                "object_inventory_004:p4_18",
+                "object_inventory_004:p4_19"
+              ],
+              "reason": "Осмотрены все четыре панели ОГМ 1–ОГМ 4. Марки, форма и основные читаемые размеры зарегистрированы. Разрешение недостаточно для полного инвентаря мелких позиций деталей, всех узловых обозначений и перекрытых размеров; нужны отдельные изображения панелей с большей детализацией."
+            }
+          },
+          "after": {
+            "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "status": "reported_inventoried",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+              "status": "inventoried",
+              "object_ids": [
+                "view_ogm1",
+                "view_ogm2",
+                "view_ogm3",
+                "view_ogm4_block_eff"
+              ],
+              "reason": "Просмотрены все четыре плитки. Повторяющиеся изображения ОГМ1–ОГМ3 связаны с ранее зарегистрированными видами. Отличающийся вид ОГМ4 с размерами 400, 2730 и дополнительным опорным интервалом 450 зарегистрирован отдельно. Версионная или экземплярная связь двух изображений ОГМ4 по этим фрагментам не установлена.",
+              "unreadable_regions": []
+            }
+          }
+        }
+      ],
+      "raw_findings": [],
+      "semantic_verified": false
     }
   ],
-  "source_blocks_reported_inventoried": 2,
-  "source_blocks_still_unresolved": 2,
+  "source_blocks_reported_inventoried": 5,
+  "source_blocks_still_unresolved": 3,
   "baseline_artifacts_changed": false,
   "semantic_coverage_complete": false,
   "new_useful_defects_confirmed": 0,
