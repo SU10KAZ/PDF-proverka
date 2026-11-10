@@ -1,0 +1,67 @@
+{
+  "basis": "experiments/auditmanager_stage1_20261109/sequential_plan.json",
+  "stage4_complete": false,
+  "reason": "Separate original implementation/control gates from later acceptance gates. This does not waive any requirement.",
+  "stage4_required": [
+    "Selected hypotheses implemented in isolated main commits",
+    "Real controls with explicit positive/negative evidence or an explicit no-filter limitation",
+    "No unjustified project-specific universal tolerance"
+  ],
+  "later_stage_ownership": [
+    {
+      "requirement": "Every useful candidate tracked to final output or justified removal",
+      "stage": 6
+    },
+    {
+      "requirement": "Complete quality, model contribution and cost measurement",
+      "stage": 5
+    },
+    {
+      "requirement": "Six-project frozen comparison and new-project transfer",
+      "stage": 7
+    },
+    {
+      "requirement": "Production integration and release acceptance",
+      "stage": 8
+    }
+  ],
+  "current_gate_review": [
+    {
+      "id": "H01",
+      "evidence": "AK recovery plus EOM F-003/F-040 known-pair pilot; whole-queue quality belongs to later acceptance.",
+      "remaining": "Consolidate latest live and local controls against original hypothesis."
+    },
+    {
+      "id": "H02",
+      "evidence": "ITP model-query continuation and KM integrated executor live followup.",
+      "remaining": "Document linked-document unavailable behavior and bounded-context limits without claiming exhaustive retrieval."
+    },
+    {
+      "id": "H03",
+      "evidence": "KM whole-source 14-packet inventory and operation controls.",
+      "remaining": "Review scoped identity controls; unresolved coverage must remain explicit, not force perfect completeness as a finish criterion."
+    },
+    {
+      "id": "H04",
+      "evidence": "EOM27 active/reserve pair used manually extracted inputs.",
+      "remaining": "Live generic inventory of 17 EOM blocks now running; inspect both compared sets before accepting extraction."
+    },
+    {
+      "id": "H05",
+      "evidence": "VK question/negative pair, EOM arithmetic, KM physical-basis review.",
+      "remaining": "Consolidate real retained conflict versus incomparable-dimension controls."
+    },
+    {
+      "id": "H06",
+      "evidence": "ITP applicability control completed; old awaiting-approval descriptions stale.",
+      "remaining": "State exact supported scope; do not claim universal catalogue applicability."
+    },
+    {
+      "id": "H07",
+      "evidence": "Metadata/prescan controls, question routing, verifier/Excel and browser component checks.",
+      "remaining": "Real filter pairs or explicit suppression disabled; full output acceptance belongs to stage6."
+    }
+  ],
+  "no_scope_reduction": true,
+  "production_changed": false
+}
