@@ -1,4 +1,4 @@
-"""Known deferred AR candidate through actual recovery and one context hop.
+"""Known deferred AR/KM candidate through actual recovery and one context hop.
 
 No historical engineer decisions or expected answer are supplied. The archived
 current-run candidate is the task under review, not independent discovery.
@@ -18,6 +18,7 @@ from backend.app.pipeline.stages.findings_merge.candidate_coverage import write_
 BASE=Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001')
 ROOT=Path('/tmp/auditmanager_ar_deferred_control_20261110')
 BID='blk_b6f2b57505d842e2bdc39369c3b5d93a'
+DISCIPLINE='AR'
 
 
 def prepare():
@@ -68,7 +69,7 @@ async def main():
             with (folder/'attempt.json').open('x') as f:json.dump({'status':'started',**binding},f)
             print('START',index,sum(len(m['content']) for m in request.messages),'chars',len(request.image_paths),'images',flush=True)
             result=asdict(await run_codex_json_messages(request.messages,model='codex/gpt-6-astra',
-                reasoning_effort='high',timeout=900,stage='candidate_recovery',project_id='AR-deferred-control',
+                reasoning_effort='high',timeout=900,stage='candidate_recovery',project_id=DISCIPLINE+'-deferred-control',
                 image_paths=request.image_paths,allowed_tools=''))
             output.write_text(json.dumps(result,ensure_ascii=False,indent=2))
             (folder/'attempt.json').write_text(json.dumps({'status':'finished','is_error':result['is_error']}))
@@ -97,4 +98,13 @@ async def main():
     print('COMPLETE',flush=True)
 
 
-if __name__=='__main__':asyncio.run(main())
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--discipline',choices=['AR','KM'],default='AR')
+    args=parser.parse_args()
+    if args.discipline=='KM':
+        DISCIPLINE='KM'
+        BASE=Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001')
+        ROOT=Path('/tmp/auditmanager_km_deferred_control_20261110')
+        BID='blk_7315b3a722f946d48c34d31d1eac62ad'
+    asyncio.run(main())

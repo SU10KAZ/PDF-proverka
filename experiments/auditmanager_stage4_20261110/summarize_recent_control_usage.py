@@ -1,4 +1,4 @@
-"""Account once for each recent EOM/AR request, including failed attempts.
+"""Account once for each recent EOM/AR/KM request, including failed attempts.
 
 This bounded ledger is not the complete six-project cost comparison. Subscription
 counters are not money and missing counters are never interpreted as free usage.
@@ -19,6 +19,7 @@ def summarize():
         ('EOM_prescan', Path('/tmp/auditmanager_eom_prescan_recovery_control_20261110')),
         ('EOM_prescan_followup', Path('/tmp/auditmanager_eom_prescan_recovery_control_20261110/followup')),
         *[(f'AR_recovery_{i}', Path('/tmp/auditmanager_ar_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
+        *[(f'KM_recovery_{i}', Path('/tmp/auditmanager_km_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
     ]
     rows = []
     seen = set()
@@ -43,7 +44,7 @@ def summarize():
         row['token_counters_incomplete'] = bool(result.get('is_error') and not
             (result.get('input_tokens') or result.get('output_tokens')))
     completed = [r for r in rows if 'result_sha256' in r]
-    return {'scope': 'Recent EOM extraction/recovery and AR deferred control only; not all stage4 work.',
+    return {'scope': 'Recent EOM extraction/recovery and AR/KM deferred controls only; not all stage4 work.',
             'requests': rows, 'completed_requests': len(completed),
             'pending_results': sum(r['status'] == 'result_pending' for r in rows),
             'failed_requests': sum(r['status'] == 'failed' for r in rows),

@@ -1,0 +1,74 @@
+{
+  "status": "inconclusive_context_not_resolved",
+  "model": "gpt-6-astra",
+  "calls": 2,
+  "baseline_preserved": 26,
+  "new_findings": 0,
+  "negative_control": "Difference of 200mm not published as proven defect; no universal end allowance inferred from OGM9/14.",
+  "positive_control": "No retained confirmed dimensional conflict in this bounded control; no suppression rule accepted.",
+  "retrieval_failure": "Literal Б(4)/Д(4) finds referring drawings; candidate recovery does not expand sheet references or use its existing sheet graph. Actual matching node block was not attached.",
+  "source_version_issue": "Prepared MD contains sheet4 nodes at stage П while OGM11 is stage Р. Applicability across stages unproved; same sheet number is not sufficient.",
+  "candidate_node_block": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+  "sheet4_blocks": [
+    {
+      "header": "### BLOCK #17 [IMAGE]: blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #18 [TEXT]: blk_ec977eb41e834dc8b7b332a66932a777",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #19 [TEXT]: blk_e0e6bcff961f41f3ad9620d662bd7b43",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #20 [TEXT]: blk_addaa8965de54d218095d13652f30388",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #21 [TEXT]: blk_984efa22a06d4fe7be4733e2ffe26c5c",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #22 [IMAGE]: blk_ddc4b49561b745ffab319ae7f3b20860",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #23 [IMAGE]: blk_d986c7bfb02a433b975de506295fd0f9",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #24 [IMAGE]: blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #25 [IMAGE]: blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #26 [IMAGE]: blk_60fce78600474a06989f2253821f34f2",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #27 [TEXT]: blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #28 [TEXT]: blk_ad6205eb490d43edadcdfc3bd8c77e05",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #29 [TEXT]: blk_7f0ce580e06f44f78c0b85f92efb82c7",
+      "stage": "П"
+    },
+    {
+      "header": "### BLOCK #30 [TEXT]: blk_02786cefba4641928c7e149eda44f872",
+      "stage": "П"
+    }
+  ],
+  "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "semantic_verified": false,
+  "production_accepted": false,
+  "next_action": "Add audited reference navigation with document/stage provenance; preserve unresolved applicability and source limits, then rerun source control."
+}

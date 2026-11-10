@@ -1,5 +1,5 @@
 {
-  "scope": "Recent EOM extraction/recovery and AR deferred control only; not all stage4 work.",
+  "scope": "Recent EOM extraction/recovery and AR/KM deferred controls only; not all stage4 work.",
   "requests": [
     {
       "control": "EOM_initial",
@@ -238,15 +238,49 @@
       "cost_source": "subscription",
       "error": "",
       "token_counters_incomplete": false
+    },
+    {
+      "control": "KM_recovery_0",
+      "directory": "/tmp/auditmanager_km_deferred_control_20261110/pass_0",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "9b0ce1c882151fd712a00f1ba1726905695652f2854167cb76b2511f639945e9",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 15804,
+      "input_tokens": 30140,
+      "output_tokens": 518,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "KM_recovery_1",
+      "directory": "/tmp/auditmanager_km_deferred_control_20261110/pass_1",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "38a1c02e62258edd49005ebdd2d87e52892dab426d156fcbb43e55dad7cc1f49",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 24410,
+      "input_tokens": 65294,
+      "output_tokens": 879,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
     }
   ],
-  "completed_requests": 14,
+  "completed_requests": 16,
   "pending_results": 0,
   "failed_requests": 2,
-  "reported_input_tokens": 566179,
-  "reported_output_tokens": 280154,
+  "reported_input_tokens": 661613,
+  "reported_output_tokens": 281551,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 89.642,
+  "completed_request_minutes_sum": 90.313,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

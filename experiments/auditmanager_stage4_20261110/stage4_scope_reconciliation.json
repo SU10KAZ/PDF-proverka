@@ -112,6 +112,12 @@
       "state": "real_AR_context_hop_and_question_candidate_preserved",
       "evidence": "AR_deferred_assessment.json",
       "detail": "Required upper roof found by model queries and attached;2Astra calls completed. Source_refs/evidence mismatch repaired and replayed without calls;22baseline preserved plus1question candidate. Not proof of excess third aerator; final verifier/export acceptance pending. Deterministic verifier and real Excel now preserve22baseline plusF023question; see AR_question_output_replay.json."
+    },
+    {
+      "hypothesis": "H02/H05",
+      "state": "KM_deferred_bounded_run_complete_context_gap",
+      "evidence": "KM_deferred_assessment.json",
+      "detail": "26classic preserved,0new rows. Reference search missed node block; available sheet4 has stage П versus OGM11 stage Р, applicability unproved. No dimensional defect or universal allowance accepted."
     }
   ]
 }
