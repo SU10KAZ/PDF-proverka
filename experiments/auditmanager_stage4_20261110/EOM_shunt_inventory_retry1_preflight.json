@@ -1,0 +1,13 @@
+{
+  "original_result": "/tmp/auditmanager_eom_shunt_inventory_control_20261111/EOM/execution/object_inventory_000/result.json",
+  "error": "codex_exec_exit_-1; codex_json_not_found",
+  "duration_ms": 900100,
+  "original_process_terminal": true,
+  "retry_request_unchanged": true,
+  "request_sha256": "30dfe00a544fc2d49c89bf23c54c9cbd8c1db83489f38b91793c737aa13ef3a3",
+  "retry_number": 1,
+  "delay_seconds_at_least": 10,
+  "model": "codex/gpt-6-astra",
+  "automatic_retry_loop": false,
+  "full_acceptance_proven": false
+}
