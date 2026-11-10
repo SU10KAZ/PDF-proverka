@@ -140,11 +140,19 @@
     {
       "control": "EOM_graphic_grid",
       "directory": "/tmp/auditmanager_eom_graphic_recovery_20261110_grid",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started",
-        "request_sha256": "861b684bdb0edf0385cb10abc954b3ac6ef421837e0bb0bd856af4865f7602b9"
-      }
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "88f490355ac55aacb68240b6db182099ba1876157dbf355b9b8df0bab522a436",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 626178,
+      "input_tokens": 86405,
+      "output_tokens": 30782,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
     },
     {
       "control": "EOM_graphic_grid_claude",
@@ -224,13 +232,13 @@
       "token_counters_incomplete": false
     }
   ],
-  "completed_requests": 12,
-  "pending_results": 2,
+  "completed_requests": 13,
+  "pending_results": 1,
   "failed_requests": 2,
-  "reported_input_tokens": 371671,
-  "reported_output_tokens": 157546,
+  "reported_input_tokens": 458076,
+  "reported_output_tokens": 188328,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 69.032,
+  "completed_request_minutes_sum": 79.468,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [
