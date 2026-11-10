@@ -2,6 +2,61 @@
   "scope": "Recent EOM extraction/recovery, AR/KM deferred, AR unlabelled inventory and AK cabinet controls only; not all stage4 work.",
   "requests": [
     {
+      "control": "AR_source_navigation",
+      "directory": "/tmp/auditmanager_ar_source_navigation_20261111",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "5b819e540577d8dfd5162e7f8a7c4a5ce8389aa1816758fb1da0a3adb55f1a3c",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 37636,
+      "input_tokens": 22917,
+      "output_tokens": 1195,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "AR_selected_sources",
+      "directory": "/tmp/auditmanager_ar_selected_source_operations_20261111",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "ede0d29633e2cfb107304b575eb95945d2d96f13478b5db55d5be47ef7411906",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 65726,
+      "input_tokens": 73416,
+      "output_tokens": 2727,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "AR_terminal_navigation_v2",
+      "directory": "/tmp/auditmanager_ar_roof_disposition_navigation_v2_20261111",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started"
+      },
+      "token_counters_incomplete": true
+    },
+    {
+      "control": "AR_rope_inventory",
+      "directory": "/tmp/auditmanager_ar_rope_inventory_control_20261111/AR/execution/object_inventory_000",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "6aaeaed0f6f70b583758781238237183998a317831a5c31fb1f32e45fa08f060",
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high"
+      },
+      "token_counters_incomplete": true
+    },
+    {
       "control": "AR_roof_terminal_claude",
       "directory": "/tmp/auditmanager_ar_roof_disposition_claude_20261111",
       "status": "response_received",
@@ -1658,14 +1713,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 89,
-  "pending_results": 0,
+  "completed_requests": 91,
+  "pending_results": 2,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 3337750,
-  "reported_output_tokens": 784411,
+  "reported_input_tokens": 3434083,
+  "reported_output_tokens": 788333,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 227.38,
+  "completed_request_minutes_sum": 229.102,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

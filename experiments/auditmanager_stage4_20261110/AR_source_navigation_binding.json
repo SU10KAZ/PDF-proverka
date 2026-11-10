@@ -1,0 +1,11 @@
+{
+  "request_sha256": "bd0fbafe11eee3fb6dcbef8f38fc08f753a8adabe4cd74aa480061e89ea38aaf",
+  "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+  "previous_result_sha256": "430e66046148926744c0749d62938f0cc020bf6b775f0663a0ff2df2727d17b5",
+  "catalogue_graphics": 42,
+  "uninspected_graphics": 34,
+  "history_or_engineer_answers_supplied": false,
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "message_chars": 36005
+}

@@ -1,0 +1,15 @@
+{
+  "scope": "Known AR K-3 control: source discovery beyond repeated literal queries.",
+  "previous_strategy": "Six literal queries stopped with no_additional_sources; 8 graphics had been attached.",
+  "new_strategy": "Model chose 6 uninspected graphics from the 42-entry frozen source catalogue; same-page TEXT/TABLE added; 14 graphics inspected in the next operation.",
+  "positive_result": "Concrete new sources found without evaluator-provided source IDs in the navigation request.",
+  "outcome": "Chosen details were reported as K-1, K-1.1 or K-4 at other levels. No definite local K-3 dimensional conflict or final question emitted.",
+  "limits": [
+    "Descriptions in catalogue are navigation only; applicability requires actual images.",
+    "No additional literal matches is not proof that all source navigation strategies are exhausted.",
+    "Source-inspection reasoning is model-reported; universal retrieval improvement is not proven.",
+    "Next terminal pass changes both source coverage and wording policy relative to the original terminal pass; do not attribute any outcome solely to one factor."
+  ],
+  "next_request": "/tmp/auditmanager_ar_roof_disposition_navigation_v2_20261111/request.json",
+  "full_acceptance_proven": false
+}

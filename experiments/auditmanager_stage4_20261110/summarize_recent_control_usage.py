@@ -10,6 +10,10 @@ from pathlib import Path
 
 def summarize():
     directories = [
+        ('AR_source_navigation', Path('/tmp/auditmanager_ar_source_navigation_20261111')),
+        ('AR_selected_sources', Path('/tmp/auditmanager_ar_selected_source_operations_20261111')),
+        ('AR_terminal_navigation_v2', Path('/tmp/auditmanager_ar_roof_disposition_navigation_v2_20261111')),
+        ('AR_rope_inventory', Path('/tmp/auditmanager_ar_rope_inventory_control_20261111/AR/execution/object_inventory_000')),
         ('AR_roof_terminal_claude', Path('/tmp/auditmanager_ar_roof_disposition_claude_20261111')),
         ('AR_roof_terminal_disposition', Path('/tmp/auditmanager_ar_roof_disposition_20261111')),
         ('AR_roof_P03_context1', Path('/tmp/auditmanager_ar_roof_operations_20261111/P03/context_1')),

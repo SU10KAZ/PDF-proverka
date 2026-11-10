@@ -1,0 +1,45 @@
+{
+  "source_md_sha256": "a28aae1470e702d3f97e45f621b558bbd8e918f69a74869c07e3e27c4e79a95f",
+  "blocks": 3,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_c2c52346b94e41d082d3db11655d2706",
+        "blk_a904b495f6cc409eb97d93ceaa3cf274",
+        "blk_8df48eff096342b68d80dbde8a26883e"
+      ],
+      "message_chars": 12360,
+      "images": [
+        {
+          "block_id": "blk_c2c52346b94e41d082d3db11655d2706",
+          "sha256": "ada6f98bef863cfa58e17d4bf8c8fce8278e6964a8f678932897d883ded5d00b"
+        },
+        {
+          "block_id": "blk_a904b495f6cc409eb97d93ceaa3cf274",
+          "sha256": "0da32f0c27ccd69266a321354d1c1f4a7ae5483c731f1b49f1850f362301b0bf"
+        },
+        {
+          "block_id": "blk_8df48eff096342b68d80dbde8a26883e",
+          "sha256": "ccb9b31c5a720817a68734d81f69f0e7f402a9d25b8f624db3a57c1bbbc00447"
+        }
+      ]
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": true,
+  "semantic_inventory_complete": false,
+  "full_source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+  "source_selection": "Three unchanged rope/railing source blocks and all same-page authoritative TEXT/TABLE blocks; no expected findings, load-path conclusions or engineer feedback.",
+  "request_digests": [
+    "6aaeaed0f6f70b583758781238237183998a317831a5c31fb1f32e45fa08f060"
+  ],
+  "requests": 1,
+  "known_source_selection": true,
+  "whole_project_control": false,
+  "independent_discovery": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}
