@@ -1,0 +1,24 @@
+{
+  "findings_sha256": "f4abf042f9b8fd5cd2ca2176b7b300bdb7b045ef0b2aac903b7d6917333b5606",
+  "queue_sha256": "08f76855e1f494f848d526a678078ecb6a700d363d8b6130ae4193dcdc79e6a2",
+  "model": "claude/claude-sonnet-5-5",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "scope": "Bounded source verification plus adjudication, using the real workflow; candidate decisions require independent admission review.",
+  "initial_requests": [
+    {
+      "finding_id": "F-050",
+      "request_sha256": "3063ce49f116325296f3367ee73dda5cc4c35ee04e157937f05e230bc2450cd1",
+      "message_chars": 10176,
+      "image_count": 3,
+      "image_bytes": 1470460
+    },
+    {
+      "finding_id": "F-051",
+      "request_sha256": "761d7e6f9f44c7a8a4c124b525451a9381f409eb76c55966913860acbe6ec655",
+      "message_chars": 16567,
+      "image_count": 4,
+      "image_bytes": 3452388
+    }
+  ]
+}

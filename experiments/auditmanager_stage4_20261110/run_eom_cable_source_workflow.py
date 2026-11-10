@@ -12,6 +12,7 @@ from backend.app.pipeline.stages.findings_verify.source_review_request import pr
 from backend.app.pipeline.stages.findings_verify.source_review_workflow import run_source_review_workflow, direct_cli_executor
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
 ROOT=Path('/tmp/auditmanager_eom_cable_source_workflow_20261111')
+GRAPHIC_DIR=None
 OUTPUT=Path('/tmp/auditmanager_eom_cable_output_20261111')
 
 def prepare():
@@ -20,7 +21,7 @@ def prepare():
     md=(BASE/'02_work/document.md').read_text()
     findings=[f for f in document['findings'] if f['id'] in ('F-050','F-051')];assert len(findings)==2
     queue=build_source_review_queue(findings,md)
-    crops=BASE/'03_analysis/runs/control/blocks_stage02_100'
+    crops=GRAPHIC_DIR or BASE/'03_analysis/runs/control/blocks_stage02_100'
     attach_graphic_receipts(queue,md,crops)
     requests=[prepare_source_review_request(queue,f,md) for f in findings]
     manifest={'findings_sha256':evidence_digest(findings),'queue_sha256':evidence_digest(queue),'model':'claude/claude-sonnet-5-5','automatic_retries':0,'history_or_engineer_answers_supplied':False,'scope':'Bounded source verification plus adjudication, using the real workflow; candidate decisions require independent admission review.','initial_requests':[{'finding_id':f['id'],'request_sha256':evidence_digest(r),'message_chars':sum(len(m['content']) for m in r['messages']),'image_count':len(r['image_paths']),'image_bytes':sum(Path(p).stat().st_size for p in r['image_paths'])} for f,r in zip(findings,requests,strict=True)]}

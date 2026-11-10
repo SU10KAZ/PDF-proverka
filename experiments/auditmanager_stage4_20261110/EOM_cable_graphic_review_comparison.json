@@ -1,0 +1,28 @@
+{
+  "scope": "Same known finding and source version, same Claude model; supplement original with source-linked detail tiles and tile-coordinate instructions.",
+  "original_first_review": {
+    "cable_execution_section_length": "needs_data: vertical label unreadable",
+    "local_mismatch": "needs_data"
+  },
+  "detail_first_review": {
+    "cable_execution_section_length": "supported",
+    "local_mismatch": "supported",
+    "validation": "EOM_cable_detail_00_validation.json"
+  },
+  "original_final_candidate": {
+    "action": "revise",
+    "semantic_hold": "Cables claim was made conditional due unreadable source; candidate_ready is not proof of semantic acceptance."
+  },
+  "new_reviewer_issue": {
+    "claim_id": "C9",
+    "claim": "Cable not accounted for in another section or document",
+    "assessment": "The original finding expressly leaves other-document accounting unknown. Do not treat this broader assertion as an original defect basis. Adjudication must preserve original scope and modality."
+  },
+  "remaining_checks": [
+    "Inspect detailed workflow final decision before accepting any wording.",
+    "Validate preservation of local mismatch despite uncertainty about other documents and sheet provenance.",
+    "Complete F-051 review and grouping/workload assessment."
+  ],
+  "tests": "40 passed: source review graphics/request/results/workflow/context/followup",
+  "full_acceptance_proven": false
+}
