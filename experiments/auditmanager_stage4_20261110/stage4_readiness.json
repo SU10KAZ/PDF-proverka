@@ -311,5 +311,33 @@
     "semantic_verified": false,
     "new_model_calls": 0,
     "runtime_dispatch_integrated": false
+  },
+  "eom_source_review_pilot": {
+    "request_path": "/tmp/auditmanager_eom_source_review_astra_20261110/request.json",
+    "request_sha256": "977847d2595261161e3f2379df917ef7ea737765de8f63631100135b80639a1e",
+    "finding_ids": [
+      "F-003",
+      "F-040"
+    ],
+    "source_blocks": [
+      "blk_53e5d0ecb2fe4e9480416db361afefda",
+      "blk_99098cf6f63347aca6b7e76e43ab3336",
+      "blk_c5f0556f94c14503bfe178ef5941c077"
+    ],
+    "message_chars": 28727,
+    "provider": "Codex CLI",
+    "model": "codex/gpt-6-astra",
+    "max_cli_invocations": 1,
+    "automatic_retries": 0,
+    "timeout_seconds": 900,
+    "sent": false,
+    "estimated_max_cost": "Subscription quota; monetary maximum unknown.",
+    "approval_required": "Explicit approval of this payload before --execute.",
+    "payload_excludes": [
+      "engineer decisions",
+      "historical review outcomes",
+      "regression control expectations"
+    ],
+    "limitation": "No OS-level proof of read isolation; must not count as blind independent audit."
   }
 }
