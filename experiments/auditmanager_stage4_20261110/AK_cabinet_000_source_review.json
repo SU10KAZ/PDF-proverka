@@ -14,6 +14,8 @@
   "supported_scope": "Local drawing addressing ambiguity; actual wiring fault and applicability of manufacturing drawings remain unproved.",
   "stage_cause": "Operation response did not emit the evidenced local observation separately from unresolved full identity.",
   "change": "Generic operation instruction separates local supported claim from unknown consequence; fresh same-source v2control pending.",
-  "semantic_acceptance": false,
-  "full_five_cabinet_control_complete": false
+  "semantic_acceptance": "Local core ambiguity source-supported; detailed cable labels and final severity/output dedup not fully reviewed.",
+  "full_five_cabinet_control_complete": false,
+  "model_v2": "Same extracted cabinet and graphic; general prompt now emits one scoped addressing ambiguity and leaves broader identity needs_data. PE repeats not alleged defects; no wiring fault asserted.",
+  "preservation_boundary": "Known baseline F054 already covers this address; do not count this candidate as incremental useful finding or append duplicate."
 }
