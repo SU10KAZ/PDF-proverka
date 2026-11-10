@@ -675,5 +675,19 @@
     "production_changed": false,
     "automatic_model_dispatch_integrated": false,
     "output_dir": "/tmp/auditmanager_itp_adjudication_replay_w7efbked"
+  },
+  "sequential_source_review_workflow": {
+    "status": "runtime_opt_in_implemented_and_tested",
+    "module": "backend/app/pipeline/stages/findings_verify/source_review_workflow.py",
+    "runtime_hook": "run_findings_verify after absence correction",
+    "max_calls_per_finding": 6,
+    "automatic_retries": 0,
+    "resume": "Reuse only exact request/executor results; interrupted calls without result are not repeated.",
+    "provider_policy": "Explicit Astra or optional Sonnet direct CLI; no fallback to OpenRouter.",
+    "output": "03_source_review_candidates.json, separate from reviewed admission inbox; original findings unchanged.",
+    "tests_selected_unique": 107,
+    "real_new_workflow_execution": false,
+    "production_enabled": false,
+    "remaining": "Run live workflow controls, evaluate semantic/visual quality, complete remaining hypothesis gates, then freeze comparative candidate. Saved-case checking is not independent discovery."
   }
 }

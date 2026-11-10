@@ -68,6 +68,8 @@ class FindingsVerifyResult:
     absence_candidates: int = 0
     absence_downgraded: int = 0
     source_followups_prepared: int = 0
+    source_review_candidates_ready: int = 0
+    source_review_workflows_failed: int = 0
     source_review_applied: int = 0
     source_review_not_applied: int = 0
     error: Optional[str] = None
@@ -262,6 +264,29 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
         await ctx.log(f"Верификатор (присутствие) упал (не критично): {e}", "warn")
         result.error = (result.error + f"; absence: {e}") if result.error else f"absence: {e}"
 
+    # Explicit experimental callback only. No configured callback means no new
+    # provider calls. Candidate outputs cannot authorize their own admission.
+    if getattr(ctx, 'source_review_invoke', None) is not None:
+        try:
+            from .source_review_workflow import run_source_review_workflow_phase
+            from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+            workflow_md_path = resolve_document_markdown(Path(output_dir))
+            if workflow_md_path is None:
+                raise ValueError('source_review_md_unavailable')
+            workflow = await run_source_review_workflow_phase(
+                Path(output_dir), workflow_md_path.read_text(encoding='utf-8'),
+                invoke=ctx.source_review_invoke,
+                executor_id=getattr(ctx, 'source_review_executor_id', None),
+                max_findings=getattr(ctx, 'source_review_max_findings', 0),
+                is_cancelled=ctx.is_cancelled,
+            )
+            result.source_review_candidates_ready = workflow['candidate_ready']
+            result.source_review_workflows_failed = workflow['not_completed']
+            await ctx.log(f"Проверка источников: кандидатов решений {workflow['candidate_ready']}, незавершённых {workflow['not_completed']}; требуется смысловая приёмка")
+        except Exception as exc:
+            await ctx.log(f"Последовательная проверка источников не завершена: {exc}", 'warn')
+            result.error = (result.error + f"; source_workflow: {exc}") if result.error else f"source_workflow: {exc}"
+
     # Model-requested context is prepared locally before semantic admission.
     # Dispatch authorization remains outside the verifier.
     try:
@@ -301,6 +326,13 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
         await ctx.log(f"Решения проверки источников не применены: {exc}", "warn")
         result.error = (result.error + f"; source_review: {exc}") if result.error else f"source_review: {exc}"
 
+    # Report the final number after explicit admission, not the pre-filter count.
+    try:
+        final_document = json.loads(findings_path.read_text(encoding='utf-8'))
+        if isinstance(final_document, dict) and isinstance(final_document.get('findings'), list):
+            result.findings_total = len(final_document['findings'])
+    except (OSError, ValueError):
+        pass
     result.ok = result.deterministic_ok or result.absence_ok
     # findings_corrector = применение вердиктов + понижение подтверждённо-ложных «нет»
     ctx.update_pipeline_log(
@@ -318,6 +350,8 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
             "downgraded": result.downgraded,
             "flagged_human": result.flagged_human,
             "source_followups_prepared": result.source_followups_prepared,
+            "source_review_candidates_ready": result.source_review_candidates_ready,
+            "source_review_workflows_failed": result.source_review_workflows_failed,
             "source_review_applied": result.source_review_applied,
             "source_review_not_applied": result.source_review_not_applied,
             "absence_candidates": result.absence_candidates,

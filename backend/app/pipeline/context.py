@@ -99,3 +99,9 @@ class PipelineStageContext:
 
     # job_id — идентификатор job (для forensic-журналов платных вызовов).
     job_id: Optional[str] = field(default=None)
+
+    # Explicit experimental source-review execution. No default provider or
+    # automatic admission; caller must authorize and bound the work.
+    source_review_invoke: Optional[Callable[..., Awaitable[dict]]] = field(default=None)
+    source_review_executor_id: Optional[str] = field(default=None)
+    source_review_max_findings: int = field(default=0)
