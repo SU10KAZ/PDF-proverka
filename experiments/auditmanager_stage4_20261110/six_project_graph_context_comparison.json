@@ -1,0 +1,115 @@
+{
+  "projects": [
+    {
+      "discipline": "AK",
+      "graphic_blocks": 70,
+      "unchanged_links": 144,
+      "lost_links": [],
+      "added_links": [],
+      "excluded_geometry_stamp_nodes": 101,
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/document_graph.json",
+          "sha256": "4a7da52c5ca9223e188d2b64351a4ee9ea2294bc3cb49d5b2840306c20dd88e4"
+        },
+        {
+          "path": "/tmp/auditmanager_six_candidate_inputs_20261110/AK/03_analysis/runs/candidate/document_graph.json",
+          "sha256": "1fe77649bf5c8e6beff6c4e64881b5e8bb9b49eb49f55a09e0132fafaff2b4d9"
+        }
+      ]
+    },
+    {
+      "discipline": "ITP",
+      "graphic_blocks": 48,
+      "unchanged_links": 12,
+      "lost_links": [],
+      "added_links": [],
+      "excluded_geometry_stamp_nodes": 52,
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/document_graph.json",
+          "sha256": "9bd290beb4589803e4c302428f3fef507f1e10536c3941e6796ee1e27d4cb679"
+        },
+        {
+          "path": "/tmp/auditmanager_six_candidate_inputs_20261110/ITP/03_analysis/runs/candidate/document_graph.json",
+          "sha256": "e7fb5e8a4a62f27f89b24cdb9a209e0dbd663a63ae9cfcd6f7016b9629d9daab"
+        }
+      ]
+    },
+    {
+      "discipline": "AR",
+      "graphic_blocks": 42,
+      "unchanged_links": 50,
+      "lost_links": [],
+      "added_links": [],
+      "excluded_geometry_stamp_nodes": 15,
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/document_graph.json",
+          "sha256": "4f5130cddad20ef055eb7a6b40bba1b1052ac013de25fc5e7dad1fffb75bbc0f"
+        },
+        {
+          "path": "/tmp/auditmanager_six_candidate_inputs_20261110/AR/03_analysis/runs/candidate/document_graph.json",
+          "sha256": "433a38fd6fdff277a0980f41a0de65ae0899d90936fae8521480441042ffb3de"
+        }
+      ]
+    },
+    {
+      "discipline": "KM",
+      "graphic_blocks": 54,
+      "unchanged_links": 173,
+      "lost_links": [],
+      "added_links": [],
+      "excluded_geometry_stamp_nodes": 10,
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/document_graph.json",
+          "sha256": "f0e2fb078fab2c266eafaaa6c305ed03f7001d1ef015d4afc5a0eb19d01989c8"
+        },
+        {
+          "path": "/tmp/auditmanager_six_candidate_inputs_20261110/KM/03_analysis/runs/candidate/document_graph.json",
+          "sha256": "253176a3eb07e280b9b1542989c8351f014e733af5476f6a7772dab302ede51b"
+        }
+      ]
+    },
+    {
+      "discipline": "VK",
+      "graphic_blocks": 35,
+      "unchanged_links": 53,
+      "lost_links": [],
+      "added_links": [],
+      "excluded_geometry_stamp_nodes": 35,
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/VK/versions/v002/03_analysis/runs/control/document_graph.json",
+          "sha256": "f8a6d808f113114e70a93d4f174dba31e1e346fc4052a66bc65263abdd891bee"
+        },
+        {
+          "path": "/tmp/auditmanager_six_candidate_inputs_20261110/VK/03_analysis/runs/candidate/document_graph.json",
+          "sha256": "95cd553e8d6292623c0fd88643660c12f3d1f7b571b0fa370aa341e2dd8662a4"
+        }
+      ]
+    },
+    {
+      "discipline": "EOM",
+      "graphic_blocks": 85,
+      "unchanged_links": 175,
+      "lost_links": [],
+      "added_links": [],
+      "excluded_geometry_stamp_nodes": 54,
+      "sources": [
+        {
+          "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/03_analysis/runs/control/document_graph.json",
+          "sha256": "05135bf0a4adfbdf8edf5e2a03d8553f725309b869643a67186f170415af956a"
+        },
+        {
+          "path": "/tmp/auditmanager_six_candidate_inputs_20261110/EOM/03_analysis/runs/candidate/document_graph.json",
+          "sha256": "87950eff34bcaa5cce9046fe72a50cc791dfd00f33a7b4ef8214c0b742f1cd10"
+        }
+      ]
+    }
+  ],
+  "all_graphic_context_links_preserved": true,
+  "new_model_calls": 0,
+  "boundary": "Compares geometric image-to-text link identities only. Does not certify semantic relevance, full prompt equivalence, output quality or model discovery."
+}
