@@ -36,17 +36,19 @@ For retain/revise/question provide display_field_reviews as an OBJECT keyed by e
         'image_paths':source_request['image_paths'],'image_bindings':source_request['image_bindings']}
 
 
-async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None):
+async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None, max_images=8):
     """invoke(request, phase) -> provider result dict; caller owns authorization.
 
     Maximum five source reviews (initial plus four context revisions) and one
     adjudication. No retries/fallback. A saved result is reused only for the exact
     same request and executor identity. No original finding is changed here.
     """
+    if type(max_images) is not int or not 0 <= max_images <= 16:
+        raise ValueError('invalid_image_budget')
     root=Path(work_dir);root.mkdir(parents=True,exist_ok=True)
     if not isinstance(executor_id,str) or not executor_id:raise ValueError('executor_identity_required')
     binding={'queue':evidence_digest(queue),'finding':evidence_digest(finding),
-             'md':evidence_digest(md),'executor_id':executor_id,'workflow_version':2}
+             'md':evidence_digest(md),'executor_id':executor_id,'workflow_version':3,'max_images':max_images}
     manifest=root/'binding.json'
     if manifest.exists():
         if json.loads(manifest.read_text())!=binding:raise ValueError('workflow_inputs_changed')
@@ -81,7 +83,7 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
         return result['json_data']
 
     for step in range(5):
-        request=prepare_source_review_request(current,finding,md)
+        request=prepare_source_review_request(current,finding,md,max_images=max_images)
         response=await call(request,'review',step)
         supplied={(im['block_id'],im['sha256']) for im in request['image_bindings']}
         for packet in current['packets']:
@@ -91,7 +93,7 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
         validation=validate_source_review(response,current,[finding],md)
         _write(root/f'{step:02d}_validation.json',validation)
         if validation['errors']:raise ValueError('invalid_source_review')
-        followup=prepare_review_followup(response,current,[finding],md,graphic_dir)
+        followup=prepare_review_followup(response,current,[finding],md,graphic_dir,max_images=max_images)
         _write(root/f'{step:02d}_followup.json',followup)
         if followup['status']=='prepared_awaiting_dispatch_authorization':
             if step==4:raise ValueError('workflow_review_limit')

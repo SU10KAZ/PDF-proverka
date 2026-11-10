@@ -120,3 +120,33 @@ async def test_runtime_hook_runs_only_explicit_callback_and_keeps_original(tmp_p
     assert result.source_review_candidates_ready==1 and result.source_review_applied==0
     assert (tmp_path/'03_findings.json').read_bytes()==before
     assert calls==['review','review','adjudication']
+
+
+@pytest.mark.asyncio
+async def test_image_budget_is_bound_across_followup_and_resume(tmp_path, monkeypatch):
+    import backend.app.pipeline.stages.findings_verify.source_review_workflow as workflow
+    md, finding, queue = setup_case()
+    calls, budgets, followup_budgets = [], [], []
+    original_request = workflow.prepare_source_review_request
+    original_followup = workflow.prepare_review_followup
+
+    def request(*args, **kwargs):
+        budgets.append(kwargs['max_images'])
+        return original_request(*args, **kwargs)
+
+    def followup(*args, **kwargs):
+        followup_budgets.append(kwargs['max_images'])
+        return original_followup(*args, **kwargs)
+
+    monkeypatch.setattr(workflow, 'prepare_source_review_request', request)
+    monkeypatch.setattr(workflow, 'prepare_review_followup', followup)
+    await run_source_review_workflow(queue, finding, md, tmp_path, tmp_path/'workflow',
+        invoke=provider(calls), executor_id='test', max_images=16)
+    assert budgets == [16, 16] and followup_budgets == [16, 16]
+    with pytest.raises(ValueError, match='workflow_inputs_changed'):
+        await run_source_review_workflow(queue, finding, md, tmp_path, tmp_path/'workflow',
+            invoke=provider(calls), executor_id='test', max_images=8)
+    assert calls == ['review', 'review', 'adjudication']
+    with pytest.raises(ValueError, match='invalid_image_budget'):
+        await run_source_review_workflow(queue, finding, md, tmp_path, tmp_path/'bad',
+            invoke=provider(calls), executor_id='test', max_images=17)

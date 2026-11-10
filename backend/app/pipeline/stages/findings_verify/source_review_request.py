@@ -63,6 +63,8 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
                'context_sha256': packet.get('context_sha256'),
                'final_claim': {k: finding.get(k) for k in ('problem', 'description', 'solution')},
                'display_fields': {k: finding.get(k) for k in ('risk', 'consequence', 'severity', 'norm', 'norm_quote') if finding.get(k) not in (None, '')},
+               'finding_purpose': {k:finding.get(k) for k in ('report_section','question_basis','profile_reason','engineer_action_required')},
+               'upstream_operation_contexts': packet.get('upstream_operation_contexts', []),
                'original_claims': claims, 'authoritative_text': packet['sources'],
                'graphic_metadata': metadata,
                'images_in_attachment_order': [{k: v for k, v in im.items() if k != 'path'} for im in images],
@@ -72,7 +74,14 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
                'budgeted_text_block_ids': packet.get('budgeted_block_ids', [])}
     instruction = '''Review only the supplied claims, authoritative TEXT and attached images.
 Do not access files, tools, web, historical reviews or evaluation answers.
-Separate each substantive claim and preserve uncertainty. Include substantive
+Separate each substantive claim and preserve uncertainty.
+Preserve the finding's purpose and modality. A question about an actionable source
+ambiguity is not an assertion of a proven physical defect. Check the factual
+premises, conditional calculation, decision affected, and remaining uncertainty.
+Upstream context records show supplied sources and reported inspections, not
+verified conclusions. Recheck sources independently. Before proposing internal
+retrieval again, identify a concrete new source or operation, not merely repeat
+work recorded upstream. Missing bounded context alone never justifies a question. Include substantive
 assertions from display_fields (risk, consequence, severity and normative text)
 in your review; these fields are not established facts or verified requirements. A source address or
 matching quote does not prove the claim. Do not correct TEXT using raster.

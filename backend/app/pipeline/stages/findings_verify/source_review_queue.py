@@ -3,6 +3,7 @@ import hashlib
 import json
 import re
 from .source_review_metadata import graphic_stamp_metadata
+from .operation_context_handoff import sanitize_operation_context
 from collections import Counter
 from copy import deepcopy
 
@@ -42,6 +43,8 @@ def attach_pending_source_reviews(findings, known_block_ids):
             refs = list(dict.fromkeys(refs))
             if refs:
                 request = {'source_finding_id': sid, 'source_claim': receipt.get('source_claim'), 'block_ids': refs}
+                if isinstance(receipt.get('upstream_operation_context'),dict):
+                    request['upstream_operation_context']=deepcopy(receipt['upstream_operation_context'])
                 missing = [bid for bid in refs if bid not in known_block_ids]
                 if missing:
                     request['unresolved_index_block_ids'] = missing
@@ -90,6 +93,21 @@ def build_source_review_queue(findings, md, *, max_chars=100000):
             ref: [label for label, group in (('source_candidate', candidate_refs), ('final_finding', final_refs)) if ref in group]
             for ref in dict.fromkeys(refs)
         }
+        upstream=[]
+        for request in requests if isinstance(requests,list) else []:
+            context=request.get('upstream_operation_context') if isinstance(request,dict) else None
+            if not isinstance(context,dict):continue
+            if context.get('source_md_sha256') != hashlib.sha256(md.encode()).hexdigest():
+                packet.setdefault('rejected_upstream_contexts',[]).append('source_version_mismatch')
+                continue
+            supplied=context.get('supplied_source_ids')
+            if not isinstance(supplied,list) or any(not isinstance(bid,str) for bid in supplied):
+                packet.setdefault('rejected_upstream_contexts',[]).append('invalid_source_ids')
+                continue
+            upstream.append(sanitize_operation_context(context))
+            refs.extend(supplied)
+            for bid in supplied:packet['reference_origins'].setdefault(bid,[]).append('upstream_operation_context')
+        if upstream:packet['upstream_operation_contexts']=upstream
         used = 0
         for ref in dict.fromkeys(refs):
             if ref not in blocks:

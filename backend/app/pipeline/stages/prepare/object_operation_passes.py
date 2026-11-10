@@ -198,9 +198,12 @@ def validate_object_operation_payload(request,payload, *, context_search_exhaust
     from ..findings_merge.operation_lineage import operation_candidate
     accepted,pending,ledger=[],[],[]
     statuses={r['operation']:r['status'] for r in coverage['operations']}
+    from ..findings_verify.operation_context_handoff import build_operation_context_handoff
+    handoff=build_operation_context_handoff(request,payload,packet)
     items=payload.get('findings',[])
     for index,finding in enumerate(items if isinstance(items,list) else []):
         candidate,lineage=operation_candidate(request.messages,finding,index,set(allowed))
+        if handoff is not None:lineage['upstream_operation_context']=handoff
         record={'candidate':candidate,'status':'pending_review','semantic_verified':False}
         ledger.append(record)
         valid=isinstance(finding,dict) and finding.get('object_id')==obj['id'] and isinstance(finding.get('operation'),str) and finding['operation'] in operations

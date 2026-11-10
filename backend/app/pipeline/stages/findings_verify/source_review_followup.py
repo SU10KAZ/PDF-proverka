@@ -5,7 +5,7 @@ from .source_review_graphics import attach_graphic_receipts
 from .source_review_request import prepare_source_review_request
 
 
-def prepare_review_followup(response, queue, findings, md, graphic_dir):
+def prepare_review_followup(response, queue, findings, md, graphic_dir, *, max_images=8):
     validation = validate_source_review(response, queue, findings, md)
     result = {'validation': validation, 'status': 'invalid_response',
               'automatic_dispatch': False, 'absence_proven': False}
@@ -70,7 +70,7 @@ def prepare_review_followup(response, queue, findings, md, graphic_dir):
         result['status'] = 'no_additional_sources'
         return result
     finding = next(f for f in findings if f['id'] == response['finding_id'])
-    result['request'] = prepare_source_review_request(expanded, finding, md)
+    result['request'] = prepare_source_review_request(expanded, finding, md, max_images=max_images)
     result['status'] = 'prepared_awaiting_dispatch_authorization'
     return result
 
