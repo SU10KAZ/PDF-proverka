@@ -1,0 +1,11 @@
+{
+  "receipts": [
+    {
+      "finding_id": "F-030",
+      "status": "not_applied",
+      "reason": "invalid_report_severity"
+    }
+  ],
+  "original_preserved": true,
+  "explanation": "Original process loaded old prompt before category-contract fix; new admission rejects prose severity."
+}

@@ -1,0 +1,40 @@
+{
+  "source_md_sha256": "63401918abe7b92cff96a6c0ab6ab23e1b2e93fdc005c62005281c4f36d7a260",
+  "blocks": 4,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+        "blk_7527066e645e47bb917a9fc17fb82ccc",
+        "blk_fa4cca816905454ab134c787b1d1862a",
+        "blk_fed30df45d124919a8b7cc13253733b1"
+      ],
+      "message_chars": 13575,
+      "images": [
+        {
+          "block_id": "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc",
+          "sha256": "53d497514b8c168918c9e9fd00680a2497bf1297f7672b747996c56e8aedba33"
+        },
+        {
+          "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+          "sha256": "f33722b2cc7117e431c01cf6c19c274f7b07a0a4042a6ce7cea7349ab1db9e49"
+        }
+      ]
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": true,
+  "semantic_inventory_complete": false,
+  "request_digests": [
+    "24b9d4a25729d42636ed2458ecfe996cd9dc717e683095a84cfcedc8b34fd091"
+  ],
+  "full_source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+  "known_source_selection": true,
+  "independent_discovery": false,
+  "history_or_engineer_answers_supplied": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}

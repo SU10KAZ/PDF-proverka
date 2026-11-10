@@ -2,6 +2,7 @@
 import argparse
 import asyncio
 import json
+import hashlib
 import os
 from pathlib import Path
 from .run_eom_instance_operations import BASE, immutable
@@ -10,13 +11,21 @@ from backend.app.pipeline.stages.findings_verify.source_review_admission import 
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
 SOURCE = Path('/tmp/auditmanager_eom_classic_semantics_control_20261111')
 ROOT = Path('/tmp/auditmanager_eom_f001_readjudication_20261111')
+FID = 'F-001'
 
 async def main(execute):
     ROOT.mkdir(exist_ok=True)
-    old = json.loads((SOURCE/'F-001/candidate.json').read_text())
+    old = json.loads((SOURCE/FID/'candidate.json').read_text())
     entry = old['entry']
-    original = json.loads((SOURCE/'F-001/00_review/request.json').read_text())['request']
+    reviews = sorted((SOURCE/FID).glob('[0-9][0-9]_review/request.json'))
+    assert reviews
+    original = json.loads(reviews[-1].read_text())['request']
     request = prepare_adjudication_request(original, entry['response'])
+    def check_images():
+        assert request['image_paths'] == [b['path'] for b in request['image_bindings']]
+        for b in request['image_bindings']:
+            assert hashlib.sha256(Path(b['path']).read_bytes()).hexdigest() == b['sha256']
+    check_images()
     md = (BASE/'02_work/document.md').read_text()
     assert entry['queue']['source_md_sha256'] == __import__('hashlib').sha256(md.encode()).hexdigest()
     immutable(ROOT/'request.json', request)
@@ -30,9 +39,10 @@ async def main(execute):
     if (ROOT/'result.json').exists():result=json.loads((ROOT/'result.json').read_text())
     else:
         with (ROOT/'attempt.json').open('x') as f:json.dump({'status':'started'},f)
-        result=await direct_cli_executor('codex/gpt-6-astra',project_id='EOM-F001-readjudication')(request,'adjudication')
+        result=await direct_cli_executor('codex/gpt-6-astra',project_id='EOM-'+FID+'-readjudication')(request,'adjudication')
         immutable(ROOT/'result.json',result)
         (ROOT/'attempt.json').write_text(json.dumps({'status':'finished','is_error':result['is_error']}))
+    check_images()
     assert not result['is_error']
     assert (BASE/'02_work/document.md').read_text()==md
     new_entry={**entry,'decision':result['json_data']}
@@ -45,4 +55,7 @@ async def main(execute):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true')
-    asyncio.run(main(p.parse_args().execute))
+    p.add_argument('--source-root', default=str(SOURCE));p.add_argument('--output-root',default=str(ROOT))
+    p.add_argument('--finding-id', default=FID)
+    args=p.parse_args();SOURCE=Path(args.source_root);ROOT=Path(args.output_root);FID=args.finding_id
+    asyncio.run(main(args.execute))
