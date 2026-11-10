@@ -1,0 +1,190 @@
+{
+  "request_sha256": "e5cc45db82fb637a748e81a25577af4daf2d43a2ce0da9a852e042a78b734b21",
+  "source_tiles": {
+    "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.pdf",
+    "pdf_sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4",
+    "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/blocks.json",
+    "blocks_sha256": "573b46f6bbe0f6e30f3e20f4138aae6ed5648d8f18ce7f7215cbdc2a7c1a9a2a",
+    "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+    "columns": 3,
+    "rows": 3,
+    "scale": 3,
+    "overlap": 0.025,
+    "tiles": [
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          54.74739039665971,
+          0.0,
+          1563.5356993736955,
+          597.7697226750628
+        ],
+        "grid_row": 0,
+        "grid_column": 0,
+        "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_0.png",
+        "width": 4527,
+        "height": 1794,
+        "sha256": "d52afca6a13d07536f89e97bde8f3ff73ef685c2afd9afb14bba2c3f33161872"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          1353.0070981210856,
+          0.0,
+          2967.059707724426,
+          597.7697226750628
+        ],
+        "grid_row": 0,
+        "grid_column": 1,
+        "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_1.png",
+        "width": 4843,
+        "height": 1794,
+        "sha256": "6a5e11c377aebe4443ee039930c746ffa57d22760f9132ca2614a8be1901a144"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          2756.5311064718167,
+          0.0,
+          4265.319415448852,
+          597.7697226750628
+        ],
+        "grid_row": 0,
+        "grid_column": 2,
+        "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_2.png",
+        "width": 4527,
+        "height": 1794,
+        "sha256": "71a680f4d46cdb4a0820609acd6b5d1b11a1e1e6c73bf6efb2f89dc2d623f951"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          54.74739039665971,
+          514.3599939297051,
+          1563.5356993736955,
+          1153.8345809774466
+        ],
+        "grid_row": 1,
+        "grid_column": 0,
+        "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_3.png",
+        "width": 4527,
+        "height": 1919,
+        "sha256": "10bdcd85865a272b6ec6b54f19ce0e1a163d0cc672b9e4de633468d8d909bfc6"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          1353.0070981210856,
+          514.3599939297051,
+          2967.059707724426,
+          1153.8345809774466
+        ],
+        "grid_row": 1,
+        "grid_column": 1,
+        "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_4.png",
+        "width": 4843,
+        "height": 1919,
+        "sha256": "736e438e76c3cfad560227ac6f1830b9f9fce87a5ae28fb23c22a1c6a95da6b7"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          2756.5311064718167,
+          514.3599939297051,
+          4265.319415448852,
+          1153.8345809774466
+        ],
+        "grid_row": 1,
+        "grid_column": 2,
+        "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_5.png",
+        "width": 4527,
+        "height": 1919,
+        "sha256": "c9171c2ac537ff2dd2a5cd7deee3f3a7ed990115961ff43d53ebdafa5f69ced9"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          54.74739039665971,
+          1070.424852232089,
+          1563.5356993736955,
+          1668.194574907152
+        ],
+        "grid_row": 2,
+        "grid_column": 0,
+        "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_6.png",
+        "width": 4527,
+        "height": 1794,
+        "sha256": "741b9a4b6269950c991c6407343dc6ccf11b7f7dd54afd111d7294974aa8a655"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          1353.0070981210856,
+          1070.424852232089,
+          2967.059707724426,
+          1668.194574907152
+        ],
+        "grid_row": 2,
+        "grid_column": 1,
+        "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_7.png",
+        "width": 4843,
+        "height": 1794,
+        "sha256": "b4cda16b2aaa07a0b7bf5d5c76afaf7127334836c1453d2e53319264b329148e"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          2756.5311064718167,
+          1070.424852232089,
+          4265.319415448852,
+          1668.194574907152
+        ],
+        "grid_row": 2,
+        "grid_column": 2,
+        "path": "/tmp/auditmanager_eom_shunt_graphic_control_20261111/tiles/detail_tile_8.png",
+        "width": 4527,
+        "height": 1794,
+        "sha256": "bcca89e08e2f3c5e842752d6b870bd398bcb4178979c685e3e52496304df7f7f"
+      }
+    ],
+    "padding_page_fraction": 0.0,
+    "original_crop_points": [
+      54.74739039665971,
+      0.0,
+      4265.319415448852,
+      1668.194574907152
+    ],
+    "expanded_crop_points": [
+      54.74739039665971,
+      0.0,
+      4265.319415448852,
+      1668.194574907152
+    ],
+    "outside_original_crop": false,
+    "model_call_performed": false,
+    "semantic_verified": false
+  },
+  "expected_answers_supplied": false,
+  "known_source_control": true,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}
