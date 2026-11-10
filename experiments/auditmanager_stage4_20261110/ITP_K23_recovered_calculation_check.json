@@ -1,0 +1,11 @@
+{
+  "source_block": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+  "system": "отопление ДОО",
+  "selected_tank": "1 шт. SPL RM 200 л 10 бар",
+  "published_required_litres": "152",
+  "published_fill_coefficient": "0.3",
+  "expansion_from_published_operands_litres": "32.920182",
+  "required_using_displayed_coefficient_litres": "137.1674250",
+  "interpretation": "The document explicitly selects 200 litres. Arithmetic with displayed rounded coefficient does not reproduce 152; coefficient precision and source formula interpretation require checking. This is not proof of an undersized tank or a new accepted defect.",
+  "graphic_TEXT_reextraction": false
+}

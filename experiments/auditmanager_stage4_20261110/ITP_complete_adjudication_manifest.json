@@ -1,0 +1,10 @@
+{
+  "request_sha256": "47071ad3d28869704063eaee4c3d24fbf07c64fbd891663f0acc866df80140b2",
+  "model": "claude/claude-sonnet-5-5",
+  "message_chars": 77315,
+  "images": 8,
+  "image_bytes": 16055739,
+  "includes_previous_model_reply": true,
+  "includes_engineer_or_evaluator_answers": false,
+  "automatic_retries": 0
+}
