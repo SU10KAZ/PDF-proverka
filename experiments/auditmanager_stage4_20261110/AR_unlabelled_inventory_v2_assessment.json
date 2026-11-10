@@ -1,0 +1,147 @@
+{
+  "control_id": "H03-P03",
+  "result_sha256": "c794679801cd659638f3d07b975419066d1b63087ab0f81af3f686371fd93e25",
+  "source_review": "AR_unlabelled_source_review.json",
+  "objects": 50,
+  "named_region_matches": [
+    {
+      "object_id": "region_05",
+      "reviewed_location": "Б9₁–Б10₁",
+      "model_observation": {
+        "id": "region_05",
+        "identity": "Локальная область 05: серый участок левого фасада ниже нижней ниши К-5",
+        "scope": "Графически различимая область; проектная марка не установлена",
+        "kind": "Немаркированная область неизвестного назначения",
+        "source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Графика и маркировка",
+            "value": "Вытянутый серый штрихованный участок в отдельном обрамлении; индивидуальная подпись не различима",
+            "unit": null,
+            "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+            "graphic_observation": "На левом наружном крае приблизительно между Б9 и Б10, ниже k5_03 и выше закругления."
+          }
+        ]
+      }
+    },
+    {
+      "object_id": "region_07",
+      "reviewed_location": "Г5₁, В1₁–В2₁",
+      "model_observation": {
+        "id": "region_07",
+        "identity": "Локальная область 07: нижний фасад между В1 и В2",
+        "scope": "Графически различимая область; проектная марка не установлена",
+        "kind": "Немаркированная область неизвестного назначения",
+        "source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Графика и маркировка",
+            "value": "Прямоугольный участок с плотной серой линейной штриховкой; индивидуальная подпись не различима",
+            "unit": null,
+            "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+            "graphic_observation": "Первый прямой штрихованный участок нижнего фасада справа от закругления."
+          }
+        ]
+      }
+    },
+    {
+      "object_id": "region_08",
+      "reviewed_location": "Г5₁, В2₁–В3₁",
+      "model_observation": {
+        "id": "region_08",
+        "identity": "Локальная область 08: нижний фасад между В2 и В3",
+        "scope": "Графически различимая область; проектная марка не установлена",
+        "kind": "Немаркированная область неизвестного назначения",
+        "source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Графика и маркировка",
+            "value": "Отдельный прямоугольник с плотной серой линейной штриховкой; индивидуальная подпись не различима",
+            "unit": null,
+            "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+            "graphic_observation": "Отделён от region_07 поперечным конструктивным элементом."
+          }
+        ]
+      }
+    },
+    {
+      "object_id": "region_09",
+      "reviewed_location": "Г5₁, В3₁–В4₁",
+      "model_observation": {
+        "id": "region_09",
+        "identity": "Локальная область 09: нижний фасад между В3 и В4",
+        "scope": "Графически различимая область; проектная марка не установлена",
+        "kind": "Немаркированная область неизвестного назначения",
+        "source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Графика и маркировка",
+            "value": "Отдельный прямоугольник с плотной серой линейной штриховкой; индивидуальная подпись не различима",
+            "unit": null,
+            "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+            "graphic_observation": "Расположен справа от region_08 между соседними поперечными элементами."
+          }
+        ]
+      }
+    },
+    {
+      "object_id": "region_10",
+      "reviewed_location": "Г5₁, В4₁–В5₁",
+      "model_observation": {
+        "id": "region_10",
+        "identity": "Локальная область 10: нижний фасад между В4 и В5",
+        "scope": "Графически различимая область; проектная марка не установлена",
+        "kind": "Немаркированная область неизвестного назначения",
+        "source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Графика и маркировка",
+            "value": "Отдельный прямоугольник с плотной серой линейной штриховкой; индивидуальная подпись не различима",
+            "unit": null,
+            "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+            "graphic_observation": "Расположен справа от region_09; дальнейшие участки нижнего фасада заметно менее контрастны."
+          }
+        ]
+      }
+    },
+    {
+      "object_id": "region_11",
+      "reviewed_location": "Г5₁, В10₁–В11₁",
+      "model_observation": {
+        "id": "region_11",
+        "identity": "Локальная область 11: нижний фасад между В10 и В11",
+        "scope": "Графически различимая область; проектная марка не установлена",
+        "kind": "Немаркированная область неизвестного назначения",
+        "source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Графика и маркировка",
+            "value": "Прямоугольный участок с плотной серой линейной штриховкой; индивидуальная подпись не различима",
+            "unit": null,
+            "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+            "graphic_observation": "У правого конца нижнего фасада, непосредственно слева от красной торцевой полосы."
+          }
+        ]
+      }
+    }
+  ],
+  "bounded_region_discovery_passed": true,
+  "findings_emitted": 0,
+  "whole_inventory_verified": false,
+  "function_verified": false,
+  "operation_control_passed": false,
+  "production_acceptance": false,
+  "boundary": "Same source and image, changed generic region instruction. One paired development control, not repeated statistical or new-project validation. More objects alone are not an improvement; only six address matches reviewed. Additional regions are not additional confirmed defects."
+}

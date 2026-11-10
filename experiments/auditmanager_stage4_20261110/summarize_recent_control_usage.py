@@ -22,6 +22,7 @@ def summarize():
         *[(f'AR_recovery_{i}', Path('/tmp/auditmanager_ar_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
         ('AR_unlabelled_inventory', Path('/tmp/auditmanager_ar_unlabelled_inventory_control_20261110/AR/execution/object_inventory_000')),
         ('AR_unlabelled_inventory_v2', Path('/tmp/auditmanager_ar_unlabelled_inventory_control_20261110_regions_v2/AR/execution/object_inventory_000')),
+        *[(f'AR_region_{i:02d}', Path('/tmp/auditmanager_ar_region_operations_20261110') / f'region_{i:02d}') for i in (5, 7, 8, 9, 10, 11)],
         *[(f'KM_recovery_{i}', Path('/tmp/auditmanager_km_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
         ('KM_node_navigation', Path('/tmp/auditmanager_km_node_navigation_control_20261110')),
         *[(f'AK_inventory_{i}', Path('/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution') / f'object_inventory_{i:03d}') for i in range(5)],

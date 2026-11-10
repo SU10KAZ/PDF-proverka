@@ -271,14 +271,67 @@
     {
       "control": "AR_unlabelled_inventory_v2",
       "directory": "/tmp/auditmanager_ar_unlabelled_inventory_control_20261110_regions_v2/AR/execution/object_inventory_000",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "token_counters_incomplete": false,
+      "result_sha256": "c794679801cd659638f3d07b975419066d1b63087ab0f81af3f686371fd93e25",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 265214,
+      "input_tokens": 16213,
+      "output_tokens": 13040,
+      "cost_source": "subscription",
+      "error": ""
+    },
+    {
+      "control": "AR_region_05",
+      "directory": "/tmp/auditmanager_ar_region_operations_20261110/region_05",
       "status": "result_pending",
       "attempt_receipt": {
         "status": "started",
-        "request_sha256": "acfe51ff9d18e3ff22baf9f30421449f30843cf77c6d03581b7798821a4161ee",
+        "request_sha256": "4845b5584975ffa18b43b9e7b6bb2dbd3ff55cc06c93ea5a970dccfe5d416c49",
+        "inventory_result_sha256": "c794679801cd659638f3d07b975419066d1b63087ab0f81af3f686371fd93e25",
+        "md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+        "images": [
+          {
+            "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_eb6d781a540446879deec9e102cbd450.png",
+            "sha256": "100cbafee53ce2e6d021dca2627c73f0460fdff4fb79bd8e23d301e5443c38eb"
+          }
+        ],
         "model": "codex/gpt-6-astra",
-        "reasoning_effort": "high"
+        "reasoning_effort": "high",
+        "automatic_retries": 0,
+        "known_source_control": true,
+        "expected_answers_supplied": false
       },
       "token_counters_incomplete": true
+    },
+    {
+      "control": "AR_region_07",
+      "directory": "/tmp/auditmanager_ar_region_operations_20261110/region_07",
+      "status": "not_started"
+    },
+    {
+      "control": "AR_region_08",
+      "directory": "/tmp/auditmanager_ar_region_operations_20261110/region_08",
+      "status": "not_started"
+    },
+    {
+      "control": "AR_region_09",
+      "directory": "/tmp/auditmanager_ar_region_operations_20261110/region_09",
+      "status": "not_started"
+    },
+    {
+      "control": "AR_region_10",
+      "directory": "/tmp/auditmanager_ar_region_operations_20261110/region_10",
+      "status": "not_started"
+    },
+    {
+      "control": "AR_region_11",
+      "directory": "/tmp/auditmanager_ar_region_operations_20261110/region_11",
+      "status": "not_started"
     },
     {
       "control": "KM_recovery_0",
@@ -649,14 +702,14 @@
       "error": ""
     }
   ],
-  "completed_requests": 31,
+  "completed_requests": 32,
   "pending_results": 2,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 963824,
-  "reported_output_tokens": 387221,
+  "reported_input_tokens": 980037,
+  "reported_output_tokens": 400261,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 127.452,
+  "completed_request_minutes_sum": 131.872,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [
