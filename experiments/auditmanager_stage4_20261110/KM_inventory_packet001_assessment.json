@@ -1,0 +1,126 @@
+{
+  "packet": "object_inventory_001",
+  "objects": 16,
+  "findings": 0,
+  "duration_ms": 419315,
+  "input_tokens": 23942,
+  "output_tokens": 20669,
+  "unresolved_source_blocks": [
+    {
+      "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+        "status": "needs_data",
+        "object_ids": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "reason": "Все четыре панели просмотрены, марки и основные размеры зарегистрированы. Часть мелких позиционных выносок и концевых размеров недостаточно разборчива для полной проверки состава и размерных цепей; требуются более читаемые графические фрагменты."
+      }
+    },
+    {
+      "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+        "status": "needs_data",
+        "object_ids": [
+          "V2",
+          "I4",
+          "I5"
+        ],
+        "reason": "Изображение просмотрено и доступные объекты зарегистрированы. Нижнее левое обозначение оси обрезано; для полной координатной идентификации нужен необрезанный фрагмент. Графика показывает план, несмотря на навигационное описание как разреза."
+      }
+    }
+  ],
+  "text_quote_receipts": [
+    {
+      "object_id": "A1",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "A1",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "A1",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "A2",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "A2",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "A2",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "T3",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "T3",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "T3",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "A4",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "A4",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "A4",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "R1",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    }
+  ],
+  "quote_mismatches": 0,
+  "cross_packet_pairs_first_two": 14,
+  "cross_packet_relations_verified": false,
+  "source_inventory_complete": false,
+  "semantic_acceptance": false
+}

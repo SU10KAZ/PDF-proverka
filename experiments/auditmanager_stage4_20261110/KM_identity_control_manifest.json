@@ -1,0 +1,26 @@
+{
+  "request_sha256": "665dcf9461cbfa1a429f1d32f4095b39d750c544a6521a998ba2e0a48ac04b73",
+  "model": "claude/claude-sonnet-5-5",
+  "pair_count": 14,
+  "message_chars": 51901,
+  "images": 8,
+  "image_bytes": 2087655,
+  "inventory_results": [
+    {
+      "path": "/tmp/auditmanager_whole_project_inventory_20261110/KM/execution/object_inventory_000/result.json",
+      "sha256": "ea3b192a606eaac93544a3a813ba4dce8e897a2a4522da8a457b7efade534821"
+    },
+    {
+      "path": "/tmp/auditmanager_whole_project_inventory_20261110/KM/execution/object_inventory_001/result.json",
+      "sha256": "775b5bd25add143a64fc6e6b79f43417c8b5551009953a4eddb54049d8a7cafc"
+    }
+  ],
+  "history_or_engineer_answers_sent": false,
+  "new_calls": 1,
+  "automatic_retries": 0,
+  "cost": "Subscription quota; monetary maximum unknown",
+  "scope": "All lexical candidates from first two KM inventory packets; not full-project acceptance",
+  "dispatch_status": "automatic_approval_rejected_specific_payload_confirmation_pending",
+  "request_sent": false,
+  "attempt_exists": false
+}

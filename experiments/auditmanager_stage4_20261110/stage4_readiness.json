@@ -777,5 +777,16 @@
     "source_version_bound": true,
     "new_model_calls": 0,
     "semantic_acceptance": false
+  },
+  "km_cross_packet_identity_control": {
+    "status": "prepared_specific_payload_approval_pending",
+    "pair_count": 14,
+    "source_packets_completed": 2,
+    "model": "claude/claude-sonnet-5-5",
+    "manifest": "KM_identity_control_manifest.json",
+    "request_sent": false,
+    "automatic_merges": false,
+    "main_inventory_session_unaffected": 96229,
+    "remaining": "Obtain response after approval, validate source receipts and graphic semantics, preserve unresolved relationships."
   }
 }
