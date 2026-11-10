@@ -1,0 +1,15 @@
+{
+  "finding_id": "F-024",
+  "image_count": 14,
+  "text_source_count": 15,
+  "context_count": 1,
+  "purpose": {
+    "report_section": "questions",
+    "question_basis": "actionable_source_ambiguity",
+    "profile_reason": "Неоднозначность касается размерной согласованности конкретного участка К-3: от поверхности отсчета отметок зависит применимая высота опор и увязка слоев покрытия. Основание вопроса — совместно заданные отметки и толщины, а не отсутствие документа в пакете.",
+    "engineer_action_required": true
+  },
+  "message_chars": 39594,
+  "model_called": false,
+  "semantic_acceptance": false
+}

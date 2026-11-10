@@ -1,0 +1,29 @@
+{
+  "prior_output_findings_preserved": 23,
+  "classic_findings_preserved": 22,
+  "prior_recovered_questions_preserved": 1,
+  "final_rows": 24,
+  "recovered_question_id": "F-024",
+  "question_core_fields_preserved": true,
+  "question_exported_separately": true,
+  "all_excel_ids_unique": true,
+  "verifier_stats": {
+    "findings_total": 24,
+    "deterministic_issues": 0,
+    "critic_error": null,
+    "phantom_cleaned": 0,
+    "page_fixed": 0,
+    "downgraded": 0,
+    "flagged_human": 0,
+    "corrector_error": null,
+    "source_reviews_pending": 1,
+    "source_review_queue_error": null
+  },
+  "source_recovery_sha256": "6bdc6228f04d9d92f715ed3d8c1159ee5461fa9c25ce8b211caf8ab0e1f6c0f5",
+  "handoff_payload_sha256": "b7200f6670edd2eb65acc1937f9642b267a2bc6fb02025e04398805356438426",
+  "xlsx_path": "/tmp/auditmanager_ar_roof_handoff_output_20261111/report.xlsx",
+  "xlsx_sha256": "ddde4a51e3fa79a8a6162d331180c6c7ffb5b0fd3d3c4dbe5e3121f8cd198902",
+  "new_model_calls": 0,
+  "semantic_acceptance": false,
+  "boundary": "Real model-produced candidate through deterministic verifier and Excel. Does not test model absence verifier, engineer usefulness or complete pipeline acceptance."
+}
