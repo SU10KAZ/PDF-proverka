@@ -48,6 +48,11 @@
       "packet": 3,
       "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
       "boundary": "Terminal topic found with manufacturer note supplied; positional M2/Y7candidates are separate baseline duplicates."
+    },
+    {
+      "packet": 4,
+      "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+      "boundary": "Terminal topic returned with same-page notes; core motorandinputgroupssource-supported; finalconsolidationpending."
     }
   ],
   "baseline_snapshots": [
@@ -486,7 +491,7 @@
       }
     }
   ],
-  "counting_boundary": "Additional addresses in one systemic topic are not independently counted defects. Fifth operation and final consolidation unverified.",
+  "counting_boundary": "Five cabinet addresses have model candidates: two already preserved in baseline, three additional address candidates within one systemic topic. Not five new defects; labelreading and finaloutput remain toverify.",
   "automatic_duplicate_suppression_applied": false,
   "final_output_verified": false
 }

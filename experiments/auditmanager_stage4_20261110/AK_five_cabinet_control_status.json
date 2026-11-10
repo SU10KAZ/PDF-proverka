@@ -149,8 +149,8 @@
         "blk_47163e69651c48528b3e054d5a5db095"
       ],
       "extraction_result": "received",
-      "operation_result": "not_saved",
-      "candidate_count": 0,
+      "operation_result": "received",
+      "candidate_count": 1,
       "final_output_verified": false,
       "baseline_address": null,
       "extraction_evidence": {
@@ -158,15 +158,30 @@
         "sha256": "ab04f421990d6b24c9c810ee0b9fec021a46ed9f95cd5d971a7db656a255d8f0"
       },
       "raw_object_records": 66,
+      "operation_revision": "page_context_v3",
+      "operation_evidence": {
+        "path": "/tmp/auditmanager_ak_cabinet_operations_20261110/page_context_v3/packet_004/validated.json",
+        "sha256": "73bce6f3cb77904178b2e23d415df27fb95f982d7770f99d13f85ccfe3ea0a15"
+      },
+      "pending_candidates": 0,
+      "operation_statuses": [
+        {
+          "operation": "identity_across_views",
+          "status": "needs_data"
+        }
+      ],
+      "source_candidate_ids": [
+        "O-ec56f7501814b5390719ed59"
+      ],
       "local_source_review": {
         "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_004_source_review.json",
-        "sha256": "ac2c894524ec6aea77044f01e0fd78b2e377971501b49cb0b9f6bc725389398b"
+        "sha256": "f6414a4f94c133e11422ff91e365ef32a8004e0a66acd44544d174effec1f7e5"
       }
     }
   ],
   "extraction_responses": 5,
-  "operation_responses": 4,
-  "candidate_rows": 6,
+  "operation_responses": 5,
+  "candidate_rows": 7,
   "full_control_complete": false,
   "production_accepted": false,
   "remaining": [

@@ -22,5 +22,7 @@
   "supported_claim": "Local addressing ambiguity only; erroneous physical connection unproved.",
   "historical_boundary": "Stage2found no terminal-ambiguity candidate for this block; source control is known-case, not blind discovery.",
   "model_answer_used_for_observations": false,
-  "full_control_complete": false
+  "full_control_complete": false,
+  "model_result": "One local terminal-address candidate preserves motorsM1/M2/M3/M5andСКЗ/fireinput; additionally identifiesPDS3/PDS4andactuatorgroups. No physical wiring fault inferred.",
+  "final_output_verified": false
 }
