@@ -1,0 +1,412 @@
+[
+  {
+    "path": "/requirement_registry/0/source_evidence/0",
+    "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/0/source_evidence/1",
+    "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/1/source_evidence/0",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/2/source_evidence/0",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/2/source_evidence/1",
+    "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/3/source_evidence/0",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/4/source_evidence/0",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/5/source_evidence/0",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/6/source_evidence/0",
+    "block_id": "blk_4f09992bf47245e9a6f8a27ddda67b86",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/6/source_evidence/1",
+    "block_id": "blk_4dfd856534c74306be925eff2ea7088a",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/7/source_evidence/0",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/7/source_evidence/1",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/8/source_evidence/0",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/9/source_evidence/0",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/10/source_evidence/0",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/requirement_registry/11/source_evidence/0",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/0/scope_evidence/0",
+    "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/0/scope_evidence/1",
+    "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/1/scope_evidence/0",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/1/scope_evidence/1",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/2/scope_evidence/0",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/2/scope_evidence/1",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/2/scope_evidence/2",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/3/scope_evidence/0",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/3/scope_evidence/1",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/3/scope_evidence/2",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/4/scope_evidence/0",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/4/scope_evidence/1",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/5/scope_evidence/0",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/5/scope_evidence/1",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/6/scope_evidence/0",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/6/scope_evidence/1",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/7/scope_evidence/0",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/7/scope_evidence/1",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/8/scope_evidence/0",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/8/scope_evidence/1",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/9/scope_evidence/0",
+    "block_id": "blk_4f09992bf47245e9a6f8a27ddda67b86",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/9/scope_evidence/1",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/10/scope_evidence/0",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/11/scope_evidence/0",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/12/scope_evidence/0",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/13/scope_evidence/0",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/requirement_applicability_checks/14/scope_evidence/0",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/findings/0/evidence/0",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/findings/0/evidence/1",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/findings/1/evidence/0",
+    "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+    "matches": true
+  },
+  {
+    "path": "/findings/1/evidence/1",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/findings/2/evidence/0",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/findings/3/evidence/0",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/findings/3/evidence/1",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/findings/3/evidence/2",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/4/evidence/0",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/findings/4/evidence/1",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/4/evidence/2",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/4/evidence/3",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/5/evidence/0",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/findings/5/evidence/1",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/findings/5/evidence/2",
+    "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+    "matches": true
+  },
+  {
+    "path": "/findings/6/evidence/0",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/findings/6/evidence/1",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/findings/6/evidence/2",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/findings/6/evidence/3",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/7/evidence/0",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/7/evidence/1",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/7/evidence/2",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/findings/8/evidence/0",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/findings/8/evidence/1",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/findings/9/evidence/0",
+    "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "matches": true
+  },
+  {
+    "path": "/findings/9/evidence/1",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/findings/10/evidence/0",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/10/evidence/1",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/10/evidence/2",
+    "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+    "matches": true
+  },
+  {
+    "path": "/findings/10/evidence/3",
+    "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+    "matches": true
+  },
+  {
+    "path": "/findings/10/evidence/4",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/findings/10/evidence/5",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/findings/11/evidence/0",
+    "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+    "matches": true
+  },
+  {
+    "path": "/findings/11/evidence/1",
+    "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+    "matches": true
+  },
+  {
+    "path": "/findings/11/evidence/2",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/findings/11/evidence/3",
+    "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "matches": true
+  },
+  {
+    "path": "/findings/12/evidence/0",
+    "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+    "matches": true
+  },
+  {
+    "path": "/findings/13/evidence/0",
+    "block_id": "blk_4dfd856534c74306be925eff2ea7088a",
+    "matches": true
+  },
+  {
+    "path": "/findings/13/evidence/1",
+    "block_id": "blk_4dfd856534c74306be925eff2ea7088a",
+    "matches": true
+  }
+]

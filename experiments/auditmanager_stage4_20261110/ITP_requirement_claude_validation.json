@@ -1,0 +1,365 @@
+{
+  "checks": [
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-01",
+        "object_id": "OBJ-03",
+        "applicability": "applies",
+        "reason": "REQ-01 names ЦТП (ИТП) electrical supply explicitly, and OBJ-03 is an ИТП. This is a topical match only. The linkage of the requirements document to ПД-00542664 is not confirmed (see F-02). The supplied pages are piping specifications with no electrical content.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+            "quote": "5.2.6; Электрооборудование ЦТП (ИТП) и насосных станций водоснабжения"
+          },
+          {
+            "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+            "quote": "ТЕПЛОМЕХАНИЧЕСКИЕ РЕШЕНИЯ"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-01",
+      "object_id": "OBJ-03",
+      "reason": "incomplete_requirement_identity_or_scope"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-02",
+        "object_id": "OBJ-04",
+        "applicability": "unknown",
+        "reason": "The clause defers to «ПД» and gives no pipe material or other criterion, so there is nothing to compare. Whether OBJ-04 belongs to a water-supply system is also not stated.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "5.3.1.3 Трубопроводы систем водоснабжения выполнить: *Принимается в соответствии с ПД.*"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубопровод ИТП"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-02",
+      "object_id": "OBJ-04"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-03",
+        "object_id": "OBJ-07",
+        "applicability": "unknown",
+        "reason": "The clause sits under water supply, residential part. The specification does not say whether the Ø25–Ø50 grooved fittings serve a water-supply system or an ИТП heating or ГВС circuit. «Ø» and the clause's «диаметр» are not defined as nominal or outside. Italic markup meaning is unknown. If the clause applies and the diameter is nominal, the 819 grooved couplings Ø25–Ø50 and associated elbows, plugs and reducers would conflict with «на резьбовых оцинкованных фитингах». This is a conditional risk, not a confirmed violation.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E*"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø25 | Dinarm FC | FC033E*"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-03",
+      "object_id": "OBJ-07"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-03",
+        "object_id": "OBJ-08",
+        "applicability": "unknown",
+        "reason": "Grooved Ø65/Ø80 items would be consistent with the grooved-joint part of the clause only if the lines are galvanized steel pipes in the water-supply system. System membership is unknown. Joint type per pipe line is not shown, and welded bends and plugs of sizes 65/80 also appear. Whether the mixed reducer Ø65х32 belongs to the ≤50 branch is unclear.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "Соединение стальных оцинкованных труб предусмотреть на грувлочном соединении"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Муфта гибкая для соединений грубллок Ø80 | Dinarm FC | FC089E*"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Переход концентрический под муфту грубллок Ø65х32 | Dinarm GCR | GCR076R042*"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-03",
+      "object_id": "OBJ-08"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-03",
+        "object_id": "OBJ-09",
+        "applicability": "unknown",
+        "reason": "OBJ-09 is threaded with sizes ≤ 50 and is specified «без покрытия», while REQ-03 asks for «резьбовых оцинкованных фитингах» for ≤ 50 when the clause applies. This is a conditional mismatch of coating only. The system served is not stated, and no document confirms whether the pipe in these joints is galvanized.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "на резьбовых оцинкованных фитингах"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=50х40мм | ГОСТ 8957-75* | Муфта 50x40"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-03",
+      "object_id": "OBJ-09"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-03",
+        "object_id": "OBJ-04",
+        "applicability": "unknown",
+        "reason": "OBJ-04 matches the wording «стальных оцинкованных труб» by material, but the system is not stated and per-line joint type is not shown. OBJ-05 (ГОСТ 10704-91) is not stated to be galvanized and is therefore outside the literal wording of the clause.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Труба стальная водогазопроводная оцинкованная, Д=80х4,0 мм | ГОСТ 3262-75"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-03",
+      "object_id": "OBJ-04"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-04",
+        "object_id": "OBJ-06",
+        "applicability": "unknown",
+        "reason": "REQ-04 only requires provision of a drainage sewerage system for emergency drains from ИТП rooms and gives no material or other criterion for comparison. The specification does not state whether «Трубопровод дренажный» is that sewerage system or an equipment drain.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "аварийных стоков от помещений ЦТП (ИТП)"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубопровод дренажный"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-04",
+      "object_id": "OBJ-06"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-05",
+        "object_id": "OBJ-06",
+        "applicability": "unknown",
+        "reason": "The literal scope of REQ-05 is household and industrial sewerage, and drainage sewerage is listed separately in 5.4.1.1. The drain pipe is steel galvanized ГОСТ 3262-75 (cast-iron SML is required for household and industrial sewerage). Whether the ИТП drain falls into the «производственная» category is not stated. No material requirement for drainage sewerage is in the supplied text.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "Системы хозяйственно-бытовой и производственной канализации выполнить"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Труба стальная оцинкованная водогазопроводная 25х4,0 | ГОСТ 3262-75"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-05",
+      "object_id": "OBJ-06"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-06",
+        "object_id": "OBJ-10",
+        "applicability": "unknown",
+        "reason": "The sentence is truncated, so the object of the exclusion and any exceptions are unknown. By position the clause is in the water-drainage section, while the specification does not allocate the many 90° bends and elbows to systems. Heating-circuit bends are not shown to be in scope.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "5.4.1.9 Исключить использование отводов под углом 90°"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Отвод 90° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 90-2-57"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-06",
+      "object_id": "OBJ-10"
+    },
+    {
+      "status": "reported_applies",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "REQ-07",
+        "object_id": "OBJ-07",
+        "applicability": "applies",
+        "reason": "The note covers «*» items such as the Dinarm lines. It is a scope modifier, not a compliance criterion: brand and catalogue code are non-mandatory, but technical parameters must be preserved. Which parameters are binding (for example joint type) is not listed.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_4f09992bf47245e9a6f8a27ddda67b86",
+            "quote": "Возможна замена на аналогичные с сохранением технических параметров."
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø40 | Dinarm FC | FC048E*"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "REQ-07",
+      "object_id": "OBJ-07",
+      "requirement": {
+        "id": "REQ-07",
+        "source_kind": "project_requirement",
+        "document": "ПД-00542664 - ИТП.ТМ.СО, specification sheets 6, 7, 8 (design organization note). It is a note in the design document, not a customer requirement.",
+        "revision": "Revisions: Не указано",
+        "requirement_text": "* Данное оборудование не является обязательным и рекомендовано в качестве аналога. В документации указана марка приборов, арматуры, приводов, изоляции, оборудования и т.п. для выдачи заданий смежным разделам, не является обязательной и рекомендовано в качестве аналога. Возможна замена на аналогичные с сохранением технических параметров.",
+        "scope": "Items marked «*» on sheets 6–8, including Dinarm codes and, by position, lines with ГОСТ 8957-75* and ГОСТ 17375-2001*. Brand or mark is non-mandatory; technical parameters must be preserved.",
+        "stage": "stamp: Не указано",
+        "execution": "Replacement by analogues with preserved technical parameters is allowed. Which parameters are binding (for example joint type or size designation) is not listed.",
+        "exceptions": "Not stated. Items without «*» are not covered by the literal wording.",
+        "source_evidence": [
+          {
+            "block_id": "blk_4f09992bf47245e9a6f8a27ddda67b86",
+            "quote": "Возможна замена на аналогичные с сохранением технических параметров."
+          },
+          {
+            "block_id": "blk_4dfd856534c74306be925eff2ea7088a",
+            "quote": "* Данное оборудование не является обязательным и рекомендовано в качестве аналога."
+          }
+        ]
+      },
+      "comparison": "unknown",
+      "boundary": "Source quotations exist; applicability reasoning and comparison are not independently verified."
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "CAT-01",
+        "object_id": "OBJ-07",
+        "applicability": "unknown",
+        "reason": "The Dinarm catalogue is not supplied. The Ø value is not treated as nominal or outside, and no system ownership is inferred from the codes. The catalogue cannot confirm compatibility with ГОСТ 3262-75 or ГОСТ 10704-91 pipe sizes.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Колено 90° под муфту грубллок Ø50 | Dinarm EL9000 | EL9000C060*"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "CAT-01",
+      "object_id": "OBJ-07"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "NC-01",
+        "object_id": "OBJ-04",
+        "applicability": "unknown",
+        "reason": "A standard is cited by designation only. Whether «Д=» in these lines is nominal or outside diameter must come from the Norm Resolver. Fitting rows use «Д=50 мм» and «Ду 50» interchangeably, and ГОСТ 10704-91 rows use «Д=57х3,5». Notation is inconsistent across the specification.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Труба стальная водогазопроводная оцинкованная, Д=50х3,5 мм | ГОСТ 3262-75"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "NC-01",
+      "object_id": "OBJ-04"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "NC-02",
+        "object_id": "OBJ-05",
+        "applicability": "unknown",
+        "reason": "Cited by designation only. Whether the pipes are coated, and what «Д» means, require the Norm Resolver and the design team.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубы стальные электросварные, Д=108х4,0 мм | ГОСТ 10704-91"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "NC-02",
+      "object_id": "OBJ-05"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "NC-03",
+        "object_id": "OBJ-09",
+        "applicability": "unknown",
+        "reason": "Cited by designation only. Whether a coated or galvanized variant exists under this standard is not verified here.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=40х20мм | ГОСТ 8957-75* | Муфта 40x20"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "NC-03",
+      "object_id": "OBJ-09"
+    },
+    {
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "requirement_id": "NC-04",
+        "object_id": "OBJ-10",
+        "applicability": "unknown",
+        "reason": "Cited by designation only. The standard's content is not verified, so the notation mapping between «Д=», «Ду» and the item code is not confirmed.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Отвод 90° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 90-2-57"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      "requirement_id": "NC-04",
+      "object_id": "OBJ-10"
+    }
+  ],
+  "unresolved": 14,
+  "requirements_without_checks": [],
+  "coverage_complete": false,
+  "semantic_verified": false
+}

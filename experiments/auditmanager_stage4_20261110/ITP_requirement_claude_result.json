@@ -1,0 +1,1004 @@
+{
+  "text": "{\"object_registry\": [{\"id\": \"OBJ-01\", \"identity\": \"Cover sheet ПД-00542664-ИТП.ТМ, «Индивидуальный тепловой пункт. Тепломеханические решения», labelled РАБОЧАЯ ДОКУМЕНТАЦИЯ, issued by ООО «СУ-10» for ООО «ДС Строй»\", \"scope\": \"Project cover only. Stage on cover: «РАБОЧАЯ ДОКУМЕНТАЦИЯ». Building identified as «квартал 3, 2-я очередь, этап 1 (рекламное название Событие 6.2)». Contains no technical data.\", \"kind\": \"document\", \"source_refs\": [\"blk_8c5527e3317248dca7d78ca059f0ec46\"]}, {\"id\": \"OBJ-02\", \"identity\": \"Specification sheets 6–8, code «ПД-00542664 - ИТП.ТМ.СО», stamp organization ООО «ПИ ВНИС»\", \"scope\": \"Pipelines and pipeline connecting parts. Stamp stage «Не указано», revisions «Не указано», project named as «Корпус 2 (рекламное название ЖК Событие 6.2)». The meaning of the suffix «.СО» is not stated. It is not assumed to be the same document as OBJ-01.\", \"kind\": \"document\", \"source_refs\": [\"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\"]}, {\"id\": \"OBJ-03\", \"identity\": \"ИТП (individual heat point) of the project «Событие 6.2»\", \"scope\": \"System level only. The supplied pages do not state which circuits or media the ИТП contains (heating, ГВС, ХВС or other), nor which building parts it serves (residential or commercial). No electrical, pump or reservation data is in the supplied pages.\", \"kind\": \"system\", \"source_refs\": [\"blk_8c5527e3317248dca7d78ca059f0ec46\", \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\"]}, {\"id\": \"OBJ-04\", \"identity\": \"Group «Трубопровод ИТП», galvanized water-gas steel pipes ГОСТ 3262-75, 8 lines («Д=15х2,8» to «Д=80х4,0 мм»)\", \"scope\": \"Sum of listed lengths is 338.0 m, calculated by the reviewer. Medium and system are not stated. Whether «Д» is nominal or outside diameter is not stated in the line text. Joint type per line is not stated.\", \"kind\": \"component_group\", \"source_refs\": [\"blk_b55acef48d8d452d92a5e3a8fcc2fd88\"]}, {\"id\": \"OBJ-05\", \"identity\": \"Group «Трубопровод ИТП», electric-welded steel pipes ГОСТ 10704-91, 14 lines («Д=19х2,0» to «Д=325х7,0 мм»)\", \"scope\": \"Sum of listed lengths is 638.9 m, calculated by the reviewer. Coating or galvanizing is not stated. Medium and system are not stated.\", \"kind\": \"component_group\", \"source_refs\": [\"blk_b55acef48d8d452d92a5e3a8fcc2fd88\"]}, {\"id\": \"OBJ-06\", \"identity\": \"Group «Трубопровод дренажный»: 5 galvanized water-gas pipe lines ГОСТ 3262-75 (25х4,0 to 65х4,5) plus one line «Решение не найдено» ГОСТ 10704-91 (0.4 m)\", \"scope\": \"Sum of listed lengths is 159.0 m, calculated by the reviewer. The sheet total reads 158.8. Not established whether this is the drainage sewerage of requirement section 5.4, the ИТП equipment drain, or something else.\", \"kind\": \"component_group\", \"source_refs\": [\"blk_b55acef48d8d452d92a5e3a8fcc2fd88\"]}, {\"id\": \"OBJ-07\", \"identity\": \"Dinarm grooved-joint fittings (ООО «Огнеборец») designated Ø25, Ø32, Ø40, Ø50: flexible couplings FC033E/FC042E/FC048E/FC060E (819 pcs by reviewer's sum), plugs EC033–EC060, 45° elbows EL4500C048/C060, 90° elbows EL9000C033–C060, reducers GCR060R042 and GCR060R048\", \"scope\": \"Sheets 7–8. The «Ø» value is not stated as nominal or outside diameter. No allocation to a system. The catalogue code is not used to derive the diameter type. All lines carry «*» (footnote: not mandatory, replaceable by an analogue with the same technical parameters).\", \"kind\": \"component_group\", \"source_refs\": [\"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\"]}, {\"id\": \"OBJ-08\", \"identity\": \"Dinarm grooved-joint fittings designated Ø65 and Ø80 (FC073E, FC089E, EC076, EC089, EL4500C076/C089, EL9000C076/C089, GCR076R042), including the mixed-size reducer Ø65х32\", \"scope\": \"Sheets 7–8. Same limitations as OBJ-07. The Ø65 coupling code FC073E differs in numeric suffix from the other Ø65 grooved items (076).\", \"kind\": \"component_group\", \"source_refs\": [\"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\"]}, {\"id\": \"OBJ-09\", \"identity\": \"Reducing couplings of malleable cast iron with cylindrical thread, «без покрытия», ГОСТ 8957-75*: 8 lines (32x25, 40x20, 40x25, 40x32, 50x15, 50x25, 50x32, 50x40), 42 pcs by reviewer's sum\", \"scope\": \"Sheet 8. No allocation to a system. Specified without coating; galvanizing is not stated.\", \"kind\": \"component_group\", \"source_refs\": [\"blk_ac52bb88a0f64138a5b5ee4256cba2e7\"]}, {\"id\": \"OBJ-10\", \"identity\": \"90° elbows: steel seamless «Отвод 90°» ГОСТ 17375-2001* (many lines, sizes written «Д=…» and «Ду …») and Dinarm EL9000 grooved 90° elbows\", \"scope\": \"Sheets 7–8. Not allocated to systems (heating, water supply, sewerage or drainage). Duplicated size notation: «Д=50 мм» and «Ду 50» both point to code «Отвод 90-2-57».\", \"kind\": \"component_group\", \"source_refs\": [\"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\"]}, {\"id\": \"OBJ-11\", \"identity\": \"Unresolved or placeholder specification lines: «<варианты>» in position or code cells, «Решение не найдено», «Нет в каталоге», «Врезка du…» without document or code\", \"scope\": \"Sheets 6–8. Items are not fully defined, so no requirement can be compared to them.\", \"kind\": \"data_quality_group\", \"source_refs\": [\"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\"]}], \"requirement_registry\": [{\"id\": \"REQ-01\", \"source_kind\": \"project_requirement\", \"document\": \"UNKNOWN: requirements document with section numbering 5.x. Title, issuer and linkage to ПД-00542664 are not on pages 150–152.\", \"revision\": \"unknown\", \"requirement_text\": \"5.2.6.1 Центральный (индивидуальный) тепловой пункт и насосные станции запитать по первой категории надежности электроснабжения. В качестве первой категории применить технологическое резервирование. Питание электрооборудования ЦТП (ИТП) предусмотреть от отдельного ВРУ ЦТП (ИТП) с узлом учета электроэнергии.\", \"scope\": \"Section 5.2.6 «Электрооборудование ЦТП (ИТП) и насосных станций водоснабжения». Electrical supply of ЦТП/ИТП and pumping stations.\", \"stage\": \"not stated in the supplied text\", \"execution\": \"First reliability category achieved by technological redundancy. Separate ВРУ ЦТП (ИТП) with an electricity metering unit.\", \"exceptions\": \"none stated in the supplied text\", \"source_evidence\": [{\"block_id\": \"blk_2a57b9d72094420086e4401e9bfbbc9e\", \"quote\": \"5.2.6.1 Центральный (индивидуальный) тепловой пункт и насосные станции запитать по первой категории надежности электроснабжения.\"}, {\"block_id\": \"blk_2a57b9d72094420086e4401e9bfbbc9e\", \"quote\": \"Питание электрооборудования ЦТП (ИТП) предусмотреть от отдельного ВРУ ЦТП (ИТП) с узлом учета электроэнергии.\"}]}, {\"id\": \"REQ-02\", \"source_kind\": \"project_requirement\", \"document\": \"UNKNOWN requirements document (as REQ-01)\", \"revision\": \"unknown\", \"requirement_text\": \"5.3.1.3 Трубопроводы систем водоснабжения выполнить: *Принимается в соответствии с ПД.*\", \"scope\": \"Section 5.3.1 «Общие требования. Жилая часть» of 5.3 «Система водоснабжения». Material of water-supply pipelines.\", \"stage\": \"defers to «ПД»; the stage of the requirement document itself is unknown\", \"execution\": \"NO substantive value. The clause is a placeholder deferring to the design documentation, which is the document under review.\", \"exceptions\": \"not stated; the meaning of the italic markup is not defined\", \"source_evidence\": [{\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"5.3.1.3 Трубопроводы систем водоснабжения выполнить: *Принимается в соответствии с ПД.*\"}]}, {\"id\": \"REQ-03\", \"source_kind\": \"project_requirement\", \"document\": \"UNKNOWN requirements document (as REQ-01)\", \"revision\": \"unknown\", \"requirement_text\": \"*5.3.1.4 Соединение стальных оцинкованных труб предусмотреть на грувлочном соединении (при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах).*\", \"scope\": \"Section 5.3.1 «Общие требования. Жилая часть» of 5.3 «Система водоснабжения». Applies to the water-supply system, residential part, for galvanized steel pipes. «Диаметр» is not defined as nominal or outside. Applicability to ИТП pipelines is not stated.\", \"stage\": \"not stated in the supplied text\", \"execution\": \"Grooved joints for galvanized steel pipes. For diameter ≤ 50 mm, threaded galvanized fittings.\", \"exceptions\": \"none stated. The clause is in italics in the MD; the meaning of the italics (variant, adapted or optional) is unknown.\", \"source_evidence\": [{\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"*5.3.1.4 Соединение стальных оцинкованных труб предусмотреть на грувлочном соединении (при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах).*\"}, {\"block_id\": \"blk_2a57b9d72094420086e4401e9bfbbc9e\", \"quote\": \"5.3.1; Общие требования. Жилая часть.\"}]}, {\"id\": \"REQ-04\", \"source_kind\": \"project_requirement\", \"document\": \"UNKNOWN requirements document (as REQ-01)\", \"revision\": \"unknown\", \"requirement_text\": \"5.4.1.1 Предусмотреть системы хозяйственно-бытовой канализации для отведения сточных вод от санитарно-технических приборов (унитазов, умывальников и др.), производственно-технологической канализации, ливневой канализации для отвода дождевых вод с высотной и стилобатной частей здания, дренажной канализации для удаления воды при сбрасывании АУПТ и аварийных стоков от помещений ЦТП (ИТП), насосных станций и приточных венткамер.\", \"scope\": \"Section 5.4.1 «Общие требования. Жилая часть» of 5.4 «Система водоотведения». Defines the sewerage systems to be provided, including drainage sewerage for emergency drains from ЦТП (ИТП) rooms.\", \"stage\": \"not stated in the supplied text\", \"execution\": \"Provision of separate sewerage systems. No pipe material is given for drainage sewerage in the supplied text.\", \"exceptions\": \"none stated\", \"source_evidence\": [{\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"дренажной канализации для удаления воды при сбрасывании АУПТ и аварийных стоков от помещений ЦТП (ИТП), насосных станций и приточных венткамер.\"}]}, {\"id\": \"REQ-05\", \"source_kind\": \"project_requirement\", \"document\": \"UNKNOWN requirements document (as REQ-01)\", \"revision\": \"unknown\", \"requirement_text\": \"5.4.1.2 Системы хозяйственно-бытовой и производственной канализации выполнить: *из чугунных безраструбных труб SML* ;\", \"scope\": \"Section 5.4.1 of 5.4 «Система водоотведения». Literal scope: household and industrial sewerage. Drainage and rainwater sewerage are named separately in 5.4.1.1 and 5.4.1.4.\", \"stage\": \"not stated in the supplied text\", \"execution\": \"Cast iron socketless SML pipes\", \"exceptions\": \"none stated; italic markup meaning is unknown\", \"source_evidence\": [{\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"5.4.1.2 Системы хозяйственно-бытовой и производственной канализации выполнить: *из чугунных безраструбных труб SML* ;\"}]}, {\"id\": \"REQ-06\", \"source_kind\": \"project_requirement\", \"document\": \"UNKNOWN requirements document (as REQ-01)\", \"revision\": \"unknown\", \"requirement_text\": \"5.4.1.9 Исключить использование отводов под углом 90° [TEXT TRUNCATED at the end of page 152; the remainder of the sentence is not supplied]\", \"scope\": \"Section 5.4.1 of 5.4 «Система водоотведения» by position. The system to which the exclusion applies (sewerage, drainage or other) cannot be confirmed because the sentence is cut off.\", \"stage\": \"not stated in the supplied text\", \"execution\": \"Exclusion of 90° bends. The object, exceptions and alternative are unknown.\", \"exceptions\": \"unknown (text truncated)\", \"source_evidence\": [{\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"5.4.1.9 Исключить использование отводов под углом 90°\"}]}, {\"id\": \"REQ-07\", \"source_kind\": \"project_requirement\", \"document\": \"ПД-00542664 - ИТП.ТМ.СО, specification sheets 6, 7, 8 (design organization note). It is a note in the design document, not a customer requirement.\", \"revision\": \"Revisions: Не указано\", \"requirement_text\": \"* Данное оборудование не является обязательным и рекомендовано в качестве аналога. В документации указана марка приборов, арматуры, приводов, изоляции, оборудования и т.п. для выдачи заданий смежным разделам, не является обязательной и рекомендовано в качестве аналога. Возможна замена на аналогичные с сохранением технических параметров.\", \"scope\": \"Items marked «*» on sheets 6–8, including Dinarm codes and, by position, lines with ГОСТ 8957-75* and ГОСТ 17375-2001*. Brand or mark is non-mandatory; technical parameters must be preserved.\", \"stage\": \"stamp: Не указано\", \"execution\": \"Replacement by analogues with preserved technical parameters is allowed. Which parameters are binding (for example joint type or size designation) is not listed.\", \"exceptions\": \"Not stated. Items without «*» are not covered by the literal wording.\", \"source_evidence\": [{\"block_id\": \"blk_4f09992bf47245e9a6f8a27ddda67b86\", \"quote\": \"Возможна замена на аналогичные с сохранением технических параметров.\"}, {\"block_id\": \"blk_4dfd856534c74306be925eff2ea7088a\", \"quote\": \"* Данное оборудование не является обязательным и рекомендовано в качестве аналога.\"}]}, {\"id\": \"CAT-01\", \"source_kind\": \"catalogue\", \"document\": \"UNKNOWN: Dinarm / ООО «Огнеборец» catalogue. Only product designations are cited in the specification; the catalogue itself is not supplied.\", \"revision\": \"unknown\", \"requirement_text\": \"NOT SUPPLIED. Catalogue content (diameter type, groove size, pipe compatibility, intended system) cannot be taken from the codes.\", \"scope\": \"UNKNOWN. Execution cited: grooved joint («грубллок»). Applicability to a given system or pipe type is not established.\", \"stage\": \"not applicable\", \"execution\": \"Grooved coupling joint, as cited in the specification text\", \"exceptions\": \"unknown\", \"source_evidence\": [{\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E*\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø65 | Dinarm FC | FC073E*\"}]}, {\"id\": \"NC-01\", \"source_kind\": \"normative_candidate\", \"document\": \"ГОСТ 3262-75 (as cited in the specification)\", \"revision\": \"edition and amendments unknown\", \"requirement_text\": \"NOT SUPPLIED. The content is not verified here. The Norm Resolver is required, in particular for how «Д=15х2,8» is designated.\", \"scope\": \"Cited for OBJ-04 and for the galvanized lines of OBJ-06\", \"stage\": \"not applicable\", \"execution\": \"water-gas steel pipes\", \"exceptions\": \"unknown\", \"source_evidence\": [{\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Труба стальная водогазопроводная оцинкованная, Д=15х2,8 мм | ГОСТ 3262-75\"}]}, {\"id\": \"NC-02\", \"source_kind\": \"normative_candidate\", \"document\": \"ГОСТ 10704-91 (as cited in the specification)\", \"revision\": \"edition and amendments unknown\", \"requirement_text\": \"NOT SUPPLIED. The content is not verified here. The Norm Resolver is required.\", \"scope\": \"Cited for OBJ-05 and one line of OBJ-06\", \"stage\": \"not applicable\", \"execution\": \"electric-welded steel pipes. Coating is not stated in the specification.\", \"exceptions\": \"unknown\", \"source_evidence\": [{\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91\"}]}, {\"id\": \"NC-03\", \"source_kind\": \"normative_candidate\", \"document\": \"ГОСТ 8957-75* (as cited; the trailing «*» appears to link to the non-mandatory footnote and is not an edition mark)\", \"revision\": \"unknown\", \"requirement_text\": \"NOT SUPPLIED. The Norm Resolver is required, in particular whether the standard has a galvanized variant.\", \"scope\": \"Cited for OBJ-09\", \"stage\": \"not applicable\", \"execution\": \"malleable cast iron couplings with cylindrical thread; the specification adds «без покрытия»\", \"exceptions\": \"unknown\", \"source_evidence\": [{\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=32х25мм | ГОСТ 8957-75* | Муфта 32x25\"}]}, {\"id\": \"NC-04\", \"source_kind\": \"normative_candidate\", \"document\": \"ГОСТ 17375-2001* (as cited)\", \"revision\": \"unknown\", \"requirement_text\": \"NOT SUPPLIED. The Norm Resolver is required.\", \"scope\": \"Cited for steel bends in OBJ-10\", \"stage\": \"not applicable\", \"execution\": \"steel seamless bends\", \"exceptions\": \"unknown\", \"source_evidence\": [{\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Отвод 90° стальной крутоизогнутый бесшовный, Ду 50 | ГОСТ 17375-2001* | Отвод 90-2-57\"}]}], \"requirement_applicability_checks\": [{\"requirement_id\": \"REQ-01\", \"object_id\": \"OBJ-03\", \"applicability\": \"applies\", \"reason\": \"REQ-01 names ЦТП (ИТП) electrical supply explicitly, and OBJ-03 is an ИТП. This is a topical match only. The linkage of the requirements document to ПД-00542664 is not confirmed (see F-02). The supplied pages are piping specifications with no electrical content.\", \"scope_evidence\": [{\"block_id\": \"blk_2a57b9d72094420086e4401e9bfbbc9e\", \"quote\": \"5.2.6; Электрооборудование ЦТП (ИТП) и насосных станций водоснабжения\"}, {\"block_id\": \"blk_8c5527e3317248dca7d78ca059f0ec46\", \"quote\": \"ТЕПЛОМЕХАНИЧЕСКИЕ РЕШЕНИЯ\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"REQ-02\", \"object_id\": \"OBJ-04\", \"applicability\": \"unknown\", \"reason\": \"The clause defers to «ПД» and gives no pipe material or other criterion, so there is nothing to compare. Whether OBJ-04 belongs to a water-supply system is also not stated.\", \"scope_evidence\": [{\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"5.3.1.3 Трубопроводы систем водоснабжения выполнить: *Принимается в соответствии с ПД.*\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Трубопровод ИТП\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"REQ-03\", \"object_id\": \"OBJ-07\", \"applicability\": \"unknown\", \"reason\": \"The clause sits under water supply, residential part. The specification does not say whether the Ø25–Ø50 grooved fittings serve a water-supply system or an ИТП heating or ГВС circuit. «Ø» and the clause's «диаметр» are not defined as nominal or outside. Italic markup meaning is unknown. If the clause applies and the diameter is nominal, the 819 grooved couplings Ø25–Ø50 and associated elbows, plugs and reducers would conflict with «на резьбовых оцинкованных фитингах». This is a conditional risk, not a confirmed violation.\", \"scope_evidence\": [{\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E*\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø25 | Dinarm FC | FC033E*\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"REQ-03\", \"object_id\": \"OBJ-08\", \"applicability\": \"unknown\", \"reason\": \"Grooved Ø65/Ø80 items would be consistent with the grooved-joint part of the clause only if the lines are galvanized steel pipes in the water-supply system. System membership is unknown. Joint type per pipe line is not shown, and welded bends and plugs of sizes 65/80 also appear. Whether the mixed reducer Ø65х32 belongs to the ≤50 branch is unclear.\", \"scope_evidence\": [{\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"Соединение стальных оцинкованных труб предусмотреть на грувлочном соединении\"}, {\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Муфта гибкая для соединений грубллок Ø80 | Dinarm FC | FC089E*\"}, {\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Переход концентрический под муфту грубллок Ø65х32 | Dinarm GCR | GCR076R042*\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"REQ-03\", \"object_id\": \"OBJ-09\", \"applicability\": \"unknown\", \"reason\": \"OBJ-09 is threaded with sizes ≤ 50 and is specified «без покрытия», while REQ-03 asks for «резьбовых оцинкованных фитингах» for ≤ 50 when the clause applies. This is a conditional mismatch of coating only. The system served is not stated, and no document confirms whether the pipe in these joints is galvanized.\", \"scope_evidence\": [{\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"на резьбовых оцинкованных фитингах\"}, {\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=50х40мм | ГОСТ 8957-75* | Муфта 50x40\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"REQ-03\", \"object_id\": \"OBJ-04\", \"applicability\": \"unknown\", \"reason\": \"OBJ-04 matches the wording «стальных оцинкованных труб» by material, but the system is not stated and per-line joint type is not shown. OBJ-05 (ГОСТ 10704-91) is not stated to be galvanized and is therefore outside the literal wording of the clause.\", \"scope_evidence\": [{\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Труба стальная водогазопроводная оцинкованная, Д=80х4,0 мм | ГОСТ 3262-75\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"REQ-04\", \"object_id\": \"OBJ-06\", \"applicability\": \"unknown\", \"reason\": \"REQ-04 only requires provision of a drainage sewerage system for emergency drains from ИТП rooms and gives no material or other criterion for comparison. The specification does not state whether «Трубопровод дренажный» is that sewerage system or an equipment drain.\", \"scope_evidence\": [{\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"аварийных стоков от помещений ЦТП (ИТП)\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Трубопровод дренажный\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"REQ-05\", \"object_id\": \"OBJ-06\", \"applicability\": \"unknown\", \"reason\": \"The literal scope of REQ-05 is household and industrial sewerage, and drainage sewerage is listed separately in 5.4.1.1. The drain pipe is steel galvanized ГОСТ 3262-75 (cast-iron SML is required for household and industrial sewerage). Whether the ИТП drain falls into the «производственная» category is not stated. No material requirement for drainage sewerage is in the supplied text.\", \"scope_evidence\": [{\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"Системы хозяйственно-бытовой и производственной канализации выполнить\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Труба стальная оцинкованная водогазопроводная 25х4,0 | ГОСТ 3262-75\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"REQ-06\", \"object_id\": \"OBJ-10\", \"applicability\": \"unknown\", \"reason\": \"The sentence is truncated, so the object of the exclusion and any exceptions are unknown. By position the clause is in the water-drainage section, while the specification does not allocate the many 90° bends and elbows to systems. Heating-circuit bends are not shown to be in scope.\", \"scope_evidence\": [{\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"5.4.1.9 Исключить использование отводов под углом 90°\"}, {\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Отвод 90° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 90-2-57\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"REQ-07\", \"object_id\": \"OBJ-07\", \"applicability\": \"applies\", \"reason\": \"The note covers «*» items such as the Dinarm lines. It is a scope modifier, not a compliance criterion: brand and catalogue code are non-mandatory, but technical parameters must be preserved. Which parameters are binding (for example joint type) is not listed.\", \"scope_evidence\": [{\"block_id\": \"blk_4f09992bf47245e9a6f8a27ddda67b86\", \"quote\": \"Возможна замена на аналогичные с сохранением технических параметров.\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø40 | Dinarm FC | FC048E*\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"CAT-01\", \"object_id\": \"OBJ-07\", \"applicability\": \"unknown\", \"reason\": \"The Dinarm catalogue is not supplied. The Ø value is not treated as nominal or outside, and no system ownership is inferred from the codes. The catalogue cannot confirm compatibility with ГОСТ 3262-75 or ГОСТ 10704-91 pipe sizes.\", \"scope_evidence\": [{\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Колено 90° под муфту грубллок Ø50 | Dinarm EL9000 | EL9000C060*\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"NC-01\", \"object_id\": \"OBJ-04\", \"applicability\": \"unknown\", \"reason\": \"A standard is cited by designation only. Whether «Д=» in these lines is nominal or outside diameter must come from the Norm Resolver. Fitting rows use «Д=50 мм» and «Ду 50» interchangeably, and ГОСТ 10704-91 rows use «Д=57х3,5». Notation is inconsistent across the specification.\", \"scope_evidence\": [{\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Труба стальная водогазопроводная оцинкованная, Д=50х3,5 мм | ГОСТ 3262-75\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"NC-02\", \"object_id\": \"OBJ-05\", \"applicability\": \"unknown\", \"reason\": \"Cited by designation only. Whether the pipes are coated, and what «Д» means, require the Norm Resolver and the design team.\", \"scope_evidence\": [{\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Трубы стальные электросварные, Д=108х4,0 мм | ГОСТ 10704-91\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"NC-03\", \"object_id\": \"OBJ-09\", \"applicability\": \"unknown\", \"reason\": \"Cited by designation only. Whether a coated or galvanized variant exists under this standard is not verified here.\", \"scope_evidence\": [{\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=40х20мм | ГОСТ 8957-75* | Муфта 40x20\"}], \"comparison\": \"unknown\"}, {\"requirement_id\": \"NC-04\", \"object_id\": \"OBJ-10\", \"applicability\": \"unknown\", \"reason\": \"Cited by designation only. The standard's content is not verified, so the notation mapping between «Д=», «Ду» and the item code is not confirmed.\", \"scope_evidence\": [{\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Отвод 90° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 90-2-57\"}], \"comparison\": \"unknown\"}], \"findings\": [{\"id\": \"F-01\", \"report_section\": \"technical_findings\", \"title\": \"Summary of permitted comparisons: none closes as complies or violates\", \"statement\": \"With the supplied text, no requirement–component comparison can be closed. Permitted conditional comparisons: (a) REQ-03 against OBJ-07, OBJ-08, OBJ-09 and OBJ-04, only after the water-supply system membership of those lines is confirmed; (b) REQ-06 against OBJ-10, only after the full sentence and its system are known; (c) REQ-04 and REQ-05 against OBJ-06, only after the drain is confirmed as sewerage under section 5.4. Not permitted: REQ-02 (placeholder, no criterion); REQ-01 against the piping spec (no electrical data); anything under 5.5 Отопление и теплоснабжение (content not supplied).\", \"evidence\": [{\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"*Принимается в соответствии с ПД.*\"}, {\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"**5.5 Отопление и теплоснабжение.**\"}], \"related_requirement_ids\": [\"REQ-01\", \"REQ-02\", \"REQ-03\", \"REQ-04\", \"REQ-05\", \"REQ-06\"], \"related_object_ids\": [\"OBJ-03\", \"OBJ-04\", \"OBJ-06\", \"OBJ-07\", \"OBJ-08\", \"OBJ-09\", \"OBJ-10\"], \"status\": \"needs-data\"}, {\"id\": \"F-02\", \"report_section\": \"questions\", \"title\": \"Identity, revision and project linkage of the requirements document are unknown\", \"statement\": \"Pages 150–152 carry only numbered sections with no title, issuer, revision or project name, and no explicit link to this building. The text defers to the design several times with «Принимается в соответствии с ПД» and mentions a «ПД» stage, so it reads like a generic template. Confirm which requirements document governs ПД-00542664, its revision, and whether italic clauses are adapted or optional.\", \"evidence\": [{\"block_id\": \"blk_2a57b9d72094420086e4401e9bfbbc9e\", \"quote\": \"*Принимается в соответствии с ПД*\"}, {\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"5.3.1.8 На стадии проектирования «ПД» представить расчеты\"}], \"related_requirement_ids\": [\"REQ-01\", \"REQ-02\", \"REQ-03\", \"REQ-04\", \"REQ-05\", \"REQ-06\"], \"related_object_ids\": [], \"status\": \"needs-data\"}, {\"id\": \"F-03\", \"report_section\": \"questions\", \"title\": \"Section 5.5 «Отопление и теплоснабжение» is not supplied\", \"statement\": \"Page 152 ends with only the heading of section 5.5. Requirements for heating and heat supply, which may govern the ИТП piping, fittings and joints, are not in the supplied pages. The ИТП pipelines are compared here only with water-supply and sewerage clauses, which may not govern them. Provide the full 5.5 content and the continuation of 5.4.1.9.\", \"evidence\": [{\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"**5.5 Отопление и теплоснабжение.**\"}], \"related_requirement_ids\": [\"REQ-06\"], \"related_object_ids\": [\"OBJ-03\"], \"status\": \"needs-data\"}, {\"id\": \"F-04\", \"report_section\": \"questions\", \"title\": \"Systems and media of «Трубопровод ИТП», «Трубопровод дренажный» and the fitting groups are not stated\", \"statement\": \"The specification groups pipes by the headings «Трубопровод ИТП» and «Трубопровод дренажный» and lists fittings under «Соединительные детали трубопроводов» without a system split. No sheet states which lines are heating, ГВС or ХВС. System ownership therefore cannot be inferred from pipe material or catalogue codes, and REQ-03 to REQ-06 cannot be tied to lines. Provide a line-to-system allocation (schemes or system-wise specification).\", \"evidence\": [{\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Трубопровод ИТП\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Трубопровод дренажный\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Соединительные детали трубопроводов\"}], \"related_requirement_ids\": [\"REQ-03\", \"REQ-04\", \"REQ-05\", \"REQ-06\"], \"related_object_ids\": [\"OBJ-04\", \"OBJ-05\", \"OBJ-06\", \"OBJ-07\", \"OBJ-08\", \"OBJ-09\", \"OBJ-10\"], \"status\": \"needs-data\"}, {\"id\": \"F-05\", \"report_section\": \"technical_findings\", \"title\": \"Conditional conflict: grooved fittings at Ø25–Ø50 against 5.3.1.4\", \"statement\": \"REQ-03 requires threaded galvanized fittings at diameter ≤ 50 mm and grooved joints above that. The specification lists many Dinarm grooved fittings at Ø25–Ø50, including 33+137+214+435 = 819 couplings at Ø25/32/40/50 (reviewer's sum). If REQ-03 applies to these lines and Ø is nominal, this contradicts the clause. If Ø is outside diameter, the relation to the ≤ 50 mm threshold must be re-derived. The finding is conditional; the footnote allows analogue replacement with preserved technical parameters, but the joint type is not stated to be a free parameter.\", \"evidence\": [{\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø32 | Dinarm FC | FC042E*\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø40 | Dinarm FC | FC048E*\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E*\"}], \"related_requirement_ids\": [\"REQ-03\", \"REQ-07\", \"CAT-01\"], \"related_object_ids\": [\"OBJ-07\"], \"status\": \"needs-data\"}, {\"id\": \"F-06\", \"report_section\": \"technical_findings\", \"title\": \"Conditional coating mismatch: uncoated threaded couplings against «оцинкованных фитингах»\", \"statement\": \"OBJ-09 consists of eight lines (42 pcs, reviewer's sum) of threaded reducing couplings of sizes up to 50 mm, specified «без покрытия». REQ-03 asks for galvanized threaded fittings at ≤ 50 mm. If these couplings are in a water-supply system with galvanized pipes, the coating specified differs from the clause. System and pipe galvanizing for these joints are not shown.\", \"evidence\": [{\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=32х25мм | ГОСТ 8957-75* | Муфта 32x25\"}, {\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=50х32мм | ГОСТ 8957-75* | Муфта 50x32\"}, {\"block_id\": \"blk_5a66eb7fcf4749a8adf723fa6716fca2\", \"quote\": \"на резьбовых оцинкованных фитингах\"}], \"related_requirement_ids\": [\"REQ-03\", \"NC-03\"], \"related_object_ids\": [\"OBJ-09\"], \"status\": \"needs-data\"}, {\"id\": \"F-07\", \"report_section\": \"questions\", \"title\": \"Diameter notation is inconsistent; nominal or outside diameter cannot be assumed\", \"statement\": \"The specification uses «Д=» for pipes («Д=57х3,5» under ГОСТ 10704-91, «Д=50х3,5» under ГОСТ 3262-75), «Д=» and «Ду» for the same fitting code («Отвод 90-2-57»), and «Ø» for grooved fittings with codes such as 060. The diameter type is not defined anywhere in the supplied text, so the threshold «≤ 50 мм» in REQ-03 cannot be mapped reliably to rows. Do not infer it from catalogue codes. Request the diameter convention from the designer and have the Norm Resolver confirm the standards' size designations.\", \"evidence\": [{\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91\"}, {\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Отвод 90° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 90-2-57\"}, {\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Отвод 90° стальной крутоизогнутый бесшовный, Ду 50 | ГОСТ 17375-2001* | Отвод 90-2-57\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E*\"}], \"related_requirement_ids\": [\"REQ-03\", \"NC-01\", \"NC-02\", \"NC-04\", \"CAT-01\"], \"related_object_ids\": [\"OBJ-04\", \"OBJ-05\", \"OBJ-07\", \"OBJ-08\", \"OBJ-10\"], \"status\": \"needs-data\"}, {\"id\": \"F-08\", \"report_section\": \"questions\", \"title\": \"Compatibility of grooved fitting designations with the pipe lines cannot be verified; Ø65 coupling code differs from other Ø65 items\", \"statement\": \"The Ø65 coupling has code FC073E, while the Ø65 plug, elbows and reducer use 076 and the electric-welded pipe line is «Д=76х3,5». The Ø50 grooved items carry 060 while the electric-welded pipe line is «Д=57х3,5». Whether grooved fittings are meant for ГОСТ 3262-75, ГОСТ 10704-91 or both is not stated. The catalogue is needed to determine whether the code difference is a size mismatch or a variant. No conclusion is drawn from the code numbers.\", \"evidence\": [{\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Муфта гибкая для соединений грубллок Ø65 | Dinarm FC | FC073E*\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Заглушка под муфту грубллок Ø65 | Dinarm EC | EC076*\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Трубы стальные электросварные, Д=76х3,5 мм | ГОСТ 10704-91\"}], \"related_requirement_ids\": [\"CAT-01\", \"NC-01\", \"NC-02\"], \"related_object_ids\": [\"OBJ-07\", \"OBJ-08\", \"OBJ-05\"], \"status\": \"needs-data\"}, {\"id\": \"F-09\", \"report_section\": \"questions\", \"title\": \"90° bends cannot be compared with 5.4.1.9: the clause is truncated and the specification contains many 90° bends\", \"statement\": \"REQ-06 ends mid-sentence at the page break. The specification lists numerous steel 90° bends (for example «Д=40 мм» 84 pcs) and Dinarm 90° elbows with no system allocation. Provide the full 5.4.1.9 text and confirm whether it applies to the ИТП drainage or only to building sewerage.\", \"evidence\": [{\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"5.4.1.9 Исключить использование отводов под углом 90°\"}, {\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Отвод 90° стальной крутоизогнутый бесшовный, Д=40 мм | ГОСТ 17375-2001* | Отвод 90-2-45\"}], \"related_requirement_ids\": [\"REQ-06\"], \"related_object_ids\": [\"OBJ-10\"], \"status\": \"needs-data\"}, {\"id\": \"F-10\", \"report_section\": \"questions\", \"title\": \"Drainage pipe: 5.4 gives no material criterion for drainage sewerage, and one drain line is unresolved\", \"statement\": \"REQ-04 mentions drainage sewerage for emergency drains from ИТП rooms but sets no pipe material. REQ-05 (SML) names household and industrial sewerage. The «Трубопровод дренажный» group is steel galvanized ГОСТ 3262-75, with one line reading «Решение не найдено» (0.4 m, ГОСТ 10704-91). Whether this group is sewerage under section 5.4 is unknown. Confirm the nature of the drain, the applicable requirement, and the intended pipe for the unresolved line.\", \"evidence\": [{\"block_id\": \"blk_7bb26b619d60430a8b597fee4d18d80e\", \"quote\": \"аварийных стоков от помещений ЦТП (ИТП)\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Решение не найдено | ГОСТ 10704-91\"}], \"related_requirement_ids\": [\"REQ-04\", \"REQ-05\"], \"related_object_ids\": [\"OBJ-06\"], \"status\": \"needs-data\"}, {\"id\": \"F-11\", \"report_section\": \"technical_findings\", \"title\": \"Specification contains unresolved placeholders, duplicates and unexplained totals\", \"statement\": \"Many lines carry «<варианты>» in the position or code cell («Врезка du15», «Врезка du25» and others, «Отвод 90 … Ду 65»). Other lines read «Нет в каталоге», and «Врезка du…» has no document or code. Some identical lines appear twice with different quantities (plug D=80: 2 and 2; plug D=125: 3 and 2), and the same code appears under «Д=» and «Ду» notation. The sheet totals «2546» and «199» do not match the length sums (976.9 m and 159.0 m by reviewer's sum; sheet values 977.0 and 158.8, which fit within rounding). Quantities and variants are not final, so quantity-based comparisons are unreliable.\", \"evidence\": [{\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Врезка du15\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"<варианты>\"}, {\"block_id\": \"blk_ac52bb88a0f64138a5b5ee4256cba2e7\", \"quote\": \"Нет в каталоге | ГОСТ 17379-2001 | Нет в каталоге\"}, {\"block_id\": \"blk_f23a8028a5d34e3e92bf1c3cfcdecf85\", \"quote\": \"Заглушка эллиптическая стальная бесшовная приварная, D=80 мм | ГОСТ 17379-2001 | Заглушка 2-89\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Общий итог: 2546\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Общий итог: 199\"}], \"related_requirement_ids\": [], \"related_object_ids\": [\"OBJ-11\"], \"status\": \"needs-data\"}, {\"id\": \"F-12\", \"report_section\": \"questions\", \"title\": \"Document identity conflicts between the cover and the specification stamps (stage, organization, building, code)\", \"statement\": \"The cover shows ООО «СУ-10», «РАБОЧАЯ ДОКУМЕНТАЦИЯ», «этап 1» and code ПД-00542664-ИТП.ТМ. The specification stamps show ООО «ПИ ВНИС», stage «Не указано», «Корпус 2», revisions «Не указано» and code ПД-00542664 - ИТП.ТМ.СО. Whether «этап 1» equals «Корпус 2», and whether the sheets belong to the same document and stage, is not established. The stage matters because the requirements text refers to a «ПД» stage. Confirm the document set, stage and revision.\", \"evidence\": [{\"block_id\": \"blk_8c5527e3317248dca7d78ca059f0ec46\", \"quote\": \"ПД-00542664-ИТП.ТМ\"}, {\"block_id\": \"blk_8c5527e3317248dca7d78ca059f0ec46\", \"quote\": \"РАБОЧАЯ ДОКУМЕНТАЦИЯ\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 6.\"}, {\"block_id\": \"blk_b55acef48d8d452d92a5e3a8fcc2fd88\", \"quote\": \"Organization: ООО «ПИ ВНИС» | Revisions: Не указано\"}], \"related_requirement_ids\": [], \"related_object_ids\": [\"OBJ-01\", \"OBJ-02\"], \"status\": \"needs-data\"}, {\"id\": \"F-13\", \"report_section\": \"questions\", \"title\": \"ИТП electrical power supply (5.2.6.1) cannot be assessed from the supplied pages\", \"statement\": \"REQ-01 requires first-category supply with technological redundancy and a separate ВРУ ИТП with metering. The supplied ИТП pages contain only pipe and fitting lists, with no electrical scheme, no pump or redundancy information and no ВРУ data. Provide the electrical section, the ИТП power-supply scheme and the pump redundancy basis.\", \"evidence\": [{\"block_id\": \"blk_2a57b9d72094420086e4401e9bfbbc9e\", \"quote\": \"Питание электрооборудования ЦТП (ИТП) предусмотреть от отдельного ВРУ ЦТП (ИТП) с узлом учета электроэнергии.\"}], \"related_requirement_ids\": [\"REQ-01\"], \"related_object_ids\": [\"OBJ-03\"], \"status\": \"needs-data\"}, {\"id\": \"F-14\", \"report_section\": \"technical_findings\", \"title\": \"The «recommended as analogue» note limits brand-level comparisons but not technical parameters\", \"statement\": \"The footnote on every specification sheet says marks and brands are non-mandatory and replaceable by analogues with preserved technical parameters. Dinarm codes therefore cannot serve as hard design requirements. Parameters such as joint type and size still bind, but the specification does not list them. The «*» also appears on ГОСТ 8957-75 and ГОСТ 17375-2001 lines, so the extent of replaceability for these standard-based items is unclear.\", \"evidence\": [{\"block_id\": \"blk_4dfd856534c74306be925eff2ea7088a\", \"quote\": \"* Данное оборудование не является обязательным и рекомендовано в качестве аналога.\"}, {\"block_id\": \"blk_4dfd856534c74306be925eff2ea7088a\", \"quote\": \"Возможна замена на аналогичные с сохранением технических параметров.\"}], \"related_requirement_ids\": [\"REQ-07\", \"CAT-01\", \"NC-03\", \"NC-04\"], \"related_object_ids\": [\"OBJ-07\", \"OBJ-08\", \"OBJ-09\", \"OBJ-10\"], \"status\": \"needs-data\"}]}",
+  "json_data": {
+    "object_registry": [
+      {
+        "id": "OBJ-01",
+        "identity": "Cover sheet ПД-00542664-ИТП.ТМ, «Индивидуальный тепловой пункт. Тепломеханические решения», labelled РАБОЧАЯ ДОКУМЕНТАЦИЯ, issued by ООО «СУ-10» for ООО «ДС Строй»",
+        "scope": "Project cover only. Stage on cover: «РАБОЧАЯ ДОКУМЕНТАЦИЯ». Building identified as «квартал 3, 2-я очередь, этап 1 (рекламное название Событие 6.2)». Contains no technical data.",
+        "kind": "document",
+        "source_refs": [
+          "blk_8c5527e3317248dca7d78ca059f0ec46"
+        ]
+      },
+      {
+        "id": "OBJ-02",
+        "identity": "Specification sheets 6–8, code «ПД-00542664 - ИТП.ТМ.СО», stamp organization ООО «ПИ ВНИС»",
+        "scope": "Pipelines and pipeline connecting parts. Stamp stage «Не указано», revisions «Не указано», project named as «Корпус 2 (рекламное название ЖК Событие 6.2)». The meaning of the suffix «.СО» is not stated. It is not assumed to be the same document as OBJ-01.",
+        "kind": "document",
+        "source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "blk_ac52bb88a0f64138a5b5ee4256cba2e7"
+        ]
+      },
+      {
+        "id": "OBJ-03",
+        "identity": "ИТП (individual heat point) of the project «Событие 6.2»",
+        "scope": "System level only. The supplied pages do not state which circuits or media the ИТП contains (heating, ГВС, ХВС or other), nor which building parts it serves (residential or commercial). No electrical, pump or reservation data is in the supplied pages.",
+        "kind": "system",
+        "source_refs": [
+          "blk_8c5527e3317248dca7d78ca059f0ec46",
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ]
+      },
+      {
+        "id": "OBJ-04",
+        "identity": "Group «Трубопровод ИТП», galvanized water-gas steel pipes ГОСТ 3262-75, 8 lines («Д=15х2,8» to «Д=80х4,0 мм»)",
+        "scope": "Sum of listed lengths is 338.0 m, calculated by the reviewer. Medium and system are not stated. Whether «Д» is nominal or outside diameter is not stated in the line text. Joint type per line is not stated.",
+        "kind": "component_group",
+        "source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ]
+      },
+      {
+        "id": "OBJ-05",
+        "identity": "Group «Трубопровод ИТП», electric-welded steel pipes ГОСТ 10704-91, 14 lines («Д=19х2,0» to «Д=325х7,0 мм»)",
+        "scope": "Sum of listed lengths is 638.9 m, calculated by the reviewer. Coating or galvanizing is not stated. Medium and system are not stated.",
+        "kind": "component_group",
+        "source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ]
+      },
+      {
+        "id": "OBJ-06",
+        "identity": "Group «Трубопровод дренажный»: 5 galvanized water-gas pipe lines ГОСТ 3262-75 (25х4,0 to 65х4,5) plus one line «Решение не найдено» ГОСТ 10704-91 (0.4 m)",
+        "scope": "Sum of listed lengths is 159.0 m, calculated by the reviewer. The sheet total reads 158.8. Not established whether this is the drainage sewerage of requirement section 5.4, the ИТП equipment drain, or something else.",
+        "kind": "component_group",
+        "source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88"
+        ]
+      },
+      {
+        "id": "OBJ-07",
+        "identity": "Dinarm grooved-joint fittings (ООО «Огнеборец») designated Ø25, Ø32, Ø40, Ø50: flexible couplings FC033E/FC042E/FC048E/FC060E (819 pcs by reviewer's sum), plugs EC033–EC060, 45° elbows EL4500C048/C060, 90° elbows EL9000C033–C060, reducers GCR060R042 and GCR060R048",
+        "scope": "Sheets 7–8. The «Ø» value is not stated as nominal or outside diameter. No allocation to a system. The catalogue code is not used to derive the diameter type. All lines carry «*» (footnote: not mandatory, replaceable by an analogue with the same technical parameters).",
+        "kind": "component_group",
+        "source_refs": [
+          "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "blk_ac52bb88a0f64138a5b5ee4256cba2e7"
+        ]
+      },
+      {
+        "id": "OBJ-08",
+        "identity": "Dinarm grooved-joint fittings designated Ø65 and Ø80 (FC073E, FC089E, EC076, EC089, EL4500C076/C089, EL9000C076/C089, GCR076R042), including the mixed-size reducer Ø65х32",
+        "scope": "Sheets 7–8. Same limitations as OBJ-07. The Ø65 coupling code FC073E differs in numeric suffix from the other Ø65 grooved items (076).",
+        "kind": "component_group",
+        "source_refs": [
+          "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "blk_ac52bb88a0f64138a5b5ee4256cba2e7"
+        ]
+      },
+      {
+        "id": "OBJ-09",
+        "identity": "Reducing couplings of malleable cast iron with cylindrical thread, «без покрытия», ГОСТ 8957-75*: 8 lines (32x25, 40x20, 40x25, 40x32, 50x15, 50x25, 50x32, 50x40), 42 pcs by reviewer's sum",
+        "scope": "Sheet 8. No allocation to a system. Specified without coating; galvanizing is not stated.",
+        "kind": "component_group",
+        "source_refs": [
+          "blk_ac52bb88a0f64138a5b5ee4256cba2e7"
+        ]
+      },
+      {
+        "id": "OBJ-10",
+        "identity": "90° elbows: steel seamless «Отвод 90°» ГОСТ 17375-2001* (many lines, sizes written «Д=…» and «Ду …») and Dinarm EL9000 grooved 90° elbows",
+        "scope": "Sheets 7–8. Not allocated to systems (heating, water supply, sewerage or drainage). Duplicated size notation: «Д=50 мм» and «Ду 50» both point to code «Отвод 90-2-57».",
+        "kind": "component_group",
+        "source_refs": [
+          "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "blk_ac52bb88a0f64138a5b5ee4256cba2e7"
+        ]
+      },
+      {
+        "id": "OBJ-11",
+        "identity": "Unresolved or placeholder specification lines: «<варианты>» in position or code cells, «Решение не найдено», «Нет в каталоге», «Врезка du…» without document or code",
+        "scope": "Sheets 6–8. Items are not fully defined, so no requirement can be compared to them.",
+        "kind": "data_quality_group",
+        "source_refs": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "blk_ac52bb88a0f64138a5b5ee4256cba2e7"
+        ]
+      }
+    ],
+    "requirement_registry": [
+      {
+        "id": "REQ-01",
+        "source_kind": "project_requirement",
+        "document": "UNKNOWN: requirements document with section numbering 5.x. Title, issuer and linkage to ПД-00542664 are not on pages 150–152.",
+        "revision": "unknown",
+        "requirement_text": "5.2.6.1 Центральный (индивидуальный) тепловой пункт и насосные станции запитать по первой категории надежности электроснабжения. В качестве первой категории применить технологическое резервирование. Питание электрооборудования ЦТП (ИТП) предусмотреть от отдельного ВРУ ЦТП (ИТП) с узлом учета электроэнергии.",
+        "scope": "Section 5.2.6 «Электрооборудование ЦТП (ИТП) и насосных станций водоснабжения». Electrical supply of ЦТП/ИТП and pumping stations.",
+        "stage": "not stated in the supplied text",
+        "execution": "First reliability category achieved by technological redundancy. Separate ВРУ ЦТП (ИТП) with an electricity metering unit.",
+        "exceptions": "none stated in the supplied text",
+        "source_evidence": [
+          {
+            "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+            "quote": "5.2.6.1 Центральный (индивидуальный) тепловой пункт и насосные станции запитать по первой категории надежности электроснабжения."
+          },
+          {
+            "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+            "quote": "Питание электрооборудования ЦТП (ИТП) предусмотреть от отдельного ВРУ ЦТП (ИТП) с узлом учета электроэнергии."
+          }
+        ]
+      },
+      {
+        "id": "REQ-02",
+        "source_kind": "project_requirement",
+        "document": "UNKNOWN requirements document (as REQ-01)",
+        "revision": "unknown",
+        "requirement_text": "5.3.1.3 Трубопроводы систем водоснабжения выполнить: *Принимается в соответствии с ПД.*",
+        "scope": "Section 5.3.1 «Общие требования. Жилая часть» of 5.3 «Система водоснабжения». Material of water-supply pipelines.",
+        "stage": "defers to «ПД»; the stage of the requirement document itself is unknown",
+        "execution": "NO substantive value. The clause is a placeholder deferring to the design documentation, which is the document under review.",
+        "exceptions": "not stated; the meaning of the italic markup is not defined",
+        "source_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "5.3.1.3 Трубопроводы систем водоснабжения выполнить: *Принимается в соответствии с ПД.*"
+          }
+        ]
+      },
+      {
+        "id": "REQ-03",
+        "source_kind": "project_requirement",
+        "document": "UNKNOWN requirements document (as REQ-01)",
+        "revision": "unknown",
+        "requirement_text": "*5.3.1.4 Соединение стальных оцинкованных труб предусмотреть на грувлочном соединении (при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах).*",
+        "scope": "Section 5.3.1 «Общие требования. Жилая часть» of 5.3 «Система водоснабжения». Applies to the water-supply system, residential part, for galvanized steel pipes. «Диаметр» is not defined as nominal or outside. Applicability to ИТП pipelines is not stated.",
+        "stage": "not stated in the supplied text",
+        "execution": "Grooved joints for galvanized steel pipes. For diameter ≤ 50 mm, threaded galvanized fittings.",
+        "exceptions": "none stated. The clause is in italics in the MD; the meaning of the italics (variant, adapted or optional) is unknown.",
+        "source_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "*5.3.1.4 Соединение стальных оцинкованных труб предусмотреть на грувлочном соединении (при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах).*"
+          },
+          {
+            "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+            "quote": "5.3.1; Общие требования. Жилая часть."
+          }
+        ]
+      },
+      {
+        "id": "REQ-04",
+        "source_kind": "project_requirement",
+        "document": "UNKNOWN requirements document (as REQ-01)",
+        "revision": "unknown",
+        "requirement_text": "5.4.1.1 Предусмотреть системы хозяйственно-бытовой канализации для отведения сточных вод от санитарно-технических приборов (унитазов, умывальников и др.), производственно-технологической канализации, ливневой канализации для отвода дождевых вод с высотной и стилобатной частей здания, дренажной канализации для удаления воды при сбрасывании АУПТ и аварийных стоков от помещений ЦТП (ИТП), насосных станций и приточных венткамер.",
+        "scope": "Section 5.4.1 «Общие требования. Жилая часть» of 5.4 «Система водоотведения». Defines the sewerage systems to be provided, including drainage sewerage for emergency drains from ЦТП (ИТП) rooms.",
+        "stage": "not stated in the supplied text",
+        "execution": "Provision of separate sewerage systems. No pipe material is given for drainage sewerage in the supplied text.",
+        "exceptions": "none stated",
+        "source_evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "дренажной канализации для удаления воды при сбрасывании АУПТ и аварийных стоков от помещений ЦТП (ИТП), насосных станций и приточных венткамер."
+          }
+        ]
+      },
+      {
+        "id": "REQ-05",
+        "source_kind": "project_requirement",
+        "document": "UNKNOWN requirements document (as REQ-01)",
+        "revision": "unknown",
+        "requirement_text": "5.4.1.2 Системы хозяйственно-бытовой и производственной канализации выполнить: *из чугунных безраструбных труб SML* ;",
+        "scope": "Section 5.4.1 of 5.4 «Система водоотведения». Literal scope: household and industrial sewerage. Drainage and rainwater sewerage are named separately in 5.4.1.1 and 5.4.1.4.",
+        "stage": "not stated in the supplied text",
+        "execution": "Cast iron socketless SML pipes",
+        "exceptions": "none stated; italic markup meaning is unknown",
+        "source_evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "5.4.1.2 Системы хозяйственно-бытовой и производственной канализации выполнить: *из чугунных безраструбных труб SML* ;"
+          }
+        ]
+      },
+      {
+        "id": "REQ-06",
+        "source_kind": "project_requirement",
+        "document": "UNKNOWN requirements document (as REQ-01)",
+        "revision": "unknown",
+        "requirement_text": "5.4.1.9 Исключить использование отводов под углом 90° [TEXT TRUNCATED at the end of page 152; the remainder of the sentence is not supplied]",
+        "scope": "Section 5.4.1 of 5.4 «Система водоотведения» by position. The system to which the exclusion applies (sewerage, drainage or other) cannot be confirmed because the sentence is cut off.",
+        "stage": "not stated in the supplied text",
+        "execution": "Exclusion of 90° bends. The object, exceptions and alternative are unknown.",
+        "exceptions": "unknown (text truncated)",
+        "source_evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "5.4.1.9 Исключить использование отводов под углом 90°"
+          }
+        ]
+      },
+      {
+        "id": "REQ-07",
+        "source_kind": "project_requirement",
+        "document": "ПД-00542664 - ИТП.ТМ.СО, specification sheets 6, 7, 8 (design organization note). It is a note in the design document, not a customer requirement.",
+        "revision": "Revisions: Не указано",
+        "requirement_text": "* Данное оборудование не является обязательным и рекомендовано в качестве аналога. В документации указана марка приборов, арматуры, приводов, изоляции, оборудования и т.п. для выдачи заданий смежным разделам, не является обязательной и рекомендовано в качестве аналога. Возможна замена на аналогичные с сохранением технических параметров.",
+        "scope": "Items marked «*» on sheets 6–8, including Dinarm codes and, by position, lines with ГОСТ 8957-75* and ГОСТ 17375-2001*. Brand or mark is non-mandatory; technical parameters must be preserved.",
+        "stage": "stamp: Не указано",
+        "execution": "Replacement by analogues with preserved technical parameters is allowed. Which parameters are binding (for example joint type or size designation) is not listed.",
+        "exceptions": "Not stated. Items without «*» are not covered by the literal wording.",
+        "source_evidence": [
+          {
+            "block_id": "blk_4f09992bf47245e9a6f8a27ddda67b86",
+            "quote": "Возможна замена на аналогичные с сохранением технических параметров."
+          },
+          {
+            "block_id": "blk_4dfd856534c74306be925eff2ea7088a",
+            "quote": "* Данное оборудование не является обязательным и рекомендовано в качестве аналога."
+          }
+        ]
+      },
+      {
+        "id": "CAT-01",
+        "source_kind": "catalogue",
+        "document": "UNKNOWN: Dinarm / ООО «Огнеборец» catalogue. Only product designations are cited in the specification; the catalogue itself is not supplied.",
+        "revision": "unknown",
+        "requirement_text": "NOT SUPPLIED. Catalogue content (diameter type, groove size, pipe compatibility, intended system) cannot be taken from the codes.",
+        "scope": "UNKNOWN. Execution cited: grooved joint («грубллок»). Applicability to a given system or pipe type is not established.",
+        "stage": "not applicable",
+        "execution": "Grooved coupling joint, as cited in the specification text",
+        "exceptions": "unknown",
+        "source_evidence": [
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E*"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø65 | Dinarm FC | FC073E*"
+          }
+        ]
+      },
+      {
+        "id": "NC-01",
+        "source_kind": "normative_candidate",
+        "document": "ГОСТ 3262-75 (as cited in the specification)",
+        "revision": "edition and amendments unknown",
+        "requirement_text": "NOT SUPPLIED. The content is not verified here. The Norm Resolver is required, in particular for how «Д=15х2,8» is designated.",
+        "scope": "Cited for OBJ-04 and for the galvanized lines of OBJ-06",
+        "stage": "not applicable",
+        "execution": "water-gas steel pipes",
+        "exceptions": "unknown",
+        "source_evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Труба стальная водогазопроводная оцинкованная, Д=15х2,8 мм | ГОСТ 3262-75"
+          }
+        ]
+      },
+      {
+        "id": "NC-02",
+        "source_kind": "normative_candidate",
+        "document": "ГОСТ 10704-91 (as cited in the specification)",
+        "revision": "edition and amendments unknown",
+        "requirement_text": "NOT SUPPLIED. The content is not verified here. The Norm Resolver is required.",
+        "scope": "Cited for OBJ-05 and one line of OBJ-06",
+        "stage": "not applicable",
+        "execution": "electric-welded steel pipes. Coating is not stated in the specification.",
+        "exceptions": "unknown",
+        "source_evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91"
+          }
+        ]
+      },
+      {
+        "id": "NC-03",
+        "source_kind": "normative_candidate",
+        "document": "ГОСТ 8957-75* (as cited; the trailing «*» appears to link to the non-mandatory footnote and is not an edition mark)",
+        "revision": "unknown",
+        "requirement_text": "NOT SUPPLIED. The Norm Resolver is required, in particular whether the standard has a galvanized variant.",
+        "scope": "Cited for OBJ-09",
+        "stage": "not applicable",
+        "execution": "malleable cast iron couplings with cylindrical thread; the specification adds «без покрытия»",
+        "exceptions": "unknown",
+        "source_evidence": [
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=32х25мм | ГОСТ 8957-75* | Муфта 32x25"
+          }
+        ]
+      },
+      {
+        "id": "NC-04",
+        "source_kind": "normative_candidate",
+        "document": "ГОСТ 17375-2001* (as cited)",
+        "revision": "unknown",
+        "requirement_text": "NOT SUPPLIED. The Norm Resolver is required.",
+        "scope": "Cited for steel bends in OBJ-10",
+        "stage": "not applicable",
+        "execution": "steel seamless bends",
+        "exceptions": "unknown",
+        "source_evidence": [
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Отвод 90° стальной крутоизогнутый бесшовный, Ду 50 | ГОСТ 17375-2001* | Отвод 90-2-57"
+          }
+        ]
+      }
+    ],
+    "requirement_applicability_checks": [
+      {
+        "requirement_id": "REQ-01",
+        "object_id": "OBJ-03",
+        "applicability": "applies",
+        "reason": "REQ-01 names ЦТП (ИТП) electrical supply explicitly, and OBJ-03 is an ИТП. This is a topical match only. The linkage of the requirements document to ПД-00542664 is not confirmed (see F-02). The supplied pages are piping specifications with no electrical content.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+            "quote": "5.2.6; Электрооборудование ЦТП (ИТП) и насосных станций водоснабжения"
+          },
+          {
+            "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+            "quote": "ТЕПЛОМЕХАНИЧЕСКИЕ РЕШЕНИЯ"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "REQ-02",
+        "object_id": "OBJ-04",
+        "applicability": "unknown",
+        "reason": "The clause defers to «ПД» and gives no pipe material or other criterion, so there is nothing to compare. Whether OBJ-04 belongs to a water-supply system is also not stated.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "5.3.1.3 Трубопроводы систем водоснабжения выполнить: *Принимается в соответствии с ПД.*"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубопровод ИТП"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "REQ-03",
+        "object_id": "OBJ-07",
+        "applicability": "unknown",
+        "reason": "The clause sits under water supply, residential part. The specification does not say whether the Ø25–Ø50 grooved fittings serve a water-supply system or an ИТП heating or ГВС circuit. «Ø» and the clause's «диаметр» are not defined as nominal or outside. Italic markup meaning is unknown. If the clause applies and the diameter is nominal, the 819 grooved couplings Ø25–Ø50 and associated elbows, plugs and reducers would conflict with «на резьбовых оцинкованных фитингах». This is a conditional risk, not a confirmed violation.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E*"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø25 | Dinarm FC | FC033E*"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "REQ-03",
+        "object_id": "OBJ-08",
+        "applicability": "unknown",
+        "reason": "Grooved Ø65/Ø80 items would be consistent with the grooved-joint part of the clause only if the lines are galvanized steel pipes in the water-supply system. System membership is unknown. Joint type per pipe line is not shown, and welded bends and plugs of sizes 65/80 also appear. Whether the mixed reducer Ø65х32 belongs to the ≤50 branch is unclear.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "Соединение стальных оцинкованных труб предусмотреть на грувлочном соединении"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Муфта гибкая для соединений грубллок Ø80 | Dinarm FC | FC089E*"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Переход концентрический под муфту грубллок Ø65х32 | Dinarm GCR | GCR076R042*"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "REQ-03",
+        "object_id": "OBJ-09",
+        "applicability": "unknown",
+        "reason": "OBJ-09 is threaded with sizes ≤ 50 and is specified «без покрытия», while REQ-03 asks for «резьбовых оцинкованных фитингах» for ≤ 50 when the clause applies. This is a conditional mismatch of coating only. The system served is not stated, and no document confirms whether the pipe in these joints is galvanized.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "на резьбовых оцинкованных фитингах"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=50х40мм | ГОСТ 8957-75* | Муфта 50x40"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "REQ-03",
+        "object_id": "OBJ-04",
+        "applicability": "unknown",
+        "reason": "OBJ-04 matches the wording «стальных оцинкованных труб» by material, but the system is not stated and per-line joint type is not shown. OBJ-05 (ГОСТ 10704-91) is not stated to be galvanized and is therefore outside the literal wording of the clause.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Труба стальная водогазопроводная оцинкованная, Д=80х4,0 мм | ГОСТ 3262-75"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "REQ-04",
+        "object_id": "OBJ-06",
+        "applicability": "unknown",
+        "reason": "REQ-04 only requires provision of a drainage sewerage system for emergency drains from ИТП rooms and gives no material or other criterion for comparison. The specification does not state whether «Трубопровод дренажный» is that sewerage system or an equipment drain.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "аварийных стоков от помещений ЦТП (ИТП)"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубопровод дренажный"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "REQ-05",
+        "object_id": "OBJ-06",
+        "applicability": "unknown",
+        "reason": "The literal scope of REQ-05 is household and industrial sewerage, and drainage sewerage is listed separately in 5.4.1.1. The drain pipe is steel galvanized ГОСТ 3262-75 (cast-iron SML is required for household and industrial sewerage). Whether the ИТП drain falls into the «производственная» category is not stated. No material requirement for drainage sewerage is in the supplied text.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "Системы хозяйственно-бытовой и производственной канализации выполнить"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Труба стальная оцинкованная водогазопроводная 25х4,0 | ГОСТ 3262-75"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "REQ-06",
+        "object_id": "OBJ-10",
+        "applicability": "unknown",
+        "reason": "The sentence is truncated, so the object of the exclusion and any exceptions are unknown. By position the clause is in the water-drainage section, while the specification does not allocate the many 90° bends and elbows to systems. Heating-circuit bends are not shown to be in scope.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "5.4.1.9 Исключить использование отводов под углом 90°"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Отвод 90° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 90-2-57"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "REQ-07",
+        "object_id": "OBJ-07",
+        "applicability": "applies",
+        "reason": "The note covers «*» items such as the Dinarm lines. It is a scope modifier, not a compliance criterion: brand and catalogue code are non-mandatory, but technical parameters must be preserved. Which parameters are binding (for example joint type) is not listed.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_4f09992bf47245e9a6f8a27ddda67b86",
+            "quote": "Возможна замена на аналогичные с сохранением технических параметров."
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø40 | Dinarm FC | FC048E*"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "CAT-01",
+        "object_id": "OBJ-07",
+        "applicability": "unknown",
+        "reason": "The Dinarm catalogue is not supplied. The Ø value is not treated as nominal or outside, and no system ownership is inferred from the codes. The catalogue cannot confirm compatibility with ГОСТ 3262-75 or ГОСТ 10704-91 pipe sizes.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Колено 90° под муфту грубллок Ø50 | Dinarm EL9000 | EL9000C060*"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "NC-01",
+        "object_id": "OBJ-04",
+        "applicability": "unknown",
+        "reason": "A standard is cited by designation only. Whether «Д=» in these lines is nominal or outside diameter must come from the Norm Resolver. Fitting rows use «Д=50 мм» and «Ду 50» interchangeably, and ГОСТ 10704-91 rows use «Д=57х3,5». Notation is inconsistent across the specification.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Труба стальная водогазопроводная оцинкованная, Д=50х3,5 мм | ГОСТ 3262-75"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "NC-02",
+        "object_id": "OBJ-05",
+        "applicability": "unknown",
+        "reason": "Cited by designation only. Whether the pipes are coated, and what «Д» means, require the Norm Resolver and the design team.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубы стальные электросварные, Д=108х4,0 мм | ГОСТ 10704-91"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "NC-03",
+        "object_id": "OBJ-09",
+        "applicability": "unknown",
+        "reason": "Cited by designation only. Whether a coated or galvanized variant exists under this standard is not verified here.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=40х20мм | ГОСТ 8957-75* | Муфта 40x20"
+          }
+        ],
+        "comparison": "unknown"
+      },
+      {
+        "requirement_id": "NC-04",
+        "object_id": "OBJ-10",
+        "applicability": "unknown",
+        "reason": "Cited by designation only. The standard's content is not verified, so the notation mapping between «Д=», «Ду» and the item code is not confirmed.",
+        "scope_evidence": [
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Отвод 90° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 90-2-57"
+          }
+        ],
+        "comparison": "unknown"
+      }
+    ],
+    "findings": [
+      {
+        "id": "F-01",
+        "report_section": "technical_findings",
+        "title": "Summary of permitted comparisons: none closes as complies or violates",
+        "statement": "With the supplied text, no requirement–component comparison can be closed. Permitted conditional comparisons: (a) REQ-03 against OBJ-07, OBJ-08, OBJ-09 and OBJ-04, only after the water-supply system membership of those lines is confirmed; (b) REQ-06 against OBJ-10, only after the full sentence and its system are known; (c) REQ-04 and REQ-05 against OBJ-06, only after the drain is confirmed as sewerage under section 5.4. Not permitted: REQ-02 (placeholder, no criterion); REQ-01 against the piping spec (no electrical data); anything under 5.5 Отопление и теплоснабжение (content not supplied).",
+        "evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "*Принимается в соответствии с ПД.*"
+          },
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "**5.5 Отопление и теплоснабжение.**"
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-01",
+          "REQ-02",
+          "REQ-03",
+          "REQ-04",
+          "REQ-05",
+          "REQ-06"
+        ],
+        "related_object_ids": [
+          "OBJ-03",
+          "OBJ-04",
+          "OBJ-06",
+          "OBJ-07",
+          "OBJ-08",
+          "OBJ-09",
+          "OBJ-10"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-02",
+        "report_section": "questions",
+        "title": "Identity, revision and project linkage of the requirements document are unknown",
+        "statement": "Pages 150–152 carry only numbered sections with no title, issuer, revision or project name, and no explicit link to this building. The text defers to the design several times with «Принимается в соответствии с ПД» and mentions a «ПД» stage, so it reads like a generic template. Confirm which requirements document governs ПД-00542664, its revision, and whether italic clauses are adapted or optional.",
+        "evidence": [
+          {
+            "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+            "quote": "*Принимается в соответствии с ПД*"
+          },
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "5.3.1.8 На стадии проектирования «ПД» представить расчеты"
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-01",
+          "REQ-02",
+          "REQ-03",
+          "REQ-04",
+          "REQ-05",
+          "REQ-06"
+        ],
+        "related_object_ids": [],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-03",
+        "report_section": "questions",
+        "title": "Section 5.5 «Отопление и теплоснабжение» is not supplied",
+        "statement": "Page 152 ends with only the heading of section 5.5. Requirements for heating and heat supply, which may govern the ИТП piping, fittings and joints, are not in the supplied pages. The ИТП pipelines are compared here only with water-supply and sewerage clauses, which may not govern them. Provide the full 5.5 content and the continuation of 5.4.1.9.",
+        "evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "**5.5 Отопление и теплоснабжение.**"
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-06"
+        ],
+        "related_object_ids": [
+          "OBJ-03"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-04",
+        "report_section": "questions",
+        "title": "Systems and media of «Трубопровод ИТП», «Трубопровод дренажный» and the fitting groups are not stated",
+        "statement": "The specification groups pipes by the headings «Трубопровод ИТП» and «Трубопровод дренажный» and lists fittings under «Соединительные детали трубопроводов» without a system split. No sheet states which lines are heating, ГВС or ХВС. System ownership therefore cannot be inferred from pipe material or catalogue codes, and REQ-03 to REQ-06 cannot be tied to lines. Provide a line-to-system allocation (schemes or system-wise specification).",
+        "evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубопровод ИТП"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубопровод дренажный"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Соединительные детали трубопроводов"
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-03",
+          "REQ-04",
+          "REQ-05",
+          "REQ-06"
+        ],
+        "related_object_ids": [
+          "OBJ-04",
+          "OBJ-05",
+          "OBJ-06",
+          "OBJ-07",
+          "OBJ-08",
+          "OBJ-09",
+          "OBJ-10"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-05",
+        "report_section": "technical_findings",
+        "title": "Conditional conflict: grooved fittings at Ø25–Ø50 against 5.3.1.4",
+        "statement": "REQ-03 requires threaded galvanized fittings at diameter ≤ 50 mm and grooved joints above that. The specification lists many Dinarm grooved fittings at Ø25–Ø50, including 33+137+214+435 = 819 couplings at Ø25/32/40/50 (reviewer's sum). If REQ-03 applies to these lines and Ø is nominal, this contradicts the clause. If Ø is outside diameter, the relation to the ≤ 50 mm threshold must be re-derived. The finding is conditional; the footnote allows analogue replacement with preserved technical parameters, but the joint type is not stated to be a free parameter.",
+        "evidence": [
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "при диаметре ≤ 50 мм на резьбовых оцинкованных фитингах"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø32 | Dinarm FC | FC042E*"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø40 | Dinarm FC | FC048E*"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E*"
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-03",
+          "REQ-07",
+          "CAT-01"
+        ],
+        "related_object_ids": [
+          "OBJ-07"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-06",
+        "report_section": "technical_findings",
+        "title": "Conditional coating mismatch: uncoated threaded couplings against «оцинкованных фитингах»",
+        "statement": "OBJ-09 consists of eight lines (42 pcs, reviewer's sum) of threaded reducing couplings of sizes up to 50 mm, specified «без покрытия». REQ-03 asks for galvanized threaded fittings at ≤ 50 mm. If these couplings are in a water-supply system with galvanized pipes, the coating specified differs from the clause. System and pipe galvanizing for these joints are not shown.",
+        "evidence": [
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=32х25мм | ГОСТ 8957-75* | Муфта 32x25"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=50х32мм | ГОСТ 8957-75* | Муфта 50x32"
+          },
+          {
+            "block_id": "blk_5a66eb7fcf4749a8adf723fa6716fca2",
+            "quote": "на резьбовых оцинкованных фитингах"
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-03",
+          "NC-03"
+        ],
+        "related_object_ids": [
+          "OBJ-09"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-07",
+        "report_section": "questions",
+        "title": "Diameter notation is inconsistent; nominal or outside diameter cannot be assumed",
+        "statement": "The specification uses «Д=» for pipes («Д=57х3,5» under ГОСТ 10704-91, «Д=50х3,5» under ГОСТ 3262-75), «Д=» and «Ду» for the same fitting code («Отвод 90-2-57»), and «Ø» for grooved fittings with codes such as 060. The diameter type is not defined anywhere in the supplied text, so the threshold «≤ 50 мм» in REQ-03 cannot be mapped reliably to rows. Do not infer it from catalogue codes. Request the diameter convention from the designer and have the Norm Resolver confirm the standards' size designations.",
+        "evidence": [
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Отвод 90° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 90-2-57"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Отвод 90° стальной крутоизогнутый бесшовный, Ду 50 | ГОСТ 17375-2001* | Отвод 90-2-57"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø50 | Dinarm FC | FC060E*"
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-03",
+          "NC-01",
+          "NC-02",
+          "NC-04",
+          "CAT-01"
+        ],
+        "related_object_ids": [
+          "OBJ-04",
+          "OBJ-05",
+          "OBJ-07",
+          "OBJ-08",
+          "OBJ-10"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-08",
+        "report_section": "questions",
+        "title": "Compatibility of grooved fitting designations with the pipe lines cannot be verified; Ø65 coupling code differs from other Ø65 items",
+        "statement": "The Ø65 coupling has code FC073E, while the Ø65 plug, elbows and reducer use 076 and the electric-welded pipe line is «Д=76х3,5». The Ø50 grooved items carry 060 while the electric-welded pipe line is «Д=57х3,5». Whether grooved fittings are meant for ГОСТ 3262-75, ГОСТ 10704-91 or both is not stated. The catalogue is needed to determine whether the code difference is a size mismatch or a variant. No conclusion is drawn from the code numbers.",
+        "evidence": [
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Муфта гибкая для соединений грубллок Ø65 | Dinarm FC | FC073E*"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Заглушка под муфту грубллок Ø65 | Dinarm EC | EC076*"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Трубы стальные электросварные, Д=76х3,5 мм | ГОСТ 10704-91"
+          }
+        ],
+        "related_requirement_ids": [
+          "CAT-01",
+          "NC-01",
+          "NC-02"
+        ],
+        "related_object_ids": [
+          "OBJ-07",
+          "OBJ-08",
+          "OBJ-05"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-09",
+        "report_section": "questions",
+        "title": "90° bends cannot be compared with 5.4.1.9: the clause is truncated and the specification contains many 90° bends",
+        "statement": "REQ-06 ends mid-sentence at the page break. The specification lists numerous steel 90° bends (for example «Д=40 мм» 84 pcs) and Dinarm 90° elbows with no system allocation. Provide the full 5.4.1.9 text and confirm whether it applies to the ИТП drainage or only to building sewerage.",
+        "evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "5.4.1.9 Исключить использование отводов под углом 90°"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Отвод 90° стальной крутоизогнутый бесшовный, Д=40 мм | ГОСТ 17375-2001* | Отвод 90-2-45"
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-06"
+        ],
+        "related_object_ids": [
+          "OBJ-10"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-10",
+        "report_section": "questions",
+        "title": "Drainage pipe: 5.4 gives no material criterion for drainage sewerage, and one drain line is unresolved",
+        "statement": "REQ-04 mentions drainage sewerage for emergency drains from ИТП rooms but sets no pipe material. REQ-05 (SML) names household and industrial sewerage. The «Трубопровод дренажный» group is steel galvanized ГОСТ 3262-75, with one line reading «Решение не найдено» (0.4 m, ГОСТ 10704-91). Whether this group is sewerage under section 5.4 is unknown. Confirm the nature of the drain, the applicable requirement, and the intended pipe for the unresolved line.",
+        "evidence": [
+          {
+            "block_id": "blk_7bb26b619d60430a8b597fee4d18d80e",
+            "quote": "аварийных стоков от помещений ЦТП (ИТП)"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Решение не найдено | ГОСТ 10704-91"
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-04",
+          "REQ-05"
+        ],
+        "related_object_ids": [
+          "OBJ-06"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-11",
+        "report_section": "technical_findings",
+        "title": "Specification contains unresolved placeholders, duplicates and unexplained totals",
+        "statement": "Many lines carry «<варианты>» in the position or code cell («Врезка du15», «Врезка du25» and others, «Отвод 90 … Ду 65»). Other lines read «Нет в каталоге», and «Врезка du…» has no document or code. Some identical lines appear twice with different quantities (plug D=80: 2 and 2; plug D=125: 3 and 2), and the same code appears under «Д=» and «Ду» notation. The sheet totals «2546» and «199» do not match the length sums (976.9 m and 159.0 m by reviewer's sum; sheet values 977.0 and 158.8, which fit within rounding). Quantities and variants are not final, so quantity-based comparisons are unreliable.",
+        "evidence": [
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Врезка du15"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "<варианты>"
+          },
+          {
+            "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+            "quote": "Нет в каталоге | ГОСТ 17379-2001 | Нет в каталоге"
+          },
+          {
+            "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+            "quote": "Заглушка эллиптическая стальная бесшовная приварная, D=80 мм | ГОСТ 17379-2001 | Заглушка 2-89"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Общий итог: 2546"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Общий итог: 199"
+          }
+        ],
+        "related_requirement_ids": [],
+        "related_object_ids": [
+          "OBJ-11"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-12",
+        "report_section": "questions",
+        "title": "Document identity conflicts between the cover and the specification stamps (stage, organization, building, code)",
+        "statement": "The cover shows ООО «СУ-10», «РАБОЧАЯ ДОКУМЕНТАЦИЯ», «этап 1» and code ПД-00542664-ИТП.ТМ. The specification stamps show ООО «ПИ ВНИС», stage «Не указано», «Корпус 2», revisions «Не указано» and code ПД-00542664 - ИТП.ТМ.СО. Whether «этап 1» equals «Корпус 2», and whether the sheets belong to the same document and stage, is not established. The stage matters because the requirements text refers to a «ПД» stage. Confirm the document set, stage and revision.",
+        "evidence": [
+          {
+            "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+            "quote": "ПД-00542664-ИТП.ТМ"
+          },
+          {
+            "block_id": "blk_8c5527e3317248dca7d78ca059f0ec46",
+            "quote": "РАБОЧАЯ ДОКУМЕНТАЦИЯ"
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 6."
+          },
+          {
+            "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+            "quote": "Organization: ООО «ПИ ВНИС» | Revisions: Не указано"
+          }
+        ],
+        "related_requirement_ids": [],
+        "related_object_ids": [
+          "OBJ-01",
+          "OBJ-02"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-13",
+        "report_section": "questions",
+        "title": "ИТП electrical power supply (5.2.6.1) cannot be assessed from the supplied pages",
+        "statement": "REQ-01 requires first-category supply with technological redundancy and a separate ВРУ ИТП with metering. The supplied ИТП pages contain only pipe and fitting lists, with no electrical scheme, no pump or redundancy information and no ВРУ data. Provide the electrical section, the ИТП power-supply scheme and the pump redundancy basis.",
+        "evidence": [
+          {
+            "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+            "quote": "Питание электрооборудования ЦТП (ИТП) предусмотреть от отдельного ВРУ ЦТП (ИТП) с узлом учета электроэнергии."
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-01"
+        ],
+        "related_object_ids": [
+          "OBJ-03"
+        ],
+        "status": "needs-data"
+      },
+      {
+        "id": "F-14",
+        "report_section": "technical_findings",
+        "title": "The «recommended as analogue» note limits brand-level comparisons but not technical parameters",
+        "statement": "The footnote on every specification sheet says marks and brands are non-mandatory and replaceable by analogues with preserved technical parameters. Dinarm codes therefore cannot serve as hard design requirements. Parameters such as joint type and size still bind, but the specification does not list them. The «*» also appears on ГОСТ 8957-75 and ГОСТ 17375-2001 lines, so the extent of replaceability for these standard-based items is unclear.",
+        "evidence": [
+          {
+            "block_id": "blk_4dfd856534c74306be925eff2ea7088a",
+            "quote": "* Данное оборудование не является обязательным и рекомендовано в качестве аналога."
+          },
+          {
+            "block_id": "blk_4dfd856534c74306be925eff2ea7088a",
+            "quote": "Возможна замена на аналогичные с сохранением технических параметров."
+          }
+        ],
+        "related_requirement_ids": [
+          "REQ-07",
+          "CAT-01",
+          "NC-03",
+          "NC-04"
+        ],
+        "related_object_ids": [
+          "OBJ-07",
+          "OBJ-08",
+          "OBJ-09",
+          "OBJ-10"
+        ],
+        "status": "needs-data"
+      }
+    ]
+  },
+  "input_tokens": 16512,
+  "output_tokens": 44116,
+  "cost_usd": 0.0,
+  "duration_ms": 301817,
+  "model": "claude/claude-sonnet-5-5",
+  "is_error": false,
+  "error_message": "",
+  "cached_tokens": 0,
+  "cache_write_tokens": 16510,
+  "reasoning_tokens": 23757,
+  "cost_source": "subscription",
+  "response_id": "02040c31-fbaa-45a2-b9fa-b2974cbac0e2",
+  "finish_reason": "images_resized=0"
+}

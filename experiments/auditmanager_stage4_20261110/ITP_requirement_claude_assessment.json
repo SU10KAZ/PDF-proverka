@@ -1,0 +1,58 @@
+{
+  "model": "claude/claude-sonnet-5-5",
+  "duration_ms": 301817,
+  "input_tokens": 16512,
+  "output_tokens_reported": 44116,
+  "reasoning_tokens_reported": 23757,
+  "cost_source": "subscription",
+  "monetary_cost_known": false,
+  "object_records": 11,
+  "requirement_records": 12,
+  "applicability_checks": 15,
+  "unresolved_checks": 14,
+  "exact_quotes_checked": 82,
+  "exact_quotes_match": true,
+  "target_scope_control": "passed_bounded_case: REQ-03/OBJ-07 explicitly unknown; 819 treated as row quantity sum, not confirmed violation count.",
+  "quantity_control": {
+    "operands": [
+      33,
+      137,
+      214,
+      435
+    ],
+    "sum": 819,
+    "violations_proven": false
+  },
+  "model_findings": 14,
+  "model_sections": {
+    "technical_findings": 5,
+    "questions": 9
+  },
+  "all_model_findings_status_needs_data": true,
+  "output_admission": "not_accepted: model technical section includes conditional/unknown and methodological records; must not auto-export as confirmed defects.",
+  "per_finding_review": {
+    "F-01": "Internal scope summary; not a project defect.",
+    "F-02": "Retrieve requirement document identity from full source before asking engineer; fragment absence is not project absence.",
+    "F-03": "Retrieve continuation from full MD first; bounded selected pages omitted section5.5.",
+    "F-04": "Potential object-to-system mapping clarification; inspect diagrams/full specification first.",
+    "F-05": "Conditional applicability only; preserve quantity819 as sum, do not emit819 violations or a confirmed technical defect.",
+    "F-06": "Conditional coating comparison only; system/pipe ownership unverified, not confirmed technical defect.",
+    "F-07": "Diameter convention requires verified reference/catalogue; no numeric code inference.",
+    "F-08": "Catalogue mapping question only; different catalogue digits do not prove incompatible sizes.",
+    "F-09": "Retrieve full clause and establish system scope; do not transfer drainage restrictions to heating by shared angle.",
+    "F-10": "Composite: material applicability unknown; textual unresolved pipe placeholder is a separate candidate needing source context.",
+    "F-11": "Composite: placeholders, repeated rows and unlike totals must be separated. Totals unit/basis and arithmetic not independently verified here; do not accept collective invalidity of all quantities.",
+    "F-12": "Unproven document conflict: missing stamp fields and different stage/building descriptors do not establish inconsistency. Clarify document links from full source.",
+    "F-13": "Electrical data absent from selected pipe fragments; retrieve related section before engineer question. No electrical defect established.",
+    "F-14": "Analogue note is a comparison constraint, not standalone technical defect."
+  },
+  "stage4_complete": false,
+  "automatic_application": false,
+  "independent_discovery": false,
+  "remaining": [
+    "Apply semantic scope decisions to output without suppressing supported cores",
+    "Separate internal missing-context tasks from engineer questions",
+    "Verify useful positive applicability control, not only unknown negative control",
+    "Measure full-project quality and cost; this request is one known bounded pilot"
+  ]
+}
