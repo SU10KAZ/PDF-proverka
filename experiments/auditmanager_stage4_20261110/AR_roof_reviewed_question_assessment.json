@@ -1,0 +1,82 @@
+{
+  "status": "bounded_question_preserved_through_source_review_adjudication_and_export",
+  "evidence_files": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/00_followup.json",
+      "sha256": "d3fe5632424ff14803d83ede7d3767a70674e7ed6b1508fd9f5ab164bf84325d"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/00_review/attempt.json",
+      "sha256": "efa78ed303fce0a75410d1b6f35490f2ec8a72339d56bcda8bb3fbce0e265028"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/00_review/request.json",
+      "sha256": "ac2e2fc509677814b994af0805826ec0495194bf2406420f583f1a0172408772"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/00_review/result.json",
+      "sha256": "7019be1edef3347df9a788ec9ccaf450ac4b78d0305576edb3863a0e9410ca00"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/00_validation.json",
+      "sha256": "3502b5290033c598f28d49a235a56289a053cc51ea3dbad44f2adf2be20f04bd"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/05_adjudication/attempt.json",
+      "sha256": "6eb6c0e3cbf5b7836435ef966f9bc4e16ed074b5f7e4f6a43161a4a4ace0038a"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/05_adjudication/request.json",
+      "sha256": "04d3e97ac2c7397c3e31e5a984fe5f2d25e3b17d9ebcdfb17c28c8641f35e362"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/05_adjudication/result.json",
+      "sha256": "91759a12b850aca70ef61a76bc207efb30ded080f8556fa09b7f1a6c49ec2fa9"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/binding.json",
+      "sha256": "de5632f6262b87e23744c9e0d340cda12e96a4c651cf523eea1478d1764d6ce9"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024/candidate.json",
+      "sha256": "dd53bc7327cae34c8e29d5e7774e1b11166d28e51cee5a045b92d3a3a82747f8"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/F-024_initial_request.json",
+      "sha256": "6647cb2b2e6083294079fd5299cee07aa02c738ca6817a33c049c71b429e0b05"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/findings.json",
+      "sha256": "3010cae576a215a6c21a1d8877ce1c6daac3768c817dfc961867d84a97bf2951"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/manifest.json",
+      "sha256": "58a75aa61e9c4fbbf992e973f550fb3c58bf5059db00f56658529b756523f531"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/ar_roof_handoff_v2_source_evidence/queue.json",
+      "sha256": "2f1d050c0dc6061fabd2880e14c3b7fdfea255bf557964e4a50609b459bc7c16"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "known_control_not_blind": true,
+  "engineer_answers_supplied": false,
+  "changes_since_previous_control": [
+    "Prior operation queries carried into source review",
+    "Question modality preserved by adjudication prompt and output routing",
+    "Structured bounded-search description accepted with required scope, actual_review, limitations"
+  ],
+  "isolated_causal_attribution": false,
+  "technical_defect_proven": false,
+  "question_basis": "actionable_source_ambiguity",
+  "conditional_results_mm": [
+    110,
+    75,
+    80,
+    40
+  ],
+  "conditions": "Lower levels must denote surface below supports and common finish level must apply at the same points; not established as actual support heights.",
+  "other_findings_preserved": 23,
+  "semantic_scope": "Reviewed conditional question only; no installation impossibility or project-wide absence asserted.",
+  "full_acceptance_proven": false
+}

@@ -1,0 +1,19 @@
+{
+  "model": "codex/gpt-6-astra",
+  "sealed_candidate_sha256": "dd53bc7327cae34c8e29d5e7774e1b11166d28e51cee5a045b92d3a3a82747f8",
+  "raw_candidate_status": "candidate_rejected",
+  "raw_rejection_reason": "supported_core_requires_explicit_profile_decision",
+  "local_contract_replay": [
+    {
+      "finding_id": "F-024",
+      "status": "applied",
+      "action": "question"
+    }
+  ],
+  "other_findings_unchanged": 23,
+  "final_findings": 24,
+  "question_exported_separately": true,
+  "new_model_calls": 0,
+  "full_acceptance_proven": false,
+  "boundary": "Actual source review and adjudication preserve a conditional engineering question. Structured search-boundary contract repaired locally; raw model response unchanged. Not full pipeline or whole-project acceptance."
+}

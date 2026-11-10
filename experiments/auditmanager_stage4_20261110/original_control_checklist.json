@@ -378,15 +378,15 @@
       "hypothesis": "H05",
       "kind": "positive_controls",
       "original_control": "АР: остаток75мм на угловом участке сопоставить с проектным диапазоном опор.",
-      "evidence_state": "partial_recovered_question_pending_source_review_handoff",
+      "evidence_state": "bounded_control_recorded",
       "evidence": [
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_recovered_question_assessment.json",
-          "sha256": "6adf46736f602b239b9c647384988274af058ea5c12049d4da6f223707b7253d"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_reviewed_question_assessment.json",
+          "sha256": "5173664ad3899ed326ea73e749053b582c6dd4fecd68c79b7821f6ac4b739696"
         },
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_question_output_replay.json",
-          "sha256": "564e405d5ec467c1bb979294990577559c89baeebeb709793101ccbc16b9511c"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_reviewed_question_replay.json",
+          "sha256": "1e13f261e193ac9c77de7f82db5dd344e7f7e48c9ca234d8dfbf4a3d5fbfb4ae"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_roof_source_review_context_loss.json",
@@ -557,13 +557,12 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 18,
+    "bounded_control_recorded": 19,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 2,
     "local_contract_verified": 2,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
-    "partial_recovered_question_pending_source_review_handoff": 1,
     "requires_explicit_evidence_review": 10,
     "synthetic_contract_only": 1
   },
