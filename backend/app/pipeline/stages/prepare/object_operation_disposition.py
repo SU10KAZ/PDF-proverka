@@ -46,8 +46,19 @@ or actionable ambiguity whose resolution affects a project decision. State which
 facts are known, what remains conditional, and what the engineer needs to clarify.
 Do not turn an unknown surface, dimension, scope or missing drawing in this packet
 into a confirmed violation or a claim that documentation does not exist.
-If another search strategy, missing related document, image detail or internal
-calculation could resolve the issue, choose internal_unresolved and state that action.
+Use internal_unresolved when you can name a concrete unperformed internal step:
+a specific not-yet-inspected source/reference, a new search strategy, a necessary
+image detail, or a calculation not yet performed. Explain what new information
+that step can supply. Do not repeat an already unsuccessful query or already
+inspected source as if it were new work, and do not use the mere possibility that
+another document exists to defer indefinitely.
+A confirmed technical violation is NOT required for an engineer question. A
+source-grounded ambiguity can warrant clarification when its resolution affects
+a concrete design decision and the supplied search/inspection record has not
+resolved it. Keep any calculation conditional on the explicitly unknown premise;
+never present that conditional result as a proven defect. If the record is too
+weak even for such a question, keep internal_unresolved or no_finding and explain
+precisely what is missing. Do not claim that the whole project has been searched.
 A question must remain report_section=questions and carry source evidence,
 question_basis=actionable_source_ambiguity, profile_reason and engineer_action_required=true.
 Do not infer installation impossibility, procurement quantities or universal limits.
