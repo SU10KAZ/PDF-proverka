@@ -1,0 +1,173 @@
+{
+  "sources": [
+    {
+      "version": "v001",
+      "files": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/projects_v2/_system/destructive_backups/20260914T143051948760Z_00580716-_5.2_V1_v001__delete_project/01_input/ПД-00580716-КМ5.2_V1.pdf",
+          "sha256": "86fd9e459edd573fa0ce7e29c92fa4564eb6c6cd19e4937efa15157ec40dfb3f"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/projects_v2/_system/destructive_backups/20260914T143051948760Z_00580716-_5.2_V1_v001__delete_project/01_input/ПД-00580716-КМ5.2_V1_blocks.json",
+          "sha256": "8f032e7059f2df90c3fb066c04c44138efba6a3a05dbc940501f2158c76a62f7"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/projects_v2/_system/destructive_backups/20260914T143051948760Z_00580716-_5.2_V1_v001__delete_project/01_input/ПД-00580716-КМ5.2_V1_results.md",
+          "sha256": "d6afcd65ad5a59cb929992d590fdf108d1a596dcb3c015c1305e83fed7406a04"
+        }
+      ]
+    },
+    {
+      "version": "v002",
+      "files": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ5.2/versions/v002/01_input/ПД-00580716-КМ5.2_V2.pdf",
+          "sha256": "4f118149af31e4007aa1e42120603988bfbd9f27eab6e801f525ebaa26fdf132"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ5.2/versions/v002/01_input/ПД-00580716-КМ5.2_V2_blocks.json",
+          "sha256": "587e577b9f07235ae1bb3f5f97163b579c742aab3c75ae41de8c319b32cf21ca"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/KM/documents/ПД-00580716-КМ5.2/versions/v002/01_input/ПД-00580716-КМ5.2_V2_results.md",
+          "sha256": "4fdc67b25c893810b94e2723efad501cf3430c25394fb3866f5a805f6b419e39"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "version": "v001",
+      "document_code": "ПД-00580716-КМ5.2",
+      "block_id": "blk_afd74d611f2b4c1bb26dfc2a8643ca40",
+      "page_index": 4,
+      "clip_page_points": [
+        59.09246501326561,
+        60.02945578098297,
+        1396.3967276513577,
+        1675.0525916814804
+      ],
+      "path": "/tmp/auditmanager_ar_linked_graphics_20261111/v001_blk_afd74d611f2b4c1bb26dfc2a8643ca40.png",
+      "width": 2675,
+      "height": 3231,
+      "sha256": "251e41c8254a982ffcd933a3aa192e22508fb126b11af73f69953563951fecff"
+    },
+    {
+      "version": "v001",
+      "document_code": "ПД-00580716-КМ5.2",
+      "block_id": "blk_4d1866590cff44e38805059bb7ba7eaf",
+      "page_index": 4,
+      "clip_page_points": [
+        1525.531786074672,
+        86.58820797230436,
+        3101.5539858728553,
+        645.8037177934367
+      ],
+      "path": "/tmp/auditmanager_ar_linked_graphics_20261111/v001_blk_4d1866590cff44e38805059bb7ba7eaf.png",
+      "width": 3153,
+      "height": 1119,
+      "sha256": "726a7a000c223681ad842d05c6e8a97db8e67a5445a9069a6d63fbba658c4010"
+    },
+    {
+      "version": "v001",
+      "document_code": "ПД-00580716-КМ5.2",
+      "block_id": "blk_5a9b58657b954e1dbd66054a71151454",
+      "page_index": 4,
+      "clip_page_points": [
+        1846.5065590312815,
+        754.038977758817,
+        2441.572149344097,
+        963.293813691886
+      ],
+      "path": "/tmp/auditmanager_ar_linked_graphics_20261111/v001_blk_5a9b58657b954e1dbd66054a71151454.png",
+      "width": 1191,
+      "height": 419,
+      "sha256": "55d3efa7fe156cbc206a380402a919b2b1176f0cd7297ff7c978dfb2b5c2e873"
+    },
+    {
+      "version": "v001",
+      "document_code": "ПД-00580716-КМ5.2",
+      "block_id": "blk_ddef5fe2f67049e8bfe9c44abfce479e",
+      "page_index": 4,
+      "clip_page_points": [
+        1713.0676084762868,
+        1021.0192856734222,
+        2632.71442986882,
+        1652.3916354714747
+      ],
+      "path": "/tmp/auditmanager_ar_linked_graphics_20261111/v001_blk_ddef5fe2f67049e8bfe9c44abfce479e.png",
+      "width": 1840,
+      "height": 1263,
+      "sha256": "f8a1a5afff758e6ad88c41e6aa3e19bbcd75c0c6fc74401e45aa06e3a597ee1d"
+    },
+    {
+      "version": "v002",
+      "document_code": "ПД-00580716-КМ5.2",
+      "block_id": "blk_4d5fc705599344c2844639604bc60163",
+      "page_index": 4,
+      "clip_page_points": [
+        63.50324231386185,
+        17.29839301109314,
+        1524.667474269867,
+        1669.6754944324493
+      ],
+      "path": "/tmp/auditmanager_ar_linked_graphics_20261111/v002_blk_4d5fc705599344c2844639604bc60163.png",
+      "width": 2923,
+      "height": 3306,
+      "sha256": "fb1ff359259ecc0b03eec4aaed0ea3672c686f47ac51cf895155368201968b3f"
+    },
+    {
+      "version": "v002",
+      "document_code": "ПД-00580716-КМ5.2",
+      "block_id": "blk_c91448c8c5ee4743bc73e7f17b686ce3",
+      "page_index": 4,
+      "clip_page_points": [
+        1559.9350528120995,
+        140.8299515247345,
+        3082.9470942616463,
+        656.6913199424744
+      ],
+      "path": "/tmp/auditmanager_ar_linked_graphics_20261111/v002_blk_c91448c8c5ee4743bc73e7f17b686ce3.png",
+      "width": 3047,
+      "height": 1033,
+      "sha256": "996fc49e43d16fe2e6b53abd6d65a5e86a168f17e1f5e343ff411a08b129daac"
+    },
+    {
+      "version": "v002",
+      "document_code": "ПД-00580716-КМ5.2",
+      "block_id": "blk_7f0b05e9777849f8bde4f7567585d09f",
+      "page_index": 4,
+      "clip_page_points": [
+        1841.0583440810442,
+        727.6683411598206,
+        2402.923075720668,
+        964.0474252700806
+      ],
+      "path": "/tmp/auditmanager_ar_linked_graphics_20261111/v002_blk_7f0b05e9777849f8bde4f7567585d09f.png",
+      "width": 1124,
+      "height": 474,
+      "sha256": "2e446bfe0303ded94a7494ece41e9a2e7a5dd91fced4c2e855d30d47afcef280"
+    },
+    {
+      "version": "v002",
+      "document_code": "ПД-00580716-КМ5.2",
+      "block_id": "blk_6ab02980fd4643bc95114b2049b55582",
+      "page_index": 4,
+      "clip_page_points": [
+        1691.8414247334003,
+        1007.3291159272194,
+        2704.575725764036,
+        1640.260201394558
+      ],
+      "path": "/tmp/auditmanager_ar_linked_graphics_20261111/v002_blk_6ab02980fd4643bc95114b2049b55582.png",
+      "width": 2027,
+      "height": 1267,
+      "sha256": "4801912cf407c21a844f11b0820a054262c6e6a42aa22ebbedc94ff98cae2038"
+    }
+  ],
+  "selection": "All four original GRAPHIC blocks on sheet 3 requested by navigation, separately per source version.",
+  "text_reextracted": false,
+  "text_raster_corrected": false,
+  "technical_applicability_verified": false,
+  "model_called": false
+}
