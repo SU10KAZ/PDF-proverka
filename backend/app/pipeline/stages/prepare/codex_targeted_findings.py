@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -839,12 +840,14 @@ def combine_findings_with_targeted(
     if not isinstance(production_findings, list):
         production_findings = []
 
-    combined = dict(production) if isinstance(production, dict) else {"findings": []}
+    # Each continuation is merged against the frozen base. Nested metadata and
+    # evidence must not alias that base or an earlier output snapshot.
+    combined = deepcopy(production) if isinstance(production, dict) else {"findings": []}
     if isinstance(combined.get("candidate_recovery_reports"), list):
         combined["candidate_recovery_reports"] = list(combined["candidate_recovery_reports"])
     if isinstance(combined.get("object_operation_reports"), list):
         combined["object_operation_reports"] = list(combined["object_operation_reports"])
-    findings = [dict(item) for item in production_findings if isinstance(item, dict)]
+    findings = [deepcopy(item) for item in production_findings if isinstance(item, dict)]
     seen_keys = {_canonical_finding_key(item) for item in findings}
     seen_keys.discard("")
     # next_idx от МАКСИМАЛЬНОГО существующего номера, не от len(): база от LLM может
@@ -860,7 +863,8 @@ def combine_findings_with_targeted(
     targeted_stages: list[str] = []
     observer_enabled = _finding_evidence_observer_enabled()
 
-    for stage, payload in targeted_payloads:
+    for stage, raw_payload in targeted_payloads:
+        payload = deepcopy(raw_payload)
         if stage.startswith("object_operations_") and isinstance(payload, dict):
             combined.setdefault("object_operation_reports", []).append({
                 "stage": stage, "coverage": payload.get("operation_coverage"),

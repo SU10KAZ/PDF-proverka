@@ -82,3 +82,21 @@ def test_later_group_merge_keeps_operation_source_from_nonleader(tmp_path):
     assert final[0]['operation_candidate_lineage']==candidate['operation_candidate_lineage']
     assert attach_pending_source_reviews(final,{'t'})==1
     assert 'Source claim' in final[0]['source_review_requests'][0]['source_claim']
+
+
+def test_merge_does_not_mutate_frozen_base_metadata_or_nested_evidence():
+    request,response=case()
+    payload=validate_object_operation_payload(request,response)
+    baseline={'findings':[{'id':'F-001','problem':'Classic','evidence':[{'block_id':'t','quote':'original'}]}],
+        'meta':{'total_findings':1,'nested':{'status':'original'}}}
+    before=deepcopy(baseline);raw_before=deepcopy(payload)
+    first=combine_findings_with_targeted(baseline,[('object_operations_first',payload)])
+    assert baseline==before
+    first['meta']['nested']['status']='changed'
+    first['findings'][0]['evidence'][0]['quote']='changed'
+    first['object_operation_reports'][0]['candidate_ledger'].clear()
+    second=combine_findings_with_targeted(baseline,[('object_operations_second',payload)])
+    assert baseline==before and payload==raw_before
+    assert second['findings'][0]['evidence'][0]['quote']=='original'
+    assert second['meta']['nested']['status']=='original'
+    assert second['object_operation_reports'][0]['candidate_ledger']

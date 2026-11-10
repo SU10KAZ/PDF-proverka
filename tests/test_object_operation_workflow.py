@@ -85,3 +85,46 @@ async def test_revision_limit_retains_unresolved_work_and_cancellation_prevents_
         pytest.fail('Cancelled workflow dispatched')
     report=await run_object_operation_workflow(request,sources,{},md,tmp_path/'cancel',invoke=forbidden,is_cancelled=lambda:True,**kwargs)
     assert report['status']=='cancelled'
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('failure', ['timeout', 'error_result', 'invalid_json'])
+async def test_continuation_failure_keeps_first_claim_in_report_and_output(tmp_path, failure):
+    from copy import deepcopy
+    from backend.app.pipeline.stages.prepare.codex_targeted_findings import combine_findings_with_targeted
+    from backend.app.pipeline.stages.findings_verify.source_review_queue import attach_pending_source_reviews
+    request,sources,md,result,kwargs=case()
+    baseline={'findings':[{'id':'F-001','problem':'Classic finding','description':'Keep unchanged'}]}
+    original=deepcopy(baseline)
+    payloads=[]
+    def accept_step(step):
+        payloads.append((f"object_operations_test_revision_{step['revision']}",step['payload']))
+        combined=combine_findings_with_targeted(baseline,payloads)
+        attach_pending_source_reviews(combined['findings'],set(sources))
+        (tmp_path/'combined.json').write_text(json.dumps(combined))
+        # Consumer mutation must not alter saved workflow evidence.
+        step['payload']['findings']=[]
+    calls=[]
+    async def invoke(req,phase):
+        calls.append(phase)
+        if failure=='timeout':raise TimeoutError('ambiguous remote outcome')
+        if failure=='error_result':return {'is_error':True,'json_data':{}}
+        return {'is_error':False,'json_data':None}
+    expected=TimeoutError if failure=='timeout' else ValueError
+    with pytest.raises(expected):
+        await run_object_operation_workflow(request,sources,{},md,tmp_path/'work',
+            initial_result=result,invoke=invoke,on_step=accept_step,**kwargs)
+    combined=json.loads((tmp_path/'combined.json').read_text())
+    assert combined['findings'][0]==original['findings'][0]
+    assert combined['findings'][1]['problem']=='Original claim'
+    assert combined['findings'][1]['source_review_requests']
+    report=json.loads((tmp_path/'work/report.json').read_text())
+    assert report['failed_revision']==1
+    assert report['steps'][0]['payload']['findings'][0]['problem']=='Original claim'
+    assert len(report['steps'])==1
+    # Resume revalidates the old result but never repeats an ambiguous/failed call.
+    with pytest.raises(ValueError):
+        await run_object_operation_workflow(request,sources,{},md,tmp_path/'work',
+            initial_result=result,invoke=invoke,**kwargs)
+    assert calls==['object_operations_revision_1']
+    assert baseline==original

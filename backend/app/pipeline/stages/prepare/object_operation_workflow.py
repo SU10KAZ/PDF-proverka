@@ -23,11 +23,12 @@ def _write(path, value):
 async def run_object_operation_workflow(request, sources, images, md, work_dir, *,
         executor_id, expected_request_sha256, expected_md_sha256,
         invoke=None, initial_result=None, graph=None, max_revisions=3,
-        is_cancelled=None):
+        is_cancelled=None, on_step=None):
     """invoke(request, phase) returns a provider dict with json_data/is_error.
 
     The caller owns authorization for EACH dispatch. None means prepare only.
     An imported initial_result is bound to this workflow, never sent again.
+    on_step receives a copy of each source-bound validated step (including replay).
     Findings and operation receipts from every revision remain separate. A later
     partial response cannot silently erase an earlier claim or close an operation.
     """
@@ -89,12 +90,16 @@ async def run_object_operation_workflow(request, sources, images, md, work_dir, 
         else:
             attempt=directory/'attempt.json'
             if attempt.exists():
+                report.update(status='interrupted_or_failed',failed_revision=step,reason='previous_attempt_has_no_result_do_not_repeat')
+                _write(root/'report.json',report)
                 raise ValueError('previous_attempt_has_no_result_do_not_repeat')
             if invoke is None:
                 report.update(status='awaiting_dispatch',next_request=str(request_path),next_request_sha256=digest)
                 break
             with attempt.open('x') as handle:
                 json.dump({'status':'started','request':digest},handle)
+            report.update(status='dispatching',active_revision=step)
+            _write(root/'report.json',report)
             try:
                 result=await invoke(deepcopy(current),f'object_operations_revision_{step}')
                 _write(output,result)
@@ -102,14 +107,22 @@ async def run_object_operation_workflow(request, sources, images, md, work_dir, 
                 _write(attempt,{'status':'finished','request':digest})
             except BaseException as exc:
                 _write(attempt,{'status':'interrupted_or_failed','request':digest,'error_type':type(exc).__name__})
+                report.update(status='interrupted_or_failed',failed_revision=step,error_type=type(exc).__name__)
+                _write(root/'report.json',report)
                 raise
             origin='performed'
         if not isinstance(result,dict) or result.get('is_error') or not isinstance(result.get('json_data'),dict):
+            report.update(status='provider_result_not_usable',failed_revision=step)
+            _write(root/'report.json',report)
             raise ValueError('provider_result_not_usable')
         validated=validate_object_operation_payload(SimpleNamespace(messages=current['messages']),result['json_data'])
         _write(directory/'validation.json',validated)
         report['steps'].append({'revision':step,'origin':origin,'request_sha256':digest,
             'result_sha256':evidence_digest(result),'payload':validated})
+        report['status']='step_validated'
+        _write(root/'report.json',report)
+        if on_step is not None:
+            on_step(deepcopy(report['steps'][-1]))
         if not any(r.get('status')=='needs_data' for r in validated['object_operation_results']):
             report['status']='no_context_request';break
         if step==max_revisions:

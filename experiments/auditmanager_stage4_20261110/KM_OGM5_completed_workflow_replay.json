@@ -1,0 +1,25 @@
+{
+  "status": "continuation_not_prepared",
+  "stop_reason": "Continuation request budget exceeded",
+  "steps": 2,
+  "baseline_findings_preserved": 26,
+  "final_findings": 28,
+  "first_step_findings_preserved": 26,
+  "candidate_ledger_records": 3,
+  "internal_pending_candidates": 1,
+  "new_model_calls": 0,
+  "request_matches_approved_expanded_packet": true,
+  "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "baseline_sha256": "5cc411cb487bc27ebe24c9b7329376e90938dbf2de52ad2898b83e5f3263e866",
+  "sealed_response_hashes": [
+    "713b07b35635e032d6db5ef7439a610b01046fbde249672400fbf660456e72fa",
+    "7d5ef0f0076ca4e5867a2a9d72b20737fe8f0594d062e74539c66c715e547ef8"
+  ],
+  "semantic_verified": false,
+  "production_accepted": false,
+  "limits": [
+    "Recorded provider answers replayed locally; no new independent audit.",
+    "This verifies continuation and merge retention; final wording and technical scope still require review.",
+    "No third request dispatched; remaining needs_data operations are unresolved."
+  ]
+}
