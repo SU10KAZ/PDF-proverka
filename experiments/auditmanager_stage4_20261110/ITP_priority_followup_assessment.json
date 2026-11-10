@@ -1,0 +1,47 @@
+{
+  "status": "scheme_recovered_instance_link_unresolved",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 93607,
+  "observed_progress": [
+    "Actual principle scheme now supplied and inspected; prior packet-absence statement withdrawn.",
+    "Primary heating side distinguished from secondary T13/T23 and unrelated same-diameter DHW pipes.",
+    "Specification row 76x3.5 does not by itself establish applicability to the calculated 76x3.0 branch."
+  ],
+  "remaining_work": "Read the requested detailed branch graphics and establish exact primary pipe identity. Preserve local arithmetic candidate for independent semantic review; do not treat it as recovery of the original thickness control.",
+  "source_only_queries": [
+    {
+      "operation": "identity_across_views",
+      "queries": [
+        "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+        "blk_94b58ecf5d404f7d90c272d267eb2e48",
+        "blk_049ee88c136045da9910995a4c44a1e8",
+        "ТО отопления Т13,Т23",
+        "Отопление III зона",
+        "К3"
+      ]
+    },
+    {
+      "operation": "dimension_consistency",
+      "queries": [
+        "гидравлический расчет",
+        "Δh=13,1",
+        "v=0,74",
+        "9,55",
+        "Трубопровод отопления 3-зоны",
+        "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+      ]
+    },
+    {
+      "operation": "document_links",
+      "queries": [
+        "ведомость трубопроводов",
+        "Трубопровод отопления 3-зоны",
+        "Д=76х3,5",
+        "Ø76 × 3,0",
+        "blk_94b58ecf5d404f7d90c272d267eb2e48",
+        "blk_049ee88c136045da9910995a4c44a1e8"
+      ]
+    }
+  ],
+  "full_acceptance_proven": false
+}
