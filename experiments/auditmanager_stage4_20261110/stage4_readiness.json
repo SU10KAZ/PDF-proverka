@@ -531,5 +531,21 @@
     "excel_export_verified": true,
     "semantic_acceptance": false,
     "new_model_calls": 0
+  },
+  "known_semantic_output_control": {
+    "status": "passed_manual_decision_downstream_control",
+    "report": "experiments/auditmanager_stage4_20261110/known_semantic_output_replay.json",
+    "baseline_count": 244,
+    "output_count": 243,
+    "suppressed_with_log": [
+      "EOM F-040"
+    ],
+    "retained_revised": [
+      "EOM F-003",
+      "ITP F-042"
+    ],
+    "other_findings_core_preserved": 241,
+    "automatic_semantic_decision_proven": false,
+    "production_changed": false
   }
 }

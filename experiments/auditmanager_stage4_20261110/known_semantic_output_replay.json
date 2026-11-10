@@ -1,0 +1,88 @@
+{
+  "scope": "Known-case manually reviewed decisions through actual deterministic verification and Excel; no automatic semantic decision proof.",
+  "new_model_calls": 0,
+  "production_changed": false,
+  "independent_discovery": false,
+  "baseline_findings": 244,
+  "output_findings": 243,
+  "projects": [
+    {
+      "discipline": "AK",
+      "baseline_findings": 65,
+      "output_findings": 65,
+      "decision_ids": [],
+      "all_other_core_fields_preserved": true,
+      "excel_ids_verified": true,
+      "workbook_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/AK/report.xlsx",
+      "decisions_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/AK/decisions.json",
+      "findings_sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd",
+      "decision_log_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "discipline": "ITP",
+      "baseline_findings": 53,
+      "output_findings": 53,
+      "decision_ids": [
+        "F-042"
+      ],
+      "all_other_core_fields_preserved": true,
+      "excel_ids_verified": true,
+      "workbook_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/ITP/report.xlsx",
+      "decisions_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/ITP/decisions.json",
+      "findings_sha256": "52b85a035320b4c0d5a193ea4a05c992a6b15c1219362f7ed16db8a51d5fb223",
+      "decision_log_sha256": "d80c32bd625f5b6958480941cd1bee3dc6417ae04940b13aab0ccf6b9ca7d288"
+    },
+    {
+      "discipline": "AR",
+      "baseline_findings": 22,
+      "output_findings": 22,
+      "decision_ids": [],
+      "all_other_core_fields_preserved": true,
+      "excel_ids_verified": true,
+      "workbook_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/AR/report.xlsx",
+      "decisions_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/AR/decisions.json",
+      "findings_sha256": "061817611a78a8ab2a21af6d9ec1e07be0cfa62b3b27394a9f78d6f3e262f113",
+      "decision_log_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "discipline": "KM",
+      "baseline_findings": 26,
+      "output_findings": 26,
+      "decision_ids": [],
+      "all_other_core_fields_preserved": true,
+      "excel_ids_verified": true,
+      "workbook_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/KM/report.xlsx",
+      "decisions_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/KM/decisions.json",
+      "findings_sha256": "5cc411cb487bc27ebe24c9b7329376e90938dbf2de52ad2898b83e5f3263e866",
+      "decision_log_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "discipline": "VK",
+      "baseline_findings": 29,
+      "output_findings": 29,
+      "decision_ids": [],
+      "all_other_core_fields_preserved": true,
+      "excel_ids_verified": true,
+      "workbook_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/VK/report.xlsx",
+      "decisions_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/VK/decisions.json",
+      "findings_sha256": "99e5efc8da399c1fe136fd900bc3c5ef666bbe82621c086cd16888f61d538569",
+      "decision_log_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "discipline": "EOM",
+      "baseline_findings": 49,
+      "output_findings": 48,
+      "decision_ids": [
+        "F-003",
+        "F-040"
+      ],
+      "all_other_core_fields_preserved": true,
+      "excel_ids_verified": true,
+      "workbook_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/EOM/report.xlsx",
+      "decisions_path": "/tmp/auditmanager_known_semantic_output_7x366t7t/EOM/decisions.json",
+      "findings_sha256": "c67866f20e442485807e30d4fe1e7f111c58c5c7ca199d4c862ef0a6cd2f035f",
+      "decision_log_sha256": "623612d78f3d820b04b0446600c3731f1c680d200188acc83e7a90a0275936ed"
+    }
+  ],
+  "remaining": "Generic semantic acceptance/application is not integrated; use this as expected downstream control, never as hidden history for a blind candidate audit."
+}
