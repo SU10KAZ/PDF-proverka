@@ -20,6 +20,9 @@ def attach_pending_source_reviews(findings, known_block_ids):
         if not isinstance(finding, dict):
             continue
         lineage = finding.get('source_candidate_lineage', [])
+        operation_lineage = finding.get('operation_candidate_lineage', [])
+        if isinstance(lineage,list) and isinstance(operation_lineage,list):
+            lineage = lineage + operation_lineage
         source_ids = finding.get('source_finding_ids', [])
         if not isinstance(lineage, list) or not isinstance(source_ids, list):
             continue

@@ -867,6 +867,7 @@ def combine_findings_with_targeted(
                 "requested_operations": payload.get("requested_operations", []),
                 "unverified_receipts": payload.get("unverified_operation_receipts", []),
                 "pending": payload.get("operation_pending", []), "semantic_verified": False,
+                "candidate_ledger": payload.get("operation_candidate_ledger", []),
             })
         if stage.startswith("candidate_recovery_") and isinstance(payload, dict):
             from backend.app.pipeline.stages.findings_merge.recovery_links import apply_duplicate_links
@@ -887,6 +888,9 @@ def combine_findings_with_targeted(
             normalized = dict(item)
             key = _canonical_finding_key(normalized)
             if key and key in seen_keys:
+                from ..findings_merge.operation_lineage import preserve_operation_lineage
+                existing = next(f for f in findings if _canonical_finding_key(f) == key)
+                preserve_operation_lineage(existing, normalized)
                 continue
             normalized["id"] = f"F-{next_idx:03d}"
             normalized.setdefault("source_stage", stage)

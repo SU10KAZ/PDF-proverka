@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime, timezone
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -218,6 +219,7 @@ def aggregate_traceability(items: Iterable[dict]) -> dict[str, Any]:
     source_ids: list[str] = []
     provenance_values: list[dict] = []
     comparison_values: list[dict] = []
+    operation_lineage: list[dict] = []
     for item in items:
         if not isinstance(item, dict):
             continue
@@ -225,6 +227,10 @@ def aggregate_traceability(items: Iterable[dict]) -> dict[str, Any]:
             source_id = str(source_id or "").strip()
             if source_id and source_id not in source_ids:
                 source_ids.append(source_id)
+        receipts = item.get("operation_candidate_lineage", [])
+        for receipt in receipts if isinstance(receipts, list) else []:
+            if isinstance(receipt, dict) and receipt not in operation_lineage:
+                operation_lineage.append(deepcopy(receipt))
         provenance = item.get("provenance")
         if isinstance(provenance, dict):
             provenance_values.append(provenance)
@@ -235,6 +241,8 @@ def aggregate_traceability(items: Iterable[dict]) -> dict[str, Any]:
     fields: dict[str, Any] = {}
     if source_ids:
         fields["source_finding_ids"] = source_ids
+    if operation_lineage:
+        fields["operation_candidate_lineage"] = operation_lineage
     if provenance_values:
         merged = merge_provenance(provenance_values)
         fields["provenance"] = merged

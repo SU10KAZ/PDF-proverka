@@ -29,6 +29,13 @@ def build_candidate_coverage(text, blocks, final):
                 candidates.append({'origin': 'graphic', 'block_id': block.get('block_id'),
                                    'pointer': f'/block_analyses/{i}/{field}/{j}',
                                    'deferred': field == 'deferred_findings', 'candidate': item})
+    for i, report in enumerate(final.get('object_operation_reports', [])):
+        for j, record in enumerate(report.get('candidate_ledger', [])):
+            candidates.append({'origin':'object_operation',
+                'pointer':f'/object_operation_reports/{i}/candidate_ledger/{j}',
+                'candidate':record['candidate'],
+                'pending_context':record.get('status')=='pending_review',
+                'operation_disposition':record.get('reason')})
     counts = Counter(candidate_source_id(c) for c in candidates if isinstance(candidate_source_id(c), str))
     links = defaultdict(list)
     for i, finding in enumerate(final.get('findings', [])):
@@ -44,6 +51,8 @@ def build_candidate_coverage(text, blocks, final):
         row['semantic_preservation_verified'] = False
         if not valid or counts[sid] != 1:
             row['status'] = 'ambiguous_source_identity'
+        elif row.get('pending_context'):
+            row['status'] = 'operation_pending_requires_review'
         elif row.get('deferred'):
             row['status'] = 'deferred_requires_context_review'
         elif row['linked_findings']:

@@ -153,22 +153,31 @@ def validate_object_operation_payload(request,payload, *, context_search_exhaust
             receipts.append(receipt)
     coverage=reconcile_object_registry({'object_registry':[obj],'object_operation_results':receipts},
                                        set(obj['source_refs'])|set(allowed))
-    accepted,pending=[],[]
+    from ..findings_merge.operation_lineage import operation_candidate
+    accepted,pending,ledger=[],[],[]
     statuses={r['operation']:r['status'] for r in coverage['operations']}
     items=payload.get('findings',[])
-    for finding in items if isinstance(items,list) else []:
+    for index,finding in enumerate(items if isinstance(items,list) else []):
+        candidate,lineage=operation_candidate(request.messages,finding,index,set(allowed))
+        record={'candidate':candidate,'status':'pending_review','semantic_verified':False}
+        ledger.append(record)
         valid=isinstance(finding,dict) and finding.get('object_id')==obj['id'] and isinstance(finding.get('operation'),str) and finding['operation'] in operations
         evidence=finding.get('evidence') if isinstance(finding,dict) else None
         if not valid or not isinstance(evidence,list) or not any(isinstance(e,dict) and e.get('block_id') in allowed for e in evidence):
-            pending.append({'finding':finding,'reason':'unaddressed_operation_or_evidence'})
+            pending.append({'finding':finding,'source_candidate_id':candidate['id'],'reason':'unaddressed_operation_or_evidence'})
+            record['reason']='unaddressed_operation_or_evidence'
         elif (finding.get('report_section')=='questions'
               and statuses.get(finding['operation']) in ('needs_data','not_checked')
               and not context_search_exhausted
               and not (finding.get('question_basis') in ('minor_confirmed','outside_profile')
                        and isinstance(finding.get('profile_reason'),str) and finding['profile_reason'].strip())):
-            pending.append({'finding':finding,'reason':'context_search_incomplete',
+            record['reason']='context_search_incomplete'
+            pending.append({'finding':finding,'source_candidate_id':candidate['id'],'reason':'context_search_incomplete',
                             'next_action':'retrieve_sources_then_review','suppressed_as_false':False})
         else:
-            accepted.append({**finding,'operation_semantic_verified':False})
+            accepted.append({**finding,'operation_semantic_verified':False,
+                'source_finding_ids':[candidate['id']],'operation_candidate_lineage':[lineage]})
+            record['status']='candidate_for_merge'
     return {**payload,'object_operation_results':receipts,'findings':accepted,'operation_pending':pending,'operation_coverage':coverage,
-            'requested_operations':sorted(operations),'unverified_operation_receipts':receipt_pending}
+            'requested_operations':sorted(operations),'unverified_operation_receipts':receipt_pending,
+            'operation_candidate_ledger':ledger}
