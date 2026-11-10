@@ -1,0 +1,414 @@
+{
+  "source": "experiments/auditmanager_stage3_20261110/selected_hypotheses.json",
+  "source_sha256": "abcaf4eabc93ca675418ab8cb6feed5d5c628128bf51ffcb7bd9cab6820508b7",
+  "scope": "Every named original control including composite and negative/limitation items; no replacement by easier controls.",
+  "rows": [
+    {
+      "id": "H01-P01",
+      "hypothesis": "H01",
+      "kind": "positive_controls",
+      "original_control": "АК G075/G076: один подтверждённый конфликт размерной цепи должен дойти до выдачи одним замечанием.",
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_graphic_recovery_pilot.json",
+          "sha256": "141c6017703db71dafb248620dac11bca9c5cd3c2ad08c93b916333a74fa2b3a"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_recovered_verifier_replay.json",
+          "sha256": "34ba81dfa0a431ec0929da5627f09db4a302dde6198cfccacedc99c490ed6282"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H01-P02",
+      "hypothesis": "H01",
+      "kind": "positive_controls",
+      "original_control": "ЭОМ F001/F030/F032: сохранить релевантные источники и уточнённый смысл эталонного вопроса.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H01-N01",
+      "hypothesis": "H01",
+      "kind": "negative_controls_and_limits",
+      "original_control": "Несуществующий sourceID не получает случайное доказательство.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H01-N02",
+      "hypothesis": "H01",
+      "kind": "negative_controls_and_limits",
+      "original_control": "Существующий блок не доказывает истинность тезиса; тяжесть автоматически не восстанавливать.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H01-N03",
+      "hypothesis": "H01",
+      "kind": "negative_controls_and_limits",
+      "original_control": "AK T004/T008/T017 и ITP T016: уже сохранённые смыслы не выпускать повторно.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H02-P01",
+      "hypothesis": "H02",
+      "kind": "positive_controls",
+      "original_control": "АР: запрос верхней кровли должен обратиться к уже имеющемуся плану.",
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_deferred_assessment.json",
+          "sha256": "23adef823fed873cb968c789d04e9a85b88b6eb5a08037c4106d13a11219797f"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_question_output_replay.json",
+          "sha256": "50903d365382302a2b23640b71d7bfc52600029045dadc5e580c905ba5e32722"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H02-P02",
+      "hypothesis": "H02",
+      "kind": "positive_controls",
+      "original_control": "КМ: запрос границ деталиОГМ11 должен сохраниться.",
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_node_navigation_summary.json",
+          "sha256": "140c5bc9626725128a06506893db410c6c315d0025d311729bb3bf6c5b42b597"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H02-N01",
+      "hypothesis": "H02",
+      "kind": "negative_controls_and_limits",
+      "original_control": "Третий аэратор не объявлять лишним без полного подсчёта.",
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_deferred_assessment.json",
+          "sha256": "23adef823fed873cb968c789d04e9a85b88b6eb5a08037c4106d13a11219797f"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H02-N02",
+      "hypothesis": "H02",
+      "kind": "negative_controls_and_limits",
+      "original_control": "3100/2900 не считать доказанной ошибкой до установления границ детали.",
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_node_navigation_summary.json",
+          "sha256": "140c5bc9626725128a06506893db410c6c315d0025d311729bb3bf6c5b42b597"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H03-P01",
+      "hypothesis": "H03",
+      "kind": "positive_controls",
+      "original_control": "АК: проверить все пять шкафов эталонной темы, сохранить адреса при объединении.",
+      "evidence_state": "live_inventory_in_progress",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_inventory_manifest.json",
+          "sha256": "95f67da6c21f9adc2d87c314e14de7d667f5ee43952bda90f1beb830b1aac2fa"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H03-P02",
+      "hypothesis": "H03",
+      "kind": "positive_controls",
+      "original_control": "ЭОМ: различить отдельные блоки с одинаковой моделью и повторным позиционнымID.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H03-P03",
+      "hypothesis": "H03",
+      "kind": "positive_controls",
+      "original_control": "АР: запросить назначение немаркированных зон.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H03-N01",
+      "hypothesis": "H03",
+      "kind": "negative_controls_and_limits",
+      "original_control": "Повторный вид не новый экземпляр. ОбщиеPE/N не коллизия автоматически.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H03-N02",
+      "hypothesis": "H03",
+      "kind": "negative_controls_and_limits",
+      "original_control": "Одинаковая модель разных блоков допустима.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H03-N03",
+      "hypothesis": "H03",
+      "kind": "negative_controls_and_limits",
+      "original_control": "Нет отдельной подтверждённой исторической отрицательной пары для общего фильтра клемм; сначала диагностический режим без подавления.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H04-P01",
+      "hypothesis": "H04",
+      "kind": "positive_controls",
+      "original_control": "ЭОМ: FRHF5×35 двух линий не закрывается строкойHF5×35.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H04-P02",
+      "hypothesis": "H04",
+      "kind": "positive_controls",
+      "original_control": "ЭОМ: активныеС2326/С2327 должны сопоставляться сРП3.",
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_model_extracted_balance_control.json",
+          "sha256": "399336dd4802c01dd227bc7ab2762a7d7ee33411054c9f8cf0280284d27bbcf8"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_model_extracted_balance_claude_control.json",
+          "sha256": "15747a82f145196076fa730b5614043a6b2407fb8b5e84d6a9b2c91252c43fc6"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H04-P03",
+      "hypothesis": "H04",
+      "kind": "positive_controls",
+      "original_control": "КМ: сохранять повторыОГМ22/25 и вопрос о сомнительных количествах.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H04-N01",
+      "hypothesis": "H04",
+      "kind": "negative_controls_and_limits",
+      "original_control": "ЭОМ: С2325/С2328 — резерв, не пропущенные рабочие нагрузки.",
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_model_extracted_balance_control.json",
+          "sha256": "399336dd4802c01dd227bc7ab2762a7d7ee33411054c9f8cf0280284d27bbcf8"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H04-N02",
+      "hypothesis": "H04",
+      "kind": "negative_controls_and_limits",
+      "original_control": "160м двух линий не факт недопоставки; не увеличивать мощность без исключения агрегирования.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H04-N03",
+      "hypothesis": "H04",
+      "kind": "negative_controls_and_limits",
+      "original_control": "КМ:228 анкеров остаются условным расчётом.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H05-P01",
+      "hypothesis": "H05",
+      "kind": "positive_controls",
+      "original_control": "КМ: одна площадкаОГМ20 с−2.350/−2.500.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H05-P02",
+      "hypothesis": "H05",
+      "kind": "positive_controls",
+      "original_control": "ИТП: расходы ветвейГВС сопоставить с режимомК15; толщины3/3.5 связать с теми же участками.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H05-P03",
+      "hypothesis": "H05",
+      "kind": "positive_controls",
+      "original_control": "АР: остаток75мм на угловом участке сопоставить с проектным диапазоном опор.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H05-N01",
+      "hypothesis": "H05",
+      "kind": "negative_controls_and_limits",
+      "original_control": "КМ F014: разные последовательные марши не одна деталь.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H05-N02",
+      "hypothesis": "H05",
+      "kind": "negative_controls_and_limits",
+      "original_control": "КМ:3240 не доказанная полная развёртка гнутого поручня.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H05-N03",
+      "hypothesis": "H05",
+      "kind": "negative_controls_and_limits",
+      "original_control": "АР: отметки у воронки не высоты всех опор.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H06-P01",
+      "hypothesis": "H06",
+      "kind": "positive_controls",
+      "original_control": "ИТП: областьТЗ5.3.1.4 сопоставить с муфтами, не объявлять819 нарушений.",
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_requirement_claude_assessment.json",
+          "sha256": "85d28e59caa328dbad64b4c2db9ce84b16b1cd51bee6cb5d1636b31f31244d84"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H06-P02",
+      "hypothesis": "H06",
+      "kind": "positive_controls",
+      "original_control": "ЭОМ: совместимость расцепителя сQF3.20 проверить по конкретному изготовителю.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H06-P03",
+      "hypothesis": "H06",
+      "kind": "positive_controls",
+      "original_control": "АР: запросить расчёт функции крепления каната по существующей ссылкеКМ8.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H06-N01",
+      "hypothesis": "H06",
+      "kind": "negative_controls_and_limits",
+      "original_control": "ВА-301 само по себе не1P; QF3.17 не переносить в тезисQF3.20.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H06-N02",
+      "hypothesis": "H06",
+      "kind": "negative_controls_and_limits",
+      "original_control": "ВГП65×4 и электросварная76×3.5 — разные трубы.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H06-N03",
+      "hypothesis": "H06",
+      "kind": "negative_controls_and_limits",
+      "original_control": "Декоративная пластина не доказывает недостаточную прочность.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H07-P01",
+      "hypothesis": "H07",
+      "kind": "positive_controls",
+      "original_control": "ЭОМ: повтор номера помещения не подавлять из-за слов«переданный контекст».",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H07-P02",
+      "hypothesis": "H07",
+      "kind": "positive_controls",
+      "original_control": "АК/ЭОМ: совет переименовать завесу требует конкретного основания.",
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_prescan_recovery_assessment.json",
+          "sha256": "68442b9b84fd6d4408ae58ec9ac86517da9a46a1debbb3796874d1d5d74f173f"
+        }
+      ],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H07-N01",
+      "hypothesis": "H07",
+      "kind": "negative_controls_and_limits",
+      "original_control": "Настоящая претензия к внутренней разметке не становится проектным замечанием.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    },
+    {
+      "id": "H07-N02",
+      "hypothesis": "H07",
+      "kind": "negative_controls_and_limits",
+      "original_control": "Синтетические варианты metadata replay не независимая историческая контрольная пара. До получения пары запретить широкое автоматическое подавление.",
+      "evidence_state": "requires_explicit_evidence_review",
+      "evidence": [],
+      "full_acceptance_proven": false
+    }
+  ],
+  "counts": {
+    "bounded_control_recorded": 9,
+    "live_inventory_in_progress": 1,
+    "requires_explicit_evidence_review": 27
+  },
+  "boundaries": [
+    "Unmapped means not explicitly reconciled in this checklist, not absent from all evidence.",
+    "Bounded control recorded is not proof of complete audit improvement.",
+    "For composite items verify every clause; do not close from one matching fragment.",
+    "Historical stage3 status/model policy fields are superseded by sequential_plan.json; original control wording remains binding."
+  ],
+  "stage4_complete": false
+}
