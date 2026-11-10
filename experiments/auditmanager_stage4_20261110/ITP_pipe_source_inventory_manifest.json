@@ -1,0 +1,30 @@
+{
+  "source_md_sha256": "44d95689c4af691fce3e5d1eab677bdd34ebafb4de595b13b52ab61b61b6631a",
+  "blocks": 3,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+        "blk_155f820c42d94fe282878a3bd85a0ffe",
+        "blk_a203939b21504fa6935b621a29929d7d"
+      ],
+      "message_chars": 11194,
+      "images": []
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": true,
+  "semantic_inventory_complete": false,
+  "request_digests": [
+    "8599bd90baefaad20fac3c248b99e575652a5811d6c7e3948c66871009a8dd93"
+  ],
+  "full_source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+  "known_source_selection": true,
+  "independent_discovery": false,
+  "history_or_engineer_answers_supplied": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}
