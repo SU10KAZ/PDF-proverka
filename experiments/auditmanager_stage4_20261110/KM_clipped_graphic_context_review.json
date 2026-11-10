@@ -1,0 +1,166 @@
+{
+  "records": [
+    {
+      "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+      "expanded_graphic_manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 1,
+        "scale": 2,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+            "page_index": 7,
+            "pdf_rotation": 270,
+            "clip_rotated_page_points": [
+              2799.873434922099,
+              0.0,
+              3370.0,
+              568.3591024720237
+            ],
+            "path": "/tmp/auditmanager_km_clipped_context_20261110/blk_00eaf91abb0f48a38267e99e757644a1/detail_tile_0.png",
+            "width": 1141,
+            "height": 1137,
+            "sha256": "b95be733220f96a5d911c24fedc5a5ea1291cf1525acb268da2e8bf8d57ab7dd"
+          }
+        ],
+        "padding_page_fraction": 0.02,
+        "original_crop_points": [
+          2867.273434922099,
+          21.252098083496094,
+          3335.054476931691,
+          520.6791024720237
+        ],
+        "expanded_crop_points": [
+          2799.873434922099,
+          0.0,
+          3370.0,
+          568.3591024720237
+        ],
+        "outside_original_crop": true,
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "visually_inspected": true,
+      "whole_block_semantic_coverage_complete": false,
+      "disposition": "truncated_callout_present_inside_source_pdf_region",
+      "observation": "The lower right anchor label still ends after HSA-M… inside the expanded source graphic, well before its right border. Other two visible callouts read HSA-M10x90; they do not justify silently restoring the missing suffix.",
+      "remaining": "Resolve intended callout from its referenced item and corresponding source; no fabrication defect inferred.",
+      "new_technical_defect": false
+    },
+    {
+      "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+      "expanded_graphic_manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 1,
+        "scale": 2,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "page_index": 6,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              36.0948805886507,
+              653.2841099572182,
+              583.409242503047,
+              1051.7938743758202
+            ],
+            "path": "/tmp/auditmanager_km_clipped_context_20261110/blk_262b1bd1d76146e7a8e45b529a38ac2e/detail_tile_0.png",
+            "width": 1095,
+            "height": 798,
+            "sha256": "8e77305453fbacf9559a40dac3022b61440fc3f248bbf359943ff644a35a04e7"
+          }
+        ],
+        "padding_page_fraction": 0.02,
+        "original_crop_points": [
+          59.9148805886507,
+          686.9641099572182,
+          559.589242503047,
+          1018.1138743758202
+        ],
+        "expanded_crop_points": [
+          36.0948805886507,
+          653.2841099572182,
+          583.409242503047,
+          1051.7938743758202
+        ],
+        "outside_original_crop": true,
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "visually_inspected": true,
+      "whole_block_semantic_coverage_complete": false,
+      "disposition": "partial_neighbor_heading_resolved_to_existing_graphic_block",
+      "neighbor_block_id": "blk_f0a5333974ac4088b7778f525922b014",
+      "neighbor_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f0a5333974ac4088b7778f525922b014.png",
+      "neighbor_sha256": "afe14108cef59c53cc2e0518187d711a9fce8c09552044605c99c59611221a00",
+      "observation": "The partial lower heading is the upper heading of the adjacent existing plan block on the same PDF page 7. Its full heading includes +12.470, +15.830, +19.190, +22.550, +25.910, +29.270, +32.630, +35.990. Geometry exists in the neighbor block; do not count the partial heading as an additional assembly.",
+      "remaining": "Link source regions for coverage without automatically equating physical instances across floors.",
+      "new_technical_defect": false
+    },
+    {
+      "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+      "expanded_graphic_manifest": {
+        "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.pdf",
+        "pdf_sha256": "e8d9ad046e7c3207717ac1d26c94b3f0c5fb8559cfa40d5300bba29518bff11e",
+        "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/blocks.json",
+        "blocks_sha256": "74183e77a85ede2bd4aaf0e05ce071b7bc268b1ea7721b50f378cf3f2f86c1db",
+        "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+        "columns": 1,
+        "scale": 2,
+        "overlap": 0.025,
+        "tiles": [
+          {
+            "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+            "page_index": 4,
+            "pdf_rotation": 0,
+            "clip_rotated_page_points": [
+              481.89832336485387,
+              0.0,
+              803.4042074006796,
+              545.0230228233337
+            ],
+            "path": "/tmp/auditmanager_km_clipped_context_20261110/blk_613b3bfe91c246e68bf7705cb59ba72f/detail_tile_0.png",
+            "width": 644,
+            "height": 1091,
+            "sha256": "b9af4065196ef05b988d20e9e60e0937dbf0599e08a6ea427bdc51722fc24917"
+          }
+        ],
+        "padding_page_fraction": 0.02,
+        "original_crop_points": [
+          505.71832336485386,
+          17.61763322353363,
+          779.5842074006796,
+          511.34302282333374
+        ],
+        "expanded_crop_points": [
+          481.89832336485387,
+          0.0,
+          803.4042074006796,
+          545.0230228233337
+        ],
+        "outside_original_crop": true,
+        "model_call_performed": false,
+        "semantic_verified": false
+      },
+      "visually_inspected": true,
+      "whole_block_semantic_coverage_complete": false,
+      "disposition": "lower_axis_recovered_other_peripheral_symbol_unresolved",
+      "observation": "Expanded same-PDF region shows lower-left axis В7₁ and plan title at +1.910. The small upper-left bent symbol has no visible mark; its engineering identity is not established.",
+      "remaining": "Preserve unidentified peripheral symbol separately; do not invent its mark or infer a missing required detail.",
+      "new_technical_defect": false
+    }
+  ],
+  "new_model_calls": 0,
+  "conclusion": "Different failure causes: one source-internal truncated annotation, one partial neighboring block already present in the corpus, one recovered axis plus unidentified peripheral symbol. Enlarging a crop alone cannot close all three.",
+  "authoritative_TEXT_reextracted": false
+}
