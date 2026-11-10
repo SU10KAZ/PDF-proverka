@@ -148,18 +148,23 @@
       "blocks": [
         "blk_47163e69651c48528b3e054d5a5db095"
       ],
-      "extraction_result": "not_saved",
+      "extraction_result": "received",
       "operation_result": "not_saved",
       "candidate_count": 0,
       "final_output_verified": false,
       "baseline_address": null,
+      "extraction_evidence": {
+        "path": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_004/result.json",
+        "sha256": "ab04f421990d6b24c9c810ee0b9fec021a46ed9f95cd5d971a7db656a255d8f0"
+      },
+      "raw_object_records": 66,
       "local_source_review": {
         "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_004_source_review.json",
         "sha256": "ac2c894524ec6aea77044f01e0fd78b2e377971501b49cb0b9f6bc725389398b"
       }
     }
   ],
-  "extraction_responses": 4,
+  "extraction_responses": 5,
   "operation_responses": 4,
   "candidate_rows": 6,
   "full_control_complete": false,

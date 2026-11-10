@@ -1,0 +1,492 @@
+{
+  "scope": "Known-case semantic comparison after model responses; never supplied as discovery input.",
+  "baseline": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/03_findings.json",
+    "sha256": "f9e38fcbedf18b521e788aeb1c42592c3a8ecdd705b436cc9f773a109c641edd"
+  },
+  "confirmed_matches": [
+    {
+      "packet": 0,
+      "class": "terminal_address_ambiguity",
+      "baseline_ids": [
+        "F-054"
+      ],
+      "incremental_defect": false
+    },
+    {
+      "packet": 2,
+      "class": "terminal_address_ambiguity",
+      "baseline_ids": [
+        "F-055"
+      ],
+      "incremental_defect": false
+    },
+    {
+      "packet": 3,
+      "class": "M2_positional_ambiguity",
+      "baseline_ids": [
+        "F-056"
+      ],
+      "incremental_defect": false
+    },
+    {
+      "packet": 3,
+      "class": "Y7_positional_ambiguity",
+      "baseline_ids": [
+        "F-057"
+      ],
+      "incremental_defect": false
+    }
+  ],
+  "additional_address_candidates": [
+    {
+      "packet": 1,
+      "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+      "boundary": "Terminal topic found; PDS4labelmisread and addresscoveragepartial."
+    },
+    {
+      "packet": 3,
+      "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+      "boundary": "Terminal topic found with manufacturer note supplied; positional M2/Y7candidates are separate baseline duplicates."
+    }
+  ],
+  "baseline_snapshots": [
+    {
+      "id": "F-054",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "documentation",
+      "sheet": "Лист 28",
+      "page": 32,
+      "problem": "Клеммы 29 и 30 назначены двум силовым цепям.",
+      "description": "На схеме шкафа ШАУВ-4-К4ПЧ двигатель M1 использует клеммы 29, 30 и PE, двигатель M2 — 29, 30, 31 и PE. Без схемы клеммника нельзя исключить ошибку нумерации.",
+      "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.408-2013",
+          "cited_designation": "ГОСТ 21.408-2013",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить однозначность обозначений клемм внешних подключений.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-050"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-050"
+              ],
+              "designation_source": "analysis candidate"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить схему с изготовителем шкафа и указать отдельные клеммы для каждой цепи.",
+      "risk": "Ошибочное соединение силовых цепей.",
+      "source_finding_ids": [
+        "G-050"
+      ],
+      "source_block_ids": [
+        "blk_96ed7d88fb23414bb14d93191a89365a"
+      ],
+      "related_block_ids": [
+        "blk_96ed7d88fb23414bb14d93191a89365a"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_96ed7d88fb23414bb14d93191a89365a",
+          "page": 32
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-050",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:04:11.145816+00:00",
+            "context_source": "structured_alia_scheme"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-055",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "documentation",
+      "sheet": "Лист 32",
+      "page": 36,
+      "problem": "Номера клемм повторяются у разных датчиков и двигателей.",
+      "description": "На схеме шкафа ШАУВ-3-К5ПЧ клеммы 23–24 указаны для PDS4 и PDS5, а 29–31 — для M1 и M2. Требуется сверка с клеммником шкафа.",
+      "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.408-2013",
+          "cited_designation": "ГОСТ 21.408-2013",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить однозначность клеммных соединений.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-053"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-053"
+              ],
+              "designation_source": "analysis candidate"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить нумерацию с изготовителем и исправить схему.",
+      "risk": "Неверное подключение датчиков и двигателей.",
+      "source_finding_ids": [
+        "G-053"
+      ],
+      "source_block_ids": [
+        "blk_f784be4786274e8c84f32d874ed99969"
+      ],
+      "related_block_ids": [
+        "blk_f784be4786274e8c84f32d874ed99969"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+          "page": 36
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-053",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:04:11.145816+00:00",
+            "context_source": "structured_alia_scheme"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-056",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Лист 33",
+      "page": 37,
+      "problem": "Одна позиция M2 присвоена вентилятору и насосу.",
+      "description": "На схеме внешних подключений ШАУВ-4-К5ПЧ обозначение M2 стоит у двигателя вентилятора и двигателя циркуляционного насоса.",
+      "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.408-2013",
+          "cited_designation": "ГОСТ 21.408-2013",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить уникальность позиционных обозначений оборудования.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-054",
+              "G-055"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-054",
+                "G-055"
+              ],
+              "designation_source": "analysis candidate"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Присвоить двигателям разные позиции и исправить связанные документы.",
+      "risk": "Неоднозначное подключение и обслуживание.",
+      "source_finding_ids": [
+        "G-054",
+        "G-055"
+      ],
+      "source_block_ids": [
+        "blk_127bea47b93f4214ac6430c54b21517a"
+      ],
+      "related_block_ids": [
+        "blk_127bea47b93f4214ac6430c54b21517a"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "page": 37
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-054",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:04:11.145816+00:00",
+            "context_source": "structured_alia_scheme"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-055",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:04:11.145816+00:00",
+            "context_source": "structured_alia_scheme"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:003"
+            ],
+            "confidence": 0.99,
+            "reason": "Оба замечания указывают на дублирование обозначения М2 у двигателя вентилятора и двигателя циркуляционного насоса на листе 33 шкафа ШАУВ-4-К5ПЧ; детализация эквивалентна.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 0.99,
+            "reason": "Оба замечания указывают на дублирование обозначения М2 у двигателя вентилятора и двигателя циркуляционного насоса на листе 33 шкафа ШАУВ-4-К5ПЧ; детализация эквивалентна.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 57,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "operations"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-057",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Лист 33",
+      "page": 37,
+      "problem": "Позиция Y7 повторена у двух приводов клапанов.",
+      "description": "На схеме внешних подключений шкафа ШАУВ-4-К5ПЧ два разных привода имеют одно обозначение Y7.",
+      "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.408-2013",
+          "cited_designation": "ГОСТ 21.408-2013",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить уникальность обозначений исполнительных механизмов.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-056"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-056"
+              ],
+              "designation_source": "analysis candidate"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Присвоить приводам разные позиции и согласовать маркировку.",
+      "risk": "Ошибочное подключение клапанов.",
+      "source_finding_ids": [
+        "G-056"
+      ],
+      "source_block_ids": [
+        "blk_127bea47b93f4214ac6430c54b21517a"
+      ],
+      "related_block_ids": [
+        "blk_127bea47b93f4214ac6430c54b21517a"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "page": 37
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T230411Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-056",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:04:11.145816+00:00",
+            "context_source": "structured_alia_scheme"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 57,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    }
+  ],
+  "counting_boundary": "Additional addresses in one systemic topic are not independently counted defects. Fifth operation and final consolidation unverified.",
+  "automatic_duplicate_suppression_applied": false,
+  "final_output_verified": false
+}

@@ -1,0 +1,15 @@
+{
+  "pid": 3478968,
+  "command": [
+    "/opt/py312/bin/python",
+    "-m",
+    "experiments.auditmanager_stage4_20261110.run_ak_cabinet_operation_control",
+    "--packet",
+    "4",
+    "--object-id",
+    "cabinet_01",
+    "--execute"
+  ],
+  "started_at_epoch": 1794341116.3605099,
+  "purpose": "Fifth AK cabinet identity operation with same-page authoritative notes."
+}
