@@ -1,0 +1,249 @@
+{
+  "object_id": "hvac_32",
+  "operation": "identity_across_views",
+  "severity": "minor",
+  "problem": "Неоднозначная графическая привязка верхней выноски К3.2.406",
+  "description": "На листе 18 верхняя и следующая выноски содержат одинаковые модель AJ068TXJ3KH/EA и обозначение К3.2.406. Их отдельные лидеры направлены к тесно наложенному наружному узлу справа от ЛК4, куда также направлена выноска AJ080TXJ4KH/EA — К3.2.403. Обозначения и показанные контуры не позволяют однозначно различить цели двух одинаковых выносок. Подтверждена локальная неоднозначность оформления. Не установлено, изображены ли разные блоки с повторным обозначением или повторные ссылки на один блок; ошибочное количество оборудования и неправильное подключение не доказаны. Общая зона НБК для квартир 403, 405, 406 на листе 28 не определяет правильное обозначение верхней выноски.",
+  "solution": "По детальному узлу и ведомости систем установить соответствие выносок физическим блокам. На листе 18 явно показать общую цель, если это повторные ссылки, либо разнести графические цели и указать подтвержденные обозначения отдельных экземпляров. Не заменять К3.2.406 на К3.2.405 без подтверждающего источника.",
+  "sheet": "18",
+  "evidence": [
+    {
+      "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+      "location": "detail_tile_1, нижняя часть; detail_tile_4, верхняя часть и наружный узел справа от ЛК4",
+      "description": "Две последовательные выноски повторяют модель AJ068TXJ3KH/EA и обозначение К3.2.406. Их лидеры сходятся к наложенным контурам рядом с целью выноски AJ080TXJ4KH/EA — К3.2.403; самостоятельные физические цели уверенно не различаются."
+    },
+    {
+      "block_id": "blk_dc3fcd7dcce44a8994616c5102f52467",
+      "location": "Лист 28, зона НБК справа от ЛК4",
+      "description": "Общая зона размещения относится к квартирам 403, 405, 406, но не содержит индивидуального сопоставления с повторяющимися выносками листа 18."
+    }
+  ],
+  "report_section": "questions",
+  "question_basis": "minor_confirmed",
+  "profile_reason": "Замечание ограничено подтвержденной неоднозначностью графической идентификации оборудования на плане силовых сетей. Технический конфликт характеристик, количества или соединений не установлен; недостаток экземплярных данных учтен отдельно как needs_data.",
+  "operation_semantic_verified": false,
+  "source_finding_ids": [
+    "O-deef659aeddb34a59e9285e8"
+  ],
+  "operation_candidate_lineage": [
+    {
+      "source_finding_id": "O-deef659aeddb34a59e9285e8",
+      "status": "requires_semantic_review",
+      "source_claim": "problem: Неоднозначная графическая привязка верхней выноски К3.2.406\ndescription: На листе 18 верхняя и следующая выноски содержат одинаковые модель AJ068TXJ3KH/EA и обозначение К3.2.406. Их отдельные лидеры направлены к тесно наложенному наружному узлу справа от ЛК4, куда также направлена выноска AJ080TXJ4KH/EA — К3.2.403. Обозначения и показанные контуры не позволяют однозначно различить цели двух одинаковых выносок. Подтверждена локальная неоднозначность оформления. Не установлено, изображены ли разные блоки с повторным обозначением или повторные ссылки на один блок; ошибочное количество оборудования и неправильное подключение не доказаны. Общая зона НБК для квартир 403, 405, 406 на листе 28 не определяет правильное обозначение верхней выноски.\nsolution: По детальному узлу и ведомости систем установить соответствие выносок физическим блокам. На листе 18 явно показать общую цель, если это повторные ссылки, либо разнести графические цели и указать подтвержденные обозначения отдельных экземпляров. Не заменять К3.2.406 на К3.2.405 без подтверждающего источника.",
+      "existing_block_ids": [
+        "blk_4b5016856cc94ec088efe86a8ec2a925",
+        "blk_dc3fcd7dcce44a8994616c5102f52467"
+      ],
+      "unresolved_block_ids": [],
+      "upstream_operation_context": {
+        "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+        "request_sha256": "a763b6ecc3df4bb1941ad87d69c3fbcd3e4e00e97fe84d444fed3d9e97c7d2b3",
+        "supplied_source_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "blk_a2f8253a41394e43a28a53892550967d",
+          "blk_5217a559e86b49a29e9fba4f76811506",
+          "blk_cea0d11c0a0748be9861c17106d28088",
+          "blk_628818db493e46e7bdccc75b01afbd16",
+          "blk_36068a499bde44769a64017e35fba41d",
+          "blk_3d36921f90d34667a0b6d17a54cd050a",
+          "blk_b6605a23b38f4e00b2f8076b62b21532",
+          "blk_89d65fba46eb42b3ba462e8ff3151306",
+          "blk_8f29abd917ed4e3c85d10f014af7de50",
+          "blk_11bded3249224ecb9f4ba41c270785db",
+          "blk_dc3fcd7dcce44a8994616c5102f52467",
+          "blk_f2b273baee994702906a6e5d94a43063",
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "blk_9b5faa493a1c45af9693f5d340e4bffc",
+          "blk_aadc46b32a1e430dabaf320154f219d3",
+          "blk_2b1c9a1c635b45eebc5bf5dc7e3f616a",
+          "blk_3620ab17f57a4d9596292b555c5abcc7",
+          "blk_72a64016ef0142b6a226f0c79be16436",
+          "blk_84e0cee1c8a145c482898b1c10b3a24b",
+          "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+          "blk_00f94ec770cf47ffbd09f39e4a586df0",
+          "blk_c47ed956c3af40b897f6b6292f26247b",
+          "blk_4734c95395d74c0ab560a6a80f46b910",
+          "blk_4638622aac5646e5b61bc689463e15c2",
+          "blk_7170586af51c43f79c96734a40269d7d",
+          "blk_af87003578d3440a9be734a66a09af90"
+        ],
+        "attached_graphic_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "blk_36068a499bde44769a64017e35fba41d",
+          "blk_3d36921f90d34667a0b6d17a54cd050a",
+          "blk_8f29abd917ed4e3c85d10f014af7de50",
+          "blk_11bded3249224ecb9f4ba41c270785db",
+          "blk_dc3fcd7dcce44a8994616c5102f52467",
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "blk_aadc46b32a1e430dabaf320154f219d3"
+        ],
+        "reported_inspections_untrusted": [
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_36068a499bde44769a64017e35fba41d"
+          },
+          {
+            "block_id": "blk_3d36921f90d34667a0b6d17a54cd050a"
+          },
+          {
+            "block_id": "blk_8f29abd917ed4e3c85d10f014af7de50"
+          },
+          {
+            "block_id": "blk_11bded3249224ecb9f4ba41c270785db"
+          },
+          {
+            "block_id": "blk_dc3fcd7dcce44a8994616c5102f52467"
+          },
+          {
+            "block_id": "blk_eecde8b541dd4b21a39a0ba7f0260bba"
+          },
+          {
+            "block_id": "blk_aadc46b32a1e430dabaf320154f219d3"
+          }
+        ],
+        "reported_context_queries": [
+          "К3.2.406",
+          "К3.2.405",
+          "К3.2.403",
+          "AJ068TXJ3KH/EA",
+          "Зона размещения НБК",
+          "Спецификация оборудования"
+        ],
+        "local_search_stop": {},
+        "boundary": "Supplied sources and local search stop are provenance, not completeness. Inspection descriptions are prior model observations, not established facts. Recheck applicability and evidence independently.",
+        "semantic_verified": false
+      }
+    }
+  ],
+  "id": "EOM-instance-question",
+  "requires_human_review": true,
+  "source_evidence_review_status": "pending",
+  "source_review_requests": [
+    {
+      "source_finding_id": "O-deef659aeddb34a59e9285e8",
+      "source_claim": "problem: Неоднозначная графическая привязка верхней выноски К3.2.406\ndescription: На листе 18 верхняя и следующая выноски содержат одинаковые модель AJ068TXJ3KH/EA и обозначение К3.2.406. Их отдельные лидеры направлены к тесно наложенному наружному узлу справа от ЛК4, куда также направлена выноска AJ080TXJ4KH/EA — К3.2.403. Обозначения и показанные контуры не позволяют однозначно различить цели двух одинаковых выносок. Подтверждена локальная неоднозначность оформления. Не установлено, изображены ли разные блоки с повторным обозначением или повторные ссылки на один блок; ошибочное количество оборудования и неправильное подключение не доказаны. Общая зона НБК для квартир 403, 405, 406 на листе 28 не определяет правильное обозначение верхней выноски.\nsolution: По детальному узлу и ведомости систем установить соответствие выносок физическим блокам. На листе 18 явно показать общую цель, если это повторные ссылки, либо разнести графические цели и указать подтвержденные обозначения отдельных экземпляров. Не заменять К3.2.406 на К3.2.405 без подтверждающего источника.",
+      "block_ids": [
+        "blk_4b5016856cc94ec088efe86a8ec2a925",
+        "blk_dc3fcd7dcce44a8994616c5102f52467"
+      ],
+      "upstream_operation_context": {
+        "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+        "request_sha256": "a763b6ecc3df4bb1941ad87d69c3fbcd3e4e00e97fe84d444fed3d9e97c7d2b3",
+        "supplied_source_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "blk_a2f8253a41394e43a28a53892550967d",
+          "blk_5217a559e86b49a29e9fba4f76811506",
+          "blk_cea0d11c0a0748be9861c17106d28088",
+          "blk_628818db493e46e7bdccc75b01afbd16",
+          "blk_36068a499bde44769a64017e35fba41d",
+          "blk_3d36921f90d34667a0b6d17a54cd050a",
+          "blk_b6605a23b38f4e00b2f8076b62b21532",
+          "blk_89d65fba46eb42b3ba462e8ff3151306",
+          "blk_8f29abd917ed4e3c85d10f014af7de50",
+          "blk_11bded3249224ecb9f4ba41c270785db",
+          "blk_dc3fcd7dcce44a8994616c5102f52467",
+          "blk_f2b273baee994702906a6e5d94a43063",
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "blk_9b5faa493a1c45af9693f5d340e4bffc",
+          "blk_aadc46b32a1e430dabaf320154f219d3",
+          "blk_2b1c9a1c635b45eebc5bf5dc7e3f616a",
+          "blk_3620ab17f57a4d9596292b555c5abcc7",
+          "blk_72a64016ef0142b6a226f0c79be16436",
+          "blk_84e0cee1c8a145c482898b1c10b3a24b",
+          "blk_b3482bfd0cc04cb8b9f47c726e9147f3",
+          "blk_00f94ec770cf47ffbd09f39e4a586df0",
+          "blk_c47ed956c3af40b897f6b6292f26247b",
+          "blk_4734c95395d74c0ab560a6a80f46b910",
+          "blk_4638622aac5646e5b61bc689463e15c2",
+          "blk_7170586af51c43f79c96734a40269d7d",
+          "blk_af87003578d3440a9be734a66a09af90"
+        ],
+        "attached_graphic_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "blk_36068a499bde44769a64017e35fba41d",
+          "blk_3d36921f90d34667a0b6d17a54cd050a",
+          "blk_8f29abd917ed4e3c85d10f014af7de50",
+          "blk_11bded3249224ecb9f4ba41c270785db",
+          "blk_dc3fcd7dcce44a8994616c5102f52467",
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "blk_aadc46b32a1e430dabaf320154f219d3"
+        ],
+        "reported_inspections_untrusted": [
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925"
+          },
+          {
+            "block_id": "blk_36068a499bde44769a64017e35fba41d"
+          },
+          {
+            "block_id": "blk_3d36921f90d34667a0b6d17a54cd050a"
+          },
+          {
+            "block_id": "blk_8f29abd917ed4e3c85d10f014af7de50"
+          },
+          {
+            "block_id": "blk_11bded3249224ecb9f4ba41c270785db"
+          },
+          {
+            "block_id": "blk_dc3fcd7dcce44a8994616c5102f52467"
+          },
+          {
+            "block_id": "blk_eecde8b541dd4b21a39a0ba7f0260bba"
+          },
+          {
+            "block_id": "blk_aadc46b32a1e430dabaf320154f219d3"
+          }
+        ],
+        "reported_context_queries": [
+          "К3.2.406",
+          "К3.2.405",
+          "К3.2.403",
+          "AJ068TXJ3KH/EA",
+          "Зона размещения НБК",
+          "Спецификация оборудования"
+        ],
+        "local_search_stop": {},
+        "boundary": "Supplied sources and local search stop are provenance, not completeness. Inspection descriptions are prior model observations, not established facts. Recheck applicability and evidence independently.",
+        "semantic_verified": false
+      }
+    }
+  ]
+}

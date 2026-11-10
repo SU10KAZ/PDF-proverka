@@ -1,0 +1,25 @@
+{
+  "scope": "Known-source instance identity control through actual source admission, merge and Excel.",
+  "source_candidate_sha256": "773889c24ccc9fb2fdcd78dadd281b11f6ef672df03c91fe46f30606eee5a540",
+  "baseline_sha256": "bd0cd2af72c0915e033a3ac329acdcd8b82451d844a9a27ee8d7b64a441ca7fd",
+  "receipts": [
+    {
+      "finding_id": "EOM-instance-question",
+      "status": "applied",
+      "action": "question"
+    }
+  ],
+  "prior_findings_preserved_exactly": 50,
+  "final_findings": 51,
+  "question_id": "F-051",
+  "question_exported_separately": true,
+  "new_model_calls": 0,
+  "limitations": [
+    "Two physical instances are not established; duplicate callouts and separately labelled units remain alternatives.",
+    "No equipment shortage, electrical fault or replacement label is established.",
+    "The original H03 positive control remains partial: a justified question is preserved, but physical instance identity is unresolved.",
+    "One unrelated-floor graphic was explicitly omitted by the 16-image budget; all direct finding graphics and nine detail tiles were supplied.",
+    "Prior grouping and source-review limitations of the 50-row baseline remain unchanged."
+  ],
+  "full_acceptance_proven": false
+}

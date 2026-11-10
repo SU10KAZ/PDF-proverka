@@ -159,8 +159,17 @@
       "hypothesis": "H03",
       "kind": "positive_controls",
       "original_control": "ЭОМ: различить отдельные блоки с одинаковой моделью и повторным позиционнымID.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "partial_instance_identity_question_preserved",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_instance_question_output_replay.json",
+          "sha256": "05b3b07b56f9cec4747e0cafeee8fc1773d15d37aecafa9f1d418d0e9726a640"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_instance_followup2_validated.json",
+          "sha256": "9fb42c732555b4bc1169be1b5a700c328a20e6f75f59f8622db16b4584388e76"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -212,8 +221,13 @@
       "hypothesis": "H03",
       "kind": "negative_controls_and_limits",
       "original_control": "Одинаковая модель разных блоков допустима.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "explicit_evidence_limit",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_instance_question_output_replay.json",
+          "sha256": "05b3b07b56f9cec4747e0cafeee8fc1773d15d37aecafa9f1d418d0e9726a640"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -591,11 +605,12 @@
     "bounded_control_recorded": 21,
     "bounded_known_candidate_control": 1,
     "disputed_requires_readjudication": 1,
-    "explicit_evidence_limit": 2,
+    "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
-    "requires_explicit_evidence_review": 7,
+    "partial_instance_identity_question_preserved": 1,
+    "requires_explicit_evidence_review": 5,
     "synthetic_contract_only": 1
   },
   "boundaries": [
