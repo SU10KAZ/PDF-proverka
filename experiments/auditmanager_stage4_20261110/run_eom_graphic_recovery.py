@@ -12,6 +12,7 @@ from backend.app.pipeline.stages.findings_verify.source_review_evidence import e
 from backend.app.pipeline.stages.text_analysis.object_registry import reconcile_object_registry
 
 ROOT = Path('/tmp/auditmanager_eom_graphic_recovery_20261110')
+GRID = False
 BASE = Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work')
 PREVIOUS = Path('/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM/execution/object_inventory_002/result.json')
 
@@ -32,14 +33,24 @@ def prepare():
         assert tiles['pdf_sha256'] == pdf_hash
         assert tiles['blocks_sha256'] == hashlib.sha256((BASE / 'blocks.json').read_bytes()).hexdigest()
     else:
-        tiles = render(BASE / 'document.pdf', BASE / 'blocks.json', bid, pdf_hash, folder, columns=4, scale=3)
+        tiles = render(BASE / 'document.pdf', BASE / 'blocks.json', bid, pdf_hash, folder, columns=8 if GRID else 4, rows=3 if GRID else 1, scale=3)
     for tile in tiles['tiles']:
         assert hashlib.sha256(Path(tile['path']).read_bytes()).hexdigest() == tile['sha256']
     metadata = [{k: t[k] for k in ('block_id', 'page_index', 'clip_rotated_page_points', 'width', 'height')}
                 for t in tiles['tiles']]
-    request = {'messages': [{'role': 'system', 'content': INSTRUCTIONS},
+    request = {'messages': [{'role': 'system', 'content': INSTRUCTIONS + ('''
+Electrical focus: extract every individually distinguishable branch, including reserves.
+For each record read its literal circuit/cable mark, upstream assembly/panel, protective
+apparatus designation, consumer, active/reserve role and load if visible. Never infer
+marks from sequential numbering. Keep unreadable fields explicit. Preserve connections
+across adjacent tiles using their coordinates; repeated overlapping views are not new
+branches. These images are a row-major grid (8 columns, 3 rows), not a single strip.
+The task is branch identity extraction, not an electrical calculation or final defect.
+''' if GRID else '')},
         {'role': 'user', 'content': json.dumps({'source_blocks': selected, 'images_in_order': metadata,
-         'scope': 'Visible GRAPHIC only. Four overlapping left-to-right tiles of one source block.'})}],
+         'scope': ('Visible GRAPHIC only. Overlapping coordinate-addressed tiles of one source block.'
+                   if GRID else 'Visible GRAPHIC only. Four overlapping left-to-right tiles of one source block.'),
+         **({'grid_columns': 8, 'grid_rows': 3} if GRID else {})})}],
         'image_paths': [t['path'] for t in tiles['tiles']]}
     manifest = {'request_sha256': evidence_digest(request), 'source_tiles': tiles,
         'previous_result_sha256': hashlib.sha256(PREVIOUS.read_bytes()).hexdigest(),
@@ -86,7 +97,11 @@ async def execute():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--grid', action='store_true')
     args = parser.parse_args()
+    if args.grid:
+        GRID = True
+        ROOT = ROOT.with_name(ROOT.name + '_grid')
     if args.execute:
         asyncio.run(execute())
     else:
