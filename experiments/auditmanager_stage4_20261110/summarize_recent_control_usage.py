@@ -1,4 +1,4 @@
-"""Account once for each recent EOM/AR/KM request, including failed attempts.
+"""Account once for each recent EOM/AR/KM/AK request, including failed attempts.
 
 This bounded ledger is not the complete six-project cost comparison. Subscription
 counters are not money and missing counters are never interpreted as free usage.
@@ -21,6 +21,10 @@ def summarize():
         *[(f'AR_recovery_{i}', Path('/tmp/auditmanager_ar_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
         *[(f'KM_recovery_{i}', Path('/tmp/auditmanager_km_deferred_control_20261110') / f'pass_{i}') for i in range(2)],
         ('KM_node_navigation', Path('/tmp/auditmanager_km_node_navigation_control_20261110')),
+        *[(f'AK_inventory_{i}', Path('/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution') / f'object_inventory_{i:03d}') for i in range(5)],
+        ('AK_identity_0_v1', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/packet_000')),
+        *[(f'AK_identity_{i}_v2', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2') / f'packet_{i:03d}') for i in range(5)],
+        ('AK_terminal_graphic', Path('/tmp/auditmanager_ak_terminal_graphic_control_20261110')),
     ]
     rows = []
     seen = set()
@@ -45,7 +49,7 @@ def summarize():
         row['token_counters_incomplete'] = bool(result.get('is_error') and not
             (result.get('input_tokens') or result.get('output_tokens')))
     completed = [r for r in rows if 'result_sha256' in r]
-    return {'scope': 'Recent EOM extraction/recovery and AR/KM deferred controls only; not all stage4 work.',
+    return {'scope': 'Recent EOM extraction/recovery, AR/KM deferred and AK cabinet controls only; not all stage4 work.',
             'requests': rows, 'completed_requests': len(completed),
             'pending_results': sum(r['status'] == 'result_pending' for r in rows),
             'failed_requests': sum(r['status'] == 'failed' for r in rows),

@@ -1,0 +1,30 @@
+{
+  "control": "AK14 cabinet3of5",
+  "block_id": "blk_f784be4786274e8c84f32d874ed99969",
+  "image": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+  "image_sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2",
+  "directly_viewed_original_resolution": true,
+  "cabinet": "ШАУВ-3-К5ПЧ",
+  "observations": [
+    {
+      "scope": "Main lower cabinet contour under PDS4/PDS5",
+      "fact": "Both cables terminate at23,24; distinct terminal-strip identifiers not shown at those groups."
+    },
+    {
+      "scope": "Main lower cabinet contour under M1/M2",
+      "fact": "Each group repeats29,30,31,PE; separate motor connections and cables visible; no distinct strip names adjacent to those groups."
+    },
+    {
+      "scope": "Actuator intermediate blocks",
+      "fact": "XT1,XT2,XT3 have separate labels; equal local numbers alone are not equal full addresses."
+    },
+    {
+      "scope": "PE",
+      "fact": "Repeated PE is not itself a defect."
+    }
+  ],
+  "supported_claim": "Local address ambiguity only; physical wiring fault unproved.",
+  "historical_boundary": "Baseline F055 already preserves this address; do not count a matching new candidate as incremental discovery.",
+  "model_answer_used_for_observations": false,
+  "full_control_complete": false
+}

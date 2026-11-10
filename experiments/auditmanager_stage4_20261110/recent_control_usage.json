@@ -1,5 +1,5 @@
 {
-  "scope": "Recent EOM extraction/recovery and AR/KM deferred controls only; not all stage4 work.",
+  "scope": "Recent EOM extraction/recovery, AR/KM deferred and AK cabinet controls only; not all stage4 work.",
   "requests": [
     {
       "control": "EOM_initial",
@@ -289,15 +289,174 @@
       "cost_source": "subscription",
       "error": "",
       "token_counters_incomplete": false
+    },
+    {
+      "control": "AK_inventory_0",
+      "directory": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_000",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "result_sha256": "7940479111f6be7b0d53d744c86938cf627c260386ac9ecd661cd71ad55af067",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 283165,
+      "input_tokens": 13837,
+      "output_tokens": 13901,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "AK_inventory_1",
+      "directory": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_001",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "result_sha256": "6a22a9b1befbe23d319d9e4fccea9aae7653c8f99982d2d5dcb80e4bf8b44eaa",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 215420,
+      "input_tokens": 13557,
+      "output_tokens": 10503,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "AK_inventory_2",
+      "directory": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_002",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "model_error": false
+      },
+      "result_sha256": "54b2d90cfd9188489ffa07558d2bfe6d8d8682ae7824f59ba86c88d5bf3636e1",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 250219,
+      "input_tokens": 14079,
+      "output_tokens": 12190,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "AK_inventory_3",
+      "directory": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_003",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "40550eeb14453d9b42d8b8685bb2cc1991655490fb286ff46008c097ed11fe91",
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high"
+      }
+    },
+    {
+      "control": "AK_inventory_4",
+      "directory": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_004",
+      "status": "not_started"
+    },
+    {
+      "control": "AK_identity_0_v1",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/packet_000",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "162361420755273aa00ac09187781e40976c4dd63e58f4c254eae9af6eca733f",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 38979,
+      "input_tokens": 14264,
+      "output_tokens": 1617,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "AK_identity_0_v2",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_000",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "b11e0357ed554e75386ebd0d77381f14bca0ce9b09a7a2288b53eb31d0ec4bbb",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 42803,
+      "input_tokens": 14385,
+      "output_tokens": 1864,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "AK_identity_1_v2",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_001",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "1a8a5de1d99919a8cccce2c8a1e336c09413724884e48d5c99994eb1345088d0",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 52927,
+      "input_tokens": 14313,
+      "output_tokens": 1962,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "AK_identity_2_v2",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_002",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "6f784fd1326ac26c47e4e1bc59c1d1baf03fc6eacf47c40771426ef432f47256",
+        "inventory_result_sha256": "54b2d90cfd9188489ffa07558d2bfe6d8d8682ae7824f59ba86c88d5bf3636e1",
+        "md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+        "images": [
+          {
+            "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
+            "sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2"
+          }
+        ],
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high",
+        "max_calls": 1,
+        "automatic_retries": 0,
+        "scope": "Known-source model-extracted cabinet; identity operation only. No historical answers or expected finding supplied."
+      }
+    },
+    {
+      "control": "AK_identity_3_v2",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_003",
+      "status": "not_started"
+    },
+    {
+      "control": "AK_identity_4_v2",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_004",
+      "status": "not_started"
+    },
+    {
+      "control": "AK_terminal_graphic",
+      "directory": "/tmp/auditmanager_ak_terminal_graphic_control_20261110",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "faf89fccf0fd29dcb0eae7ffc47dbe82bc7122349998f5e0e14f97238b7fc1e0"
+      }
     }
   ],
-  "completed_requests": 17,
-  "pending_results": 0,
+  "completed_requests": 23,
+  "pending_results": 3,
   "failed_requests": 2,
-  "reported_input_tokens": 730009,
-  "reported_output_tokens": 282424,
+  "reported_input_tokens": 814444,
+  "reported_output_tokens": 324461,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 90.729,
+  "completed_request_minutes_sum": 105.454,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [
