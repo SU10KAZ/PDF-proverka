@@ -1,0 +1,8 @@
+{
+  "status": "completed_with_unresolved_applicability",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 51422,
+  "full_acceptance_proven": false,
+  "confirmed_local_scope": "ВРУ-2 / РП3 / QF3.20 / С2320 / фанкойлы; one circuit device across repeated views",
+  "remaining": "Exact chosen manufacturer/accessory execution and control scheme not established. No incompatibility finding emitted; manufacturer documentation still requires an applicable link."
+}

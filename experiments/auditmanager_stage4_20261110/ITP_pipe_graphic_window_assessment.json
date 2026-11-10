@@ -1,0 +1,8 @@
+{
+  "status": "completed_with_unresolved_applicability",
+  "model": "codex/gpt-6-astra",
+  "duration_ms": 85647,
+  "full_acceptance_proven": false,
+  "confirmed_local_scope": "Heating zone III primary T1/T2 DN65 branches distinguished from secondary T13/T23 DN80 in three requested graphic blocks.",
+  "remaining": "Nominal versus outside diameter, allocation of the specification to specific segments, and per-exchanger calculation scope remain unresolved. Arithmetic candidate is not a substitute for the original wall-thickness control."
+}
