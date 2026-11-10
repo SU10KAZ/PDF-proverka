@@ -1,0 +1,30 @@
+{
+  "scope": "Known-candidate F-032 revision; not independent detection or full-project acceptance.",
+  "source_candidate_sha256": "04af4522238b22303002ad2c8e3c89c8424c9a63a6e573eb620404e85c10f4c4",
+  "baseline_sha256": "c0eebe7dcaaa58035c9f0ecd337fd48587d032e023cefa5ed9a2c160272a1f56",
+  "receipts": [
+    {
+      "finding_id": "F-032",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "unchanged_other_findings": 50,
+  "final_findings": 51,
+  "source_identity_preserved": true,
+  "all_reviewed_display_fields_exported": true,
+  "original_archived": true,
+  "checked_source_blocks": [
+    "blk_fb5f780dae7a475ca6c249f62b64771e",
+    "blk_f2b273baee994702906a6e5d94a43063",
+    "blk_29be4ff018f040daaa2000c0a3ebde08"
+  ],
+  "evidence": "Authoritative MD tables confirm 105.4 vs 108.1 and 68.6 vs 63.0. Arithmetic recomputed; no universal minimum inferred.",
+  "limitations": [
+    "Area priority and final required loads unresolved.",
+    "Normative applicability remains unverified.",
+    "Existing limitations of earlier 51-row baseline remain."
+  ],
+  "full_acceptance": false,
+  "new_model_calls": 0
+}
