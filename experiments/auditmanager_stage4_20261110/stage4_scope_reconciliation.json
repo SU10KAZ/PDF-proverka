@@ -71,7 +71,9 @@
       "control": "Five smaller packets, all17blocks and3images preserved exactly; no manual repair of failed response.",
       "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM",
       "session": 60228,
-      "expected_answer_hidden": true
+      "expected_answer_hidden": true,
+      "detail": "3/5 extraction packets completed. Table extracted, target graphic still unreadable. Same-source four-tile recovery running without expected circuit marks.",
+      "graphic_recovery_session": 28612
     },
     {
       "hypothesis": "H06",
@@ -92,12 +94,13 @@
     },
     {
       "hypothesis": "H07",
-      "state": "recovery_and_navigation_verified_semantic_decisions_pending",
+      "state": "live_recovery_needs_data_followup_running",
       "evidence": [
         "prescan_recovery_control.json",
         "prescan_navigation_replay.json"
       ],
-      "detail": "21 tests on latest navigation plus earlier15 decision/recovery tests. Real AK/EOM requests reach actual source pages, not title-page fallback. Existing source findings remain preserved; synthetic verdicts do not prove accuracy."
+      "detail": "First live Astra recovery completed in23769ms;49classic findings preserved;0newrows; needs_data retained in final receipt accounting. Standard context followup running; no historical answers supplied.",
+      "session": 58499
     }
   ]
 }

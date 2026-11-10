@@ -1,0 +1,100 @@
+{
+  "request_sha256": "7d4b02174080259d2c4dfa60d9528c680f4b9018d1c83a30a67a6d23dc3cae09",
+  "source_tiles": {
+    "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.pdf",
+    "pdf_sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4",
+    "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/blocks.json",
+    "blocks_sha256": "573b46f6bbe0f6e30f3e20f4138aae6ed5648d8f18ce7f7215cbdc2a7c1a9a2a",
+    "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+    "columns": 4,
+    "scale": 3,
+    "overlap": 0.025,
+    "tiles": [
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          54.74739039665971,
+          0.0,
+          1212.6546972860128,
+          1668.194574907152
+        ],
+        "path": "/tmp/auditmanager_eom_graphic_recovery_20261110/blk_4e968dd71c7149aca85e4195d5c3de49/detail_tile_0.png",
+        "width": 3474,
+        "height": 5005,
+        "sha256": "b16985eb82d3d4d906a65c7df6cfd7f1a50a7afa921b793105d5fd9ec18e26ad"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          1002.1260960334031,
+          0.0,
+          2265.2977035490608,
+          1668.194574907152
+        ],
+        "path": "/tmp/auditmanager_eom_graphic_recovery_20261110/blk_4e968dd71c7149aca85e4195d5c3de49/detail_tile_1.png",
+        "width": 3790,
+        "height": 5005,
+        "sha256": "871c6ff09ea4cce8a5391628486a0253ce6cb7007670aee20a77d83dd276cb1c"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          2054.769102296451,
+          0.0,
+          3317.940709812109,
+          1668.194574907152
+        ],
+        "path": "/tmp/auditmanager_eom_graphic_recovery_20261110/blk_4e968dd71c7149aca85e4195d5c3de49/detail_tile_2.png",
+        "width": 3790,
+        "height": 5005,
+        "sha256": "b540ffc8b9e5c9fea05a05e630f0283289c3071c72e060dd5d4116f1601f83b9"
+      },
+      {
+        "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "page_index": 3,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          3107.4121085594993,
+          0.0,
+          4265.319415448852,
+          1668.194574907152
+        ],
+        "path": "/tmp/auditmanager_eom_graphic_recovery_20261110/blk_4e968dd71c7149aca85e4195d5c3de49/detail_tile_3.png",
+        "width": 3474,
+        "height": 5005,
+        "sha256": "22b720664c5821db5650363453861d6d9cebb51562cc840d3aa1cfeed13240c5"
+      }
+    ],
+    "padding_page_fraction": 0.0,
+    "original_crop_points": [
+      54.74739039665971,
+      0.0,
+      4265.319415448852,
+      1668.194574907152
+    ],
+    "expanded_crop_points": [
+      54.74739039665971,
+      0.0,
+      4265.319415448852,
+      1668.194574907152
+    ],
+    "outside_original_crop": false,
+    "model_call_performed": false,
+    "semantic_verified": false
+  },
+  "previous_result_sha256": "4f923c50e2393f7ec9ab52e6bf0d30e205d8e6bf1a276ab5d04c9a38432a909b",
+  "selection": "All model-reported unreadable GRAPHIC blocks in completed extraction packet002.",
+  "history_supplied": false,
+  "expected_marks_supplied": false,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0,
+  "message_chars": 2513,
+  "image_bytes": 3351232
+}
