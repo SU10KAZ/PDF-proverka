@@ -1,0 +1,26 @@
+{
+  "status": "bounded_local_profile_control",
+  "receipts": [
+    {
+      "finding_id": "F-001",
+      "status": "applied",
+      "action": "question"
+    }
+  ],
+  "prior_other_findings_preserved": 50,
+  "final_findings": 51,
+  "question_exported_separately": true,
+  "approved_model_wording_unchanged": true,
+  "original_archived": true,
+  "model_decision_sha256": "ea4ec67e58fa749451b2feea4315f5a08c0c033580e08deb6050d09e1878624f",
+  "source_candidate_sha256": "e471e49219920ec69838b31d5378f67b1daafcfc9736de26f7cab3fd9d5cb77b",
+  "baseline_sha256": "0fbd8959a9c0be7e25acc0bddc2d82cf04a7c1a5747e5f2e5bbc1df99df4845f",
+  "autonomous_model_profile_routing": false,
+  "new_model_calls": 0,
+  "full_acceptance": false,
+  "limitations": [
+    "Local profile decision is not proof of general automatic routing.",
+    "Cable composition, actual delivery and normative breach remain unestablished.",
+    "No independent historical positive-negative pair."
+  ]
+}
