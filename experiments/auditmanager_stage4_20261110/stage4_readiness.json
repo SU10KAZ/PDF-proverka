@@ -53,9 +53,14 @@
     {
       "id": "H04",
       "status": "partial",
-      "verified_or_implemented_scope": "Source-addressed set difference execution implemented.",
+      "verified_or_implemented_scope": "Source-addressed set difference execution implemented. EOM27 bounded source control computes missing active C2326/C2327 while retaining C2325/C2328 as reserves; full RP3 TEXT subsection checked, manual graphic inventory.",
       "remaining": "Prove extraction and completeness of compared sets on real positive/negative cases; new discovery not measured.",
-      "evidence": []
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/EOM27_object_balance_control.json",
+          "sha256": "b1a91532e9b9325b61e49bdcb6515d58880d3778f1726784efc4a9352b07440f"
+        }
+      ]
     },
     {
       "id": "H05",

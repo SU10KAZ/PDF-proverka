@@ -1,0 +1,176 @@
+{
+  "historical_case": "H-EOM-27 / Claude UNI-027",
+  "engineer_decision": "Принято; причина и комментарий отсутствуют в исторической записи. Исходный тезис Claude UNI-027 сохранён отдельно от уточнённого вывода.",
+  "source_md": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/sources/EOM/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "graphic_reinspected": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/H-EOM-27/images/blk_4e968dd71c7149aca85e4195d5c3de49_64b4f8629c9d.png",
+    "sha256": "ee73eed5771cd83923012f781d1a58a72e12e5985d0a8c41b5441c571fdd0e62",
+    "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+    "directly_viewed": true,
+    "observation": "С2326 и С2327 имеют розетки коридора МОП С2, по2,0/2,0кВт,cos0,90,10,1А. Аппараты QFD3.14/QFD3.15 C16A30мА. Магистрали3×4,0 длиной50м и3×6,0 длиной65м; у розеток отдельно3×2,5–10м(5×10м). СоседниеС2325/С2328 подписаны Резерв."
+  },
+  "table_source": {
+    "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+    "scope_start": "| РПЗ |",
+    "scope_end": "| РП4 |",
+    "complete_subsection": " Pp | 62,6 | 60,7 | 99,5 | 0,93 | 65,4 |\n|  | Pp.лож |  | 14,9 | 24,8 | 0,91 | 16,3 |\n| C231 | Рабочее освещение лестничной клетки в 2 секции С2 с 2-10 этаж | 0,300 | 0,300 | 1,4 | 0,95 | 0,32 |\n| C232 | Рабочее освещение лифтового холла №1 и №2 в 2 секции С2 | 0,800 | 0,800 | 3,8 | 0,95 | 0,84 |\n| C233 | Рабочее освещение квартирного коридора МОП в 2 секции С2 | 0,700 | 0,700 | 3,3 | 0,95 | 0,74 |\n| C234 | Рабочее освещение бра квартирного коридора МОП в 2 секции С2 | 0,100 | 0,100 | 0,5 | 0,95 | 0,11 |\n| C235 | Рабочее освещение лифтовых шахт Л2.1 и Л2.2 в 2 секции С2 | 0,100 | 0,100 | 0,5 | 0,95 | 0,11 |\n| C236 | Рабочее освещение пом. ПУИ в 2 секции С2 | 0,200 | 0,200 | 1,0 | 0,95 | 0,21 |\n| C237 | Рабочее освещение 1 технического этажа | 0,200 | 0,200 | 1,0 | 0,95 | 0,21 |\n| C238 | Рабочее освещение 10 технического этажа | 0,200 | 0,200 | 1,0 | 0,95 | 0,21 |\n| C239 | Рабочее освещение пом.электро- щитовой С2 | 0,100 | 0,100 | 0,5 | 0,95 | 0,11 |\n| C2310 | Рабочее освещение пом.СС С2 на -1 этаже | 0,100 | 0,100 | 0,5 | 0,95 | 0,11 |\n| C2311 | Розетка для отопительного прибора в 2 секции на -1 этаже в щитовой | 1,0 | 1,0 | 4,9 | 0,92 | 1,09 |\n| C2312 | Розетка для отопительного прибора в 2 секции на -1 этаже в пом. СС | 1,0 | 1,0 | 4,9 | 0,92 | 1,1 |\n| C2313 | Обогрев водосточных воронок на кровле | 0,2 | 0,2 | 1,0 | 0,90 | 0,2 |\n| C2314 | 2ШРОВ1 | 1,4 | 1,1 | 2,0 | 0,85 | 1,29 |\n| C2315 | 2ШРОВ2 | 3,70 | 3,300 | 5,9 | 0,85 | 3,88 |\n| C2316 | У1 | 12,0 | 12,0 | 19,2 | 0,95 | 12,63 |\n| C2317 | У2 | 12,0 | 12,0 | 19,2 | 0,95 | 12,63 |\n| C2318 | УЗ | 12,0 | 12,0 | 19,2 | 0,95 | 12,63 |\n| C2319 | Наружный блок кондиционера АМ080АХVАНH/ЕА коридор МОП С2 | 5,0 | 5,0 | 8,5 | 0,90 | 5,56 |\n| C2320 | Фанкойлы квартирных коридоров МОП С2 | 0,40 | 0,40 | 2,0 | 0,90 | 0,44 |\n| C2321 | 1ЩС | 7,300 | 6,500 | 11,0 | 0,90 | 7,22 |\n| C2322 | 1ЩС-УК | 3,000 | 2,700 | 4,6 | 0,90 | 3,00 |\n| C2323 | 1ЩО-1 | 0,46 | 0,41 | 0,7 | 0,95 | 0,44 |\n| C2324 | 1ЩО-УК | 0,300 | 0,300 | 0,5 | 0,95 | 0,32 |\n",
+    "parsed_marks": [
+      "C231",
+      "C232",
+      "C233",
+      "C234",
+      "C235",
+      "C236",
+      "C237",
+      "C238",
+      "C239",
+      "C2310",
+      "C2311",
+      "C2312",
+      "C2313",
+      "C2314",
+      "C2315",
+      "C2316",
+      "C2317",
+      "C2318",
+      "C2319",
+      "C2320",
+      "C2321",
+      "C2322",
+      "C2323",
+      "C2324"
+    ]
+  },
+  "normalization": "Cyrillic С in graphic and Latin C in MD represent the same explicitly reviewed circuit marks in this control; no global normalization rule introduced.",
+  "operation": {
+    "id": "EOM27_bounded_four_circuits",
+    "kind": "set_balance",
+    "scope": "ВРУ-2 РП3: только С2325–С2328, проверенные на графическом фрагменте; сравнение отдельных строк полного подраздела РП3",
+    "left": {
+      "scope_refs": [
+        "blk_4e968dd71c7149aca85e4195d5c3de49"
+      ],
+      "items": [
+        {
+          "key": [
+            "ВРУ-2",
+            "РП3",
+            "C2325"
+          ],
+          "role": "reserve",
+          "source_refs": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ]
+        },
+        {
+          "key": [
+            "ВРУ-2",
+            "РП3",
+            "C2326"
+          ],
+          "role": "active",
+          "source_refs": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ]
+        },
+        {
+          "key": [
+            "ВРУ-2",
+            "РП3",
+            "C2327"
+          ],
+          "role": "active",
+          "source_refs": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ]
+        },
+        {
+          "key": [
+            "ВРУ-2",
+            "РП3",
+            "C2328"
+          ],
+          "role": "reserve",
+          "source_refs": [
+            "blk_4e968dd71c7149aca85e4195d5c3de49"
+          ]
+        }
+      ]
+    },
+    "right": {
+      "scope_refs": [
+        "blk_c5f0556f94c14503bfe178ef5941c077"
+      ],
+      "items": []
+    }
+  },
+  "execution": {
+    "operations": [
+      {
+        "id": "EOM27_bounded_four_circuits",
+        "status": "computed",
+        "source_interpretation_verified": false,
+        "scope": "ВРУ-2 РП3: только С2325–С2328, проверенные на графическом фрагменте; сравнение отдельных строк полного подраздела РП3",
+        "only_left": [
+          {
+            "key": [
+              "ВРУ-2",
+              "РП3",
+              "C2326"
+            ],
+            "source_refs": [
+              "blk_4e968dd71c7149aca85e4195d5c3de49"
+            ]
+          },
+          {
+            "key": [
+              "ВРУ-2",
+              "РП3",
+              "C2327"
+            ],
+            "source_refs": [
+              "blk_4e968dd71c7149aca85e4195d5c3de49"
+            ]
+          }
+        ],
+        "only_right": [],
+        "matched": 0,
+        "reserves": {
+          "left": [
+            [
+              "ВРУ-2",
+              "РП3",
+              "C2325"
+            ],
+            [
+              "ВРУ-2",
+              "РП3",
+              "C2328"
+            ]
+          ],
+          "right": []
+        },
+        "publication": "requires_source_scope_and_identity_review"
+      }
+    ],
+    "computed": 1,
+    "not_checked": 0,
+    "coverage_complete": false
+  },
+  "control_pair": {
+    "positive": "Keep missing separate rows for active C2326/C2327.",
+    "negative": "Do not count reserve C2325/C2328 as missing active loads.",
+    "source_pair_verified": true,
+    "model_discovery_verified": false
+  },
+  "limits": [
+    "Bounded four-circuit comparison, not full scheme inventory.",
+    "Does not exclude aggregation into another table row.",
+    "Do not automatically add 4 kW to all operating modes or claim overload.",
+    "Manual known-source inventory; independent model extraction not tested."
+  ],
+  "new_model_calls": 0
+}
