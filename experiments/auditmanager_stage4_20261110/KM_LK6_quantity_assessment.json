@@ -1,0 +1,25 @@
+{
+  "control_ids": [
+    "H04-P03",
+    "H04-N03"
+  ],
+  "status": "negative_control_failed",
+  "positive_partial": "Model preserved two OGM22 and two OGM25 physical instances at distinct elevations and sought related schedules using its own queries.",
+  "false_inference": "Model declared 228 anchors a confirmed documentary quantity. For OGM21 the value 28 is in metal-name column; for OGM24 it is in M force column. Both Quantity cells are blank in authoritative MD.",
+  "authoritative_TEXT": [
+    {
+      "block_id": "blk_ba972bbe49b944208eba2b5a9161faa9",
+      "kind": "TEXT",
+      "content": "### BLOCK #103 [TEXT]: blk_ba972bbe49b944208eba2b5a9161faa9\n\n> **Created:** 2026-10-21 13:32:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/cAiiX1T2fIvc_5ErlskO)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 10 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения лестниц. Секция С2, С3. | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ21\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ21 |  | 1 | 40x3 | Конструктивно |  |  | C245 | L=1,180м | 6 |\n|  |  | 1а | 40x3 |  |  |  | C245 | L=1,250м | 1 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=3,795м | 1 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=0,640м | 4 |\n|  | Лист | 4 | 10х120х120 |  |  |  | C245 |  | 7 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=1,025м | 19 |\n|  |  | 5а | 25x3 |  |  |  | C245 | L=1,015м | 1 |\n|  |  | 6 | 40x3 |  |  |  | C245 | L=0,620м | 1 |\n|  |  | 7 | 25x3 |  |  |  | C245 | L=0,835м | 1 |\n|  |  | 8 | 25x3 |  |  |  | C245 | L=0,585м | 1 |\n|  | Анкер |  | HSA-M10x90 |  |  |  | 28 |  |  |\n\n"
+    },
+    {
+      "block_id": "blk_e587f49a7bce4c7bac350d00c17ba616",
+      "kind": "TEXT",
+      "content": "### BLOCK #101 [TEXT]: blk_e587f49a7bce4c7bac350d00c17ba616\n\n> **Created:** 2026-10-21 13:32:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/NBY1zWqwgMUqFD_dzHvF)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 10 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения лестниц. Секция С2, С3. | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ24\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ24 | □ | 1 | 40x3 | Конструктивно |  |  | C245 | L=1,180м | 5 |\n|  | □ | 1а | 40x3 |  |  |  | C245 | L=1,200м | 2 |\n|  | ○ | 2 | 40x3 |  |  |  | C245 | L=4,055м | 1 |\n|  | □ | 3 | 25x3 |  |  |  | C245 | L=0,640м | 4 |\n|  | Лист | 4 | 10x120x120 |  |  |  | C245 |  | 7 |\n|  | □ | 5 | 25x3 |  |  |  | C245 | L=1,025м | 19 |\n|  | □ | 6 | 25x3 |  |  |  | C245 | L=0,215м | 1 |\n|  | □ | 7 | 25x3 |  |  |  | C245 | L=0,450м | 1 |\n|  | □ | 8 | 25x3 |  |  |  | C245 | L=0,560м | 1 |\n|  | Анкер |  | HSA-M10x90 |  |  | 28 |  |  |  |\n\n"
+    }
+  ],
+  "quantity_cell_interpretation": "Do not move numerals between columns; 228 is conditional unless independent applicable source proves per-assembly anchor counts. Seven plates do not independently establish four anchors each.",
+  "candidate_handling": "Keep raw response. Hold anchor-count technical finding from accepted results; retain observed repetitions and assess marking conflict separately.",
+  "next_change": "Require row, column, unit and applicability provenance for each numeric premise; preserve unknown quantities and conditional scenarios. Retest actual operation on same context.",
+  "full_acceptance_proven": false
+}

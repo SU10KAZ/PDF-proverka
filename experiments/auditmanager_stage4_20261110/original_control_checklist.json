@@ -230,8 +230,17 @@
       "hypothesis": "H04",
       "kind": "positive_controls",
       "original_control": "ЭОМ: FRHF5×35 двух линий не закрывается строкойHF5×35.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "partial_discovery_pending_reconciliation",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_cable_graphic_0_assessment.json",
+          "sha256": "a2ec08fc7ffc9eece755f7f88821a745f334b79307ff01307b58b1c089943357"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_cable_graphic_1_assessment.json",
+          "sha256": "57d181fc021314748d87b253236ad1dee2c5242957acfad4ad896a5424a270af"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -257,8 +266,17 @@
       "hypothesis": "H04",
       "kind": "positive_controls",
       "original_control": "КМ: сохранять повторыОГМ22/25 и вопрос о сомнительных количествах.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "partial_control_failed_quantitative_basis",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_quantity_assessment.json",
+          "sha256": "865e6201b95fd88148899a16e08307ab2e018a92e668dd8c1fddcf49a6e30bf1"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_repeated_instances_source_review.json",
+          "sha256": "e13f3983be53aa4452ae305e8cce41922e7b7b3f22f36f27dfcc8551f9d5f832"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -289,8 +307,17 @@
       "hypothesis": "H04",
       "kind": "negative_controls_and_limits",
       "original_control": "КМ:228 анкеров остаются условным расчётом.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "negative_control_failed",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_quantity_assessment.json",
+          "sha256": "865e6201b95fd88148899a16e08307ab2e018a92e668dd8c1fddcf49a6e30bf1"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_quantity_context3_validated.json",
+          "sha256": "b6a1455a565c1b761cdaa608c9783a613df9906cf343aede1a548357fa988b85"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -486,7 +513,10 @@
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 1,
     "local_contract_verified": 2,
-    "requires_explicit_evidence_review": 17,
+    "negative_control_failed": 1,
+    "partial_control_failed_quantitative_basis": 1,
+    "partial_discovery_pending_reconciliation": 1,
+    "requires_explicit_evidence_review": 14,
     "synthetic_contract_only": 1
   },
   "boundaries": [
