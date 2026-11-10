@@ -1,0 +1,2372 @@
+{
+  "objects": [
+    {
+      "id": "obj_001",
+      "identity": "ВРУ-3, сборка вводно-распределительного устройства",
+      "scope": "Лист 3, ПД-00580716-ЭОМ 2-1",
+      "kind": "сборка",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996",
+        "blk_4efb5f71075b46c9a256fdebb447e338",
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка",
+          "value": "ВРУ-3",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Обозначение ВРУ-3 видно в нижней части схемы и под компоновочным изображением."
+        },
+        {
+          "name": "Исполнение панелей",
+          "value": "Напольные, одностороннего обслуживания",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Все панели ВРУ - напольные одностороннего обслуживания со степенью защиты не менее IP31."
+        },
+        {
+          "name": "Минимальная степень защиты",
+          "value": "IP31",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Все панели ВРУ - напольные одностороннего обслуживания со степенью защиты не менее IP31."
+        },
+        {
+          "name": "Предписанные изготовители внутрищитового оборудования",
+          "value": "DEKraft или EKF",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Внутрищитовое оборудование применить DEKraft или EKF."
+        },
+        {
+          "name": "Требование к внутреннему разделению, как записано в источнике",
+          "value": "Изоляционное разгромаживание вида не менее 2в; ссылка на СП 256.1325800.2016",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "В соответствии с СП 256.1325800.2016, во ВРУ обеспечить изоляционное разгромаживание вида не менее 2в."
+        },
+        {
+          "name": "Маркировка проводников",
+          "value": "Маркировка всех жгутов, жгутов учета и перемычек; цвета фазных перемычек по примечанию",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Все жгуты (проводники), в том числе жгуты учета и перемычки промаркировать, фазные перемычки должны быть разноцветными ЖЗК по ПУЭ или белый/кор./черный"
+        }
+      ]
+    },
+    {
+      "id": "obj_002",
+      "identity": "ВП1, вводная панель ВРУ, электрощитовая -1-го этажа",
+      "scope": "Ввод питающих кабелей",
+      "kind": "панель",
+      "source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка, назначение и расположение",
+          "value": "ВП1; ввод и подключение питающих кабелей; электрощитовая -1-го этажа",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Для ввода и подключения питающих кабелей электроснабжения предусмотрены вводные панели ВП1 и ВП2 во ВРУ в помещении электрощитовой -1-го этажа."
+        },
+        {
+          "name": "Направление ввода",
+          "value": "Снизу, питающие КЛ от ГРЩ",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Ввод питающих КЛ от ГРЩ в панели осуществить снизу."
+        }
+      ]
+    },
+    {
+      "id": "obj_003",
+      "identity": "ВП2, вводная панель ВРУ, электрощитовая -1-го этажа",
+      "scope": "Ввод питающих кабелей",
+      "kind": "панель",
+      "source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Марка, назначение и расположение",
+          "value": "ВП2; ввод и подключение питающих кабелей; электрощитовая -1-го этажа",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Для ввода и подключения питающих кабелей электроснабжения предусмотрены вводные панели ВП1 и ВП2 во ВРУ в помещении электрощитовой -1-го этажа."
+        },
+        {
+          "name": "Направление ввода",
+          "value": "Снизу, питающие КЛ от ГРЩ",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Ввод питающих КЛ от ГРЩ в панели осуществить снизу."
+        }
+      ]
+    },
+    {
+      "id": "obj_004",
+      "identity": "Секция I, расчетная линия учета Wh1",
+      "scope": "ВРУ-3, таблица проверки трансформаторов тока",
+      "kind": "электрическая секция",
+      "source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Обозначение секции учета",
+          "value": "Wh1, секция I",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Значение – Wh1 (секция I)"
+        },
+        {
+          "name": "Рабочий расчетный ток",
+          "value": "262.4",
+          "unit": "А",
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "=262.4А"
+        },
+        {
+          "name": "Минимальный ток при 15% нагрузке",
+          "value": "39.4",
+          "unit": "А",
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "262.4 × 0,15= 39.4А"
+        },
+        {
+          "name": "Аварийный расчетный ток",
+          "value": "465,1",
+          "unit": "А",
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Iаб= | 465,1"
+        },
+        {
+          "name": "Коэффициент мощности",
+          "value": "0.96",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Cosφ= | 0.96"
+        }
+      ]
+    },
+    {
+      "id": "obj_005",
+      "identity": "Секция II, расчетная линия учета Wh2",
+      "scope": "ВРУ-3, таблица проверки трансформаторов тока",
+      "kind": "электрическая секция",
+      "source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Обозначение секции учета",
+          "value": "Wh2, секция II",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Значение – Wh2 (секция II)"
+        },
+        {
+          "name": "Рабочий расчетный ток",
+          "value": "190.5",
+          "unit": "А",
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "=190.5А"
+        },
+        {
+          "name": "Минимальный ток при 15% нагрузке",
+          "value": "28.6",
+          "unit": "А",
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "190.5 × 0,15= 28.6А"
+        },
+        {
+          "name": "Аварийный расчетный ток",
+          "value": "465,1",
+          "unit": "А",
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Iаб= | 465,1"
+        },
+        {
+          "name": "Коэффициент мощности",
+          "value": "0,97",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Cosφ= | 0,97"
+        }
+      ]
+    },
+    {
+      "id": "obj_006",
+      "identity": "Трансформаторы тока цепи Wh1, секция I, 500/5",
+      "scope": "Учет электроэнергии; число физических трансформаторов в таблице не задано",
+      "kind": "группа оборудования без установленного количества",
+      "source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Выбранное отношение токов",
+          "value": "500/5",
+          "unit": "А/А",
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "принимаем тр-р тока 500/5 с учетом 20% перегрузки; Ip.аб/1,2 < In1мм; 465.1/1,2=387.6 < 500"
+        },
+        {
+          "name": "Принятое в источнике условие перегрузки",
+          "value": "20%",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "с учетом 20% перегрузки"
+        },
+        {
+          "name": "Вывод автора таблицы и нормативные ссылки",
+          "value": "Автор заявил соответствие ПУЭ, п. 1.5.17 и РМ-2559, п.п. 6.1–6.3, 6.5; применимость и соответствие в этой операции не проверялись",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Выбранные трансформаторы тока удовлетворяют требованиям ПУЭ, п. 1.5.17 и РМ-2559, п.п. 6.1–6.3, 6.5"
+        }
+      ]
+    },
+    {
+      "id": "obj_007",
+      "identity": "Трансформаторы тока цепи Wh2, секция II, 400/5",
+      "scope": "Учет электроэнергии; число физических трансформаторов в таблице не задано",
+      "kind": "группа оборудования без установленного количества",
+      "source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Выбранное отношение токов",
+          "value": "400/5",
+          "unit": "А/А",
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "принимаем тр-р тока 400/5 с учетом 20% перегрузки Ip.аб/1,2 < In1мм; 465.1/1,2=387.6 < 400"
+        },
+        {
+          "name": "Вывод автора таблицы и нормативные ссылки",
+          "value": "Автор заявил соответствие ПУЭ, п. 1.5.17 и РМ-2559, п.п. 6.1–6.3, 6.5; применимость и соответствие в этой операции не проверялись",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Выбранные трансформаторы тока удовлетворяют требованиям ПУЭ, п. 1.5.17 и РМ-2559, п.п. 6.1–6.3, 6.5"
+        }
+      ]
+    },
+    {
+      "id": "obj_008",
+      "identity": "Wh1, счетчик секции I",
+      "scope": "ВРУ-3, учет электроэнергии",
+      "kind": "прибор учета",
+      "source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Принадлежность",
+          "value": "Секция I",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Значение – Wh1 (секция I)"
+        },
+        {
+          "name": "Ток счетчика при рабочей нагрузке, запись источника",
+          "value": "262.4/100 = 2.6А > 2А (40% от In.cч)",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "262.4/100 = 2.6А > 2А (40% от In.cч)"
+        },
+        {
+          "name": "Ток счетчика при минимальной нагрузке, запись источника",
+          "value": "77/100 = 0.8А > 0,1А",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "77/100 = 0.8А > 0,1А"
+        }
+      ]
+    },
+    {
+      "id": "obj_009",
+      "identity": "Wh2, счетчик секции II",
+      "scope": "ВРУ-3, учет электроэнергии",
+      "kind": "прибор учета",
+      "source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Принадлежность",
+          "value": "Секция II",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "Значение – Wh2 (секция II)"
+        },
+        {
+          "name": "Ток счетчика при рабочей нагрузке, запись источника",
+          "value": "190.5/80 = 2.4А > 2А (40% от In.cч)",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "190.5/80 = 2.4А > 2А (40% от In.cч)"
+        },
+        {
+          "name": "Ток счетчика при минимальной нагрузке, запись источника",
+          "value": "74/80 = 0.9А > 0,1А",
+          "unit": null,
+          "source_ref": "blk_7ca68a936c85428dbd4b60b2893398a2",
+          "quote": "74/80 = 0.9А > 0,1А"
+        }
+      ]
+    },
+    {
+      "id": "obj_010",
+      "identity": "Шина N сборки ВРУ",
+      "scope": "ВРУ, общие указания",
+      "kind": "шина",
+      "source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Материал и протяженность",
+          "value": "Медь, на всю длину сборки",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Применить шины N и РЕ медные на всю длину сборки ВРУ."
+        }
+      ]
+    },
+    {
+      "id": "obj_011",
+      "identity": "Шина РЕ сборки ВРУ; на вводе используется как ГЗШ",
+      "scope": "ВРУ, защитное заземление",
+      "kind": "шина",
+      "source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Материал и протяженность",
+          "value": "Медь, на всю длину сборки",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Применить шины N и РЕ медные на всю длину сборки ВРУ."
+        },
+        {
+          "name": "Функция ГЗШ",
+          "value": "Возложена на шину РЕ на вводе; отдельный физический экземпляр ГЗШ этим указанием не установлен",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "В качестве шины ГЗШ использовать РЕ шину на вводе."
+        }
+      ]
+    },
+    {
+      "id": "obj_012",
+      "identity": "Заводской металлический цоколь ВРУ",
+      "scope": "Опорная конструкция ВРУ",
+      "kind": "конструктивный элемент",
+      "source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Высота",
+          "value": "100",
+          "unit": "мм",
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Для подставки ВРУ предусмотреть заводской металлический цоколь высотой 100мм."
+        }
+      ]
+    },
+    {
+      "id": "obj_013",
+      "identity": "ГРЩ, источник питающих КЛ",
+      "scope": "Ссылочный объект за пределами детализированного состава ВРУ",
+      "kind": "ссылочный объект",
+      "source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Связь с вводными панелями",
+          "value": "От ГРЩ приходят питающие кабельные линии; индивидуальная марка ГРЩ не указана",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Ввод питающих КЛ от ГРЩ в панели осуществить снизу."
+        }
+      ]
+    },
+    {
+      "id": "obj_014",
+      "identity": "ВРУ-1, ссылка в примечании 10",
+      "scope": "Объект ссылки; тождество с ВРУ-3 не установлено",
+      "kind": "ссылочный объект",
+      "source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Направление вывода распределительных линий",
+          "value": "Сверху",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Вывод распределительных линий от панелей ВРУ-1 осуществить сверху"
+        }
+      ]
+    },
+    {
+      "id": "obj_015",
+      "identity": "Вводные аппараты ВРУ, индивидуальные марки не установлены",
+      "scope": "Общее требование к группе аппаратов, без определения числа экземпляров",
+      "kind": "группа оборудования без установленного количества",
+      "source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Условное требование к подключению",
+          "value": "При необходимости шинные удлинители для подключения четырех жил кабелей на фазу",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "На вводных аппаратах предусмотреть (при необходимости) шинные удлинители чтобы можно было подключить четыре жилы кабелей на одну фазу."
+        }
+      ]
+    },
+    {
+      "id": "obj_016",
+      "identity": "Распределительные панели ВРУ, общие требования",
+      "scope": "Группа панелей; индивидуальный состав требует чтения схемы",
+      "kind": "группа оборудования без установленного количества",
+      "source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Место для прокладки кабелей",
+          "value": "Свободное место для опусков сверху вниз",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "В распределительных панелях предусмотреть свободное место для опусков распределительных кабелей сверху вниз"
+        },
+        {
+          "name": "Защита кабелей от острых кромок",
+          "value": "Резиновый кант в местах возможного приближения кабеля к острым кромкам",
+          "unit": null,
+          "source_ref": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "quote": "Обрамить острые края металлических деталей резиновым кантом в тех местах где кабель близко расположен или может быть расположен от острого края панели, либо пластрона, либо профиля или рейки"
+        }
+      ]
+    },
+    {
+      "id": "obj_017",
+      "identity": "Левый верхний узел с группами прямоугольных условных обозначений",
+      "scope": "Изображение: приблизительно 4–8% ширины, 15–25% высоты",
+      "kind": "неразрешенный фрагмент электрической схемы",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Графическая структура и читаемость",
+          "value": "Две группы мелких прямоугольных символов на разных уровнях, соединенные вертикальными линиями с крайней левой частью шин. Подписи присутствуют, но надежно не читаются. Тип и число физических потребителей не установлены.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Отдельный левый стояк с двумя скоплениями прямоугольных символов; для инвентаризации внутренних элементов нужен увеличенный фрагмент."
+        }
+      ]
+    },
+    {
+      "id": "obj_018",
+      "identity": "Второй слева верхний узел с группой прямоугольных условных обозначений",
+      "scope": "Изображение: приблизительно 9–12% ширины, 15–20% высоты",
+      "kind": "неразрешенный фрагмент электрической схемы",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Графическая структура и читаемость",
+          "value": "Отдельная группа мелких прямоугольных символов с вертикальными связями к следующему слева участку шин. Индивидуальные марки и количество физических устройств не установлены.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Группа пространственно отделена от крайнего левого стояка; мелкие внутренние обозначения требуют увеличения."
+        }
+      ]
+    },
+    {
+      "id": "obj_019",
+      "identity": "Левый нижний вводной узел схемы",
+      "scope": "Изображение: приблизительно 4–8% ширины, 79–98% высоты",
+      "kind": "неразрешенный узел сборки",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Видимые элементы",
+          "value": "Вертикальная вводная цепь, коммутационные и измерительные символы, отходящие связи. Марки, номиналы и сопоставление с ВП1 либо ВП2 не установлены.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Первый из двух соседних нижних узлов; подписи и внутренние соединения слишком мелкие для поэлементного учета."
+        }
+      ]
+    },
+    {
+      "id": "obj_020",
+      "identity": "Правый из двух нижних вводных узлов схемы",
+      "scope": "Изображение: приблизительно 9–13% ширины, 79–98% высоты",
+      "kind": "неразрешенный узел сборки",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Видимые элементы",
+          "value": "Отдельная вертикальная вводная цепь с коммутационными и измерительными символами. Марки, номиналы и сопоставление с ВП1 либо ВП2 не установлены.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Второй нижний узел справа от obj_019; мелкие внутренние элементы требуют увеличенного изображения."
+        }
+      ]
+    },
+    {
+      "id": "obj_021",
+      "identity": "Основное левое поле распределительных цепей",
+      "scope": "Изображение: приблизительно 13–53% ширины, верхняя и средняя части",
+      "kind": "неразрешенный фрагмент электрической схемы",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Состав видимого поля",
+          "value": "Многочисленные вертикальные отходящие линии, символы аппаратов у горизонтальных шин, прямоугольные и иные символы потребителей на разных уровнях. Индивидуальные обозначения, номиналы и часть разветвлений не читаются.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Протяженный участок между вторым левым узлом и пунктирной границей около середины изображения. Это запись неполноты учета, а не один физический объект; требуется последовательное увеличение всего поля."
+        }
+      ]
+    },
+    {
+      "id": "obj_022",
+      "identity": "Среднее поле распределительных цепей",
+      "scope": "Изображение: приблизительно 53–65% ширины, верхняя и средняя части",
+      "kind": "неразрешенный фрагмент электрической схемы",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Состав видимого поля",
+          "value": "Участок горизонтальных шин с вертикальными отходящими цепями и аппаратами; несколько цепей продолжаются к верхним условным обозначениям. Марки и параметры не установлены.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Поле выделено вертикальными пунктирными границами. Внутренние объекты не инвентаризированы поштучно из-за масштаба; нужен увеличенный фрагмент."
+        }
+      ]
+    },
+    {
+      "id": "obj_023",
+      "identity": "Правое поле распределительных цепей",
+      "scope": "Изображение: приблизительно 65–100% ширины, верхняя и средняя части",
+      "kind": "неразрешенный фрагмент электрической схемы",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Состав видимого поля",
+          "value": "Протяженные шины с отходящими цепями; сверху группы прямоугольных и наклонных условных обозначений. В правой части несколько повторяющихся символов расположены на одном уровне, еще два — ниже. Их одинаковый вид не устанавливает одинаковое назначение.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Мелкие подписи не позволяют надежно установить марки, номиналы и принадлежность отдельных аппаратов. Правый край схемы доходит до края изображения; требуется увеличенное изображение и проверка продолжения."
+        }
+      ]
+    },
+    {
+      "id": "obj_024",
+      "identity": "Прямоугольный узел под средним полем шин",
+      "scope": "Изображение: около 57–59% ширины, 67–71% высоты",
+      "kind": "неидентифицированный узел схемы",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Внешний вид и связи",
+          "value": "Прямоугольная рамка с внутренними символами, подключенная к линиям сверху и снизу; подпись имеется, но не читается надежно. Назначение неизвестно.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Самостоятельно различимый узел ниже шин среднего поля; тип и номинал требуют увеличения."
+        }
+      ]
+    },
+    {
+      "id": "obj_025",
+      "identity": "Прямоугольный узел под правым полем шин",
+      "scope": "Изображение: около 74–76% ширины, 70–74% высоты",
+      "kind": "неидентифицированный узел схемы",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Внешний вид и связи",
+          "value": "Отдельная прямоугольная рамка с внутренними символами и подводящими линиями; индивидуальная подпись не читается надежно. Назначение неизвестно.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Узел расположен правее и ниже obj_024; сходство изображения не доказывает одинаковый тип или исполнение."
+        }
+      ]
+    },
+    {
+      "id": "obj_026",
+      "identity": "Фронтальный компоновочный вид ВРУ",
+      "scope": "Изображение: нижняя часть, приблизительно 32–40% ширины",
+      "kind": "вид сборки",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Представление",
+          "value": "Ряд высоких прямоугольных панелей, две правые выделены красным. Подписи внутри панелей присутствуют, но надежно не читаются. Вид не учитывается как дополнительный экземпляр ВРУ.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Внизу между расчетной таблицей и горизонтальным компоновочным видом изображен фасад сборки."
+        }
+      ]
+    },
+    {
+      "id": "obj_027",
+      "identity": "Левая красная панель на фронтальном виде",
+      "scope": "Вид obj_026, первая из двух красных панелей",
+      "kind": "индивидуальное графическое представление панели",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Выделение и идентификация",
+          "value": "Замкнутый вертикальный прямоугольник с красной заливкой и индивидуальной подписью; подпись не прочитана надежно. Назначение и соответствие панели на электрической схеме не установлены.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Красная область непосредственно слева от крайней правой красной панели. Локальный ID не является проектной маркой."
+        }
+      ]
+    },
+    {
+      "id": "obj_028",
+      "identity": "Правая красная панель на фронтальном виде",
+      "scope": "Вид obj_026, вторая из двух красных панелей",
+      "kind": "индивидуальное графическое представление панели",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Выделение и идентификация",
+          "value": "Отдельный замкнутый вертикальный прямоугольник с красной заливкой и индивидуальной подписью; подпись не прочитана надежно. Назначение и соответствие панели на электрической схеме не установлены.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Крайняя правая красная панель фронтального вида. Отделена вертикальной границей от obj_027."
+        }
+      ]
+    },
+    {
+      "id": "obj_029",
+      "identity": "Горизонтальный компоновочный вид ВРУ-3",
+      "scope": "Изображение: нижняя часть, приблизительно 44–53% ширины",
+      "kind": "вид сборки",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Обозначение и устройство вида",
+          "value": "ВРУ-3; ряд прямоугольных секций, линии открывания и размерные цепочки. Соответствие отдельных секций фронтальному виду не установлено.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Под изображением читается ВРУ-3; рядом видна надпись о месте обслуживания. Размеры и марки секций требуют увеличения."
+        }
+      ]
+    },
+    {
+      "id": "obj_030",
+      "identity": "Левый оранжевый элемент горизонтального компоновочного вида",
+      "scope": "Вид obj_029, центральная часть ряда секций",
+      "kind": "локальное графическое наблюдение",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Вид и индивидуальная подпись",
+          "value": "Оранжевый угловой контур внутри одной секции; индивидуальная подпись не различима. Назначение неизвестно; отдельный физический экземпляр этим наблюдением не доказан.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Первый слева из двух соседних оранжевых элементов нижнего горизонтального вида."
+        }
+      ]
+    },
+    {
+      "id": "obj_031",
+      "identity": "Правый оранжевый элемент горизонтального компоновочного вида",
+      "scope": "Вид obj_029, секция справа от obj_030",
+      "kind": "локальное графическое наблюдение",
+      "source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "observed_parameters": [
+        {
+          "name": "Вид и индивидуальная подпись",
+          "value": "Второй оранжевый угловой контур в соседней секции; индивидуальная подпись не различима. Назначение неизвестно; одинаковый цвет не устанавливает тождество с obj_030.",
+          "unit": null,
+          "source_ref": "blk_513e35c4f8a7432986e9a498d4573996",
+          "graphic_observation": "Самостоятельно различимый оранжевый элемент справа от первого; связь с красными панелями фронтального вида не подтверждена."
+        }
+      ]
+    }
+  ],
+  "invalid_objects": [],
+  "operations": [
+    {
+      "object_id": "obj_001",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996",
+        "blk_4efb5f71075b46c9a256fdebb447e338",
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_001",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996",
+        "blk_4efb5f71075b46c9a256fdebb447e338",
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_001",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996",
+        "blk_4efb5f71075b46c9a256fdebb447e338",
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_001",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996",
+        "blk_4efb5f71075b46c9a256fdebb447e338",
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_001",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996",
+        "blk_4efb5f71075b46c9a256fdebb447e338",
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_002",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_002",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_002",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_002",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_002",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_003",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_003",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_003",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_003",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_003",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_004",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_004",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_004",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_004",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_004",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_005",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_005",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_005",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_005",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_005",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_006",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_006",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_006",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_006",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_006",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_007",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_007",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_007",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_007",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_007",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_008",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_008",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_008",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_008",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_008",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_009",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_009",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_009",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_009",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_009",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_7ca68a936c85428dbd4b60b2893398a2"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_010",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_010",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_010",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_010",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_010",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_011",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_011",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_011",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_011",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_011",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_012",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_012",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_012",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_012",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_012",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_013",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_013",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_013",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_013",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_013",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_014",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_014",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_014",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_014",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_014",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_015",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_015",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_015",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_015",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_015",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_016",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_016",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_016",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_016",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_016",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_4efb5f71075b46c9a256fdebb447e338"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_017",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_017",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_017",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_017",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_017",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_018",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_018",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_018",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_018",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_018",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_019",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_019",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_019",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_019",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_019",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_020",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_020",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_020",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_020",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_020",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_021",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_021",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_021",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_021",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_021",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_022",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_022",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_022",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_022",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_022",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_023",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_023",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_023",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_023",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_023",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_024",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_024",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_024",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_024",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_024",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_025",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_025",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_025",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_025",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_025",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_026",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_026",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_026",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_026",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_026",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_027",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_027",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_027",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_027",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_027",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_028",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_028",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_028",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_028",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_028",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_029",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_029",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_029",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_029",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_029",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_030",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_030",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_030",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_030",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_030",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_031",
+      "operation": "identity_across_views",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_031",
+      "operation": "quantity_balance",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_031",
+      "operation": "dimension_consistency",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_031",
+      "operation": "requirement_applicability",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    },
+    {
+      "object_id": "obj_031",
+      "operation": "document_links",
+      "status": "not_checked",
+      "semantic_verified": false,
+      "object_source_refs": [
+        "blk_513e35c4f8a7432986e9a498d4573996"
+      ],
+      "reason": "missing_receipt"
+    }
+  ],
+  "unmatched_operations": [],
+  "source_inventory": [
+    {
+      "block_id": "blk_4efb5f71075b46c9a256fdebb447e338",
+      "status": "reported_inventoried",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_4efb5f71075b46c9a256fdebb447e338",
+        "status": "inventoried",
+        "object_ids": [
+          "obj_001",
+          "obj_002",
+          "obj_003",
+          "obj_010",
+          "obj_011",
+          "obj_012",
+          "obj_013",
+          "obj_014",
+          "obj_015",
+          "obj_016"
+        ],
+        "reason": "Учтены индивидуально названные панели ВП1 и ВП2, шины N и РЕ, цоколь, общие требования к ВРУ и аппаратам, ссылки на ГРЩ и ВРУ-1. ГЗШ сохранена как функция шины РЕ на вводе. Условие звездочки о комплектной поставке или разработке схемы в другом разделе не позволяет установить конкретные комплекты без чтения маркированных элементов изображения. Индивидуальный состав обобщенно упомянутых аппаратов и распределительных панелей текстом не задан."
+      }
+    },
+    {
+      "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+        "status": "needs_data",
+        "object_ids": [
+          "obj_001",
+          "obj_017",
+          "obj_018",
+          "obj_019",
+          "obj_020",
+          "obj_021",
+          "obj_022",
+          "obj_023",
+          "obj_024",
+          "obj_025",
+          "obj_026",
+          "obj_027",
+          "obj_028",
+          "obj_029",
+          "obj_030",
+          "obj_031"
+        ],
+        "reason": "Приложенное изображение осмотрено целиком. Видны однолинейная схема, вводные узлы, поля распределительных цепей и компоновочные виды. Масштаб не позволяет надежно прочитать большинство марок, номиналов, кабельных надписей и междокументных ссылок. Поштучная инвентаризация отходящих цепей, аппаратов, потребителей, неокрашенных панелей фасада и всех секций горизонтального вида не завершена. Нужны увеличенные фрагменты этих областей, нижних вводных узлов и правого края схемы. Объекты obj_021–obj_023 обозначают области незавершенного учета, а не физические группы с установленным составом. Перечни из навигационного описания IMAGE не приняты за подтвержденные марки. Таблица и примечания учтены по авторитетным TEXT-блокам без исправления по растру."
+      }
+    },
+    {
+      "block_id": "blk_7ca68a936c85428dbd4b60b2893398a2",
+      "status": "reported_inventoried",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_7ca68a936c85428dbd4b60b2893398a2",
+        "status": "inventoried",
+        "object_ids": [
+          "obj_001",
+          "obj_004",
+          "obj_005",
+          "obj_006",
+          "obj_007",
+          "obj_008",
+          "obj_009"
+        ],
+        "reason": "Выделены две секции, два счетчика и относящиеся к ним группы трансформаторов тока. Отношения токов и расчетные записи сохранены раздельно для Wh1 и Wh2. Количество физических трансформаторов, их типы и классы точности по этому тексту не установлены. Вывод источника о нормативном соответствии сохранен как заявление автора."
+      }
+    }
+  ],
+  "unknown_inventory_blocks": [],
+  "unresolved_operations": 155,
+  "unresolved_source_blocks": 1,
+  "coverage_complete": false,
+  "semantic_verified": false
+}

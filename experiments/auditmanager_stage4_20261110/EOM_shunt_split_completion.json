@@ -1,0 +1,35 @@
+{
+  "status": "completed_with_unresolved_graphics",
+  "packets": [
+    {
+      "packet": 0,
+      "objects": 151,
+      "invalid_objects": 0,
+      "duration_ms": 893633,
+      "unresolved_source_blocks": 1,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 23449,
+      "output_tokens": 44424,
+      "cost_source": "subscription",
+      "response_sha256": "95783bce57cc4742e0ef832ed1273fae0c663f861463038700cfc866ec5f0075"
+    },
+    {
+      "packet": 1,
+      "objects": 31,
+      "invalid_objects": 0,
+      "duration_ms": 404603,
+      "unresolved_source_blocks": 1,
+      "model": "codex/gpt-6-astra",
+      "input_tokens": 23451,
+      "output_tokens": 10514,
+      "cost_source": "subscription",
+      "response_sha256": "fdfd651c95794943ed998866434bd783946240579b6310ec4e95cf23cfc02065"
+    }
+  ],
+  "registered_objects": 182,
+  "duration_ms_sum": 1298236,
+  "fine_device_identity_recovered": false,
+  "remaining_work": "Read circuit devices from source-bound higher-resolution tiles; do not infer device models from navigation descriptions.",
+  "boundary": "182 inventory records include assemblies, views, notes and specification entries; these are not 182 independent physical objects or defects.",
+  "full_acceptance_proven": false
+}
