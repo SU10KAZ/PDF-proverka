@@ -1,0 +1,721 @@
+{
+  "packet": "object_inventory_005",
+  "objects": 43,
+  "findings": 0,
+  "duration_ms": 871661,
+  "unresolved_operation_count": 191,
+  "unresolved_source_blocks": 1,
+  "unresolved_source_block_receipts": [
+    {
+      "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+        "status": "needs_data",
+        "object_ids": [
+          "ОГМ5_ведомость",
+          "ОГМ6_ведомость",
+          "ОГМ7_ведомость",
+          "ОГМ8_ведомость"
+        ],
+        "reason": "Все четыре панели просмотрены и сопоставлены по маркам. Мелкие позиции, часть наклонных размеров и узловых выносок недостаточно разборчивы для полного поэлементного учета и сравнения; требуется более четкий графический фрагмент."
+      }
+    }
+  ],
+  "text_quote_receipts": [
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 4,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 5,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 6,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 7,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 8,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 9,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ1_ведомость",
+      "parameter_index": 10,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 4,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 5,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 6,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 7,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 8,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ2_ведомость",
+      "parameter_index": 9,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 4,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 5,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 6,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 7,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 8,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМЗ_ведомость",
+      "parameter_index": 9,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 4,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 5,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 6,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 7,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 8,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 9,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ4_ведомость",
+      "parameter_index": 10,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 4,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 5,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 6,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 7,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 8,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ5_ведомость",
+      "parameter_index": 9,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 4,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 5,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 6,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 7,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 8,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ6_ведомость",
+      "parameter_index": 9,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 4,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 5,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 6,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 7,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 8,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ7_ведомость",
+      "parameter_index": 9,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 4,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 5,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 6,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 7,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 8,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ОГМ8_ведомость",
+      "parameter_index": 9,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "Требования_лист6",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "Требования_лист6",
+      "parameter_index": 1,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "Требования_лист6",
+      "parameter_index": 2,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "Требования_лист6",
+      "parameter_index": 3,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "Требования_лист6",
+      "parameter_index": 4,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК1_1_ОГМ1",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК1_1_ОГМ2",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК1_1_ОГМ3",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК1_1_ОГМ4",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК3_1_ОГМ5",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК3_1_ОГМ6",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК3_1_ОГМ7",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК3_1_ОГМ8",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК3_1_ОГМ9",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК4_1_ОГМ5",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК4_1_ОГМ6",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК4_1_ОГМ7",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК4_1_ОГМ10",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК5_ОГМ11",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК5_ОГМ12",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК5_ОГМ13",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК5_ОГМ17",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК5_ОГМ18",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК5_ОГМ19",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК5_ОГМ20",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК6_ОГМ14",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК6_ОГМ15",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК6_ОГМ16",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК6_ОГМ21",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК6_ОГМ22",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК6_ОГМ23",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК6_ОГМ24",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    },
+    {
+      "object_id": "ЛК6_ОГМ25",
+      "parameter_index": 0,
+      "quote_matches": true,
+      "semantic_value_verified": false
+    }
+  ],
+  "quote_mismatches": 0,
+  "semantic_acceptance": false,
+  "result_sha256": "22d1c94a833385e0835e55d3d94529a9fed10c78723b7db4a6a89bd987eaaaff"
+}

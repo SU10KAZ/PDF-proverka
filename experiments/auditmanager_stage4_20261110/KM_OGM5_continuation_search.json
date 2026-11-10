@@ -1,0 +1,3160 @@
+{
+  "origin": "Actual OGM5 Astra needs_data response",
+  "previously_supplied_sources_excluded": true,
+  "previous_omitted_sources_prioritized": true,
+  "operation_searches": [
+    {
+      "operation": "dimension_consistency",
+      "search": {
+        "hits": [
+          {
+            "block_id": "blk_e3630afbd9f64adfa84ce0d6b68ec184",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 811
+          },
+          {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 1001
+          },
+          {
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 444
+          },
+          {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 571
+          },
+          {
+            "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "по А",
+              "2-2",
+              "4-4"
+            ],
+            "start_line": 587
+          },
+          {
+            "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "по А",
+              "4-4"
+            ],
+            "start_line": 612
+          },
+          {
+            "block_id": "blk_60fce78600474a06989f2253821f34f2",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "по А",
+              "2-2",
+              "3-3"
+            ],
+            "start_line": 628
+          },
+          {
+            "block_id": "blk_e32648e76bae476f840c5cf12bfe3003",
+            "kind": "TEXT",
+            "page": 1,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 13
+          },
+          {
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "по А",
+              "по Е"
+            ],
+            "start_line": 1305
+          },
+          {
+            "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "по А",
+              "2-2"
+            ],
+            "start_line": 86
+          },
+          {
+            "block_id": "blk_f3f0332f544a4ca493442513059a154d",
+            "kind": "TEXT",
+            "page": 1,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 34
+          },
+          {
+            "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А",
+              "по Е"
+            ],
+            "start_line": 1618
+          }
+        ],
+        "backlog": [
+          {
+            "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "по А",
+              "2-2"
+            ],
+            "start_line": 152,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_c35486f85bac42b799c61a10c630a793",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "по А",
+              "3-3"
+            ],
+            "start_line": 985,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e4b1c3dd3043481db86f87c923f0a173",
+            "kind": "TEXT",
+            "page": 2,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 50,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_26d908d359d14584917702c046803793",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А",
+              "по Е"
+            ],
+            "start_line": 1749,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+            "kind": "TEXT",
+            "page": 4,
+            "queries": [
+              "по А",
+              "2-2"
+            ],
+            "start_line": 289,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "по А",
+              "2-2",
+              "3-3",
+              "4-4"
+            ],
+            "start_line": 1215,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_49d947c318c3478582a39740abda8658",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "по А",
+              "4-4"
+            ],
+            "start_line": 1017,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_ef276d1030da49b48f4bb057ebafe685",
+            "kind": "TEXT",
+            "page": 2,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 71,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_f4e8aa99af0048148949bd81155997fe",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А",
+              "по Е"
+            ],
+            "start_line": 1765,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_07bceef658074a22a028d29f7493e678",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "по А",
+              "3-3",
+              "4-4"
+            ],
+            "start_line": 1452,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А",
+              "по Е"
+            ],
+            "start_line": 1797,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6d3a9c479ffe4b57b3cd3e5310d5abfd",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А",
+              "3-3"
+            ],
+            "start_line": 1937,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "по А",
+              "4-4"
+            ],
+            "start_line": 1247,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+            "kind": "IMAGE",
+            "page": 12,
+            "queries": [
+              "по А",
+              "по Е"
+            ],
+            "start_line": 2030,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6451cc830d2b45f5bf19bbc352d4a419",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "по А",
+              "2-2"
+            ],
+            "start_line": 881,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_f63af88de2a840e49ca709d736eaa225",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 257,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+            "kind": "IMAGE",
+            "page": 12,
+            "queries": [
+              "по А",
+              "по Е"
+            ],
+            "start_line": 2131,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_185c30cc9f724458a4fc36ac10e2af68",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А",
+              "4-4"
+            ],
+            "start_line": 1969,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_9243af20ea504c1c8f940705d31f1f32",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 275,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "по А",
+              "2-2"
+            ],
+            "start_line": 1337,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_ddecc5c2c49a4deb8a4156af444dfcd9",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А",
+              "2-2"
+            ],
+            "start_line": 1586,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 312,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e3a065c965414cc9a95c5488f8e41108",
+            "kind": "IMAGE",
+            "page": 12,
+            "queries": [
+              "по А",
+              "2-2"
+            ],
+            "start_line": 2265,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_767432a366864283851be4a9092d0909",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 345,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+            "kind": "TEXT",
+            "page": 5,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 434,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_02786cefba4641928c7e149eda44f872",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 710,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_69c102e8922e48c982c254c05fb2e093",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 745,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 761,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6e38e7f2d8ae4bae9cbf4deb442c7742",
+            "kind": "TEXT",
+            "page": 7,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 839,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 849,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 865,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 897,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 919,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4b49406098054a4da822e4286031df67",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 941,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_2b31bb21c613499ea1bea845105e296f",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 963,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1063,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1085,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1107,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_9d85769870054701b8f16e3f8d203864",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1129,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+            "kind": "TEXT",
+            "page": 9,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1147,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1191,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_a454c3538d6d4b3eafc59261d7229c42",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1231,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_09df648d1b4d4cc097ea6f0e25ceef52",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1263,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1279,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_c39bd325354f41b2837e3a7527ff4854",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1321,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1354,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1374,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_5de20e336f994591bdd8c56c0f1e4183",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1395,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4412076f7a7349f587fb211ff8b4af08",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1416,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1436,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_18bd9bc412d24963af5f2334bad9aa33",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1470,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_0359ba1d16b44cfb9ad1781c770c02c1",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1490,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4f196780d3d74b9a9eab9e8baed67f12",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1511,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_767f34cdd83944c9bfffd5deab397aee",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1531,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_86391202bd4d44b79d72ea0d02397531",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1552,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_32a409cc3ad1431a9b93259722f9a866",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1568,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_db827d15a9c64c8fbcc57f1ac5f8408e",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1602,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_7315b3a722f946d48c34d31d1eac62ad",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1634,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_44d5d64039f74e2188935e15eabafb7d",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1650,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_f8cad33a4f74403cb982ba27beeb20fc",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1666,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_fe9c8af96413404a8b896cd8382fc410",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1685,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_7fc4d0805a89466695360d1c96b75a3b",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1706,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_bfa3c6ea2ddc4f868883b3c60b38e04d",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1726,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_f71b2ff9b6e84caeb63ce9c77a0863e9",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1781,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_32bc47a039c54d7e9eb7cc9d7abbc8fb",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1813,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_a691961445f147298f9cdc1cb0d29fce",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1829,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4e4e96f61e414814a73cc4d46c2d0ffa",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1854,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_df88245dc58542b5ace64cd60723f153",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1876,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_b2ea5b80b2d4480e907cb019c19a01f0",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1900,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6fe994e514a34102a382292a53829663",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1921,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_a7a7a6260e93456e98307050fde64c31",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1953,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_8f0cdcd952da450b9c0b3b7192dbacec",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 1986,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_d39eda30ae7d471f97d09e3f41e1a33f",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2011,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_1d97a9dde301455c81972e7f15cdb7fd",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2046,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e587f49a7bce4c7bac350d00c17ba616",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2066,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_481ce0cbd6d54010a98f34640ed65aed",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2088,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_ba972bbe49b944208eba2b5a9161faa9",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2108,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2147,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_1ab59db7d11b4521a1cd065b1ff8812b",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2168,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_40c82b814ff7491eae9f712e2b0c108f",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2188,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_2bb57db30b02415ebce2a71e46947bad",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2208,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_185d91fc43b749c7adbb30e30f4f1bf1",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2229,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_430981d1cd56433ab0a1189212418430",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 2249,
+            "reason": "context_budget"
+          }
+        ],
+        "query_hit_counts": {
+          "ОГМ 5": 12,
+          "по А": 111,
+          "по Е": 7,
+          "2-2": 10,
+          "3-3": 5,
+          "4-4": 7
+        },
+        "rejected_queries": [],
+        "deferred_queries": [],
+        "already_supplied": [
+          {
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 361
+          },
+          {
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 377
+          },
+          {
+            "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 393
+          },
+          {
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 418
+          },
+          {
+            "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 460
+          },
+          {
+            "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 482
+          },
+          {
+            "block_id": "blk_addaa8965de54d218095d13652f30388",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 503
+          },
+          {
+            "block_id": "blk_984efa22a06d4fe7be4733e2ffe26c5c",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 525
+          },
+          {
+            "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 547
+          },
+          {
+            "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 644
+          },
+          {
+            "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 666
+          },
+          {
+            "block_id": "blk_7f0ce580e06f44f78c0b85f92efb82c7",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "по А"
+            ],
+            "start_line": 688
+          },
+          {
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 728
+          },
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 777
+          },
+          {
+            "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 795
+          },
+          {
+            "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ОГМ 5",
+              "по А"
+            ],
+            "start_line": 1041
+          }
+        ],
+        "absence_proven": false,
+        "sheet_lookup_enabled": true,
+        "boundary": "Literal MD search and optional same-version sheet lookup; zero matches do not establish absence."
+      }
+    },
+    {
+      "operation": "requirement_applicability",
+      "search": {
+        "hits": [
+          {
+            "block_id": "blk_e3630afbd9f64adfa84ce0d6b68ec184",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "ОГМ 5"
+            ],
+            "start_line": 811
+          },
+          {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "ОГМ 5"
+            ],
+            "start_line": 1001
+          },
+          {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "HSA-M10",
+              "бетон"
+            ],
+            "start_line": 571
+          },
+          {
+            "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+            "kind": "TEXT",
+            "page": 4,
+            "queries": [
+              "HSA-M10"
+            ],
+            "start_line": 289
+          },
+          {
+            "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 897
+          },
+          {
+            "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "Общие указания",
+              "нагрузки",
+              "бетон"
+            ],
+            "start_line": 152
+          },
+          {
+            "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "бетон"
+            ],
+            "start_line": 86
+          },
+          {
+            "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 919
+          },
+          {
+            "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "HSA-M10"
+            ],
+            "start_line": 849
+          },
+          {
+            "block_id": "blk_4b49406098054a4da822e4286031df67",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 941
+          },
+          {
+            "block_id": "blk_f63af88de2a840e49ca709d736eaa225",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "бетон"
+            ],
+            "start_line": 257
+          },
+          {
+            "block_id": "blk_2b31bb21c613499ea1bea845105e296f",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 963
+          }
+        ],
+        "backlog": [
+          {
+            "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1063,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_32a409cc3ad1431a9b93259722f9a866",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "HSA-M10",
+              "бетон"
+            ],
+            "start_line": 1568,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1085,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e3a065c965414cc9a95c5488f8e41108",
+            "kind": "IMAGE",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "бетон"
+            ],
+            "start_line": 2265,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1107,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1354,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1374,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_5de20e336f994591bdd8c56c0f1e4183",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1395,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4412076f7a7349f587fb211ff8b4af08",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1416,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_18bd9bc412d24963af5f2334bad9aa33",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1470,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_0359ba1d16b44cfb9ad1781c770c02c1",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1490,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4f196780d3d74b9a9eab9e8baed67f12",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1511,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_767f34cdd83944c9bfffd5deab397aee",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1531,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_f8cad33a4f74403cb982ba27beeb20fc",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1666,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_fe9c8af96413404a8b896cd8382fc410",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1685,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_7fc4d0805a89466695360d1c96b75a3b",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1706,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_bfa3c6ea2ddc4f868883b3c60b38e04d",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1726,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_a691961445f147298f9cdc1cb0d29fce",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1829,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4e4e96f61e414814a73cc4d46c2d0ffa",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1854,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_df88245dc58542b5ace64cd60723f153",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1876,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_b2ea5b80b2d4480e907cb019c19a01f0",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1900,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_1d97a9dde301455c81972e7f15cdb7fd",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 2046,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e587f49a7bce4c7bac350d00c17ba616",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 2066,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_481ce0cbd6d54010a98f34640ed65aed",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 2088,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_ba972bbe49b944208eba2b5a9161faa9",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 2108,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_d39eda30ae7d471f97d09e3f41e1a33f",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "HSA-M10"
+            ],
+            "start_line": 2011,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 2147,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_1ab59db7d11b4521a1cd065b1ff8812b",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 2168,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_40c82b814ff7491eae9f712e2b0c108f",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 2188,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_2bb57db30b02415ebce2a71e46947bad",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 2208,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_185d91fc43b749c7adbb30e30f4f1bf1",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 2229,
+            "reason": "context_budget"
+          }
+        ],
+        "query_hit_counts": {
+          "ОГМ 5": 12,
+          "HSA-M10": 46,
+          "Конструктивно": 40,
+          "Общие указания": 1,
+          "нагрузки": 1,
+          "бетон": 8
+        },
+        "rejected_queries": [],
+        "deferred_queries": [],
+        "already_supplied": [
+          {
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "ОГМ 5"
+            ],
+            "start_line": 361
+          },
+          {
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "ОГМ 5"
+            ],
+            "start_line": 377
+          },
+          {
+            "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "ОГМ 5"
+            ],
+            "start_line": 393
+          },
+          {
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "ОГМ 5",
+              "бетон"
+            ],
+            "start_line": 418
+          },
+          {
+            "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 460
+          },
+          {
+            "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 482
+          },
+          {
+            "block_id": "blk_addaa8965de54d218095d13652f30388",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 503
+          },
+          {
+            "block_id": "blk_984efa22a06d4fe7be4733e2ffe26c5c",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 525
+          },
+          {
+            "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "ОГМ 5"
+            ],
+            "start_line": 547
+          },
+          {
+            "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "ОГМ 5",
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 644
+          },
+          {
+            "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 666
+          },
+          {
+            "block_id": "blk_7f0ce580e06f44f78c0b85f92efb82c7",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 688
+          },
+          {
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "ОГМ 5"
+            ],
+            "start_line": 728
+          },
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "ОГМ 5"
+            ],
+            "start_line": 777
+          },
+          {
+            "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "ОГМ 5",
+              "бетон"
+            ],
+            "start_line": 795
+          },
+          {
+            "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ОГМ 5",
+              "HSA-M10",
+              "Конструктивно"
+            ],
+            "start_line": 1041
+          }
+        ],
+        "absence_proven": false,
+        "sheet_lookup_enabled": true,
+        "boundary": "Literal MD search and optional same-version sheet lookup; zero matches do not establish absence."
+      }
+    },
+    {
+      "operation": "document_links",
+      "search": {
+        "hits": [
+          {
+            "block_id": "blk_e3630afbd9f64adfa84ce0d6b68ec184",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 811
+          },
+          {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1001
+          },
+          {
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 444
+          },
+          {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 571
+          },
+          {
+            "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 587
+          },
+          {
+            "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 612
+          },
+          {
+            "block_id": "blk_60fce78600474a06989f2253821f34f2",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 628
+          },
+          {
+            "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "Общие указания",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 152
+          },
+          {
+            "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 86
+          },
+          {
+            "block_id": "blk_e32648e76bae476f840c5cf12bfe3003",
+            "kind": "TEXT",
+            "page": 1,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 13
+          },
+          {
+            "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 312
+          },
+          {
+            "block_id": "blk_f3f0332f544a4ca493442513059a154d",
+            "kind": "TEXT",
+            "page": 1,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 34
+          }
+        ],
+        "backlog": [
+          {
+            "block_id": "blk_767432a366864283851be4a9092d0909",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 345,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e4b1c3dd3043481db86f87c923f0a173",
+            "kind": "TEXT",
+            "page": 2,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 50,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6ffe5ad972834d309b921eb28548ac98",
+            "kind": "TEXT",
+            "page": 5,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 434,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_ef276d1030da49b48f4bb057ebafe685",
+            "kind": "TEXT",
+            "page": 2,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 71,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_69c102e8922e48c982c254c05fb2e093",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 745,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_02786cefba4641928c7e149eda44f872",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 710,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 761,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_f63af88de2a840e49ca709d736eaa225",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 257,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6e38e7f2d8ae4bae9cbf4deb442c7742",
+            "kind": "TEXT",
+            "page": 7,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 839,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_9243af20ea504c1c8f940705d31f1f32",
+            "kind": "TEXT",
+            "page": 3,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 275,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+            "kind": "TEXT",
+            "page": 9,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1147,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+            "kind": "TEXT",
+            "page": 4,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 289,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1191,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1215,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_a454c3538d6d4b3eafc59261d7229c42",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1231,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1247,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_09df648d1b4d4cc097ea6f0e25ceef52",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1263,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+            "kind": "IMAGE",
+            "page": 9,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1279,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 849,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 865,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6451cc830d2b45f5bf19bbc352d4a419",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 881,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 897,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 919,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4b49406098054a4da822e4286031df67",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 941,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_2b31bb21c613499ea1bea845105e296f",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 963,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_c35486f85bac42b799c61a10c630a793",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 985,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_49d947c318c3478582a39740abda8658",
+            "kind": "IMAGE",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1017,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1063,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1085,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1107,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_9d85769870054701b8f16e3f8d203864",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1129,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1305,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_c39bd325354f41b2837e3a7527ff4854",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1321,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1337,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1354,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1374,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_5de20e336f994591bdd8c56c0f1e4183",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1395,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4412076f7a7349f587fb211ff8b4af08",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1416,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_bed91bec458a466db84aaae236ff05a4",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1436,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_07bceef658074a22a028d29f7493e678",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1452,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_18bd9bc412d24963af5f2334bad9aa33",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1470,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_0359ba1d16b44cfb9ad1781c770c02c1",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1490,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4f196780d3d74b9a9eab9e8baed67f12",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1511,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_767f34cdd83944c9bfffd5deab397aee",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1531,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_86391202bd4d44b79d72ea0d02397531",
+            "kind": "TEXT",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1552,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_32a409cc3ad1431a9b93259722f9a866",
+            "kind": "IMAGE",
+            "page": 10,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1568,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_ddecc5c2c49a4deb8a4156af444dfcd9",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1586,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_db827d15a9c64c8fbcc57f1ac5f8408e",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1602,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1618,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_7315b3a722f946d48c34d31d1eac62ad",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1634,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_44d5d64039f74e2188935e15eabafb7d",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1650,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_f8cad33a4f74403cb982ba27beeb20fc",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1666,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_fe9c8af96413404a8b896cd8382fc410",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1685,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_7fc4d0805a89466695360d1c96b75a3b",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1706,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_bfa3c6ea2ddc4f868883b3c60b38e04d",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1726,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_26d908d359d14584917702c046803793",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1749,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_f4e8aa99af0048148949bd81155997fe",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1765,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_f71b2ff9b6e84caeb63ce9c77a0863e9",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1781,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1797,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_32bc47a039c54d7e9eb7cc9d7abbc8fb",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1813,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_a691961445f147298f9cdc1cb0d29fce",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1829,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_4e4e96f61e414814a73cc4d46c2d0ffa",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1854,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_df88245dc58542b5ace64cd60723f153",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1876,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_b2ea5b80b2d4480e907cb019c19a01f0",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1900,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6fe994e514a34102a382292a53829663",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1921,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6d3a9c479ffe4b57b3cd3e5310d5abfd",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1937,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_a7a7a6260e93456e98307050fde64c31",
+            "kind": "TEXT",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1953,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_185c30cc9f724458a4fc36ac10e2af68",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1969,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_8f0cdcd952da450b9c0b3b7192dbacec",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1986,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_d39eda30ae7d471f97d09e3f41e1a33f",
+            "kind": "IMAGE",
+            "page": 11,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2011,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+            "kind": "IMAGE",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2030,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_1d97a9dde301455c81972e7f15cdb7fd",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2046,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e587f49a7bce4c7bac350d00c17ba616",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2066,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_481ce0cbd6d54010a98f34640ed65aed",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2088,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_ba972bbe49b944208eba2b5a9161faa9",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2108,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+            "kind": "IMAGE",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2131,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e69fc79ed47d40ecb1fd922bd60777c3",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2147,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_1ab59db7d11b4521a1cd065b1ff8812b",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2168,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_40c82b814ff7491eae9f712e2b0c108f",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2188,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_2bb57db30b02415ebce2a71e46947bad",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2208,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_185d91fc43b749c7adbb30e30f4f1bf1",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2229,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_430981d1cd56433ab0a1189212418430",
+            "kind": "TEXT",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2249,
+            "reason": "context_budget"
+          },
+          {
+            "block_id": "blk_e3a065c965414cc9a95c5488f8e41108",
+            "kind": "IMAGE",
+            "page": 12,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 2265,
+            "reason": "context_budget"
+          }
+        ],
+        "query_hit_counts": {
+          "Лист 4": 14,
+          "Общие указания": 1,
+          "Схема расположения ограждений": 22,
+          "ПД-00580716": 111,
+          "КМ1.2": 111,
+          "ПД-00580716-КМ1.2": 111
+        },
+        "rejected_queries": [],
+        "deferred_queries": [
+          "Ведомость рабочих чертежей"
+        ],
+        "already_supplied": [
+          {
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 361
+          },
+          {
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 377
+          },
+          {
+            "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 393
+          },
+          {
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "kind": "IMAGE",
+            "page": 5,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 418
+          },
+          {
+            "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 460
+          },
+          {
+            "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 482
+          },
+          {
+            "block_id": "blk_addaa8965de54d218095d13652f30388",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 503
+          },
+          {
+            "block_id": "blk_984efa22a06d4fe7be4733e2ffe26c5c",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 525
+          },
+          {
+            "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "kind": "IMAGE",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 547
+          },
+          {
+            "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 644
+          },
+          {
+            "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 666
+          },
+          {
+            "block_id": "blk_7f0ce580e06f44f78c0b85f92efb82c7",
+            "kind": "TEXT",
+            "page": 6,
+            "queries": [
+              "Лист 4",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 688
+          },
+          {
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 728
+          },
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 777
+          },
+          {
+            "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+            "kind": "IMAGE",
+            "page": 7,
+            "queries": [
+              "Схема расположения ограждений",
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 795
+          },
+          {
+            "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+            "kind": "TEXT",
+            "page": 8,
+            "queries": [
+              "ПД-00580716",
+              "КМ1.2",
+              "ПД-00580716-КМ1.2"
+            ],
+            "start_line": 1041
+          }
+        ],
+        "absence_proven": false,
+        "sheet_lookup_enabled": true,
+        "boundary": "Literal MD search and optional same-version sheet lookup; zero matches do not establish absence."
+      }
+    }
+  ],
+  "sources_semantically_checked": false,
+  "followup_dispatched": false,
+  "absence_proven": false,
+  "limit": "Per-operation local search pages only; union not yet packaged for a model. Generic mark/sheet queries also return adjacent material; backlog remains."
+}
