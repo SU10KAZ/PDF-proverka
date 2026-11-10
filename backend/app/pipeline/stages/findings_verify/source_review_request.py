@@ -50,6 +50,7 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
     payload = {'finding_id': finding['id'], 'finding_sha256': finding_hash, 'source_md_sha256': md_hash,
                'context_sha256': packet.get('context_sha256'),
                'final_claim': {k: finding.get(k) for k in ('problem', 'description', 'solution')},
+               'display_fields': {k: finding.get(k) for k in ('risk', 'consequence', 'severity', 'norm', 'norm_quote') if finding.get(k) not in (None, '')},
                'original_claims': claims, 'authoritative_text': packet['sources'],
                'images_in_attachment_order': [{k: v for k, v in im.items() if k != 'path'} for im in images],
                'unavailable_images': omitted,
@@ -57,7 +58,9 @@ def prepare_source_review_request(queue, finding, md, *, max_images=8):
                'budgeted_text_block_ids': packet.get('budgeted_block_ids', [])}
     instruction = '''Review only the supplied claims, authoritative TEXT and attached images.
 Do not access files, tools, web, historical reviews or evaluation answers.
-Separate each substantive claim and preserve uncertainty. A source address or
+Separate each substantive claim and preserve uncertainty. Include substantive
+assertions from display_fields (risk, consequence, severity and normative text)
+in your review; these fields are not established facts or verified requirements. A source address or
 matching quote does not prove the claim. Do not correct TEXT using raster.
 For arithmetic enumerate source rows and reproduce the operation. Distinguish
 annotation conflicts from physical defects and operating-mode assumptions.

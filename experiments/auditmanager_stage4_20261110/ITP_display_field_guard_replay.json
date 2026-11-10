@@ -1,0 +1,14 @@
+{
+  "new_model_calls": 0,
+  "original_finding_preserved": true,
+  "receipts": [
+    {
+      "finding_id": "F-042",
+      "status": "not_applied",
+      "reason": "incomplete_display_field_review"
+    }
+  ],
+  "meaning": "Prior Claude candidate did not review risk, severity and normative display text. It is now rejected before mutation; raw decision preserved.",
+  "supersedes": "Earlier successful admission replay applies only to the previous contract, not the current strengthened contract.",
+  "remaining": "Produce and evaluate a complete decision with retrieved calculation and all report fields; no model output edited to fake compliance."
+}

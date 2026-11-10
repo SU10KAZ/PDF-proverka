@@ -72,6 +72,36 @@ def _check_decision(response, decision):
     return action
 
 
+DISPLAY_REVIEW_FIELDS = ('risk', 'consequence', 'severity', 'norm', 'norm_quote')
+
+
+def _review_display_fields(original, decision, action):
+    """Require explicit consistency review of ancillary report text before applying."""
+    if action not in ('retain', 'revise', 'question'):
+        return {}
+    required = {k for k in DISPLAY_REVIEW_FIELDS if original.get(k) not in (None, '')}
+    reviews = decision.get('display_field_reviews', {})
+    if not isinstance(reviews, dict) or set(reviews) != required:
+        raise ValueError('incomplete_display_field_review')
+    updates = {}
+    for key in required:
+        row = reviews[key]
+        if not isinstance(row, dict) or row.get('original_value_sha256') != evidence_digest(original[key]):
+            raise ValueError('stale_display_field_review')
+        if (row.get('consistent_with_final_claim') is not True
+                or not isinstance(row.get('reason'), str) or not row['reason'].strip()):
+            raise ValueError('display_field_consistency_unverified')
+        value = row.get('value')
+        if 'value' not in row or not isinstance(value, str):
+            raise ValueError('explicit_display_field_value_required')
+        if key == 'severity' and not value.strip():
+            raise ValueError('severity_cannot_be_empty')
+        if action == 'retain' and value != original[key]:
+            raise ValueError('changed_display_field_requires_revision')
+        updates[key] = value
+    return updates
+
+
 def apply_review_admissions(document, entries, md):
     """Return a new document and per-entry receipts, preserving all originals."""
     if not isinstance(document,dict) or not isinstance(document.get('findings'),list):
@@ -96,6 +126,7 @@ def apply_review_admissions(document, entries, md):
             validation=validate_source_review(response,entry['queue'],[original],md)
             if validation['errors']:raise ValueError('invalid_source_receipt: '+','.join(validation['errors']))
             action=_check_decision(response,decision)
+            display_updates=_review_display_fields(original,decision,action)
             history={'finding_id':fid,'original_finding':deepcopy(original),'decision':deepcopy(decision),
                      'response':deepcopy(response),'source_md_sha256':hashlib.sha256(md.encode()).hexdigest()}
             # Only mutate once all checks have passed for this entry.
@@ -106,6 +137,7 @@ def apply_review_admissions(document, entries, md):
                 result.setdefault(archive,[]).append(deepcopy(original))
             else:
                 if action in ('revise','question'):original.update(decision['approved_fields'])
+                original.update(display_updates)
                 original['report_section']='questions' if action=='question' else 'technical_findings'
                 original['source_evidence_review_status']='reviewed_question' if action=='question' else 'reviewed_supported'
                 original['source_review_response_sha256']=evidence_digest(response)

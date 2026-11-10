@@ -104,3 +104,35 @@ def test_retain_cannot_leave_unverified_context_in_original_wording():
     e['decision']['claim_reviews'].append({'claim_id':'C2','role':'context','verdict':'needs_data','reason':'Cause is unverified'})
     out,receipts=apply_review_admissions(doc,entries,md)
     assert out==doc and receipts[0]['status']=='not_applied'
+
+
+def display_case():
+    doc,entries,md=case('revise','supported');f=doc['findings'][0];e=entries[0]
+    f.update(risk='Equipment will fail',norm='Unverified standard',severity='ЭКСПЛУАТАЦИОННОЕ')
+    e['queue']=build_source_review_queue([f],md)
+    e['response']['finding_sha256']=e['queue']['packets'][0]['finding_sha256']
+    e['decision'].update(response_sha256=evidence_digest(e['response']),
+        approved_fields={'problem':'Conflicting labels','description':'Two source labels differ','solution':'Reconcile labels'},final_wording_verified=True)
+    return doc,entries,md
+
+
+def test_revision_cannot_silently_preserve_unreviewed_risk_and_norm():
+    doc,entries,md=display_case()
+    out,receipts=apply_review_admissions(doc,entries,md)
+    assert out==doc and receipts[0]['reason']=='incomplete_display_field_review'
+
+
+def test_explicit_display_revision_reaches_excel_and_preserves_original():
+    doc,entries,md=display_case();f=doc['findings'][0]
+    values={'risk':'Risk of ambiguous selection; physical failure not established','norm':'','severity':f['severity']}
+    entries[0]['decision']['display_field_reviews']={k:{'original_value_sha256':evidence_digest(f[k]),
+        'consistent_with_final_claim':True,'reason':'Only source label disagreement established','value':v} for k,v in values.items()}
+    out,receipts=apply_review_admissions(doc,entries,md)
+    assert receipts[0]['status']=='applied'
+    assert out['source_review_history'][0]['original_finding']['risk']=='Equipment will fail'
+    wb=Workbook();build_project_sheet(wb,{'project_id':'test','sheet_name':'test','findings_json':out})
+    cells=[cell for row in wb['test'].values for cell in row]
+    assert values['risk'] in cells and 'Equipment will fail' not in cells and 'Unverified standard' not in cells
+    entries[0]['decision']['display_field_reviews']['risk']['original_value_sha256']='stale'
+    unchanged,receipts=apply_review_admissions(doc,entries,md)
+    assert unchanged==doc and receipts[0]['reason']=='stale_display_field_review'

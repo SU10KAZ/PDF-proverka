@@ -634,5 +634,12 @@
     "model_evaluation_of_expanded_sources": false,
     "automatic_dispatch": false,
     "remaining": "34 matching hits and one query still deferred; graphic limits and final semantic evaluation remain. No whole-project completeness claim."
+  },
+  "display_field_consistency_guard": {
+    "status": "implemented_and_real_saved_decision_rejected",
+    "report": "ITP_display_field_guard_replay.json",
+    "tests_passed": 99,
+    "current_contract_live_acceptance": false,
+    "remaining": "Prepare full source review and adjudication with display fields. Prior successful admission controls are historical and do not prove current contract acceptance."
   }
 }
