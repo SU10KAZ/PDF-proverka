@@ -1074,12 +1074,66 @@
       "Per-pass files and all candidate provenance retained by existing targeted executor."
     ],
     "tests_passed": 40,
-    "test_mode": "Fake provider through actual targeted executor; no live run of integrated opt-in path yet.",
+    "test_mode": "40 local tests plus actual targeted executor with sealed initial pass and one fresh Astra continuation. Initial pass construction injected; full discovery not tested.",
     "provider_bridge_changed": false,
     "limits": [
       "Provider bridge executes only frozen planned roles; no extra unplanned continuation calls added there.",
       "A flag and local tests do not constitute candidate freeze, quality acceptance or production rollout.",
       "Standalone live OGM5 workflow and real response retention are separate evidence from this runtime integration."
-    ]
+    ],
+    "live_control": {
+      "status": "live_followup_mechanism_pass_quality_not_accepted",
+      "model": "codex/gpt-6-astra",
+      "reasoning_effort": "high",
+      "fresh_calls": 1,
+      "duration_ms": 99317,
+      "request_sha256": "9b530d16e17e8ccb05065e3a63ed6953b7f17ddfabbf74dbab8a4d9caa431c88",
+      "message_chars": 117808,
+      "images": 16,
+      "image_bytes": 4548875,
+      "baseline_findings_preserved_exactly": 26,
+      "final_transport_rows": 28,
+      "unique_incremental_confirmed_findings": 0,
+      "duplicate_topics": [
+        "Classic F-009: sheet reference",
+        "Classic F-013: pipe standard designation"
+      ],
+      "candidate_disposition": {
+        "candidate_for_merge": 2,
+        "pending_review": 2
+      },
+      "context_trajectory": [
+        "sealed exact first response",
+        "runtime searched authoritative MD and supplied additional graphics",
+        "fresh Astra response",
+        "no further sources within bounded envelope"
+      ],
+      "not_proved": [
+        "Complete audit quality",
+        "All sources exhausted",
+        "Physical defect for 648/650 mm",
+        "Anchor structural insufficiency",
+        "Full candidate construction path: first pass injected into actual executor"
+      ],
+      "production_changed": false,
+      "evidence_files": [
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_integrated_ogm5_small_summary.json",
+          "sha256": "9dbf8ba16f76582417e8cb7f4ea4e73f2c8e18544608753d42caf9a65baa3209"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_integrated_ogm5_small_manifest.json",
+          "sha256": "1d4e0a2262f1682c2fdb952030abf4cb5e220845487220153799abdb0e7367e7"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_integrated_ogm5_small_result.json",
+          "sha256": "5a2550319ebec9b54c5549d6cad98136019d7a1018dca4fa5e5fa7b34ae92e22"
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/KM_integrated_ogm5_ranked_summary.json",
+          "sha256": "db8437c2811e08b99008c8429b302074eddacd86ca87abfacd1da9583dcc98e4"
+        }
+      ]
+    }
   }
 }

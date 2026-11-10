@@ -1,0 +1,1073 @@
+{
+  "exit_code": 0,
+  "calls": [
+    {
+      "origin": "sealed_exact_request",
+      "request_sha256": "26e8ad0768bcad521e22fc9cfaddacd105fdb88f55e63f0c93c6ddc80d72328f"
+    },
+    {
+      "request_sha256": "9b530d16e17e8ccb05065e3a63ed6953b7f17ddfabbf74dbab8a4d9caa431c88",
+      "message_chars": 117808,
+      "images": 16,
+      "image_bytes": 4548875,
+      "origin": "fresh_followup",
+      "duration_ms": 99317,
+      "model_error": false
+    }
+  ],
+  "baseline_findings_preserved": 26,
+  "final_transport_rows": 28,
+  "operation_reports": [
+    {
+      "stage": "object_operations_integrated_ogm5",
+      "coverage": {
+        "objects": [
+          {
+            "id": "object_inventory_002:ogm5",
+            "identity": "ОГМ 5, ПД-00580716-КМ1.2, лист 4",
+            "scope": "Марка сборочного ограждения; 10 экземпляров по заголовку ведомости, индивидуальные места установки не представлены",
+            "kind": "сборка",
+            "source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "observed_parameters": [
+              {
+                "name": "Количество ограждений",
+                "value": 10,
+                "unit": "шт.",
+                "source_ref": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "quote": "Ведомость элементов ограждения ОГМ 5 (10 шт.)"
+              },
+              {
+                "name": "Усилие для прикрепления",
+                "value": "Конструктивно",
+                "unit": null,
+                "source_ref": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "quote": "| ОГМ 5 | ⊙ | 1 | φ40х3 | Конструктивно |  |  | C245 | L=3,420м | 1 |"
+              }
+            ]
+          }
+        ],
+        "invalid_objects": [],
+        "operations": [
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "identity_across_views",
+            "status": "reported_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "receipt": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "identity_across_views",
+              "status": "checked",
+              "reason": "Осмотрены все восемь приложенных изображений. На листе 4 найден самостоятельный размерный вид ОГМ 5 с позициями деталей и выносками узлов. На разрезе секции 2 листа 3 прослеживаются 10 ограждений этой марки: от марша +7,270…+9,110 до марша +37,510…+39,350, что согласуется с заголовком ведомости «10 шт.». Планы секции 2 также содержат ОГМ 5. Изображения листа 5 относятся к секции 3, для которой представлена отдельная ведомость листа 6; эти экземпляры не прибавлялись к количеству объекта листа 4. Идентификация марки выполнена; согласованность стадий и редакций листов требует отдельного уточнения.",
+              "source_refs": [
+                "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "blk_9dbddaba8e334be3ab857afe48df76ec",
+                "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                "blk_f0a5333974ac4088b7778f525922b014",
+                "blk_30cfd1306b554f0483179e8e36c3ef41"
+              ],
+              "context_queries": []
+            }
+          },
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "quantity_balance",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "reason": "missing_receipt"
+          },
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "receipt": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "dimension_consistency",
+              "status": "needs_data",
+              "reason": "Размерный вид ОГМ 5 теперь представлен. Видимые размеры 3420, 955, 800 и 500 мм согласуются с длинами соответствующих деталей 1, 2, 4 и 3 в ведомости после перевода метров в миллиметры. На виде также показаны четыре горизонтальных интервала по 600 мм, вертикальные интервалы по 320 мм и наклонные размеры 648 мм. Последние нельзя непосредственно объявить противоречащими заготовкам позиции 5 длиной 650 мм: необходимо установить границы измерения и обработку концов по узлам. Для полной проверки совместимости деталей, концевых примыканий и монтажной геометрии отсутствуют изображения узлов А, В, Е и связанных сечений листа 4. Их текстовые графические описания не заменяют изображения. Полная размерная согласованность не установлена.",
+              "source_refs": [
+                "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "blk_9dbddaba8e334be3ab857afe48df76ec",
+                "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "blk_d2963ae2ab2841cd95de9c28e8cac089"
+              ],
+              "context_queries": [
+                "ОГМ 5",
+                "по А",
+                "по Е",
+                "2-2",
+                "3-3",
+                "4-4"
+              ]
+            }
+          },
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "requirement_applicability",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "receipt": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "requirement_applicability",
+              "status": "needs_data",
+              "reason": "По ведомости установлены материал С245, анкеры HSA-M10х90 и указание «Конструктивно» в графе усилия для прикрепления. На общем виде имеются выноски узлов, однако сами изображения узлов крепления и сварных примыканий не приложены. Полный текст общих указаний blk_02786cefba4641928c7e149eda44f872 также не передан. Для проверки применимости требований нужны эти указания, изображения применяемых узлов и проектное основание выбора крепления: нагрузки, характеристики бетонного основания и условия установки анкеров. Слово «Конструктивно» само по себе не доказывает ни достаточность крепления, ни нарушение требований.",
+              "source_refs": [
+                "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "blk_ddc4b49561b745ffab319ae7f3b20860"
+              ],
+              "context_queries": [
+                "ОГМ 5",
+                "HSA-M10",
+                "Конструктивно",
+                "Общие указания",
+                "нагрузки",
+                "бетон"
+              ]
+            }
+          },
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "document_links",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "receipt": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "document_links",
+              "status": "needs_data",
+              "reason": "Общий вид ОГМ 5 на листе 4 и схемы размещения секции 2 на листе 3 обнаружены, поэтому прежнее утверждение об отсутствии графического контекста больше неприменимо. Однако исходный текст ссылки из общих указаний blk_02786cefba4641928c7e149eda44f872 не включён в пакет: проверить её точную формулировку и правильность адресации нельзя. По переданным метаданным лист 3 имеет стадию Р, лист 4 — П; необходимы сведения об их совместной применимости и редакциях. Листы 5 и 6 относятся к отдельному контексту секции 3 и не подтверждают адресацию ссылки для объекта листа 4.",
+              "source_refs": [
+                "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                "blk_30cfd1306b554f0483179e8e36c3ef41"
+              ],
+              "context_queries": [
+                "Лист 4",
+                "Общие указания",
+                "Схема расположения ограждений",
+                "ПД-00580716-КМ1.2",
+                "Ведомость рабочих чертежей"
+              ]
+            }
+          }
+        ],
+        "unmatched_operations": [],
+        "source_inventory": [
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_7f0ce580e06f44f78c0b85f92efb82c7",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_984efa22a06d4fe7be4733e2ffe26c5c",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_addaa8965de54d218095d13652f30388",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          }
+        ],
+        "unknown_inventory_blocks": [],
+        "unresolved_operations": 4,
+        "unresolved_source_blocks": 16,
+        "coverage_complete": false,
+        "semantic_verified": false
+      },
+      "requested_operations": [
+        "dimension_consistency",
+        "document_links",
+        "identity_across_views",
+        "requirement_applicability"
+      ],
+      "unverified_receipts": [],
+      "pending": [],
+      "semantic_verified": false,
+      "candidate_ledger": [],
+      "context_retrieval": {
+        "status": "prepared",
+        "new_source_ids": [
+          "blk_02786cefba4641928c7e149eda44f872",
+          "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+          "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+          "blk_2b31bb21c613499ea1bea845105e296f",
+          "blk_2f6153fc7d8243798ccea08249042194",
+          "blk_4b49406098054a4da822e4286031df67",
+          "blk_531e843c117243a3b1582cb3399f4681",
+          "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "blk_5f00d7d0be874b0ead4105aad66a03ed",
+          "blk_60fce78600474a06989f2253821f34f2",
+          "blk_6361593a2045407a94dff35af62ca5c3",
+          "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+          "blk_9da5632926f24581897a4eaebfd14c09",
+          "blk_ae8f7849e07147388fc213cff1fbb43f",
+          "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+          "blk_c314777ec1714d25b4d7f16f26513258",
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "blk_d986c7bfb02a433b975de506295fd0f9",
+          "blk_e3630afbd9f64adfa84ce0d6b68ec184",
+          "blk_ef276d1030da49b48f4bb057ebafe685",
+          "blk_f3f0332f544a4ca493442513059a154d"
+        ],
+        "omitted": [
+          {
+            "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_c35486f85bac42b799c61a10c630a793",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_26d908d359d14584917702c046803793",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_6451cc830d2b45f5bf19bbc352d4a419",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_49d947c318c3478582a39740abda8658",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_69c102e8922e48c982c254c05fb2e093",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+            "reason": "image_unavailable_or_budget"
+          }
+        ],
+        "automatic_dispatch": false,
+        "absence_proven": false,
+        "semantic_verified": false,
+        "next_stage": "object_operations_integrated_ogm5_context_1",
+        "request_sha256": "9b530d16e17e8ccb05065e3a63ed6953b7f17ddfabbf74dbab8a4d9caa431c88"
+      }
+    },
+    {
+      "stage": "object_operations_integrated_ogm5_context_1",
+      "coverage": {
+        "objects": [
+          {
+            "id": "object_inventory_002:ogm5",
+            "identity": "ОГМ 5, ПД-00580716-КМ1.2, лист 4",
+            "scope": "Марка сборочного ограждения; 10 экземпляров по заголовку ведомости, индивидуальные места установки не представлены",
+            "kind": "сборка",
+            "source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "observed_parameters": [
+              {
+                "name": "Количество ограждений",
+                "value": 10,
+                "unit": "шт.",
+                "source_ref": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "quote": "Ведомость элементов ограждения ОГМ 5 (10 шт.)"
+              },
+              {
+                "name": "Усилие для прикрепления",
+                "value": "Конструктивно",
+                "unit": null,
+                "source_ref": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "quote": "| ОГМ 5 | ⊙ | 1 | φ40х3 | Конструктивно |  |  | C245 | L=3,420м | 1 |"
+              }
+            ]
+          }
+        ],
+        "invalid_objects": [],
+        "operations": [
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "identity_across_views",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "reason": "missing_receipt"
+          },
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "quantity_balance",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "reason": "missing_receipt"
+          },
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "dimension_consistency",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "receipt": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "dimension_consistency",
+              "status": "needs_data",
+              "reason": "Размерный вид ОГМ 5 и узлы листа 4 представлены. Размеры 3420, 955, 800 и 500 мм согласуются с ведомостью для позиций 1, 2, 4 и 3 соответственно. Пять опорных пластин и четыре анкера на пластину согласуются с количеством 20 анкеров на сборку; цепочка 25+70+25=120 мм согласуется с размером пластины. Однако для наклонных деталей позиции 5 на виде указан размер 648 мм, а в ведомости — длина 650 мм. Не установлено, относятся ли эти значения к одинаковым границам измерения: отсутствует деталировка заготовки с обработкой торцов и объяснением перехода к сборочному размеру. Разность 2 мм сама по себе не доказывает ошибку или допустимость. Полная совместимость длин деталей не установлена.",
+              "source_refs": [
+                "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "blk_d986c7bfb02a433b975de506295fd0f9",
+                "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+                "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+                "blk_60fce78600474a06989f2253821f34f2"
+              ],
+              "context_queries": [
+                "ОГМ 5",
+                "648",
+                "L=0,650м",
+                "КМД",
+                "Размеры сварных швов"
+              ]
+            }
+          },
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "requirement_applicability",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "receipt": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "requirement_applicability",
+              "status": "needs_data",
+              "reason": "Установлена применимость указаний листа 4 к сварной сборке ОГМ 5 и показанным на ней узлам А, В и Е. Представлены крепление HSA-M10х90, сварные соединения и условное требование установки заглушек при отсутствии примыкающих ограждений. Общие данные предусматривают проверку соединений в КМД по расчетным усилиям и отсылают за нагрузками к разделу КЖ. В пакете отсутствуют расчетные нагрузки и усилия для этой сборки, характеристики бетонного основания, фактические расстояния анкеров до краев бетона, глубина анкеровки и расчет крепления. Поэтому достаточность выбранного крепления и сварных соединений не подтверждена и не опровергнута. Указание «Конструктивно» не заменяет недостающего расчетного основания.",
+              "source_refs": [
+                "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "blk_d986c7bfb02a433b975de506295fd0f9",
+                "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+                "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+                "blk_02786cefba4641928c7e149eda44f872",
+                "blk_531e843c117243a3b1582cb3399f4681"
+              ],
+              "context_queries": [
+                "ОГМ 5",
+                "HSA-M10",
+                "нагрузки и их нормативные значения",
+                "расчетным усилиям",
+                "Конструкции железобетонные",
+                "КМД"
+              ]
+            }
+          },
+          {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "document_links",
+            "status": "reported_checked",
+            "semantic_verified": false,
+            "object_source_refs": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ],
+            "receipt": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "document_links",
+              "status": "checked",
+              "reason": "Проверены адресация схемы и доступные ссылки применяемых узлов. Пункт 5 листа 4 направляет за схемой расположения на тот же лист 4, тогда как ведомость чертежей и приложенные изображения помещают схему секции 2 на лист 3. На листе 4 найдены общий вид ОГМ 5 и узлы А, В, Е с соответствующими сечениями. Также выявлено различие обозначений стандарта трубы: ГОСТ 8732-78 в узлах и ГОСТ 8732-2025 в ведомости ссылочных документов. Эти документальные несогласованности вынесены в вопросы. Просмотрены все 16 приложенных изображений; материалы секции 3 на листах 5–6 и других марок листа 8 не использованы как замена исполнения ОГМ 5 листа 4.",
+              "source_refs": [
+                "blk_02786cefba4641928c7e149eda44f872",
+                "blk_5e4c3725456d4cafa74220f8a1fad14c",
+                "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                "blk_9dbddaba8e334be3ab857afe48df76ec",
+                "blk_2f7923b916294bdcac3dd9b3d5589665",
+                "blk_d2963ae2ab2841cd95de9c28e8cac089",
+                "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "blk_d986c7bfb02a433b975de506295fd0f9",
+                "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+                "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+                "blk_60fce78600474a06989f2253821f34f2"
+              ],
+              "context_queries": []
+            }
+          }
+        ],
+        "unmatched_operations": [],
+        "source_inventory": [
+          {
+            "block_id": "blk_02786cefba4641928c7e149eda44f872",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_2b31bb21c613499ea1bea845105e296f",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_2f7923b916294bdcac3dd9b3d5589665",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_4b49406098054a4da822e4286031df67",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_60fce78600474a06989f2253821f34f2",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_7f0ce580e06f44f78c0b85f92efb82c7",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_984efa22a06d4fe7be4733e2ffe26c5c",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_addaa8965de54d218095d13652f30388",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_e3630afbd9f64adfa84ce0d6b68ec184",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_ef276d1030da49b48f4bb057ebafe685",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_f3f0332f544a4ca493442513059a154d",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          },
+          {
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "status": "not_checked",
+            "semantic_verified": false,
+            "reason": "missing_or_duplicate_inventory_receipt"
+          }
+        ],
+        "unknown_inventory_blocks": [],
+        "unresolved_operations": 4,
+        "unresolved_source_blocks": 38,
+        "coverage_complete": false,
+        "semantic_verified": false
+      },
+      "requested_operations": [
+        "dimension_consistency",
+        "document_links",
+        "requirement_applicability"
+      ],
+      "unverified_receipts": [],
+      "pending": [
+        {
+          "finding": {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "dimension_consistency",
+            "severity": "info",
+            "problem": "Требуется установить связь сборочного размера 648 мм с длиной детали 650 мм.",
+            "description": "На виде ОГМ 5 наклонные элементы позиции 5 имеют размер 648 мм; в ведомости для четырех деталей этой позиции задано L=0,650 м. Без одинаковой базы измерения и деталировки торцов нельзя считать разность 2 мм подтвержденным размерным конфликтом либо объяснять ее допуском.",
+            "solution": "Предоставить деталировку позиции 5 в КМД с границами размера, длиной заготовки и обработкой торцов; после приведения размеров к одной базе проверить необходимость корректировки.",
+            "sheet": "4",
+            "evidence": [
+              {
+                "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+                "description": "На размерном виде ОГМ 5 показаны наклонные размеры 648 мм у элементов позиции 5."
+              },
+              {
+                "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "quote": "|  | □ | 5 | 25х3 |  |  |  | C245 | L=0,650м | 4 |"
+              }
+            ],
+            "report_section": "questions"
+          },
+          "source_candidate_id": "O-c3e4a620f97dfc49d1313150",
+          "reason": "context_search_incomplete",
+          "next_action": "retrieve_sources_then_review",
+          "suppressed_as_false": false
+        },
+        {
+          "finding": {
+            "object_id": "object_inventory_002:ogm5",
+            "operation": "requirement_applicability",
+            "severity": "info",
+            "problem": "Для проверки крепления и сварных соединений требуется расчетный контекст ОГМ 5.",
+            "description": "Ведомость и узел А задают анкеры HSA-M10х90, но представленные материалы не содержат расчетных усилий, характеристик и условий работы бетонного основания и расчета соединений. Общие указания предусматривают проверку соединений в КМД. Это ограничение предоставленного контекста, а не доказанное отсутствие расчета в проекте или недостаточность крепления.",
+            "solution": "Предоставить относящиеся к ОГМ 5 нагрузки из КЖ, усилия и расчет соединений КМД, а для анкеров — параметры бетона, толщину основания, глубину установки и расстояния до краев.",
+            "sheet": "1, 4",
+            "evidence": [
+              {
+                "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                "description": "В графе усилия указано «Конструктивно»; предусмотрено 20 анкеров HSA-M10х90 на сборку."
+              },
+              {
+                "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+                "description": "Узел А показывает крепление опорной пластины четырьмя анкерами HSA-M10х90."
+              },
+              {
+                "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+                "description": "Пункт 1.6 отсылает за нагрузками к КЖ; пункты 3.1 и 3.5 предусматривают определение или проверку соединений и сварных швов по расчету."
+              }
+            ],
+            "report_section": "questions"
+          },
+          "source_candidate_id": "O-1b081ec38145b2f6127af20c",
+          "reason": "context_search_incomplete",
+          "next_action": "retrieve_sources_then_review",
+          "suppressed_as_false": false
+        }
+      ],
+      "semantic_verified": false,
+      "candidate_ledger": [
+        {
+          "candidate": {
+            "id": "O-c3e4a620f97dfc49d1313150",
+            "finding": "problem: Требуется установить связь сборочного размера 648 мм с длиной детали 650 мм.\ndescription: На виде ОГМ 5 наклонные элементы позиции 5 имеют размер 648 мм; в ведомости для четырех деталей этой позиции задано L=0,650 м. Без одинаковой базы измерения и деталировки торцов нельзя считать разность 2 мм подтвержденным размерным конфликтом либо объяснять ее допуском.\nsolution: Предоставить деталировку позиции 5 в КМД с границами размера, длиной заготовки и обработкой торцов; после приведения размеров к одной базе проверить необходимость корректировки.",
+            "raw_candidate": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "dimension_consistency",
+              "severity": "info",
+              "problem": "Требуется установить связь сборочного размера 648 мм с длиной детали 650 мм.",
+              "description": "На виде ОГМ 5 наклонные элементы позиции 5 имеют размер 648 мм; в ведомости для четырех деталей этой позиции задано L=0,650 м. Без одинаковой базы измерения и деталировки торцов нельзя считать разность 2 мм подтвержденным размерным конфликтом либо объяснять ее допуском.",
+              "solution": "Предоставить деталировку позиции 5 в КМД с границами размера, длиной заготовки и обработкой торцов; после приведения размеров к одной базе проверить необходимость корректировки.",
+              "sheet": "4",
+              "evidence": [
+                {
+                  "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+                  "description": "На размерном виде ОГМ 5 показаны наклонные размеры 648 мм у элементов позиции 5."
+                },
+                {
+                  "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                  "quote": "|  | □ | 5 | 25х3 |  |  |  | C245 | L=0,650м | 4 |"
+                }
+              ],
+              "report_section": "questions"
+            },
+            "related_block_ids": [
+              "blk_ddc4b49561b745ffab319ae7f3b20860",
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+            ]
+          },
+          "status": "pending_review",
+          "semantic_verified": false,
+          "reason": "context_search_incomplete"
+        },
+        {
+          "candidate": {
+            "id": "O-1b081ec38145b2f6127af20c",
+            "finding": "problem: Для проверки крепления и сварных соединений требуется расчетный контекст ОГМ 5.\ndescription: Ведомость и узел А задают анкеры HSA-M10х90, но представленные материалы не содержат расчетных усилий, характеристик и условий работы бетонного основания и расчета соединений. Общие указания предусматривают проверку соединений в КМД. Это ограничение предоставленного контекста, а не доказанное отсутствие расчета в проекте или недостаточность крепления.\nsolution: Предоставить относящиеся к ОГМ 5 нагрузки из КЖ, усилия и расчет соединений КМД, а для анкеров — параметры бетона, толщину основания, глубину установки и расстояния до краев.",
+            "raw_candidate": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "requirement_applicability",
+              "severity": "info",
+              "problem": "Для проверки крепления и сварных соединений требуется расчетный контекст ОГМ 5.",
+              "description": "Ведомость и узел А задают анкеры HSA-M10х90, но представленные материалы не содержат расчетных усилий, характеристик и условий работы бетонного основания и расчета соединений. Общие указания предусматривают проверку соединений в КМД. Это ограничение предоставленного контекста, а не доказанное отсутствие расчета в проекте или недостаточность крепления.",
+              "solution": "Предоставить относящиеся к ОГМ 5 нагрузки из КЖ, усилия и расчет соединений КМД, а для анкеров — параметры бетона, толщину основания, глубину установки и расстояния до краев.",
+              "sheet": "1, 4",
+              "evidence": [
+                {
+                  "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+                  "description": "В графе усилия указано «Конструктивно»; предусмотрено 20 анкеров HSA-M10х90 на сборку."
+                },
+                {
+                  "block_id": "blk_d986c7bfb02a433b975de506295fd0f9",
+                  "description": "Узел А показывает крепление опорной пластины четырьмя анкерами HSA-M10х90."
+                },
+                {
+                  "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+                  "description": "Пункт 1.6 отсылает за нагрузками к КЖ; пункты 3.1 и 3.5 предусматривают определение или проверку соединений и сварных швов по расчету."
+                }
+              ],
+              "report_section": "questions"
+            },
+            "related_block_ids": [
+              "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+              "blk_d986c7bfb02a433b975de506295fd0f9",
+              "blk_531e843c117243a3b1582cb3399f4681"
+            ]
+          },
+          "status": "pending_review",
+          "semantic_verified": false,
+          "reason": "context_search_incomplete"
+        },
+        {
+          "candidate": {
+            "id": "O-7c3e1b8db6e79c576e1f4ebd",
+            "finding": "problem: Ссылка на схему расположения указывает на лист деталей.\ndescription: Пункт 5 листа 4 содержит ссылку «Схему расположения ограждений см. л.4». По ведомости рабочих чертежей лист 4 содержит ограждения ОГМ 1...6, 8, а схема секции 2 размещена на листе 3; приложенные изображения это подтверждают. Выявлена редакционная ошибка адресации, не технический дефект сборки.\nsolution: Уточнить у разработчика и исправить адрес ссылки на схему секции 2 — лист 3.",
+            "raw_candidate": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "document_links",
+              "severity": "low",
+              "problem": "Ссылка на схему расположения указывает на лист деталей.",
+              "description": "Пункт 5 листа 4 содержит ссылку «Схему расположения ограждений см. л.4». По ведомости рабочих чертежей лист 4 содержит ограждения ОГМ 1...6, 8, а схема секции 2 размещена на листе 3; приложенные изображения это подтверждают. Выявлена редакционная ошибка адресации, не технический дефект сборки.",
+              "solution": "Уточнить у разработчика и исправить адрес ссылки на схему секции 2 — лист 3.",
+              "sheet": "4",
+              "evidence": [
+                {
+                  "block_id": "blk_02786cefba4641928c7e149eda44f872",
+                  "quote": "5. Схему расположения ограждений см. л.4."
+                },
+                {
+                  "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+                  "description": "В ведомости лист 3 обозначен как схема расположения ограждений лестницы секции 2, лист 4 — как «Ограждения ОГМ 1...6, 8»."
+                },
+                {
+                  "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+                  "description": "Разрез лестницы секции 2 на листе 3 содержит места установки ОГМ 5."
+                }
+              ],
+              "report_section": "questions"
+            },
+            "related_block_ids": [
+              "blk_02786cefba4641928c7e149eda44f872",
+              "blk_5e4c3725456d4cafa74220f8a1fad14c",
+              "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+            ]
+          },
+          "status": "candidate_for_merge",
+          "semantic_verified": false
+        },
+        {
+          "candidate": {
+            "id": "O-6f6e58c830e9850f3691d8b7",
+            "finding": "problem: В узлах и ведомости ссылочных документов указаны разные редакции стандарта трубы.\ndescription: В применяемых узлах В и Е листа 4 труба Ø40х3 обозначена по ГОСТ 8732-78, а ведомость ссылочных документов содержит ГОСТ 8732-2025. Установлено различие ссылок; несоответствие самой трубы требованиям стандарта по предоставленным данным не доказано.\nsolution: Уточнить принятую для данного исполнения редакцию стандарта и согласовать обозначения в узлах и ведомости ссылочных документов.",
+            "raw_candidate": {
+              "object_id": "object_inventory_002:ogm5",
+              "operation": "document_links",
+              "severity": "low",
+              "problem": "В узлах и ведомости ссылочных документов указаны разные редакции стандарта трубы.",
+              "description": "В применяемых узлах В и Е листа 4 труба Ø40х3 обозначена по ГОСТ 8732-78, а ведомость ссылочных документов содержит ГОСТ 8732-2025. Установлено различие ссылок; несоответствие самой трубы требованиям стандарта по предоставленным данным не доказано.",
+              "solution": "Уточнить принятую для данного исполнения редакцию стандарта и согласовать обозначения в узлах и ведомости ссылочных документов.",
+              "sheet": "1, 4",
+              "evidence": [
+                {
+                  "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+                  "description": "Узел В содержит обозначение трубы Ø40х3 по ГОСТ 8732-78."
+                },
+                {
+                  "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+                  "description": "В узле Е и сечении 4-4 указана труба Ø40х3 по ГОСТ 8732-78."
+                },
+                {
+                  "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+                  "quote": "| ГОСТ 8732-2025 | Трубы стальные бесшовные горячедеформированные. Сортамент |  |"
+                }
+              ],
+              "report_section": "questions"
+            },
+            "related_block_ids": [
+              "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+              "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+              "blk_5e4c3725456d4cafa74220f8a1fad14c"
+            ]
+          },
+          "status": "candidate_for_merge",
+          "semantic_verified": false
+        }
+      ],
+      "context_retrieval": {
+        "status": "no_additional_sources",
+        "omitted": [
+          {
+            "block_id": "blk_c72c48098edc48c2a39e53212fe464d9",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_6d3a9c479ffe4b57b3cd3e5310d5abfd",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_5de20e336f994591bdd8c56c0f1e4183",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_4412076f7a7349f587fb211ff8b4af08",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_18bd9bc412d24963af5f2334bad9aa33",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_0359ba1d16b44cfb9ad1781c770c02c1",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_4f196780d3d74b9a9eab9e8baed67f12",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_767f34cdd83944c9bfffd5deab397aee",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_f8cad33a4f74403cb982ba27beeb20fc",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_fe9c8af96413404a8b896cd8382fc410",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_7fc4d0805a89466695360d1c96b75a3b",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_bfa3c6ea2ddc4f868883b3c60b38e04d",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_a691961445f147298f9cdc1cb0d29fce",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_4e4e96f61e414814a73cc4d46c2d0ffa",
+            "reason": "text_budget"
+          },
+          {
+            "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_c35486f85bac42b799c61a10c630a793",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_26d908d359d14584917702c046803793",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_6451cc830d2b45f5bf19bbc352d4a419",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_49d947c318c3478582a39740abda8658",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_69c102e8922e48c982c254c05fb2e093",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_f4e8aa99af0048148949bd81155997fe",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_07bceef658074a22a028d29f7493e678",
+            "reason": "image_unavailable_or_budget"
+          },
+          {
+            "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+            "reason": "message_budget"
+          }
+        ],
+        "automatic_dispatch": false,
+        "absence_proven": false
+      }
+    }
+  ],
+  "incremental_useful_findings_verified": false,
+  "production_accepted": false,
+  "limits": [
+    "Integrated executor tested on one known case with sealed first answer; not full discovery or six-project quality.",
+    "Final transport rows may include semantic duplicates; count is not unique defect count."
+  ]
+}

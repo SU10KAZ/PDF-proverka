@@ -1,0 +1,11 @@
+{
+  "sealed_request": "26e8ad0768bcad521e22fc9cfaddacd105fdb88f55e63f0c93c6ddc80d72328f",
+  "sealed_result": "713b07b35635e032d6db5ef7439a610b01046fbde249672400fbf660456e72fa",
+  "source_binding": "ad295ddec2f116117e81d69c2217ae0126352d52a6c99456fe514ee7458d53b2",
+  "max_new_calls": 2,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0,
+  "history_or_engineer_answers_supplied": false,
+  "scope": "Known OGM5 continuation mechanism; classic baseline stays executor-side."
+}
