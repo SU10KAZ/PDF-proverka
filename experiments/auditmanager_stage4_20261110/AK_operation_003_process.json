@@ -1,0 +1,15 @@
+{
+  "pid": 3472469,
+  "command": [
+    "/opt/py312/bin/python",
+    "-m",
+    "experiments.auditmanager_stage4_20261110.run_ak_cabinet_operation_control",
+    "--packet",
+    "3",
+    "--object-id",
+    "cabinet_01",
+    "--execute"
+  ],
+  "started_at_epoch": 1794340768.1752102,
+  "purpose": "AK fourth cabinet identity with authoritative same-page notes; direct Astra, no historical answers."
+}

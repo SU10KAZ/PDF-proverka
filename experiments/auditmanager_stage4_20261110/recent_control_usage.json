@@ -448,6 +448,48 @@
       "status": "not_started"
     },
     {
+      "control": "AK_identity_0_v3",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/page_context_v3/packet_000",
+      "status": "not_started"
+    },
+    {
+      "control": "AK_identity_1_v3",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/page_context_v3/packet_001",
+      "status": "not_started"
+    },
+    {
+      "control": "AK_identity_2_v3",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/page_context_v3/packet_002",
+      "status": "not_started"
+    },
+    {
+      "control": "AK_identity_3_v3",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/page_context_v3/packet_003",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "27ae542d6f05d267f8067c8ef9e5265167f795c8b3d7011636a5c6cb4b8edf00",
+        "inventory_result_sha256": "3cbabb4341f91842ef49891160d8378be34f5c184632107afb1de6a28ae4c66f",
+        "md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+        "images": [
+          {
+            "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+            "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba"
+          }
+        ],
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high",
+        "max_calls": 1,
+        "automatic_retries": 0,
+        "scope": "Known-source model-extracted cabinet; identity operation only. No historical answers or expected finding supplied."
+      }
+    },
+    {
+      "control": "AK_identity_4_v3",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/page_context_v3/packet_004",
+      "status": "not_started"
+    },
+    {
       "control": "AK_identity_2_interrupted",
       "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_002/interrupted_01",
       "status": "interrupted",
@@ -525,7 +567,7 @@
     }
   ],
   "completed_requests": 25,
-  "pending_results": 1,
+  "pending_results": 2,
   "failed_requests": 2,
   "interrupted_requests": 4,
   "reported_input_tokens": 842599,

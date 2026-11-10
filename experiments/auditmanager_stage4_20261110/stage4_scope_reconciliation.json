@@ -125,13 +125,18 @@
     },
     {
       "hypothesis": "H03",
-      "state": "AK_five_cabinet_inventory_started",
+      "state": "AK_four_inventory_three_operation_responses_remaining_active",
       "control": "Original named AK14 five cabinet source drawings; generic extraction instructions only.",
       "root": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK",
-      "session": 40416,
+      "session": null,
       "expected_answer_hidden": true,
       "independent_discovery": false,
-      "remaining": "Inspect model-extracted terminal addresses and physical scope, then execute identity/operation checks; one cabinet mounting-dimension recovery does not cover this control."
+      "remaining": "Finish fifth extraction and fourth/fifth operations with same-page notes; resolve second graphic label errors; reconcile systemic output. Process receipts are not proof of liveness; poll actual PIDs/logs.",
+      "evidence": "AK_five_cabinet_control_status.json",
+      "process_receipts": [
+        "AK_inventory_resume_process.json",
+        "AK_operation_003_process.json"
+      ]
     }
   ]
 }

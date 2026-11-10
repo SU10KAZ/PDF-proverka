@@ -1,0 +1,157 @@
+{
+  "scope": "Original AK14 five-cabinet known-source control, not blind discovery or full project audit.",
+  "rows": [
+    {
+      "packet": 0,
+      "blocks": [
+        "blk_96ed7d88fb23414bb14d93191a89365a"
+      ],
+      "extraction_result": "received",
+      "operation_result": "received",
+      "candidate_count": 1,
+      "final_output_verified": false,
+      "baseline_address": "F-054",
+      "extraction_evidence": {
+        "path": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_000/result.json",
+        "sha256": "7940479111f6be7b0d53d744c86938cf627c260386ac9ecd661cd71ad55af067"
+      },
+      "raw_object_records": 47,
+      "operation_revision": "local_claim_v2",
+      "operation_evidence": {
+        "path": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_000/validated.json",
+        "sha256": "04ae1dad833e7ae79b68e2fe99df2482acbfde6044b3238381460eb04d535dc6"
+      },
+      "pending_candidates": 0,
+      "operation_statuses": [
+        {
+          "operation": "identity_across_views",
+          "status": "needs_data"
+        }
+      ],
+      "source_candidate_ids": [
+        "O-3ea4c2bdc3ed7e16782c1139"
+      ],
+      "local_source_review": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_000_source_review.json",
+        "sha256": "127d93b6b712da7e4305e1a223cabd52604ae4ad57ac95aaf1aee6d32f55e324"
+      }
+    },
+    {
+      "packet": 1,
+      "blocks": [
+        "blk_cd9d763d198246859c3df42c18b5c3d8"
+      ],
+      "extraction_result": "received",
+      "operation_result": "received",
+      "candidate_count": 1,
+      "final_output_verified": false,
+      "baseline_address": null,
+      "extraction_evidence": {
+        "path": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_001/result.json",
+        "sha256": "6a22a9b1befbe23d319d9e4fccea9aae7653c8f99982d2d5dcb80e4bf8b44eaa"
+      },
+      "raw_object_records": 35,
+      "operation_revision": "local_claim_v2",
+      "operation_evidence": {
+        "path": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_001/validated.json",
+        "sha256": "1e3881eb781257dbf88d848c4b628ab29ebf5c938799f90b1e06a538ce02578e"
+      },
+      "pending_candidates": 0,
+      "operation_statuses": [
+        {
+          "operation": "identity_across_views",
+          "status": "needs_data"
+        }
+      ],
+      "source_candidate_ids": [
+        "O-03f0c8c926eba33daacbb9f3"
+      ],
+      "local_source_review": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_001_source_review.json",
+        "sha256": "4f0c235fca1ec64803960bd4bd771dec4029190cc73903c18e67cd526466fdb7"
+      }
+    },
+    {
+      "packet": 2,
+      "blocks": [
+        "blk_f784be4786274e8c84f32d874ed99969"
+      ],
+      "extraction_result": "received",
+      "operation_result": "received",
+      "candidate_count": 1,
+      "final_output_verified": false,
+      "baseline_address": "F-055",
+      "extraction_evidence": {
+        "path": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_002/result.json",
+        "sha256": "54b2d90cfd9188489ffa07558d2bfe6d8d8682ae7824f59ba86c88d5bf3636e1"
+      },
+      "raw_object_records": 49,
+      "operation_revision": "local_claim_v2",
+      "operation_evidence": {
+        "path": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_002/validated.json",
+        "sha256": "5d2c130786b2f878412d6b6f24be7fa72227b2a7e5ca324f29aad71d7c2a58a6"
+      },
+      "pending_candidates": 0,
+      "operation_statuses": [
+        {
+          "operation": "identity_across_views",
+          "status": "needs_data"
+        }
+      ],
+      "source_candidate_ids": [
+        "O-9c18e3b1cb4cd69c6bd60938"
+      ],
+      "local_source_review": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_002_source_review.json",
+        "sha256": "11ed1c93b0cf483b46493c8191b80f7c4f8d95695535210b27456026742a35f5"
+      }
+    },
+    {
+      "packet": 3,
+      "blocks": [
+        "blk_127bea47b93f4214ac6430c54b21517a"
+      ],
+      "extraction_result": "received",
+      "operation_result": "not_saved",
+      "candidate_count": 0,
+      "final_output_verified": false,
+      "baseline_address": null,
+      "extraction_evidence": {
+        "path": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_003/result.json",
+        "sha256": "3cbabb4341f91842ef49891160d8378be34f5c184632107afb1de6a28ae4c66f"
+      },
+      "raw_object_records": 39,
+      "local_source_review": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_003_source_review.json",
+        "sha256": "878e3d7c1279c9df7f3a2b5180315184c0ba5cf33b495b74a81a604f005e456c"
+      }
+    },
+    {
+      "packet": 4,
+      "blocks": [
+        "blk_47163e69651c48528b3e054d5a5db095"
+      ],
+      "extraction_result": "not_saved",
+      "operation_result": "not_saved",
+      "candidate_count": 0,
+      "final_output_verified": false,
+      "baseline_address": null,
+      "local_source_review": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_004_source_review.json",
+        "sha256": "ac2c894524ec6aea77044f01e0fd78b2e377971501b49cb0b9f6bc725389398b"
+      }
+    }
+  ],
+  "extraction_responses": 4,
+  "operation_responses": 3,
+  "candidate_rows": 3,
+  "full_control_complete": false,
+  "production_accepted": false,
+  "remaining": [
+    "Read remaining operation results and verify source claims.",
+    "Resolve second-cabinet literal label errors with source-bound graphic detail control.",
+    "Check same-page notes for each affected operation before final acceptance.",
+    "Reconcile systemic topic with F054/F055 without losing additional cabinet addresses or duplicating findings.",
+    "Verify final output; candidate count is not unique incremental defect count."
+  ]
+}
