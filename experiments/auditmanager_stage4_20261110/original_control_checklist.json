@@ -35,8 +35,13 @@
       "hypothesis": "H01",
       "kind": "negative_controls_and_limits",
       "original_control": "Несуществующий sourceID не получает случайное доказательство.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "local_contract_verified",
+      "evidence": [
+        {
+          "path": "tests/test_text_candidate_lineage.py",
+          "sha256": "6e6137401effede171b14480af7288d219d4be2392adbc762de825c13a1e8886"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -44,8 +49,13 @@
       "hypothesis": "H01",
       "kind": "negative_controls_and_limits",
       "original_control": "Существующий блок не доказывает истинность тезиса; тяжесть автоматически не восстанавливать.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "local_contract_verified",
+      "evidence": [
+        {
+          "path": "tests/test_text_candidate_lineage.py",
+          "sha256": "6e6137401effede171b14480af7288d219d4be2392adbc762de825c13a1e8886"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -53,8 +63,13 @@
       "hypothesis": "H01",
       "kind": "negative_controls_and_limits",
       "original_control": "AK T004/T008/T017 и ITP T016: уже сохранённые смыслы не выпускать повторно.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/duplicate_link_repair_pilot.json",
+          "sha256": "02c18f7b5f817dc5858041d4462eebfe31774995a5c6e1ddfda20f64e70d8b02"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -122,11 +137,19 @@
       "hypothesis": "H03",
       "kind": "positive_controls",
       "original_control": "АК: проверить все пять шкафов эталонной темы, сохранить адреса при объединении.",
-      "evidence_state": "live_inventory_in_progress",
+      "evidence_state": "bounded_control_recorded",
       "evidence": [
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_inventory_manifest.json",
-          "sha256": "95f67da6c21f9adc2d87c314e14de7d667f5ee43952bda90f1beb830b1aac2fa"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_systemic_output_replay.json",
+          "sha256": "bcc2a56fb0ee96edb88811e74c23d2ecdb162eaea742825ab1216d099ca3c175"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_terminal_graphic_assessment.json",
+          "sha256": "6a11bd24fbd15f83ef77f8acee156f4262432cc3875a8b74f1bdb066901888b0"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_001_operation_v4_validated.json",
+          "sha256": "391331006e63bd1ae9d01a629044961ed1e91446866e5785d997fbce9d0ec28a"
         }
       ],
       "full_acceptance_proven": false
@@ -154,8 +177,21 @@
       "hypothesis": "H03",
       "kind": "negative_controls_and_limits",
       "original_control": "Повторный вид не новый экземпляр. ОбщиеPE/N не коллизия автоматически.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_identity_known_relation_pair.json",
+          "sha256": "42fe07fa03f727af8974038af3c13d9725bf0069ecb3030fc408c0c116628b6b"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_terminal_graphic_assessment.json",
+          "sha256": "6a11bd24fbd15f83ef77f8acee156f4262432cc3875a8b74f1bdb066901888b0"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_003_source_review.json",
+          "sha256": "d442d464516c628406fc39193aa159f3cc077fc70fd7b75237b63baa3804a9d4"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -362,8 +398,13 @@
       "hypothesis": "H07",
       "kind": "positive_controls",
       "original_control": "ЭОМ: повтор номера помещения не подавлять из-за слов«переданный контекст».",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "bounded_control_recorded",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/metadata_gate_candidate_replay.json",
+          "sha256": "3ce1063beaac5f7c58aa9e06eab91a9bcac6f9b1b0957c94af927f30ea02832c"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -385,8 +426,13 @@
       "hypothesis": "H07",
       "kind": "negative_controls_and_limits",
       "original_control": "Настоящая претензия к внутренней разметке не становится проектным замечанием.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "synthetic_contract_only",
+      "evidence": [
+        {
+          "path": "tests/test_stage01_evidence_context.py",
+          "sha256": "c019397170aa72fd191e613af0c65e467fdaf99f6cb386f1fef6dbe3a2f15c9a"
+        }
+      ],
       "full_acceptance_proven": false
     },
     {
@@ -394,15 +440,22 @@
       "hypothesis": "H07",
       "kind": "negative_controls_and_limits",
       "original_control": "Синтетические варианты metadata replay не независимая историческая контрольная пара. До получения пары запретить широкое автоматическое подавление.",
-      "evidence_state": "requires_explicit_evidence_review",
-      "evidence": [],
+      "evidence_state": "explicit_evidence_limit",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/metadata_gate_candidate_replay.json",
+          "sha256": "3ce1063beaac5f7c58aa9e06eab91a9bcac6f9b1b0957c94af927f30ea02832c"
+        }
+      ],
       "full_acceptance_proven": false
     }
   ],
   "counts": {
-    "bounded_control_recorded": 9,
-    "live_inventory_in_progress": 1,
-    "requires_explicit_evidence_review": 27
+    "bounded_control_recorded": 13,
+    "explicit_evidence_limit": 1,
+    "local_contract_verified": 2,
+    "requires_explicit_evidence_review": 20,
+    "synthetic_contract_only": 1
   },
   "boundaries": [
     "Unmapped means not explicitly reconciled in this checklist, not absent from all evidence.",

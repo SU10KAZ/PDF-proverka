@@ -361,13 +361,19 @@
     {
       "control": "AK_inventory_4",
       "directory": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_004",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started",
-        "request_sha256": "66afcd832214b83ba8135259e175d6f07c104fc43a9d21e56ef7e474adb50ba5",
-        "model": "codex/gpt-6-astra",
-        "reasoning_effort": "high"
-      }
+        "status": "finished",
+        "model_error": false
+      },
+      "result_sha256": "ab04f421990d6b24c9c810ee0b9fec021a46ed9f95cd5d971a7db656a255d8f0",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 347007,
+      "input_tokens": 13427,
+      "output_tokens": 17098,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
     },
     {
       "control": "AK_identity_0_v1",
@@ -465,29 +471,53 @@
     {
       "control": "AK_identity_3_v3",
       "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/page_context_v3/packet_003",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started",
-        "request_sha256": "27ae542d6f05d267f8067c8ef9e5265167f795c8b3d7011636a5c6cb4b8edf00",
-        "inventory_result_sha256": "3cbabb4341f91842ef49891160d8378be34f5c184632107afb1de6a28ae4c66f",
-        "md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
-        "images": [
-          {
-            "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
-            "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba"
-          }
-        ],
-        "model": "codex/gpt-6-astra",
-        "reasoning_effort": "high",
-        "max_calls": 1,
-        "automatic_retries": 0,
-        "scope": "Known-source model-extracted cabinet; identity operation only. No historical answers or expected finding supplied."
-      }
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "069f4eee62df0a31595f6372e35fa2ff4099aad0e15cafe942524653bb7bd44e",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 78362,
+      "input_tokens": 15636,
+      "output_tokens": 3113,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
     },
     {
       "control": "AK_identity_4_v3",
       "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/page_context_v3/packet_004",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "c81b46f9be1255ad64dd5feba25b1769851bbe23aaa0f9891add23e63095aa6a",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 54980,
+      "input_tokens": 15180,
+      "output_tokens": 2238,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
+    },
+    {
+      "control": "AK_identity_1_v4",
+      "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/graphic_context_v4/packet_001",
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "2c73fce31b3b771c084866793ffe31642c98171bc8d7350a983e7acfd65ae4d9",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 71212,
+      "input_tokens": 31946,
+      "output_tokens": 3270,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
     },
     {
       "control": "AK_identity_2_interrupted",
@@ -563,17 +593,29 @@
     {
       "control": "AK_terminal_graphic",
       "directory": "/tmp/auditmanager_ak_terminal_graphic_control_20261110",
-      "status": "not_started"
+      "status": "response_received",
+      "attempt_receipt": {
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "f42f1958e556f8d259ca3e8cf4b4142ad47f6c27b767a4dd8fdebcddaabf99ab",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 339791,
+      "input_tokens": 28979,
+      "output_tokens": 16696,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
     }
   ],
-  "completed_requests": 25,
-  "pending_results": 2,
+  "completed_requests": 30,
+  "pending_results": 0,
   "failed_requests": 2,
   "interrupted_requests": 4,
-  "reported_input_tokens": 842599,
-  "reported_output_tokens": 336678,
+  "reported_input_tokens": 947767,
+  "reported_output_tokens": 379093,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 109.805,
+  "completed_request_minutes_sum": 124.66,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

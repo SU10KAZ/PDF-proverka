@@ -125,14 +125,18 @@
     },
     {
       "hypothesis": "H03",
-      "state": "AK_four_inventory_three_operation_responses_remaining_active",
+      "state": "AK_five_address_bounded_control_recorded",
       "control": "Original named AK14 five cabinet source drawings; generic extraction instructions only.",
       "root": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK",
       "session": null,
       "expected_answer_hidden": true,
       "independent_discovery": false,
-      "remaining": "Finish fifth extraction and fourth/fifth operations with same-page notes; resolve second graphic label errors; reconcile systemic output. Process receipts are not proof of liveness; poll actual PIDs/logs.",
-      "evidence": "AK_five_cabinet_control_status.json",
+      "remaining": "Bounded five-address control and known-group Excel replay recorded. Whole-inventory correctness, autonomous grouping and six-project acceptance remain separate gates.",
+      "evidence": [
+        "AK_five_cabinet_control_status.json",
+        "AK_systemic_output_replay.json",
+        "AK_terminal_graphic_assessment.json"
+      ],
       "process_receipts": [
         "AK_inventory_resume_process.json",
         "AK_operation_003_process.json"

@@ -23,7 +23,7 @@ def summarize():
             row.update(extraction_result='error' if result.get('is_error') else 'received',extraction_evidence=reference(path))
             if isinstance(result.get('json_data'),dict):
                 row['raw_object_records']=len(result['json_data'].get('object_registry',[]))
-        for revision in ('page_context_v3','local_claim_v2'):
+        for revision in ('graphic_context_v4','page_context_v3','local_claim_v2'):
             path=OPERATIONS/revision/f'packet_{i:03d}'/'validated.json'
             if not path.exists():continue
             data=json.loads(path.read_text())
@@ -40,8 +40,8 @@ def summarize():
         'operation_responses':sum(r['operation_result']=='received' for r in rows),
         'candidate_rows':sum(r['candidate_count'] for r in rows),
         'full_control_complete':False,'production_accepted':False,
-        'remaining':['Read remaining operation results and verify source claims.',
-            'Resolve second-cabinet literal label errors with source-bound graphic detail control.',
+        'remaining':['Confirm broad acceptance separately from the completed bounded cabinet control.',
+            'Second-cabinet named label controls corrected; other raw extraction records remain unaccepted.',
             'Check same-page notes for each affected operation before final acceptance.',
             'Reconcile systemic topic with F054/F055 without losing additional cabinet addresses or duplicating findings.',
             'Verify final output; candidate count is not unique incremental defect count.']}

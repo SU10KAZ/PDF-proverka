@@ -25,6 +25,7 @@ def summarize():
         ('AK_identity_0_v1', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/packet_000')),
         *[(f'AK_identity_{i}_v2', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2') / f'packet_{i:03d}') for i in range(5)],
         *[(f'AK_identity_{i}_v3', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/page_context_v3') / f'packet_{i:03d}') for i in range(5)],
+        ('AK_identity_1_v4', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/graphic_context_v4/packet_001')),
         ('AK_identity_2_interrupted', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_002/interrupted_01')),
         ('AK_graphic_interrupted', Path('/tmp/auditmanager_ak_terminal_graphic_control_20261110/interrupted_01')),
         ('AK_inventory_4_interrupted', Path('/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_004/interrupted_01')),

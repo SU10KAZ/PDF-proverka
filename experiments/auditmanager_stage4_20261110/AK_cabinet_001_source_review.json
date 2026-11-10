@@ -33,7 +33,7 @@
   "full_control_complete": false,
   "model_candidate_count": 1,
   "model_restored_scope": "One candidate covers actuatorY1–Y6and motor-side repeated groups; source-consistent local ambiguity without wiring fault.",
-  "remaining": "Candidate omits PDS3/PDS4duplicate17/18. Need examine operation receipt and final systemic grouping before claiming complete address coverage.",
+  "remaining": "Full graphic inventory stillpartial; autonomous semantic grouping and whole-project acceptance notproved.",
   "final_output_verified": false,
   "observed_reading_errors": [
     {
@@ -50,5 +50,6 @@
       "consequence": "Do not accept all details of the operation receipt merely because its main finding is useful."
     }
   ],
-  "recovery": "Same whole drawing rendered into6overlapping high-resolution tiles; no expected labels or previous answers supplied; request active."
+  "recovery": "Same whole drawing rendered into6overlapping high-resolution tiles; no expected labels or previous answers supplied; request active.",
+  "detail_operation_result": "v4candidate now preserves PDS3/PDS4at17–18as well as motorandactuatorgroups; no physicalfaultclaim."
 }

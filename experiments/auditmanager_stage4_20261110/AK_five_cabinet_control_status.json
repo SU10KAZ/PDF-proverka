@@ -51,10 +51,10 @@
         "sha256": "6a22a9b1befbe23d319d9e4fccea9aae7653c8f99982d2d5dcb80e4bf8b44eaa"
       },
       "raw_object_records": 35,
-      "operation_revision": "local_claim_v2",
+      "operation_revision": "graphic_context_v4",
       "operation_evidence": {
-        "path": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_001/validated.json",
-        "sha256": "1e3881eb781257dbf88d848c4b628ab29ebf5c938799f90b1e06a538ce02578e"
+        "path": "/tmp/auditmanager_ak_cabinet_operations_20261110/graphic_context_v4/packet_001/validated.json",
+        "sha256": "391331006e63bd1ae9d01a629044961ed1e91446866e5785d997fbce9d0ec28a"
       },
       "pending_candidates": 0,
       "operation_statuses": [
@@ -64,11 +64,11 @@
         }
       ],
       "source_candidate_ids": [
-        "O-03f0c8c926eba33daacbb9f3"
+        "O-cf0fc8c8e70957c346e33d3b"
       ],
       "local_source_review": {
         "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_001_source_review.json",
-        "sha256": "4f0c235fca1ec64803960bd4bd771dec4029190cc73903c18e67cd526466fdb7"
+        "sha256": "19a566bffddf52068ad46826a5218fa1227f8a38064885a917a2c043f31bd1ab"
       }
     },
     {
@@ -185,8 +185,8 @@
   "full_control_complete": false,
   "production_accepted": false,
   "remaining": [
-    "Read remaining operation results and verify source claims.",
-    "Resolve second-cabinet literal label errors with source-bound graphic detail control.",
+    "Confirm broad acceptance separately from the completed bounded cabinet control.",
+    "Second-cabinet named label controls corrected; other raw extraction records remain unaccepted.",
     "Check same-page notes for each affected operation before final acceptance.",
     "Reconcile systemic topic with F054/F055 without losing additional cabinet addresses or duplicating findings.",
     "Verify final output; candidate count is not unique incremental defect count."

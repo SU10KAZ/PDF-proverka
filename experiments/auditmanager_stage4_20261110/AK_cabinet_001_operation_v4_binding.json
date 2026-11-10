@@ -1,0 +1,36 @@
+{
+  "request_sha256": "893979cf014c1a92c1cb3c208cf42abfbfa463bafb8ed6ecb698bf3606f08a29",
+  "inventory_result_sha256": "f42f1958e556f8d259ca3e8cf4b4142ad47f6c27b767a4dd8fdebcddaabf99ab",
+  "md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "images": [
+    {
+      "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_0.png",
+      "sha256": "28b4c7270b82b57ef7c9474830e22131f87d60ffa6d0342fe92fb33c98ab0b3d"
+    },
+    {
+      "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_1.png",
+      "sha256": "5fede9d3a18bcc0ffbb963361805f0a0297c191a45718268693ddbaaf535618f"
+    },
+    {
+      "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_2.png",
+      "sha256": "8680ee9658a0280b4415889b7129f728a9b6f1873df91d23188d8639a0f7247f"
+    },
+    {
+      "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_3.png",
+      "sha256": "72590e7dd5418e12fa2f5d52e9318da25c321d16347641843fac64665c971a32"
+    },
+    {
+      "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_4.png",
+      "sha256": "5e57faf3ed8f9b30f5718ce9ecf738cc40fa49c4132894c9451b568b37a853fe"
+    },
+    {
+      "path": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/tiles/detail_tile_5.png",
+      "sha256": "28ea0e31c6dcce09e08ba53b195d6801b2bed0cf58a839d5a4afaf5a66792579"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_calls": 1,
+  "automatic_retries": 0,
+  "scope": "Known-source model-extracted cabinet; identity operation only. No historical answers or expected finding supplied."
+}

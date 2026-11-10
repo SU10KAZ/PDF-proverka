@@ -16,7 +16,7 @@ from backend.app.pipeline.stages.report.generate_excel_report import build_proje
 HERE=Path(__file__).parent
 BASE=Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001')
 ROOT=Path('/tmp/auditmanager_ak_systemic_output_control_20261110')
-SELECT=[(0,2,0),(1,2,0),(2,2,0),(3,3,2),(4,3,0)]
+SELECT=[(0,2,0),(1,4,0),(2,2,0),(3,3,2),(4,3,0)]
 
 def main():
     ROOT.mkdir(exist_ok=True);groupdir=ROOT/'group';groupdir.mkdir(exist_ok=True)
@@ -70,7 +70,7 @@ def main():
         'source_candidate_ids_preserved':True,'xlsx_path':str(path),'xlsx_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
         'verifier_stats':stats,'new_model_calls':0,'autonomous_semantic_grouping_proven':False,'full_control_complete':False,
         'limits':['Known evaluator grouping, not autonomous model decision.',
-            'Second-cabinet PDS4reading issue remains; only actual model claims were exported, no expected missing claim inserted.',
+            'Second-cabinet PDS3/PDS4clause comes from actual detailed model response, not an evaluator-inserted answer.',
             'No full model verifier or production acceptance; grouped row count is not independent defect count.']}
     (HERE/'AK_systemic_output_replay.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     shutil.copyfile(path,HERE/'AK_systemic_output_control.xlsx')

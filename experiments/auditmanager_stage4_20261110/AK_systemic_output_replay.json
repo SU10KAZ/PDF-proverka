@@ -7,8 +7,8 @@
       "finding_index": 0
     },
     {
-      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_001_operation_v2_validated.json",
-      "sha256": "1e3881eb781257dbf88d848c4b628ab29ebf5c938799f90b1e06a538ce02578e",
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_001_operation_v4_validated.json",
+      "sha256": "391331006e63bd1ae9d01a629044961ed1e91446866e5785d997fbce9d0ec28a",
       "finding_index": 0
     },
     {
@@ -38,7 +38,7 @@
   "cabinet_candidate_descriptions_preserved": 5,
   "source_candidate_ids_preserved": true,
   "xlsx_path": "/tmp/auditmanager_ak_systemic_output_control_20261110/report.xlsx",
-  "xlsx_sha256": "c1b9df909176f120a79349eec4ac638622737de3b5245ff39d0be0508806b97e",
+  "xlsx_sha256": "36a4445bffe658a10f9561f33388e1f71946bf681fffb4b48d79a76bdd887fc8",
   "verifier_stats": {
     "findings_total": 64,
     "deterministic_issues": 0,
@@ -56,7 +56,7 @@
   "full_control_complete": false,
   "limits": [
     "Known evaluator grouping, not autonomous model decision.",
-    "Second-cabinet PDS4reading issue remains; only actual model claims were exported, no expected missing claim inserted.",
+    "Second-cabinet PDS3/PDS4clause comes from actual detailed model response, not an evaluator-inserted answer.",
     "No full model verifier or production acceptance; grouped row count is not independent defect count."
   ]
 }
