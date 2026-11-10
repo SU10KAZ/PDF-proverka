@@ -1,0 +1,12 @@
+{
+  "packet": "object_inventory_006",
+  "objects": 37,
+  "findings": 1,
+  "duration_ms": 675570,
+  "unresolved_operation_count": 151,
+  "unresolved_source_blocks": 0,
+  "text_quote_receipts": [],
+  "quote_mismatches": 0,
+  "whole_packet_semantic_acceptance": false,
+  "result_sha256": "c572f28d5887f9fcc10c1758ffb5c749376206fb3fe9dbd6b43ee4414a370881"
+}

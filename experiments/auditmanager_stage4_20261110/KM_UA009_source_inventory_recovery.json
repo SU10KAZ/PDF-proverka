@@ -1,0 +1,48 @@
+{
+  "current_candidate": "object_inventory_006:F1",
+  "historical_id": "UA-009",
+  "control_id": "KM:9",
+  "target_id": "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+  "project": "ПД-00580716-КМ1.2_V1",
+  "engineer_decision": "Принято",
+  "engineer_comment": "новое, в старом такого замечания нет.",
+  "classic_control_comparison": {
+    "final_match": "not_found_in_reviewed_output",
+    "upstream_match": "not_found_in_10_text_25_graphic_and_1_deferred_candidates",
+    "matching_basis": "ОГМ20ЛК5:−2.350/−2.500 при общей−1.800 отсутствует. F-015/G-011/012 относятся к другой площадкеОГМ6С3(+37.510/+34.150); F-017 — ОГМ26ЛК6.",
+    "earliest_observed_gap": "candidate_generation_or_earlier"
+  },
+  "same_version_source_evidence": [
+    {
+      "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+      "sha256": "337026cb8604094fb374e3e777ccdac9d2e3013652099b49d2829dac397309a6",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_9e54c5e5fb6b4b28ae2304bd06c49949.png"
+    },
+    {
+      "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+      "sha256": "dacc03a022080c2ab7c14f78e90ade3c013510bfc9a995fc847d5a17aadfccd2",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_fe7bfb2c1c0b469ca1c3e2cb30686758.png"
+    }
+  ],
+  "local_visual_check": {
+    "plan": "Rightmost LK5 plan at -0.150: landing at OGM20/OGM18 labelled -2.350, opposite landing -1.800; horizontal chain 1340/1345/665.",
+    "sections": "Section 6-6 LK5 has reversed chain 665/1345/1340, OGM20 and landing -2.500 with opposite -1.800; section 5-5 also shows -2.500.",
+    "same_object_basis": "LK5, OGM20, cut line 6-6, adjoining OGM18 and reversed matching dimension chain.",
+    "confirmed_difference_mm": 150,
+    "plan_rise_mm": 550,
+    "section_rise_mm": 700
+  },
+  "narrow_claim_verified": true,
+  "correct_elevation_selected": false,
+  "cause_or_physical_installation_defect_verified": false,
+  "historical_answers_sent_to_inventory": false,
+  "known_project_not_new_blind": true,
+  "os_level_evaluator_isolation_proven": false,
+  "final_output_retention_verified_for_this_new_candidate": false,
+  "whole_project_improvement_proven": false,
+  "negative_control_to_preserve": "B-KM-F-014: different marches at a shared landing must not be treated as the same physical railing.",
+  "sources": {
+    "historical_register": "experiments/auditmanager_stage1_20261109/register.json",
+    "classic_matching": "experiments/auditmanager_stage2_20261110/historical_KM_matching.json"
+  }
+}
