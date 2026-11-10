@@ -1,0 +1,181 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "region_09",
+      "operation": "identity_across_views",
+      "status": "needs_data",
+      "reason": "На изображении листа 6 осмотрена прямоугольная область с плотной параллельной штриховкой вдоль нижнего фасада между осями В3 и В4 и соседние аналогичные области. Положение между осями позволяет локализовать экземпляр, но индивидуальная проектная марка и назначение не установлены. Марки К-5 на других участках не имеют видимой привязки к рассматриваемой области. Текст условных обозначений не устанавливает соответствие этой штриховки конкретному типу покрытия. Для проверки идентичности нужны другой вид этого участка с координатной привязкой и графическая легенда либо маркировочный план, раскрывающие назначение области. Противоречие между экземплярами не установлено.",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450",
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "context_queries": [
+        "План покрытия технических ниш",
+        "Условные обозначения",
+        "В3",
+        "В4"
+      ]
+    },
+    {
+      "object_id": "region_09",
+      "operation": "document_links",
+      "status": "needs_data",
+      "reason": "В осмотренной области между В3 и В4 на листе 6 не различима адресная ссылка на узел, ведомость или другой лист. Примечания содержат ссылки на лист 3, раздел КМ6.2, узел Ж листа 11 и раздел АР7.2, однако их применимость к этой немаркированной области не установлена. Отсутствие различимой локальной ссылки не доказывает отсутствие связи в проекте. Нужны источник идентификации области и соответствующий фрагмент ведомости, узла или связанного вида с явной привязкой к этому участку.",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450",
+        "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "context_queries": [
+        "План покрытия технических ниш",
+        "Ведомость покрытий",
+        "В3",
+        "В4",
+        "Раскладку финишного покрытия",
+        "Маркировка фрагмента плана/Узла"
+      ]
+    }
+  ],
+  "findings": [],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "region_09",
+        "identity": "Локальная область 09: нижний фасад между В3 и В4",
+        "scope": "Графически различимая область; проектная марка не установлена",
+        "kind": "Немаркированная область неизвестного назначения",
+        "source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Графика и маркировка",
+            "value": "Отдельный прямоугольник с плотной серой линейной штриховкой; индивидуальная подпись не различима",
+            "unit": null,
+            "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+            "graphic_observation": "Расположен справа от region_08 между соседними поперечными элементами."
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "region_09",
+        "operation": "identity_across_views",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "receipt": {
+          "object_id": "region_09",
+          "operation": "identity_across_views",
+          "status": "needs_data",
+          "reason": "На изображении листа 6 осмотрена прямоугольная область с плотной параллельной штриховкой вдоль нижнего фасада между осями В3 и В4 и соседние аналогичные области. Положение между осями позволяет локализовать экземпляр, но индивидуальная проектная марка и назначение не установлены. Марки К-5 на других участках не имеют видимой привязки к рассматриваемой области. Текст условных обозначений не устанавливает соответствие этой штриховки конкретному типу покрытия. Для проверки идентичности нужны другой вид этого участка с координатной привязкой и графическая легенда либо маркировочный план, раскрывающие назначение области. Противоречие между экземплярами не установлено.",
+          "source_refs": [
+            "blk_eb6d781a540446879deec9e102cbd450",
+            "blk_0dc65bdd718344b78468a4d4cb3728de"
+          ],
+          "context_queries": [
+            "План покрытия технических ниш",
+            "Условные обозначения",
+            "В3",
+            "В4"
+          ]
+        }
+      },
+      {
+        "object_id": "region_09",
+        "operation": "quantity_balance",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "region_09",
+        "operation": "dimension_consistency",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "region_09",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "region_09",
+        "operation": "document_links",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "receipt": {
+          "object_id": "region_09",
+          "operation": "document_links",
+          "status": "needs_data",
+          "reason": "В осмотренной области между В3 и В4 на листе 6 не различима адресная ссылка на узел, ведомость или другой лист. Примечания содержат ссылки на лист 3, раздел КМ6.2, узел Ж листа 11 и раздел АР7.2, однако их применимость к этой немаркированной области не установлена. Отсутствие различимой локальной ссылки не доказывает отсутствие связи в проекте. Нужны источник идентификации области и соответствующий фрагмент ведомости, узла или связанного вида с явной привязкой к этому участку.",
+          "source_refs": [
+            "blk_eb6d781a540446879deec9e102cbd450",
+            "blk_0dc65bdd718344b78468a4d4cb3728de",
+            "blk_d41410ac6a6b414799fd047ee093fbfc"
+          ],
+          "context_queries": [
+            "План покрытия технических ниш",
+            "Ведомость покрытий",
+            "В3",
+            "В4",
+            "Раскладку финишного покрытия",
+            "Маркировка фрагмента плана/Узла"
+          ]
+        }
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_d41410ac6a6b414799fd047ee093fbfc",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_eb6d781a540446879deec9e102cbd450",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 5,
+    "unresolved_source_blocks": 3,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "document_links",
+    "identity_across_views"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}

@@ -62,7 +62,9 @@ def prepare_object_operation_continuation(original, response, sources, images, m
         search_queries=queries['queries']
         if revision and (previous.get('backlog') or previous.get('deferred_queries')):
             recorded=list(previous.get('query_hit_counts',{})) if previous.get('backlog') else []
-            search_queries=recorded+list(previous.get('deferred_queries',[]))+search_queries
+            # A refined query must not be starved by six old broad queries.
+            # Keep older work as deferred queries/backlog, rather than discarding it.
+            search_queries=search_queries+list(previous.get('deferred_queries',[]))+recorded
         prior_ids=[b['block_id'] for b in packet['omitted']]
         if revision:
             prior_ids.extend(b['block_id'] for b in previous.get('backlog',[]))

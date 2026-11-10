@@ -1,0 +1,19 @@
+{
+  "control": "AR region05 actual model query replay",
+  "target_source": "blk_602b484f088b4a029d3ba6e01df3f645",
+  "before_attached": false,
+  "after_attached": true,
+  "new_model_query": "Ведомость покрытий кровли",
+  "old_query_deferral": [
+    "Ведомость покрытий кровли",
+    "+5.320"
+  ],
+  "new_query_deferral": [
+    "Условные обозначения",
+    "Маркировка фрагмента плана/Узла"
+  ],
+  "old_packet_executed": false,
+  "change": "Current model queries precede carried-over queries; previous backlog retained.",
+  "semantic_applicability_verified": false,
+  "production_acceptance": false
+}

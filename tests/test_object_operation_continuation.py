@@ -103,3 +103,21 @@ def test_whole_message_budget_defers_new_blocks_without_losing_original_context(
     assert deferred in followup['new_source_ids']
     assert all(b in json.loads(followup['request']['messages'][-1]['content'])['source_context']
         for b in packet['source_context'])
+
+
+def test_refined_query_is_not_starved_by_previous_six_broad_queries():
+    request,response,sources,md,kwargs=case()
+    packet=json.loads(request['messages'][-1]['content'])
+    old_queries=[f'OLD QUERY {i}' for i in range(6)]
+    packet['context_revision']=1
+    packet['context_searches']={'dimension_consistency':{
+        'query_hit_counts':{q:1 for q in old_queries},
+        'backlog':[{'block_id':'a'}], 'deferred_queries':[]}}
+    request['messages'][-1]['content']=json.dumps(packet)
+    kwargs['expected_request_sha256']=evidence_digest(request)
+    result=prepare_object_operation_continuation(request,response,sources,{},md,**kwargs)
+    assert result['status']=='prepared'
+    assert result['new_source_ids']==['b']
+    search=result['searches']['dimension_consistency']
+    assert 'A 20' in search['query_hit_counts']
+    assert old_queries[-1] in search['deferred_queries']

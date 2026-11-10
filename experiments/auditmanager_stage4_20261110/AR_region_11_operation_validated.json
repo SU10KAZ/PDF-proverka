@@ -1,0 +1,177 @@
+{
+  "object_operation_results": [
+    {
+      "object_id": "region_11",
+      "operation": "identity_across_views",
+      "status": "needs_data",
+      "reason": "На изображении листа 6 осмотрен участок нижнего фасада между В10 и В11 у оси Г5, слева от красной торцевой полосы. Видна прямоугольная область с плотной серой линейной штриховкой; индивидуальная марка и выноска к ней не различимы. Подобная штриховка присутствует в других пролётах нижнего фасада, поэтому сама по себе не идентифицирует экземпляр. Положение позволяет локализовать участок на данном плане, но другие виды с его обозначением и привязкой не представлены. Противоречие идентичности не установлено; необходим соответствующий фасад, разрез или фрагмент с обозначением этого участка.",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450",
+        "blk_0dc65bdd718344b78468a4d4cb3728de"
+      ],
+      "context_queries": [
+        "В10",
+        "В11",
+        "Г5",
+        "План покрытия технических ниш"
+      ]
+    },
+    {
+      "object_id": "region_11",
+      "operation": "document_links",
+      "status": "needs_data",
+      "reason": "В осмотренной области листа 6 между В10 и В11 у оси Г5 адресная ссылка на узел, ведомость или другой лист не различима. Текст условных обозначений перечисляет типы покрытий, но не устанавливает соответствие серой линейной штриховки конкретному типу. Примечания содержат общие ссылки на лист 3, узел Ж листа 11 и смежные разделы; их применимость к этому участку не подтверждена. Необходимы графическое соответствие штриховки условному обозначению и документ, связывающий установленный тип или марку с данным участком. Отсутствие связи в представленном пакете не доказывает отсутствие ссылки в проекте.",
+      "source_refs": [
+        "blk_eb6d781a540446879deec9e102cbd450",
+        "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "blk_d41410ac6a6b414799fd047ee093fbfc"
+      ],
+      "context_queries": [
+        "Условные обозначения",
+        "В10",
+        "В11",
+        "Ведомость покрытий"
+      ]
+    }
+  ],
+  "findings": [],
+  "operation_pending": [],
+  "operation_coverage": {
+    "objects": [
+      {
+        "id": "region_11",
+        "identity": "Локальная область 11: нижний фасад между В10 и В11",
+        "scope": "Графически различимая область; проектная марка не установлена",
+        "kind": "Немаркированная область неизвестного назначения",
+        "source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "observed_parameters": [
+          {
+            "name": "Графика и маркировка",
+            "value": "Прямоугольный участок с плотной серой линейной штриховкой; индивидуальная подпись не различима",
+            "unit": null,
+            "source_ref": "blk_eb6d781a540446879deec9e102cbd450",
+            "graphic_observation": "У правого конца нижнего фасада, непосредственно слева от красной торцевой полосы."
+          }
+        ]
+      }
+    ],
+    "invalid_objects": [],
+    "operations": [
+      {
+        "object_id": "region_11",
+        "operation": "identity_across_views",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "receipt": {
+          "object_id": "region_11",
+          "operation": "identity_across_views",
+          "status": "needs_data",
+          "reason": "На изображении листа 6 осмотрен участок нижнего фасада между В10 и В11 у оси Г5, слева от красной торцевой полосы. Видна прямоугольная область с плотной серой линейной штриховкой; индивидуальная марка и выноска к ней не различимы. Подобная штриховка присутствует в других пролётах нижнего фасада, поэтому сама по себе не идентифицирует экземпляр. Положение позволяет локализовать участок на данном плане, но другие виды с его обозначением и привязкой не представлены. Противоречие идентичности не установлено; необходим соответствующий фасад, разрез или фрагмент с обозначением этого участка.",
+          "source_refs": [
+            "blk_eb6d781a540446879deec9e102cbd450",
+            "blk_0dc65bdd718344b78468a4d4cb3728de"
+          ],
+          "context_queries": [
+            "В10",
+            "В11",
+            "Г5",
+            "План покрытия технических ниш"
+          ]
+        }
+      },
+      {
+        "object_id": "region_11",
+        "operation": "quantity_balance",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "region_11",
+        "operation": "dimension_consistency",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "region_11",
+        "operation": "requirement_applicability",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "reason": "missing_receipt"
+      },
+      {
+        "object_id": "region_11",
+        "operation": "document_links",
+        "status": "needs_data",
+        "semantic_verified": false,
+        "object_source_refs": [
+          "blk_eb6d781a540446879deec9e102cbd450"
+        ],
+        "receipt": {
+          "object_id": "region_11",
+          "operation": "document_links",
+          "status": "needs_data",
+          "reason": "В осмотренной области листа 6 между В10 и В11 у оси Г5 адресная ссылка на узел, ведомость или другой лист не различима. Текст условных обозначений перечисляет типы покрытий, но не устанавливает соответствие серой линейной штриховки конкретному типу. Примечания содержат общие ссылки на лист 3, узел Ж листа 11 и смежные разделы; их применимость к этому участку не подтверждена. Необходимы графическое соответствие штриховки условному обозначению и документ, связывающий установленный тип или марку с данным участком. Отсутствие связи в представленном пакете не доказывает отсутствие ссылки в проекте.",
+          "source_refs": [
+            "blk_eb6d781a540446879deec9e102cbd450",
+            "blk_0dc65bdd718344b78468a4d4cb3728de",
+            "blk_d41410ac6a6b414799fd047ee093fbfc"
+          ],
+          "context_queries": [
+            "Условные обозначения",
+            "В10",
+            "В11",
+            "Ведомость покрытий"
+          ]
+        }
+      }
+    ],
+    "unmatched_operations": [],
+    "source_inventory": [
+      {
+        "block_id": "blk_0dc65bdd718344b78468a4d4cb3728de",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_d41410ac6a6b414799fd047ee093fbfc",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      },
+      {
+        "block_id": "blk_eb6d781a540446879deec9e102cbd450",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_or_duplicate_inventory_receipt"
+      }
+    ],
+    "unknown_inventory_blocks": [],
+    "unresolved_operations": 5,
+    "unresolved_source_blocks": 3,
+    "coverage_complete": false,
+    "semantic_verified": false
+  },
+  "requested_operations": [
+    "document_links",
+    "identity_across_views"
+  ],
+  "unverified_operation_receipts": [],
+  "operation_candidate_ledger": []
+}

@@ -145,16 +145,18 @@
     {
       "hypothesis": "H03",
       "control": "AR unlabelled regions H03-P03",
-      "state": "six_regions_extracted_operation_controls_running",
+      "state": "six_region_operations_needs_data_context2_running",
       "evidence": [
         "AR_unlabelled_source_review.json",
         "AR_unlabelled_inventory_v1_assessment.json",
         "AR_unlabelled_inventory_v2_manifest.json",
-        "AR_unlabelled_inventory_v2_assessment.json"
+        "AR_unlabelled_inventory_v2_assessment.json",
+        "AR_region_operation_status.json",
+        "AR_context_query_priority_replay.json"
       ],
-      "detail": "Six named regions now have separate model records with locations. Other records not semantically accepted. Zero findings at extraction, appropriate uncertainty retained. Actual identity/document-link operations started for six extracted objects; no expected answers supplied.",
+      "detail": "Six regions found; twelve identity/document-link receipts needs_data, zero findings. First followup rejects automatic identity across different elevations. Fixed old broad queries starving new model queries; actual sheet7 source now attached. Second followup running.",
       "root": "/tmp/auditmanager_ar_unlabelled_inventory_control_20261110_regions_v2/AR",
-      "process_receipt": "/tmp/auditmanager_ar_region_operations_process_20261110/process.json",
+      "process_receipt": "/tmp/auditmanager_ar_region_followup2_process_20261110/process.json",
       "production_acceptance": false
     },
     {
