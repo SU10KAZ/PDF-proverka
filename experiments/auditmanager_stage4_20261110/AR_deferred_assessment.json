@@ -15,8 +15,9 @@
   "negative_control": "No confirmed claim that third aerator is excessive; result is explicitly a question about placement.",
   "limits": [
     "Model-reported inability to locate third symbol is not exhaustive proof of absence.",
-    "Question semantic acceptance and verifier/Excel retention remain to be checked.",
+    "Question semantic acceptance remains open; deterministic verifier/Excel retention now confirmed separately.",
     "No baseline finding mentioned aerators, but absence of keyword alone is not complete semantic deduplication."
   ],
-  "production_changed": false
+  "production_changed": false,
+  "output_retention": "AR_question_output_replay.json:22classic preserved, F-023 exported once under questions after deterministic verification."
 }
