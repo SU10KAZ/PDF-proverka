@@ -78,6 +78,6 @@
   "automatic_retries": 0,
   "historical_answers_sent": false,
   "cost": "Codex subscription quota; monetary maximum unknown",
-  "dispatch_status": "automatic_approval_rejected_specific_payload_confirmation_pending",
-  "request_sent": false
+  "dispatch_status": "started_after_specific_user_approval",
+  "request_sent": true
 }
