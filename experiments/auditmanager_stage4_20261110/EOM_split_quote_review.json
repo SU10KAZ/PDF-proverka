@@ -1,0 +1,18 @@
+{
+  "packet": "object_inventory_003",
+  "source_ref": "blk_7d22e811017e4e969b2d732e9e30c50d",
+  "reviews": [
+    {
+      "reported_quote": "384.1/1,2=320.1 < 350",
+      "exact_source_substring": "384.1/1,2=320.1 \\< 350",
+      "assessment": "Model omitted Markdown escape before <. Numerical values and inequality direction agree; literal quotation contract still fails. No source correction or global normalization performed."
+    },
+    {
+      "reported_quote": "384.1/1,2=320.1 < 400",
+      "exact_source_substring": "384.1/1,2=320.1 \\< 400",
+      "assessment": "Model omitted Markdown escape before <. Numerical values and inequality direction agree; literal quotation contract still fails. No source correction or global normalization performed."
+    }
+  ],
+  "source_preserved": true,
+  "calculation_correctness_verified": false
+}
