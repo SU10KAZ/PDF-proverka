@@ -1,0 +1,11 @@
+{
+  "pid": 3471456,
+  "command": [
+    "/opt/py312/bin/python",
+    "-m",
+    "experiments.auditmanager_stage4_20261110.run_ak_cabinet_inventory_control",
+    "--execute"
+  ],
+  "started_at_epoch": 1794340709.1085851,
+  "purpose": "Resume only incomplete AK inventory; four sealed responses reused locally."
+}

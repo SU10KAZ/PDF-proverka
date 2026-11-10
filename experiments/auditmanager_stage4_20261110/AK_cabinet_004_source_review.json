@@ -1,0 +1,26 @@
+{
+  "control": "AK14cabinet5of5",
+  "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+  "image": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+  "image_sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+  "directly_viewed_original_resolution": true,
+  "cabinet": "ШАУВ-1-К6АС",
+  "observations": [
+    {
+      "scope": "Main lower cabinet contour underM1,M2,M3,M5",
+      "fact": "Separate connections show repeated23,24,25,PE; no distinct strip names at those groups."
+    },
+    {
+      "scope": "Main lower contour atСКЗandfireinput",
+      "fact": "Separate incoming lines terminate at47,48without distinguishable strip identifiers nearby."
+    },
+    {
+      "scope": "IntermediateXTblocks andPE",
+      "fact": "Separate XTlabels distinguish local contacts; PErepeat alone is not a defect."
+    }
+  ],
+  "supported_claim": "Local addressing ambiguity only; erroneous physical connection unproved.",
+  "historical_boundary": "Stage2found no terminal-ambiguity candidate for this block; source control is known-case, not blind discovery.",
+  "model_answer_used_for_observations": false,
+  "full_control_complete": false
+}

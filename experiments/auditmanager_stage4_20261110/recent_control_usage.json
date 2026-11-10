@@ -423,24 +423,19 @@
     {
       "control": "AK_identity_2_v2",
       "directory": "/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_002",
-      "status": "result_pending",
+      "status": "response_received",
       "attempt_receipt": {
-        "status": "started",
-        "request_sha256": "6f784fd1326ac26c47e4e1bc59c1d1baf03fc6eacf47c40771426ef432f47256",
-        "inventory_result_sha256": "54b2d90cfd9188489ffa07558d2bfe6d8d8682ae7824f59ba86c88d5bf3636e1",
-        "md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
-        "images": [
-          {
-            "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_f784be4786274e8c84f32d874ed99969.png",
-            "sha256": "005f33fd71bc9e0ac8233260d6119835b47634d035bc1f7bffbaf649bac382c2"
-          }
-        ],
-        "model": "codex/gpt-6-astra",
-        "reasoning_effort": "high",
-        "max_calls": 1,
-        "automatic_retries": 0,
-        "scope": "Known-source model-extracted cabinet; identity operation only. No historical answers or expected finding supplied."
-      }
+        "status": "finished",
+        "is_error": false
+      },
+      "result_sha256": "88167575787e78ba5febadd53700b3e94290b0fbd3ce8ef0e767030a6ae065ab",
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 57055,
+      "input_tokens": 14555,
+      "output_tokens": 2296,
+      "cost_source": "subscription",
+      "error": "",
+      "token_counters_incomplete": false
     },
     {
       "control": "AK_identity_3_v2",
@@ -494,19 +489,49 @@
       "token_counters_incomplete": true
     },
     {
+      "control": "AK_inventory_4_interrupted",
+      "directory": "/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_004/interrupted_01",
+      "status": "interrupted",
+      "attempt_receipt": {
+        "status": "interrupted",
+        "request_sha256": "66afcd832214b83ba8135259e175d6f07c104fc43a9d21e56ef7e474adb50ba5",
+        "model": "codex/gpt-6-astra",
+        "reasoning_effort": "high",
+        "exit_code": 143,
+        "termination_cause": "unknown",
+        "response_recovered": false,
+        "token_usage_unknown": true
+      },
+      "token_counters_incomplete": true
+    },
+    {
+      "control": "AK_graphic_interrupted_2",
+      "directory": "/tmp/auditmanager_ak_terminal_graphic_control_20261110/interrupted_02",
+      "status": "interrupted",
+      "attempt_receipt": {
+        "status": "interrupted",
+        "request_sha256": "faf89fccf0fd29dcb0eae7ffc47dbe82bc7122349998f5e0e14f97238b7fc1e0",
+        "exit_code": 143,
+        "termination_cause": "unknown",
+        "response_recovered": false,
+        "token_usage_unknown": true
+      },
+      "token_counters_incomplete": true
+    },
+    {
       "control": "AK_terminal_graphic",
       "directory": "/tmp/auditmanager_ak_terminal_graphic_control_20261110",
       "status": "not_started"
     }
   ],
-  "completed_requests": 24,
-  "pending_results": 2,
+  "completed_requests": 25,
+  "pending_results": 1,
   "failed_requests": 2,
-  "interrupted_requests": 2,
-  "reported_input_tokens": 828044,
-  "reported_output_tokens": 334382,
+  "interrupted_requests": 4,
+  "reported_input_tokens": 842599,
+  "reported_output_tokens": 336678,
   "token_accounting_complete": false,
-  "completed_request_minutes_sum": 108.854,
+  "completed_request_minutes_sum": 109.805,
   "wall_clock_elapsed_minutes": null,
   "monetary_cost_known": false,
   "boundaries": [

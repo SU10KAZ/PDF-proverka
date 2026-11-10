@@ -26,6 +26,8 @@ def summarize():
         *[(f'AK_identity_{i}_v2', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2') / f'packet_{i:03d}') for i in range(5)],
         ('AK_identity_2_interrupted', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_002/interrupted_01')),
         ('AK_graphic_interrupted', Path('/tmp/auditmanager_ak_terminal_graphic_control_20261110/interrupted_01')),
+        ('AK_inventory_4_interrupted', Path('/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution/object_inventory_004/interrupted_01')),
+        ('AK_graphic_interrupted_2', Path('/tmp/auditmanager_ak_terminal_graphic_control_20261110/interrupted_02')),
         ('AK_terminal_graphic', Path('/tmp/auditmanager_ak_terminal_graphic_control_20261110')),
     ]
     rows = []
