@@ -1,0 +1,27 @@
+{
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "known_candidate_control": true,
+  "source_selection": "Known case source blocks; original classic findings, no engineer feedback or corrected benchmark wording.",
+  "original_findings_sha256": "d15870091424921798f5b4b5beb1bc227dad0d9d3e12a376e61d09f2f7edef8a",
+  "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "history_or_engineer_answers_supplied": false,
+  "semantic_acceptance": false,
+  "requests": [
+    {
+      "finding_id": "F-001",
+      "request_sha256": "e76baca61943e0ca6efcc18da548a712269a468f6108b8d5bb5b11b6a7e27714",
+      "message_chars": 12057
+    },
+    {
+      "finding_id": "F-030",
+      "request_sha256": "11b9c0e8130998d620803136d238a1879fb2cbb8c4a53ff9d460b3d58c0a6c6f",
+      "message_chars": 10047
+    },
+    {
+      "finding_id": "F-032",
+      "request_sha256": "dd822dabbd4efb2d71720f4f8ed6585a2bc930a1eb2368622442c88ed7759c77",
+      "message_chars": 11586
+    }
+  ]
+}
