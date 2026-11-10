@@ -1,0 +1,303 @@
+{
+  "source": "/tmp/auditmanager_km_complete_identity_candidates_20261110.json",
+  "source_sha256": "b00712315223b446c764bc690b80ddfe7451b5618a1e036cc40c3c73507bd982",
+  "total_pairs": 2190,
+  "scheduled": 2000,
+  "backlog": 190,
+  "top_triggers": [
+    {
+      "kind": "shared_mark",
+      "value": "км1.2",
+      "pair_count": 899
+    },
+    {
+      "kind": "shared_mark",
+      "value": "пд-00580716",
+      "pair_count": 899
+    },
+    {
+      "kind": "shared_mark",
+      "value": "лк6",
+      "pair_count": 345
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм 5",
+      "pair_count": 156
+    },
+    {
+      "kind": "shared_mark",
+      "value": "лк4.1",
+      "pair_count": 122
+    },
+    {
+      "kind": "shared_mark",
+      "value": "лист 9",
+      "pair_count": 111
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм 8",
+      "pair_count": 104
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм 6",
+      "pair_count": 74
+    },
+    {
+      "kind": "shared_mark",
+      "value": "лк5",
+      "pair_count": 71
+    },
+    {
+      "kind": "shared_mark",
+      "value": "лист 10",
+      "pair_count": 48
+    },
+    {
+      "kind": "shared_mark",
+      "value": "лк3.1",
+      "pair_count": 47
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм6",
+      "pair_count": 35
+    },
+    {
+      "kind": "shared_mark",
+      "value": "лк1.1",
+      "pair_count": 34
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм 1",
+      "pair_count": 33
+    },
+    {
+      "kind": "shared_mark",
+      "value": "с2",
+      "pair_count": 29
+    },
+    {
+      "kind": "shared_mark",
+      "value": "с3",
+      "pair_count": 29
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм 2",
+      "pair_count": 24
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм7",
+      "pair_count": 23
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм 4",
+      "pair_count": 19
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм5",
+      "pair_count": 18
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм25",
+      "pair_count": 17
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм9",
+      "pair_count": 14
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм22",
+      "pair_count": 13
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм24",
+      "pair_count": 13
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм16",
+      "pair_count": 12
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм14",
+      "pair_count": 10
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм15",
+      "pair_count": 10
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм 3",
+      "pair_count": 9
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм11",
+      "pair_count": 9
+    },
+    {
+      "kind": "shared_mark",
+      "value": "огм21",
+      "pair_count": 9
+    }
+  ],
+  "only_project_code_or_sheet_context_pairs": 952,
+  "context_values_examined": [
+    "км1.2",
+    "лист 10",
+    "лист 9",
+    "пд-00580716"
+  ],
+  "example_pairs": [
+    {
+      "left_object_id": "object_inventory_000:obj_02",
+      "right_object_id": "object_inventory_002:ogm5",
+      "triggers": [
+        {
+          "kind": "shared_mark",
+          "value": "км1.2"
+        },
+        {
+          "kind": "shared_mark",
+          "value": "пд-00580716"
+        }
+      ],
+      "source_refs": [
+        "blk_f3f0332f544a4ca493442513059a154d",
+        "blk_ef276d1030da49b48f4bb057ebafe685",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c"
+      ],
+      "left_scope": "Комплект документации; не физическое изделие",
+      "right_scope": "Марка сборочного ограждения; 10 экземпляров по заголовку ведомости, индивидуальные места установки не представлены",
+      "identity_relation": "not_checked",
+      "semantic_verified": false
+    },
+    {
+      "left_object_id": "object_inventory_000:obj_02",
+      "right_object_id": "object_inventory_002:ogm6",
+      "triggers": [
+        {
+          "kind": "shared_mark",
+          "value": "км1.2"
+        },
+        {
+          "kind": "shared_mark",
+          "value": "пд-00580716"
+        }
+      ],
+      "source_refs": [
+        "blk_f3f0332f544a4ca493442513059a154d",
+        "blk_ef276d1030da49b48f4bb057ebafe685",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_ad6205eb490d43edadcdfc3bd8c77e05"
+      ],
+      "left_scope": "Комплект документации; не физическое изделие",
+      "right_scope": "Марка сборочного ограждения; 9 экземпляров по заголовку, места установки не представлены",
+      "identity_relation": "not_checked",
+      "semantic_verified": false
+    },
+    {
+      "left_object_id": "object_inventory_000:obj_02",
+      "right_object_id": "object_inventory_002:ogm8",
+      "triggers": [
+        {
+          "kind": "shared_mark",
+          "value": "км1.2"
+        },
+        {
+          "kind": "shared_mark",
+          "value": "пд-00580716"
+        }
+      ],
+      "source_refs": [
+        "blk_f3f0332f544a4ca493442513059a154d",
+        "blk_ef276d1030da49b48f4bb057ebafe685",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_7f0ce580e06f44f78c0b85f92efb82c7"
+      ],
+      "left_scope": "Комплект документации; не физическое изделие",
+      "right_scope": "Марка сборочного ограждения; 1 экземпляр по заголовку, место установки не представлено",
+      "identity_relation": "not_checked",
+      "semantic_verified": false
+    },
+    {
+      "left_object_id": "object_inventory_000:obj_02",
+      "right_object_id": "object_inventory_002:sheet_requirements",
+      "triggers": [
+        {
+          "kind": "shared_mark",
+          "value": "км1.2"
+        },
+        {
+          "kind": "shared_mark",
+          "value": "пд-00580716"
+        }
+      ],
+      "source_refs": [
+        "blk_f3f0332f544a4ca493442513059a154d",
+        "blk_ef276d1030da49b48f4bb057ebafe685",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_02786cefba4641928c7e149eda44f872"
+      ],
+      "left_scope": "Комплект документации; не физическое изделие",
+      "right_scope": "Требования и документные ссылки; не физическая сборка",
+      "identity_relation": "not_checked",
+      "semantic_verified": false
+    },
+    {
+      "left_object_id": "object_inventory_000:obj_02",
+      "right_object_id": "object_inventory_005:ОГМ1_ведомость",
+      "triggers": [
+        {
+          "kind": "shared_mark",
+          "value": "км1.2"
+        },
+        {
+          "kind": "shared_mark",
+          "value": "пд-00580716"
+        }
+      ],
+      "source_refs": [
+        "blk_f3f0332f544a4ca493442513059a154d",
+        "blk_ef276d1030da49b48f4bb057ebafe685",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_4b49406098054a4da822e4286031df67"
+      ],
+      "left_scope": "Комплект документации; не физическое изделие",
+      "right_scope": "Сборочная марка и состав по ведомости. Конкретное место установки не установлено.",
+      "identity_relation": "not_checked",
+      "semantic_verified": false
+    }
+  ],
+  "interpretation": "Shared project codes and sheet references propose many pairs without establishing common object identity. Pair totals overlap across trigger counts.",
+  "recommended_change": "Represent designation, location, document reference and parent assembly separately; prioritize supported object-designation matches, preserve weak links in backlog and test recall before changing runtime ordering.",
+  "runtime_changed": false,
+  "pairs_discarded": 0,
+  "automatic_merges": 0,
+  "limits": [
+    "Observed context strings are diagnostic, never a project-specific blacklist.",
+    "Shared assembly labels may also refer to different components; priority is not semantic identity.",
+    "No validated recall comparison yet; do not claim cost improvement."
+  ]
+}

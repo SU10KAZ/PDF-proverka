@@ -1,7 +1,7 @@
 {
   "discipline": "KM",
   "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
-  "completed_packets": 12,
+  "completed_packets": 14,
   "total_packets": 14,
   "packets": [
     {
@@ -147,17 +147,41 @@
       "duration_ms": 307856,
       "input_tokens": 22494,
       "output_tokens": 15145
+    },
+    {
+      "packet": "object_inventory_012",
+      "result_sha256": "773938ca37ae85dbd3aea46ed5f69ebe5f49cba96975dd2f2fb1a077137b6103",
+      "objects": 11,
+      "invalid_objects": 0,
+      "findings": 2,
+      "unresolved_operations": 38,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 384007,
+      "input_tokens": 22778,
+      "output_tokens": 18865
+    },
+    {
+      "packet": "object_inventory_013",
+      "result_sha256": "ddfb5d31a498d19449428daf2eb5493426bb1b88f006daf648e0f2ffb31b40ac",
+      "objects": 8,
+      "invalid_objects": 0,
+      "findings": 0,
+      "unresolved_operations": 27,
+      "unresolved_source_blocks": 1,
+      "duration_ms": 308798,
+      "input_tokens": 20035,
+      "output_tokens": 15204
     }
   ],
-  "packet_local_objects": 249,
-  "raw_findings": 6,
+  "packet_local_objects": 268,
+  "raw_findings": 8,
   "operation_status_counts": {
-    "reported_checked": 153,
+    "reported_checked": 183,
     "reported_not_applicable": 36,
-    "needs_data": 1056
+    "needs_data": 1121
   },
-  "quote_count": 259,
-  "exact_quote_matches": 259,
+  "quote_count": 346,
+  "exact_quote_matches": 346,
   "parameter_evidence_issues": [
     {
       "packet": "object_inventory_004",
@@ -352,11 +376,47 @@
         "reason": "Изображение просмотрено; зарегистрированы марка, позиции, размерные цепи и ссылочные обозначения."
       },
       "reason": "inventory_conflicts_with_registered_objects"
+    },
+    {
+      "packet": "object_inventory_012",
+      "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+        "status": "needs_data",
+        "object_ids": [
+          "OGM17",
+          "OGM18",
+          "OGM21",
+          "OGM24"
+        ],
+        "reason": "Все четыре панели просмотрены, марки и основные конструкции учтены. Разрешение не позволяет надёжно прочитать все мелкие размеры, выноски позиций и выполнить полный поэлементный подсчёт; требуется более читаемая графика этих панелей."
+      }
+    },
+    {
+      "packet": "object_inventory_013",
+      "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+      "status": "needs_data",
+      "semantic_verified": false,
+      "receipt": {
+        "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+        "status": "needs_data",
+        "object_ids": [
+          "p13_ogm19",
+          "p13_ogm20",
+          "p13_ogm22",
+          "p13_ogm23",
+          "p13_ogm25",
+          "p13_node_a"
+        ],
+        "reason": "Изображение осмотрено целиком; обнаружены все пять марочных сборок и ссылки на узлы. Часть мелких размеров, позиционных обозначений и пересекающихся выносок не читается достаточно надежно для полной инвентаризации графических параметров."
+      }
     }
   ],
-  "duration_ms_sum": 5648790,
-  "input_tokens_sum": 282348,
-  "output_tokens_sum": 278441,
+  "duration_ms_sum": 6341595,
+  "input_tokens_sum": 325161,
+  "output_tokens_sum": 312510,
   "semantic_verified": false,
   "whole_project_coverage_verified": false,
   "limits": [

@@ -1,0 +1,118 @@
+{
+  "status": "passed_real_table_browser_fixture",
+  "browser": "Chrome/157.0.0.0",
+  "skill": "/home/coder/.agents/skills/browser-skill/SKILL.md",
+  "fixture": {
+    "url": "http://127.0.0.1:37537/",
+    "source_hashes": {
+      "frontend/index.html": "794bbb860559508768ba47a103fa3c7463eed4a7c77c53ff6c4ab2a798fcff3e",
+      "frontend/static/js/app.js": "9ff9bd60b42505174300ffcb33e5c4e4fa05dc045e21591494f7307dd90ccdc5",
+      "frontend/static/css/styles.css": "e3518b8c7c79015e3c392a6f00427b873ab3153b1139f6a4e5f2bab3ad72803a",
+      "frontend/static/js/vue.global.prod.js": "71e4b2357de7cbee9675fe66c48a23967ca00367dc8c92824690b241c1e64909"
+    },
+    "table_sha256": "af6a29619da0a06325f1f2ff271e25fef072e1dbbae24332039a3e6fccc34f03",
+    "logic_sha256": "e858c72f9ec6ef71132c8e59e0d41f7b87935960cc876b1286ea411fc84fdeaa",
+    "scope": "Real table template, section computed logic, Vue and CSS; synthetic rows; ancillary badges/evidence and persistence stubbed.",
+    "production_accessed": false,
+    "project_data_sent": false
+  },
+  "cases": {
+    "mixed_normal": {
+      "ids": [
+        "F-T2",
+        "F-L1",
+        "F-Q2",
+        "F-Q1"
+      ],
+      "headings": [
+        "Замечания",
+        "Вопросы и уточнения"
+      ],
+      "colspans": [
+        6,
+        6
+      ],
+      "columns": 6,
+      "html_path": "/tmp/auditmanager_questions_mixed_normal.html",
+      "html_sha256": "2f60d1151128a5a9bcf3088c2aa5b31958265a14740b113450df919bf0fa7a3e"
+    },
+    "mixed_expert": {
+      "ids": [
+        "F-T2",
+        "F-L1",
+        "F-Q2",
+        "F-Q1"
+      ],
+      "headings": [
+        "Замечания",
+        "Вопросы и уточнения"
+      ],
+      "colspans": [
+        8,
+        8
+      ],
+      "columns": 8,
+      "html_path": "/tmp/auditmanager_questions_mixed_expert.html",
+      "html_sha256": "93d143b6abd95f1301084273963bcc47a6476ed08c0b7ffc961e2428736ba642"
+    },
+    "only": {
+      "ids": [
+        "F-Q2",
+        "F-Q1"
+      ],
+      "headings": [
+        "Вопросы и уточнения"
+      ],
+      "colspans": [
+        8
+      ],
+      "columns": 8,
+      "html_path": "/tmp/auditmanager_questions_only.html",
+      "html_sha256": "efd588ebdfb22f4863f73da1b915de7503ad51a746df69bdf8e0f920ddf04849"
+    },
+    "legacy": {
+      "ids": [
+        "F-L1"
+      ],
+      "headings": [],
+      "colspans": [],
+      "columns": 8,
+      "html_path": "/tmp/auditmanager_questions_legacy.html",
+      "html_sha256": "0a38ba01bead1cdfa8e72acc5748bbaedfa22513c9566b475ad6f049aad7bece"
+    },
+    "empty": {
+      "ids": [],
+      "headings": [],
+      "colspans": [],
+      "columns": 8,
+      "html_path": "/tmp/auditmanager_questions_empty.html",
+      "html_sha256": "685ea7da9228a9a33c5454416b8e5441a26fdd89bd856a44b5844dfff02fc333"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/question_sections_browser_normal.png",
+      "sha256": "c6be438be6f04df8688ba0f388af883f8a1c48a4ef9cbe2bc7a6497756eaa8aa",
+      "visually_inspected": true
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/question_sections_browser_expert.png",
+      "sha256": "ea6e4b7ebd744fc622a1cb37fc4f6d7b181ab30708aa40c37397489dfd974a37",
+      "visually_inspected": true
+    }
+  ],
+  "question_acceptance_comment_survives_filter_switch": true,
+  "decision_storage": "fixture memory only; no backend persistence tested",
+  "console_errors_corrected_fixture": 0,
+  "capture_path": "/tmp/auditmanager_question_browser_capture.json",
+  "capture_sha256": "83c445c27694be684032291ab207ebfc397132fa8293fd7c6404410e3cda1099",
+  "first_fixture_attempt": "Missing ancillary findingNormBadge stub caused a Vue render error; corrected in fixture only before successful checks.",
+  "production_accessed": false,
+  "new_model_calls": 0,
+  "session_closed": true,
+  "fixture_server_stopped": true,
+  "limits": [
+    "Actual table template, section computed logic, Vue and CSS are tested. Ancillary badges, evidence expansion and persistence are stubbed.",
+    "This is browser component acceptance, not authenticated full-portal integration or production release validation."
+  ]
+}

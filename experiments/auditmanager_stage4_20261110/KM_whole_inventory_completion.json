@@ -1,0 +1,49 @@
+{
+  "status": "all_source_inventory_packets_completed",
+  "model": "codex/gpt-6-astra",
+  "completed_packets": 14,
+  "source_blocks": 111,
+  "source_graphics": 54,
+  "packet_local_object_records": 268,
+  "raw_findings": 8,
+  "unresolved_source_blocks": 14,
+  "unresolved_operations": 1121,
+  "model_reported_operation_states": {
+    "reported_checked": 183,
+    "reported_not_applicable": 36,
+    "needs_data": 1121
+  },
+  "duration_ms_sum": 6341595,
+  "duration_minutes_sum": 105.69325,
+  "input_tokens_sum": 325161,
+  "output_tokens_sum": 312510,
+  "json_chars": 768108,
+  "operation_ledger_chars": 424164,
+  "operation_ledger_fraction": 0.5522192191723039,
+  "identity_pair_candidates": 2000,
+  "identity_pair_backlog": 190,
+  "identity_candidates_path": "/tmp/auditmanager_km_complete_identity_candidates_20261110.json",
+  "identity_candidates_sha256": "b00712315223b446c764bc690b80ddfe7451b5618a1e036cc40c3c73507bd982",
+  "new_incremental_useful_finding_verified": "UA-009 / KM:9 landing elevation difference 150 mm; output automatic wording still not proved.",
+  "classic_overlap_verified": [
+    "F-012 repeated-plan elevations",
+    "F-021 mass totals with unresolved rounding",
+    "F-018 OGM10 3065/2965"
+  ],
+  "semantic_inventory_complete": false,
+  "whole_candidate_audit_complete": false,
+  "independent_new_project_validation": false,
+  "policy_limits": [
+    "Known project regression; historical answers not included in model packets, but OS/tool access isolation is not proved.",
+    "Original running process predated no-retry patch; aggregate attempt count beyond recorded calls cannot be certified.",
+    "268 entries are packet-local observations, not unique physical objects or defects.",
+    "Eight raw candidates are not eight accepted new findings."
+  ],
+  "recommended_next_actions": [
+    "Recover 13 unresolved GRAPHIC blocks by readable source-bound panels or expanded crop, review two inventory linkage inconsistencies.",
+    "Compare duplicate view/type/instance records with source evidence; lexical pairs must not merge objects automatically.",
+    "Prioritize source-supported comparisons and shared missing-context tasks; do not dispatch every needs_data row independently.",
+    "Measure a controlled extraction-only variant before accepting the all-five-operations-per-object design: operation ledger consumes over half of response characters.",
+    "Complete source review and final formatting of retained discoveries, then freeze candidate for planned comparative trials."
+  ]
+}

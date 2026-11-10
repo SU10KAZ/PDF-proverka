@@ -51,7 +51,7 @@
       "id": "H03",
       "status": "partial",
       "verified_or_implemented_scope": "Object registry and five-operation ledger implemented; source-only known-fragment pilot extracted eight objects and reported the cabinet conflict.",
-      "remaining": "Whole-project extraction completeness, independent discovery and expanded-source operation controls remain unverified.",
+      "remaining": "Whole-project source pass completed 14/14; resolve 14 source coverage issues and execute prioritized cross-source comparisons; semantic completeness not established.",
       "evidence": []
     },
     {
@@ -101,7 +101,7 @@
       "id": "H07",
       "status": "partial",
       "verified_or_implemented_scope": "Explicit question routing added to classic Excel and protected across deduplication; narrow metadata/prescan changes retained. Actual Excel export/import roundtrip preserves IDs, decisions and comments in both sections; accepted comments no longer discarded. Portal table groups explicit questions under a separate heading and API grouping preserves section boundaries. Known VK20 source-backed question survives merge, deterministic verifier and saved Excel, preserving baseline 29 outputs; model discovery not tested.",
-      "remaining": "Browser-level rendered portal acceptance and real filter control pairs remain; whole six-project acceptance not established.",
+      "remaining": "End-to-end real filter pairs and full six-project acceptance remain; actual table template browser control passed with synthetic data and stubbed persistence.",
       "evidence": [
         {
           "path": "experiments/auditmanager_stage4_20261110/metadata_gate_candidate_replay.json",
@@ -165,10 +165,10 @@
     "restricted_features_probe": "codex_restricted_features_probe.json",
     "full_candidate_runs_started": false,
     "candidate_frozen": false,
-    "model_jobs_live": true,
+    "model_jobs_live": false,
     "live_job_observation_utc": "2026-11-10T16:52:33.111064+00:00",
-    "live_job_pid": 3228866,
-    "live_job_scope": "KM source-only inventory; snapshot not a live monitor"
+    "live_job_pid": null,
+    "live_job_scope": "KM source inventory completed 14/14; no active model jobs at this snapshot"
   },
   "next_required_checks": [
     {
@@ -197,19 +197,14 @@
     },
     {
       "id": "H07",
-      "remaining": "Rendered browser acceptance and end-to-end filter pairs; local Excel/merge/verifier preservation passed."
+      "remaining": "Real end-to-end filter pairs and full-path integration; actual table browser rendering, local Excel and verifier preservation passed within recorded boundaries."
     }
   ],
   "browser_acceptance": {
-    "status": "not_executed_environment_failure",
-    "executable": "/usr/bin/google-chrome",
-    "mode": "headless with fresh temporary profile, default sandbox, about:blank",
-    "exit_code": 134,
-    "error": "sandbox/linux/services/credentials.cc:131 Permission denied (13)",
-    "production_accessed": false,
-    "project_data_sent": false,
-    "sandbox_disabled": false,
-    "next_action": "Use a supported browser environment to render the actual portal question section; do not count the existing Node computed-list tests as visual acceptance."
+    "status": "passed_real_table_fixture",
+    "artifact": "question_sections_browser_acceptance.json",
+    "full_authenticated_portal_integration_tested": false,
+    "production_accessed": false
   },
   "source_review_queue_validation": {
     "artifact": "experiments/auditmanager_stage4_20261110/EOM_source_review_queue.json",
@@ -466,8 +461,8 @@
       "H03": "Whole-project object extraction and operation completeness.",
       "H04": "Independent extraction of both compared object sets and preservation of active/reserve distinctions.",
       "H05": "Physical quantities, units and operating modes; controlled arithmetic alone is insufficient.",
-      "H06": "Actual applicability checks with exact scope, execution and exceptions; ITP pilot also awaiting payload approval.",
-      "H07": "Browser-rendered section acceptance and filter control pairs through the full model path."
+      "H06": "Actual applicability checks with exact scope, execution and exceptions; completed ITP/OGM5 pilots remain bounded and do not close whole-project applicability.",
+      "H07": "Real table browser component accepted; authenticated full-portal integration and filter control pairs through the full model path remain."
     },
     "later_stages": "Quality/cost, preservation acceptance, six-project regression plus new-project transfer and production release remain unaccepted.",
     "rule": "Do not count additional preparation tests as demonstrated audit-quality improvement.",
@@ -854,7 +849,7 @@
       "document_links": "needs_data"
     },
     "semantic_verified": false,
-    "context_loss_fixed": "Operation receipt source_refs are now retained, including general notes. Verified locally; expanded model followup not yet sent.",
+    "context_loss_fixed": "Operation receipt source_refs retained, including general notes; expanded followup completed once after exact user approval. See expanded_continuation.",
     "continuation_manifest": "KM_OGM5_continuation_manifest.json",
     "expanded_continuation": {
       "status": "completed_once_partial",
@@ -877,16 +872,16 @@
     "inventory_efficiency_evidence": "KM_inventory_interim_efficiency.json",
     "operation_retrieval_diagnosis": "KM_operation_retrieval_diagnosis.json",
     "remaining": [
-      "Finish all 14 KM source inventory packets and validate object/source coverage.",
+      "All 14 KM source inventory packets completed; resolve source coverage issues and review discovered candidates.",
       "Recover unreadable GRAPHIC details and execute source-bound cross-packet comparisons; model checked labels are not semantic acceptance.",
       "Connect and test reusable object-operation continuation across the candidate runtime; injected workflow and source-only inventory integration are implemented.",
       "Resolve pending technical context and wording evidence; preserve confirmed questions separately from internal retrieval tasks.",
       "Freeze accepted candidate, compare model contribution and output retention, then run six known projects plus new projects before production acceptance."
     ],
-    "observed_at_utc": "2026-11-10T16:52:33.111064+00:00",
-    "inventory_packets_completed": 11,
+    "observed_at_utc": "2026-11-10T17:22:03.141750+00:00",
+    "inventory_packets_completed": 14,
     "inventory_packets_total": 14,
-    "inventory_live_pid": 3228866
+    "inventory_live_pid": null
   },
   "historical_versions": [
     {
@@ -904,6 +899,20 @@
         "manifest": "KM_OGM5_continuation_manifest.json"
       },
       "reason": "User approved exact expanded OGM5 package; single request completed."
+    },
+    {
+      "browser_acceptance": {
+        "status": "not_executed_environment_failure",
+        "executable": "/usr/bin/google-chrome",
+        "mode": "headless with fresh temporary profile, default sandbox, about:blank",
+        "exit_code": 134,
+        "error": "sandbox/linux/services/credentials.cc:131 Permission denied (13)",
+        "production_accessed": false,
+        "project_data_sent": false,
+        "sandbox_disabled": false,
+        "next_action": "Use a supported browser environment to render the actual portal question section; do not count the existing Node computed-list tests as visual acceptance."
+      },
+      "reason": "Supported bsk browser session subsequently rendered real table fixture successfully."
     }
   ],
   "object_operation_workflow": {
@@ -921,9 +930,9 @@
     "local_tests_passed": 19,
     "real_replay": "KM_inventory_enrichment_replay.json",
     "classic_text_candidates_preserved": 10,
-    "inventory_candidates_added": 6,
+    "inventory_candidates_added": 8,
     "full_candidate_audit_executed": false,
-    "real_replay_packets": 12
+    "real_replay_packets": 14
   },
   "latest_inventory_progress_assessment": "KM_inventory_progress_assessment.json",
   "latest_dimension_candidate_review": "KM_inventory_dimension_candidate_review.json",
@@ -937,5 +946,32 @@
       "scope": "Description-form candidates, inventory integration and text runner regression."
     },
     "full_candidate_audit": false
+  },
+  "km_whole_inventory_completion": "KM_whole_inventory_completion.json",
+  "operation_candidate_lineage": {
+    "implementation": "backend/app/pipeline/stages/findings_merge/operation_lineage.py",
+    "local_validation_tests_passed": 91,
+    "real_replay": "KM_OGM5_output_lineage_replay.json",
+    "baseline_findings_preserved": 26,
+    "new_question_candidates": 2,
+    "internal_candidate_not_exported": 1,
+    "semantic_acceptance": false
+  },
+  "km_anchor_table_review": {
+    "artifact": "KM_anchor_table_candidate_review.json",
+    "source_facts_verified": 2,
+    "technical_defects_confirmed": 0,
+    "engineer_usefulness_pending": true
+  },
+  "km_identity_pair_diagnostic": {
+    "artifact": "KM_identity_pair_diagnostic.json",
+    "total_pairs": 2190,
+    "only_project_code_or_sheet_context_pairs": 952,
+    "runtime_filter_added": false
+  },
+  "latest_regression_tests": {
+    "artifact": "operation_lineage_regression_tests.json",
+    "passed": 172,
+    "failed": 0
   }
 }

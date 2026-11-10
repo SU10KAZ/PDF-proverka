@@ -1,0 +1,134 @@
+{
+  "project": "ПД-00580716-КМ1.2_V1",
+  "source_md": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/KM/versions/v001/02_work/document.md",
+  "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+  "model_result": "/tmp/auditmanager_whole_project_inventory_20261110/KM/execution/object_inventory_012/result.json",
+  "model_result_sha256": "773938ca37ae85dbd3aea46ed5f69ebe5f49cba96975dd2f2fb1a077137b6103",
+  "records": [
+    {
+      "raw_candidate": {
+        "id": "F1",
+        "object_ids": [
+          "KIT24"
+        ],
+        "kind": "неполнота ведомости",
+        "statement": "В предоставленной ведомости ОГМ24 для анкера HSA-M10x90 не заполнен столбец «Количество». Число 28 находится в столбце «M, кНм». Поэтому количество анкеров по этой ведомости не установлено.",
+        "source_refs": [
+          "blk_e587f49a7bce4c7bac350d00c17ba616"
+        ],
+        "evidence": [
+          {
+            "source_ref": "blk_e587f49a7bce4c7bac350d00c17ba616",
+            "quote": "|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |"
+          },
+          {
+            "source_ref": "blk_e587f49a7bce4c7bac350d00c17ba616",
+            "quote": "|  | Анкер |  | HSA-M10x90 |  |  | 28 |  |  |  |"
+          }
+        ],
+        "limitation": "Зафиксировано расположение данных в авторитетном MD. Фактическое количество установленных анкеров и ошибочность значения момента не установлены."
+      },
+      "source_block_sha256": "06c41d7f93f601948d0e9f84ab942c14e5bfa76635ddfe21ba1f500210267cdf",
+      "column_count": 10,
+      "anchor_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10x90",
+        "",
+        "",
+        "28",
+        "",
+        "",
+        ""
+      ],
+      "quantity_cell": "",
+      "value_28_column_index_zero_based": 6,
+      "quote_checks": [
+        {
+          "quote": "|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |",
+          "exact": true
+        },
+        {
+          "quote": "|  | Анкер |  | HSA-M10x90 |  |  | 28 |  |  |  |",
+          "exact": true
+        }
+      ],
+      "disposition": "bounded_table_completeness_question",
+      "technical_defect_confirmed": false,
+      "engineer_decision": null,
+      "new_incremental_useful_finding_verified": false,
+      "allowed_wording": "В предоставленной ведомости ОГМ24 для анкера HSA-M10x90 не заполнен столбец «Количество». Число 28 находится в столбце «M, кНм». Поэтому количество анкеров по этой ведомости не установлено.",
+      "limits": [
+        "Only completeness of this authoritative MD table is established.",
+        "No conclusion on installed quantity, structural safety or absence of quantities elsewhere.",
+        "No transfer of 28 to another column by analogy; no TEXT raster correction.",
+        "Source fact is checked; engineering usefulness and final output admission remain pending."
+      ]
+    },
+    {
+      "raw_candidate": {
+        "id": "F2",
+        "object_ids": [
+          "KIT21"
+        ],
+        "kind": "неполнота ведомости",
+        "statement": "В предоставленной ведомости ОГМ21 для анкера HSA-M10x90 не заполнен столбец «Количество». Число 28 находится в столбце «Наименование или марка металла» и не задаёт количество анкеров.",
+        "source_refs": [
+          "blk_ba972bbe49b944208eba2b5a9161faa9"
+        ],
+        "evidence": [
+          {
+            "source_ref": "blk_ba972bbe49b944208eba2b5a9161faa9",
+            "quote": "| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |"
+          },
+          {
+            "source_ref": "blk_ba972bbe49b944208eba2b5a9161faa9",
+            "quote": "|  | Анкер |  | HSA-M10x90 |  |  |  | 28 |  |  |"
+          }
+        ],
+        "limitation": "Число 28 не перенесено в другой столбец по аналогии. Вывод ограничен полнотой представленной ведомости, а не фактической комплектностью ограждения."
+      },
+      "source_block_sha256": "222d4a1490d14eb1f40defee440ebb5e6f758a02c4188f576f4ee4f6b513eb3a",
+      "column_count": 10,
+      "anchor_row": [
+        "",
+        "Анкер",
+        "",
+        "HSA-M10x90",
+        "",
+        "",
+        "",
+        "28",
+        "",
+        ""
+      ],
+      "quantity_cell": "",
+      "value_28_column_index_zero_based": 7,
+      "quote_checks": [
+        {
+          "quote": "| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |",
+          "exact": true
+        },
+        {
+          "quote": "|  | Анкер |  | HSA-M10x90 |  |  |  | 28 |  |  |",
+          "exact": true
+        }
+      ],
+      "disposition": "bounded_table_completeness_question",
+      "technical_defect_confirmed": false,
+      "engineer_decision": null,
+      "new_incremental_useful_finding_verified": false,
+      "allowed_wording": "В предоставленной ведомости ОГМ21 для анкера HSA-M10x90 не заполнен столбец «Количество». Число 28 находится в столбце «Наименование или марка металла» и не задаёт количество анкеров.",
+      "limits": [
+        "Only completeness of this authoritative MD table is established.",
+        "No conclusion on installed quantity, structural safety or absence of quantities elsewhere.",
+        "No transfer of 28 to another column by analogy; no TEXT raster correction.",
+        "Source fact is checked; engineering usefulness and final output admission remain pending."
+      ]
+    }
+  ],
+  "new_model_calls": 0,
+  "new_filter_accepted": false,
+  "whole_candidate_audit_complete": false
+}

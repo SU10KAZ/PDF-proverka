@@ -1,0 +1,7 @@
+{
+  "command": "python -m pytest tests/test_operation_candidate_lineage.py tests/test_candidate_coverage.py tests/test_source_review_*.py tests/test_codex_targeted_global_audit.py tests/test_object_operation_passes.py tests/test_object_operation_workflow.py tests/findings/dedup/ tests/test_report_routing_dedup.py -q",
+  "passed": 172,
+  "failed": 0,
+  "duration_seconds": 2.05,
+  "scope": "Local unit and integration tests; no live model or production acceptance."
+}
