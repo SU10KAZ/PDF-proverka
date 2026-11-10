@@ -1,0 +1,46 @@
+{
+  "text": "{\n  \"findings\": [],\n  \"candidate_decisions\": [\n    {\n      \"origin\": \"graphic\",\n      \"pointer\": \"/block_analyses/0/deferred_findings/0\",\n      \"source_id\": \"D-0137bcb0d75d03a0f7291883\",\n      \"decision\": \"needs_data\",\n      \"reason\": \"На приложенном изображении плана кровли на отм. +41.280, лист 2, в правой части показаны два обозначения «Кровельный аэратор АК-1». Авторитетный TEXT спецификации подтверждает количество АК-1 — 3 шт. Однако требуемый план кровли на отм. +44.870, лист 4, не предоставлен. Размещение третьего аэратора и область действия спецификации не установлены; расхождение нельзя ни подтвердить, ни опровергнуть.\",\n      \"source_refs\": [\n        \"blk_b6f2b57505d842e2bdc39369c3b5d93a\",\n        \"blk_2fc185aaba9941a8a14de201a4b9c198\"\n      ],\n      \"deferred\": true,\n      \"gate_reasons\": [\n        \"non_publishable_claim_type\",\n        \"insufficient_context\",\n        \"speculative_wording\"\n      ],\n      \"required_context\": [\n        \"План кровли 2, 3 секций на отм. +44.870 (лист 4)\"\n      ],\n      \"context_queries\": [\n        \"План кровли 2, 3 секций на отм. +44.870\",\n        \"АК-1\",\n        \"Спецификация кровельных аэраторов\"\n      ]\n    }\n  ]\n}",
+  "json_data": {
+    "findings": [],
+    "candidate_decisions": [
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/0/deferred_findings/0",
+        "source_id": "D-0137bcb0d75d03a0f7291883",
+        "decision": "needs_data",
+        "reason": "На приложенном изображении плана кровли на отм. +41.280, лист 2, в правой части показаны два обозначения «Кровельный аэратор АК-1». Авторитетный TEXT спецификации подтверждает количество АК-1 — 3 шт. Однако требуемый план кровли на отм. +44.870, лист 4, не предоставлен. Размещение третьего аэратора и область действия спецификации не установлены; расхождение нельзя ни подтвердить, ни опровергнуть.",
+        "source_refs": [
+          "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+          "blk_2fc185aaba9941a8a14de201a4b9c198"
+        ],
+        "deferred": true,
+        "gate_reasons": [
+          "non_publishable_claim_type",
+          "insufficient_context",
+          "speculative_wording"
+        ],
+        "required_context": [
+          "План кровли 2, 3 секций на отм. +44.870 (лист 4)"
+        ],
+        "context_queries": [
+          "План кровли 2, 3 секций на отм. +44.870",
+          "АК-1",
+          "Спецификация кровельных аэраторов"
+        ]
+      }
+    ]
+  },
+  "input_tokens": 23275,
+  "output_tokens": 420,
+  "cost_usd": 0.0,
+  "duration_ms": 16195,
+  "model": "codex/gpt-6-astra",
+  "is_error": false,
+  "error_message": "",
+  "cached_tokens": 0,
+  "cache_write_tokens": 0,
+  "reasoning_tokens": 37,
+  "cost_source": "subscription",
+  "response_id": "01a1c6d6-eeae-75f1-a77b-5931e487ccd1",
+  "finish_reason": "stop"
+}

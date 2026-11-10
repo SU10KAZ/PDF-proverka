@@ -1,0 +1,9 @@
+{
+  "request_sha256": "c294c020c83bbdd464bc880387c27210725df6226e3392d458e693aa417f16ed",
+  "images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_b6f2b57505d842e2bdc39369c3b5d93a.png",
+      "sha256": "d50ef30ba544c25b65902f067b9b882ef4f4bbdaf6825eb521187d1819336544"
+    }
+  ]
+}

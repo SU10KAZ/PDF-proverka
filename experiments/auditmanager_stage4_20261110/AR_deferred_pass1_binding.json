@@ -1,0 +1,17 @@
+{
+  "request_sha256": "1f195dc21749fc6a0853771b3eef0189df0b85a71a6d41793b62780ea6e63b67",
+  "images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_b6f2b57505d842e2bdc39369c3b5d93a.png",
+      "sha256": "d50ef30ba544c25b65902f067b9b882ef4f4bbdaf6825eb521187d1819336544"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_edb43acbc543429aaae9aff33ffd8539.png",
+      "sha256": "a74c48d33748e764cb608289ec2e5cc306f533b0e7bc0b4e42f7fe0db48049f5"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AR/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_d1465109f2c843cd8d4190cde8e9b75d.png",
+      "sha256": "ecd8f35f878168be37687d5a02865910baee55f47b002691386ecc2d6cdfe16c"
+    }
+  ]
+}

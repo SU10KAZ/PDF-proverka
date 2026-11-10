@@ -1,0 +1,22 @@
+{
+  "before_adapter": {
+    "classic_preserved": 22,
+    "added_rows": 0,
+    "unresolved_decision_receipts": 1,
+    "reason": "Model supplied source_refs without evidence; validator retained candidate in pending."
+  },
+  "after_adapter": {
+    "classic_preserved": 22,
+    "added_question_candidates": 1,
+    "unresolved_decision_receipts": 0,
+    "new_model_calls": 0
+  },
+  "source_context_control": "Model requested upper roof; literal retrieval selected blk_d1465109f2c843cd8d4190cde8e9b75d and attached its indexed image in pass1.",
+  "negative_control": "No confirmed claim that third aerator is excessive; result is explicitly a question about placement.",
+  "limits": [
+    "Model-reported inability to locate third symbol is not exhaustive proof of absence.",
+    "Question semantic acceptance and verifier/Excel retention remain to be checked.",
+    "No baseline finding mentioned aerators, but absence of keyword alone is not complete semantic deduplication."
+  ],
+  "production_changed": false
+}

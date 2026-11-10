@@ -1,0 +1,11 @@
+{
+  "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+  "source_candidates_sha256": "799b8aab94e84524b647b97aad62762afec8bfe32b40f66cb31980e82c520c9c",
+  "selected_block": "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+  "max_calls": 2,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0,
+  "engineer_answers_supplied": false,
+  "known_recovery_not_blind_discovery": true
+}

@@ -1,0 +1,60 @@
+{
+  "calls": [
+    {
+      "pass": 0,
+      "duration_ms": 16195,
+      "input_tokens": 23275,
+      "output_tokens": 420,
+      "request_sha256": "c294c020c83bbdd464bc880387c27210725df6226e3392d458e693aa417f16ed"
+    },
+    {
+      "pass": 1,
+      "duration_ms": 41146,
+      "input_tokens": 37429,
+      "output_tokens": 1351,
+      "request_sha256": "1f195dc21749fc6a0853771b3eef0189df0b85a71a6d41793b62780ea6e63b67"
+    }
+  ],
+  "baseline_findings_preserved": 22,
+  "new_transport_rows": 1,
+  "decision_coverage": {
+    "decisions": [
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/0/deferred_findings/0",
+        "status": "reported_requires_semantic_review",
+        "semantic_verified": false,
+        "reported_decision": {
+          "origin": "graphic",
+          "pointer": "/block_analyses/0/deferred_findings/0",
+          "source_id": "D-0137bcb0d75d03a0f7291883",
+          "decision": "retained",
+          "reason": "Запрошенный план листа 4 предоставлен и осмотрен вместе с обеими другими приложенными картинками. Спецификация подтверждает 3 шт. АК-1, на плане листа 2 идентифицированы два места установки. План на отм. +44.870 и аксонометрия не позволяют идентифицировать третий АК-1. Кандидат сохранён только как вопрос о размещении третьей позиции и согласовании количества; технический дефект и необходимость уменьшения количества не подтверждены. Существующих замечаний для дублирования нет.",
+          "source_refs": [
+            "blk_b6f2b57505d842e2bdc39369c3b5d93a",
+            "blk_2fc185aaba9941a8a14de201a4b9c198",
+            "blk_d1465109f2c843cd8d4190cde8e9b75d",
+            "blk_edb43acbc543429aaae9aff33ffd8539"
+          ],
+          "deferred": true,
+          "gate_reasons": [
+            "non_publishable_claim_type",
+            "insufficient_context",
+            "speculative_wording"
+          ],
+          "required_context": [
+            "План кровли 2, 3 секций на отм. +44.870 (лист 4)"
+          ],
+          "required_context_reviewed": true
+        }
+      }
+    ],
+    "unmatched_decisions": [],
+    "malformed_decisions": [],
+    "not_checked": 0,
+    "semantic_verified": false
+  },
+  "retrieval_status": "followup_limit",
+  "semantic_verified": false,
+  "production_accepted": false
+}
