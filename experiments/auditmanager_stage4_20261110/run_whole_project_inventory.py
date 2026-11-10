@@ -4,6 +4,7 @@ import asyncio
 from dataclasses import asdict
 import hashlib
 import json
+import os
 from pathlib import Path
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
 from backend.app.pipeline.stages.text_analysis.object_registry import reconcile_object_registry
@@ -23,6 +24,8 @@ def preflight(disc):
     return manifest,requests
 
 async def execute(disc,digest):
+    # Standalone experimental process: enforce the declared no-retry policy.
+    os.environ['CODEX_TRANSIENT_RETRIES']='0'
     manifest,requests=preflight(disc)
     if evidence_digest(manifest)!=digest:raise ValueError('Manifest changed')
     from backend.app.services.llm.codex_runner import run_codex_json_messages
@@ -69,6 +72,8 @@ async def execute(disc,digest):
     (root/'02_text_analysis.json').write_text(json.dumps(aggregate,ensure_ascii=False,indent=2))
     all_blocks={bid for row in manifest['packets'] for bid in row['block_ids']}
     coverage=reconcile_object_registry(aggregate,all_blocks)
+    from backend.app.pipeline.stages.text_analysis.object_identity_candidates import build_object_identity_candidates
+    (root/'object_identity_candidates.json').write_text(json.dumps(build_object_identity_candidates(coverage['objects']),ensure_ascii=False,indent=2))
     (root/'aggregate_coverage.json').write_text(json.dumps(coverage,ensure_ascii=False,indent=2))
     print('COMPLETE',disc,'objects',len(coverage['objects']),'unresolved_blocks',coverage['unresolved_source_blocks'],flush=True)
 

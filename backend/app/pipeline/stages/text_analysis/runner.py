@@ -301,6 +301,10 @@ async def run_text_analysis(
         current["object_registry_coverage"] = reconcile_object_registry(
             current, set(build_block_page_index(graph)),
         )
+        from .object_identity_candidates import build_object_identity_candidates
+        current['object_identity_candidates'] = build_object_identity_candidates(
+            current['object_registry_coverage']['objects'],
+        )
         from .requirement_checks import authoritative_text_blocks, reconcile_requirement_checks
         from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
         requirement_md = resolve_document_markdown(output_dir)

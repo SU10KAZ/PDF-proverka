@@ -1,0 +1,20 @@
+{
+  "active_session": 96229,
+  "discipline": "KM",
+  "model": "codex/gpt-6-astra",
+  "observed_workdir": "/home/coder/projects/PDF-proverka",
+  "sandbox": "read-only",
+  "web_search": "disabled",
+  "os_level_evaluator_isolation_proven": false,
+  "history_in_request_payload": false,
+  "known_projects_not_blind": true,
+  "retry_policy_correction": {
+    "original_claim": "no automatic retries",
+    "observed_backend_default_additional_retries": 2,
+    "observed_backend_default_base_delay_seconds": 3,
+    "active_parent_has_explicit_retry_override": false,
+    "actual_retries_so_far": "not established; no completed result yet",
+    "future_standalone_launches": "CODEX_TRANSIENT_RETRIES=0 now set explicitly; this does not alter the active Python process"
+  },
+  "boundary": "No relaunch of active session. Read-only repository cwd does not prove access isolation. Successful backend result currently omits successful retry count; do not report exact request cost from it."
+}
