@@ -1,0 +1,64 @@
+{
+  "projects": [
+    {
+      "discipline": "AK",
+      "findings_preserved": 65,
+      "excel_ids_unique_and_complete": true,
+      "questions_exported_separately": 0,
+      "pending_source_reviews": 24,
+      "core_fields_preserved": true,
+      "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+    },
+    {
+      "discipline": "ITP",
+      "findings_preserved": 53,
+      "excel_ids_unique_and_complete": true,
+      "questions_exported_separately": 0,
+      "pending_source_reviews": 42,
+      "core_fields_preserved": true,
+      "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    },
+    {
+      "discipline": "AR",
+      "findings_preserved": 22,
+      "excel_ids_unique_and_complete": true,
+      "questions_exported_separately": 0,
+      "pending_source_reviews": 11,
+      "core_fields_preserved": true,
+      "source_md_sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+    },
+    {
+      "discipline": "KM",
+      "findings_preserved": 26,
+      "excel_ids_unique_and_complete": true,
+      "questions_exported_separately": 0,
+      "pending_source_reviews": 10,
+      "core_fields_preserved": true,
+      "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+    },
+    {
+      "discipline": "VK",
+      "findings_preserved": 29,
+      "excel_ids_unique_and_complete": true,
+      "questions_exported_separately": 0,
+      "pending_source_reviews": 14,
+      "core_fields_preserved": true,
+      "source_md_sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a"
+    },
+    {
+      "discipline": "EOM",
+      "findings_preserved": 49,
+      "excel_ids_unique_and_complete": true,
+      "questions_exported_separately": 0,
+      "pending_source_reviews": 26,
+      "core_fields_preserved": true,
+      "source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+    }
+  ],
+  "findings_preserved": 244,
+  "pending_source_reviews": 127,
+  "new_model_calls": 0,
+  "independent_discovery": false,
+  "semantic_acceptance": false,
+  "scope": "All saved findings including useful and potentially false ones preserved; this tests transport, not semantic quality. No absence-model phase or new whole-project run."
+}

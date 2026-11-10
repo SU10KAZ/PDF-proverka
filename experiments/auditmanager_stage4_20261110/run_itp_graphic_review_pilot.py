@@ -11,6 +11,8 @@ PREPARED = Path('/tmp/auditmanager_itp_tank_source_review_prepared.json')
 ROOT = Path('/tmp/auditmanager_itp_graphic_review_astra_20261110')
 MD = Path('/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.md')
 MODEL = 'codex/gpt-6-astra'
+EXPECTED_IMAGES = 6
+SCOPE = 'Known-case supplied-context verification; not independent context retrieval or blind audit'
 
 
 def preflight():
@@ -32,7 +34,7 @@ def preflight():
     for im in request['image_bindings']:
         if hashlib.sha256(Path(im['path']).read_bytes()).hexdigest() != im['sha256']:
             raise ValueError('Image version changed')
-    if payload['finding_id'] != 'F-042' or len(request['image_paths']) != 6:
+    if payload['finding_id'] != 'F-042' or len(request['image_paths']) != EXPECTED_IMAGES:
         raise ValueError('Unexpected pilot scope')
     manifest = {'request_sha256': digest, 'model': MODEL, 'finding_id': 'F-042',
                 'message_chars': sum(len(m['content']) for m in request['messages']),
@@ -40,8 +42,8 @@ def preflight():
                 'image_bytes': sum(Path(p).stat().st_size for p in request['image_paths']),
                 'max_cli_invocations': 1, 'automatic_retries': 0, 'timeout_seconds': 900,
                 'cost': 'Codex subscription quota; monetary maximum unknown',
-                'scope': 'Known-case supplied-context verification; not independent context retrieval or blind audit',
-                'approval_required': 'Specific approval of this text and six project images; preflight sends nothing'}
+                'scope': SCOPE,
+                'approval_required': 'Specific approval of this text and attached project images; preflight sends nothing'}
     return request, manifest
 
 

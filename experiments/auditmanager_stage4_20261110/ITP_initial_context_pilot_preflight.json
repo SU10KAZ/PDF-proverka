@@ -1,0 +1,15 @@
+{
+  "request_sha256": "78466124920f82f707d9c2e8de2d06c3a9d9bcc98a529b8f210d1e174aaf5641",
+  "model": "codex/gpt-6-astra",
+  "finding_id": "F-042",
+  "message_chars": 3206,
+  "text_blocks": 0,
+  "images": 4,
+  "image_bytes": 12533784,
+  "max_cli_invocations": 1,
+  "automatic_retries": 0,
+  "timeout_seconds": 900,
+  "cost": "Codex subscription quota; monetary maximum unknown",
+  "scope": "Known original-candidate context; evaluate whether model requests missing linked sources without manually supplied search queries. Not blind discovery.",
+  "approval_required": "Specific approval of this text and attached project images; preflight sends nothing"
+}
