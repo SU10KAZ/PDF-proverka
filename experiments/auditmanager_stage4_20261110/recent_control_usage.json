@@ -53,6 +53,26 @@
       "error": ""
     },
     {
+      "control": "EOM_cable_graphic_0",
+      "directory": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "26b8dc0988ee832d3040aba1bc7348a09e0de2eead024f77ad7afdba5d52c92b"
+      },
+      "token_counters_incomplete": true
+    },
+    {
+      "control": "EOM_cable_graphic_1",
+      "directory": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_001",
+      "status": "result_pending",
+      "attempt_receipt": {
+        "status": "started",
+        "request_sha256": "82be4047d7b8f484408d2548ea459aa87a28081567283e75b28fbf898101018d"
+      },
+      "token_counters_incomplete": true
+    },
+    {
       "control": "EOM_cable_inventory",
       "directory": "/tmp/auditmanager_eom_cable_inventory_control_20261110/EOM/execution/object_inventory_000",
       "status": "response_received",
@@ -881,7 +901,7 @@
     }
   ],
   "completed_requests": 46,
-  "pending_results": 0,
+  "pending_results": 2,
   "failed_requests": 2,
   "interrupted_requests": 4,
   "reported_input_tokens": 1371017,

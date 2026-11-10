@@ -1,0 +1,173 @@
+{
+  "request_sha256": "26b8dc0988ee832d3040aba1bc7348a09e0de2eead024f77ad7afdba5d52c92b",
+  "source_tiles": {
+    "pdf_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.pdf",
+    "pdf_sha256": "eaabe7162db57bcea1fead7f07afe6a4b5eecf3b0f5de960e066203bc63e33d4",
+    "blocks_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/blocks.json",
+    "blocks_sha256": "573b46f6bbe0f6e30f3e20f4138aae6ed5648d8f18ce7f7215cbdc2a7c1a9a2a",
+    "purpose": "GRAPHIC-only higher resolution tiles; no TEXT re-extraction",
+    "columns": 4,
+    "rows": 2,
+    "scale": 3,
+    "overlap": 0.025,
+    "tiles": [
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "page_index": 4,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          54.20791566371918,
+          16.54869794845581,
+          873.9866468757392,
+          781.9891661465168
+        ],
+        "grid_row": 0,
+        "grid_column": 0,
+        "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_0.png",
+        "width": 2460,
+        "height": 2297,
+        "sha256": "d6ea50b675a122327fbbb7b27443dc0f245747c840e9009f6fcdd899b35d642a"
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "page_index": 4,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          724.9359684735537,
+          16.54869794845581,
+          1619.2400388866663,
+          781.9891661465168
+        ],
+        "grid_row": 0,
+        "grid_column": 1,
+        "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_1.png",
+        "width": 2684,
+        "height": 2297,
+        "sha256": "bf618d03fa66ff42a2d4d884289c263d42760650d41b16045b79e90b5169ff67"
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "page_index": 4,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          1470.1893604844809,
+          16.54869794845581,
+          2364.4934308975935,
+          781.9891661465168
+        ],
+        "grid_row": 0,
+        "grid_column": 2,
+        "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_2.png",
+        "width": 2684,
+        "height": 2297,
+        "sha256": "659fed250146b189c03decbfb5ad1e924fafbfbb51ef49550e8bd0ffc17ba9dc"
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "page_index": 4,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          2215.442752495408,
+          16.54869794845581,
+          3035.221483707428,
+          781.9891661465168
+        ],
+        "grid_row": 0,
+        "grid_column": 3,
+        "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_3.png",
+        "width": 2460,
+        "height": 2297,
+        "sha256": "a2c424819f465739bc31ba3fec7790135bcf100123c4c41f0e14f75f21196a77"
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "page_index": 4,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          54.20791566371918,
+          709.0900739371776,
+          873.9866468757392,
+          1474.5305421352386
+        ],
+        "grid_row": 1,
+        "grid_column": 0,
+        "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_4.png",
+        "width": 2460,
+        "height": 2297,
+        "sha256": "a111b070884ac9ca404a3c8643acf15d6a1576fa3c2564660e3dfdc6d4c2f6dd"
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "page_index": 4,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          724.9359684735537,
+          709.0900739371776,
+          1619.2400388866663,
+          1474.5305421352386
+        ],
+        "grid_row": 1,
+        "grid_column": 1,
+        "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_5.png",
+        "width": 2684,
+        "height": 2297,
+        "sha256": "7d0d17ce83d69ffe957bce2e532afa445dfeda06f3468017c9f35f31f51ee016"
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "page_index": 4,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          1470.1893604844809,
+          709.0900739371776,
+          2364.4934308975935,
+          1474.5305421352386
+        ],
+        "grid_row": 1,
+        "grid_column": 2,
+        "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_6.png",
+        "width": 2684,
+        "height": 2297,
+        "sha256": "4c52a05267f9a213c4217e751c9c3377ad68c84c22f538f9303efd94d5c4feac"
+      },
+      {
+        "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+        "page_index": 4,
+        "pdf_rotation": 0,
+        "clip_rotated_page_points": [
+          2215.442752495408,
+          709.0900739371776,
+          3035.221483707428,
+          1474.5305421352386
+        ],
+        "grid_row": 1,
+        "grid_column": 3,
+        "path": "/tmp/auditmanager_eom_cable_graphic_control_20261110/block_000/tiles/detail_tile_7.png",
+        "width": 2460,
+        "height": 2297,
+        "sha256": "760f769eec93d9f6b948b946eb6a47d412b81ba892d351c19e2c7f43d3bd9d3d"
+      }
+    ],
+    "padding_page_fraction": 0.0,
+    "original_crop_points": [
+      54.20791566371918,
+      16.54869794845581,
+      3035.221483707428,
+      1474.5305421352386
+    ],
+    "expanded_crop_points": [
+      54.20791566371918,
+      16.54869794845581,
+      3035.221483707428,
+      1474.5305421352386
+    ],
+    "outside_original_crop": false,
+    "model_call_performed": false,
+    "semantic_verified": false
+  },
+  "expected_answers_supplied": false,
+  "known_source_control": true,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "automatic_retries": 0
+}
