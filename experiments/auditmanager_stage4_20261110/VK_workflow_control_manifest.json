@@ -1,0 +1,20 @@
+{
+  "inputs_sha256": "886b997d92e86ed5f3a2bcd9b6faea940d8cee3245e7ab58468714ad8dc3a32e",
+  "discipline": "VK",
+  "finding_id": "F-013",
+  "initial_request_sha256": "eb0f01c763e3d5340919e758422b57099a244619e3ee62f29d1f556f5a526e4e",
+  "initial_message_chars": 7793,
+  "initial_images": 1,
+  "initial_image_bytes": 242973,
+  "model": "claude/claude-sonnet-5-5",
+  "max_model_calls": 6,
+  "max_context_revisions": 4,
+  "max_total_retrieved_text_chars": 240000,
+  "max_images_per_request": 8,
+  "context_boundary": "Only this frozen VK prepared MD and graphic index. No linked external documents.",
+  "history_or_engineer_answers_sent": false,
+  "known_saved_finding_not_blind": true,
+  "automatic_retries": 0,
+  "production_changed": false,
+  "cost": "Subscription quota; monetary maximum unknown"
+}
