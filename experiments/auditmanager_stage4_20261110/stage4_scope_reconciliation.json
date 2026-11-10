@@ -67,17 +67,17 @@
   "specific_open_controls": [
     {
       "hypothesis": "H04",
-      "state": "running",
-      "control": "EOM 17 source blocks, one unchanged generic packet",
-      "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110",
-      "session": 45645,
+      "state": "running_after_terminal_timeout",
+      "control": "Same17blocks and3images; inventory-only instruction, operations not marked complete.",
+      "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_extraction_only/EOM",
+      "session": 47641,
       "expected_answer_hidden": true
     },
     {
       "hypothesis": "H06",
-      "state": "running_positive_control",
-      "evidence": "ITP_requirement_claude_assessment.json",
-      "detail": "Existing requirement response proves preservation of unknown applicability, not a valid positive applicability comparison. REQ-01 has unresolved document linkage; REQ-07 is an analogue permission, not a proved defect.",
+      "state": "bounded_source_scope_pair_pass_full_output_unaccepted",
+      "evidence": "VK_requirement_astra_assessment.json",
+      "detail": "63exactquotes; retainK2conditionalquantitymismatch; noDN200shortage orK21cross-scopeborrowing.21applicabilityreceiptsstillneeds_data; otherfiveoutputrowsnotaccepted.",
       "control": "VK project requirement and eight source TEXT blocks; no expected findings in request",
       "root": "/tmp/auditmanager_vk_requirement_control_20261110",
       "session": 14753,
