@@ -10,10 +10,31 @@
   "new_message_chars": 52618,
   "fresh_run_root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_extraction_only/EOM",
   "fresh_session": 47641,
-  "fresh_status": "running",
+  "fresh_status": "terminal_invalid_json",
   "tests_passed": 22,
   "test_command": "python -m pytest -q tests/test_object_inventory_passes.py tests/test_object_registry.py tests/test_object_operation_passes.py tests/test_inventory_enrichment.py tests/test_inventory_candidates.py",
   "coverage_policy": "Missing operations remain not_checked; extraction never closes engineering checks.",
   "known_case_not_blind": true,
-  "production_changed": false
+  "production_changed": false,
+  "fresh_error": {
+    "error_message": "codex_json_not_found",
+    "duration_ms": 605786,
+    "input_tokens": 40105,
+    "output_tokens": 29983,
+    "cost_source": "subscription",
+    "distinction": "Second attempt is invalidJSON, not the first900s timeout. Raw answer preserved; no manual repair admitted."
+  },
+  "split_control": {
+    "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM",
+    "session": 60228,
+    "status": "running",
+    "packets": 5,
+    "blocks": 17,
+    "images": 3,
+    "max_source_chars": 12000,
+    "max_images": 1,
+    "every_original_block_preserved_exactly": true,
+    "every_original_image_preserved": true,
+    "source_only_tools_enforced": true
+  }
 }

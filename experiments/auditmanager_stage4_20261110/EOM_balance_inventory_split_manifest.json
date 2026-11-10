@@ -1,0 +1,95 @@
+{
+  "source_md_sha256": "b83feebc321f263ef50113b2e9952f0cdf9684882b3bb942dcac01f09cefb682",
+  "blocks": 17,
+  "packets": [
+    {
+      "stage": "object_inventory_000",
+      "block_ids": [
+        "blk_97dfd866170b49b5b153ad8e250776b3",
+        "blk_3620ab17f57a4d9596292b555c5abcc7",
+        "blk_51d637f2ecef4a978fd84a990758a753",
+        "blk_72a64016ef0142b6a226f0c79be16436",
+        "blk_84e0cee1c8a145c482898b1c10b3a24b",
+        "blk_76d1760dd5b34882a0df18538f78e39b"
+      ],
+      "message_chars": 13637,
+      "images": []
+    },
+    {
+      "stage": "object_inventory_001",
+      "block_ids": [
+        "blk_d90c772851514a0a9c65cdd019e56957",
+        "blk_f248e51f2f7f40e0bd78f45f651d9d74",
+        "blk_b6605a23b38f4e00b2f8076b62b21532"
+      ],
+      "message_chars": 13435,
+      "images": []
+    },
+    {
+      "stage": "object_inventory_002",
+      "block_ids": [
+        "blk_0c80393b53734992a6730bc7a16b2833",
+        "blk_4e968dd71c7149aca85e4195d5c3de49",
+        "blk_c5f0556f94c14503bfe178ef5941c077"
+      ],
+      "message_chars": 12695,
+      "images": [
+        {
+          "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+          "sha256": "a5b8b99f7c248661b1a326103a59062fb9691488c4e6c7f2c5f6275e166e3bf5"
+        }
+      ]
+    },
+    {
+      "stage": "object_inventory_003",
+      "block_ids": [
+        "blk_7d22e811017e4e969b2d732e9e30c50d",
+        "blk_54ee6784647e49ae86ad9fd46e7082e3",
+        "blk_9246c510169f4ad6bc11932a046cdd17"
+      ],
+      "message_chars": 9711,
+      "images": [
+        {
+          "block_id": "blk_9246c510169f4ad6bc11932a046cdd17",
+          "sha256": "a6264ff3ac541c9b0e450d22fe782541ba3332a9a439b2d1e5cf9420a679202f"
+        }
+      ]
+    },
+    {
+      "stage": "object_inventory_004",
+      "block_ids": [
+        "blk_8fac348a820c41aeb2d941339987da14",
+        "blk_5b30188592764230a7cd894838a60430"
+      ],
+      "message_chars": 11347,
+      "images": [
+        {
+          "block_id": "blk_8fac348a820c41aeb2d941339987da14",
+          "sha256": "0eb4286aeca07a3e7755216036b8253b936d2fc12034dddca7f78fb0bd6879c7"
+        }
+      ]
+    }
+  ],
+  "unavailable_graphics": [],
+  "history_supplied": false,
+  "input_coverage_complete": false,
+  "semantic_inventory_complete": false,
+  "discipline": "EOM",
+  "request_digests": [
+    "f3b32b72bc2939a0a830fe1c8164204f6af7221e58fecbf9d5e26719f7b24756",
+    "dcf57e1cbce6aca243336fa5324d55ac82a08467057b30f49ac50822d81529d3",
+    "e12b3f5c1af597c318949b08d21b1fa2871e6f82660f282b676764fb0906f481",
+    "1857ceca8176e8a5d906732b576076e01fe16ef1f89d185ffc19046457fdf3ef",
+    "b2c2392d76884eeedf4a0d1dad0bdae464014b230e709e20d2208f78a321a033"
+  ],
+  "parent_source_md_sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+  "parent_request_sha256": "d3f70419c2968a486c1aa334d29622bb18bbccbfdcc313d4d7d9f673f961a983",
+  "max_chars": 12000,
+  "max_images": 1,
+  "all_original_blocks_preserved": true,
+  "all_original_images_preserved": true,
+  "extraction_only": true,
+  "scope": "Same17-block known-source control split at existing block boundaries; not whole-project discovery.",
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0
+}

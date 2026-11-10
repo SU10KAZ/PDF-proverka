@@ -67,10 +67,10 @@
   "specific_open_controls": [
     {
       "hypothesis": "H04",
-      "state": "running_after_terminal_timeout",
-      "control": "Same17blocks and3images; inventory-only instruction, operations not marked complete.",
-      "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_extraction_only/EOM",
-      "session": 47641,
+      "state": "running_split_after_invalid_json",
+      "control": "Five smaller packets, all17blocks and3images preserved exactly; no manual repair of failed response.",
+      "root": "/tmp/auditmanager_eom_balance_inventory_control_20261110_split/EOM",
+      "session": 60228,
       "expected_answer_hidden": true
     },
     {
