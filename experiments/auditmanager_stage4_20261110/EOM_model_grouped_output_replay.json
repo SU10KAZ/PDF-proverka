@@ -1,0 +1,30 @@
+{
+  "scope": "Actual Astra grouping proposal followed by explicit known-control source review, classic merge and Excel.",
+  "proposal_all_findings": 51,
+  "proposal_groups": 2,
+  "applied_member_ids": [
+    "F-050",
+    "F-051"
+  ],
+  "classic_findings_preserved_exactly": 49,
+  "final_rows": 50,
+  "both_cable_descriptions_solutions_and_evidence_preserved": true,
+  "model_discovered_shared_group_without_expected_ids": true,
+  "prior_figure_and_identifier_uncertainty_preserved": true,
+  "unapplied_groups": [
+    [
+      "F-021",
+      "F-023"
+    ]
+  ],
+  "xlsx_sha256": "8f0b32c6b7e39dd64b665e14a5aa159d52eaeab0728bd6a91ce7d001599774a6",
+  "raw_model_result_sha256": "1477c3ab3f6da029ee6b0881c045bc0af5ed7f9748b7e7ce01e45dc7e6a166f3",
+  "limitations": [
+    "Presentation grouping does not prove the technical truth of every grouped sentence.",
+    "Only the cable shared-source group has bounded source-review evidence here; voltage group is not accepted or discarded.",
+    "Known-control adapter still required; generic production grouping admission is not implemented.",
+    "No negative grouping pair or whole-project transfer acceptance established by this replay."
+  ],
+  "new_model_calls": 0,
+  "full_acceptance_proven": false
+}

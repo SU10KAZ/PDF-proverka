@@ -1,0 +1,12 @@
+{
+  "source_document_sha256": "259c5585c9d470189680ef0c802e52c1e6bcddac22a49d6dae3278268e8f47ba",
+  "request_sha256": "885dff46cb6d6a17de4fbbbcca0d6f0d6c6bc355677810567de5f0598df3e1a1",
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "message_chars": 34805,
+  "findings": 51,
+  "history_or_engineer_answers_supplied": false,
+  "expected_groups_supplied": false,
+  "automatic_retries": 0,
+  "scope": "Known-development output grouping proposal, not an independent project audit or semantic acceptance."
+}

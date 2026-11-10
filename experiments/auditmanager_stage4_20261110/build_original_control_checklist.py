@@ -23,7 +23,7 @@ EVIDENCE={
  ('H02','negative_controls_and_limits',1):('bounded_control_recorded',['KM_node_navigation_summary.json']),
  ('H03','positive_controls',0):('bounded_control_recorded',['AK_systemic_output_replay.json','AK_terminal_graphic_assessment.json','AK_cabinet_001_operation_v4_validated.json']),
  ('H03','positive_controls',2):('bounded_control_recorded',['AR_unlabelled_inventory_v2_assessment.json','AR_region_operation_status.json','AR_region05_context2_validated.json']),
- ('H04','positive_controls',0):('partial_control_pending_address_and_output',['EOM_two_cable_operations_assessment.json','EOM_cable_graphic_1_assessment.json']),
+ ('H04','positive_controls',0):('partial_control_pending_grouping_and_semantic_caveats',['EOM_reviewed_cable_output_replay.json','EOM_line_address_assessment.json','EOM_source_workflow_progress.json','EOM_classic_grouping_replay.json','EOM_model_grouped_output_replay.json']),
  ('H04','positive_controls',2):('partial_control_pending_quantity_question',['KM_quantity_provenance_assessment.json','KM_LK6_repeated_instances_source_review.json']),
  ('H04','negative_controls_and_limits',2):('bounded_control_recorded',['KM_LK6_quantity_assessment.json','KM_quantity_provenance_assessment.json','KM_quantity_provenance_validated.json']),
  ('H04','positive_controls',1):('bounded_control_recorded',['EOM_model_extracted_balance_control.json','EOM_model_extracted_balance_claude_control.json']),

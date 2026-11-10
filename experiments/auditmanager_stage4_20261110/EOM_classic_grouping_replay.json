@@ -1,0 +1,13 @@
+{
+  "source_sha256": "259c5585c9d470189680ef0c802e52c1e6bcddac22a49d6dae3278268e8f47ba",
+  "runtime_function": "backend/app/pipeline/stages/findings_merge/runner.py:merge_similar_findings",
+  "stats": {
+    "merged_groups": 0
+  },
+  "before": 51,
+  "after": 51,
+  "both_cable_descriptions_retained": true,
+  "same_group_contains_both_cables": false,
+  "source_document_mutated": false,
+  "semantic_grouping_quality_verified": false
+}

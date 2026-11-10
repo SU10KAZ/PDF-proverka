@@ -235,15 +235,27 @@
       "hypothesis": "H04",
       "kind": "positive_controls",
       "original_control": "ЭОМ: FRHF5×35 двух линий не закрывается строкойHF5×35.",
-      "evidence_state": "partial_control_pending_address_and_output",
+      "evidence_state": "partial_control_pending_grouping_and_semantic_caveats",
       "evidence": [
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_two_cable_operations_assessment.json",
-          "sha256": "180ef7b07c2918c16cd072e2913ca5c5b534206f930ed59ea94d6af01f0b1df5"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_reviewed_cable_output_replay.json",
+          "sha256": "9269653c91279ebdcc3794c4e7e4cc8c6a4c4aa91b27e00488cec909cc846478"
         },
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_cable_graphic_1_assessment.json",
-          "sha256": "57d181fc021314748d87b253236ad1dee2c5242957acfad4ad896a5424a270af"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_line_address_assessment.json",
+          "sha256": "9146758c9de228ed8d7ff7ea994a5cb3a3de8c5d719fe3a346e299ca599a142f"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_source_workflow_progress.json",
+          "sha256": "5c7dda0edb8427c82d61ff959cb9a891f56e4fdc1a4791fb10ac298ccd95da80"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_classic_grouping_replay.json",
+          "sha256": "0e4fda70c62c4529571d6b65c15b2f9db3ecc073107891e357044911225bb2a8"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_model_grouped_output_replay.json",
+          "sha256": "58893fd508c35bec348bb4b56b3542de6fc52350359e7a12019c33411fa7d637"
         }
       ],
       "full_acceptance_proven": false
@@ -527,7 +539,7 @@
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 2,
     "local_contract_verified": 2,
-    "partial_control_pending_address_and_output": 1,
+    "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
     "requires_explicit_evidence_review": 12,
     "synthetic_contract_only": 1
