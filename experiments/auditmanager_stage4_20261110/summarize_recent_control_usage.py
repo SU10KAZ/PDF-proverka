@@ -24,6 +24,8 @@ def summarize():
         *[(f'AK_inventory_{i}', Path('/tmp/auditmanager_ak_cabinet_inventory_control_20261110/AK/execution') / f'object_inventory_{i:03d}') for i in range(5)],
         ('AK_identity_0_v1', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/packet_000')),
         *[(f'AK_identity_{i}_v2', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2') / f'packet_{i:03d}') for i in range(5)],
+        ('AK_identity_2_interrupted', Path('/tmp/auditmanager_ak_cabinet_operations_20261110/local_claim_v2/packet_002/interrupted_01')),
+        ('AK_graphic_interrupted', Path('/tmp/auditmanager_ak_terminal_graphic_control_20261110/interrupted_01')),
         ('AK_terminal_graphic', Path('/tmp/auditmanager_ak_terminal_graphic_control_20261110')),
     ]
     rows = []
@@ -37,6 +39,9 @@ def summarize():
         if not attempt.exists():
             continue
         row['attempt_receipt'] = json.loads(attempt.read_text())
+        if row['attempt_receipt'].get('status') == 'interrupted':
+            row.update(status='interrupted',token_counters_incomplete=True)
+            continue
         row['status'] = 'result_pending'
         if not output.exists():
             continue
@@ -53,9 +58,10 @@ def summarize():
             'requests': rows, 'completed_requests': len(completed),
             'pending_results': sum(r['status'] == 'result_pending' for r in rows),
             'failed_requests': sum(r['status'] == 'failed' for r in rows),
+            'interrupted_requests': sum(r['status'] == 'interrupted' for r in rows),
             'reported_input_tokens': sum(r.get('input_tokens') or 0 for r in completed),
             'reported_output_tokens': sum(r.get('output_tokens') or 0 for r in completed),
-            'token_accounting_complete': not any(r['token_counters_incomplete'] for r in completed),
+            'token_accounting_complete': not any(r.get('token_counters_incomplete',False) for r in rows),
             'completed_request_minutes_sum': round(sum(r.get('duration_ms') or 0 for r in completed)/60000, 3),
             'wall_clock_elapsed_minutes': None, 'monetary_cost_known': False,
             'boundaries': ['Parallel request durations must not be summed as wall-clock elapsed time.',
