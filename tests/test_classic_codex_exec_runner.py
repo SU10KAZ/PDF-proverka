@@ -1146,6 +1146,40 @@ def test_codex_json_mode_keeps_web_disabled_without_tools():
     assert _json_tool_args(None) == ["-c", 'web_search="disabled"']
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("item_type", ["agent_message", "command_execution", "mcp_tool_call"])
+async def test_explicit_toolless_json_disables_tools_and_rejects_tool_events(monkeypatch, item_type):
+    from backend.app.services.llm import codex_runner
+
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    monkeypatch.setenv("CODEX_TRANSIENT_RETRIES", "0")
+    captured = {}
+
+    async def fake_run(cmd, **kwargs):
+        captured['cmd'] = cmd
+        Path(cmd[cmd.index('-o') + 1]).write_text('{"findings": []}')
+        event = {'type': 'item.completed', 'item': {'type': item_type, 'text': 'source test'}}
+        return 0, json.dumps(event), ''
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run)
+    result = await codex_runner.run_codex_json_messages(
+        [{'role': 'user', 'content': 'Review only inline sources'}],
+        model='codex/gpt-6-astra', allowed_tools='', timeout=10)
+    command = captured['cmd']
+    for setting in ('features.shell_tool=false', 'features.view_image=false',
+                    'features.multi_agent=false', 'features.apps=false',
+                    'memories.use_memories=false', 'skills.include_instructions=false'):
+        assert setting in command
+    if item_type == 'agent_message':
+        assert not result.is_error
+        assert result.json_data == {'findings': []}
+    else:
+        assert result.is_error
+        assert result.json_data is None
+        assert result.error_message == 'unexpected_tool_activity_in_toolless_json'
+        assert result.text == '{"findings": []}'
+
+
 def test_normative_stage_refuses_to_run_without_norms_tools():
     """Нормативная стадия падает закрыто, если сервер норм не пробросили.
 

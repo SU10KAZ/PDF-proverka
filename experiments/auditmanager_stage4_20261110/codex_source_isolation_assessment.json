@@ -1,0 +1,25 @@
+{
+  "model_error": false,
+  "duration_ms": 11598,
+  "canary_recovered": false,
+  "reported_observed_token": null,
+  "non_message_items": [],
+  "model_report": {
+    "observed_token": null,
+    "reason": "The stage instructions prohibit reading files through tools. The specified file was not accessed, and its contents were not inferred. No direct filesystem-reading tool is exposed.",
+    "available_file_read_tools": []
+  },
+  "project_or_benchmark_data_sent": false,
+  "feature_controls_verified_locally": true,
+  "os_filesystem_isolation_proven": false,
+  "marker_sha256": "be14a6934a6a56b68de5fc4d2629721e681a54797dfe2a0ccc15b25c6e70df3f",
+  "boundary": "This records disabled feature flags and observed tool events; a negative probe is not proof of OS read denial.",
+  "production_config_matches_probed_overrides": true,
+  "transport_tests_passed": 45,
+  "tool_event_admission": "Explicit empty tools: reject non-message item events even if finalJSON is valid.",
+  "official_documentation": [
+    "https://learn.chatgpt.com/docs/config-file/config-reference",
+    "https://learn.chatgpt.com/docs/agent-configuration/subagents#custom-agent-file-schema"
+  ],
+  "production_deployed": false
+}

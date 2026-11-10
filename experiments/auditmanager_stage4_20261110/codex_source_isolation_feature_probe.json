@@ -1,0 +1,16 @@
+{
+  "shell_tool": "false",
+  "view_image": "false",
+  "multi_agent": "false",
+  "apps": "false",
+  "plugins": "false",
+  "memories": "false",
+  "browser_use": "false",
+  "browser_use_external": "false",
+  "computer_use": "false",
+  "skill_search": "false",
+  "shell_snapshot": "false",
+  "tool_suggest": "false",
+  "goals": "false",
+  "request_permissions_tool": "false"
+}
