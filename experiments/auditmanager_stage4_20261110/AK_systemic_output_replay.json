@@ -1,0 +1,62 @@
+{
+  "scope": "Five real model-produced cabinet candidates through explicit known-case grouping, deterministic verifier and Excel.",
+  "inputs": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_000_operation_v2_validated.json",
+      "sha256": "04ae1dad833e7ae79b68e2fe99df2482acbfde6044b3238381460eb04d535dc6",
+      "finding_index": 0
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_001_operation_v2_validated.json",
+      "sha256": "1e3881eb781257dbf88d848c4b628ab29ebf5c938799f90b1e06a538ce02578e",
+      "finding_index": 0
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_002_operation_v2_validated.json",
+      "sha256": "5d2c130786b2f878412d6b6f24be7fa72227b2a7e5ca324f29aad71d7c2a58a6",
+      "finding_index": 0
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_003_operation_v3_validated.json",
+      "sha256": "759ffe4cf077431869c3d696128aa60893b30b2f6e0ade6fd4c6cb533126ec8a",
+      "finding_index": 2
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_004_operation_v3_validated.json",
+      "sha256": "73bce6f3cb77904178b2e23d415df27fb95f982d7770f99d13f85ccfe3ea0a15",
+      "finding_index": 0
+    }
+  ],
+  "baseline_findings": 65,
+  "output_findings": 64,
+  "untouched_classic_findings_preserved": 63,
+  "systemic_finding_id": "F-054",
+  "merged_baseline_ids": [
+    "F-054",
+    "F-055"
+  ],
+  "cabinet_candidate_descriptions_preserved": 5,
+  "source_candidate_ids_preserved": true,
+  "xlsx_path": "/tmp/auditmanager_ak_systemic_output_control_20261110/report.xlsx",
+  "xlsx_sha256": "c1b9df909176f120a79349eec4ac638622737de3b5245ff39d0be0508806b97e",
+  "verifier_stats": {
+    "findings_total": 64,
+    "deterministic_issues": 0,
+    "critic_error": null,
+    "phantom_cleaned": 0,
+    "page_fixed": 0,
+    "downgraded": 0,
+    "flagged_human": 0,
+    "corrector_error": null,
+    "source_reviews_pending": 1,
+    "source_review_queue_error": null
+  },
+  "new_model_calls": 0,
+  "autonomous_semantic_grouping_proven": false,
+  "full_control_complete": false,
+  "limits": [
+    "Known evaluator grouping, not autonomous model decision.",
+    "Second-cabinet PDS4reading issue remains; only actual model claims were exported, no expected missing claim inserted.",
+    "No full model verifier or production acceptance; grouped row count is not independent defect count."
+  ]
+}
