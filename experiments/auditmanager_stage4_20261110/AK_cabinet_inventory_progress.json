@@ -85,7 +85,67 @@
       "source_blocks": [
         "blk_cd9d763d198246859c3df42c18b5c3d8"
       ],
-      "state": "result_not_saved"
+      "state": "response_received",
+      "result_sha256": "6a22a9b1befbe23d319d9e4fccea9aae7653c8f99982d2d5dcb80e4bf8b44eaa",
+      "duration_ms": 215420,
+      "input_tokens": 13557,
+      "output_tokens": 10503,
+      "objects": 35,
+      "invalid_objects": 0,
+      "record_id_repairs": [],
+      "unresolved_source_blocks": 1,
+      "unresolved_operations": 175,
+      "source_inventory": [
+        {
+          "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+          "status": "needs_data",
+          "semantic_verified": false,
+          "receipt": {
+            "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+            "status": "needs_data",
+            "object_ids": [
+              "obj_01",
+              "obj_02",
+              "obj_03",
+              "obj_04",
+              "obj_05",
+              "obj_06",
+              "obj_07",
+              "obj_08",
+              "obj_09",
+              "obj_10",
+              "obj_11",
+              "obj_12",
+              "obj_13",
+              "obj_14",
+              "obj_15",
+              "obj_16",
+              "obj_17",
+              "obj_18",
+              "obj_19",
+              "obj_20",
+              "obj_21",
+              "obj_22",
+              "obj_23",
+              "obj_24",
+              "obj_25",
+              "obj_26",
+              "obj_27",
+              "obj_28",
+              "obj_29",
+              "obj_30",
+              "obj_31",
+              "obj_32",
+              "obj_33",
+              "obj_34",
+              "obj_35"
+            ],
+            "reason": "Изображение просмотрено полностью. Выделены основной шкаф, отдельно обозначенный узел ПЧ, восемь устройств контроля температуры и перепада давления, пять электродвигателей, семь приводов клапанов, семь промежуточных клеммных групп и шесть внешних цепей питания, сигнализации и связи. Ссылки на смежные разделы и лист 44 сохранены как наблюдения. Для полной инвентаризации кабельных изделий требуется более читаемое изображение вертикальных надписей: марки, сечения, длины, отдельные кабельные обозначения и номера жил не установлены достоверно. Также не установлена мощность ввода 220 В. Наименования из описания изображения не использованы для заполнения нечитаемых параметров. Охват относится только к предоставленному фрагменту."
+          }
+        }
+      ],
+      "candidate_count": 0,
+      "semantic_verified": false
     },
     {
       "stage": "object_inventory_002",
@@ -109,7 +169,7 @@
       "state": "result_not_saved"
     }
   ],
-  "completed_responses": 1,
+  "completed_responses": 2,
   "total_packets": 5,
   "semantic_verified": false,
   "stage4_complete": false,

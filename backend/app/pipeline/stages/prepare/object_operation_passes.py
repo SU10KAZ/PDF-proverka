@@ -119,6 +119,15 @@ different cabinets/strips, common PE/N, bridges and repeated views are not defec
 by themselves: establish the actual connection and addressing convention. Record
 each inspected location and any unresolved address component. A manufacturer
 clarification note is context, not proof that an observed ambiguity is resolved.
+Separate an evidenced local inconsistency or addressing ambiguity from unresolved
+physical consequences and from whole-document completeness. If the supplied
+drawing itself establishes the local problem, preserve that narrowly scoped
+finding with its inspected locations even when the broader operation needs_data.
+Do not suppress a supported local claim solely because another document is needed
+to choose the correction or determine consequences. Conversely, missing context
+alone is not a local problem: cite the actual conflicting or ambiguous source
+elements and explain what remains undecided. Do not infer a wiring fault, shortage,
+noncompliance or missing project-wide documentation from a local ambiguity.
 Return JSON with object_operation_results (object_id, operation, status checked/
 not_applicable/needs_data/not_checked, reason in Russian, source_refs) and findings.
 Each finding must have object_id, operation, severity, problem, description, solution,

@@ -1,0 +1,16 @@
+{
+  "request_sha256": "3cc0102dec7f789a1a28f4fa38c524ca91110691c31880003a42bd4e8a88663a",
+  "inventory_result_sha256": "7940479111f6be7b0d53d744c86938cf627c260386ac9ecd661cd71ad55af067",
+  "md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "images": [
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+      "sha256": "8e69fe04c4bd1743063db50a61e17c1813f8a1214949ff6c8855abc3ed3bf1bb"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_calls": 1,
+  "automatic_retries": 0,
+  "scope": "Known-source model-extracted cabinet; identity operation only. No historical answers or expected finding supplied."
+}

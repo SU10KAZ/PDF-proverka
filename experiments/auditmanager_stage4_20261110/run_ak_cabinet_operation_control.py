@@ -11,8 +11,8 @@ from backend.app.pipeline.stages.findings_verify.source_review_evidence import e
 from .run_ak_cabinet_inventory_control import ROOT as INVENTORY,BASE
 
 
-def prepare(packet_index,object_id):
-    root=Path('/tmp/auditmanager_ak_cabinet_operations_20261110')/f'packet_{packet_index:03d}'
+def prepare(packet_index,object_id,revision):
+    root=Path('/tmp/auditmanager_ak_cabinet_operations_20261110')/revision/f'packet_{packet_index:03d}'
     root.mkdir(parents=True,exist_ok=True)
     source=INVENTORY/'AK/execution'/f'object_inventory_{packet_index:03d}'/'result.json'
     result=json.loads(source.read_text());assert not result['is_error']
@@ -42,7 +42,7 @@ def prepare(packet_index,object_id):
     return root,request,binding
 
 async def main(args):
-    root,request,binding=prepare(args.packet,args.object_id)
+    root,request,binding=prepare(args.packet,args.object_id,args.revision)
     print('PREPARED',root,flush=True)
     if not args.execute:return
     os.environ['CODEX_TRANSIENT_RETRIES']='0'
@@ -63,5 +63,5 @@ async def main(args):
     print('COMPLETE',flush=True)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--packet',type=int,required=True);p.add_argument('--object-id',required=True);p.add_argument('--execute',action='store_true')
+    p=argparse.ArgumentParser();p.add_argument('--packet',type=int,required=True);p.add_argument('--object-id',required=True);p.add_argument('--execute',action='store_true');p.add_argument('--revision',choices=['local_claim_v2'],default='local_claim_v2')
     asyncio.run(main(p.parse_args()))

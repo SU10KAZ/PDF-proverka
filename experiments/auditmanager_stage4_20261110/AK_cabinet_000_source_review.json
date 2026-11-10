@@ -1,0 +1,19 @@
+{
+  "control": "AK14 first of five cabinets",
+  "source_block": "blk_96ed7d88fb23414bb14d93191a89365a",
+  "image_path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/AK/versions/v001/03_analysis/runs/control/blocks_stage02_100/block_blk_96ed7d88fb23414bb14d93191a89365a.png",
+  "image_sha256": "8e69fe04c4bd1743063db50a61e17c1813f8a1214949ff6c8855abc3ed3bf1bb",
+  "directly_viewed": true,
+  "observations": [
+    "M1: lower cabinet contacts29,30,PE; M2:29,30,31,PE; separate cables and different device connections.",
+    "No distinct terminal-strip identifiers shown immediately beneath these two cabinet contact groups.",
+    "XT1/XT2/XT3 near actuators are separately labelled; repeated contact numbers there do not establish same complete address.",
+    "PE repeats throughout; repeat alone is not a fault."
+  ],
+  "model_v1": "Extracted and described repeated29/30correctly but returned needs_data and zero findings.",
+  "supported_scope": "Local drawing addressing ambiguity; actual wiring fault and applicability of manufacturing drawings remain unproved.",
+  "stage_cause": "Operation response did not emit the evidenced local observation separately from unresolved full identity.",
+  "change": "Generic operation instruction separates local supported claim from unknown consequence; fresh same-source v2control pending.",
+  "semantic_acceptance": false,
+  "full_five_cabinet_control_complete": false
+}
