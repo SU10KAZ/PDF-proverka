@@ -234,5 +234,16 @@
     "semantic_reviews_completed": 0,
     "scope": "Real saved EOM findings through deterministic verifier with authoritative document.md; referenced text availability does not establish sufficient context or claim validity.",
     "next_action": "Review each substantive claim with source evidence; obtain additional graphics or linked documents where needed. Validate source and finding hashes before consuming any review."
+  },
+  "source_claim_review_first5": {
+    "artifact": "experiments/auditmanager_stage4_20261110/EOM_source_claim_review_first5.json",
+    "sha256": "e9840feac88d147967665e7f0ab68341d1802adb247049d4929512ca5a2b6da6",
+    "findings_reviewed": 5,
+    "incorrect_semantic_source_links": 3,
+    "recovered_source_blocks": 2,
+    "source_arithmetic_positive_control": "F-003",
+    "source_arithmetic_negative_control": "F-040 (prior separate review)",
+    "automatic_application": false,
+    "boundary": "Known-case local evidence review; F-003 operating mode/cause and normative applicability unresolved. Runtime pending flags not cleared. No independent discovery or full stage acceptance."
   }
 }

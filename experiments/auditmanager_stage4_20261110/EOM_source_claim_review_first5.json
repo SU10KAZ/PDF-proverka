@@ -1,0 +1,819 @@
+{
+  "source": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/EOM/versions/v002/02_work/document.md",
+    "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac"
+  },
+  "scope": "Known-case source review by the current assistant; assertions reproduce text and arithmetic, not independent blind discovery.",
+  "reviews": [
+    {
+      "finding_id": "F-001",
+      "finding_sha256": "216dd57be97976a1d6ba27498c3ee51bc804f71f3e0eafa3aa9b1d89742a5152",
+      "original_requests": [
+        {
+          "source_finding_id": "T-001",
+          "source_claim": "В общих указаниях кабели ППГнг(А)-HF описаны как имеющие ПВХ-изоляцию и ПВХ-оболочку, тогда как спецификация предусматривает безгалогенные полимерные композиции. Описание материала противоречит выбранной марке и создаёт неоднозначность закупки. Привести требования к изоляции и оболочке в соответствие с маркой и пожарными характеристиками кабеля.",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957",
+            "blk_67c8cc82d7e24f738797d9b75ce14e97"
+          ]
+        }
+      ],
+      "final_finding": {
+        "id": "F-001",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "cable",
+        "sheet": "Листы 1, 5",
+        "page": [
+          3,
+          41
+        ],
+        "problem": "Материал кабеля ППГнг(А)-HF описан противоречиво",
+        "description": "Общие указания называют изоляцию и оболочку кабеля выполненными из ПВХ, а спецификация предусматривает безгалогенные полимерные композиции.",
+        "norm": "ГОСТ 31996-2012 (норматив-кандидат), пункт не подтверждён; ГОСТ 31565-2012 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 31996-2012",
+            "cited_designation": "ГОСТ 31996-2012",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить обозначение и конструкцию силового кабеля.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 31565-2012",
+            "cited_designation": "ГОСТ 31565-2012",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить пожарные характеристики кабеля.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать описание материала изоляции и оболочки с выбранной маркой кабеля и спецификацией.",
+        "risk": "Неоднозначность закупки и поставка кабеля с иными характеристиками.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-001",
+            "status": "requires_semantic_review",
+            "source_claim": "В общих указаниях кабели ППГнг(А)-HF описаны как имеющие ПВХ-изоляцию и ПВХ-оболочку, тогда как спецификация предусматривает безгалогенные полимерные композиции. Описание материала противоречит выбранной марке и создаёт неоднозначность закупки. Привести требования к изоляции и оболочке в соответствие с маркой и пожарными характеристиками кабеля.",
+            "source_location": "МД стр. 3, лист 1, раздел 4; стр. 41, спецификация кабелей.",
+            "existing_block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957",
+              "blk_67c8cc82d7e24f738797d9b75ce14e97"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-001",
+            "source_claim": "В общих указаниях кабели ППГнг(А)-HF описаны как имеющие ПВХ-изоляцию и ПВХ-оболочку, тогда как спецификация предусматривает безгалогенные полимерные композиции. Описание материала противоречит выбранной марке и создаёт неоднозначность закупки. Привести требования к изоляции и оболочке в соответствие с маркой и пожарными характеристиками кабеля.",
+            "block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957",
+              "blk_67c8cc82d7e24f738797d9b75ce14e97"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Описания одного кабеля в общих указаниях и спецификации различаются.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+              "quote": "Все сети выполнены кабелями с медными жилами с ПВХ изоляцией и не поддерживающие горение ПВХ оболочкой, с низким дымовыделением типа ППГнг(A)-HF."
+            },
+            {
+              "block_id": "blk_67c8cc82d7e24f738797d9b75ce14e97",
+              "quote": "Кабель силовой с медными жилами, с изоляцией и оболочкой из полимерных композиций не распространяющие горение при групповой прокладке и не выделяющие коррозионно-активных газообразных продуктов при горении и тлении, сечением: | ППГнг(A)-HF"
+            }
+          ],
+          "limit": "Проверено расхождение описаний. Материал фактически поставленного кабеля, паспорт и соответствие нормам не проверены."
+        }
+      ],
+      "recommendation": "Сохранить требование согласовать описание; не утверждать фактическую поставку кабеля с неподходящими свойствами.",
+      "engineer_decision": "Отдельное решение инженера по этой классической записи не установлено."
+    },
+    {
+      "finding_id": "F-003",
+      "finding_sha256": "28ac6d88d03e66a762d20ccd65358539f6cefceab6d35dff33f3fdeb7104e12a",
+      "original_requests": [
+        {
+          "source_finding_id": "T-003",
+          "source_claim": "Сумма установленных мощностей перечисленных потребителей РП5 составляет 94,5 кВт вместо 94,1 кВт. Сумма их расчётных мощностей составляет 89,9 кВт вместо пожарного итога 89,5 кВт. Оба расхождения равны мощности клапанов ОЗК и ДУ — 0,4 кВт, что указывает на возможный пропуск этой строки. Проверить включение клапанов в пожарный режим и пересчитать сводные нагрузки.",
+          "block_ids": [
+            "blk_c5f0556f94c14503bfe178ef5941c077"
+          ]
+        }
+      ],
+      "final_finding": {
+        "id": "F-003",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "calculation",
+        "sheet": "Лист 2.1",
+        "page": 4,
+        "problem": "В итогах РП5 ВРУ-2 возможно не учтены клапаны",
+        "description": "Сумма установленных мощностей перечисленных потребителей составляет 94,5 кВт вместо 94,1 кВт, расчётных мощностей пожарного режима — 89,9 кВт вместо 89,5 кВт. Оба расхождения равны мощности клапанов ОЗК и ДУ 0,4 кВт.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить учёт нагрузок противопожарных систем.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "source finding"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить включение клапанов в пожарный режим и пересчитать итоговые нагрузки.",
+        "risk": "Занижение расчётной нагрузки оборудования пожарного режима.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-003",
+            "status": "requires_semantic_review",
+            "source_claim": "Сумма установленных мощностей перечисленных потребителей РП5 составляет 94,5 кВт вместо 94,1 кВт. Сумма их расчётных мощностей составляет 89,9 кВт вместо пожарного итога 89,5 кВт. Оба расхождения равны мощности клапанов ОЗК и ДУ — 0,4 кВт, что указывает на возможный пропуск этой строки. Проверить включение клапанов в пожарный режим и пересчитать сводные нагрузки.",
+            "source_location": "МД стр. 4, лист 2.1, таблица нагрузок ВРУ-2, панель РП5.",
+            "existing_block_ids": [
+              "blk_c5f0556f94c14503bfe178ef5941c077"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-003",
+            "source_claim": "Сумма установленных мощностей перечисленных потребителей РП5 составляет 94,5 кВт вместо 94,1 кВт. Сумма их расчётных мощностей составляет 89,9 кВт вместо пожарного итога 89,5 кВт. Оба расхождения равны мощности клапанов ОЗК и ДУ — 0,4 кВт, что указывает на возможный пропуск этой строки. Проверить включение клапанов в пожарный режим и пересчитать сводные нагрузки.",
+            "block_ids": [
+              "blk_c5f0556f94c14503bfe178ef5941c077"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Суммы опубликованных строк РП5 равны 94,5 и 89,9 кВт.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C251 | Аварийное освещение лестничной клетки в 2 секции С2 с 2-10 этаж | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C252 | Аварийное освещение лифтового холла №1 и №2 в 2 секции С2 | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C253 | Аварийное освещение квартирного коридора МОП в 2 секции С2 | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C254 | Аварийное освещение квартирного коридора МОП в 2 секции С2 | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C255 | Аварийное освещение 10 технического этажа | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C256 | Аварийное освещение таблички ПК в коридорах МОП в 2 секции С2 | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C257 | Аварийное освещение светильники на входе в здание на кровле | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C258 | Аварийное освещение светильники на входе в здание | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C259 | Аварийное освещение в управляющей компании | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2510 | Аварийное освещение электрощитовой в С2 секции на -1 этаже | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2511 | Аварийное освещение помещения СС в С2 секции на -1 этаже | 0,1 | 0,1 | 0,5 | 0,95 | 0,11 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2512 | АПС, СОУЭ | 0,8 | 0,8 | 4,0 | 0,90 | 0,89 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2513 | ШУЛ-2.2 Лифт перемещения пож.бригад | 23,0 | 18,4 | 43,1 | 0,65 | 28,31 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2514 | 1ЩАО | 0,3 | 0,3 | 0,5 | 0,95 | 0,32 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2518 | Клапана ОЗК и ДУ | 0,4 | 0,4 | 2,3 | 0,80 | 0,50 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2519 | ДУ.2.1 | 7,5 | 7,5 | 14,3 | 0,80 | 9,38 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2520 | ПД.2.1 | 6 | 6 | 10,5 | 0,80 | 6,88 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2521 | ПД.2.2 | 11,0 | 11,0 | 20,9 | 0,80 | 13,75 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2522 | ПД.2.3.1 | 3,0 | 3,0 | 5,7 | 0,80 | 3,75 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2523 | ПД.2.3.2 | 23 | 23 | 43,9 | 0,80 | 28,88 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2524 | ПД.2.4.1 | 7,5 | 7,5 | 14,3 | 0,80 | 9,38 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2525 | ПД.2.4.2 | 7,5 | 7,5 | 14,3 | 0,80 | 9,38 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2526 | ПД.2.4.3 | 1,7 | 1,7 | 3,2 | 0,80 | 2,13 |"
+            },
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2527 | ПД.2.4.4 | 1,7 | 1,7 | 3,2 | 0,80 | 2,13 |"
+            }
+          ],
+          "row_inventory": [
+            "C251",
+            "C252",
+            "C253",
+            "C254",
+            "C255",
+            "C256",
+            "C257",
+            "C258",
+            "C259",
+            "C2510",
+            "C2511",
+            "C2512",
+            "C2513",
+            "C2514",
+            "C2518",
+            "C2519",
+            "C2520",
+            "C2521",
+            "C2522",
+            "C2523",
+            "C2524",
+            "C2525",
+            "C2526",
+            "C2527"
+          ],
+          "operation": {
+            "py_sum": "94.5",
+            "pp_sum": "89.9",
+            "published_totals": [
+              {
+                "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+                "quote": "| РП5 | Pp | 94,10 | 20,60"
+              },
+              {
+                "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+                "quote": "|  | Pp.лож |  | 89,50"
+              }
+            ],
+            "py_difference": "0.40",
+            "pp_difference": "0.40"
+          }
+        },
+        {
+          "claim": "Причина расхождения — пропуск клапанов, а все нагрузки должны суммироваться в пожарном режиме.",
+          "status": "needs_data",
+          "evidence": [
+            {
+              "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+              "quote": "| C2518 | Клапана ОЗК и ДУ | 0,4 | 0,4"
+            }
+          ],
+          "reason": "Совпадение разницы с мощностью клапанов не устанавливает причину. Нужны алгоритм режимов и одновременность работы."
+        }
+      ],
+      "recommendation": "Сохранить проверку расхождения; не заменять условную причину на доказанный пропуск клапанов.",
+      "engineer_decision": "Отдельное решение инженера по этой классической записи не установлено."
+    },
+    {
+      "finding_id": "F-044",
+      "finding_sha256": "222184834de848cc2bfb7eebcfc37770d73774b91a42dc45ef506f3f9fcde3ab",
+      "original_requests": [
+        {
+          "source_finding_id": "T-021",
+          "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957"
+          ]
+        }
+      ],
+      "final_finding": {
+        "id": "F-044",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Наименование нормативного документа по эксплуатации электроустановок неполное",
+        "description": "В перечне встречается общее наименование правил технической эксплуатации электроустановок потребителей без номера и даты утверждения; применённая редакция не идентифицирована.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Указать точное обозначение и редакцию применяемых правил.",
+        "risk": "Неоднозначность эксплуатационных требований.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "operations"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-021",
+            "status": "requires_semantic_review",
+            "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+            "source_location": "МД стр. 3, лист 1, раздел 4.",
+            "existing_block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-021",
+            "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+            "block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Исходный T-021 об идентификации проводников подтверждает этот итоговый тезис.",
+          "status": "refuted",
+          "reason": "T-021 относится к ГОСТ Р 50462-2009. Итоговый тезис имеет другой предмет; привязанный блок не содержит проверяемого обозначения.",
+          "evidence": [
+            {
+              "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+              "quote": "ГОСТ Р 50462-2009"
+            }
+          ]
+        },
+        {
+          "claim": "Упоминание документа присутствует в авторитетном MD.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_76d1760dd5b34882a0df18538f78e39b",
+              "quote": "Предусмотренное в данном проекте оборудование не служит источником шума и вибрации, опасных для здоровья и жизни человека. При эксплуатации оборудования необходимо соблюдать правила техники безопасности, изложенные в «МПБЭЭ», правила устройства электроустановок и правила технической эксплуатации электроустановок потребителей."
+            }
+          ]
+        },
+        {
+          "claim": "Ссылка недействительна либо нарушение технических требований доказано.",
+          "status": "needs_data",
+          "reason": "Упоминание или неполнота обозначения не доказывают недействительность. Внешняя проверка статуса и применимости здесь не выполнена."
+        }
+      ],
+      "recommendation": "Перепривязать доказательства; рассматривать как вопрос/уточнение. Не удалять только из-за неправильной родословной и не выдавать как подтверждённое техническое нарушение.",
+      "engineer_decision": "Отдельное решение инженера по этой классической записи не установлено.",
+      "failure_stage": "merge_source_link_semantic_mismatch",
+      "recovered_block_id": "blk_76d1760dd5b34882a0df18538f78e39b"
+    },
+    {
+      "finding_id": "F-045",
+      "finding_sha256": "0c912fc2454b0ac62bdd52b2df16dc85826ac690c06338f23b4764c5322d8c6f",
+      "original_requests": [
+        {
+          "source_finding_id": "T-021",
+          "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957"
+          ]
+        }
+      ],
+      "final_finding": {
+        "id": "F-045",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Ссылка «МПБЭЭ» не идентифицирует нормативный документ",
+        "description": "В перечне приведено сокращение «МПБЭЭ» без полного наименования, номера и даты. По нему нельзя установить применённые требования безопасности эксплуатации.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Заменить сокращение точной ссылкой на применяемые правила охраны труда.",
+        "risk": "Неоднозначность нормативной основы монтажных и эксплуатационных указаний.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction",
+            "operations"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-021",
+            "status": "requires_semantic_review",
+            "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+            "source_location": "МД стр. 3, лист 1, раздел 4.",
+            "existing_block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-021",
+            "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+            "block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Исходный T-021 об идентификации проводников подтверждает этот итоговый тезис.",
+          "status": "refuted",
+          "reason": "T-021 относится к ГОСТ Р 50462-2009. Итоговый тезис имеет другой предмет; привязанный блок не содержит проверяемого обозначения.",
+          "evidence": [
+            {
+              "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+              "quote": "ГОСТ Р 50462-2009"
+            }
+          ]
+        },
+        {
+          "claim": "Упоминание документа присутствует в авторитетном MD.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_76d1760dd5b34882a0df18538f78e39b",
+              "quote": "Предусмотренное в данном проекте оборудование не служит источником шума и вибрации, опасных для здоровья и жизни человека. При эксплуатации оборудования необходимо соблюдать правила техники безопасности, изложенные в «МПБЭЭ», правила устройства электроустановок и правила технической эксплуатации электроустановок потребителей."
+            }
+          ]
+        },
+        {
+          "claim": "Ссылка недействительна либо нарушение технических требований доказано.",
+          "status": "needs_data",
+          "reason": "Упоминание или неполнота обозначения не доказывают недействительность. Внешняя проверка статуса и применимости здесь не выполнена."
+        }
+      ],
+      "recommendation": "Перепривязать доказательства; рассматривать как вопрос/уточнение. Не удалять только из-за неправильной родословной и не выдавать как подтверждённое техническое нарушение.",
+      "engineer_decision": "Отдельное решение инженера по этой классической записи не установлено.",
+      "failure_stage": "merge_source_link_semantic_mismatch",
+      "recovered_block_id": "blk_76d1760dd5b34882a0df18538f78e39b"
+    },
+    {
+      "finding_id": "F-046",
+      "finding_sha256": "2a9380651f7a87fddb5beef0f2deccd110bde01071473f21d7b1f49dfc556f39",
+      "original_requests": [
+        {
+          "source_finding_id": "T-021",
+          "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957"
+          ]
+        }
+      ],
+      "final_finding": {
+        "id": "F-046",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "documentation",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "Применённая редакция ряда ссылочных документов не установлена",
+        "description": "Для ГОСТ 21.101-2026, ГОСТ Р 50571.5.54-2024 и СП 6.13130.2025 в переданных материалах отсутствует подтверждение точного обозначения и даты введения. Это основание для проверки ссылок, но само по себе не доказывает их недействительность.",
+        "norm": "ГОСТ 21.101-2026 (норматив-кандидат), пункт не подтверждён; ГОСТ Р 50571.5.54-2024 (норматив-кандидат), пункт не подтверждён; СП 6.13130.2025 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.101-2026",
+            "cited_designation": "ГОСТ 21.101-2026",
+            "candidate_relevance": 0.6,
+            "reason": "Подтвердить точное обозначение и дату введения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "analysis candidate"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ Р 50571.5.54-2024",
+            "cited_designation": "ГОСТ Р 50571.5.54-2024",
+            "candidate_relevance": 0.6,
+            "reason": "Подтвердить точное обозначение и дату введения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "analysis candidate"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "СП 6.13130.2025",
+            "cited_designation": "СП 6.13130.2025",
+            "candidate_relevance": 0.6,
+            "reason": "Подтвердить применённую редакцию и дату введения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "analysis candidate"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить обозначения и редакции с официальными текстами перед выпуском комплекта.",
+        "risk": "Непроверяемые ссылки при экспертизе проекта.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 15,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        },
+        "corrector_note": "[source_review_required] У исходного кандидата есть ссылки, но их соответствие итоговому тезису не проверено.",
+        "corrected_by": "deterministic",
+        "source_candidate_lineage": [
+          {
+            "source_finding_id": "T-021",
+            "status": "requires_semantic_review",
+            "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+            "source_location": "МД стр. 3, лист 1, раздел 4.",
+            "existing_block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957"
+            ],
+            "unresolved_block_ids": []
+          }
+        ],
+        "requires_human_review": true,
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "T-021",
+            "source_claim": "Для идентификации проводников приведена заменённая ссылка ГОСТ Р 50462-2009. Актуализировать нормативную ссылку с учётом ГОСТ 33542-2015 и согласовать указания по цветовой маркировке проводников.",
+            "block_ids": [
+              "blk_d90c772851514a0a9c65cdd019e56957"
+            ]
+          }
+        ]
+      },
+      "claims": [
+        {
+          "claim": "Исходный T-021 об идентификации проводников подтверждает этот итоговый тезис.",
+          "status": "refuted",
+          "reason": "T-021 относится к ГОСТ Р 50462-2009. Итоговый тезис имеет другой предмет; привязанный блок не содержит проверяемого обозначения.",
+          "evidence": [
+            {
+              "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+              "quote": "ГОСТ Р 50462-2009"
+            }
+          ]
+        },
+        {
+          "claim": "Упоминание документа присутствует в авторитетном MD.",
+          "status": "supported",
+          "evidence": [
+            {
+              "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+              "quote": "| ГОСТ 21.101-2026 | Основные требования к проектной и рабочей документации» |  |"
+            },
+            {
+              "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+              "quote": "| ГОСТ Р 50571.5.54-2024 | Электроустановки зданий. Часть 5 «Выбор и монтаж электрооборудования. Глава 54. Заземляющие устройства и защитные проводники»; |  |"
+            },
+            {
+              "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+              "quote": "| СП 6.13130.2025 | Система обеспечения пожарной безопасности объекта защиты. ЭЛЕКТРОУСТАНОВКИ НИЗКОВОЛЬТНЫЕ. Требования пожарной безопасности. |  |"
+            }
+          ]
+        },
+        {
+          "claim": "Ссылка недействительна либо нарушение технических требований доказано.",
+          "status": "needs_data",
+          "reason": "Упоминание или неполнота обозначения не доказывают недействительность. Внешняя проверка статуса и применимости здесь не выполнена."
+        }
+      ],
+      "recommendation": "Перепривязать доказательства; рассматривать как вопрос/уточнение. Не удалять только из-за неправильной родословной и не выдавать как подтверждённое техническое нарушение.",
+      "engineer_decision": "Отдельное решение инженера по этой классической записи не установлено.",
+      "failure_stage": "merge_source_link_semantic_mismatch",
+      "recovered_block_id": "blk_b6605a23b38f4e00b2f8076b62b21532"
+    }
+  ],
+  "reviewed_findings": 5,
+  "remaining_queue_findings": [
+    "F-030",
+    "F-031",
+    "F-032",
+    "F-033",
+    "F-034",
+    "F-035",
+    "F-036",
+    "F-037",
+    "F-038",
+    "F-039",
+    "F-040",
+    "F-041",
+    "F-042",
+    "F-043"
+  ],
+  "automatic_application": false,
+  "new_model_calls": 0,
+  "runtime_pending_flags_unchanged": true,
+  "arithmetic_control_pair": {
+    "retain": "F-003: source row sums really differ; operating-mode cause remains unresolved.",
+    "reject": "F-040: EOM_F040_semantic_refutation.json reproduces 1636.5, not claimed 1622.7.",
+    "limit": "Source arithmetic pair only; end-to-end model detection and engineering-mode adjudication remain unverified."
+  }
+}
