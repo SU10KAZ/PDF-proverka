@@ -53,9 +53,22 @@ async def main():
         assert baseline==unchanged
         assert final['findings'][:len(baseline['findings'])]==baseline['findings']
         assert all(f in final['findings'] for f in snapshots[0]['findings'])
+        prepared=json.loads((Path(work)/'01/continuation.json').read_text())
+        third=prepared.get('request')
+        continuation_summary={'status':prepared['status'],'new_source_ids':prepared.get('new_source_ids',[]),
+            'omitted':prepared.get('omitted',[]),'sent':False}
+        if third:
+            continuation_summary.update(message_chars=sum(len(m['content']) for m in third['messages']),
+                images=len(third['image_paths']),request_sha256=evidence_digest(third))
+            dest=Path('/tmp/auditmanager_km_ogm5_second_continuation_20261110')
+            dest.mkdir(exist_ok=True)
+            path=dest/'request.json'
+            if path.exists():assert evidence_digest(json.loads(path.read_text()))==evidence_digest(third)
+            path.write_text(json.dumps(third,ensure_ascii=False,indent=2)+'\n')
+            continuation_summary['request_path']=str(path)
         ledger=[row for r in final['object_operation_reports'] for row in r['candidate_ledger']]
         pending=[row for r in final['object_operation_reports'] for row in r['pending']]
-        result={'status':report['status'],'stop_reason':report.get('reason'),'steps':len(report['steps']),
+        result={'status':report['status'],'stop_reason':report.get('reason'),'steps':len(report['steps']),'next_preparation':continuation_summary,
             'baseline_findings_preserved':len(baseline['findings']),'final_findings':len(final['findings']),
             'first_step_findings_preserved':len(snapshots[0]['findings']),
             'candidate_ledger_records':len(ledger),'internal_pending_candidates':len(pending),

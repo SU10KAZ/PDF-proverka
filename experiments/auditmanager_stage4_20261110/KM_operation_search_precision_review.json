@@ -1,0 +1,33 @@
+{
+  "status": "source_retrieval_precision_issue_verified",
+  "query": "по А",
+  "literal_hits": 111,
+  "total_KM_blocks": 111,
+  "cause": "Case-insensitive substring search matches по адресу in repeated stamp/address lines. Earlier hypothesis of project-code matching alone was incomplete.",
+  "other_query_hits": {
+    "ОГМ 5": 12,
+    "по Е": 7,
+    "2-2": 10,
+    "3-3": 5,
+    "4-4": 7
+  },
+  "next_packet": {
+    "message_chars": 119915,
+    "images": 16,
+    "new_allowed_sources": [
+      "blk_e4b1c3dd3043481db86f87c923f0a173",
+      "blk_ef276d1030da49b48f4bb057ebafe685"
+    ],
+    "description": "Two title blocks, not dimension endpoints or anchor calculation.",
+    "sent": false
+  },
+  "recommended_next_change": "Compare token-boundary and source-body relevance ranking while preserving all substring-only hits as visible backlog. Do not delete metadata because sheet/revision checks need it.",
+  "acceptance_controls": [
+    "Node А should precede address-only matches for query по А.",
+    "Retain exact object mark and sheet lookup matches.",
+    "Keep morphological/substring hits in backlog; no inference of source absence.",
+    "Repeat known OGM5 retrieval from frozen requests; changed request cannot reuse an old model answer as if it saw the new context."
+  ],
+  "runtime_search_changed": false,
+  "new_model_calls": 0
+}

@@ -1,7 +1,113 @@
 {
-  "status": "continuation_not_prepared",
-  "stop_reason": "Continuation request budget exceeded",
+  "status": "cancelled",
+  "stop_reason": null,
   "steps": 2,
+  "next_preparation": {
+    "status": "prepared",
+    "new_source_ids": [
+      "blk_e4b1c3dd3043481db86f87c923f0a173",
+      "blk_ef276d1030da49b48f4bb057ebafe685"
+    ],
+    "omitted": [
+      {
+        "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_32a409cc3ad1431a9b93259722f9a866",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_e3a065c965414cc9a95c5488f8e41108",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_5de20e336f994591bdd8c56c0f1e4183",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_4412076f7a7349f587fb211ff8b4af08",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_18bd9bc412d24963af5f2334bad9aa33",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_0359ba1d16b44cfb9ad1781c770c02c1",
+        "reason": "text_budget"
+      },
+      {
+        "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_613b3bfe91c246e68bf7705cb59ba72f",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_c35486f85bac42b799c61a10c630a793",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_26d908d359d14584917702c046803793",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_9e54c5e5fb6b4b28ae2304bd06c49949",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_49d947c318c3478582a39740abda8658",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_f4e8aa99af0048148949bd81155997fe",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_07bceef658074a22a028d29f7493e678",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_0baef9435e014790ad7708e6e4cd256a",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_6d3a9c479ffe4b57b3cd3e5310d5abfd",
+        "reason": "image_unavailable_or_budget"
+      },
+      {
+        "block_id": "blk_fe7bfb2c1c0b469ca1c3e2cb30686758",
+        "reason": "message_budget"
+      }
+    ],
+    "sent": false,
+    "message_chars": 119915,
+    "images": 16,
+    "request_sha256": "f3ab777d8b97f6fb03808a348f8ccbb037f7b30dbd0a98e9fd049a2fbf19a6b4",
+    "request_path": "/tmp/auditmanager_km_ogm5_second_continuation_20261110/request.json"
+  },
   "baseline_findings_preserved": 26,
   "final_findings": 28,
   "first_step_findings_preserved": 26,

@@ -71,6 +71,7 @@ def prepare_object_operation_continuation(original, response, sources, images, m
         candidate_ids.extend(b['block_id'] for b in search['hits'])
         searches[op['operation']] = {**search,'hits':[{k:v for k,v in b.items() if k!='content'} for b in search['hits']]}
     context = {b['block_id']:b for b in packet['source_context']}
+    original_context_ids = set(context)
     omitted = []
     size = sum(len(b['content']) for b in context.values())
     for bid in dict.fromkeys(candidate_ids):
@@ -104,12 +105,31 @@ def prepare_object_operation_continuation(original, response, sources, images, m
         allowed_source_refs=sorted({bid for bid,b in context.items() if b['kind'] in ('TEXT','TABLE')}|set(attached)),
         prior_operation_response_untrusted=response,context_revision=revision+1,
         source_md_sha256=expected_md_sha256,scope_complete=False)
-    request={'messages':[original['messages'][0],{'role':'user','content':json.dumps(packet,ensure_ascii=False)}],
-             'image_paths':[im['path'] for im in bindings]}
-    chars=sum(len(m['content']) for m in request['messages'])
-    image_bytes=sum(Path(im['path']).stat().st_size for im in bindings)
-    if chars>max_message_chars or image_bytes>max_image_bytes:
-        raise ValueError('Continuation request budget exceeded')
+    # Account for the whole message, not only source text. Keep the original
+    # packet intact; newly found blocks which do not fit remain explicit backlog.
+    added_ids = [bid for bid in context if bid not in original_context_ids]
+    while True:
+        packet['source_context'] = list(context.values())
+        packet['attached_image_ids_in_order'] = attached
+        packet['allowed_source_refs'] = sorted(
+            {bid for bid,b in context.items() if b['kind'] in ('TEXT','TABLE')} | set(attached))
+        packet['omitted'] = omitted
+        bindings = [images[bid] for bid in attached]
+        request={'messages':[original['messages'][0],{'role':'user','content':json.dumps(packet,ensure_ascii=False)}],
+                 'image_paths':[im['path'] for im in bindings]}
+        chars=sum(len(m['content']) for m in request['messages'])
+        image_bytes=sum(Path(im['path']).stat().st_size for im in bindings)
+        if chars<=max_message_chars and image_bytes<=max_image_bytes:
+            break
+        if not added_ids:
+            raise ValueError('Continuation request budget exceeded; original context preserved')
+        bid=added_ids.pop()
+        del context[bid]
+        if bid in attached and bid not in old_ids:
+            attached.remove(bid)
+        omitted=[row for row in omitted if row['block_id']!=bid]
+        omitted.append({'block_id':bid,'reason':
+            'message_budget' if chars>max_message_chars else 'image_bytes_budget'})
     old_allowed=set(json.loads(original['messages'][-1]['content'])['allowed_source_refs'])
     newly_supplied=set(packet['allowed_source_refs'])-old_allowed
     if not newly_supplied:

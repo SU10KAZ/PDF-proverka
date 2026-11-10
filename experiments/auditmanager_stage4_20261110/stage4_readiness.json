@@ -973,5 +973,14 @@
     "artifact": "operation_lineage_regression_tests.json",
     "passed": 172,
     "failed": 0
+  },
+  "operation_continuation_retention": {
+    "artifact": "KM_OGM5_completed_workflow_replay.json",
+    "baseline_preserved": 26,
+    "final_candidates": 28,
+    "new_model_calls": 0,
+    "regression_tests_passed": 182,
+    "original_context_preserved_at_budget": true,
+    "remaining": "Continuation is replayed locally with real responses. Full candidate runtime and source relevance remain unaccepted."
   }
 }

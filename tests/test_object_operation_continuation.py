@@ -76,3 +76,30 @@ def test_recorded_search_backlog_continues_without_repeating_old_sources():
     assert len(second['new_source_ids'])==8
     assert not set(first['new_source_ids']).intersection(second['new_source_ids'])
     assert not second['searches']['dimension_consistency']['backlog']
+
+
+def test_whole_message_budget_defers_new_blocks_without_losing_original_context():
+    request,response,sources,md,kwargs=case()
+    for i in range(2):
+        bid=f'large{i}'; content=f'ITEM {i} '+('x'*3000)+'\n'
+        md+=f'### BLOCK #{i+3} [TEXT]: {bid}\n'+content
+        sources[bid]={'block_id':bid,'kind':'TEXT','content':content}
+    kwargs['expected_md_sha256']=hashlib.sha256(md.encode()).hexdigest()
+    response['object_operation_results'][0]['context_queries']=['ITEM']
+    result=prepare_object_operation_continuation(request,response,sources,{},md,
+        max_message_chars=6000,**kwargs)
+    assert result['status']=='prepared'
+    assert len(result['new_source_ids'])==1
+    assert sum(len(m['content']) for m in result['request']['messages'])<=6000
+    packet=json.loads(result['request']['messages'][-1]['content'])
+    assert packet['source_context'][0]==sources['a']
+    assert len(result['omitted'])==1 and result['omitted'][0]['reason']=='message_budget'
+    deferred=result['omitted'][0]['block_id']
+    assert deferred not in packet['allowed_source_refs']
+    # Next context search can recover the deferred source; it was not marked read.
+    kwargs['expected_request_sha256']=evidence_digest(result['request'])
+    followup=prepare_object_operation_continuation(result['request'],response,sources,{},md,
+        max_message_chars=12000,**kwargs)
+    assert deferred in followup['new_source_ids']
+    assert all(b in json.loads(followup['request']['messages'][-1]['content'])['source_context']
+        for b in packet['source_context'])
