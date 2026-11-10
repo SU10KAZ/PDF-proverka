@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 from backend.app.pipeline.stages.findings_verify.source_review_evidence import evidence_digest
 from backend.app.pipeline.stages.text_analysis.object_registry import reconcile_object_registry
+from backend.app.pipeline.stages.text_analysis.inventory_candidates import inventory_text_candidates
 
 ROOT=Path('/tmp/auditmanager_whole_project_inventory_20261110')
 
@@ -32,6 +33,7 @@ async def execute(disc,digest):
     from backend.app.services.llm.codex_model_substitution import substitute_codex_model
     if substitute_codex_model('gpt-6-astra')!='gpt-6-astra':raise ValueError('Model substitution not allowed')
     root=ROOT/disc/'execution';root.mkdir(exist_ok=True);reports=[];aggregate={'object_registry':[],'object_inventory_coverage':[],'object_operation_results':[],'text_findings':[]}
+    candidate_packets=[]
     for i,(row,request) in enumerate(requests):
         directory=root/row['stage'];directory.mkdir(exist_ok=True)
         binding={'request_sha256':evidence_digest(request),'model':'codex/gpt-6-astra','reasoning_effort':'high'}
@@ -62,15 +64,18 @@ async def execute(disc,digest):
             if isinstance(rec,dict):aggregate['object_inventory_coverage'].append({**rec,'object_ids':[prefix+oid for oid in rec.get('object_ids',[]) if isinstance(oid,str)]})
         for rec in data.get('object_operation_results',[]):
             if isinstance(rec,dict) and isinstance(rec.get('object_id'),str):aggregate['object_operation_results'].append({**rec,'object_id':prefix+rec['object_id']})
-        for f in data.get('text_findings',[]):
-            if isinstance(f,dict):aggregate['text_findings'].append({**f,'inventory_packet':row['stage'],'semantic_verified':False})
+        candidate_packets.append({'packet_id':row['stage'],'findings':data.get('text_findings',[])})
         reports.append({'stage':row['stage'],'objects':len(coverage['objects']),'invalid_objects':len(coverage['invalid_objects']),
             'unresolved_source_blocks':coverage['unresolved_source_blocks'],'duration_ms':result['duration_ms'],
             'input_tokens':result.get('input_tokens'),'output_tokens':result.get('output_tokens'),'cost_source':result.get('cost_source')})
         (root/'progress.json').write_text(json.dumps({'completed':len(reports),'total':len(requests),'packets':reports,'semantic_verified':False},ensure_ascii=False,indent=2))
         print('DONE',disc,i+1,'objects',len(coverage['objects']),'unresolved_blocks',coverage['unresolved_source_blocks'],flush=True)
-    (root/'02_text_analysis.json').write_text(json.dumps(aggregate,ensure_ascii=False,indent=2))
     all_blocks={bid for row in manifest['packets'] for bid in row['block_ids']}
+    adapted=inventory_text_candidates(candidate_packets,all_blocks)
+    aggregate['text_findings']=adapted['text_findings']
+    aggregate['pending_inventory_findings']=adapted['pending']
+    aggregate['raw_inventory_findings']=candidate_packets
+    (root/'02_text_analysis.json').write_text(json.dumps(aggregate,ensure_ascii=False,indent=2))
     coverage=reconcile_object_registry(aggregate,all_blocks)
     from backend.app.pipeline.stages.text_analysis.object_identity_candidates import build_object_identity_candidates
     (root/'object_identity_candidates.json').write_text(json.dumps(build_object_identity_candidates(coverage['objects']),ensure_ascii=False,indent=2))
