@@ -29,6 +29,8 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable
     if graph is not None and graph.get('source_md_sha256') != hashlib.sha256(md.encode()).hexdigest():
         graph = None  # Unbound legacy graphs cannot interpret sheet-number queries.
     coverage = reconcile_object_registry(data, set(blocks))
+    from .inventory_source_navigation import build_inventory_source_navigation, INVENTORY_NAVIGATION_INSTRUCTIONS
+    inventory_navigation = build_inventory_source_navigation(coverage['objects'], blocks)
     crops = resolve_blocks_dir(output_dir)
     index_path = crops/'index.json'
     index = json.loads(index_path.read_text()) if index_path.is_file() else {}
@@ -113,7 +115,7 @@ def build_object_operation_passes(output_dir, md_path, *, max_requests=8, enable
         operations = eligible
         if not operations:
             continue
-        packet={'object':obj,'operations':operations,'source_context':context,'context_searches':searches,
+        packet={'object':obj,'inventory_source_navigation':inventory_navigation,'operations':operations,'source_context':context,'context_searches':searches,
                 'attached_image_ids_in_order':image_ids,'allowed_source_refs':allowed,'omitted':omitted,
                 'scope_complete':False,
                 'same_page_text_context':{'candidate_block_ids':page_context_ids,
@@ -159,6 +161,7 @@ out-of-profile question during an unresolved operation must state question_basis
 Use quote only for an exact source substring; describe paraphrases as description.
 Preserve all listed operations, even those that remain unresolved. Do not declare
 whole-project coverage or silently add an operation outside the supplied list.'''
+        instructions += INVENTORY_NAVIGATION_INSTRUCTIONS
         if any(operation['operation'] == 'quantity_balance' for operation in operations):
             from .quantity_provenance import QUANTITY_PROVENANCE_INSTRUCTIONS
             instructions += QUANTITY_PROVENANCE_INSTRUCTIONS
