@@ -1,0 +1,220 @@
+{
+  "manifest_sha256": "8272e4586f32da58ea0ab762a20f15b1c2d916e2977d0e68009fab5cefba2e46",
+  "baseline_coverage_sha256": "58a72975d62d7ea702a204056a033e75dbacc1e5b9df3e0f4bf02b4aa7d6d61e",
+  "completed_packets": 1,
+  "total_packets": 2,
+  "pending_packets": [
+    1
+  ],
+  "packets": [
+    {
+      "packet": 0,
+      "status": "response_assessed_structurally",
+      "result_sha256": "4726641838d921d7f9f375e60ad964de8dc5960a5c67e6773d4c87a83b4344c2",
+      "duration_ms": 317105,
+      "input_tokens": 63265,
+      "output_tokens": 15314,
+      "objects": 17,
+      "invalid_objects": [],
+      "observed_parameters": 95,
+      "parameter_provenance_issues": [],
+      "unexpected_operation_receipts": [],
+      "source_changes": [
+        {
+          "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+          "before": {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+              "status": "needs_data",
+              "object_ids": [
+                "object_inventory_005:ОГМ5_ведомость",
+                "object_inventory_005:ОГМ6_ведомость",
+                "object_inventory_005:ОГМ7_ведомость",
+                "object_inventory_005:ОГМ8_ведомость"
+              ],
+              "reason": "Все четыре панели просмотрены и сопоставлены по маркам. Мелкие позиции, часть наклонных размеров и узловых выносок недостаточно разборчивы для полного поэлементного учета и сравнения; требуется более четкий графический фрагмент."
+            }
+          },
+          "after": {
+            "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+              "status": "inventoried",
+              "object_ids": [
+                "view_ogm5",
+                "view_ogm6",
+                "view_ogm7",
+                "view_ogm8"
+              ],
+              "reason": "Просмотрены все четыре изображения; зарегистрированы ОГМ 5–8. Краевые фрагменты соседних видов объединены с их полными изображениями.",
+              "unreadable_regions": [
+                {
+                  "region": "Правое верхнее окончание ОГМ 5",
+                  "description": "Читается обозначение В. Дополнительный префикс перед ним не установлен; обозначение сохранено без дополнения."
+                }
+              ]
+            },
+            "reason": "declared_unreadable_regions"
+          }
+        },
+        {
+          "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+          "before": {
+            "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+              "status": "needs_data",
+              "object_ids": [
+                "object_inventory_013:p13_ogm19",
+                "object_inventory_013:p13_ogm20",
+                "object_inventory_013:p13_ogm22",
+                "object_inventory_013:p13_ogm23",
+                "object_inventory_013:p13_ogm25",
+                "object_inventory_013:p13_node_a"
+              ],
+              "reason": "Изображение осмотрено целиком; обнаружены все пять марочных сборок и ссылки на узлы. Часть мелких размеров, позиционных обозначений и пересекающихся выносок не читается достаточно надежно для полной инвентаризации графических параметров."
+            }
+          },
+          "after": {
+            "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_6bb0b4fa825241f087dbf06ba2178a0c",
+              "status": "inventoried",
+              "object_ids": [
+                "view_ogm25",
+                "view_ogm19",
+                "view_ogm20",
+                "view_ogm22",
+                "view_ogm23"
+              ],
+              "reason": "Просмотрены все четыре изображения; зарегистрированы пять видов. ОГМ20 и ОГМ22 представлены также в перекрытиях и учтены однократно.",
+              "unreadable_regions": [
+                {
+                  "region": "Верхняя граница tile_index=0 над левым переломом ОГМ25",
+                  "description": "Размер 170 и ссылка по Г(4) частично обрезаны верхней границей. Видимые обозначения сохранены; содержимое за границей изображения не установлено."
+                }
+              ]
+            },
+            "reason": "declared_unreadable_regions"
+          }
+        },
+        {
+          "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+          "before": {
+            "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+              "status": "needs_data",
+              "object_ids": [
+                "object_inventory_012:OGM17",
+                "object_inventory_012:OGM18",
+                "object_inventory_012:OGM21",
+                "object_inventory_012:OGM24"
+              ],
+              "reason": "Все четыре панели просмотрены, марки и основные конструкции учтены. Разрешение не позволяет надёжно прочитать все мелкие размеры, выноски позиций и выполнить полный поэлементный подсчёт; требуется более читаемая графика этих панелей."
+            }
+          },
+          "after": {
+            "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+            "status": "reported_inventoried",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_93f2455360ea4a65b5cd536a83c00668",
+              "status": "inventoried",
+              "object_ids": [
+                "view_ogm17",
+                "view_ogm18",
+                "view_ogm21",
+                "view_ogm24"
+              ],
+              "reason": "Просмотрены все четыре изображения; зарегистрированы четыре вида. Обрезанные соседние фрагменты идентифицированы по перекрытиям. Арифметически противоречивая надпись ОГМ21 сохранена буквально.",
+              "unreadable_regions": []
+            }
+          }
+        },
+        {
+          "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+          "before": {
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "status": "needs_data",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+              "status": "needs_data",
+              "object_ids": [
+                "object_inventory_007:p7_22",
+                "object_inventory_007:p7_23",
+                "object_inventory_007:p7_24",
+                "object_inventory_007:p7_25"
+              ],
+              "reason": "Осмотрены все четыре изображения, выявлены сборки ограждений ОГМ1–ОГМ4, основные размерные цепочки и ссылки. Часть мелких позиционных обозначений, концевых размеров и привязок выносок нельзя надёжно разобрать в представленном разрешении; для полного учёта деталей и узлов нужен более читаемый фрагмент. Изображения не интерпретированы как самостоятельные конструкции лестничных маршей."
+            }
+          },
+          "after": {
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "status": "reported_inventoried",
+            "semantic_verified": false,
+            "receipt": {
+              "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+              "status": "inventoried",
+              "object_ids": [
+                "view_ogm1",
+                "view_ogm2",
+                "view_ogm3",
+                "view_ogm4"
+              ],
+              "reason": "Просмотрены все четыре изображения; зарегистрированы ОГМ1–4. Повторные краевые фрагменты объединены; стрелочные обозначения дополнительных видов сохранены как ссылки.",
+              "unreadable_regions": []
+            }
+          }
+        }
+      ],
+      "raw_findings": [
+        {
+          "statement": "На виде ОГМ22 в нижней размерной цепи написано «150×4=450». Запись содержит прямое арифметическое противоречие: 150×4=600. По изображению не определяется, какой именно компонент надписи подлежит исправлению.",
+          "source_refs": [
+            "blk_6bb0b4fa825241f087dbf06ba2178a0c"
+          ],
+          "object_ids": [
+            "view_ogm22"
+          ],
+          "graphic_evidence": "tile_index=2, нижняя цепь под горизонтальной правой частью ОГМ22, интервал между средней и правой опорными стойками. Надпись читается как 150×4=450; её фрагмент также виден слева на tile_index=3."
+        },
+        {
+          "statement": "На виде ОГМ21 в нижней размерной цепи написано «150×3=600». Запись содержит прямое арифметическое противоречие: 150×3=450. Исправленное значение не подставлялось.",
+          "source_refs": [
+            "blk_93f2455360ea4a65b5cd536a83c00668"
+          ],
+          "object_ids": [
+            "view_ogm21"
+          ],
+          "graphic_evidence": "tile_index=2, первый полный пролёт основной наклонной части после левого участка 300. Надпись 150×3=600 находится над объединяющим размером 600×4=2400; следующие три пролёта подписаны 150×4=600."
+        }
+      ],
+      "semantic_verified": false
+    }
+  ],
+  "source_blocks_reported_inventoried": 2,
+  "source_blocks_still_unresolved": 2,
+  "baseline_artifacts_changed": false,
+  "semantic_coverage_complete": false,
+  "new_useful_defects_confirmed": 0,
+  "limits": [
+    "Readability recovery on known selected source blocks; not independent unseen-project evaluation.",
+    "Image scale and prompt both changed; no isolated causal attribution or measured engineering recall improvement.",
+    "Object counts are extraction records, not physical item counts; no automatic cross-pass identity merge.",
+    "Reported inventoried status and graphic_observation text require visual/source checking.",
+    "Whole-project coverage and technical operations remain incomplete."
+  ]
+}
