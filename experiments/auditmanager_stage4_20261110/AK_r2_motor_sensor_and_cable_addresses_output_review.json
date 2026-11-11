@@ -1,0 +1,1091 @@
+{
+  "status": "four_AK_address_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "3ad3fd1336b5346b564fa4d3a5e81a385bb21eec1907fb80551c24ce54cca2de",
+  "queue_after_sha256": "2f91dad463b48bd7c8e94d3922adc8c56d07c1b11d104a5efd1f855e2d06da11",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Обозначения электродвигателей",
+        "sheet": "Листы 9, 11, 13, 15, 31",
+        "page": [
+          13,
+          15,
+          17,
+          19,
+          35,
+          64,
+          65,
+          67,
+          71,
+          72,
+          75
+        ],
+        "problem": "Позиции насосов и вентиляторов расходятся между схемами, перечнями и журналом.",
+        "description": "Для Пкр4.1 насос М3 в журнале заменён на М2. Для Пкр5.1 схема подключает Пкр5.1-9 к резервному вентилятору М3, Пкр5.1-13 — к насосу М2, а журнал переставляет адресатов. Для Пн5.1 насос М5 в строке Пн5.1-21 обозначен М1. Для Па3.1/Ва3.1 схема показывает М2 у насоса, М4 у резервного вентилятора и дополнительный М5; перечень относит М1–М3 к вентиляторам, М4 к насосу и не содержит М5.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Составить единое соответствие двигателей, систем и кабелей; согласовать функциональные схемы, внешние подключения, перечни и журнал с разделом ОВ.",
+        "risk": "Подключение силовых линий к неверным двигателям и нарушение алгоритмов управления.",
+        "source_finding_ids": [
+          "T-016",
+          "G-016",
+          "G-074",
+          "G-075"
+        ],
+        "source_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "blk_c0ed6bca935843c18344796377677f2f"
+        ],
+        "related_block_ids": [
+          "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "blk_c0ed6bca935843c18344796377677f2f",
+          "blk_6414183ffe264f65a253b3d6a5155da1",
+          "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_ba2cc771448645a5b9a7203af971680b",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_0074662f330048ff843342b285e6a016"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c0ed6bca935843c18344796377677f2f",
+            "page": 35
+          },
+          {
+            "type": "text",
+            "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+            "page": 64
+          },
+          {
+            "type": "text",
+            "block_id": "blk_0074662f330048ff843342b285e6a016",
+            "page": 75
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-074",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-075",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковые расхождения обозначений М2 и М4 между схемой и перечнем и отсутствие М5 в перечне.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение: на схеме Пкр5.1-9 подключён к М3, Пкр5.1-13 — к М2, а в кабельном журнале — соответственно к М2 и М3. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение: на схеме Пкр5.1-9 подключён к М3, Пкр5.1-13 — к М2, а в кабельном журнале — соответственно к М2 и М3. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пкр4.1-13: насос M3 в перечне и внешней схеме, M2 в журнале.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC",
+          "limits": "Внешняя схема лист27 показывает насос M3, отдельный от резервного вентилятора M2. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет. Графическое подтверждение взято из прежнего просмотра идентичных файлов, не нового осмотра."
+        },
+        {
+          "claim": "Пкр5.1-9: резервный вентилятор M3 на схеме и в перечне, M2 в журнале; Пкр5.1-13: насос M2 на схеме и в перечне, МЗ в журнале.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC",
+          "limits": "Литера МЗ сохранена как в TEXT, без исправления OCR. Адресные строки и функции приборов различаются. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет. Графическое подтверждение взято из прежнего просмотра идентичных файлов, не нового осмотра."
+        },
+        {
+          "claim": "Пн5.1.-21: M1 в журнале против M5 насоса в перечне.",
+          "verdict": "confirmed_TEXT_role_address_conflict",
+          "limits": "Внешняя схема лист33 содержит ещё один вариант M2 для насоса, также M2 у вентилятора. Это конфликт трёх документов, а не основание объявить M5 единственно правильным монтажным адресом."
+        },
+        {
+          "claim": "Двигатели фактически перепутаны при подключении.",
+          "verdict": "not_established",
+          "limits": "Проверены проектные документы, а не исполнительная проводка или испытания."
+        },
+        {
+          "claim": "Нарушение нормативного пункта установлено.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативный кандидат не проверялся как нарушение."
+        },
+        {
+          "claim": "Перечень листа 11 содержит М1–М3 как три двигателя вентиляторов и М4 как двигатель насоса.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Оборудование отнесено к разделам ОВ; поставка не проверена."
+        },
+        {
+          "claim": "На функциональной схеме М2 подписан у насоса, М4 у резервного вытяжного вентилятора; М5 показан рядом с М1 у приточного вентилятора.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Не выводить отдельный дополнительный вентилятор только из второго обозначения двигателя у одного символа. Графическое подтверждение взято из прежнего просмотра идентичных файлов, не нового осмотра."
+        },
+        {
+          "claim": "Журнал содержит четыре линии 4х2,5 к М1, М5, М3, М4 и линию 3х1,5 к М2.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Это записи адресов кабелей, а не доказательство фактического монтажа или количества поставленных двигателей."
+        },
+        {
+          "claim": "Состав и адреса двигателей в перечне необходимо согласовать со схемой и журналом.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "Сохранить конфликт М2/М4 и неучтённое в перечне обозначение М5; окончательный состав сверить с ОВ."
+        },
+        {
+          "claim": "Доказана неполная комплектация или подключение к неверным цепям.",
+          "verdict": "not_established",
+          "limits": "Риски условные; данные закупки, монтажа и исполнения оборудования отсутствуют."
+        },
+        {
+          "claim": "Подтверждено нарушение конкретных пунктов ГОСТ.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативные кандидаты и отсутствие цитаты не заменяют проверку применимого пункта."
+        },
+        {
+          "claim": "Второй повтор повторяет ложную перестановку М2/М3 для Пкр6.1 и Вм6.1.",
+          "verdict": "not_asserted_in_r2",
+          "limits": "Прежняя опровергнутая часть в новой строке отсутствует. Добавлена подтверждённая ранее отдельной строкой тема Па3.1/Ва3.1. М5 — дополнительное обозначение, не автоматически отдельный вентилятор."
+        }
+      ],
+      "unsupported_additions": "Не выводить фактический неправильный монтаж, закупку или интерфейсную несовместимость из разницы проектных адресов; сохранять буквальные обозначения TEXT и границы проверенного раздела.",
+      "novel_useful_content": "Поштучно сопоставлены текущие адресные тезисы с прежними проверками идентичных источников; убранные ложные части не приписаны новой выдаче.",
+      "duplicate_burden": "Составная строка объединяет адреса нескольких систем и прежнюю отдельную тему Па3.1/Ва3.1. Считать сохранность по самостоятельным тезисам, не по числу строк.",
+      "profile_and_section": "technical_address_conflicts_partial_false_composite",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_ba2cc771448645a5b9a7203af971680b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0074662f330048ff843342b285e6a016",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1a998befeb274900bd8048e09752beba",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5add216cde364840a6e302f75f71d361",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT «МЗ», «Пн5.1.-21» и суффикс НФ сохранены буквально. Не исправлять их по растру. Расхождение устанавливается по номеру линии, шкафу и назначению, а не догадке о распознавании.",
+            "Наличие насосной линии опровергает её полное отсутствие, но не снимает конфликт адреса с КЖ.",
+            "Совпадение позиции M2 в двух строках само по себе не доказывает ошибку: различие назначений проверено графически.",
+            "Тип и длина кабеля не используются для автоматического выбора правильного обозначения; заводские схемы и фактический монтаж не проверены.",
+            "Отказ, физическая перестановка цепей и нормативная квалификация не установлены."
+          ],
+          "wording": "Согласовать адреса двигателей: Пкр4.1-13 в КЖ→M2, на схеме подключений и функциональной схеме насос→M3; Пкр5.1-9 в КЖ→M2, на схемах резервный вентилятор→M3, а Пкр5.1-13 в КЖ→«МЗ», на схемах насос→M2; Пн5.1.-21 в КЖ→M1, насос на функциональной схеме→M5, на схеме подключений→M2. Сохранять функциональное назначение каждой линии при согласовании обозначений."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT «МЗ», «Пн5.1.-21» и суффикс НФ сохранены буквально. Не исправлять их по растру. Расхождение устанавливается по номеру линии, шкафу и назначению, а не догадке о распознавании.",
+            "Наличие насосной линии опровергает её полное отсутствие, но не снимает конфликт адреса с КЖ.",
+            "Совпадение позиции M2 в двух строках само по себе не доказывает ошибку: различие назначений проверено графически.",
+            "Тип и длина кабеля не используются для автоматического выбора правильного обозначения; заводские схемы и фактический монтаж не проверены.",
+            "Отказ, физическая перестановка цепей и нормативная квалификация не установлены."
+          ],
+          "wording": "Согласовать адреса двигателей: Пкр4.1-13 в КЖ→M2, на схеме подключений и функциональной схеме насос→M3; Пкр5.1-9 в КЖ→M2, на схемах резервный вентилятор→M3, а Пкр5.1-13 в КЖ→«МЗ», на схемах насос→M2; Пн5.1.-21 в КЖ→M1, насос на функциональной схеме→M5, на схеме подключений→M2. Сохранять функциональное назначение каждой линии при согласовании обозначений."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT «МЗ», «Пн5.1.-21» и суффикс НФ сохранены буквально. Не исправлять их по растру. Расхождение устанавливается по номеру линии, шкафу и назначению, а не догадке о распознавании.",
+            "Наличие насосной линии опровергает её полное отсутствие, но не снимает конфликт адреса с КЖ.",
+            "Совпадение позиции M2 в двух строках само по себе не доказывает ошибку: различие назначений проверено графически.",
+            "Тип и длина кабеля не используются для автоматического выбора правильного обозначения; заводские схемы и фактический монтаж не проверены.",
+            "Отказ, физическая перестановка цепей и нормативная квалификация не установлены."
+          ],
+          "wording": "Согласовать адреса двигателей: Пкр4.1-13 в КЖ→M2, на схеме подключений и функциональной схеме насос→M3; Пкр5.1-9 в КЖ→M2, на схемах резервный вентилятор→M3, а Пкр5.1-13 в КЖ→«МЗ», на схемах насос→M2; Пн5.1.-21 в КЖ→M1, насос на функциональной схеме→M5, на схеме подключений→M2. Сохранять функциональное назначение каждой линии при согласовании обозначений."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_c0ed6bca935843c18344796377677f2f.png",
+          "sha256": "f26dd1d18d31cb5990d87ed8aabf21c5f613e4d999eba6691f469af00408ab5c",
+          "block_id": "blk_c0ed6bca935843c18344796377677f2f",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Пкр5.1-9 reserve fan M3; Пкр5.1-13 pump M2."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fcd31b6618d34e0f982af6c418e3bf37.png",
+          "sha256": "7265169d198c15255584b261cce1dbc1517006493ca16c6a463b4607bc01325f",
+          "block_id": "blk_fcd31b6618d34e0f982af6c418e3bf37",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Пкр4.1-13 pump M3; reserve fan M2."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_127bea47b93f4214ac6430c54b21517a.png",
+          "sha256": "96325a7c5599c3592f35a0c671688cf03cfe45b6e5f00ed4044047ae892044ba",
+          "block_id": "blk_127bea47b93f4214ac6430c54b21517a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Пн5.1-21 pump M2; fan also M2. Three-way conflict with list M5 and journal M1."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+          "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+          "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Пкр6.1 reserve fan M2; Вм6.1 exhaust fan M3."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0c71a5773a2348d0822a526b8c88b16a.png",
+          "sha256": "c7ed7dfe2a0e03098467557efab196bc4317e49293e8f678142efb0edb1f8b24",
+          "block_id": "blk_0c71a5773a2348d0822a526b8c88b16a",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Пкр6.1-9→M2; Вм6.1-2→M3, consistent with functional scheme and journal roles."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-021",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25",
+          "primary_adjudication": null,
+          "limits": [
+            "Полностью проверен перечень листа11: двигатели M1–M3 количеством3 и M4 количеством1; M5 не входит в эти позиции. Отсутствие ограничено этим перечнем, не всем проектом.",
+            "КЖ лист9 содержит M1, M2, M5 для Па3.1 и M3/M4 для Ва3.1. Сечения кабелей подтверждают записи трасс, но сами по себе не доказывают назначение двигателей или правильность выбора сечения.",
+            "Фактическая поставка, монтаж, ПНР, спецификации ОВ и заводские документы не проверены. Двигатели перечня отнесены к смежным разделам ОВ; недопоставка не установлена.",
+            "Какой документ требуется исправить и какова окончательная нумерация, не установлено; нельзя автоматически перенумеровать устройства по одной схеме.",
+            "Нет установленного решения инженера по этим blind-кандидатам и подтверждения конкретного нормативного нарушения."
+          ],
+          "wording": "Согласовать перечень элементов листа11 с функциональной схемой Па3.1/Ва3.1 и КЖ: на схеме M2 — насос, M4 — вентилятор, M5 — дополнительный двигатель приточной установки; перечень относит M2 к вентиляторам, M4 к насосу и не содержит M5. В КЖ лист9 для M5 предусмотрен кабель Па3.1-12 от ШАУВ-1-К4АС."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25",
+          "primary_adjudication": null,
+          "limits": [
+            "Полностью проверен перечень листа11: двигатели M1–M3 количеством3 и M4 количеством1; M5 не входит в эти позиции. Отсутствие ограничено этим перечнем, не всем проектом.",
+            "КЖ лист9 содержит M1, M2, M5 для Па3.1 и M3/M4 для Ва3.1. Сечения кабелей подтверждают записи трасс, но сами по себе не доказывают назначение двигателей или правильность выбора сечения.",
+            "Фактическая поставка, монтаж, ПНР, спецификации ОВ и заводские документы не проверены. Двигатели перечня отнесены к смежным разделам ОВ; недопоставка не установлена.",
+            "Какой документ требуется исправить и какова окончательная нумерация, не установлено; нельзя автоматически перенумеровать устройства по одной схеме.",
+            "Нет установленного решения инженера по этим blind-кандидатам и подтверждения конкретного нормативного нарушения."
+          ],
+          "wording": "Согласовать перечень элементов листа11 с функциональной схемой Па3.1/Ва3.1 и КЖ: на схеме M2 — насос, M4 — вентилятор, M5 — дополнительный двигатель приточной установки; перечень относит M2 к вентиляторам, M4 к насосу и не содержит M5. В КЖ лист9 для M5 предусмотрен кабель Па3.1-12 от ШАУВ-1-К4АС."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25",
+          "primary_adjudication": null,
+          "limits": [
+            "Полностью проверен перечень листа11: двигатели M1–M3 количеством3 и M4 количеством1; M5 не входит в эти позиции. Отсутствие ограничено этим перечнем, не всем проектом.",
+            "КЖ лист9 содержит M1, M2, M5 для Па3.1 и M3/M4 для Ва3.1. Сечения кабелей подтверждают записи трасс, но сами по себе не доказывают назначение двигателей или правильность выбора сечения.",
+            "Фактическая поставка, монтаж, ПНР, спецификации ОВ и заводские документы не проверены. Двигатели перечня отнесены к смежным разделам ОВ; недопоставка не установлена.",
+            "Какой документ требуется исправить и какова окончательная нумерация, не установлено; нельзя автоматически перенумеровать устройства по одной схеме.",
+            "Нет установленного решения инженера по этим blind-кандидатам и подтверждения конкретного нормативного нарушения."
+          ],
+          "wording": "Согласовать перечень элементов листа11 с функциональной схемой Па3.1/Ва3.1 и КЖ: на схеме M2 — насос, M4 — вентилятор, M5 — дополнительный двигатель приточной установки; перечень относит M2 к вентиляторам, M4 к насосу и не содержит M5. В КЖ лист9 для M5 предусмотрен кабель Па3.1-12 от ШАУВ-1-К4АС."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+          "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+          "block_id": "blk_2aeda93ede5444ebb33f638cd45586f2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "M2 at water pump; M3 exhaust and M4 reserve exhaust; M1 and M5 adjacent to supply fan symbol. This establishes label conflict, not actual equipment or wiring."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-017_address_identity_and_document_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабельный журнал",
+        "sheet": "Листы 21, 22",
+        "page": [
+          79,
+          80
+        ],
+        "problem": "Линии системы Ва4.1 имеют марки другой системы и неоднозначные адресаты.",
+        "description": "В группе Ва4.1 записаны Ва3.1-3ПЧ, Ва3.1-4ПЧ и Ва3.1-RS. Для двух силовых линий по 330 м началом и концом указаны шкафы ШАУВ-1-К5АС.ПЧ и ШАУВ-1-К5АС; отдельные подключения вытяжных двигателей в журнале не определены. По анализу схемы внешних подключений участки до двигателей показаны отдельно.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Исправить марки и адресаты, согласовав расположение выносного шкафа ПЧ и все участки до двигателей.",
+        "risk": "Ошибки трассировки, маркировки и подключения вытяжных вентиляторов.",
+        "source_finding_ids": [
+          "T-017"
+        ],
+        "source_block_ids": [
+          "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "blk_3e1eb0838e6b4a33b9a090a9c4b998dd"
+        ],
+        "related_block_ids": [
+          "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+          "blk_79d9e78b69fa43249052446c07dff8c0",
+          "blk_397f9663589b40bfbde9b898e99e5117"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_c13afb271fc74ce4a28b79e59652ee51",
+            "page": 79
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+            "page": 80
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 67,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В разделе Па4.1/Ва4.1 записаны Ba3.1-3ПЧ, Ba3.1-4ПЧ, Ba3.1-RS; в разделе К4АС есть Ва3.1-3ПЧ, Ва3.1-4ПЧ, Ва3.1-RS.",
+          "verdict": "confirmed_authoritative_TEXT_contextual_identity",
+          "limits": "Латинское Ba и кириллическое Ва не объявляются побайтно одинаковыми строками. Сопоставление по номеру системы, суффиксам и адресам шкафов."
+        },
+        {
+          "claim": "Схема К5АС использует Ва4.1-3ПЧ/-4ПЧ/-RS между теми же шкафами.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Сохранить конфликт номера системы 3.1/4.1; не ограничиваться замечанием о шрифте. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Две силовые строки 330 м адресованы между шкафами.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "В разделе журнала Па4.1/Ва4.1 нет отдельных строк ПЧ→М2/М3.",
+          "verdict": "confirmed_bounded_section_TEXT",
+          "limits": "Раздел проверен от заголовка КЖ20 до следующей системы КЖ22. Две строки Ba4.1-3/-4 по10м также адресованы между шкафами, не автоматически моторным участкам."
+        },
+        {
+          "claim": "Подключения к двигателям отсутствуют во всей документации.",
+          "verdict": "refuted_direct_GRAPHIC",
+          "limits": "Схема показывает два участка ПЧ→двигатели по15м; замечание об отсутствии относится только к отдельным строкам проверенного раздела журнала. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Согласовать марки и адреса участков журнала со схемой.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Фактические линии перепутаны либо смонтированы не полностью.",
+          "verdict": "not_established",
+          "limits": "Монтаж и испытания не проверялись."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ21.408-2013 п.4.1.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативный кандидат без проверенной цитаты."
+        },
+        {
+          "claim": "Второй повтор заявляет отсутствие подключений двигателей во всех документах.",
+          "verdict": "not_asserted_in_r2_explicit_GRAPHIC_counterevidence_retained",
+          "limits": "Новая строка прямо отмечает отдельные моторные участки на внешней схеме; отсутствие ограничено адресными строками журнала."
+        }
+      ],
+      "unsupported_additions": "Не выводить фактический неправильный монтаж, закупку или интерфейсную несовместимость из разницы проектных адресов; сохранять буквальные обозначения TEXT и границы проверенного раздела.",
+      "novel_useful_content": "Поштучно сопоставлены текущие адресные тезисы с прежними проверками идентичных источников; убранные ложные части не приписаны новой выдаче.",
+      "duplicate_burden": "Related to F-059 in the same cable assembly: retain distinct marking/address and quantity atoms within one coordinated topic; do not count three repeated suffixes as three independent defects.",
+      "profile_and_section": "technical_document_coordination",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT Ba/Ва и K5AC/К5АС сохранён буквально; сопоставление по шкафам, назначению, номеру и суффиксам не заменяет исходные строки.",
+            "Полностью прочитан раздел Па4.1/Ва4.1 от заголовка КЖ20 до следующей системы на КЖ22. Отсутствие отдельных трасс не заявляется для всех смежных комплектов.",
+            "Арифметическое расхождение730/700 усиливает документальное замечание, но не доказывает механизм составления700м или исключение именно двух15м из фактической закупки.",
+            "СуммаКЖ720м отражает его записанные конечные точки. Две10м линии нельзя автоматически считать заменой двух15м моторных участков: концы записаны как шкафы.",
+            "Маршрутные обмеры, заводские схемы, границы комплектной поставки и заказ не проверены. Длины330м не объявляются неправильными только из-за отличия от10м.",
+            "Историческое принятие и широкое объяснение сохранены отдельно от ограниченного текущего вывода. Записанная историческая причина потери немаркированных рёбер требует проверки журналов исполнения на этапе2."
+          ],
+          "wording": "Согласовать марки и состав цепей ШАУВ-1-К5АС.ПЧ: схема лист36 задаёт Ва4.1-3ПЧ/-4ПЧ/-RS, а КЖ лист22 — Ba3.1-3ПЧ/-4ПЧ/-RS для той же пары шкафов. Отдельные участки ПЧ→M2/M3 по15м4×2,5 на схеме не имеют индивидуальных марок и не представлены самостоятельными трассами в разделе КЖ Па4.1/Ва4.1. Сумма шести показанных участков4×2,5 составляет730м при700м в локальной ведомости. В КЖ дополнительно имеются межшкафные Ba4.1-3/-4 по10м; согласовать их назначение и пересчитать итог."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT Ba/Ва и K5AC/К5АС сохранён буквально; сопоставление по шкафам, назначению, номеру и суффиксам не заменяет исходные строки.",
+            "Полностью прочитан раздел Па4.1/Ва4.1 от заголовка КЖ20 до следующей системы на КЖ22. Отсутствие отдельных трасс не заявляется для всех смежных комплектов.",
+            "Арифметическое расхождение730/700 усиливает документальное замечание, но не доказывает механизм составления700м или исключение именно двух15м из фактической закупки.",
+            "СуммаКЖ720м отражает его записанные конечные точки. Две10м линии нельзя автоматически считать заменой двух15м моторных участков: концы записаны как шкафы.",
+            "Маршрутные обмеры, заводские схемы, границы комплектной поставки и заказ не проверены. Длины330м не объявляются неправильными только из-за отличия от10м.",
+            "Историческое принятие и широкое объяснение сохранены отдельно от ограниченного текущего вывода. Записанная историческая причина потери немаркированных рёбер требует проверки журналов исполнения на этапе2."
+          ],
+          "wording": "Согласовать марки и состав цепей ШАУВ-1-К5АС.ПЧ: схема лист36 задаёт Ва4.1-3ПЧ/-4ПЧ/-RS, а КЖ лист22 — Ba3.1-3ПЧ/-4ПЧ/-RS для той же пары шкафов. Отдельные участки ПЧ→M2/M3 по15м4×2,5 на схеме не имеют индивидуальных марок и не представлены самостоятельными трассами в разделе КЖ Па4.1/Ва4.1. Сумма шести показанных участков4×2,5 составляет730м при700м в локальной ведомости. В КЖ дополнительно имеются межшкафные Ba4.1-3/-4 по10м; согласовать их назначение и пересчитать итог."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_397f9663589b40bfbde9b898e99e5117.png",
+          "sha256": "96df1986c5929c97c62369499fd26e3a7eb38071d3066a995f0aff8684fc9893",
+          "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Va4.1-3PCh/-4PCh/-RS between cabinets and separate15m motor tails shown."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-023",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-018_address_identity_and_document_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подключение датчиков",
+        "sheet": "Листы 17, 35",
+        "page": [
+          21,
+          39,
+          77,
+          99
+        ],
+        "problem": "Для датчиков По5.1 и Вос5.1 не согласованы конечные позиции кабелей.",
+        "description": "Кабель По5.1-1 на схеме направлен к TE2, в журнале — к ТЕ1. Перечень и спецификация содержат оба прибора: наружный ТЕ1 и канальный ТЕ2, но однозначное подключение обоих не раскрыто. Вос5.1-1 на функциональной схеме и внешних подключениях относится к PDS5, а в журнале — к PDS45.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать адресаты По5.1-1 и Вос5.1-1; показать подключения обоих температурных датчиков либо обосновать исключение одного.",
+        "risk": "Подключение неверного датчика и отсутствие необходимого температурного или вентиляционного контроля.",
+        "source_finding_ids": [
+          "T-025",
+          "G-038",
+          "G-083",
+          "G-084",
+          "G-085"
+        ],
+        "source_block_ids": [
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_065a335469904b2db1640b480b321503",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ],
+        "related_block_ids": [
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_065a335469904b2db1640b480b321503",
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_c63456cda51644db9470fb57f29b27de",
+          "blk_79d9e78b69fa43249052446c07dff8c0"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+            "page": 21
+          },
+          {
+            "type": "text",
+            "block_id": "blk_065a335469904b2db1640b480b321503",
+            "page": 39
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+            "page": 77
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-038",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-083",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-084",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-085",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение: PDS5 на схеме Вос5.1 и PDS45 в конечной точке кабеля Вос5.1-1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Слева включено то же расхождение TE2 / ТЕ1 для По5.1-1 и дополнительно расхождение PDS5 / PDS45 для Вос5.1-1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 1.0,
+              "reason": "Слева включено то же расхождение TE2 / ТЕ1 для По5.1-1 и дополнительно расхождение PDS5 / PDS45 для Вос5.1-1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Перечень По5.1 содержит наружный ТЕ1 и канальный ТЕ2; По5.1-1 на внешней схеме приходит к TE2, в КЖ19 к ТЕ1.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC_address_conflict",
+          "limits": "В проверенных внешней схеме и разделе журнала имеется одна линия к температурному датчику. Не установлено, что наружный датчик отсутствует во всём проекте либо не передаётся иной связью. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Вос5.1-1 на внешней схеме приходит к PDS5, в КЖ19 к PDS45.",
+          "verdict": "confirmed_TEXT_and_direct_GRAPHIC_address_conflict",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Оборудование подключено неправильно либо не имеет защиты.",
+          "verdict": "not_established",
+          "limits": "Исполнительная проводка, заводские схемы и испытания не проверены; подтверждены расхождения проектных адресов."
+        },
+        {
+          "claim": "Для двух температурных датчиков обязательно нужны две самостоятельные внешние линии.",
+          "verdict": "not_established",
+          "limits": "Доказан конфликт адреса TE1/TE2. Для требования дополнительного кабеля нужно установить границы заводских соединений и способ передачи сигнала; число приборов само по себе не задаёт число внешних линий."
+        }
+      ],
+      "unsupported_additions": "Не выводить фактический неправильный монтаж, закупку или интерфейсную несовместимость из разницы проектных адресов; сохранять буквальные обозначения TEXT и границы проверенного раздела.",
+      "novel_useful_content": "Поштучно сопоставлены текущие адресные тезисы с прежними проверками идентичных источников; убранные ложные части не приписаны новой выдаче.",
+      "duplicate_burden": "Здесь только По5.1 TE1/TE2 и Вос5.1 PDS5/PDS45. Прежние П4.1.1 ТС2 и П6.1.4 TS2/ТС1 этой строке не приписывать.",
+      "profile_and_section": "technical_address_conflicts_plus_factory_boundary_question",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+          "sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f",
+          "primary_adjudication": null,
+          "limits": [
+            "PDS45 в авторитетном TEXT сохранено буквально; проверка графики относится к самостоятельным схемам, а не исправлению распознавания журнала.",
+            "Нельзя интерпретировать PDS45 как PDS4 и PDS5: соседняя строка Во5.1-1 отдельно относится к PDS4, внешняя схема имеет раздельные линии и клеммы.",
+            "Фактическая маркировка, наличие отдельного PDS45 в иных документах и ошибочное подключение не установлены. Правильное подключение по внешней схеме возможно.",
+            "Нормативный пункт и решение инженера не установлены; вывод ограничен документальным конфликтом одного конечного прибора."
+          ],
+          "wording": "Согласовать конечный прибор линии Вос5.1-1 шкафа ШАУВ-6-К5ПЧ: КЖ лист19 указывает PDS45, тогда как функциональная и внешняя схемы показывают PDS5; внешняя схема задаёт клеммы14/15."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+          "sha256": "7f391d6a377940f60763577625de4cf7ec7cdf80d28ddb2317108f1965f7d1f3",
+          "primary_adjudication": null,
+          "limits": [
+            "Совпадают шкаф, марка линии, длина10м и сечение1×2×0,75, поэтому сопоставлены записи одной линии, а не случайно одинаковые обозначения разных шкафов.",
+            "Наличие двух разных функций в перечне делает существенным номер прибора. Однако это не доказывает фактическое подключение к неверному входу контроллера.",
+            "Правильную окончательную нумерацию следует согласовать с заводской документацией; журнал сам по себе не определяет номер входа контроллера.",
+            "Полнота подключения наружного ТЕ1 в целом здесь не проверена. Нельзя из отсутствия его на одном фрагменте вывести отсутствующий датчик или необходимый дополнительный кабель.",
+            "Текст нормативного пункта ГОСТ21.408-2013 не проверен, нормативное нарушение не установлено. Решение инженера по кандидату отсутствует."
+          ],
+          "wording": "Согласовать конечный прибор линии По5.1-1 шкафа ШАУВ-6-К5ПЧ: внешняя схема указывает TE2 — датчик приточного воздуха, КЖ лист19 указывает ТЕ1. Перечень листа17 различает ТЕ1 наружного воздуха и канальный ТЕ2; функциональная схема показывает TE2 в выходном воздуховоде По5.1."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+          "sha256": "4ae7511ca6056afa1ff0f85c52539b4154b6ba45c99f75bac26d841da23f0d38",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT Пб.1.4-2 сохранён буквально и не исправлен по растру. Сопоставление с П6.1.4-2 установлено по заголовку раздела КЖ лист24 «Системы П6.1.1 и П6.1.4», общему шкафу, последовательности линий и соседним приборам TE4,PDS3–PDS5,M2,XT3,электронагреватель.",
+            "На КЖ лист24 для первой системы П6.1.1-4 указан ТС1, что согласуется с TS1 на внешней схеме. Расхождение касается номера второго прибора, а не только кириллицы/латиницы.",
+            "Дублирование строки на листах25/26 не означает две физические неисправности. Случай фиксируется один раз.",
+            "Фактическая ошибка монтажа, отказ защиты и необходимость замены прибора не доказаны. Окончательные исправления согласовать по заводской схеме и реестру позиций.",
+            "Снятая количественная претензия F059 не является основанием снять этот конфликт идентификации. Решение инженера по F060 не установлено."
+          ],
+          "wording": "Согласовать обозначение конечного прибора второй системы шкафа ШАУВ-2-К6ПЧ: на схеме внешних подключений линия П6.1.4-2 идёт к TS2 на клеммы15/16, в КЖ листы25/26 строка Пб.1.4-2 указывает ТС1. Функциональная схема также показывает TS2 у электрического нагревателя; TS1 относится к первой системе."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+          "block_id": "blk_065a335469904b2db1640b480b321503",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "По5.1-1 connects to TE2; Вос5.1-1 to PDS5. One temperature sensor connection is shown; TS1 separately shown."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+          "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "П6.1.4-2 connects to TS2; П6.1.1-4 to TS1; separate drawn cables and cabinet terminals."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-024",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-026_address_identity_and_document_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-027",
+      "finding": {
+        "id": "F-027",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Кабельный журнал",
+        "sheet": "Лист 34",
+        "page": 92,
+        "problem": "В строке СУК1-1 приведены разные типы кабеля.",
+        "description": "Проектная часть содержит контрольный кабель 1×2×0,75, правая часть строки — интерфейсный КИС-Пнг(А)-HF 2×2×0,78. Назначение правой части как проектных или исполнительных данных не уточнено.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать запись для проектной раскладки либо оформить и обосновать замену в исполнительной части.",
+        "risk": "Неоднозначный выбор кабеля при закупке и монтаже.",
+        "source_finding_ids": [
+          "T-026"
+        ],
+        "source_block_ids": [
+          "blk_25cd2a4f5a734187897f8aba96b1dbad"
+        ],
+        "related_block_ids": [
+          "blk_25cd2a4f5a734187897f8aba96b1dbad"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+            "page": 92
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "СтрокаСУК1-1 отСУ-КЗ1 доШАУВ-1-К5АС содержит КСПВПнг(A)-HF1×2×0,75 слева иКИС-Пнг(A)-HF2×2×0.78 справа, обе длины10м.",
+          "verdict": "confirmed_authoritative_TEXT_same_row_difference",
+          "limits": ""
+        },
+        {
+          "claim": "Заголовок правой группы — «проложен», но фактическая исполнительная замена документально подтверждена.",
+          "verdict": "not_established",
+          "limits": "Надпись заголовка есть, однако в соседних строках этой группы стоят способы прокладки и составные записи марки/размерности. Сам заголовок не доказывает факт монтажа или согласование изменения."
+        },
+        {
+          "claim": "Нужно определить назначение правой записи и согласовать одно исполнение линии.",
+          "verdict": "supported_document_coordination_question",
+          "limits": "Нельзя автоматически выбрать любой вариант или считать два кабеля независимыми линиями."
+        },
+        {
+          "claim": "Различие0,75/0.78 доказывает неправильный диаметр либо сечение по паспорту.",
+          "verdict": "not_established",
+          "limits": "Сохранены буквальные размерности и названия граф. Конкретная расшифровка марки, электрическая пригодность и интерфейс не проверены."
+        }
+      ],
+      "unsupported_additions": "Не выводить фактический неправильный монтаж, закупку или интерфейсную несовместимость из разницы проектных адресов; сохранять буквальные обозначения TEXT и границы проверенного раздела.",
+      "novel_useful_content": "Поштучно сопоставлены текущие адресные тезисы с прежними проверками идентичных источников; убранные ложные части не приписаны новой выдаче.",
+      "duplicate_burden": "One cable identifier and two documentary executions; not two procurement items.",
+      "profile_and_section": "questions_clarifications_execution_record_scope",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-028",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-027_address_identity_and_document_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
