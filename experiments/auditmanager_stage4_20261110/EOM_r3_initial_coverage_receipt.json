@@ -1,0 +1,19 @@
+{
+  "status": "initial_EOM_r3_coverage_not_quality_acceptance",
+  "previous_ledger_sha256": "5da1859f2db887c6fc56fe699c95dd3ae41a6c4c4a3a0c079375aea7e8fc16c8",
+  "ledger_path": "experiments/auditmanager_stage4_20261110/EOM_r3_coverage_ledger.json",
+  "ledger_sha256": "7cf382737f2a6a4b6de96aa72e2cb58fe6939df9824ab53d3caf63305eb1b61f",
+  "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+  "findings_sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "reviewed_targets": [
+    "B-EOM-F-002:589046b033f782342a04",
+    "B-EOM-F-003:26a778e20220ace19772"
+  ],
+  "unchecked_targets": 70,
+  "limits": [
+    "46 output findings;72 canonical targets. Only first two coverage links assessed. Unsupported additions and all claim quality pending. No model answers or evaluator history provided to runners."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}

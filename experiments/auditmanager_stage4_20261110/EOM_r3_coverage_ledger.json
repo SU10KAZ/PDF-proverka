@@ -1,0 +1,688 @@
+{
+  "schema_version": 1,
+  "discipline": "EOM",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "findings_sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+  "reviewer": "source_bound_manual_atomic_review",
+  "entire_output_reviewed": false,
+  "targets": [
+    {
+      "target_id": "B-EOM-F-002:589046b033f782342a04",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-001"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-002.json",
+          "sha256": "2851662c79803e5a4e8d362f3c73fee55915522fab48395fe380e426b4dd512d"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-001"
+        }
+      ],
+      "reason": "РП2:180×0,32=57,6 против240/69,6 явно названо;0,29 описывает арифметическое соответствие, не назначенный правильный коэффициент.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-003:26a778e20220ace19772",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-002"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-003.json",
+          "sha256": "0577c89529c7aadb1f5f57385d56f6cf8748477b1df25539747380ce45aca248"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-002"
+        }
+      ],
+      "reason": "РП5:опубликованные суммы94,5/89,9 против94,1/89,5 явно названы. Засчитывается узкий вопрос согласования, не доказанная ошибка итога по неокруглённым данным; состав режима требует уточнения.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-004:90fc50f60a8f39d5e2cb",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-005:a26fcc71b65fb1e5cfa1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-006:70a5bb3630cd86d67bdf",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-006:9b2481431ea0814f9774",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-EOM-F-006:50e2ed9a377d8e0af479",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM11:7985c84eea058c206240",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM11:3cea91fda96c41ad80dc",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM27_active_socket_circuits:46bf196510e24cc289cf",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM27_active_socket_circuits:d00dddfff15bbd7767ab",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM5_shunt_trip_identity:946dc28da1dfa089e8c3",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM5_shunt_trip_identity:877b6fefac02ba992ea1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM70_F008_consumer_power:d74160d19f75fda36950",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM76_B-EOM-F-012:8e69883d4dc84cb69b01",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM8:93d4f22f3881c3b6f642",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM8:e341364ee0bc7bae8147",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F001_cable_description:e57af65ca85f5ab8075c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F007_phase_and_temporary_load:9e004a2c0153a24dc3ce",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F009_commercial_identity_supply:2c0ad71382f4e28b3853",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F009_commercial_identity_supply:ceddc2904fb7fa5d39e4",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F010_meter_CT_identity:3db2ab4cd251ab7a20a8",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F010_meter_CT_identity:428615994b8f295c4f7f",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F011_meter_internal_symbols:d1766d1077f31422494f",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F013_small_load_currents:4191d1c0f009a85947f9",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F014_phase_A_current:d972a6b9f556089a8923",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F016_management_phase_current:fdef783b69877a39920c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F017_poles_and_PE_scope:5a5257d09b828c10e8ca",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F018_temporary_outgoing_parameters:51ab0814a9c617d18dcc",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F018_temporary_outgoing_parameters:5a289d06ebe35181566c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F019_typical_floor_scope:35bac9306e2bcbc588c5",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F019_typical_floor_scope:784b0d5832e912d7f9d7",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F020_enclosure_minimums:b34c225d7cc1d2d234e8",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F021_F023_controller_voltage_scope:b197a84551461f1efaca",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F021_F023_controller_voltage_scope:04253642dc34f231614b",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F022_ventilation_power_rounding:2dcc867069010078edd3",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F024_room_number_collision:a27bd6546c4ff55c4e59",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F024_room_number_collision:425a9b88c69b00e6214e",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F025_repeated_note_numbers:c0bda0b5718912600dc3",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F026_emergency_tray_legend:2474510e8b112f4c5cb1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F027_penetration_material_scope:d3fca7220bbe9d48857c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F028_apartment_plan_identity:bbc814c9d763c8f736f7",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F029_shared_product_code:9059426853483f0c34cf",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F030_CT_minimum_substitutions:e48399b0ddd41647bc4a",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F030_CT_minimum_substitutions:82bb92f6ba02b2b7c780",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F031_CT_emergency_assumptions:d8fbf0545ffcdbb28172",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F032_commercial_area_inputs:16faed04bf572c1876a5",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F032_commercial_area_inputs:147160644f952ff76e59",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F033_apartment_board_scope:dbb1bab29b165bc0b8ca",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F034_specification_quantity:cc93bff16c691fce3df8",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F035_specification_quantity:0498a98c0a043fe1e66d",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F036_tray_code_description:da6b33367ef613f75477",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F037_tray_cover_scope:5eaa42d72fba7e53d76e",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F038_specification_quantity:2bf971bcf81224ba57b8",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F039_frame_capacity:289e229897613e2cc690",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F040_parking_sum_refuted:d962213a7fbe53a371a7",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F040_parking_sum_refuted:6aaa8a3dc96fadec242b",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F041_F048_contradictory_norm_status:35536aa9bdef77ffbaf1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F042_SPZ_legend_scope:1b019c967f9372026bd1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F043_hanger_fireproofing_supply:2828cd141e6335bf59ca",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F044_F045_incomplete_reference_identity:922b40879439f8fa0153",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F044_F045_incomplete_reference_identity:43be2c9d093d757ce864",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:49e98cd23b9141b479ed",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:07b64d2a81e03ae2bf52",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:2adc54b2dd1facb5698e",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F047_unsubstantiated_norm_status:d6a04d7c3701131cd97f",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F049_lightning_reference_title:106f839cb3a98ca97f29",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "H-EOM-2:c728f93740c455471c9e",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F015_neutral_PE_unresolved_topology:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:composite:1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "EOM_F046_new_reference_identity:composite:2",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    }
+  ],
+  "limits": [
+    "Full match requires all mandatory object, relationship and location context.",
+    "Score unsupported additions and novel findings separately.",
+    "Engineer confirmation is required; model suggestions alone are not final matches."
+  ],
+  "repeat": 3
+}
