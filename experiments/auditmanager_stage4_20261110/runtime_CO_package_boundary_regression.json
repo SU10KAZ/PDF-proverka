@@ -1,0 +1,19 @@
+{
+  "status": "same_version_graphic_refutes_output_absence_claim",
+  "finding_id": "F-013",
+  "candidate_scope": "AK_F001_F002_CO_package_boundary",
+  "evidence": {
+    "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/images/blk_206d5fa1055148c5b12414a2919fbe84_6471b342ae3c.png",
+    "sha256": "e201c2c8758083ae833e2bc3ab4c1904a3319761855ad5e875dc2acc0a74a7d7",
+    "block_id": "blk_206d5fa1055148c5b12414a2919fbe84",
+    "directly_viewed": true,
+    "observation": "Группа5.1,5.2,…5.17,5.18 с КСИ выделена областью «см. книга1 АК1-ПА». Первый датчик связан с X3 шлейфа2 БПС-3-И-1 (СУ-К33), далее изображена последовательная связь. Монтажных длин этой группы на просмотренном фрагменте нет."
+  },
+  "source_decision": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+  "source_decision_sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+  "inspection": "Direct view of original graphic; group5.1–5.18 boxed with reference to book1 AK1-ПА, line to input X3 loop2 of БПС-3-И-1 СУ-К33.",
+  "corrected_boundary": "Group affiliation is specified; actual completeness of the adjacent package remains unverified.",
+  "failure_stage": "Final merge retains a text-derived absence claim without checking explicit cross-package graphic reference.",
+  "recommendation": "Before publishing absence of affiliation or quantity shortage, inspect source references around the group and retain external-package links. Unavailable adjacent package becomes a scoped question, not absence of design.",
+  "production_acceptance": false
+}

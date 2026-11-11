@@ -91,8 +91,20 @@
       "finding_id": "F-013",
       "problem": "Не установлена поставка и подключение группы СО 5.1–5.18.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "false_absence_of_package_reference",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+        "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+        "direct_graphic": {
+          "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/images/blk_206d5fa1055148c5b12414a2919fbe84_6471b342ae3c.png",
+          "sha256": "e201c2c8758083ae833e2bc3ab4c1904a3319761855ad5e875dc2acc0a74a7d7",
+          "block_id": "blk_206d5fa1055148c5b12414a2919fbe84",
+          "directly_viewed": true,
+          "observation": "Группа5.1,5.2,…5.17,5.18 с КСИ выделена областью «см. книга1 АК1-ПА». Первый датчик связан с X3 шлейфа2 БПС-3-И-1 (СУ-К33), далее изображена последовательная связь. Монтажных длин этой группы на просмотренном фрагменте нет."
+        }
+      },
+      "review_reason": "В графической области датчиков5.1–5.18 прямо написано «см. книга1 АК1-ПА» и показано подключение шлейфа2. Утверждение итогового текста «принадлежность другому комплекту не указана» опровергнуто. Сохранить только вопрос полноты по смежной книге, не требование добавить изделия в АК2-ПА."
     },
     {
       "finding_id": "F-014",
@@ -196,8 +208,14 @@
       "finding_id": "F-028",
       "problem": "В реестре отклонений указан другой шифр раздела.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "editorial_scope_promoted_to_technical",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
+        "sha256": "4d6c40af5a9db18ddf520f1f06842a8cc958439af0f690fd5cf2020d5b19fc05"
+      },
+      "review_reason": "Шифр реестра прочитан, но применимость отклонения не установлена; эталон требует вопрос уточнения принадлежности, а не подтверждённый технический дефект.",
+      "proposed_section": "questions"
     },
     {
       "finding_id": "F-029",
@@ -650,8 +668,8 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 8,
-  "unchecked": 77,
+  "reviewed": 10,
+  "unchecked": 75,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
