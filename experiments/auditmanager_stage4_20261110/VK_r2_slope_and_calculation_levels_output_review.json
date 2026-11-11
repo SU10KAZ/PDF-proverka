@@ -1,0 +1,494 @@
+{
+  "status": "three_VK_geometry_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "8f5dc9399167c959f49ddd0c702543c24b0842b39da7e63cc9a792023932fa8b",
+  "queue_after_sha256": "159610d1af8d28eb95dcb435ff93824e010650274eba40d0ab525050b0484713",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Уклоны канализации",
+        "sheet": "Лист 17",
+        "page": 19,
+        "problem": "Отметки участка К1.1 противоречат направлению стока и указанному уклону.",
+        "description": "На участке К1.1 диаметром 110×5,0 мм к продолжению на листе 22 указан уклон 0,010. Согласно исходному графическому замечанию, по направлению стока отметка повышается с +5,512 до +5,521, то есть на 9 мм.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к уклонам и гидравлическому расчёту самотечных канализационных трубопроводов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-006"
+                ],
+                "designation_source": "Перечень нормативных документов проекта и предмет замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить направление стока и привязку отметок к концам участка; согласовать их с длиной и уклоном 0,010, исключив обратный уклон.",
+        "risk": "При реализации обратного уклона возможны застой стоков, отложения и повторные засоры.",
+        "source_finding_ids": [
+          "G-006"
+        ],
+        "source_block_ids": [
+          "blk_ece9516e802e47a8baa35590355f2526"
+        ],
+        "related_block_ids": [
+          "blk_ece9516e802e47a8baa35590355f2526",
+          "blk_7f11769cf1164f53aec644339cd35e97"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_ece9516e802e47a8baa35590355f2526",
+            "page": 19
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T122708Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-006",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:27:08.898826+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Привязка отметок к одному участку или вертикальному стояку.",
+          "verdict": "supported_same_segment_level_slope_conflict",
+          "limits": "На правой ветви К1.1-ø110×5,0 листа 17 отметка +5,512 привязана к основанию вертикального участка справа; +5,521 — к левому концу того же наклонного участка перед поворотом вниз. Указатель 0,010 направлен влево к этому продолжению. По ходу указанного уклона число увеличивается на 0,009 м."
+        },
+        {
+          "claim": "Разность числовых отметок.",
+          "verdict": "decimal_arithmetic_confirmed",
+          "limits": "5.521 − 5.512 = 0.009 м."
+        },
+        {
+          "claim": "Исправить отметки или изображение после согласования трассы.",
+          "verdict": "supported_scoped_followup",
+          "limits": "Чертёж подтверждает внутреннее противоречие, но не выбирает правильную отметку. Длина участка и правильное абсолютное значение не восстановлены; требуемый уклон не выводился из изображения в пикселях."
+        },
+        {
+          "claim": "Фактическое нарушение монтажа, застой либо засор.",
+          "verdict": "not_observed",
+          "limits": "Возможное последствие нельзя считать случившимся дефектом. Монтаж и исполнительные отметки не исследованы."
+        },
+        {
+          "claim": "Нарушение СП 30.13330.2020.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Пункт и norm_quote отсутствуют. Для фиксации внутреннего противоречия не подменять проектную геометрию неподтверждённой нормой."
+        }
+      ],
+      "unsupported_additions": "Внутреннее противоречие чертежа не доказывает фактический засор,неверный монтаж или ошибку численного гидравлического расчёта. Правильные абсолютные отметки не восстановлены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "distinct_segment_or_riser_address_no_equivalent_claim_in_reviewed_VK_output",
+      "profile_and_section": "technical_document_conflict_candidate_no_engineer_acceptance",
+      "engineer_reuse": "no_matching_frozen_target_or_engineer_adjudication_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_ece9516e802e47a8baa35590355f2526.png",
+          "sha256": "860484a3aab09351d1bd0e93538f6bd4df2655bc3d84aa1eb617ee3ade357a9a",
+          "block_id": "blk_ece9516e802e47a8baa35590355f2526",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "На правой ветви К1.1-ø110×5,0 листа 17 отметка +5,512 привязана к основанию вертикального участка справа; +5,521 — к левому концу того же наклонного участка перед поворотом вниз. Указатель 0,010 направлен влево к этому продолжению. По ходу указанного уклона число увеличивается на 0,009 м."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-017",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_unmapped_graphic_conflict_pending_usefulness_adjudication"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Согласованность отметок",
+        "sheet": "Лист 26",
+        "page": 28,
+        "problem": "Высотные отметки верхней части стояка К2.1-2.2 противоречат изображённому расположению присоединений.",
+        "description": "Верхние отводы обозначены отметками +38,787 и +38,844, а изображённое ниже присоединение горизонтального трубопровода — +39,647. Численно отметка нижнего присоединения выше отметок верхних отводов на 860 и 803 мм соответственно.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проверить привязку каждой отметки к соответствующему элементу и согласовать геометрию, высотные значения и направление отвода воды на схеме.",
+        "risk": "Монтаж по несогласованным отметкам может привести к невозможности соединения участков или нарушению самотечного отвода воды.",
+        "source_finding_ids": [
+          "G-017"
+        ],
+        "source_block_ids": [
+          "blk_1861896656bb467fb9787ee25605c340"
+        ],
+        "related_block_ids": [
+          "blk_1861896656bb467fb9787ee25605c340"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_1861896656bb467fb9787ee25605c340",
+            "page": 28
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T122708Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:27:08.898826+00:00",
+              "context_source": "structured_water"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Привязка отметок к одному участку или вертикальному стояку.",
+          "verdict": "supported_same_riser_vertical_order_conflict",
+          "limits": "На листе 26 верхний отвод стояка К2.1-2.2 имеет +38,787; ниже по тому же вертикальному стояку, после ревизии R, начало бокового присоединения подписано +39,647. Разность 0,860 м противоречит вертикальному порядку присоединений. Это не сравнение высоты двух произвольных линий аксонометрии: прослежено соединение вдоль одного вертикального стояка."
+        },
+        {
+          "claim": "Разность числовых отметок.",
+          "verdict": "decimal_arithmetic_confirmed",
+          "limits": "39.647 − 38.787 = 0.860 м."
+        },
+        {
+          "claim": "Исправить отметки или изображение после согласования трассы.",
+          "verdict": "supported_scoped_followup",
+          "limits": "Чертёж подтверждает внутреннее противоречие, но не выбирает правильную отметку. Длина участка и правильное абсолютное значение не восстановлены; требуемый уклон не выводился из изображения в пикселях."
+        },
+        {
+          "claim": "Фактическое нарушение монтажа, застой либо засор.",
+          "verdict": "not_observed",
+          "limits": "Возможное последствие нельзя считать случившимся дефектом. Монтаж и исполнительные отметки не исследованы."
+        },
+        {
+          "claim": "Нарушение СП 30.13330.2020.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Пункт и norm_quote отсутствуют. Для фиксации внутреннего противоречия не подменять проектную геометрию неподтверждённой нормой."
+        },
+        {
+          "claim": "Дополнительная отметка верхнего отвода+38,844 также ниже численно+39,647 на803мм.",
+          "verdict": "confirmed_current_direct_GRAPHIC_and_arithmetic",
+          "limits": "Верхняя петляК2.1-2.2 содержит38,787 и38,844;ниже послеR присоединение39,647. Связь прослежена по одному стояку;правильная отметка не назначена."
+        }
+      ],
+      "unsupported_additions": "Внутреннее противоречие чертежа не доказывает фактический засор,неверный монтаж или ошибку численного гидравлического расчёта. Правильные абсолютные отметки не восстановлены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "distinct_segment_or_riser_address_no_equivalent_claim_in_reviewed_VK_output",
+      "profile_and_section": "technical_document_conflict_candidate_no_engineer_acceptance",
+      "engineer_reuse": "no_matching_frozen_target_or_engineer_adjudication_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1861896656bb467fb9787ee25605c340.png",
+          "sha256": "f0ae28492692f0bfaa499b6c987f652355b93b6609a9ec4306dcdc33a6c97102",
+          "block_id": "blk_1861896656bb467fb9787ee25605c340",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "На листе 26 верхний отвод стояка К2.1-2.2 имеет +38,787; ниже по тому же вертикальному стояку, после ревизии R, начало бокового присоединения подписано +39,647. Разность 0,860 м противоречит вертикальному порядку присоединений. Это не сравнение высоты двух произвольных линий аксонометрии: прослежено соединение вдоль одного вертикального стояка."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-024",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1861896656bb467fb9787ee25605c340.png",
+          "sha256": "f0ae28492692f0bfaa499b6c987f652355b93b6609a9ec4306dcdc33a6c97102",
+          "block_id": "blk_1861896656bb467fb9787ee25605c340",
+          "route": "current_direct_GRAPHIC_original_resolution",
+          "observation": "Верхние38,787/38,844 наК2.1-2.2,ниже послеR39,647. Разности860/803мм."
+        }
+      ],
+      "disposition": "assessed_r2_unmapped_graphic_conflict_pending_usefulness_adjudication"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-028",
+      "finding": {
+        "id": "F-028",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Согласованность расчётной схемы",
+        "sheet": "Листы 2, 15, 16",
+        "page": [
+          3,
+          17,
+          18,
+          37
+        ],
+        "problem": "Кровля и крыша надстройки на расчётной схеме имеют отметку технического пространства.",
+        "description": "На гидравлической схеме секции С3 кровля и крыша надстройки обозначены одинаковой отметкой +38,640, совпадающей с отметкой технического пространства. В ведомости планы кровли указаны на +40,690 и +44,870. При этом заголовок плана листа 15 содержит +41,280, поэтому механическая замена расчётных отметок по ведомости без согласования планов недопустима.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить уровни кровли и надстройки по согласованным архитектурным данным, исправить расчётную схему и проверить влияние исправления на расчётные высоты и напоры.",
+        "risk": "Если ошибочные отметки использованы как расчётные исходные данные, результаты проверки водостока могут не соответствовать проектной геометрии.",
+        "source_finding_ids": [
+          "G-019"
+        ],
+        "source_block_ids": [
+          "blk_d2571e41e76d4f328298d074001845db"
+        ],
+        "related_block_ids": [
+          "blk_d2571e41e76d4f328298d074001845db",
+          "blk_646b9b78524b469f982f5ec9f3b85138",
+          "blk_02d4fb9a7c524289a73899512cd4f3d0"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_d2571e41e76d4f328298d074001845db",
+            "page": 37
+          },
+          {
+            "type": "image",
+            "block_id": "blk_646b9b78524b469f982f5ec9f3b85138",
+            "page": 17
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T122708Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:27:08.898826+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 67,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "rework"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F027_calculation_level_labels:7479fd101bd142ad9eec",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В расчётной схеме секции3 три разных уровня подписаны +38,640.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Подписи относятся к надстройке, кровле и тех.пр.2, изображённым раздельными уровнями."
+        },
+        {
+          "claim": "Ведомость содержит кровли +40,690 и +44,870, заголовок плана +41,280.",
+          "verdict": "confirmed_source_disagreement",
+          "limits": ""
+        },
+        {
+          "claim": "В расчёте реально использованы неправильные высоты.",
+          "verdict": "not_established",
+          "limits": "Подпись схемы не доказывает неверность чисел в расчётных операциях. Ошибка давления или подбора не рассчитана."
+        },
+        {
+          "claim": "Согласовать подписи и проверить использованные высоты.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не выбирать окончательные отметки только по ведомости до согласования с планами и разрезами."
+        },
+        {
+          "claim": "Нормативный кандидат в исходной выдаче.",
+          "verdict": "not_verified_applicable_norm",
+          "limits": "Не засчитывать нормативное нарушение без подтверждённого применимого требования."
+        }
+      ],
+      "unsupported_additions": "Внутреннее противоречие чертежа не доказывает фактический засор,неверный монтаж или ошибку численного гидравлического расчёта. Правильные абсолютные отметки не восстановлены.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "Не полный дубльF-010/F-027:там разные документы об одном техпространстве,здесь три разных уровня внутри расчётной схемы. Объединение возможно только с сохранением обоих самостоятельных тезисов.",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_aa5ad48812d541538c628ba1476d1b05",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F027_calculation_level_labels.json",
+          "sha256": "49dda7205363350c951c84c3700e8d9ee08324e23f0236f50dfa885bece5e924",
+          "primary_adjudication": null,
+          "limits": "Подтверждено повторение подписи у трёх разных линий схемы. Рисунок условный: расстояние между линиями не доказывает реальные высоты. Числа из ведомости не определяют автоматически отметки воронок или значения для каждой из трёх линий. Расчётные длины и влияние подписей на результат не проверены; ошибка гидравлического расчёта, монтажа или нарушение нормы не установлены. Этот тезис отличается от F011: F011 сопоставляет один уровень техпространства в разных документах, F027 — три уровня внутри расчётного изображения.",
+          "wording": "Уточнить подписи уровней на расчётной схеме водостока секции3: вышележащая надстройка, кровля и техническое пространство2 обозначены одинаковой отметкой +38,640. В ведомости планы кровель названы с отметками +40,690 и +44,870. Сопоставить конкретные поверхности и участки расчёта перед исправлением подписей."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d2571e41e76d4f328298d074001845db.png",
+          "sha256": "cbe1a352b0351cb8d6e1feae822f80c3a0cc8662c2e7948530993d8930d2dc6d",
+          "block_id": "blk_d2571e41e76d4f328298d074001845db",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Три левые отметки надстройки, кровли и тех.пр.2 одинаковы +38,640."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_646b9b78524b469f982f5ec9f3b85138.png",
+          "sha256": "b3fcf72e6b00882879fd8dafd847d3a6151c934f01fc1ee30f94bed3feddd0d1",
+          "block_id": "blk_646b9b78524b469f982f5ec9f3b85138",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Заголовок плана кровли +41,280."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-026",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_calculation_label_question_no_proven_computation_error"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "Specification inconsistencies do not prove physical supply failures. Reused evidence bound to identical current source hashes."
+}
