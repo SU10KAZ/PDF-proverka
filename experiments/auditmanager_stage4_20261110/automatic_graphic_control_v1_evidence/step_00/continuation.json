@@ -1,0 +1,11 @@
+{
+  "status": "prepared",
+  "route": "graphic_detail",
+  "next_stage": "object_operations_1d5ddc8a6489d3c9_context_1",
+  "block_id": "blk_7527066e645e47bb917a9fc17fb82ccc",
+  "tiles_added": 9,
+  "deferred_block_ids": [],
+  "manifest_path": "/tmp/auditmanager_itp_automatic_graphic_control_20261111/initial/pipe66_t411/object_graphic_details/graphic_detail_eqzie0m_/tiles/manifest.json",
+  "semantic_verified": false,
+  "absence_proven": false
+}

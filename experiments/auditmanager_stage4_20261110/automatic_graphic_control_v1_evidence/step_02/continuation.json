@@ -1,0 +1,31 @@
+{
+  "status": "prepared",
+  "new_source_ids": [
+    "blk_06029d59a01b4b779037ffcee1ae5260",
+    "blk_095853a82158483ab52761fde61dd652",
+    "blk_296b8547a33a47dbb7a9b8e546d964e0",
+    "blk_3050f16afc994b889498a2535ea14a52",
+    "blk_30789714316b48908c5addc9bfb135d2",
+    "blk_5d085f4c917a4e568fd33327e6f8edea",
+    "blk_94b58ecf5d404f7d90c272d267eb2e48",
+    "blk_a203939b21504fa6935b621a29929d7d",
+    "blk_a5c04128f54f404e900b3ee4e3a854ba",
+    "blk_acc3bf59f8f447f988de16849e40e9f1",
+    "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "blk_cc70e063642d457fa0a38b30b1a1a51f",
+    "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
+  ],
+  "omitted": [],
+  "automatic_dispatch": false,
+  "absence_proven": false,
+  "semantic_verified": false,
+  "graphic_detail": {
+    "status": "graphic_image_budget",
+    "requested_block_ids": [
+      "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "blk_d4b7a506870a4c3dbe5a3d19eb26dfdc"
+    ]
+  },
+  "next_stage": "object_operations_1d5ddc8a6489d3c9_context_3",
+  "request_sha256": "f92e58a3fb680c6a443df9bde1e98867e3fdc1c763c8a9e61a677e898ed256b4"
+}
