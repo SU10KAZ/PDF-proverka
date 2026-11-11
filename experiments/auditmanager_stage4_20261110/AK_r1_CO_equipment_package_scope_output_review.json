@@ -1,0 +1,250 @@
+{
+  "status": "CO_quantity_claim_scope_qualified",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "e4bf62094ea2195f3301d22eda4cfd0b66d5bb7674ecdf21f4b1e278d6120211",
+  "queue_after_sha256": "f5ffc43a61aa8312ef549d8770c6ebc4d5cd6ff7375e53891eb76f3092d5d062",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-006",
+      "finding": {
+        "id": "F-006",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектность оборудования",
+        "sheet": "Листы 54, 9",
+        "page": [
+          58,
+          102
+        ],
+        "problem": "Спецификация не охватывает 18 предусмотренных сигнализаторов СО и коробок.",
+        "description": "Таблица применимости содержит 61 сигнализатор: 19 в зоне 3, 20 в зоне 4 и 22 в зоне 5. В спецификации указаны 43 сигнализатора и 43 коробки КСИ. Разность 18 комплектов соответствует цепочке СТГ-3-И-5.1–5.18.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1; ГОСТ 21.408-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту учёта оборудования в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить согласованность таблицы применимости и комплекта автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Включить недостающие комплекты либо указать документ, в котором учтена поставка цепочки 5.",
+        "risk": "Неполный монтаж системы контроля СО в зоне 5.",
+        "source_finding_ids": [
+          "T-006"
+        ],
+        "source_block_ids": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "related_block_ids": [
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_206d5fa1055148c5b12414a2919fbe84"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+            "page": 58
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Таблица применимости перечисляет19+20+22=61 адресную позицию:14+5,20,4+18.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "СО19.2/19.3 задаёт43 сигнализатора и43КСИ.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "61−43=18 совпадает с числом позиций серии5.1–5.18.",
+          "verdict": "confirmed_arithmetic_not_supply_ownership_proof",
+          "limits": ""
+        },
+        {
+          "claim": "На схеме лист45 группа5.1–5.18 с соединениями выделена рамкой «см.книга1 АК1-ПА».",
+          "verdict": "confirmed_direct_GRAPHIC_scope_reference",
+          "limits": "Подключение кШлейф2 также показано; принадлежность всей группы текущей спецификации нельзя предполагать."
+        },
+        {
+          "claim": "В АК2-ПА подтверждён пропуск18 комплектов, их нужно добавить в эту СО.",
+          "verdict": "not_supported_different_package_scope",
+          "limits": "Граница смежного комплекта указана. СмежнаяСО АК1-ПА здесь не проверена; ссылка не доказывает фактическую полноту поставки по обоим комплектам."
+        },
+        {
+          "claim": "Необходимо проверить учёт группы5 и границу подключения вАК1-ПА.",
+          "verdict": "supported_cross_package_question",
+          "limits": "Не выдавать как18 самостоятельных технических дефектов. Исходная альтернатива «указать документ» уже частично разрешена ссылкой на схеме; остаётся проверить сам документ."
+        },
+        {
+          "claim": "Неполный монтаж системыСО в зоне5.",
+          "verdict": "not_established",
+          "limits": "Нет проверки фактического монтажа или полного закупочного комплекта."
+        },
+        {
+          "claim": "Нарушены ГОСТ21.110/21.408 п.4.1.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; применимость и точные требования не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One adjacent-package completeness question shared with F-007 cable scope; not18 missing sensor defects or36 missing component defects.",
+      "profile_and_section": "questions_clarifications_cross_package_completeness",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+          "primary_adjudication": null,
+          "limits": [
+            "Проверены таблица применимости, позиции19.2–19.3 СО, 43 строки БПС групп1–4, позиция интерфейсного кабеля985м и две схемы. Это не полная проверка всего кабельного журнала на отсутствие иных вариантов обозначения группы5.",
+            "Разные написания HF/НФ и символы сечения сохранены из TEXT; суммирование здесь по идентификаторам линий, не доказательство эквивалентности всех марок. Повторные значения графы проложен не суммировались.",
+            "Смежная спецификация АК1-ПА не проверена; ссылка не доказывает полноту поставки по двум комплектам. Вывод о недостаче также не доказан.",
+            "Нормативные нарушения ГОСТ21.110 и ГОСТ21.408 не проверены; не включать их в подтверждённые технические находки.",
+            "Самостоятельного решения инженера по этим blind-кандидатам не установлено. Их нельзя объявлять принятыми инженером или подтверждёнными пропусками классического метода."
+          ],
+          "wording": "При межкомплектной проверке запросить книгу1 АК1-ПА и подтвердить учёт группы5 (18 сигнализаторов, КСИ и соединительные линии до СУ-К33). Схемы АК2-ПА явно относят эту группу к АК1-ПА; добавление изделий и кабеля в АК2-ПА по одной арифметической разнице не обосновано."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_206d5fa1055148c5b12414a2919fbe84.png",
+          "sha256": "1eaedbf298530a27e8b5092fe8efae5bd4fec55ffa7c76ff671356830fe811b0",
+          "block_id": "blk_206d5fa1055148c5b12414a2919fbe84",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Original-resolution view: group5.1,5.2,...5.17,5.18 enclosed with explicit reference to book1 AK1-PA; shown wired chain joins loop2. Group4.1–4.4 outside frame."
+        }
+      ],
+      "disposition": "assessed_reclassify_CO_shortage_as_adjacent_package_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+      "authoritative_TEXT": "### BLOCK #207 [TEXT]: blk_f9a46b38e8aa4c498ede6fbe4a461052\n\n> **Created:** 2026-09-28 07:29:33 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/cqWgP7UHPmKAr3PTYN4k)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 54 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: г. Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: План расположения оборудования и кабельных трасс. -1 этаж в осях П.24-П.48 | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Таблица применимости\n\n| Зона установки | Включение установки на 100% мощности | Шкаф управления | Датчики СКЗ |\n|---|---|---|---|\n| Автостоянка -1 этаж. Дымовая зона 3 (Корпус 4+рампа) | Па3.1/Ва3.1 | ШАУВ-1-К4АС | СТГ-З-И-1.1...СТГ-З-И-1.14, СТГ-З-И-2.1...СТГ-З-И-2.5 |\n| Автостоянка -1 этаж. Дымовая зона 4 (Корпус 5) | Па4.1/Ва4.1 | ШАУВ-1-К5АС | СТГ-З-И-3.1...СТГ-З-И-3.20 |\n| Автостоянка -1 этаж. Дымовая зона 5 (Корпус 6) | Па5.1/Ва5.1 | ШАУВ-1-К6АС | СТГ-З-И-4.1...СТГ-З-И-4.4, СТГ-З-И-5.1...СТГ-З-И-5.18 |\n\n## Page 59 — Sheet 1 — Кабельный журнал\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+      "authoritative_TEXT": "### BLOCK #251 [TEXT]: blk_b8f98350127c4603bb6811846ec13309\n\n> **Created:** 2026-09-28 07:29:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JD825dNrJgioLdV32EKM)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 9 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 17 | Тепловые завесы |  |  |  |  |  |  |  |\n| 17.1 | Концевой выключатель | ВП15К21 |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 17.2 | Блок диспетчеризации МК | КЭВ-Б/ЛОК-МК |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 18 | Основное оборудование сплин систем |  |  |  |  |  |  |  |\n| 18.1 | Согласователь работы 2-х кондиционеров | TD0027170RU | БУРР | Haier | шт. | 3 |  |  |\n| 18.2 | Адаптер |  |  | Haier | шт. | 6 |  |  |\n| 19 | Система контроля загазованности |  |  |  |  |  |  |  |\n| 19.1 | Блок питания и сигнализации БПС-3-И | ИБЯЛ.426479.046-01 |  | Аналитприбор | шт. | 3 |  |  |\n| 19.2 | Сигнализатор загазованности СТГ-3-И-СО | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.3 | Коробка соединительная КСИ | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.4 | Светозвуковой оповещатель \"Внимание! Загазованность!\" | \"ЛЮКС-24-К МС\" |  | Электротехника и Автоматика | шт. | 1 |  |  |\n| 20 | Система противодымной вентиляции |  |  |  |  |  |  |  |\n| 20.1 | Термопреобразователь сопротивления канальный, чувствительный элемент NTC10К, длина погружной части датчика 200 мм | МВТ 3280 | 097У0112 | Ридан | шт. | 6 |  |  |\n| 21 | Кабели и провода |  |  |  |  |  |  |  |\n| 21.1 | Кабель силовой с медными жилами | ППГнг(А)-HF 3x1,5 |  | Ивановский кабельный завод | м | 3945 |  |  |\n| 21.2 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x2,5 |  | Ивановский кабельный завод | м | 2060 |  |  |\n| 21.3 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x4,0 |  | Ивановский кабельный завод | м | 60 |  |  |\n| 21.4 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 1x2x0,75 |  | Паритет | м | 7040 |  |  |\n| 21.5 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 4x2x0,75 |  | Паритет | м | 20 |  |  |\n\n## Page 103 — Sheet 10\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_206d5fa1055148c5b12414a2919fbe84.png",
+      "sha256": "1eaedbf298530a27e8b5092fe8efae5bd4fec55ffa7c76ff671356830fe811b0",
+      "block_id": "blk_206d5fa1055148c5b12414a2919fbe84",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Original-resolution view: group5.1,5.2,...5.17,5.18 enclosed with explicit reference to book1 AK1-PA; shown wired chain joins loop2. Group4.1–4.4 outside frame."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+      "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+      "primary_adjudication": null,
+      "limits": [
+        "Проверены таблица применимости, позиции19.2–19.3 СО, 43 строки БПС групп1–4, позиция интерфейсного кабеля985м и две схемы. Это не полная проверка всего кабельного журнала на отсутствие иных вариантов обозначения группы5.",
+        "Разные написания HF/НФ и символы сечения сохранены из TEXT; суммирование здесь по идентификаторам линий, не доказательство эквивалентности всех марок. Повторные значения графы проложен не суммировались.",
+        "Смежная спецификация АК1-ПА не проверена; ссылка не доказывает полноту поставки по двум комплектам. Вывод о недостаче также не доказан.",
+        "Нормативные нарушения ГОСТ21.110 и ГОСТ21.408 не проверены; не включать их в подтверждённые технические находки.",
+        "Самостоятельного решения инженера по этим blind-кандидатам не установлено. Их нельзя объявлять принятыми инженером или подтверждёнными пропусками классического метода."
+      ],
+      "wording": "При межкомплектной проверке запросить книгу1 АК1-ПА и подтвердить учёт группы5 (18 сигнализаторов, КСИ и соединительные линии до СУ-К33). Схемы АК2-ПА явно относят эту группу к АК1-ПА; добавление изделий и кабеля в АК2-ПА по одной арифметической разнице не обосновано."
+    }
+  ],
+  "limits": [
+    "Adjacent AK1-PA specification not checked; completeness unresolved, not disproved or confirmed.",
+    "Exact arithmetic cannot establish procurement ownership across package boundaries.",
+    "No blanket filter for quantity differences; retain verified same-scope discrepancies.",
+    "Frozen evaluator, independent inputs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
