@@ -1,0 +1,220 @@
+{
+  "status": "three_more_output_findings_reviewed_with_scope_limits",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "source_md": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "reviews": [
+    {
+      "finding_id": "F-004",
+      "original_model_finding": {
+        "id": "F-004",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Идентификация электродвигателей",
+        "report_section": "technical_findings",
+        "sheet": "Лист 11",
+        "page": [
+          15,
+          67
+        ],
+        "problem": "Перечень двигателей Па3.1/Ва3.1 противоречит кабельному журналу.",
+        "description": "Перечень листа 11 содержит три двигателя вентиляторов М1–М3 и насос М4. В журнале Ва3.1-4 4×2,5 идет от отдельного шкафа ПЧ к М4, Па3.1-11 3×1,5 — к М2, а Па3.1-12 4×2,5 — к М5, отсутствующему в перечне. Четыре ПЧ сами по себе не определяют количество одновременно работающих двигателей. Положение М2, М4 и М5 на функциональной схеме без изображения не проверено.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать перечень основного и резервного оборудования, назначения М1–М5 и концы кабелей.",
+        "risk": "Ошибки адресации приводов и реализации резервирования.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [
+          "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6"
+        ],
+        "related_block_ids": [
+          "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_2aeda93ede5444ebb33f638cd45586f2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+            "page": 67
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_identity_conflict_with_narrow_scope",
+      "reason": "В полном перечне листа11 есть М1–М3 вентиляторов иМ4насоса, М5нет; КЖ9 содержитПа3.1-12 кМ5. Остальные процитированные концы и сечения совпадают сTEXT. Надёжное основание — отсутствие сопоставимойМ5 в перечне. Само питаниеМ4 отПЧ или3-жильный кабель кМ2 отдельно не доказывают техническую ошибку; без схем не подтверждаем роли резервных двигателей.",
+      "evidence": [
+        {
+          "block_id": "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "md_span_sha256": "a095f446652b758a685d03bc90668ce5aac64a5ca33ba35da21f5304c95b3af3",
+          "start": 80601,
+          "end": 82170,
+          "full_text_block_inspected": true
+        },
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "md_span_sha256": "26dfc9ca56ee05e38b7bd4580d4210febb93d5e5819aef4477beb3e28dbcdcca",
+          "start": 370196,
+          "end": 372825,
+          "full_text_block_inspected": true
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained"
+    },
+    {
+      "finding_id": "F-005",
+      "original_model_finding": {
+        "id": "F-005",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка кабелей",
+        "report_section": "technical_findings",
+        "sheet": "Лист 36",
+        "page": [
+          40,
+          79,
+          80
+        ],
+        "problem": "В составе Па4.1/Ва4.1 записаны линии другой системы с неоднозначными концами.",
+        "description": "Журнал, лист 22, содержит Ва3.1-3ПЧ, Ва3.1-4ПЧ и Ва3.1-RS длиной по 330 м между ШАУВ-1-К5АС.ПЧ и ШАУВ-1-К5АС. На листе 21 для этих же шкафов уже заданы Ва4.1-3 и Ва4.1-4 по 10 м. Марки Ва3.1 относятся к другой системе. При буквальном чтении концы длинных силовых линий также являются шкафами, а не двигателями. Поэтому итог 730 м и предполагаемые дополнительные моторные участки по 15 м нельзя подтвердить без схемы.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить действительные начало, конец, назначение и длину каждой линии; исправить марки и затем пересчитать кабельную ведомость.",
+        "risk": "Ошибочное подключение вынесенных ПЧ и недостоверный объем кабельной поставки.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [
+          "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "blk_3e1eb0838e6b4a33b9a090a9c4b998dd"
+        ],
+        "related_block_ids": [
+          "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+          "blk_96a99d46f82645bebdf992507a3e3ec6",
+          "blk_397f9663589b40bfbde9b898e99e5117"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_c13afb271fc74ce4a28b79e59652ee51",
+            "page": 79
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+            "page": 80
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_mark_and_endpoint_conflict",
+      "reason": "КЖ21 содержитBa4.1-3/-4 междуК5АС иК5АС.ПЧ по10м; КЖ22 содержитBa3.1-3ПЧ/-4ПЧ/RS между теми же шкафами по330м. Переченьлист11 отдельно относится кПа3.1/Ва3.1. Разные обозначения и неоднозначные концы требуют согласования. Нельзя выдавать разные длины за автоматический дубль одной физическойлинии; итог730м требует графики, а не опровержения.",
+      "evidence": [
+        {
+          "block_id": "blk_c13afb271fc74ce4a28b79e59652ee51",
+          "md_span_sha256": "e90f600d452f84d524f0c3c2808856da75026ad1b37e28133ff2a202a24277cf",
+          "start": 398950,
+          "end": 401292,
+          "full_text_block_inspected": true
+        },
+        {
+          "block_id": "blk_3e1eb0838e6b4a33b9a090a9c4b998dd",
+          "md_span_sha256": "4be8e1bd4fd7ccd83ee8b40a9f59a58182ad1cd00c9940c395a29498833d4ebe",
+          "start": 401292,
+          "end": 403514,
+          "full_text_block_inspected": true
+        },
+        {
+          "block_id": "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "md_span_sha256": "a095f446652b758a685d03bc90668ce5aac64a5ca33ba35da21f5304c95b3af3",
+          "start": 80601,
+          "end": 82170,
+          "full_text_block_inspected": true
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained"
+    },
+    {
+      "finding_id": "F-006",
+      "original_model_finding": {
+        "id": "F-006",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектация приборов",
+        "report_section": "technical_findings",
+        "sheet": "Лист 10",
+        "page": [
+          14,
+          95
+        ],
+        "problem": "Количество реле давления ШАУВ-4-К4ПЧ переставлено между диапазонами.",
+        "description": "Перечень листа 10 задает PDS2: 20–200 Па, 1 шт.; PDS1, PDS3, PDS4: 50–500 Па, 3 шт. Спецификация, позиции 4.4 и 4.5, содержит соответственно 3 и 1 шт. Общее количество четыре совпадает, состав по диапазонам различается. Дополнительное утверждение о диапазоне PDS4 20–200 Па в графической таблице сигналов не проверено.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать назначение, диапазон и уставку каждого PDS1–PDS4; исправить перечень и спецификацию, проверить таблицу сигналов.",
+        "risk": "Поставка реле с диапазоном, не соответствующим назначенной уставке.",
+        "source_finding_ids": [
+          "T-006",
+          "G-011",
+          "G-012"
+        ],
+        "source_block_ids": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1"
+        ],
+        "related_block_ids": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_e3e39f8820d7474caa10ab626d2a2c91"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+            "page": 95
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_range_quantity_conflict",
+      "reason": "Лист10: PDS2 20–200Па1шт.;PDS1/PDS3/PDS4 50–500Па3шт. Спецификация4.4/4.5 даёт3/1. Совпадение общего количества4 не устраняет расхождение по исполнениям. Сохранить замечание; необходимый диапазон конкретного PDS4 и графическая таблица сигналов здесь не подтверждены.",
+      "evidence": [
+        {
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "md_span_sha256": "d12caff8e905ca49022d08daee69c0c52ed9b192c56ee5b54e9c114a519d7f51",
+          "start": 72899,
+          "end": 74575,
+          "full_text_block_inspected": true
+        },
+        {
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "md_span_sha256": "45a639cd03c26f6c428e2654dd78c7cd5d68fba8c4662afe4ec080bb6a9e689d",
+          "start": 435382,
+          "end": 438074,
+          "full_text_block_inspected": true
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained"
+    }
+  ],
+  "production_acceptance": false
+}
