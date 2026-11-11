@@ -1,0 +1,159 @@
+{
+  "status": "source_review_and_replay_confirm_final_emission_gap",
+  "request_sha256": "4521eeaf3eff03102ec3607f432daff3889f798d83a5d3aa91496a1682f40c4b",
+  "response_sha256": "5354dfb0d254cbba4ba79019fd328e80ab10d9ed226be806244c200527da936e",
+  "response_path": "/tmp/auditmanager_primary_text_runtime_recovery_results_20261112/candidate_recovery_b6955a9ce7a4594e_attempt_1.json",
+  "source_image_sha256": "5c9cdf1f1635d706791f30152851a62ac7c2e0757c65ed25561084084bba4bc0",
+  "source_text_rows": [
+    "| PDS2 | Датчик давления дифференциальный 20-200 Па | 1 |  |",
+    "| PDS1,PDS3, PDS4 | Датчик давления дифференциальный 50-500 Па | 3 |  |"
+  ],
+  "source_text_span_sha256": "d12caff8e905ca49022d08daee69c0c52ed9b192c56ee5b54e9c114a519d7f51",
+  "positive_case": {
+    "candidate_ids": [
+      "G-011",
+      "G-012"
+    ],
+    "assessment": "confirmed_graphic_range_conflict_PDS4",
+    "basis": "Direct inspection: PDS4 line18 corresponds to table20–200Pa; authoritative TEXT places PDS4 in50–500Pa group. Graphical distribution2/2 differs from list1/3.",
+    "engineering_target_mapping": "AK57:9851f2c4946bad03af44 and AK57:a998dcf058f81b7ac194; narrow address/quantity components only."
+  },
+  "negative_case": {
+    "candidate_id": "G-013",
+    "raw_recovery_finding": {
+      "id": "F-036",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "Обозначение нагревателя",
+      "report_section": "technical_findings",
+      "sheet": "Лист 10",
+      "page": 14,
+      "problem": "Символ нагревателя Пм4.1 противоречит показанному водяному подключению.",
+      "description": "В системе Пм4.1 нагреватель изображён символом электрической нагревательной секции из легенды этого же листа. При этом к секции подведены линии теплоносителя 85/60 °C с насосом M3 и регулирующим клапаном Y3. Подтверждено противоречие графического обозначения гидравлическим связям, а не ошибочный выбор фактического оборудования.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Согласовать символ секции Пм4.1 с показанным водяным узлом, используя обозначение водяного нагревателя из легенды.",
+      "risk": "Неоднозначное определение типа нагревателя при чтении схемы автоматизации.",
+      "source_finding_ids": [
+        "G-013"
+      ],
+      "source_block_ids": [
+        "blk_e3e39f8820d7474caa10ab626d2a2c91"
+      ],
+      "related_block_ids": [],
+      "evidence": [
+        {
+          "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+          "type": "graphic",
+          "observation": "В верхней правой схеме Пм4.1 секция между фильтром PDS3 и вентилятором M2 содержит горизонтальную черту, два закрашенных треугольника и зигзагообразный элемент. Такое обозначение приведено в нижней правой легенде как электрическая нагревательная секция; символ водяной секции в легенде отличается.",
+          "location": "Лист 10, верхняя правая схема Пм4.1 и нижняя правая легенда."
+        },
+        {
+          "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+          "type": "graphic",
+          "observation": "От нагревательной секции Пм4.1 показаны гидравлические линии к узлу с насосом M3 и клапаном Y3; нижние подключения подписаны «От системы теплоснабжения», T=85 °C и T=60 °C.",
+          "location": "Лист 10, под нагревательной секцией Пм4.1, узел теплоснабжения."
+        }
+      ],
+      "highlight_regions": []
+    },
+    "assessment": "specific_electric_symbol_identification_not_supported",
+    "basis": "Direct same-image inspection: the wavy element in Pm4.1 continues from TS1, whereas the actual electric heater P4.1.1 and legend use a separate angular lightning sign. Hydraulic supply85/60 alone does not prove a symbol error. No claim of universal graphic conformity."
+  },
+  "final_emission_replay": {
+    "existing_finding_before": {
+      "id": "F-006",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "Комплектация датчиков",
+      "report_section": "technical_findings",
+      "sheet": "Листы 10, 2",
+      "page": [
+        14,
+        95
+      ],
+      "problem": "Для ШАУВ-4-К4ПЧ переставлены количества датчиков разных диапазонов.",
+      "description": "Перечень листа 10 содержит PDS2 20–200 Па — 1 шт. и PDS1, PDS3, PDS4 50–500 Па — 3 шт. Спецификация, позиции 4.4 и 4.5, содержит соответственно 3 и 1 шт. Общее количество четыре совпадает, состав по исполнениям различается. Утверждение о диапазоне PDS4 в графической таблице без изображения не подтверждено.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Согласовать назначение, диапазон и уставку каждого PDS и исправить количества соответствующих исполнений.",
+      "risk": "Поставка приборов с неподходящим диапазоном настройки.",
+      "source_finding_ids": [
+        "T-006",
+        "G-011",
+        "G-012"
+      ],
+      "source_block_ids": [
+        "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "blk_3dfcda405820460b84179ebf65d182d1"
+      ],
+      "related_block_ids": [
+        "blk_e3e39f8820d7474caa10ab626d2a2c91"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "page": 14
+        },
+        {
+          "type": "text",
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "page": 95
+        }
+      ],
+      "highlight_regions": []
+    },
+    "existing_finding_after": {
+      "id": "F-006",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "Комплектация датчиков",
+      "report_section": "technical_findings",
+      "sheet": "Листы 10, 2",
+      "page": [
+        14,
+        95
+      ],
+      "problem": "Для ШАУВ-4-К4ПЧ переставлены количества датчиков разных диапазонов.",
+      "description": "Перечень листа 10 содержит PDS2 20–200 Па — 1 шт. и PDS1, PDS3, PDS4 50–500 Па — 3 шт. Спецификация, позиции 4.4 и 4.5, содержит соответственно 3 и 1 шт. Общее количество четыре совпадает, состав по исполнениям различается. Утверждение о диапазоне PDS4 в графической таблице без изображения не подтверждено.",
+      "norm": null,
+      "norm_quote": null,
+      "candidate_norm_references": [],
+      "solution": "Согласовать назначение, диапазон и уставку каждого PDS и исправить количества соответствующих исполнений.",
+      "risk": "Поставка приборов с неподходящим диапазоном настройки.",
+      "source_finding_ids": [
+        "T-006",
+        "G-011",
+        "G-012"
+      ],
+      "source_block_ids": [
+        "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "blk_3dfcda405820460b84179ebf65d182d1"
+      ],
+      "related_block_ids": [
+        "blk_e3e39f8820d7474caa10ab626d2a2c91"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "page": 14
+        },
+        {
+          "type": "text",
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "page": 95
+        }
+      ],
+      "highlight_regions": []
+    },
+    "finding_unchanged": true,
+    "G011_pending_before": true,
+    "G011_pending_after": false,
+    "limitation": "Replay isolates this sealed response; it is not final acceptance of the running collection."
+  },
+  "required_change": "Require supported recovered subclaims to be represented in the final finding before closing their publication obligation; a retained receipt with an existing target ID is insufficient. Preserve original confirmed quantities and record any superseded qualifications explicitly.",
+  "production_acceptance": false
+}
