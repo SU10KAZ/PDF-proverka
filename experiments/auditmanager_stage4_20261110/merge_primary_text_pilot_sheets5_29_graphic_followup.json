@@ -1,0 +1,279 @@
+{
+  "status": "four_candidate_records_three_issue_groups_graphically_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-001",
+      "pointer": "/block_analyses/0/findings/0",
+      "original_candidate": {
+        "id": "G-001",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "На схеме автоматизации корпуса 1 у 11 отдельно изображённых пультов завес У1.1–У1.6, У2.1, У2.2, У3, У4 и У5 повторена одна марка «ПУ-У1.1». Обозначения не позволяют однозначно идентифицировать пульты соответствующих завес.\n\nРекомендация: Присвоить пультам индивидуальные обозначения в соответствии с марками подключённых завес и согласовать их со схемами подключения.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_0792816c162c469289b461843d2c307b",
+        "value_found": "У1.1; У1.2; У1.3; У1.4; У1.5; У1.6; У2.1; У2.2; У3; У4; У5 — ПУ-У1.1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковую марку «ПУ-У1.1» у 11 отдельных пультов завес корпуса 1: У1.1–У1.6, У2.1, У2.2, У3, У4 и У5. Проблема и детализация эквивалентны.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_repeated_control_labels_document_identity_concern",
+      "reason": "На структурной схеме корпуса 1 показаны 11 отдельных пультов: шесть у завес У1.1–У1.6 и пять у У2.1,У2.2,У3,У4,У5. На каждом повторена подпись ПУ-У1.1. Разные обслуживаемые завесы и отдельные рамки подтверждают повтор марки самостоятельных изображений. Это замечание об идентификации в документации; ошибочная коммутация или реальное объединение пультов не доказаны. Детальные схемы пультов для окончательной перенумерации не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0792816c162c469289b461843d2c307b.png",
+        "sha256": "7cc18f2b25f7f7ba5728daf368eee0eefb4e43aa9549e2c6ab2497ca080e7769",
+        "bytes": 3925103,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-002",
+      "pointer": "/block_analyses/0/findings/1",
+      "original_candidate": {
+        "id": "G-002",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_marking",
+        "finding": "На схеме корпуса 1 одиннадцать отдельных пультов тепловых завес обозначены одинаково «ПУ-У1.1»: для У1.1–У1.6, У2.1, У2.2, У3, У4 и У5. Маркировка не позволяет однозначно идентифицировать пульты.\n\nРекомендация: Присвоить отдельным пультам уникальные обозначения, согласованные с марками обслуживаемых завес.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_0792816c162c469289b461843d2c307b",
+        "value_found": "ПУ-У1.1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковую марку «ПУ-У1.1» у 11 отдельных пультов завес корпуса 1: У1.1–У1.6, У2.1, У2.2, У3, У4 и У5. Проблема и детализация эквивалентны.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_repeated_control_labels_document_identity_concern",
+      "reason": "На структурной схеме корпуса 1 показаны 11 отдельных пультов: шесть у завес У1.1–У1.6 и пять у У2.1,У2.2,У3,У4,У5. На каждом повторена подпись ПУ-У1.1. Разные обслуживаемые завесы и отдельные рамки подтверждают повтор марки самостоятельных изображений. Это замечание об идентификации в документации; ошибочная коммутация или реальное объединение пультов не доказаны. Детальные схемы пультов для окончательной перенумерации не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0792816c162c469289b461843d2c307b.png",
+        "sha256": "7cc18f2b25f7f7ba5728daf368eee0eefb4e43aa9549e2c6ab2497ca080e7769",
+        "bytes": 3925103,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-003",
+      "pointer": "/block_analyses/0/findings/2",
+      "original_candidate": {
+        "id": "G-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_marking",
+        "finding": "Обозначения кондиционеров «К5.3» и «К5.4» повторены для трех отдельных пар: в помещении СС корпуса 5 и в двух помещениях корпуса 6. Разные установки имеют одинаковые идентификаторы.\n\nРекомендация: Уточнить марки трех пар кондиционеров и согласовать уникальные обозначения со смежными разделами и диспетчеризацией.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_0792816c162c469289b461843d2c307b",
+        "value_found": "К5.3; К5.4",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "repeated_air_conditioner_labels_confirmed_global_uniqueness_scope_unresolved",
+      "reason": "На структурной схеме три отдельные пары кондиционеров подписаны К5.3/К5.4: одна в помещении СС корпуса 5, две в отдельных помещениях корпуса 6. У каждой пары свой блок БУРР и связь с диспетчеризацией. Повтор графических марок подтверждён. Не установлено, обязана ли марка быть уникальной без дополнения корпусом/помещением и какие адреса использованы в книге диспетчеризации. Сохранить вопрос согласования идентификаторов; не считать доказанными коллизию адресов в реальной системе или неисправность.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0792816c162c469289b461843d2c307b.png",
+        "sha256": "7cc18f2b25f7f7ba5728daf368eee0eefb4e43aa9549e2c6ab2497ca080e7769",
+        "bytes": 3925103,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-069",
+      "pointer": "/block_analyses/24/findings/0",
+      "original_candidate": {
+        "id": "G-069",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity",
+        "finding": "В ведомости кабелей листа 29 занижены количества двух марок: ППГнг(А)-HF 3×1,5 — 620 м вместо 640 м по схеме; ППГнг(А)-HF 4×2,5 — 290 м вместо 310 м. Недостача составляет по 20 м каждой марки.\n\nРекомендация: Привести ведомость кабелей в соответствие с суммарными длинами линий схемы внешних подключений ШАУВ-1-К4АС.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_cd9d763d198246859c3df42c18b5c3d8",
+        "value_found": "ППГнг(А)-HF 3x1,5мм² — 620 м; ППГнг(А)-HF 4x2,5мм² — 290 м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-069",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cable_total_conflict",
+      "reason": "Лист 29: ППГнг(А)-HF 3х1,5 к Y1 составляет 20 м, к Y2–Y6 пять отдельных линий по 120 м, к насосу M2 ещё 20 м: 20+5×120+20=640 м против 620 м ведомости. ППГнг(А)-HF 4х2,5 к M1 и M5 по 20 м, два ввода шкафа ШАУВ-1-К4АС.ПЧ по 120 м, два самостоятельных выхода к M3/M4 по 15 м: 2×20+2×120+2×15=310 м против 290 м ведомости. Промежуточный шкаф разделяет входные и выходные участки, они не посчитаны повторно. Подтверждены две документные разности по 20 м; фактическая недопоставка и распределение закупки не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cd9d763d198246859c3df42c18b5c3d8.png",
+        "sha256": "05e8996615a803ac8aeeb4c80430160eb8954f89bc42940d73a0c5613da7b8d0",
+        "bytes": 653537,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "heading": "### BLOCK #106 [TEXT]: blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "start": 176574,
+          "end": 177530,
+          "sha256": "e3788dedfde0f01103d58813b2328e7dda6e3c771a7ff3720b80b820966d8c79",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false,
+  "analytic_crops": [
+    {
+      "path": "/tmp/ak5_controls.png",
+      "sha256": "07a0e039d45a0ca985cd41dc8ab3872d98ae4b3774430a284fda3d1ba902a9a4",
+      "box_in_1600_by_633_overview": [
+        25,
+        262,
+        180,
+        310
+      ],
+      "operation": "PIL crop of original IMAGE using round(x*8247/1600), round(y*3265/633); no OCR or TEXT correction"
+    },
+    {
+      "path": "/tmp/ak5_ac5.png",
+      "sha256": "20db02822292f80955395432da37f9f633c7ffb19cbc8c97d76f92cc308f418e",
+      "box_in_1600_by_633_overview": [
+        1065,
+        445,
+        1128,
+        490
+      ],
+      "operation": "PIL crop of original IMAGE using round(x*8247/1600), round(y*3265/633); no OCR or TEXT correction"
+    },
+    {
+      "path": "/tmp/ak5_ac6.png",
+      "sha256": "04bb2ab8ca96fbfd284d695d492b17fca0ff12c68dc66e551b400b0d8715183b",
+      "box_in_1600_by_633_overview": [
+        1335,
+        325,
+        1447,
+        360
+      ],
+      "operation": "PIL crop of original IMAGE using round(x*8247/1600), round(y*3265/633); no OCR or TEXT correction"
+    }
+  ]
+}
