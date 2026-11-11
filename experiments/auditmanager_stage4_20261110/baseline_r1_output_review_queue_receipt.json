@@ -1,0 +1,51 @@
+{
+  "status": "prepared_output_review_not_quality_verdict",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "sources": [
+    {
+      "discipline": "AK",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+      "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477"
+    },
+    {
+      "discipline": "ITP",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+      "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2"
+    },
+    {
+      "discipline": "AR",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+      "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "3e3f08c803fdaf9da8e5071ab7ae2e2587a47fcfd95ce38c6b4719722cbe5223"
+    },
+    {
+      "discipline": "KM",
+      "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "final_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+      "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "f87b1c95f76a84973bd52d831ed4b0df40f56acbdac9a432eca613008fc3b2a3"
+    }
+  ],
+  "counts": {
+    "mapped_requires_addition_review": 128,
+    "unmapped_not_yet_classified": 43
+  },
+  "rules": [
+    "Split compound findings into factual claims before assessing additions.",
+    "No target link means unclassified, not false, novel or useless.",
+    "A full target match does not approve risk, remedy, severity or extra assertions.",
+    "Reuse historical engineer decisions only for the same atomic claim and source context.",
+    "Do not send this evaluator queue to independent discovery runs.",
+    "Do not count multiple target links as independent physical defects."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_sha256": "155b040396eaaacb95c53bf9cdfc65236f0336449202dd03d4d44f19c7d20c02",
+  "findings": 171
+}
