@@ -1,0 +1,16 @@
+{
+  "status": "diagnostic_export_preservation_verified",
+  "source_sha256": "f5f74b9d5926ce21ccde497d83e055d9c94e015f8c8c7ee093dc0d210cab3119",
+  "xlsx_path": "/tmp/auditmanager_runtime_G011_emission_diagnostic_not_accepted.xlsx",
+  "xlsx_sha256": "468b2d9a5176687d371128afa3dfa527380a0d9dfe63828a88f50a834f872ca2",
+  "exporter_sha256": "1b8a2b557dad416c649d1c1c1166496055b81f78d7e7f6f09aee53e0e57309b1",
+  "rows_preserved": 37,
+  "F006_addenda_preserved": 2,
+  "original_description_preserved": true,
+  "source_unchanged": true,
+  "limits": [
+    "Diagnostic export includes unaccepted model findings, including the known unsupported G-013 symbol claim. It is not an accepted engineering report.",
+    "Cell text preservation does not certify source facts or complete engineer usability."
+  ],
+  "production_acceptance": false
+}

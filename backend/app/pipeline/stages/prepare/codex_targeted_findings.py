@@ -899,6 +899,8 @@ def combine_findings_with_targeted(
 
     for stage, raw_payload in targeted_payloads:
         payload = deepcopy(raw_payload)
+        recovery_report = None
+        local_targets = {}
         if stage.startswith("object_operations_") and isinstance(payload, dict):
             combined.setdefault("object_operation_reports", []).append({
                 "stage": stage, "coverage": payload.get("operation_coverage"),
@@ -921,6 +923,7 @@ def combine_findings_with_targeted(
                 "format_repair": payload.get("format_repair"),
                 "pending": payload.get("recovery_pending", []), "semantic_verified": False,
             })
+            recovery_report = combined["candidate_recovery_reports"][-1]
         targeted_findings = payload.get("findings") if isinstance(payload, dict) else []
         if not isinstance(targeted_findings, list):
             continue
@@ -934,6 +937,8 @@ def combine_findings_with_targeted(
                 from ..findings_merge.operation_lineage import preserve_operation_lineage
                 existing = next(f for f in findings if _canonical_finding_key(f) == key)
                 preserve_operation_lineage(existing, normalized)
+                if isinstance(item.get("id"), str):
+                    local_targets.setdefault(item["id"], []).append(existing["id"])
                 continue
             normalized["id"] = f"F-{next_idx:03d}"
             normalized.setdefault("source_stage", stage)
@@ -942,11 +947,16 @@ def combine_findings_with_targeted(
             if observer_enabled:
                 _ensure_text_evidence_refs(normalized)
             findings.append(normalized)
+            if isinstance(item.get("id"), str):
+                local_targets.setdefault(item["id"], []).append(normalized["id"])
             if key:
                 seen_keys.add(key)
             next_idx += 1
             targeted_added += 1
             added_for_stage += 1
+        if recovery_report is not None and "recovery_existing_target_ids" in payload:
+            from backend.app.pipeline.stages.findings_merge.recovery_target_binding import bind_report_targets
+            bind_report_targets(recovery_report, payload["recovery_existing_target_ids"], local_targets)
         if added_for_stage:
             targeted_stages.append(stage)
 

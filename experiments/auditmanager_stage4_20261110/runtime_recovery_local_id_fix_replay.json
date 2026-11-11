@@ -1,0 +1,176 @@
+{
+  "status": "request_local_finding_id_binding_verified",
+  "binding": {
+    "repairs": [
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/6/findings/2",
+        "claim_id": null,
+        "reported_targets": [
+          "F-036"
+        ],
+        "bound_targets": [
+          "F-038"
+        ]
+      },
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/6/findings/2",
+        "claim_id": "1",
+        "reported_targets": [
+          "F-036"
+        ],
+        "bound_targets": [
+          "F-038"
+        ]
+      },
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/6/findings/2",
+        "claim_id": "2",
+        "reported_targets": [
+          "F-036"
+        ],
+        "bound_targets": [
+          "F-038"
+        ]
+      },
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/6/findings/3",
+        "claim_id": null,
+        "reported_targets": [
+          "F-036"
+        ],
+        "bound_targets": [
+          "F-038"
+        ]
+      },
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/6/findings/3",
+        "claim_id": "1",
+        "reported_targets": [
+          "F-036"
+        ],
+        "bound_targets": [
+          "F-038"
+        ]
+      },
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/6/findings/3",
+        "claim_id": "2",
+        "reported_targets": [
+          "F-036"
+        ],
+        "bound_targets": [
+          "F-038"
+        ]
+      },
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/6/findings/4",
+        "claim_id": null,
+        "reported_targets": [
+          "F-037"
+        ],
+        "bound_targets": [
+          "F-039"
+        ]
+      },
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/6/findings/4",
+        "claim_id": "1",
+        "reported_targets": [
+          "F-037"
+        ],
+        "bound_targets": [
+          "F-039"
+        ]
+      },
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/6/findings/4",
+        "claim_id": "2",
+        "reported_targets": [
+          "F-037"
+        ],
+        "bound_targets": [
+          "F-039"
+        ]
+      }
+    ],
+    "unresolved": [],
+    "local_to_final": {
+      "F-036": [
+        "F-038"
+      ],
+      "F-037": [
+        "F-039"
+      ]
+    },
+    "semantic_verified": false
+  },
+  "checks": [
+    {
+      "claim": "16 от M3/Ва3.1 ошибочно назван резервным.",
+      "final_id": "F-038",
+      "final_problem": "Подписи состояния основного и резервного вытяжных вентиляторов переставлены.",
+      "source_ids": [
+        "G-018",
+        "G-019"
+      ]
+    },
+    {
+      "claim": "19 от M4/Ва3.1р ошибочно назван основным.",
+      "final_id": "F-038",
+      "final_problem": "Подписи состояния основного и резервного вытяжных вентиляторов переставлены.",
+      "source_ids": [
+        "G-018",
+        "G-019"
+      ]
+    },
+    {
+      "claim": "Канал 16 основного Ва3.1 назван резервным.",
+      "final_id": "F-038",
+      "final_problem": "Подписи состояния основного и резервного вытяжных вентиляторов переставлены.",
+      "source_ids": [
+        "G-018",
+        "G-019"
+      ]
+    },
+    {
+      "claim": "Канал 19 резервного Ва3.1р назван основным.",
+      "final_id": "F-038",
+      "final_problem": "Подписи состояния основного и резервного вытяжных вентиляторов переставлены.",
+      "source_ids": [
+        "G-018",
+        "G-019"
+      ]
+    },
+    {
+      "claim": "PDS3 подключён с обратной полярностью при пороге 100 Па.",
+      "final_id": "F-039",
+      "final_problem": "У PDS3 и PDS4 обратная полярность отбора давления относительно направления вытяжного потока.",
+      "source_ids": [
+        "G-020"
+      ]
+    },
+    {
+      "claim": "PDS4 подключён с обратной полярностью при пороге 100 Па.",
+      "final_id": "F-039",
+      "final_problem": "У PDS3 и PDS4 обратная полярность отбора давления относительно направления вытяжного потока.",
+      "source_ids": [
+        "G-020"
+      ]
+    }
+  ],
+  "source_evidence": "runtime_recovery_local_id_binding_review.json",
+  "limits": [
+    "Correct identity does not certify factual validity or claim publication completeness.",
+    "The unsupported heater-symbol claim remains a negative control; no quality acceptance inferred."
+  ],
+  "production_acceptance": false
+}
