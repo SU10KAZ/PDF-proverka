@@ -1,0 +1,21 @@
+{
+  "status": "nine_graphics_rendered_source_bytes_unchanged",
+  "source_intake_sha256": "192c93dfa9e14877dd34a2704e9378148c364512f6f0400811761823d03f0266",
+  "root": "/tmp/auditmanager_user_km_214_v002_20261111/source_only",
+  "index_path": "/tmp/auditmanager_user_km_214_v002_20261111/source_only/03_analysis/runs/candidate/blocks_stage02_100/index.json",
+  "index_sha256": "8aeeeb0581af2a3bb40a13fc92e7630b4f31b806d4bead6cd963877831e03ded",
+  "graphic_blocks": 9,
+  "text_blocks_not_rendered": 15,
+  "stamp_blocks_not_rendered": 2,
+  "rendition": "Local PDF visual orientation and normalized source rectangles; 100dpi with minimum long side 800, one-pixel margin before rounding.",
+  "source_semantics_reviewed": false,
+  "network_calls": 0,
+  "model_calls": 0,
+  "remaining": [
+    "Minimal runner metadata with local source paths",
+    "Source-only document graph and block context",
+    "Frozen separate calibration protocol"
+  ],
+  "independent_new_object_claimed": false,
+  "production_acceptance": false
+}
