@@ -1,0 +1,30 @@
+{
+  "status": "prepared",
+  "new_source_ids": [
+    "blk_0103a941fa5a4b0d9141a4149e927bff",
+    "blk_06029d59a01b4b779037ffcee1ae5260",
+    "blk_095853a82158483ab52761fde61dd652",
+    "blk_10f7f3fbc82f4e11be9c81cdf6e4bc5c",
+    "blk_1601889b50624245a5c590ad23d87175",
+    "blk_3050f16afc994b889498a2535ea14a52",
+    "blk_30789714316b48908c5addc9bfb135d2",
+    "blk_4916cf83dbce454b88ef0d17b8b1b922",
+    "blk_5d085f4c917a4e568fd33327e6f8edea",
+    "blk_630319779cfb408bb7b091a309e86a78",
+    "blk_7bb26b619d60430a8b597fee4d18d80e",
+    "blk_90da5d0d361c48008030c2bf87767ced",
+    "blk_94b58ecf5d404f7d90c272d267eb2e48",
+    "blk_9a10a5131f3e467db9bd6e9cce76c59a",
+    "blk_acc3bf59f8f447f988de16849e40e9f1",
+    "blk_b236e8ad38084811b7ae15386e293de5",
+    "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+    "blk_cc70e063642d457fa0a38b30b1a1a51f",
+    "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0"
+  ],
+  "omitted": [],
+  "automatic_dispatch": false,
+  "absence_proven": false,
+  "semantic_verified": false,
+  "next_stage": "object_operations_1d5ddc8a6489d3c9_context_2",
+  "request_sha256": "0e16e363aa15d6b901d090b2aae0061b7c19cdc16c2d3f00b2eee4e2d08883d5"
+}
