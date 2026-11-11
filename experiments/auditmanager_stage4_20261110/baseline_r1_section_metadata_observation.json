@@ -1,0 +1,717 @@
+{
+  "status": "baseline_section_metadata_observed_not_render_acceptance",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "runs": [
+    {
+      "discipline": "AK",
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+      "ledger_path": "experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477",
+      "finding_count": 66,
+      "explicit_questions": 0,
+      "unclassified_count": 66,
+      "fully_matched_question_targets": [
+        {
+          "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+          "finding_ids": [
+            "F-014"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+          "finding_ids": [
+            "F-011"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКОНОМИЧЕСКОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+          "finding_ids": [
+            "F-029"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F028_change_register_scope:da80e943594aac429110",
+          "finding_ids": [
+            "F-032"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+          "finding_ids": [
+            "F-002"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+          "finding_ids": [
+            "F-066"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+          "finding_ids": [
+            "F-030"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F033_power_reference_scope:2ec9d727804fc985242e",
+          "finding_ids": [
+            "F-033"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+          "finding_ids": [
+            "F-036"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+          "finding_ids": [
+            "F-050"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+          "finding_ids": [
+            "F-053"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+          "finding_ids": [
+            "F-054"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+          "finding_ids": [
+            "F-054"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+          "finding_ids": [
+            "F-054"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        }
+      ]
+    },
+    {
+      "discipline": "ITP",
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+      "ledger_path": "experiments/auditmanager_stage4_20261110/ITP_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2",
+      "finding_count": 57,
+      "explicit_questions": 0,
+      "unclassified_count": 57,
+      "fully_matched_question_targets": [
+        {
+          "target_id": "B-ITP-F-017:05e18fdb07cf5bb1bc8b",
+          "finding_ids": [
+            "F-017"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
+          "finding_ids": [
+            "F-040"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-020:c729cc29afbee39e2ed0",
+          "finding_ids": [
+            "F-040"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-021:61e590ad93c41a790803",
+          "finding_ids": [
+            "F-012"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-021:21e573255419bee97d92",
+          "finding_ids": [
+            "F-012"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-021:19069482aa6e7267f73b",
+          "finding_ids": [
+            "F-012"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-022:8cd785f32b0f2581717f",
+          "finding_ids": [
+            "F-010"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-024:f36bd082707154691153",
+          "finding_ids": [
+            "F-012"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
+          "finding_ids": [
+            "F-026"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-031:20e0a2fe6cdbb065f78a",
+          "finding_ids": [
+            "F-030"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-031:d7fa75e76f824fe5d722",
+          "finding_ids": [
+            "F-028"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-035:4868f82f52227408ecc1",
+          "finding_ids": [
+            "F-037"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-035:6e663d7b02b8e032a0c2",
+          "finding_ids": [
+            "F-037"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-038:705f2262875c31478443",
+          "finding_ids": [
+            "F-032"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-040:7f53850450a0df3ef46e",
+          "finding_ids": [
+            "F-039"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+          "finding_ids": [
+            "F-042"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-042:ecfe1ebab48bd184691d",
+          "finding_ids": [
+            "F-043"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-044:de24b888831313c4d337",
+          "finding_ids": [
+            "F-044"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "B-ITP-F-050:5cd9d3d1be70ff9681c3",
+          "finding_ids": [
+            "F-053"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
+          "finding_ids": [
+            "F-017"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
+          "finding_ids": [
+            "F-036"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
+          "finding_ids": [
+            "F-022"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+          "finding_ids": [
+            "F-046"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
+          "finding_ids": [
+            "F-045"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        }
+      ]
+    },
+    {
+      "discipline": "AR",
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+      "ledger_path": "experiments/auditmanager_stage4_20261110/AR_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "3e3f08c803fdaf9da8e5071ab7ae2e2587a47fcfd95ce38c6b4719722cbe5223",
+      "finding_count": 21,
+      "explicit_questions": 0,
+      "unclassified_count": 21,
+      "fully_matched_question_targets": [
+        {
+          "target_id": "AR17:b3834745b8377f227bbc",
+          "finding_ids": [
+            "F-018"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКОНОМИЧЕСКОЕ"
+          ]
+        },
+        {
+          "target_id": "AR36_B-AR-F-005:d576dd306cbd1e602f34",
+          "finding_ids": [
+            "F-005",
+            "F-016"
+          ],
+          "explicit_sections": [
+            null,
+            null
+          ],
+          "severities": [
+            "ЭКОНОМИЧЕСКОЕ",
+            "ЭКОНОМИЧЕСКОЕ"
+          ]
+        },
+        {
+          "target_id": "AR_F001_sp_editions:0fa6c5d50247757e829d",
+          "finding_ids": [
+            "F-002"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          ]
+        },
+        {
+          "target_id": "AR_F001_sp_editions:8f90690c3dc52ad03760",
+          "finding_ids": [
+            "F-002"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          ]
+        },
+        {
+          "target_id": "AR_F007_KM_references:b89d5f235921cd9de65b",
+          "finding_ids": [
+            "F-009"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "AR_F007_KM_references:b06b284a61699380958a",
+          "finding_ids": [
+            "F-009"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "AR_F008_sheet_register:3b6bd4f3bacbcd4e30ae",
+          "finding_ids": [
+            "F-001"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "AR_F009_club_classification_scope:4e28ba265a83e035660e",
+          "finding_ids": [
+            "F-011"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          ]
+        },
+        {
+          "target_id": "AR_F011_access_register:16a9d1d9252402ce3968",
+          "finding_ids": [
+            "F-013"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+          ]
+        },
+        {
+          "target_id": "AR_F018_screen_identity:2fc8c1d03f237cb052ba",
+          "finding_ids": [
+            "F-019"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        },
+        {
+          "target_id": "AR_F020_OGN4_height:45b7c32dafd201c30a67",
+          "finding_ids": [
+            "F-021"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "B-AR-F-004:5ba89cb25036827448d4",
+          "finding_ids": [
+            "F-004"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКОНОМИЧЕСКОЕ"
+          ]
+        },
+        {
+          "target_id": "B-AR-F-016:fff2912112e6c79e3b46",
+          "finding_ids": [
+            "F-017"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКОНОМИЧЕСКОЕ"
+          ]
+        }
+      ]
+    },
+    {
+      "discipline": "KM",
+      "findings_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "findings_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+      "ledger_path": "experiments/auditmanager_stage4_20261110/KM_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "f87b1c95f76a84973bd52d831ed4b0df40f56acbdac9a432eca613008fc3b2a3",
+      "finding_count": 27,
+      "explicit_questions": 0,
+      "unclassified_count": 27,
+      "fully_matched_question_targets": [
+        {
+          "target_id": "KM_F009_sheet_cross_reference:01c2e819a95b8ab792a2",
+          "finding_ids": [
+            "F-010"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "РЕКОМЕНДАТЕЛЬНОЕ"
+          ]
+        },
+        {
+          "target_id": "KM_F012_level_list_scope:caf42e6feef6a3355c54",
+          "finding_ids": [
+            "F-012"
+          ],
+          "explicit_sections": [
+            null
+          ],
+          "severities": [
+            "ЭКСПЛУАТАЦИОННОЕ"
+          ]
+        }
+      ]
+    }
+  ],
+  "current_renderer_evidence": [
+    {
+      "path": "frontend/static/js/app.js",
+      "sha256": "9ff9bd60b42505174300ffcb33e5c4e4fa05dc045e21591494f7307dd90ccdc5"
+    },
+    {
+      "path": "backend/app/pipeline/stages/report/generate_excel_report.py",
+      "sha256": "1b8a2b557dad416c649d1c1c1166496055b81f78d7e7f6f09aee53e0e57309b1"
+    },
+    {
+      "path": "backend/app/services/findings/report_routing.py",
+      "sha256": "c3efe1d127fbf33b5e14eb66e8d3f12c17508bed1d8d2c36608203cbf11fe2b2"
+    }
+  ],
+  "mechanism": "Only explicit report_section=questions routes a finding to the separate questions section; severity alone does not. Missing sections retain the legacy main-list route.",
+  "version_boundary": "Current checkout renderer inspected; the frozen baseline source capsule does not include frontend/static/js/app.js. No historical deployed UI behaviour is inferred.",
+  "limits": [
+    "No output or frozen candidate was changed.",
+    "This is metadata and code inspection, not a rendered export test of these project outputs.",
+    "Coverage ledgers and section scores are unchanged; final section acceptance still requires output rendering checks.",
+    "A target is not an independent physical defect; multiple targets may link to one finding."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
