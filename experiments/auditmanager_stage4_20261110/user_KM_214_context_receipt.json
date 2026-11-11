@@ -1,0 +1,51 @@
+{
+  "status": "prepared_source_contracts_passed",
+  "model_calls": 0,
+  "root": "/tmp/auditmanager_user_km_214_v002_20261111/prepared_context",
+  "context_source_snapshot_sha256": "c93ead373e6d08cc9a63bf84c1a884f5d3fc8694296fc969980515962542f748",
+  "graphic_blocks": 9,
+  "text_blocks": 15,
+  "sheet_status_counts": {
+    "missing": 4,
+    "high": 2
+  },
+  "source_counts": {
+    "structured_structure": 9
+  },
+  "metadata_change": {
+    "before": "5765ac9665a8dab7a20cda1407a86d266fa1a39111bd128d7b9b33ee6071bafb",
+    "after": "00ecb3f7c13c9efd0379183f8e874ebf34ca0365fe1fd96069662d6d34a772d5",
+    "reason": "Local runner paths and fixed discipline only; original intake preserved separately."
+  },
+  "files": {
+    "02_work/document.md": "3f32e829fac08e0006ca28f2cb2be2b3d2326f7be1fb58332c3ae85efd892ec4",
+    "02_work/document.pdf": "0a1b36ae187051e72297dd27e2369666b546b691623b9f4cc715cd866b84d0a0",
+    "02_work/blocks.json": "6077b969dc75802dce096ade0f8cd1846dbac8b3f2340d41b0e4d3445eef47fc",
+    "01_input/project_info.json": "00ecb3f7c13c9efd0379183f8e874ebf34ca0365fe1fd96069662d6d34a772d5",
+    "03_analysis/runs/candidate/document_graph.json": "8f607496e548a7aaf63fce3d9fd48ed1b3620613f79c65d63e7dec761a78462e",
+    "03_analysis/runs/candidate/block_context_summary.json": "a74fd36e0cbb9b33b51b9eea5d4331b040efd3c3bd84e7ab49c2f75f38d72816",
+    "03_analysis/runs/candidate/blocks_stage02_100/block_blk_7a032ac77dba4637a70f19d047e8cdc1.png": "d4b8dc3fbdb1a6d5dc1b13495985472e61a31c24b96a46383871a3e5b785bcf9",
+    "03_analysis/runs/candidate/blocks_stage02_100/block_blk_54d9909cd91649d7b8bae9ffe55b7e82.png": "b52d74adf5dddfe9467708db4e62dc56d35f1392a1d262cb508f841c13173e99",
+    "03_analysis/runs/candidate/blocks_stage02_100/block_blk_e67facc5d21f47aa851e184a24d50c7f.png": "338973927b233f7b33ef1ea136e9eecf939be2416ba86f52f500fc011136886d",
+    "03_analysis/runs/candidate/blocks_stage02_100/block_blk_f52e40eb477548ca96ab94b63a3c8509.png": "1a3a221173a2dfb7a5c3cb460937f49bd46d26a708289f640c222c95eafe75fd",
+    "03_analysis/runs/candidate/blocks_stage02_100/block_blk_044a4243b00b4d389eec82a9c42a1fa4.png": "a5cf7bc44cb0ad5f3dcd9b9b03ef2f7305c7d60d257ce06089e4fa2eda85cac4",
+    "03_analysis/runs/candidate/blocks_stage02_100/index.json": "8aeeeb0581af2a3bb40a13fc92e7630b4f31b806d4bead6cd963877831e03ded",
+    "03_analysis/runs/candidate/blocks_stage02_100/block_blk_72d9675cc0d647a2ba1b4df38e16c352.png": "ea411a0407743613cc867b44173ce5db43c01578b80072656078a59f4437766f",
+    "03_analysis/runs/candidate/blocks_stage02_100/block_blk_f7d70259d9f247ed9418a81cc5cd60a7.png": "16e3e2007103dec821a27312525e66ec0652c03f40e5df8cc3b34d2cec56313c",
+    "03_analysis/runs/candidate/blocks_stage02_100/block_blk_9ccaebfcb0574075b73d5ca6d544623e.png": "dd55b54e25160949daef55aff2f8a364be0c53c4f600e48f688b9304fe6c00c1",
+    "03_analysis/runs/candidate/blocks_stage02_100/block_blk_18df84c011cd44df85dbfbff94751726.png": "b9aa204f12ad4d16c3b8291737e6c0a7112decd7b2bee0ccfce029c1e245b618",
+    "03_analysis/runs/candidate/block_vector_graphs/blk_7a032ac77dba4637a70f19d047e8cdc1.json": "1d29c01b76a29ac8f535b227c667363330476da7cbaf913479c16ae59122667c",
+    "03_analysis/runs/candidate/block_vector_graphs/blk_18df84c011cd44df85dbfbff94751726.json": "595948f24c2433a65b6dfb79663e6ae0a03ca400275f11bd0a393d3b66fc3c89",
+    "03_analysis/runs/candidate/block_vector_graphs/blk_f52e40eb477548ca96ab94b63a3c8509.json": "ba2b23736ffe9d77275e33ed845c9cb993e3cbd3dd78c41193dc8740c2fa42c7",
+    "03_analysis/runs/candidate/block_vector_graphs/blk_9ccaebfcb0574075b73d5ca6d544623e.json": "5803f99842633251ecade55e2d80fbf07905959cf1d332f3e4a94939c761ad1b",
+    "03_analysis/runs/candidate/block_vector_graphs/blk_72d9675cc0d647a2ba1b4df38e16c352.json": "bfaf80d505ac170c1ccdaf3f282c780e4c63dcc1a8d18e2cc9db0570b458ec9e",
+    "03_analysis/runs/candidate/block_vector_graphs/blk_f7d70259d9f247ed9418a81cc5cd60a7.json": "62fab38a6fbedaaa9303cf521e626ab863a67112c2a7f13d42563996ec45bd14",
+    "03_analysis/runs/candidate/block_vector_graphs/blk_044a4243b00b4d389eec82a9c42a1fa4.json": "41f83ad360dd38c0465e3dbf518823b5ba4c8be4ff445880b56e982c97a430df",
+    "03_analysis/runs/candidate/block_vector_graphs/blk_e67facc5d21f47aa851e184a24d50c7f.json": "ae4c1f51c27db85e0378337d0c53930f028de7a1c4c96a2a32f7cc72c2f4efef",
+    "03_analysis/runs/candidate/block_vector_graphs/blk_54d9909cd91649d7b8bae9ffe55b7e82.json": "95b373358b4667e2cc5a649ff525c58fda8f66844b8926fbea791056d31fc4c3"
+  },
+  "source_text_pdf_graphic_bytes_unchanged": true,
+  "historical_answers_read": false,
+  "new_independent_object_claimed": false,
+  "trial_started": false
+}
