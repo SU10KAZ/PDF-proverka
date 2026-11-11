@@ -1,0 +1,738 @@
+{
+  "schema_version": 1,
+  "discipline": "KM",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "findings_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+  "reviewer": "coordinator_source_bound_review_not_new_engineer_acceptance",
+  "entire_output_reviewed": true,
+  "targets": [
+    {
+      "target_id": "B-KM-F-024:e542b18bca55db64dadc",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-KM-F-024.json",
+          "sha256": "ee417134781cb32eb990c6a47841e5348b34eebf7a42363cbf4a004733035123"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "СНиП из названия СП20 не выпущен как отдельная самостоятельная устаревшая ссылка.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM13_F004_S2_anchor_multiplicity:59a9339a0f210f950692",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM13_F004_S2_anchor_multiplicity.json",
+          "sha256": "b039e259c55746828a55fdad1fbb9afe04bc99d2498ae858403e14b33bf19631"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Сохранены секция С2, развёрнутая повторяемость и 488/448 анкеров. Масса пластин отмечена отдельно с оговоркой об отверстиях; фактическая недопоставка не считается доказанной этим совпадением.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM14_LK6_repetitions_conditional_totals:f37239acceec07686153",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM14_LK6_repetitions_conditional_totals.json",
+          "sha256": "ef42022ce9ccb4895b2cc4bb11aacc050a7d72636e26bd45375b95a0c663a3b4"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Повторяемость ОГМ22/25 по два и 57 пластин сохранены. Но 228/188 анкеров выданы без неопределённости значения 28 в строках ОГМ21/24; условный итог превращён в установленный недоучёт.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM3:23f9be653d9b57c84d4c",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM3.json",
+          "sha256": "b453c43a58d1054330e0ac62fc71b0488ebbfcc1bca7aabe16011cd7d124e215"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Выноска ОГМ26 на плане ЛК6 −0,700 и вопрос ошибочной марки найдены. Отсутствие деталировки и данных изготовления утверждается шире установленного отсутствия строки и ограничения ведомости.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM5_S3_bent_handrail_developed_length:f55d97014c925f15f7ac",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM5_S3_bent_handrail_developed_length.json",
+          "sha256": "0d30fb366a7e5dc1cbcaf40ea55979118c8c44e929912483c5b539a27e5f69c9"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Гнутый поручень ОГМ4 секции С3 с 3640 против суммы 3240 не рассмотрен. Прямые поручни других листов не заменяют этот объект.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM6_F018_straight_handrail_rejection_review:41b349266f7d7fa6803b",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-024",
+        "F-025"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json",
+          "sha256": "332c6b03682d0728dc030587f7934bbd6c930302eda3c3c261bee60353061ea3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "ОГМ9 3400/3300 и ОГМ10 3065/2965 сохранены с вопросом границ. Нет третьего расхождения ОГМ4 3765/3665; объяснение вычета по узлам Д/Е не проверено, поэтому вся цель не покрыта.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM9_LK5_landing_elevation:95ba2445f5ada28f5184",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM9_LK5_landing_elevation.json",
+          "sha256": "258baafbac8c43c86e9a48ba228505f40cb9bd22ad945c8c03aa587ff06eb35b"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Различие −2,350/−2,500 нижней площадки ЛК5 с ОГМ20 не найдено. Отметки ЛК6 из F-020/021 относятся к другим объектам.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F001_norm_editions_scope:cc6d088a37f8ea14e2fe",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-001"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F001_norm_editions_scope.json",
+          "sha256": "33b3aa3bc7d3e7470afa0640da907a872316eb10bda4279b180e36cca8f558de"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Разные редакции СП16 для перечня и сварки сохранены. ГОСТ23118-2012 назван, но его подтверждённая замена не установлена; основание применимости верно оставлено открытым.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F003_loads_document_link:51c645f6877fe417223f",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F003_loads_document_link.json",
+          "sha256": "c6dc587ee5359dc549bda0a342845dbff0d8941417085f9949b3e6e5f8eb6691"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Глобальное отсутствие любых ссылок не утверждается: F-003 признаёт КМ8 и требует однозначный адрес. Неполный учёт КЖ отдельно ограничивает положительное совпадение.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F003_loads_document_link:978d350d6e39eb1fcf5a",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F003_loads_document_link.json",
+          "sha256": "c6dc587ee5359dc549bda0a342845dbff0d8941417085f9949b3e6e5f8eb6691"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Запрошен точный расчёт нагрузок и усилий, отмечены Конструктивно и ссылка КМ8. Прямая отсылка пункта 1.6 к КЖ не учтена; формулировка отсутствия исходных данных шире локальной проверки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F008_weld_calculation_requirement:17d3c36c737f3734f145",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F008_weld_calculation_requirement.json",
+          "sha256": "76a198553e6e2fd04bef42ef3c57894d433c24e7a4c6943a44fafc3d6ccda164"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Отсутствие предусмотренной расчётной проверки не заявлено: F-003 прямо признаёт передачу определения размеров в КМД по расчётным усилиям.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F009_sheet_cross_reference:01c2e819a95b8ab792a2",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-010"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F009_sheet_cross_reference.json",
+          "sha256": "7fbdfa43cd59998b7eba82f63bed364033f257914b0db60f482280b24d7def1e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Примечание 5 листа 4 сопоставлено с зарегистрированным листом 3 схемы С2. Это покрытие ошибки ссылки; категория и гипотетические последствия отдельно не приняты.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F010_end_caps_material_accounting:f1072b185954c64a3f41",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F010_end_caps_material_accounting.json",
+          "sha256": "b32312f6cad2d814ffc5e487eaa8e55ef5b42e961a8126469f22ee529d1cf693"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Отсутствие отдельной строки листа 3 мм найдено. Но предписано включить материал без выяснения добавки к массе и его возможного существующего учёта; 22 детали не заменяют полный баланс свободных торцов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F012_level_list_scope:caf42e6feef6a3355c54",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F012_level_list_scope.json",
+          "sha256": "f2c0052c8e3217c2fc0115deb2f4d7a426e4127d17ce0a4ca37e36645858abcd"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Обе отметки +22,550/+32,630 сопоставлены с разрезом и областью типовой схемы. Количество изделий автоматически не увеличено; дополнительный тезис +39,350 требует отдельной проверки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F013_pipe_standard_designations:72e396e785f77c8d64b3",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F013_pipe_standard_designations.json",
+          "sha256": "a15f78ba84e466ec6c47f29ec3e77b047613bf2a079f141e886a4882d67ab649"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Разные обозначения 8732-78/2025 для трубы сохранены. Замена стандарта не проверена в выдаче; охват листа 6 шире подтверждённого эталонного объёма и оценивается отдельно.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F014_adjacent_flights_identity:b731dff3b4f369ab5f8b",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Оценка технической ложности и приёмка фильтра приостановлены замороженным evaluator errata. F-017 содержит связанную формулировку, но не засчитывается повтором ошибки по опровергнутому основанию снятия.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F015_typical_level_list:bce51ca28ffba3fa98c3",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-015"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+          "sha256": "86849d4e464c5efa654fd2e5aa1e08127b5859ee7c63a2ec2eddd62ecda17ea5"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Последняя отметка +37,510 в типовом списке С3 сопоставлена с +34,150 разреза и следующим участком ОГМ7. Исправление прямо обусловлено проверкой проектной геометрии.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F025_standard_title_editorial:81d65a25e69a6b09ca37",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F025_standard_title_editorial.json",
+          "sha256": "3f8d7c7073427759289a2b6f7d9c0bfa350602d05a9aca89b1e6a7dd04534045"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Редакционное название ГОСТ19903-2015 не рассмотрено; ошибка индекса Р другого стандарта F-027 не заменяет этот вопрос.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM12_F022_anchor_installation_identity:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003",
+        "F-026"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json",
+          "sha256": "b9d5cb7748465536b642a9edc3df0d3d5d897d8df415e46fe603482443a9aaa5"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Запрошены расчёт, точное исполнение, бетон и монтаж HSA-M10×90; универсальные глубины не назначены. Не учтена заданная геометрия пластины 120×120×10, четырёх анкеров и шага70; не раскрыта связь с КЖ.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F002_ladder_description_scope:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-002"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F002_ladder_description_scope.json",
+          "sha256": "151514dfc81300d49bb4d1a639ed4f1aa4c315ae354ce07ec93e89f6a653d70a"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Несогласованность описания стремянки и спецификации ограждений сохранена, наличие анкеров признано. Принадлежность стремянки КМ6.2 не проверена, замена описания предписана без выяснения области.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F005_total_plate_balance:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-004",
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F005_total_plate_balance.json",
+          "sha256": "c0650dd58ee0c6cf3ec04847956f7b9534183f7169c5f65f167fba59080061cf"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Есть частные балансы 57 пластин ЛК6 и 122 С2. Нет общего 437, сравнения 493,9848/472 и 64,4328/53; сводный баланс полностью не выполнен. Отдельная оценка раздела для этой цели приостановлена эталоном.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F006_profile_mass_recalculation:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F006_profile_mass_recalculation.json",
+          "sha256": "50baec1746488e3179ac2bd45e64ef3493a81ef06326deb30af36fc3a165e822"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Длины 128,505/128,875 и массы при 3,36 сохранены, решение требует проверки сечений и методики. Однако принадлежность всех позиций профилю 40×40×3 в описании утверждена до проверки пустых обозначений сечения.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F007_round_pipe_unreproduced_total:composite:1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F007_round_pipe_unreproduced_total.json",
+          "sha256": "6b38efc1f6e92ce5dc08ce3b43ed619504013063160fdb52d3bd13e62f931a88"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Происхождение 41,125 м и раскладка 33,265/35,125 м круглой трубы ЛК6 не рассмотрены. Частные длины повторных изделий F-004 не заменяют этот баланс.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F008_weld_calculation_requirement:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F008_weld_calculation_requirement.json",
+          "sha256": "76a198553e6e2fd04bef42ef3c57894d433c24e7a4c6943a44fafc3d6ccda164"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Запрошены усилия и расчёт сварных соединений при признании передачи в КМД. Не сопоставлены конкретное требование расчёта п.3.5, ограничение 1,2t и размеры швов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F011_dimension_reference_points:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F011_dimension_reference_points.json",
+          "sha256": "b47d5331d28fc2d1a12dc1c4f52e732d33cedfa68ff068827a9e9481165cc324"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "2030/2070 у +4,630 найдены. Не проверены выносные линии, ось/грань и стена; различие размеров площадки заявлено до установления тождества баз.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F016_label_count_scope:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F016_label_count_scope.json",
+          "sha256": "38f37126a25f3a6b37eaba9d42387f4084f2b39e40f54f08e6d103f71ed0c1d6"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Две выноски ОГМ5 и одно изделие спецификации сопоставлены, выбор между ошибкой марки и количества оставлен открытым. Нет трёх выносок ОГМ6 и согласованных двух изделий разреза/спецификации; разрез ОГМ5 также не учтён.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F019_OGM11_end_component_boundaries:composite:1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F019_OGM11_end_component_boundaries.json",
+          "sha256": "fc992c096f95e4d0d40316e308fe0f78b6970c3f1e7fccfbdb82d8883a88cf98"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "ОГМ11 3100/2900 с концевыми узлами Б/Д не рассмотрено. ОГМ9/10 не засчитываются вместо этого объекта.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "KM_F020_conditional_diagonal:composite:1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F020_conditional_diagonal.json",
+          "sha256": "8f35494d8dc6ed5ce840b1d43c8f126ebd9d4369ce0a661397afc4e434fa538c"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad"
+        }
+      ],
+      "reason": "Границы 245/170/335 и условный расчёт диагонали позиции6 не рассмотрены.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "limits": [
+    "Full match requires all mandatory object, relationship and location context.",
+    "Score unsupported additions and novel findings separately.",
+    "Engineer confirmation is required; model suggestions alone are not final matches."
+  ]
+}
