@@ -1,0 +1,1020 @@
+{
+  "status": "baseline_coverage_three_repeats_not_trial_acceptance",
+  "evaluator_path": "experiments/auditmanager_stage4_20261110/evaluator_release_errata_v2.json",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "repeats": [
+    {
+      "repeat": 1,
+      "projects": [
+        {
+          "discipline": "AK",
+          "source": {
+            "discipline": "AK",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+            "ledger_sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 55,
+                "availability_available": 55,
+                "partial": 12,
+                "absent": 3,
+                "full": 40
+              },
+              "review_complete": true,
+              "full_match_rate": 0.7272727272727273,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 23,
+                "availability_available": 23,
+                "partial": 6,
+                "full": 14,
+                "absent": 3
+              },
+              "review_complete": true,
+              "full_match_rate": 0.6086956521739131,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 22,
+                "availability_available": 22,
+                "absent": 21,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 54
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "ITP",
+          "source": {
+            "discipline": "ITP",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r1_completed_coverage_ledger.json",
+            "ledger_sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 19,
+                "availability_available": 19,
+                "partial": 8,
+                "full": 8,
+                "absent": 3
+              },
+              "review_complete": true,
+              "full_match_rate": 0.42105263157894735,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 56,
+                "availability_available": 56,
+                "partial": 23,
+                "absent": 9,
+                "full": 24
+              },
+              "review_complete": true,
+              "full_match_rate": 0.42857142857142855,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 12,
+                "availability_available": 12,
+                "absent": 10,
+                "partial": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 32
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "AR",
+          "source": {
+            "discipline": "AR",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r1_completed_coverage_ledger.json",
+            "ledger_sha256": "3e3f08c803fdaf9da8e5071ab7ae2e2587a47fcfd95ce38c6b4719722cbe5223"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 2,
+                "availability_available": 2,
+                "full": 1,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 21,
+                "availability_available": 21,
+                "absent": 6,
+                "full": 13,
+                "partial": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 0.6190476190476191,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 10,
+                "availability_available": 10,
+                "absent": 9,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 14
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "KM",
+          "source": {
+            "discipline": "KM",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r1_completed_coverage_ledger.json",
+            "ledger_sha256": "f87b1c95f76a84973bd52d831ed4b0df40f56acbdac9a432eca613008fc3b2a3"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 4,
+                "availability_available": 4,
+                "full": 2,
+                "partial": 1,
+                "absent": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 20,
+                "availability_available": 20,
+                "partial": 13,
+                "absent": 5,
+                "full": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 0.1,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 3,
+                "availability_available": 3,
+                "absent": 3,
+                "held": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 4,
+            "held": 1
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "VK",
+          "source": {
+            "discipline": "VK",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "f1af464f54b891870a16ed8dba3f766301bd3926bb12d58f969c40ac71e537f8",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_completed_coverage_ledger.json",
+            "ledger_sha256": "51d93d5ab1e16b3699a93df72df3c601c426986f1e34be0061e93d766dbf9a7b"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 2,
+                "availability_available": 2,
+                "partial": 1,
+                "full": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 26,
+                "availability_available": 26,
+                "full": 8,
+                "partial": 8,
+                "absent": 10
+              },
+              "review_complete": true,
+              "full_match_rate": 0.3076923076923077,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 11,
+                "availability_available": 11,
+                "absent": 11
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 9
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "EOM",
+          "source": {
+            "discipline": "EOM",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "5b69122029e6985fbeebfa71cb54d687f8219171e432fd09a4c2f8718c872386",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_completed_coverage_ledger.json",
+            "ledger_sha256": "37b9b611cc988bcf51c2c23d1adb2b11b93832af5c748642c73c7700798fa8f3"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 2,
+                "availability_available": 2,
+                "absent": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 52,
+                "availability_available": 52,
+                "full": 33,
+                "partial": 8,
+                "absent": 11
+              },
+              "review_complete": true,
+              "full_match_rate": 0.6346153846153846,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 18,
+                "availability_available": 18,
+                "absent": 15,
+                "partial": 2,
+                "full": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.05555555555555555,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 31,
+            "held": 2
+          },
+          "section_adapters": [
+            "EOM_F032_commercial_area_inputs:16faed04bf572c1876a5",
+            "EOM_F032_commercial_area_inputs:147160644f952ff76e59"
+          ]
+        }
+      ],
+      "totals": {
+        "technical": {
+          "denominator": 84,
+          "availability_available": 84,
+          "partial": 23,
+          "absent": 9,
+          "full": 52
+        },
+        "question": {
+          "denominator": 198,
+          "availability_available": 198,
+          "partial": 60,
+          "full": 94,
+          "absent": 44
+        },
+        "negative": {
+          "denominator": 76,
+          "availability_available": 76,
+          "absent": 69,
+          "partial": 6,
+          "held": 1,
+          "full": 1
+        }
+      }
+    },
+    {
+      "repeat": 2,
+      "projects": [
+        {
+          "discipline": "AK",
+          "source": {
+            "discipline": "AK",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "23f2f26b2037210e7d364cf48c55d42f62832e649a25b10b0f3eb4f1ab8a8c3b",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_coverage_ledger.json",
+            "ledger_sha256": "449d0c8fb50834c3f647396ff56c34e27bd3c35538560c5367b84f62551a1618",
+            "coverage_status": "reviewed"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 55,
+                "availability_available": 55,
+                "partial": 15,
+                "absent": 3,
+                "full": 37
+              },
+              "review_complete": true,
+              "full_match_rate": 0.6727272727272727,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 23,
+                "availability_available": 23,
+                "partial": 5,
+                "full": 14,
+                "absent": 4
+              },
+              "review_complete": true,
+              "full_match_rate": 0.6086956521739131,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 22,
+                "availability_available": 22,
+                "absent": 20,
+                "full": 1,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.045454545454545456,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 51
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "ITP",
+          "source": {
+            "discipline": "ITP",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_coverage_ledger.json",
+            "ledger_sha256": "bd048fa48edc53cc95406086aa67879420eee8ff86c89905f0241e17b33e5445",
+            "coverage_status": "reviewed"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 19,
+                "availability_available": 19,
+                "partial": 10,
+                "full": 7,
+                "absent": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 0.3684210526315789,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 56,
+                "availability_available": 56,
+                "partial": 25,
+                "full": 19,
+                "absent": 12
+              },
+              "review_complete": true,
+              "full_match_rate": 0.3392857142857143,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 12,
+                "availability_available": 12,
+                "absent": 11,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 26
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "AR",
+          "source": {
+            "discipline": "AR",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "19945dcbf049ddaac4c873aa6699b58b1a2bc9085e4788efc9b9d43cd73eda3e",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_completed_coverage_ledger.json",
+            "ledger_sha256": "bd862c6c4d1abe7c57b3c45dc28b488ddb8ddca8f96b5ecff2c2128b7c670795",
+            "coverage_status": "reviewed"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 2,
+                "availability_available": 2,
+                "full": 1,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 21,
+                "availability_available": 21,
+                "absent": 7,
+                "full": 11,
+                "partial": 3
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5238095238095238,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 10,
+                "availability_available": 10,
+                "absent": 9,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 12
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "KM",
+          "source": {
+            "discipline": "KM",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "d93486c6a6510ae841be839873e137a44c3241005e6060361017dce855a3e5d1",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_completed_coverage_ledger.json",
+            "ledger_sha256": "b79de5b362cff64fcc4c4553688eb2040b1fa41bf5c373835deb2262f8c088e5",
+            "coverage_status": "reviewed"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 4,
+                "availability_available": 4,
+                "full": 1,
+                "partial": 2,
+                "absent": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.25,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 20,
+                "availability_available": 20,
+                "partial": 11,
+                "absent": 6,
+                "full": 3
+              },
+              "review_complete": true,
+              "full_match_rate": 0.15,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 3,
+                "availability_available": 3,
+                "absent": 3,
+                "held": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 4,
+            "held": 1
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "VK",
+          "source": {
+            "discipline": "VK",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "6182e5efe3cb42c6924c22aec4caa065ddd49a6e1130d44dc73a157477cbd9cd",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_completed_coverage_ledger.json",
+            "ledger_sha256": "052cc9870b1727d14ffe47e24e903c2ec899bc59e0e5d3846d4b16b45c78e1da",
+            "coverage_status": "reviewed"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 2,
+                "availability_available": 2,
+                "partial": 1,
+                "full": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 26,
+                "availability_available": 26,
+                "partial": 10,
+                "full": 7,
+                "absent": 9
+              },
+              "review_complete": true,
+              "full_match_rate": 0.2692307692307692,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 11,
+                "availability_available": 11,
+                "absent": 11
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 8
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "EOM",
+          "source": {
+            "discipline": "EOM",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "4b6101d8efa69bb635f953a84ce8d301b3ab5d0fca05ea0c7263afe52bcc54ca",
+            "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_completed_coverage_ledger.json",
+            "ledger_sha256": "149921326a4c237ab43fd514d1b799ed6437d45e62f66f09f890bdaf91a82e51",
+            "coverage_status": "reviewed"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 2,
+                "availability_available": 2,
+                "absent": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 52,
+                "availability_available": 52,
+                "full": 32,
+                "partial": 8,
+                "absent": 12
+              },
+              "review_complete": true,
+              "full_match_rate": 0.6153846153846154,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 18,
+                "availability_available": 18,
+                "absent": 17,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 30,
+            "held": 2
+          },
+          "section_adapters": []
+        }
+      ],
+      "totals": {
+        "technical": {
+          "denominator": 84,
+          "availability_available": 84,
+          "partial": 29,
+          "absent": 8,
+          "full": 47
+        },
+        "question": {
+          "denominator": 198,
+          "availability_available": 198,
+          "partial": 62,
+          "full": 86,
+          "absent": 50
+        },
+        "negative": {
+          "denominator": 76,
+          "availability_available": 76,
+          "absent": 71,
+          "full": 1,
+          "partial": 4,
+          "held": 1
+        }
+      }
+    },
+    {
+      "repeat": 3,
+      "projects": [
+        {
+          "discipline": "AK",
+          "source": {
+            "discipline": "AK",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34",
+            "ledger_path": "experiments/auditmanager_stage4_20261110/AK_r3_coverage_ledger.json",
+            "ledger_sha256": "bf15e6bd7dbb66d3f5ad86c17fff3c9721f8981562a812d492a50df57ba4d004"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 55,
+                "availability_available": 55,
+                "full": 35,
+                "absent": 3,
+                "partial": 17
+              },
+              "review_complete": true,
+              "full_match_rate": 0.6363636363636364,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 23,
+                "availability_available": 23,
+                "partial": 7,
+                "full": 12,
+                "absent": 4
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5217391304347826,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 22,
+                "availability_available": 22,
+                "absent": 20,
+                "partial": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 47
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "AR",
+          "source": {
+            "discipline": "AR",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "621390c1cdb193ce05fdfe22870406a03c1b214eafddde754219d244db341a85",
+            "ledger_path": "experiments/auditmanager_stage4_20261110/AR_r3_completed_coverage_ledger.json",
+            "ledger_sha256": "743bca7f5fc6204fd5878e65c03462598d96ccb253016ca5aa2f90839083b389"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 2,
+                "availability_available": 2,
+                "full": 1,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 21,
+                "availability_available": 21,
+                "absent": 7,
+                "full": 12,
+                "partial": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5714285714285714,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 10,
+                "availability_available": 10,
+                "absent": 10
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 13
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "ITP",
+          "source": {
+            "discipline": "ITP",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "aa76592c061f7c75196ee2c35c606de32dd98c383243ddb22357d35dde54c89b",
+            "ledger_path": "experiments/auditmanager_stage4_20261110/ITP_r3_coverage_ledger.json",
+            "ledger_sha256": "03a062e8b031a4787afa3936335cce1df58628c08ccfc54b2654020d146af293"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 19,
+                "availability_available": 19,
+                "full": 11,
+                "partial": 7,
+                "absent": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5789473684210527,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 56,
+                "availability_available": 56,
+                "full": 31,
+                "partial": 18,
+                "absent": 7
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5535714285714286,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 12,
+                "availability_available": 12,
+                "absent": 11,
+                "partial": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 42
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "KM",
+          "source": {
+            "discipline": "KM",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "24144ca36a134832df47be32c1b795fc8923515017c46a3e07296ab7380ce60f",
+            "ledger_path": "experiments/auditmanager_stage4_20261110/KM_r3_completed_coverage_ledger.json",
+            "ledger_sha256": "79515eb1000d61bc5d8fbcc332d4e161d7626fd67e2375fc7a7b77a26fc66512"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 4,
+                "availability_available": 4,
+                "full": 2,
+                "partial": 1,
+                "absent": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.5,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 20,
+                "availability_available": 20,
+                "partial": 8,
+                "full": 7,
+                "absent": 5
+              },
+              "review_complete": true,
+              "full_match_rate": 0.35,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 3,
+                "availability_available": 3,
+                "absent": 3,
+                "held": 1
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 9,
+            "held": 1
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "VK",
+          "source": {
+            "discipline": "VK",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "0a4caa0be6bebf3fdd93179a8bbd4bc4cd80a12f7cb63e2650f447a29f317bcb",
+            "ledger_path": "experiments/auditmanager_stage4_20261110/VK_r3_coverage_ledger.json",
+            "ledger_sha256": "0dca12f32f90ecca3d979af278c86dd3610db9a1a55f07793badc6729984ff57"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 2,
+                "availability_available": 2,
+                "full": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 1.0,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 26,
+                "availability_available": 26,
+                "full": 12,
+                "absent": 10,
+                "partial": 4
+              },
+              "review_complete": true,
+              "full_match_rate": 0.46153846153846156,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 11,
+                "availability_available": 11,
+                "absent": 11
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 14
+          },
+          "section_adapters": []
+        },
+        {
+          "discipline": "EOM",
+          "source": {
+            "discipline": "EOM",
+            "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+            "final_sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+            "ledger_path": "experiments/auditmanager_stage4_20261110/EOM_r3_coverage_ledger.json",
+            "ledger_sha256": "71573391e34889b0cbae61b7e039654cd617e72366366889f585d183975b218c"
+          },
+          "routes": {
+            "technical": {
+              "counts": {
+                "denominator": 2,
+                "availability_available": 2,
+                "absent": 2
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "fully preserved target rate"
+            },
+            "question": {
+              "counts": {
+                "denominator": 52,
+                "availability_available": 52,
+                "full": 33,
+                "partial": 7,
+                "absent": 12
+              },
+              "review_complete": true,
+              "full_match_rate": 0.6346153846153846,
+              "meaning": "fully preserved target rate"
+            },
+            "negative": {
+              "counts": {
+                "denominator": 18,
+                "availability_available": 18,
+                "absent": 15,
+                "partial": 3
+              },
+              "review_complete": true,
+              "full_match_rate": 0.0,
+              "meaning": "repeated false claim rate"
+            }
+          },
+          "section_accuracy_counts": {
+            "unchecked": 31,
+            "held": 2
+          },
+          "section_adapters": []
+        }
+      ],
+      "totals": {
+        "technical": {
+          "denominator": 84,
+          "availability_available": 84,
+          "full": 51,
+          "absent": 7,
+          "partial": 26
+        },
+        "question": {
+          "denominator": 198,
+          "availability_available": 198,
+          "partial": 46,
+          "full": 107,
+          "absent": 45
+        },
+        "negative": {
+          "denominator": 76,
+          "availability_available": 76,
+          "absent": 70,
+          "partial": 6,
+          "held": 1
+        }
+      }
+    }
+  ],
+  "production_acceptance": false,
+  "limits": [
+    "Each repeat uses the same 359 targets, including one truth hold; these are not independent projects.",
+    "Full target coverage is not correctness of every addition in a finding.",
+    "Technical targets, questions and negative controls must not be pooled as defect recall.",
+    "Negative absence does not establish successful filtering. Partial negative matches must remain visible.",
+    "Output claim-review errata remain separate; this report does not aggregate free-form verdict labels into precision.",
+    "Report sections, useful retention, model cost/time, engineer burden, experimental comparison and new-project transfer remain unaccepted."
+  ]
+}
