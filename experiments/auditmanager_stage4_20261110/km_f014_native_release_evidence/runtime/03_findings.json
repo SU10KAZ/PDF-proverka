@@ -1,0 +1,3615 @@
+{
+  "meta": {
+    "project_id": "classic-control-KM",
+    "audit_completed": "2026-11-07T00:00:00+03:00",
+    "total_findings": 26,
+    "blocks_analyzed": 54,
+    "by_severity": {
+      "КРИТИЧЕСКОЕ": 0,
+      "ЭКОНОМИЧЕСКОЕ": 6,
+      "ЭКСПЛУАТАЦИОННОЕ": 7,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 5,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 2
+    },
+    "codex_targeted_added": 6,
+    "codex_targeted_stages": [
+      "alia_km_steel_audit",
+      "alia_docnorm_audit"
+    ],
+    "codex_targeted_enabled": true,
+    "finding_source_counts": {
+      "gpt": 0,
+      "codex": 10,
+      "gpt_codex": 0,
+      "claude": 0,
+      "claude_codex": 0,
+      "other": 0,
+      "unattributed": 16
+    },
+    "finding_source_schema_version": 1,
+    "finding_comparison_counts": {
+      "match": 4,
+      "extension": 1,
+      "new": 5,
+      "disputed": 0,
+      "unclassified": 16
+    },
+    "finding_comparison_schema_version": 1,
+    "normative_candidate_contract": {
+      "candidates": 34,
+      "with_clause_candidate": 1,
+      "normalized": 0
+    },
+    "quality_summary": {
+      "total": 26,
+      "high_relevance": 5,
+      "medium_relevance": 15,
+      "low_relevance": 6,
+      "likely_formal_only": 3,
+      "high_severity_formal_only": 1
+    },
+    "analysis_coverage": {
+      "schema_version": 1,
+      "summary": {
+        "gemma_uncovered_count": 0,
+        "single_block_failed_count": 0,
+        "stage02_crop_missing_count": 0,
+        "excluded_from_full_analysis_count": 0,
+        "base_gemma_covered_count": 0,
+        "base_gemma_total_count": 0,
+        "high_detail_candidates": 0,
+        "high_detail_successful": 0,
+        "high_detail_skipped_large": 0,
+        "base_only_blocks_count": 0,
+        "upgraded_to_300_count": 0
+      },
+      "gemma_uncovered_blocks": [],
+      "single_block_failed_blocks": [],
+      "stage02_crop_missing_blocks": [],
+      "blocks_analyzed_only_with_100_dpi_base": [],
+      "blocks_upgraded_to_300": [],
+      "excluded_blocks_from_full_analysis": [],
+      "sections": [
+        {
+          "title": "Блоки без подготовленного контекста",
+          "blocks": []
+        },
+        {
+          "title": "Ошибки single-block анализа",
+          "blocks": []
+        },
+        {
+          "title": "Блоки, исключённые из полноценного анализа",
+          "blocks": []
+        },
+        {
+          "title": "Блоки, оставшиеся на base 100 DPI",
+          "blocks": []
+        },
+        {
+          "title": "Блоки, upgraded до 300 DPI",
+          "blocks": []
+        }
+      ]
+    }
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "sheet": "Лист 1",
+      "page": 3,
+      "problem": "В общих указаниях приведены заменённые редакции нормативных документов.",
+      "description": "На листе 1 указаны СП 20.13330.2011, СП 28.13330.2012, СП 63.13330.2012, СП 16.13330.2011, СП 2.13130.2012, СП 48.13330.2011, СП 72.13330.2011 и ГОСТ 23118-2012. При этом материалы и швы назначены по СП 16.13330.2017. По предоставленным сведениям перечисленные старые редакции заменены; применимость актуальных редакций и изменений к принятым решениям требует проверки.",
+      "norm": "СП 20.13330.2016 (норматив-кандидат), пункт не подтверждён; СП 28.13330.2017 (норматив-кандидат), пункт не подтверждён; СП 63.13330.2018 (норматив-кандидат), пункт не подтверждён; СП 16.13330.2017 (норматив-кандидат), пункт не подтверждён; СП 2.13130.2020 (норматив-кандидат), пункт не подтверждён; СП 48.13330.2019 (норматив-кандидат), пункт не подтверждён; СП 72.13330.2016 (норматив-кандидат), пункт не подтверждён; ГОСТ 23118-2019 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 20.13330.2016",
+          "cited_designation": "СП 20.13330.2016",
+          "candidate_relevance": 0.75,
+          "reason": "Проверить применимую редакцию норм нагрузок и её влияние на принятые нагрузки ограждений.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "СП 28.13330.2017",
+          "cited_designation": "СП 28.13330.2017",
+          "candidate_relevance": 0.65,
+          "reason": "Проверить применимую редакцию требований к защите конструкций от коррозии.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "СП 63.13330.2018",
+          "cited_designation": "СП 63.13330.2018",
+          "candidate_relevance": 0.45,
+          "reason": "Проверить применимость требований к железобетонному основанию анкерных креплений.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "СП 16.13330.2017",
+          "cited_designation": "СП 16.13330.2017",
+          "candidate_relevance": 0.9,
+          "reason": "Согласовать редакцию норм для стальных элементов и сварных соединений.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "СП 2.13130.2020",
+          "cited_designation": "СП 2.13130.2020",
+          "candidate_relevance": 0.5,
+          "reason": "Проверить применимую редакцию требований огнестойкости.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "СП 48.13330.2019",
+          "cited_designation": "СП 48.13330.2019",
+          "candidate_relevance": 0.4,
+          "reason": "Проверить применимую редакцию требований к организации строительства.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "СП 72.13330.2016",
+          "cited_designation": "СП 72.13330.2016",
+          "candidate_relevance": 0.4,
+          "reason": "Проверить применимую редакцию требований к защитным покрытиям.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "ГОСТ 23118-2019",
+          "cited_designation": "ГОСТ 23118-2019",
+          "candidate_relevance": 0.7,
+          "reason": "Проверить применимую редакцию требований к изготовлению и приёмке стальных строительных конструкций.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить применимую нормативную базу, привести ссылки к согласованным редакциям и проверить затронутые проектные решения.",
+      "risk": "Неоднозначная нормативная база при изготовлении, проверке и приёмке конструкций.",
+      "source_finding_ids": [
+        "T-001"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_f63af88de2a840e49ca709d736eaa225"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "schedule",
+          "construction"
+        ],
+        "formalism_flags": [
+          "formal_reference_category"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-002",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Листы 1, 2",
+      "page": [
+        3,
+        4
+      ],
+      "problem": "Описание стремянки не согласуется с составом комплекта ограждений лестниц.",
+      "description": "Раздел «Конструктивные решения» описывает стремянку из уголков, круглых ступеней, полосового ограждения и болтов. В технической спецификации комплекта приведены трубы, листы и анкеры; материалы и крепёж описанной стремянки отсутствуют.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить требования к содержанию общих данных и согласованности конструктивных решений со спецификацией.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-002"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Описать фактически запроектированные ограждения либо указать, к какому другому комплекту относится стремянка.",
+      "risk": "Ошибочное толкование состава работ и материалов.",
+      "source_finding_ids": [
+        "T-002"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_7b0802767f0147c197b0a35334b4a7ae",
+        "blk_f63af88de2a840e49ca709d736eaa225"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3
+        },
+        {
+          "type": "text",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "page": 4
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 45,
+        "engineering_relevance": "medium",
+        "impact_axes": [],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-003",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "stability",
+      "sheet": "Лист 1",
+      "page": 3,
+      "problem": "Не заданы горизонтальная нагрузка на поручни и усилия для расчёта соединений.",
+      "description": "В общих указаниях расчёт соединений поручен разработчику КМД, но передаваемые усилия не приведены; в ведомостях элементов вместо них указано «Конструктивно». Горизонтальная нагрузка на поручни и однозначная ссылка на её расчёт отсутствуют. Указанное в исходном анализе базовое значение для поручней жилых зданий составляет 0,3 кН/м; требуемое значение зависит от назначения участка.",
+      "norm": "СП 20.13330.2016 (норматив-кандидат), кандидат п. 8.3.1",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 20.13330.2016",
+          "cited_designation": "СП 20.13330.2016",
+          "candidate_relevance": 0.95,
+          "reason": "Проверить нормативную горизонтальную нагрузку на поручни с учётом назначения лестниц.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-003"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": "8.3.1",
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Указать расчётную нагрузку и усилия для стоек, сварных соединений, опорных пластин и анкеров либо дать точную ссылку на расчёт с этими данными.",
+      "risk": "Невозможно подтвердить несущую способность ограждений и их креплений.",
+      "source_finding_ids": [
+        "T-003"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_f63af88de2a840e49ca709d736eaa225"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 35,
+        "engineering_relevance": "low",
+        "impact_axes": [],
+        "formalism_flags": [
+          "reference_register",
+          "reference_maintenance"
+        ],
+        "likely_formal_only": true,
+        "severity_mismatch": true,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-004",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Листы 2, 4",
+      "page": [
+        4,
+        6
+      ],
+      "problem": "Сводная спецификация секции С2 занижает количество анкеров и массу опорных пластин.",
+      "description": "В технической спецификации секции С2 указано 448 анкеров, а сумма по ведомостям элементов составляет 488; расхождение — 40 штук. Для 122 опорных пластин 10×120×120 мм расчётная масса составляет 137,909 кг при плотности стали 7850 кг/м³ против 127 кг в сводной спецификации.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить требования к составлению и согласованию спецификаций с ведомостями элементов.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-004"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить количество элементов и скорректировать сводную спецификацию анкеров и листа толщиной 10 мм.",
+      "risk": "Недопоставка анкеров и опорных пластин, задержка монтажа.",
+      "source_finding_ids": [
+        "T-004"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_7b0802767f0147c197b0a35334b4a7ae",
+        "blk_addaa8965de54d218095d13652f30388",
+        "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+        "blk_ec977eb41e834dc8b7b332a66932a777"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "page": 4
+        },
+        {
+          "type": "text",
+          "block_id": "blk_addaa8965de54d218095d13652f30388",
+          "page": 6
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 87,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-005",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Листы 2, 7, 9, 10",
+      "page": [
+        4,
+        9,
+        11,
+        12
+      ],
+      "problem": "Для ЛК6 в сводной спецификации не хватает 40 анкеров.",
+      "description": "По спецификации расположения и ведомостям элементов ЛК6 требуется 228 анкеров, тогда как на листе 2 указано 188. Для 57 опорных пластин 10×120×120 мм расчётная масса составляет 64,433 кг против 53 кг в сводной спецификации. С учётом секции С2 суммарная потребность по деталировочным ведомостям составляет 1748 анкеров вместо 1668 и 437 опорных пластин массой 493,985 кг вместо 472 кг листа толщиной 10 мм.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить согласованность сводной спецификации с ведомостями элементов и схемой расположения.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-005"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Пересчитать количество анкеров и пластин по маркам ЛК6 и обновить сводную спецификацию.",
+      "risk": "Недопоставка крепежа и листового металла, дополнительные закупки при монтаже.",
+      "source_finding_ids": [
+        "T-005"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_7b0802767f0147c197b0a35334b4a7ae",
+        "blk_b9096ac74f95416da66cc607a9828c3f"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "page": 4
+        },
+        {
+          "type": "text",
+          "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 69,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-006",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Листы 2, 4, 6",
+      "page": [
+        4,
+        6,
+        8
+      ],
+      "problem": "Масса трубы 40×40×3 в сводной спецификации секций С2 и С3 занижена.",
+      "description": "Подсчитанные по ведомостям длины трубы 40×40×3 составляют 128,505 м для С2 и 128,875 м для С3. При массе 3,36 кг/м это 431,777 и 433,020 кг, тогда как сводная спецификация содержит 422 и 423 кг. Расхождения около 9,8 и 10,0 кг превышают округление до 1 кг.",
+      "norm": "ГОСТ 8639-82 (норматив-кандидат), пункт не подтверждён; ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 8639-82",
+          "cited_designation": "ГОСТ 8639-82",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить табличную массу квадратной трубы 40×40×3.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-006"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить согласованность количеств металлопроката в спецификации и ведомостях элементов.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-006"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить длины профиля с ведомостями элементов и пересчитать массу в сводной спецификации.",
+      "risk": "Недостаточный заказ металлопроката и перерасход относительно сметы.",
+      "source_finding_ids": [
+        "T-006"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_7b0802767f0147c197b0a35334b4a7ae",
+        "blk_addaa8965de54d218095d13652f30388",
+        "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+        "blk_ec977eb41e834dc8b7b332a66932a777"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "page": 4
+        },
+        {
+          "type": "text",
+          "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+          "page": 6
+        },
+        {
+          "type": "text",
+          "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+          "page": 8
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 67,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "cost",
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-007",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Листы 2, 7, 9, 10",
+      "page": [
+        4,
+        9,
+        11,
+        12
+      ],
+      "problem": "Предварительный подсчёт круглой трубы Ø40×3 для ЛК6 расходится со сводной спецификацией.",
+      "description": "По интерпретации ведомостей длина круглых поручней ЛК6 составляет 41,125 м, или около 112,57 кг, против 80 кг на листе 2. Общая расчётная длина трубы по комплекту — 298,970 м против 287,1 м. Часть эскизов сечений не сохранилась при извлечении текста, поэтому отнесение всех подсчитанных поручней к трубе Ø40×3 требует сверки с оригиналом.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить полноту и согласованность количества круглой трубы в спецификации.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-007"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить сечения позиций поручней по оригинальным эскизам, затем пересчитать длину и массу трубы Ø40×3.",
+      "risk": "При подтверждении расхождения потребуется дополнительная закупка трубы.",
+      "source_finding_ids": [
+        "T-007"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_7b0802767f0147c197b0a35334b4a7ae",
+        "blk_b9096ac74f95416da66cc607a9828c3f"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "page": 4
+        },
+        {
+          "type": "text",
+          "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 57,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-008",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "welding",
+      "sheet": "Лист 1",
+      "page": 3,
+      "problem": "Не назначены конкретные параметры сварных швов ограждений.",
+      "description": "Общие указания ограничивают катет шва величиной 1,2 меньшей толщины соединяемых деталей, но расчётные катеты по типам соединений в текстовых ведомостях не приведены. Для стенки трубы 3 мм это ограничение составляет 3,6 мм; оно само по себе не подтверждает прочность соединения трубы с опорной пластиной толщиной 10 мм.",
+      "norm": "СП 16.13330.2017 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "СП 16.13330.2017",
+          "cited_designation": "СП 16.13330.2017",
+          "candidate_relevance": 0.95,
+          "reason": "Проверить минимальные и расчётные катеты угловых швов с учётом толщин деталей и способа сварки.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-008"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Назначить типы, катеты и протяжённость швов для характерных соединений и согласовать их с расчётными усилиями.",
+      "risk": "Невозможно проверить прочность сварных соединений и изготовить их по однозначным требованиям.",
+      "source_finding_ids": [
+        "T-008"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_f63af88de2a840e49ca709d736eaa225"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 57,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-009",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Листы 1, 4",
+      "page": [
+        3,
+        6
+      ],
+      "problem": "В примечании к деталям ограждений неверно указан лист схемы расположения.",
+      "description": "Примечание 5 листа 4 отсылает за схемой расположения ограждений секции С2 на тот же лист 4. По ведомости рабочих чертежей схема расположения находится на листе 3.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.7,
+          "reason": "Проверить требования к оформлению ссылок на схемы расположения.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-009"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Исправить ссылку в примечании на лист 3.",
+      "risk": "Затруднён поиск схемы при изготовлении и монтаже.",
+      "source_finding_ids": [
+        "T-009"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_531e843c117243a3b1582cb3399f4681",
+        "blk_5e4c3725456d4cafa74220f8a1fad14c",
+        "blk_addaa8965de54d218095d13652f30388",
+        "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+        "blk_ec977eb41e834dc8b7b332a66932a777",
+        "blk_f63af88de2a840e49ca709d736eaa225"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_addaa8965de54d218095d13652f30388",
+          "page": 6
+        },
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 39,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-010",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "sheet": "Листы 2, 4, 6, 8, 9, 10",
+      "page": [
+        4,
+        6,
+        8,
+        10,
+        11,
+        12
+      ],
+      "problem": "Учёт заглушек толщиной 3 мм в ведомостях и сводной спецификации неясен.",
+      "description": "Примечания предписывают заглушки на концах стоек и свободных торцах поручней. В ведомостях они указаны лишь для отдельных марок, а в сводной спецификации приведён лист толщиной 10 мм без отдельной позиции листа толщиной 3 мм. Количество фактически открытых торцов и масса заглушек не определены.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить полноту учёта деталей и материалов в ведомостях и спецификации.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "T-010"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "T-010"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Определить количество открытых торцов по каждой марке и включить необходимые заглушки и лист толщиной 3 мм в спецификации либо пояснить их учёт.",
+      "risk": "Неполная комплектация деталей для изготовления ограждений.",
+      "source_finding_ids": [
+        "T-010"
+      ],
+      "source_block_ids": [],
+      "related_block_ids": [
+        "blk_addaa8965de54d218095d13652f30388",
+        "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+        "blk_ec977eb41e834dc8b7b332a66932a777"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_addaa8965de54d218095d13652f30388",
+          "page": 6
+        },
+        {
+          "type": "text",
+          "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+          "page": 8
+        }
+      ],
+      "highlight_regions": [],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 61,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-011",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Лист 3",
+      "page": 5,
+      "problem": "Размер привязки ограждения ОГМ 2 на разрезе и схеме различается на 40 мм.",
+      "description": "На разрезе 1-1 расстояние от конца ограждения ОГМ 2 до правой стены площадки на отметке +4,630 указано 2070 мм; на схеме этой площадки — 2030 мм.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить требования к согласованности размеров на схеме расположения и разрезе.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-001"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-001"
+              ],
+              "designation_source": "inferred from finding context"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить правильную привязку ограждения и одинаково указать её на разрезе и схеме.",
+      "risk": "Ошибочное изготовление или установка ограждения с нарушением проектного зазора.",
+      "source_finding_ids": [
+        "G-001"
+      ],
+      "source_block_ids": [
+        "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+      ],
+      "related_block_ids": [
+        "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+          "page": 5
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-001",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 81,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-012",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Лист 3",
+      "page": 5,
+      "problem": "Перечень отметок на схеме секции С2 не включает два уровня, показанных на разрезе.",
+      "description": "В перечне отметок железобетонных площадок схемы отсутствуют +22,550 и +32,630. На разрезе 1-1 того же листа соответствующие площадки показаны с ограждениями ОГМ 5.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить полноту и согласованность высотных отметок на рабочих чертежах.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-002",
+              "G-003"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-002",
+                "G-003"
+              ],
+              "designation_source": "inferred from finding context"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить перечень уровней и добавить отметки +22,550 и +32,630 при подтверждении их соответствия схеме.",
+      "risk": "Пропуск ограждений указанных уровней при комплектации или монтаже.",
+      "source_finding_ids": [
+        "G-002",
+        "G-003"
+      ],
+      "source_block_ids": [
+        "blk_9dbddaba8e334be3ab857afe48df76ec"
+      ],
+      "related_block_ids": [
+        "blk_9dbddaba8e334be3ab857afe48df76ec",
+        "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+          "page": 5
+        },
+        {
+          "type": "image",
+          "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+          "page": 5
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-002",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-003",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 0.99,
+            "reason": "Оба замечания указывают на пропуск отметок +22.550 и +32.630 в перечне на схеме листа 3 при их наличии на разрезе 1-1 и предлагают добавить эти отметки. Упоминание ОГМ 5 слева не меняет сути и объёма замечания.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 0.99,
+            "reason": "Оба замечания указывают на пропуск отметок +22.550 и +32.630 в перечне на схеме листа 3 при их наличии на разрезе 1-1 и предлагают добавить эти отметки. Упоминание ОГМ 5 слева не меняет сути и объёма замечания.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 63,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-013",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "sheet": "Листы 2, 4, 6",
+      "page": [
+        4,
+        6,
+        8
+      ],
+      "problem": "Для трубы Ø40×3 в узлах и спецификации указаны разные редакции ГОСТ.",
+      "description": "В узлах Б, В, Г, Д, Е и сечениях листов 4 и 6 труба Ø40×3 обозначена по ГОСТ 8732-78; техническая спецификация листа 2 и ведомость ссылочных документов указывают ГОСТ 8732-2025. Статус редакций по предоставленным данным не проверен.",
+      "norm": "ГОСТ 8732-78 (норматив-кандидат), пункт не подтверждён; ГОСТ 8732-2025 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 8732-78",
+          "cited_designation": "ГОСТ 8732-78",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить обозначение и сортамент трубы, указанные в узлах.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-004",
+              "G-005",
+              "G-006",
+              "G-007",
+              "G-008",
+              "G-009",
+              "G-013",
+              "G-014",
+              "G-015",
+              "G-016",
+              "G-017",
+              "G-018"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-004",
+                "G-005",
+                "G-006",
+                "G-007",
+                "G-008",
+                "G-009",
+                "G-013",
+                "G-014",
+                "G-015",
+                "G-016",
+                "G-017",
+                "G-018"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        },
+        {
+          "designation": "ГОСТ 8732-2025",
+          "cited_designation": "ГОСТ 8732-2025",
+          "candidate_relevance": 0.85,
+          "reason": "Проверить обозначение, наличие и применимость редакции, указанной в технической спецификации.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-004",
+              "G-005",
+              "G-006",
+              "G-007",
+              "G-008",
+              "G-009",
+              "G-013",
+              "G-014",
+              "G-015",
+              "G-016",
+              "G-017",
+              "G-018"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-004",
+                "G-005",
+                "G-006",
+                "G-007",
+                "G-008",
+                "G-009",
+                "G-013",
+                "G-014",
+                "G-015",
+                "G-016",
+                "G-017",
+                "G-018"
+              ],
+              "designation_source": "source finding"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить применимый стандарт и привести обозначение трубы во всех узлах, ведомости ссылочных документов и спецификации к одному значению.",
+      "risk": "Неоднозначный заказ и входной контроль труб.",
+      "source_finding_ids": [
+        "G-004",
+        "G-005",
+        "G-006",
+        "G-007",
+        "G-008",
+        "G-009",
+        "G-013",
+        "G-014",
+        "G-015",
+        "G-016",
+        "G-017",
+        "G-018"
+      ],
+      "source_block_ids": [
+        "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+        "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+        "blk_60fce78600474a06989f2253821f34f2",
+        "blk_00eaf91abb0f48a38267e99e757644a1",
+        "blk_6451cc830d2b45f5bf19bbc352d4a419",
+        "blk_49d947c318c3478582a39740abda8658"
+      ],
+      "related_block_ids": [
+        "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+        "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+        "blk_60fce78600474a06989f2253821f34f2",
+        "blk_00eaf91abb0f48a38267e99e757644a1",
+        "blk_6451cc830d2b45f5bf19bbc352d4a419",
+        "blk_49d947c318c3478582a39740abda8658",
+        "blk_7b0802767f0147c197b0a35334b4a7ae"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "page": 6
+        },
+        {
+          "type": "image",
+          "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+          "page": 6
+        },
+        {
+          "type": "image",
+          "block_id": "blk_60fce78600474a06989f2253821f34f2",
+          "page": 6
+        },
+        {
+          "type": "image",
+          "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+          "page": 8
+        },
+        {
+          "type": "image",
+          "block_id": "blk_6451cc830d2b45f5bf19bbc352d4a419",
+          "page": 8
+        },
+        {
+          "type": "image",
+          "block_id": "blk_49d947c318c3478582a39740abda8658",
+          "page": 8
+        },
+        {
+          "type": "text",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "page": 4
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-004",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-005",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-006",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-007",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-008",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-009",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-013",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-014",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-015",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-016",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-017",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-018",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одно противоречие: для трубы Ø40×3 в узлах Б, В, Г и Д указан ГОСТ 8732-78, а в технической спецификации и ведомости ссылочных документов — ГОСТ 8732-2025. Детализация эквивалентна; различие в оценке серьёзности не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания указывают на одно противоречие: для трубы Ø40×3 в узлах Б, В, Г и Д указан ГОСТ 8732-78, а в технической спецификации и ведомости ссылочных документов — ГОСТ 8732-2025. Детализация эквивалентна; различие в оценке серьёзности не меняет сути проблемы.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 21,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-014",
+      "problem": "На листе 5 различаются обозначения ограждения марша между отметками +6,070 и +7,270.",
+      "description": "На схеме расположения ограждений лестницы секции 3 на отметке +9,110 ограждение марша, примыкающего к площадке +7,270 со стороны +6,070, обозначено ОГМ 6. На разрезе 1-1 тот же участок обозначен ОГМ 4; марка ОГМ 4 также показана на схеме +6,070. Детали листа 6 предусматривают для этих марок разные исполнения, поэтому противоречие влияет на выбор изделия. Фактическое изготовление или монтаж неподходящего ограждения не установлены.",
+      "solution": "Сопоставить геометрию марша между +6,070 и +7,270 с деталями ОГМ 4 и ОГМ 6 на листе 6, определить требуемую марку и согласовать её обозначения на схемах и разрезе листа 5.",
+      "severity": "СУЩЕСТВЕННОЕ",
+      "norm": "ГОСТ 21.502-2016 — норматив-кандидат; применимость и конкретный пункт не подтверждены.",
+      "norm_quote": null,
+      "risk": "Возможное изготовление или монтаж ограждения неподходящей марки при выборе по противоречащим обозначениям.",
+      "sheet": "Листы 5, 6",
+      "page": [
+        7,
+        8
+      ],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+          "bbox_norm_xyxy": [
+            0.19,
+            0.49,
+            0.59,
+            0.721
+          ],
+          "observation": "Надпись ОГМ 6 соединена выноской с верхней линией ограждения у левой площадки; рядом площадка подписана «Отм. Ж/Б плиты +7.270».",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+          "bbox_norm_xyxy": [
+            0.15,
+            0.035,
+            0.72,
+            0.1
+          ],
+          "observation": "Заголовок определяет рассматриваемую схему как схему расположения ограждений лестницы на отметке +9.110.",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "bbox_norm_xyxy": [
+            0.09,
+            0.767,
+            0.877,
+            0.83
+          ],
+          "observation": "Выноска ОГМ 4 относится к ограждению восходящего вправо марша между левой площадкой +6,070 и правой площадкой +7,270.",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "bbox_norm_xyxy": [
+            0.44,
+            0.008,
+            0.509,
+            0.022
+          ],
+          "observation": "Разрез озаглавлен «1-1».",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+          "image_sha256": "03f98971a897be59c307f7dfc84408102f399994764a0d5a7a20a1e6bc737bfa",
+          "bbox_norm_xyxy": [
+            0.644,
+            0.354,
+            0.856,
+            0.665
+          ],
+          "observation": "На схеме +6.070 выноска ОГМ 4 указывает на верхнюю правую часть ограждения возле площадки +6.070.",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+          "bbox_norm_xyxy": [
+            0.105,
+            0.0,
+            0.885,
+            0.738
+          ],
+          "observation": "Схема связывает площадку +7.270 слева, нижележащую площадку +6.070 в верхней части изображения и обозначение ОГМ 6 на прилегающем участке ограждения; показаны оси А3₁ и А5₁.",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "bbox_norm_xyxy": [
+            0.09,
+            0.766,
+            0.88,
+            0.98
+          ],
+          "observation": "Разрез показывает ОГМ 4 между +6,070 и +7,270; внизу ось А5₁ расположена слева, А3₁ — справа, что позволяет сопоставить его с планом.",
+          "page": 7
+        },
+        {
+          "type": "metadata",
+          "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "quote": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано",
+          "page": 7
+        },
+        {
+          "type": "metadata",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "quote": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "image_sha256": "f6907f70f3d50ece52d1b7a4bb65b98f13d1a7edd9fc138fc7f48575a6c983e7",
+          "bbox_norm_xyxy": [
+            0.805,
+            0.115,
+            0.989,
+            0.944
+          ],
+          "observation": "Деталь ОГМ 4 содержит горизонтальный концевой участок и размерную цепочку наклонной части с последним пролётом 450.",
+          "page": 8
+        },
+        {
+          "type": "image",
+          "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+          "image_sha256": "da37fbca4a5fc6a4c22b0d146614319bcbb0de6eca5e123d0ae82c6b6c5a5513",
+          "bbox_norm_xyxy": [
+            0.26,
+            0.165,
+            0.455,
+            0.958
+          ],
+          "observation": "Деталь ОГМ 6 содержит горизонтальный концевой участок и другую размерную цепочку наклонной части: четыре пролёта по 600.",
+          "page": 8
+        },
+        {
+          "type": "metadata",
+          "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+          "quote": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано",
+          "page": 8
+        },
+        {
+          "type": "metadata",
+          "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+          "quote": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано",
+          "page": 8
+        }
+      ],
+      "source_evidence_review_status": "reviewed_supported",
+      "source_review_requests": [
+        {
+          "source_finding_id": "classic-KM-F014",
+          "source_claim": "Марка ограждения площадки на отметке +7,270 различается на схеме и разрезе.\nПромежуточная площадка на отметке +7,270 обозначена на схеме расположения секции С3 как ОГМ 6, а на разрезе 1-1 того же листа — как ОГМ 4.\nОпределить требуемую марку по деталям листа 6 и одинаково обозначить её на схеме и разрезе.",
+          "block_ids": [
+            "blk_69c102e8922e48c982c254c05fb2e093",
+            "blk_6d4c4daf192546de9f1dce661aafe577",
+            "blk_f0a5333974ac4088b7778f525922b014",
+            "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "blk_eff2811805d64c26b34d72e41ecbb194",
+            "blk_2f6153fc7d8243798ccea08249042194",
+            "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+            "blk_30cfd1306b554f0483179e8e36c3ef41",
+            "blk_6361593a2045407a94dff35af62ca5c3"
+          ]
+        }
+      ],
+      "source_review_final_evidence_refs": [
+        {
+          "claim_id": "F-014-C1",
+          "evidence_index": 0
+        },
+        {
+          "claim_id": "F-014-C1",
+          "evidence_index": 1
+        },
+        {
+          "claim_id": "F-014-C2",
+          "evidence_index": 0
+        },
+        {
+          "claim_id": "F-014-C2",
+          "evidence_index": 1
+        },
+        {
+          "claim_id": "F-014-C2",
+          "evidence_index": 2
+        },
+        {
+          "claim_id": "F-014-C3",
+          "evidence_index": 0
+        },
+        {
+          "claim_id": "F-014-C3",
+          "evidence_index": 1
+        },
+        {
+          "claim_id": "F-014-C3",
+          "evidence_index": 2
+        },
+        {
+          "claim_id": "F-014-C3",
+          "evidence_index": 3
+        },
+        {
+          "claim_id": "F-014-C4",
+          "evidence_index": 0
+        },
+        {
+          "claim_id": "F-014-C4",
+          "evidence_index": 1
+        },
+        {
+          "claim_id": "F-014-C4",
+          "evidence_index": 2
+        },
+        {
+          "claim_id": "F-014-C4",
+          "evidence_index": 3
+        }
+      ],
+      "report_section": "technical_findings",
+      "source_review_response_sha256": "5a7d955436378ae071e2cdf72c3799211b2fc21edc22cc9cb7becdb803e154da"
+    },
+    {
+      "id": "F-015",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Лист 5",
+      "page": 7,
+      "problem": "Отметка площадки ОГМ 6 на схеме секции С3 противоречит разрезу.",
+      "description": "Последняя отметка левой площадки с ОГМ 6 на схеме указана +37,510, тогда как на разрезе 1-1 соответствующая площадка имеет отметку +34,150. Отметка +37,510 относится к следующему уровню.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить согласованность высотных привязок ограждений на схеме и разрезе.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-011",
+              "G-012"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-011",
+                "G-012"
+              ],
+              "designation_source": "inferred from finding context"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить соответствие площадки и исправить отметку на схеме на +34,150 при подтверждении разреза.",
+      "risk": "Размещение ограждения на неверном уровне при комплектации и монтаже.",
+      "source_finding_ids": [
+        "G-011",
+        "G-012"
+      ],
+      "source_block_ids": [
+        "blk_f0a5333974ac4088b7778f525922b014"
+      ],
+      "related_block_ids": [
+        "blk_f0a5333974ac4088b7778f525922b014",
+        "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+          "page": 7
+        },
+        {
+          "type": "image",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "page": 7
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-011",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-012",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания описывают одно расхождение отметки площадки ОГМ 6 между схемой листа 5 (+37.510) и разрезом 1-1 (+34.150) и предлагают одинаковое исправление.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 1.0,
+            "reason": "Оба замечания описывают одно расхождение отметки площадки ОГМ 6 между схемой листа 5 (+37.510) и разрезом 1-1 (+34.150) и предлагают одинаковое исправление.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 59,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-016",
+      "severity": "ЭКОНОМИЧЕСКОЕ",
+      "category": "documentation",
+      "sheet": "Лист 7",
+      "page": 9,
+      "problem": "Количество ограждений ОГМ5 и ОГМ6 для ЛК4.1 на схемах не совпадает со спецификацией.",
+      "description": "На схемах расположения ЛК4.1 марка ОГМ5 встречается дважды, ОГМ6 — трижды; в спецификации к схемам указаны соответственно один и два элемента.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить соответствие количеств марок на схемах расположения и в спецификации.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-019"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-019"
+              ],
+              "designation_source": "inferred from finding context"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сверить повторяющиеся обозначения с фактическим числом изделий и исправить схему или спецификацию.",
+      "risk": "Недопоставка ограждений либо избыточный заказ после исправления маркировки.",
+      "source_finding_ids": [
+        "G-019"
+      ],
+      "source_block_ids": [
+        "blk_09df648d1b4d4cc097ea6f0e25ceef52"
+      ],
+      "related_block_ids": [
+        "blk_09df648d1b4d4cc097ea6f0e25ceef52"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_09df648d1b4d4cc097ea6f0e25ceef52",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-019",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 87,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "rework",
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-017",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Лист 7",
+      "page": 9,
+      "problem": "На схеме ЛК6 указана марка ОГМ26, отсутствующая в спецификации и ведомости элементов.",
+      "description": "На схеме ограждения ЛК6 на отметке −0,700 указано ОГМ26, тогда как спецификация к схемам расположения и ведомости элементов содержат марки только до ОГМ25. Состав и детали ОГМ26 не определены.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.9,
+          "reason": "Проверить однозначность обозначения марки на схеме и наличие изделия в спецификации.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-020",
+              "G-021"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-020",
+                "G-021"
+              ],
+              "designation_source": "inferred from finding context"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Уточнить марку на схеме; если ОГМ26 является отдельным изделием, добавить его количество и рабочий чертёж.",
+      "risk": "Невозможно однозначно изготовить и поставить ограждение указанной площадки.",
+      "source_finding_ids": [
+        "G-020",
+        "G-021"
+      ],
+      "source_block_ids": [
+        "blk_441423dd5fb448c89a33b610c54783ba"
+      ],
+      "related_block_ids": [
+        "blk_441423dd5fb448c89a33b610c54783ba",
+        "blk_1849759086c445e687f8c0e2b424250b"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+          "page": 9
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-020",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-021",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "match",
+        "relations": [
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:002"
+            ],
+            "confidence": 0.99,
+            "reason": "Оба замечания указывают на одну проблему: марка ОГМ26 на схеме ЛК6 на отметке −0.700 отсутствует в спецификации. Различия в оценке последствий и упоминание ведомости элементов не меняют сути замечания.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          },
+          {
+            "relation": "match",
+            "role": "peer",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 0.99,
+            "reason": "Оба замечания указывают на одну проблему: марка ОГМ26 на схеме ЛК6 на отметке −0.700 отсутствует в спецификации. Различия в оценке последствий и упоминание ведомости элементов не меняют сути замечания.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 47,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-018",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "documentation",
+      "sheet": "Лист 9",
+      "page": 11,
+      "problem": "Размеры поручней ОГМ9 и ОГМ10 на видах отличаются от длин в ведомости элементов.",
+      "description": "Для ОГМ9 на виде указан размер 3400 мм, а для позиции 2 в ведомости — длина 3300 мм. Для ОГМ10 приведены соответственно 3065 и 2965 мм. В обоих случаях разница составляет 100 мм. Требуется установить, относятся ли размеры на видах к полной длине поручня или к габариту между иными точками.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.8,
+          "reason": "Проверить соответствие размеров поручней на видах длинам позиций в ведомости элементов.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-022",
+              "G-024"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-022",
+                "G-024"
+              ],
+              "designation_source": "inferred from finding context"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Сопоставить границы позиции 2 с размерными линиями и концевыми узлами ОГМ9 и ОГМ10; при подтверждении расхождения исправить виды или ведомость.",
+      "risk": "При неверной длине изготовленные поручни могут не подойти к опорам.",
+      "source_finding_ids": [
+        "G-022",
+        "G-024"
+      ],
+      "source_block_ids": [
+        "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+        "blk_44d5d64039f74e2188935e15eabafb7d"
+      ],
+      "related_block_ids": [
+        "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+        "blk_44d5d64039f74e2188935e15eabafb7d"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+          "page": 11
+        },
+        {
+          "type": "image",
+          "block_id": "blk_44d5d64039f74e2188935e15eabafb7d",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-astra",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-022",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          },
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-024",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 49,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-019",
+      "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+      "category": "documentation",
+      "sheet": "Лист 9",
+      "page": 11,
+      "problem": "Размер 3100 мм для ОГМ11 требует сопоставления с ведомостной длиной поручня 2900 мм.",
+      "description": "На виде ОГМ11 вдоль верхнего поручня указан размер 3100 мм, а в ведомости для позиции 2 — длина 2900 мм. Разница 200 мм пока не доказывает ошибку: границы позиции 2 и концевых деталей по узлам Б(4) и Д(4) не установлены. У соседнего ограждения также различаются габаритный размер и ведомостная длина.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.75,
+          "reason": "Проверить, совпадают ли границы размерной линии с границами детали позиции 2.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-023"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-023"
+              ],
+              "designation_source": "inferred from finding context"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить узлы Б(4) и Д(4) и деталировку позиции 2; исправить ведомость или вид только при подтверждении расхождения.",
+      "risk": "Неверная трактовка габарита может привести к ошибочному изменению длины заготовки.",
+      "source_finding_ids": [
+        "G-023"
+      ],
+      "source_block_ids": [
+        "blk_7315b3a722f946d48c34d31d1eac62ad"
+      ],
+      "related_block_ids": [
+        "blk_7315b3a722f946d48c34d31d1eac62ad"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_7315b3a722f946d48c34d31d1eac62ad",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-023",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "extension",
+        "relations": [
+          {
+            "relation": "extension",
+            "role": "base",
+            "counterpart_refs": [
+              "codex:001"
+            ],
+            "confidence": 0.93,
+            "reason": "Оба замечания сопоставляют размер 3100 мм с L=2,900 м для позиции 2 ОГМ11. Левое существенно дополняет правое: требует проверить границы детали по узлам Б(4) и Д(4), прежде чем считать разницу 200 мм подтверждённым противоречием.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 47,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-020",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "documentation",
+      "sheet": "Лист 9",
+      "page": 11,
+      "problem": "Размеры в разрезе 3-3 требуют согласования по точкам привязки.",
+      "description": "Между верхними узлами указаны 245 мм по горизонтали, 170 мм по вертикали и 335 мм по наклонной. Если все три размера относятся к одним точкам, наклонное расстояние по первым двум составляет около 298 мм, что на 37 мм меньше указанного. При разных точках привязки размерные линии нуждаются в пояснении.",
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.75,
+          "reason": "Проверить однозначность и согласованность размерных привязок узла.",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.candidate_norm_references",
+            "source_finding_ids": [
+              "G-025"
+            ],
+            "input_provenance": {
+              "source_finding_ids": [
+                "G-025"
+              ],
+              "designation_source": "inferred from finding context"
+            }
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "solution": "Проверить точки начала и конца каждого размера на разрезе 3-3, затем исправить противоречащий размер или уточнить его привязку.",
+      "risk": "Ошибка при изготовлении или сборке узла из-за неоднозначной геометрии.",
+      "source_finding_ids": [
+        "G-025"
+      ],
+      "source_block_ids": [
+        "blk_6d3a9c479ffe4b57b3cd3e5310d5abfd"
+      ],
+      "related_block_ids": [
+        "blk_6d3a9c479ffe4b57b3cd3e5310d5abfd"
+      ],
+      "evidence_text_refs": [],
+      "evidence": [
+        {
+          "type": "image",
+          "block_id": "blk_6d3a9c479ffe4b57b3cd3e5310d5abfd",
+          "page": 11
+        }
+      ],
+      "highlight_regions": [],
+      "provenance": {
+        "found_by": [
+          "codex"
+        ],
+        "detector_summary": "codex",
+        "detections": [
+          {
+            "detector": "codex",
+            "model": "codex/gpt-6-sol",
+            "prompt_version": "stage01-findings-evidence-v3",
+            "run_id": "stage01-20261106T234847Z-ensemble_codex-only:codex",
+            "raw_finding_id": "G-025",
+            "mode": "independent",
+            "detected_at": "2026-11-06T23:48:47.021565+00:00",
+            "context_source": "structured_structure"
+          }
+        ]
+      },
+      "detector_summary": "codex",
+      "detector_comparison": {
+        "schema_version": 1,
+        "primary_relation": "new",
+        "relations": [
+          {
+            "relation": "new",
+            "role": "unique_detector_finding",
+            "counterpart_refs": [],
+            "confidence": 1.0,
+            "reason": "Другой независимый детектор не вернул смысловой аналог.",
+            "reviewer_model": "codex/gpt-6.1-sol",
+            "origin": "dual_comparison"
+          }
+        ],
+        "gap_search": false
+      },
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 87,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "high"
+      }
+    },
+    {
+      "id": "F-021",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "documentation",
+      "problem": "Итоги массы металлопроката не сходятся по строкам и колонкам спецификации.",
+      "description": "Лист 2, строки MD 301–307: сумма опубликованных масс четырёх видов проката, относящихся к С245, составляет 0,787 + 1,546 + 2,991 + 0,472 = 5,796 т и совпадает с итогом С245 5,796 т. Однако сумма опубликованных итогов по семи лестницам составляет 0,388 + 0,479 + 0,476 + 0,484 + 0,645 + 1,657 + 1,669 = 5,798 т. Сумма исходных ячеек четырёх строк составляет 5,793 т. Расхождение может быть следствием округления, но правила округления и исходные неокруглённые массы не приведены.",
+      "page": 4,
+      "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "solution": "Проверить расчёт по исходным неокруглённым массам и привести итоги по строкам, лестницам и марке стали к согласованному значению.",
+      "risk": "Неоднозначная итоговая масса для заказа и сметы.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "page": 4,
+          "md_lines": "301-307"
+        }
+      ],
+      "source_stage": "alia_km_steel_audit",
+      "sheet": "Лист 2",
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 21.502-2016",
+          "cited_designation": "ГОСТ 21.502-2016",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 72,
+        "engineering_relevance": "high",
+        "impact_axes": [
+          "schedule",
+          "construction"
+        ],
+        "formalism_flags": [],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-022",
+      "severity": "ЭКСПЛУАТАЦИОННОЕ",
+      "category": "other",
+      "problem": "Несущая способность анкеров и требования к бетонному основанию не определены.",
+      "description": "Общие указания называют механические анкеры Hilti HSA «или аналогичные» (строка 251); спецификация и узлы указывают HSA-M10×90 (строки 305, 579–583). В предоставленном контексте нет расчётных сопротивлений анкера растяжению и срезу, требуемой прочности и состояния бетона, глубины анкеровки, краевых расстояний и критериев эквивалентности аналога. Не приведена ссылка на документ с характеристиками конкретного анкера и подтверждением его применимости.",
+      "page": 3,
+      "norm": "ГОСТ 56731-2023 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "solution": "Указать документ производителя или сертификат для выбранного анкера, расчётные нагрузки и несущую способность, параметры бетонного основания и монтажа; задать проверяемые условия замены на аналог.",
+      "risk": "Невозможно подтвердить надёжность крепления ограждений к железобетону.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3,
+          "md_lines": "248-251"
+        },
+        {
+          "type": "text",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "page": 4,
+          "md_lines": "301-305"
+        },
+        {
+          "type": "text",
+          "block_id": "blk_ddc4b49561b745ffab319ae7f3b20860",
+          "page": 6,
+          "md_lines": "577-583"
+        }
+      ],
+      "source_stage": "alia_km_steel_audit",
+      "sheet": "Лист 1",
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 56731-2023",
+          "cited_designation": "ГОСТ 56731-2023",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 58,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "construction",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-023",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "problem": "Ссылка на заменённый СНиП 12-03-2001",
+      "description": "В общих указаниях указано: «- СНиП 12-03-2001 «Безопасность труда в строительстве. Часть 1. Общие требования»;». Локальная проверка определяет статус СНиП 12-03-2001 как replaced. Это обозначение не названо в существующих замечаниях.",
+      "page": 3,
+      "norm": "СНиП 12-03-2001 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "solution": "Уточнить применимый действующий документ и исправить ссылки в общих указаниях.",
+      "risk": "Ссылка на заменённый документ создаёт неоднозначность требований к производству работ.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3,
+          "md_lines": "188"
+        },
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3,
+          "md_lines": "249"
+        }
+      ],
+      "source_stage": "alia_docnorm_audit",
+      "sheet": "Лист 1",
+      "candidate_norm_references": [
+        {
+          "designation": "СНиП 12-03-2001",
+          "cited_designation": "СНиП 12-03-2001",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 34,
+        "engineering_relevance": "low",
+        "impact_axes": [
+          "safety"
+        ],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_maintenance",
+          "editorial_fix"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    },
+    {
+      "id": "F-024",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "problem": "В названии СП сохранено обозначение заменённого СНиП 2.01.07-85",
+      "description": "Строка MD: «- СП 20.13330.2011 \"СНиП 2.01.07-85* Нагрузки и воздействия\";». Локальная проверка определяет статус СНиП 2.01.07-85 как replaced. Существующее замечание F-001 называет СП 20.13330.2011, но не это обозначение СНиП.",
+      "page": 3,
+      "norm": "СНиП 2.01.07-85 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "solution": "При обновлении ссылки на нормы нагрузок проверить и согласовать полное наименование документа.",
+      "risk": "В общих указаниях сохраняется ссылка на заменённое обозначение.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3,
+          "md_lines": "172"
+        }
+      ],
+      "source_stage": "alia_docnorm_audit",
+      "sheet": "Лист 1",
+      "candidate_norm_references": [
+        {
+          "designation": "СНиП 2.01.07-85",
+          "cited_designation": "СНиП 2.01.07-85",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 14,
+        "engineering_relevance": "low",
+        "impact_axes": [],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_maintenance"
+        ],
+        "likely_formal_only": true,
+        "severity_mismatch": false,
+        "review_priority": "normal"
+      }
+    },
+    {
+      "id": "F-025",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "problem": "Неверно указано наименование ГОСТ 19903-2015",
+      "description": "В ведомости записано: «| ГОСТ 19903-2015 | Лист стальной горячекатаный. Сортамент |  |». Согласно локально проверенному статусу, наименование ГОСТ 19903-2015 — «Прокат листовой горячекатаный. Сортамент». Обозначение стандарта актуально.",
+      "page": 3,
+      "norm": "ГОСТ 19903-2015 (норматив-кандидат), пункт не подтверждён",
+      "norm_quote": null,
+      "solution": "Исправить наименование в ведомости ссылочных документов.",
+      "risk": "Неточное название затрудняет идентификацию документа при проверке комплекта.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "page": 3,
+          "md_lines": "127"
+        }
+      ],
+      "source_stage": "alia_docnorm_audit",
+      "sheet": "Лист 1",
+      "candidate_norm_references": [
+        {
+          "designation": "ГОСТ 19903-2015",
+          "cited_designation": "ГОСТ 19903-2015",
+          "candidate_relevance": 0.5,
+          "reason": "legacy_norm_field",
+          "provenance": {
+            "producer": "stage03_candidate_contract",
+            "designation_source": "stage03.norm",
+            "source_finding_ids": []
+          },
+          "clause_candidate": null,
+          "quote_candidate": null
+        }
+      ],
+      "norm_references": [],
+      "norm_paragraph_state": "resolver_pending",
+      "quality": {
+        "practicality_score": 2,
+        "engineering_relevance": "low",
+        "impact_axes": [],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_register",
+          "editorial_fix"
+        ],
+        "likely_formal_only": true,
+        "severity_mismatch": false,
+        "review_priority": "normal"
+      }
+    },
+    {
+      "id": "F-026",
+      "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+      "category": "normative_refs",
+      "problem": "В общих указаниях приведён непрофильный стандарт на огнестойкость железобетонных конструкций",
+      "description": "Комплект назван «Ограждения лестниц. Секции С2, С3.» (строка 46), однако в перечень документов включено: «- СТО 36554501-006-2006 «Правила по обеспечению огнестойкости и огнесохранности железобетонных конструкций»;». Приведённые решения описывают металлические ограждения и их крепление к железобетону; решение по обеспечению огнестойкости железобетонных конструкций в предоставленном контексте отсутствует.",
+      "page": 3,
+      "norm": null,
+      "norm_quote": null,
+      "solution": "Исключить ссылку из общих указаний, если в комплекте нет решения, к которому применяется этот стандарт.",
+      "risk": "Перечень нормативных документов приписывает комплекту требования к работам, не описанным в его решениях.",
+      "evidence": [
+        {
+          "type": "text",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "page": 3,
+          "md_lines": "192"
+        }
+      ],
+      "source_stage": "alia_docnorm_audit",
+      "sheet": "Лист 1",
+      "candidate_norm_references": [],
+      "norm_references": [],
+      "quality": {
+        "practicality_score": 54,
+        "engineering_relevance": "medium",
+        "impact_axes": [
+          "safety",
+          "coordination"
+        ],
+        "formalism_flags": [
+          "formal_reference_category",
+          "reference_maintenance"
+        ],
+        "likely_formal_only": false,
+        "severity_mismatch": false,
+        "review_priority": "low"
+      }
+    }
+  ],
+  "analysis_coverage": {
+    "schema_version": 1,
+    "summary": {
+      "gemma_uncovered_count": 0,
+      "single_block_failed_count": 0,
+      "stage02_crop_missing_count": 0,
+      "excluded_from_full_analysis_count": 0,
+      "base_gemma_covered_count": 0,
+      "base_gemma_total_count": 0,
+      "high_detail_candidates": 0,
+      "high_detail_successful": 0,
+      "high_detail_skipped_large": 0,
+      "base_only_blocks_count": 0,
+      "upgraded_to_300_count": 0
+    },
+    "gemma_uncovered_blocks": [],
+    "single_block_failed_blocks": [],
+    "stage02_crop_missing_blocks": [],
+    "blocks_analyzed_only_with_100_dpi_base": [],
+    "blocks_upgraded_to_300": [],
+    "excluded_blocks_from_full_analysis": [],
+    "sections": [
+      {
+        "title": "Блоки без подготовленного контекста",
+        "blocks": []
+      },
+      {
+        "title": "Ошибки single-block анализа",
+        "blocks": []
+      },
+      {
+        "title": "Блоки, исключённые из полноценного анализа",
+        "blocks": []
+      },
+      {
+        "title": "Блоки, оставшиеся на base 100 DPI",
+        "blocks": []
+      },
+      {
+        "title": "Блоки, upgraded до 300 DPI",
+        "blocks": []
+      }
+    ]
+  },
+  "source_review_history": [
+    {
+      "finding_id": "F-014",
+      "original_finding": {
+        "id": "F-014",
+        "problem": "Марка ограждения площадки на отметке +7,270 различается на схеме и разрезе.",
+        "description": "Промежуточная площадка на отметке +7,270 обозначена на схеме расположения секции С3 как ОГМ 6, а на разрезе 1-1 того же листа — как ОГМ 4.",
+        "solution": "Определить требуемую марку по деталям листа 6 и одинаково обозначить её на схеме и разрезе.",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "risk": "Изготовление или монтаж ограждения другой марки.",
+        "sheet": "Лист 5",
+        "page": 7,
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "page": 7
+          }
+        ],
+        "source_evidence_review_status": "pending",
+        "source_review_requests": [
+          {
+            "source_finding_id": "classic-KM-F014",
+            "source_claim": "Марка ограждения площадки на отметке +7,270 различается на схеме и разрезе.\nПромежуточная площадка на отметке +7,270 обозначена на схеме расположения секции С3 как ОГМ 6, а на разрезе 1-1 того же листа — как ОГМ 4.\nОпределить требуемую марку по деталям листа 6 и одинаково обозначить её на схеме и разрезе.",
+            "block_ids": [
+              "blk_69c102e8922e48c982c254c05fb2e093",
+              "blk_6d4c4daf192546de9f1dce661aafe577",
+              "blk_f0a5333974ac4088b7778f525922b014",
+              "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+              "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+              "blk_eff2811805d64c26b34d72e41ecbb194",
+              "blk_2f6153fc7d8243798ccea08249042194",
+              "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+              "blk_30cfd1306b554f0483179e8e36c3ef41",
+              "blk_6361593a2045407a94dff35af62ca5c3"
+            ]
+          }
+        ]
+      },
+      "decision": {
+        "response_sha256": "5a7d955436378ae071e2cdf72c3799211b2fc21edc22cc9cb7becdb803e154da",
+        "origin": "explicit_source_review",
+        "reviewer": "candidate_adjudicator",
+        "reason": "Просмотрены все семь изображений и предоставленный авторитетный TEXT. Подтверждён конфликт обозначений одного ограждения марша между +6,070 и +7,270: на схеме +9,110 указано ОГМ 6, на разрезе 1-1 — ОГМ 4. Сопоставление выполнено по отметкам, осям и направлению выносок. Уточнён объект замечания: ограждение марша с примыкающим участком, а не площадка целиком. Это техническая несогласованность, поскольку марки относятся к исполнениям с различной геометрией; оснований считать её малозначительной редакционной ошибкой и переносить в вопросы нет. Фактический дефект смонтированного ограждения не установлен. Эксплуатационная категория и нормативное основание не подтверждены.",
+        "action": "revise",
+        "claim_reviews": [
+          {
+            "claim_id": "F-014-C1",
+            "role": "context",
+            "verdict": "supported",
+            "reason": "На схеме +9,110 выноска ОГМ 6 указывает на ограждение верхнего на плане марша возле площадки +7,270. Это подтверждённое обозначение, которое само по себе ещё не устанавливает противоречие.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-014-C2",
+            "role": "context",
+            "verdict": "supported",
+            "reason": "На разрезе 1-1 выноска ОГМ 4 относится к ограждению марша между +6,070 и +7,270. Схема +6,070 также показывает ОГМ 4 на соответствующей ветви. Обозначение относится к ограждению марша, а не ко всей площадке.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-014-C3",
+            "role": "defect_basis",
+            "verdict": "supported",
+            "reason": "На схеме +9,110 ограждение верхнего на плане марша между нижележащей площадкой +6,070 у оси А5₁ и площадкой +7,270 у оси А3₁ обозначено ОГМ 6. На разрезе тот же марш между этими отметками и осями обозначен ОГМ 4. Обратный порядок осей на разрезе учтён. Метаданные подтверждают общий лист 5 и секцию 3. Установлен конфликт проектных обозначений, но не физический дефект изделия.",
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-014-C4",
+            "role": "recommendation",
+            "verdict": "supported",
+            "reason": "Детали листа 6 показывают различающиеся исполнения ОГМ 4 и ОГМ 6: у ОГМ 4 последний размерный участок наклонной части составляет 450, у ОГМ 6 показаны четыре участка по 600. Подтверждённый конфликт требует сопоставить исполнения с геометрией рассматриваемого марша и согласовать обозначения. Сами детали не доказывают, какую именно марку следует принять.",
+            "supporting_claim_ids": [
+              "F-014-C3"
+            ],
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-014-C5",
+            "role": "context",
+            "verdict": "supported",
+            "reason": "Риск поддерживается как условное последствие выбора изделия по одному из противоречащих обозначений. Авторитетные ведомости задают разные длины элемента позиции 1 для ОГМ 4 и ОГМ 6; графические детали также различаются. Следовательно, выбор марки влияет на исполнение изделия. Ошибочное изготовление или монтаж как состоявшийся факт не доказаны.",
+            "supporting_claim_ids": [
+              "F-014-C3",
+              "F-014-C4"
+            ],
+            "same_scope_verified": true,
+            "evidence_sufficiency_verified": true
+          },
+          {
+            "claim_id": "F-014-C6",
+            "role": "context",
+            "verdict": "needs_data",
+            "reason": "Конкретное влияние на эксплуатационные характеристики и критерии присвоения исходной категории не представлены. Подтверждённая несогласованность выбора исполнения не доказывает именно эксплуатационную тяжесть.",
+            "same_scope_verified": false,
+            "evidence_sufficiency_verified": false
+          },
+          {
+            "claim_id": "F-014-C7",
+            "role": "context",
+            "verdict": "needs_data",
+            "reason": "Текст применимого требования ГОСТ 21.502-2016 отсутствует. Норматив можно обозначать только как непроверенного кандидата; нарушение конкретного требования не установлено.",
+            "same_scope_verified": false,
+            "evidence_sufficiency_verified": false
+          }
+        ],
+        "approved_fields": {
+          "problem": "На листе 5 различаются обозначения ограждения марша между отметками +6,070 и +7,270.",
+          "description": "На схеме расположения ограждений лестницы секции 3 на отметке +9,110 ограждение марша, примыкающего к площадке +7,270 со стороны +6,070, обозначено ОГМ 6. На разрезе 1-1 тот же участок обозначен ОГМ 4; марка ОГМ 4 также показана на схеме +6,070. Детали листа 6 предусматривают для этих марок разные исполнения, поэтому противоречие влияет на выбор изделия. Фактическое изготовление или монтаж неподходящего ограждения не установлены.",
+          "solution": "Сопоставить геометрию марша между +6,070 и +7,270 с деталями ОГМ 4 и ОГМ 6 на листе 6, определить требуемую марку и согласовать её обозначения на схемах и разрезе листа 5."
+        },
+        "final_wording_verified": true,
+        "final_evidence_refs": [
+          {
+            "claim_id": "F-014-C1",
+            "evidence_index": 0
+          },
+          {
+            "claim_id": "F-014-C1",
+            "evidence_index": 1
+          },
+          {
+            "claim_id": "F-014-C2",
+            "evidence_index": 0
+          },
+          {
+            "claim_id": "F-014-C2",
+            "evidence_index": 1
+          },
+          {
+            "claim_id": "F-014-C2",
+            "evidence_index": 2
+          },
+          {
+            "claim_id": "F-014-C3",
+            "evidence_index": 0
+          },
+          {
+            "claim_id": "F-014-C3",
+            "evidence_index": 1
+          },
+          {
+            "claim_id": "F-014-C3",
+            "evidence_index": 2
+          },
+          {
+            "claim_id": "F-014-C3",
+            "evidence_index": 3
+          },
+          {
+            "claim_id": "F-014-C4",
+            "evidence_index": 0
+          },
+          {
+            "claim_id": "F-014-C4",
+            "evidence_index": 1
+          },
+          {
+            "claim_id": "F-014-C4",
+            "evidence_index": 2
+          },
+          {
+            "claim_id": "F-014-C4",
+            "evidence_index": 3
+          }
+        ],
+        "display_field_reviews": {
+          "risk": {
+            "original_value_sha256": "2554e6c4dfed4cbfc71c5d5cbd666e4fd471aa1b71c574b08b9b4a83028591fe",
+            "value": "Возможное изготовление или монтаж ограждения неподходящей марки при выборе по противоречащим обозначениям.",
+            "consistent_with_final_claim": true,
+            "reason": "Условный риск связан с подтверждённым конфликтом марок разных исполнений; факт ошибочного изготовления или монтажа не утверждается."
+          },
+          "severity": {
+            "original_value_sha256": "e53698e7501a3dd0b636e5316684e41267bf1eee26a88eda5f4c6e73a322f504",
+            "value": "СУЩЕСТВЕННОЕ",
+            "consistent_with_final_claim": true,
+            "reason": "Противоречие затрагивает выбор геометрически различающихся изделий для конкретного марша и требует проектного согласования перед изготовлением или монтажом. Поэтому оно имеет техническое значение и не является простой редакционной неточностью. Исходная эксплуатационная категория отдельно не подтверждена."
+          },
+          "norm": {
+            "original_value_sha256": "64d0990e937562252af4b2885b3f70666c016c29ac427c80157dafc5d630d49c",
+            "value": "ГОСТ 21.502-2016 — норматив-кандидат; применимость и конкретный пункт не подтверждены.",
+            "consistent_with_final_claim": true,
+            "reason": "Ссылка сохранена только в непроверенной модальности. Замечание основано на непосредственно установленном конфликте проектных обозначений, а не на доказанном нарушении стандарта."
+          }
+        }
+      },
+      "response": {
+        "finding_id": "F-014",
+        "finding_sha256": "0d806c10ccd3698d94ed40d50ce1beb447652b376d374ce8c280c1a2a804bdfa",
+        "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+        "context_sha256": null,
+        "claims": [
+          {
+            "claim_id": "F-014-C1",
+            "claim": "На схеме расположения ограждений у промежуточной площадки +7,270 указана марка ОГМ 6.",
+            "status": "supported",
+            "reason": "На схеме с заголовком «на отм. +9.110» выноска ОГМ 6 указывает на ограждение возле площадки, подписанной +7.270. Уточнение области утверждения: выноска относится к ограждению марша с примыкающим участком, а не обозначает всю площадку как отдельное изделие.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+                "bbox_norm_xyxy": [
+                  0.19,
+                  0.49,
+                  0.59,
+                  0.721
+                ],
+                "observation": "Надпись ОГМ 6 соединена выноской с верхней линией ограждения у левой площадки; рядом площадка подписана «Отм. Ж/Б плиты +7.270»."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+                "bbox_norm_xyxy": [
+                  0.15,
+                  0.035,
+                  0.72,
+                  0.1
+                ],
+                "observation": "Заголовок определяет рассматриваемую схему как схему расположения ограждений лестницы на отметке +9.110."
+              }
+            ]
+          },
+          {
+            "claim_id": "F-014-C2",
+            "claim": "На разрезе 1-1 соответствующее ограждение у площадки +7,270 обозначено ОГМ 4.",
+            "status": "supported",
+            "reason": "На разрезе марка ОГМ 4 относится к ограждению марша между +6,070 и +7,270, включая примыкание к промежуточной площадке. Отдельная схема на отметке +6,070 также содержит выноску ОГМ 4 на соответствующей ветви лестницы.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+                "bbox_norm_xyxy": [
+                  0.09,
+                  0.767,
+                  0.877,
+                  0.83
+                ],
+                "observation": "Выноска ОГМ 4 относится к ограждению восходящего вправо марша между левой площадкой +6,070 и правой площадкой +7,270."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+                "bbox_norm_xyxy": [
+                  0.44,
+                  0.008,
+                  0.509,
+                  0.022
+                ],
+                "observation": "Разрез озаглавлен «1-1»."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+                "image_sha256": "03f98971a897be59c307f7dfc84408102f399994764a0d5a7a20a1e6bc737bfa",
+                "bbox_norm_xyxy": [
+                  0.644,
+                  0.354,
+                  0.856,
+                  0.665
+                ],
+                "observation": "На схеме +6.070 выноска ОГМ 4 указывает на верхнюю правую часть ограждения возле площадки +6.070."
+              }
+            ]
+          },
+          {
+            "claim_id": "F-014-C3",
+            "claim": "На схеме и разрезе одного листа секции 3 имеется противоречие марок ОГМ 6 и ОГМ 4 для соответствующего ограждения.",
+            "status": "supported",
+            "reason": "Связь устанавливается по отметкам +6,070 и +7,270, расположению маршей и осям, а не только по совпадению названий марок. На плане оси А3₁ и А5₁ расположены противоположно их порядку на разрезе. Сопоставление показывает конфликт обозначений одного участка. Штампы относят обе графики к листу 5 одного комплекта и секции 3. Это подтверждает несогласованность документации, но не фактический дефект изготовленного или установленного ограждения.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+                "bbox_norm_xyxy": [
+                  0.105,
+                  0.0,
+                  0.885,
+                  0.738
+                ],
+                "observation": "Схема связывает площадку +7.270 слева, нижележащую площадку +6.070 в верхней части изображения и обозначение ОГМ 6 на прилегающем участке ограждения; показаны оси А3₁ и А5₁."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+                "bbox_norm_xyxy": [
+                  0.09,
+                  0.766,
+                  0.88,
+                  0.98
+                ],
+                "observation": "Разрез показывает ОГМ 4 между +6,070 и +7,270; внизу ось А5₁ расположена слева, А3₁ — справа, что позволяет сопоставить его с планом."
+              },
+              {
+                "type": "metadata",
+                "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                "quote": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+              },
+              {
+                "type": "metadata",
+                "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                "quote": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+              }
+            ]
+          },
+          {
+            "claim_id": "F-014-C4",
+            "claim": "Следует определить требуемую марку с использованием деталей листа 6 и согласовать обозначения на схеме и разрезе.",
+            "status": "supported",
+            "reason": "Это обоснованное действие для устранения установленного конфликта. На листе 6 представлены разные исполнения ОГМ 4 и ОГМ 6. Их детали позволяют проверить соответствие геометрии марша, однако наличие этих деталей само по себе не устанавливает, какое обозначение следует исправить. Рекомендация поддерживается как необходимость проектного согласования, а не как уже доказанный выбор конкретной марки.",
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+                "image_sha256": "f6907f70f3d50ece52d1b7a4bb65b98f13d1a7edd9fc138fc7f48575a6c983e7",
+                "bbox_norm_xyxy": [
+                  0.805,
+                  0.115,
+                  0.989,
+                  0.944
+                ],
+                "observation": "Деталь ОГМ 4 содержит горизонтальный концевой участок и размерную цепочку наклонной части с последним пролётом 450."
+              },
+              {
+                "type": "image",
+                "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+                "image_sha256": "da37fbca4a5fc6a4c22b0d146614319bcbb0de6eca5e123d0ae82c6b6c5a5513",
+                "bbox_norm_xyxy": [
+                  0.26,
+                  0.165,
+                  0.455,
+                  0.958
+                ],
+                "observation": "Деталь ОГМ 6 содержит горизонтальный концевой участок и другую размерную цепочку наклонной части: четыре пролёта по 600."
+              },
+              {
+                "type": "metadata",
+                "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+                "quote": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+              },
+              {
+                "type": "metadata",
+                "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+                "quote": "> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано"
+              }
+            ]
+          },
+          {
+            "claim_id": "F-014-C5",
+            "claim": "Несогласованность создаёт риск изготовления или монтажа ограждения другой марки.",
+            "status": "supported",
+            "reason": "Поддерживается как возможное последствие выбора марки по одному из противоречащих обозначений. ОГМ 4 и ОГМ 6 имеют разные детали и состав, поэтому это не два равнозначных имени одного изделия. Факт ошибочного изготовления или монтажа источниками не установлен.",
+            "evidence": [
+              {
+                "type": "text",
+                "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+                "quote": "###### Ведомость элементов ограждения ОГМ 4 (1шт.)"
+              },
+              {
+                "type": "text",
+                "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+                "quote": "| ОГМ 4 |  | 1 | φ40x3 | Конструктивно |  |  | C245 | L=3,640м | 1 |"
+              },
+              {
+                "type": "text",
+                "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+                "quote": "#### Ведомость элементов ограждения ОГМ 6 (8 шт.)"
+              },
+              {
+                "type": "text",
+                "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+                "quote": "| ОГМ 6 | ⊙ | 1 | φ40х3 | Конструктивно |  |  | C245 | L=3,480м | 1 |"
+              }
+            ]
+          },
+          {
+            "claim_id": "F-014-C6",
+            "claim": "Замечание имеет тяжесть «ЭКСПЛУАТАЦИОННОЕ».",
+            "status": "needs_data",
+            "reason": "Установлен конфликт проектных обозначений и обусловленный им риск выбора изделия. Этого недостаточно для подтверждения эксплуатационной категории: не приведены критерии классификации и конкретное влияние возможной подмены на эксплуатационные характеристики.",
+            "evidence": [],
+            "missing_data": [
+              "Критерии присвоения категории «ЭКСПЛУАТАЦИОННОЕ».",
+              "Обоснование эксплуатационных последствий применения неподходящей марки на рассматриваемом участке."
+            ]
+          },
+          {
+            "claim_id": "F-014-C7",
+            "claim": "ГОСТ 21.502-2016 является применимым нормативным основанием замечания; конкретный пункт не подтверждён.",
+            "status": "needs_data",
+            "reason": "В предоставленных источниках нет текста стандарта или конкретного требования, позволяющего проверить нормативную ссылку. Её можно сохранить только в заявленной модальности нормативного кандидата; подтверждённое нарушение пункта стандарта не установлено.",
+            "evidence": [],
+            "missing_data": [
+              "Текст конкретного пункта ГОСТ 21.502-2016, относящегося к согласованности обозначений ограждений на схемах и разрезах.",
+              "Подтверждение применимости этого требования к представленным проектным листам."
+            ]
+          }
+        ]
+      },
+      "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "final_release_check": {
+        "status": "applied",
+        "binding": {
+          "entry_sha256": "a26c6d9a86b47f52e2cb70dfe23127b0b3aaf2ed93f217fda0a3b01e4f9c3e25",
+          "document_sha256": "b80537dcc912c496f23559ef1d3114f3e70a810daf49ea8541244ff99709e6b7",
+          "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        "review": {
+          "finding_id": "F-014",
+          "binding_sha256": "70a726da959ca236700dfff7e96d64a0452ef3d690e0658df240aa45f5fa53e0",
+          "decision": "release",
+          "checks": [
+            {
+              "check_id": "source_support",
+              "status": "pass",
+              "reason": "Противоречие подтверждено графикой. На схеме +9,110 выноска ОГМ 6 относится к ограждению верхнего в плане марша, связывающего площадки +6,070 и +7,270. На разрезе этот марш обозначен ОГМ 4; схема +6,070 также показывает ОГМ 4. Сопоставление учитывает отметки, направление маршей и обратное расположение осей А3₁/А5₁ на плане и разрезе, а не только близость надписи к площадке. Просмотрены все семь изображений.",
+              "evidence": [
+                {
+                  "type": "image",
+                  "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                  "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+                  "bbox_norm_xyxy": [
+                    0.105,
+                    0.0,
+                    0.885,
+                    0.738
+                  ],
+                  "observation": "На схеме +9.110 площадка +7.270 находится слева; выноска отметки +6.070 указывает на площадку справа за верхним маршем. ОГМ 6 обозначает ограждение этого марша у левого конца. На плане А3₁ слева, А5₁ справа."
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                  "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+                  "bbox_norm_xyxy": [
+                    0.09,
+                    0.766,
+                    0.88,
+                    0.98
+                  ],
+                  "observation": "ОГМ 4 обозначает ограждение марша от левой площадки +6,070 к правой +7,270. Внизу разреза А5₁ находится слева, А3₁ справа."
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+                  "image_sha256": "03f98971a897be59c307f7dfc84408102f399994764a0d5a7a20a1e6bc737bfa",
+                  "bbox_norm_xyxy": [
+                    0.35,
+                    0.24,
+                    0.87,
+                    0.693
+                  ],
+                  "observation": "На схеме +6.070 выноска ОГМ 4 указывает на верхнюю в плане сторону ограждения у правой площадки +6.070; марш продолжается влево."
+                }
+              ]
+            },
+            {
+              "check_id": "quantities_and_scope",
+              "status": "pass",
+              "reason": "Замечание ограничено одним участком лестницы секции 3 и двумя конкретными марками. Итоги количества изделий и распространение ошибки на другие уровни не заявлены. Различие исполнений ОГМ 4 и ОГМ 6 подтверждается деталями и отдельными ведомостями. Значения из пустых ячеек не восстанавливаются, проектные размеры не превращены в универсальные требования.",
+              "evidence": [
+                {
+                  "type": "metadata",
+                  "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                  "quote": "Наименование листа: Схема расположения ограждений лестницы секции 3 на отм. +0.550 ~ +41.190"
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+                  "image_sha256": "f6907f70f3d50ece52d1b7a4bb65b98f13d1a7edd9fc138fc7f48575a6c983e7",
+                  "bbox_norm_xyxy": [
+                    0.805,
+                    0.115,
+                    0.989,
+                    0.944
+                  ],
+                  "observation": "У ОГМ 4 есть горизонтальный концевой участок; нижняя размерная цепочка наклонной части содержит три пролёта по 600 и последний 450."
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+                  "image_sha256": "da37fbca4a5fc6a4c22b0d146614319bcbb0de6eca5e123d0ae82c6b6c5a5513",
+                  "bbox_norm_xyxy": [
+                    0.26,
+                    0.165,
+                    0.455,
+                    0.958
+                  ],
+                  "observation": "У ОГМ 6 есть горизонтальный концевой участок; нижняя размерная цепочка наклонной части содержит четыре пролёта по 600."
+                },
+                {
+                  "type": "text",
+                  "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+                  "quote": "| ОГМ 4 |  | 1 | φ40x3 | Конструктивно |  |  | C245 | L=3,640м | 1 |"
+                },
+                {
+                  "type": "text",
+                  "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+                  "quote": "| ОГМ 6 | ⊙ | 1 | φ40х3 | Конструктивно |  |  | C245 | L=3,480м | 1 |"
+                }
+              ]
+            },
+            {
+              "check_id": "original_clause_preservation",
+              "status": "pass",
+              "reason": "Сохранены исходное расхождение ОГМ 6/ОГМ 4, привязка к +7,270, требование выбрать марку по деталям листа 6 и согласовать изображения, а также риск выбора другого изделия. Формулировка об ограждении площадки уточнена до ограждения примыкающего марша по фактическим окончаниям выносок. Подтверждённое техническое ядро не подавлено и не перенесено в неопределённый запрос.",
+              "evidence": [
+                {
+                  "type": "image",
+                  "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                  "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+                  "bbox_norm_xyxy": [
+                    0.19,
+                    0.49,
+                    0.59,
+                    0.721
+                  ],
+                  "observation": "Выноска ОГМ 6 заканчивается на линии ограждения марша у площадки +7.270, а не внутри обозначения самой площадки."
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                  "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+                  "bbox_norm_xyxy": [
+                    0.09,
+                    0.767,
+                    0.877,
+                    0.83
+                  ],
+                  "observation": "На разрезе ОГМ 4 относится к наклонному ограждению между +6,070 и +7,270, что обосновывает уточнение объекта замечания."
+                }
+              ]
+            },
+            {
+              "check_id": "uncertainty_and_consequences",
+              "status": "pass",
+              "reason": "Доказано противоречие проектных обозначений, но правильная марка заранее не назначена. Решение предусматривает сопоставление геометрии с деталями. Риск изготовления или монтажа сформулирован как возможное последствие выбора между различающимися изделиями. Фраза о неустановленном фактическом изготовлении или монтаже корректно ограничивает вывод материалами проверки и не утверждает отсутствие таких событий.",
+              "evidence": [
+                {
+                  "type": "image",
+                  "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+                  "image_sha256": "f6907f70f3d50ece52d1b7a4bb65b98f13d1a7edd9fc138fc7f48575a6c983e7",
+                  "bbox_norm_xyxy": [
+                    0.805,
+                    0.115,
+                    0.989,
+                    0.944
+                  ],
+                  "observation": "Деталь ОГМ 4 задаёт собственную геометрию, включая конечный пролёт 450."
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+                  "image_sha256": "da37fbca4a5fc6a4c22b0d146614319bcbb0de6eca5e123d0ae82c6b6c5a5513",
+                  "bbox_norm_xyxy": [
+                    0.26,
+                    0.165,
+                    0.455,
+                    0.958
+                  ],
+                  "observation": "Деталь ОГМ 6 задаёт другую размерную цепочку, с четырьмя пролётами по 600; взаимозаменяемость с ОГМ 4 изображением не установлена."
+                }
+              ]
+            },
+            {
+              "check_id": "profile_and_norms",
+              "status": "pass",
+              "reason": "Раздел technical_findings обоснован: конфликт обозначений определяет выбор между изделиями с разной геометрией и составом, поэтому это техническая неоднозначность изготовления, а не подтверждённая мелкая редакционная неточность. Уровень «СУЩЕСТВЕННОЕ» соответствует этому подтверждённому влиянию; аварийность и нарушение несущей способности не заявлены. ГОСТ 21.502-2016 оставлен нормативом-кандидатом с неподтверждёнными применимостью и пунктом, norm_quote равен null. Оснований выдавать нормативную ссылку за проверенное требование нет, и предложенный текст этого не делает.",
+              "evidence": [
+                {
+                  "type": "text",
+                  "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+                  "quote": "|  |  | 4 | 25x3 |  |  |  | C245 | L=0,800м | 17 |"
+                },
+                {
+                  "type": "text",
+                  "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+                  "quote": "|  | □ | 4 | 25х3 |  |  |  | C245 | L=0,800м | 19 |"
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+                  "image_sha256": "f6907f70f3d50ece52d1b7a4bb65b98f13d1a7edd9fc138fc7f48575a6c983e7",
+                  "bbox_norm_xyxy": [
+                    0.805,
+                    0.115,
+                    0.989,
+                    0.944
+                  ],
+                  "observation": "ОГМ 4 представлен как отдельная размерно определённая конструкция, а не альтернативное текстовое название ОГМ 6."
+                }
+              ]
+            },
+            {
+              "check_id": "peer_overlap",
+              "status": "pass",
+              "reason": "По представленным формулировкам дублирования нет. F-015 касается соответствия отметок верхних площадок на повторяющейся схеме; F-014 касается марки конкретного нижнего марша +6,070—+7,270. Общий лист и общий разрез являются общими источниками, а не признаком одного дефекта. F-006 рассматривает массу профиля, остальные замечания также не повторяют этот конфликт марок. Это проверка разграничения содержания отчёта; достоверность самостоятельных утверждений соседних замечаний здесь не подтверждается и для F-014 не используется.",
+              "evidence": []
+            },
+            {
+              "check_id": "final_citations",
+              "status": "pass",
+              "reason": "Проверено именно предложенное поле evidence. Оно содержит обе конфликтующие выноски, отметки и оси для сопоставления участка, дополнительную схему +6,070, заголовок схемы +9,110, обозначение разреза 1-1 и обе детали. Указанные области изображений поддерживают сохранённые технические утверждения. Метаданные подтверждают секцию 3 и принадлежность схем листу 5, деталей листу 6; ссылки на страницы 7 и 8 согласованы с предоставленной привязкой. Устаревших ссылок на другие листы или пропущенного ключевого изображения в итоговом поле нет. Отсутствие ссылок на текстовые ведомости не создаёт пробела: заявленное различие исполнений непосредственно показано процитированными деталями.",
+              "evidence": [
+                {
+                  "type": "image",
+                  "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                  "image_sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+                  "bbox_norm_xyxy": [
+                    0.105,
+                    0.0,
+                    0.885,
+                    0.738
+                  ],
+                  "observation": "Процитированная широкая область охватывает заголовок +9.110, отметки +6.070 и +7.270, оси и выноску ОГМ 6, необходимые для идентификации участка."
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+                  "image_sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+                  "bbox_norm_xyxy": [
+                    0.09,
+                    0.766,
+                    0.88,
+                    0.98
+                  ],
+                  "observation": "Процитированная область содержит марку ОГМ 4, обе отметки рассматриваемого марша и оси для сопоставления с планом."
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+                  "image_sha256": "f6907f70f3d50ece52d1b7a4bb65b98f13d1a7edd9fc138fc7f48575a6c983e7",
+                  "bbox_norm_xyxy": [
+                    0.805,
+                    0.115,
+                    0.989,
+                    0.944
+                  ],
+                  "observation": "Процитированная область содержит заголовок ОГМ 4 и размерную цепочку с конечным пролётом 450."
+                },
+                {
+                  "type": "image",
+                  "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+                  "image_sha256": "da37fbca4a5fc6a4c22b0d146614319bcbb0de6eca5e123d0ae82c6b6c5a5513",
+                  "bbox_norm_xyxy": [
+                    0.26,
+                    0.165,
+                    0.455,
+                    0.958
+                  ],
+                  "observation": "Процитированная область содержит заголовок ОГМ 6 и четыре пролёта по 600."
+                },
+                {
+                  "type": "metadata",
+                  "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+                  "quote": "Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 5"
+                },
+                {
+                  "type": "metadata",
+                  "block_id": "blk_eff2811805d64c26b34d72e41ecbb194",
+                  "quote": "Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6"
+                },
+                {
+                  "type": "metadata",
+                  "block_id": "blk_2f6153fc7d8243798ccea08249042194",
+                  "quote": "Наименование листа: Ограждения ОГМ1...ОГМ8"
+                }
+              ]
+            }
+          ]
+        },
+        "semantic_certified": false,
+        "original_document_mutated": false,
+        "executor_id": "exact-recorded-KM-F014-final-control",
+        "request_sha256": "efcd7a776adf814543fa6608a72c9d8ff107d53066638a30cfa0043553be3eb1",
+        "result_sha256": "2105a5270e99e955500a11f887967df2826a5843f60970bfaca1b54980455ecf",
+        "review_policy_sha256": "3bc07c3d5d15c93a5a17a0e45c0aaffe8af5b54d7469001589dd2a75032d6bb6",
+        "applied_finding_sha256": "6d779f5ab9743c59aa777b6dc15f78c5bc8a3ea453cc410b4307b622277d3f53"
+      }
+    }
+  ]
+}

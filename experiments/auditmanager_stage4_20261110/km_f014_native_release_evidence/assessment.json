@@ -1,0 +1,29 @@
+{
+  "status": "known_candidate_source_to_excel_control_passed",
+  "baseline_rows": 26,
+  "output_rows": 26,
+  "other_25_classic_findings_unchanged": true,
+  "all_visible_claim_fields_checked": true,
+  "rerun_idempotent": true,
+  "new_model_calls": 0,
+  "recorded_calls_replayed": [],
+  "known_F014_core_retained_with_revised_wording": true,
+  "autonomous_context_retrieval_proven": false,
+  "known_target_snapshot_adapter": true,
+  "whole_audit_discovery": false,
+  "full_stage4_acceptance": false,
+  "output_sha256": "a8f55427e5e7237a78879d5135edff96616c9928bc63e56ca952620f29606bff",
+  "xlsx_sha256": "675b2e4bf9b614a619eed89828ba746220a43d4b1205021d6b98e17ec9b07b08",
+  "source_review": "km_f014_native_cross_plan_evidence/assessment.json",
+  "source_correspondence": "km_f014_cross_plan_trace_evidence/assessment.json",
+  "metadata_failure_preserved": "km_f014_final_metadata_failure_evidence/assessment.json",
+  "fix_commit": "e31c30b1",
+  "frozen_evaluator_v2_changed": false,
+  "original_negative_control": "Invalid as a proven false-positive example. Retained positive factual core is not a replacement negative test.",
+  "remaining": [
+    "Automatic retrieval of adjacent plans not demonstrated by this known-candidate packet.",
+    "Final design choice and right-upper OGM5 assignment remain unresolved.",
+    "Full method comparison and transfer acceptance remain pending."
+  ],
+  "production_changed": false
+}

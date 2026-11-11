@@ -200,7 +200,7 @@
       "control_id": "H05-N01",
       "original_control": "КМ F014: разные последовательные марши не одна деталь.",
       "current_evidence_state": "cross_plan_core_supported_original_negative_control_not_valid",
-      "required_resolution": "Сопоставление соседних планов поддерживает привязку левой ОГМ6 к маршу +6,070 → +7,270, обозначенному ОГМ4 на разрезе. Сохранить фактическое ядро с исправлением слова «площадка». Окончательная корректная марка и правая верхняя ОГМ5 остаются не установлены. Не использовать F014 как доказанное ложное замечание для приёмки фильтра.",
+      "required_resolution": "Сопоставление соседних планов поддерживает привязку левой ОГМ6 к маршу +6,070 → +7,270, обозначенному ОГМ4 на разрезе. Сохранить фактическое ядро с исправлением слова «площадка». Окончательная корректная марка и правая верхняя ОГМ5 остаются не установлены. Не использовать F014 как доказанное ложное замечание для приёмки фильтра. Контрольный выпуск исправленного F014 через штатную проверку и Excel пройден; другие 25 замечаний сохранены. Это не доказывает автономный поиск контекста.",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
@@ -229,6 +229,10 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_cross_plan_trace_evidence/assessment.json",
           "sha256": "38af53473afaf609afd4602e2468a4b426c26df07b744e8ac9ef4c772002f47a"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_native_release_evidence/assessment.json",
+          "sha256": "c6680c2b7b2861df20a8661f7d0b3a9ccb9c9a88fb0fcc21283396f5b7460b44"
         }
       ],
       "engineering_answer": null,

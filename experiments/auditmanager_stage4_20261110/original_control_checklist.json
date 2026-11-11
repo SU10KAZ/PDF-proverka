@@ -553,6 +553,10 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_cross_plan_trace_evidence/assessment.json",
           "sha256": "38af53473afaf609afd4602e2468a4b426c26df07b744e8ac9ef4c772002f47a"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_native_release_evidence/assessment.json",
+          "sha256": "c6680c2b7b2861df20a8661f7d0b3a9ccb9c9a88fb0fcc21283396f5b7460b44"
         }
       ],
       "full_acceptance_proven": false

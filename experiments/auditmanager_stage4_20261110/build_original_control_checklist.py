@@ -42,7 +42,7 @@ EVIDENCE={
  ('H04','negative_controls_and_limits',1):('bounded_control_recorded',['EOM_quantitative_overclaim_limits.json']),
  ('H04','negative_controls_and_limits',0):('bounded_control_recorded',['EOM_model_extracted_balance_control.json']),
  ('H05','positive_controls',0):('bounded_control_recorded',['KM_OGM20_geometry_assessment.json','KM_OGM20_geometry_validated.json']),
- ('H05','negative_controls_and_limits',0):('cross_plan_core_supported_original_negative_control_not_valid',['benchmark_errata.json','KM_adjacent_flights_validated.json','km_f014_readjudication_evidence/assessment.json','km_f014_claude_same_input_evidence/assessment.json','km_f014_claude_same_input_evidence/transport_diagnosis.json','km_f014_claude_raw_receipt_evidence/assessment.json','km_f014_cross_plan_trace_evidence/assessment.json']),
+ ('H05','negative_controls_and_limits',0):('cross_plan_core_supported_original_negative_control_not_valid',['benchmark_errata.json','KM_adjacent_flights_validated.json','km_f014_readjudication_evidence/assessment.json','km_f014_claude_same_input_evidence/assessment.json','km_f014_claude_same_input_evidence/transport_diagnosis.json','km_f014_claude_raw_receipt_evidence/assessment.json','km_f014_cross_plan_trace_evidence/assessment.json','km_f014_native_release_evidence/assessment.json']),
  ('H06','positive_controls',0):('bounded_control_recorded',['ITP_requirement_claude_assessment.json']),
  ('H07','positive_controls',1):('bounded_control_recorded',['EOM_prescan_recovery_assessment.json']),
 }
