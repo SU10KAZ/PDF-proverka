@@ -84,6 +84,14 @@ Do not use a detector's interpretation as independent proof. If you cannot inspe
 the required sources, record `needs_data` and describe the missing context.
 Do not publish deferred claims merely to satisfy candidate accounting.
 
+Each receipt must also include `subclaims`: one entry per independently checkable
+claim or location in the original candidate. Each has `id` (stable within this
+candidate), `claim`, `decision`, `reason`, `source_refs`, `required_source_refs`
+(missing source block IDs), and `target_finding_ids` for retained/duplicate parts.
+Use the same decision vocabulary as the parent. Preserve unresolved graphic parts
+as `needs_data` even when a textual part is retained. A parent link or a duplicate
+decision does not establish that every part survived. Never invent source IDs.
+
 ### Step 2: Merge Findings
 
 Merge findings from both stages (01 blocks + 02 text).

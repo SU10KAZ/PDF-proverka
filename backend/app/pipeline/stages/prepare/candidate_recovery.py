@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 
 from backend.app.pipeline.stages.findings_merge.candidate_coverage import build_candidate_coverage
+from backend.app.pipeline.stages.findings_merge.subclaim_coverage import pending_subclaims
 from backend.app.pipeline.stages.block_context.contract import resolve_blocks_dir
 from backend.app.pipeline.stages.prepare.graph_builder import build_block_page_index
 
@@ -17,9 +18,6 @@ def build_recovery_passes(output_dir, md_path):
         return []
     payloads = [json.loads((output_dir / name).read_text()) for name in names]
     coverage = build_candidate_coverage(*payloads)
-    candidates = [c for c in coverage['candidates'] if c['status'] == 'unlinked_requires_trace' or c.get('deferred')]
-    if not candidates:
-        return []
     graph_path = output_dir / 'document_graph.json'
     graph = json.loads(graph_path.read_text()) if graph_path.exists() else {}
     block_pages = build_block_page_index(graph)
@@ -45,6 +43,14 @@ def build_recovery_passes(output_dir, md_path):
                 md_text_ids.add(bid)
     block_pages.update(md_block_pages)
     text_ids = md_text_ids
+    obligations = pending_subclaims(payloads[2], set(block_pages) | set(files))
+    candidates = []
+    for candidate in coverage['candidates']:
+        pending = obligations.get((candidate['origin'], candidate['pointer']), [])
+        if candidate['status'] == 'unlinked_requires_trace' or candidate.get('deferred') or pending:
+            candidates.append({**candidate, 'pending_subclaims': pending})
+    if not candidates:
+        return []
     # Review candidates from the same graphic together so the model can
     # distinguish duplicate claims from independent defects before publication.
     groups = {}
@@ -57,6 +63,11 @@ def build_recovery_passes(output_dir, md_path):
         item = candidate['candidate']
         refs = [candidate.get('block_id')]
         for member in group:
+            for obligation in member.get('pending_subclaims', []):
+                claim = obligation.get('claim')
+                values = claim.get('required_source_refs') if isinstance(claim, dict) else None
+                if isinstance(values, list):
+                    refs.extend(values)
             for field in ('related_block_ids', 'source_block_ids', 'source_block_hints'):
                 values = member['candidate'].get(field)
                 if isinstance(values, list):
@@ -95,7 +106,15 @@ def build_recovery_passes(output_dir, md_path):
                                   'index_sha256': hashlib.sha256(index_path.read_bytes()).hexdigest() if index_path.exists() else None},
                   'md_source': {'path': str(md_path.resolve()), 'sha256': hashlib.sha256(md_path.read_bytes()).hexdigest()},
                   'allowed_source_refs': sorted(set(image_refs) | {r for r, page in block_pages.items() if page in selected_pages and r in text_ids})}
-        instructions = '''Review the unlinked candidate_group against the supplied original sources.
+        instructions = '''Review the candidate_group against the supplied original sources.
+Some candidates already have a linked finding but still have pending_subclaims.
+Review those unresolved parts without repeating already supported content. A link
+or retained decision for the parent does not close its unresolved parts.
+Every decision must include subclaims, one per independently checkable claim, with
+id (stable within that candidate), claim, decision, reason, source_refs,
+required_source_refs for missing sources, and target_finding_ids for retained or
+duplicate claims. Reuse pending claim IDs exactly. Omitted claims remain pending.
+An outcome is only a model report, not independent certification of truth.
 Candidates sharing a graphic are reviewed together: emit one finding per distinct
 problem, preserving every supporting source_finding_id. Different defects in one
 graphic must remain distinct. Return one decision for each candidate in the group.

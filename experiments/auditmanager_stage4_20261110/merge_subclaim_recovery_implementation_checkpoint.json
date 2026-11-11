@@ -1,0 +1,29 @@
+{
+  "status": "structured_pending_subclaim_scheduling_implemented_local_tests_passed",
+  "changed_files": [
+    "backend/app/pipeline/stages/findings_merge/subclaim_coverage.py",
+    "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+    "prompts/pipeline/en/findings_merge_task.md",
+    "tests/test_subclaim_coverage.py"
+  ],
+  "behavior": [
+    "Explicit pending subclaims survive candidate-level retained or duplicate links.",
+    "Recovery packets include pending claims, their required source references, existing findings and available images.",
+    "Candidate-level later receipts without subclaims do not erase previous obligations.",
+    "Conflicting claim IDs, unknown references and missing final links remain pending."
+  ],
+  "validation": {
+    "command": "python -m pytest -q tests/test_subclaim_coverage.py tests/test_candidate_recovery.py tests/test_candidate_decisions.py tests/test_recovery_context.py tests/test_recovery_format.py tests/test_recovery_links.py tests/test_recovery_snapshot.py",
+    "result": "37 passed",
+    "model_calls": 0
+  },
+  "remaining": [
+    "Legacy pilot receipts have no structured subclaims; no prose-based migration or retrospective benefit claimed.",
+    "Primary TEXT merge handoff is still not integrated.",
+    "Model completeness of subclaim decomposition and emitted result preservation require real sealed pilots.",
+    "Structural receipt validity is not semantic correctness or proof that a source was inspected.",
+    "Need test/run changes for other discovery gaps and full comparative acceptance before release."
+  ],
+  "production_acceptance": false,
+  "production_deployed": false
+}
