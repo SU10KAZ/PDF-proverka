@@ -47,6 +47,31 @@ def prepare(args):
         digest=hashlib.sha256(Path(path).read_bytes()).hexdigest();name=f'detail_{i}.png'
         copy_bound(path,crops/name,digest)
         details.append({'block_id':bid,'sha256':digest,'file':name})
+    if args.extra_detail_manifest:
+        import fitz
+        extra=json.loads(Path(args.extra_detail_manifest).read_text())
+        assert extra['source_md_sha256']==hashlib.sha256(md.encode()).hexdigest()
+        blocks=json.loads((md_path.parent/'blocks.json').read_text())
+        assert blocks['coordinate_space']=='normalized_page_top_left'
+        for i,row in enumerate(extra['images']):
+            provenance=row['provenance'];bid=provenance['source_block']
+            assert bid in required
+            pdf=md_path.with_suffix('.pdf')
+            assert Path(provenance['source_pdf']).resolve()==pdf.resolve()
+            assert hashlib.sha256(pdf.read_bytes()).hexdigest()==provenance['source_pdf_sha256']
+            block,=[b for b in blocks['blocks'] if b['block_id']==bid]
+            assert block['block_type']=='image' and block['page_index']==provenance['page_index']
+            with fitz.open(pdf) as doc:
+                page=doc[block['page_index']];n=block['coords_norm']
+                bounds=fitz.Rect(n[0]*page.rect.width,n[1]*page.rect.height,n[2]*page.rect.width,n[3]*page.rect.height)
+                clip=fitz.Rect(provenance['clip']);assert bounds.contains(clip) and not clip.is_empty
+                assert 0 < provenance['scale'] <= 4 and provenance['rotation_for_reading'] in (0,90,180,270)
+                rendered=page.get_pixmap(matrix=fitz.Matrix(provenance['scale'],provenance['scale']).prerotate(provenance['rotation_for_reading']),clip=clip,alpha=False).tobytes('png')
+            assert hashlib.sha256(rendered).hexdigest()==row['sha256']
+            name=f'extra_{i}.png';copy_bound(row['path'],crops/name,row['sha256'])
+            details.append({'block_id':bid,'file':name,'sha256':row['sha256'],
+                'page_index':provenance['page_index'],'clip_rotated_page_points':provenance['clip'],
+                'source_pdf_sha256':provenance['source_pdf_sha256']})
     immutable(crops/'graphic_detail_manifest.json',{'source_md_sha256':hashlib.sha256(md.encode()).hexdigest(),'images':details})
     attach_graphic_receipts(queue,md,crops)
     request=prepare_source_review_request(queue,finding,md,max_images=16)
@@ -60,7 +85,9 @@ def prepare(args):
         'history_or_engineer_answers_supplied':False,'evaluator_corrections_supplied':False,
         'message_chars':sum(len(m['content']) for m in request['messages']),
         'images':len(request['image_paths']),'image_bytes':sum(Path(p).stat().st_size for p in request['image_paths']),
-        'known_candidate_control':True,'semantic_acceptance':False}
+        'known_candidate_control':True,'semantic_acceptance':False,
+        **({'additional_graphic_manifest_sha256':hashlib.sha256(Path(args.extra_detail_manifest).read_bytes()).hexdigest(),
+            'graphic_selection':'Executor-selected orientation/detail control; not an automatic model-requested crop.'} if args.extra_detail_manifest else {})}
     immutable(root/'manifest.json',manifest)
     print('PREPARED',json.dumps(manifest,ensure_ascii=False),flush=True)
     return queue,finding,md,crops
@@ -89,5 +116,6 @@ if __name__=='__main__':
     p=argparse.ArgumentParser()
     for name in ('source-root','output-root','md-path','crops-root','source-finding-id','finding-id'):
         p.add_argument('--'+name,required=True)
+    p.add_argument('--extra-detail-manifest')
     p.add_argument('--execute',action='store_true')
     asyncio.run(main(p.parse_args()))
