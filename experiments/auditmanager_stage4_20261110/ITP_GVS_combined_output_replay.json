@@ -1,0 +1,29 @@
+{
+  "scope": "Known-source composition of two independently reviewed GVS claims, not full-project acceptance.",
+  "baseline_sha256": "037ded3c50ff29d711a5625d66df3191bbcc322cc710e850a6d7036c91ac0c5a",
+  "source_candidate_sha256": "1eebafff51284ca20429781e86a375f8cf48f30aa64c9704219a7952c50f788f",
+  "receipts": [
+    {
+      "finding_id": "ITP-T311-flow-conflict",
+      "status": "applied",
+      "action": "revise"
+    }
+  ],
+  "prior_findings_preserved_exactly": 54,
+  "original_classic_rows_preserved": 53,
+  "final_findings": 55,
+  "added_id": "F-055",
+  "circulation_id": "F-054",
+  "duplicate_review": {
+    "origin": "explicit_local_review",
+    "reason": "T311 supplies hot water; T411/T412 circulate it. Different branches and numerical propositions. Original 53-row descriptions contain no T311 conflict. F011 PZ arithmetic/units is distinct.",
+    "automatic_deduplication_proven": false
+  },
+  "full_acceptance": false,
+  "historical_compound_control_closed": false,
+  "limitations": [
+    "T312 supply balance and pipe thickness are not closed by T311.",
+    "Other ITP pilot corrections still require composition.",
+    "Original baseline retention is not certification of its truth."
+  ]
+}
