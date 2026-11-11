@@ -1,0 +1,768 @@
+{
+  "status": "five_quantity_output_reviews_scope_qualified",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "3fa54fa20e366b7a4b52313ae8aed819ac14d71571da2dc7da0077244dafd435",
+  "queue_after_sha256": "3f57f2190097a872457dafae7b2ed615a8a0e6808b781d595774ef4ed4a91ce1",
+  "reviewer": "coordinator_authoritative_TEXT_review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Лист 6",
+        "page": 42,
+        "problem": "В спецификации дважды учтена одинаковая труба Ø32 мм по 190 м.",
+        "description": "Две строки гофрированной безгалогенной трубы Ø32 мм имеют одинаковые характеристики и количество 190 м. Суммарно получается 380 м без разграничения участков; обоснованность повтора не раскрыта.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Однозначный количественный учёт материалов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить ведомость объёмов: удалить ошибочный повтор либо обозначить отдельные участки для каждой партии.",
+        "risk": "Избыточная закупка 190 м трубы при подтверждении дублирования.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 44,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F034_specification_quantity:cc93bff16c691fce3df8",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Две одинаковые строки трубыØ32 по190м, сумма380м.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Потребность дважды ошибочно учтена.",
+          "verdict": "insufficient_route_allocation_evidence",
+          "limits": "Заголовок сильнее доказанного повтора строк. Участки и ведомость объёмов не привязаны; удаление190м без проверки недопустимо."
+        },
+        {
+          "claim": "Проверить потребность и удалить только подтверждённый дубль либо обозначить разные участки.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Лишняя закупка190м.",
+          "verdict": "conditional_not_observed",
+          "limits": "В выдаче условие подтверждения дубля есть; закупка и поставка не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Конкретное нарушение не подтверждено этой сверкой количеств."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_objects_and_sections_not_deduplicated_by_repeated_numbers",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+          "sha256": "a63aa0206c93f1d384029fc98b7d1b4c335e25505edd3672d091df494b1d711a",
+          "primary_adjudication": null,
+          "limits": "Прочитан полный лист 6; между строками Ø32 стоит Ø25, отдельного заголовка участка между ними нет. Это не доказывает отсутствие пояснения в смежной ведомости. Требуемая длина по трассам не установлена. Строка клипс 190 м не подтверждает правильную длину трубы. Нельзя автоматически удалить 190 м.",
+          "wording": "Уточнить назначение двух одинаковых строк гофрированной безгалогенной трубы Ø32 по 190 м в СО, лист 6: являются ли они объёмами разных участков или повтором одной потребности. Формальная сумма строк — 380 м."
+        }
+      ],
+      "disposition": "assessed_preserve_repeated_pipe_question_no_proven_overorder"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Лист 6",
+        "page": 42,
+        "problem": "Клипсы для труб учтены в метрах вместо штук.",
+        "description": "Для клипс Ø25 и Ø32 мм указаны единица «м» и количества 2345 и 190, совпадающие с длинами труб. Количество отдельных держателей должно определяться трассой и шагом крепления.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Указание единиц измерения и количества изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-014"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Заменить единицу измерения на штуки и рассчитать количество держателей по принятому шагу и конфигурации трасс.",
+        "risk": "Неверная стоимость и недостаточная либо избыточная поставка креплений.",
+        "source_finding_ids": [
+          "T-014"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 84,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F038_specification_quantity:2bf971bcf81224ba57b8",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "КлипсыØ25/Ø32 записаны вм,2345/190.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Эти числа совпадают с длинами соответствующих строк труб.",
+          "verdict": "confirmed_bounded_numeric_match",
+          "limits": "190 совпадает с каждой отдельной строкойØ32, но не суммой380. Копирование не доказано как причина."
+        },
+        {
+          "claim": "Показанное количество задаёт число отдельных держателей.",
+          "verdict": "not_established",
+          "limits": "Нужны шаг, конфигурация трасс и способ учёта. Возможная комплексная позиция на метр требует явного описания, не принимается автоматически."
+        },
+        {
+          "claim": "Заменитьм на штуки и пересчитать.",
+          "verdict": "qualify_action_after_accounting_scope",
+          "limits": "Вопрос единицы обоснован; нельзя сохранить2345/190 как правильное число штук. Сначала установить способ учёта, затем количество."
+        },
+        {
+          "claim": "Неверная стоимость или поставка креплений.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Конкретное нарушение не подтверждено этой сверкой количеств."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_objects_and_sections_not_deduplicated_by_repeated_numbers",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+          "sha256": "96f4c1648640eb1c94ca979a73869993ab04a7359a183655ca07a3807fe43e64",
+          "primary_adjudication": null,
+          "limits": "Числа совпадают с длиной строки трубы Ø25 и каждой отдельной строкой Ø32; 190 не равно сумме двух строк Ø32 (380). Такое совпадение не доказывает причину ошибки. Шаг и места креплений не проверены, автоматически заменять м на шт. при сохранении числа нельзя. Возможный учёт комплектной работы на метр также требует явного пояснения. Конкретное нарушение ГОСТ и фактическая ошибка закупки не установлены.",
+          "wording": "Уточнить единицы и количество клипс Ø25/Ø32 на листе 6 СО: указаны 2345 и 190 м, что не задаёт количество отдельных держателей. Представить количество креплений с основанием расчёта."
+        }
+      ],
+      "disposition": "assessed_preserve_clip_accounting_question_qualify_unit_correction"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Листы 7, 8",
+        "page": [
+          43,
+          44
+        ],
+        "problem": "Вероятно продублированы соединители и винты лотков помещения ВРУ-2.",
+        "description": "В одной группе дважды указаны соединители LG1000 по 96 шт. и винты М6×20 по 768 шт. При двойном учёте получается 1536 винтов М6×20 плюс 44 винта М6×10, тогда как шайб и гаек М6 предусмотрено по 812 шт., то есть 768+44. Сопряжённые количества указывают на вероятный повтор пары строк.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Полнота и согласованность количественного состава спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-015"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить комплектность соединений и удалить подтверждённый дубль либо исправить количества сопрягаемого крепежа.",
+        "risk": "Двойной заказ соединителей и винтов или некомплектная поставка крепежа.",
+        "source_finding_ids": [
+          "T-015"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e88244dd00b348158ab8aabf0d7863e1",
+            "page": 43
+          },
+          {
+            "type": "text",
+            "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+            "page": 44
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 76,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F035_specification_quantity:0498a98c0a043fe1e66d",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Две парыLG1000 по96 иМ6×20 по768 относятся к продолжающемуся разделуВРУ2 до заголовкаВРУ-К.",
+          "verdict": "confirmed_section_continuation_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Шайб и гаекМ6 по812,М6×10 —44;768+44=812;две768 дают1536.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Сопряжённые количества доказывают дубль второй пары.",
+          "verdict": "insufficient_joint_and_kit_evidence",
+          "limits": "Числовое совпадение поддерживает вопрос, но схемы соединений и комплектные метизы не проверены. Другие типы винтов и гаек нельзя автоматически объединять."
+        },
+        {
+          "claim": "Сверить комплектность и удалить лишь подтверждённый дубль либо уточнить количества.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Двойной заказ либо некомплектная поставка.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Конкретное нарушение не подтверждено этой сверкой количеств."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_objects_and_sections_not_deduplicated_by_repeated_numbers",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_e88244dd00b348158ab8aabf0d7863e1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+          "sha256": "d2fdf2b0a62b954bc12f46539bcc5944fc1413db62c61166ff991b5d317f8177",
+          "primary_adjudication": null,
+          "limits": "Проверены листы 7–8: раздел ВРУ-2 начинается на листе 7, обе пары стоят до следующего заголовка ВРУ-К. Повтор не объясняется переходом между этими двумя помещениями, но может учитывать разные соединения внутри ВРУ-2. Потребность и граница комплектного крепежа углов LC1330K не проверены. Суммы относятся к этим парам, не ко всему проекту; лишняя закупка не доказана.",
+          "wording": "Уточнить повтор пары LG1000 по 96 шт. и СМ010620 по 768 шт. в разделе ВРУ-2, СО лист 8. Две пары дают 192 соединителя и 1536 винтов. Указать участки их применения или подтвердить ошибочное повторение."
+        }
+      ],
+      "disposition": "assessed_preserve_fastener_pair_question_no_proven_duplicate"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Листы 12, 13",
+        "page": [
+          48,
+          49
+        ],
+        "problem": "Не обозначена принадлежность двух одинаковых наборов вертикальных трасс.",
+        "description": "На соседних страницах повторены лотки 80×300 — 108 м, 80×200 — 72 м, 80×150 — 36 м, короб ПЭСПЗ — 72 м и одинаковые количества профилей. Повтор может соответствовать двум секциям, но секции или участки не указаны.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.85,
+            "reason": "Однозначность группировки и количественного учёта материалов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-016"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подписать секции или участки для каждого набора и подтвердить суммарные количества без автоматического удаления повтора.",
+        "risk": "Ошибочное исключение необходимого набора либо двойной заказ.",
+        "source_finding_ids": [
+          "T-016"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_fa3060b62f634a2b8228b10863e0eb99",
+            "page": 48
+          },
+          {
+            "type": "text",
+            "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+            "page": 49
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 64,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Два разделаВертикальные трассы на соседних листах12/13 повторяют108/72/36м лотков,72м короба и количества профилей.",
+          "verdict": "confirmed_local_TEXT_repetition",
+          "limits": ""
+        },
+        {
+          "claim": "Наборы полностью одинаковы.",
+          "verdict": "overbroad_identity",
+          "limits": "В авторитетномTEXT различаютсяLO9261/L09261 иЭКМК/ЗКМК. Числа совпадают; обозначения не исправляются по растру и не нормализуются молча."
+        },
+        {
+          "claim": "В этих двух подразделах не подписаны секции/участки.",
+          "verdict": "confirmed_local_scope_only",
+          "limits": "Привязка по всей трассировочной документации не проверена. Две секции — возможное объяснение, не установленное назначение."
+        },
+        {
+          "claim": "Подписать принадлежность и подтвердить объём без автоматического удаления.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Двойной заказ или исключение нужного комплекта.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Конкретное нарушение не подтверждено этой сверкой количеств."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_source_supported_question_usefulness_unestablished",
+      "duplicate_burden": "distinct_objects_and_sections_not_deduplicated_by_repeated_numbers",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_fa3060b62f634a2b8228b10863e0eb99",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_unmapped_vertical_route_allocation_question"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектность материалов",
+        "sheet": "Листы 17, 18",
+        "page": [
+          53,
+          54
+        ],
+        "problem": "Длина крышек меньше длины соответствующих лотков на 7 м.",
+        "description": "На отметке +38,690 предусмотрено 126 м крышек на 130 м лотка, на +41,290 — 55 на 57 м, на +44,650 — 40 на 41 м. Суммарная разница составляет 7 м; участки без крышек или отдельный запас лотка не пояснены.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Комплектность материалов для предусмотренного проектом исполнения трасс.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать участки без крышек или запас лотка; при отсутствии такого основания увеличить количество крышек.",
+        "risk": "Дополнительная закупка и задержка завершения монтажа.",
+        "source_finding_ids": [
+          "T-018"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+            "page": 53
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 82,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F037_tray_cover_scope:5eaa42d72fba7e53d76e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На+38,690:130/126;на+41,290:57/55;на+44,650:41/40м лотков/крышек.",
+          "verdict": "confirmed_addressed_TEXT_pairs",
+          "limits": ""
+        },
+        {
+          "claim": "Суммарная разница прямых изделий7м.",
+          "verdict": "confirmed_arithmetic",
+          "limits": "Не путать метры прямых крышек со штуками фасонных изделий."
+        },
+        {
+          "claim": "Не хватает7м крышек для монтажа.",
+          "verdict": "insufficient_final_requirement_evidence",
+          "limits": "Нужно установить участки без крышек, запас и покрытие комплектными изделиями; разница объёмов сама по себе не доказывает недопоставку."
+        },
+        {
+          "claim": "Уточнить незакрытые участки/запас, затем корректировать количество.",
+          "verdict": "supported_scoped_question",
+          "limits": "Отсутствие пояснения не заменяет расчёт потребности; увеличивать на7м автоматически нельзя."
+        },
+        {
+          "claim": "Задержка монтажа и дополнительная закупка.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Конкретное нарушение не подтверждено этой сверкой количеств."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_objects_and_sections_not_deduplicated_by_repeated_numbers",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+          "sha256": "15432598db63ee87b27c7deece7cbcede488860c1944a00c2f5ef1fa513caa1f",
+          "primary_adjudication": null,
+          "limits": "Проверены полные листы СО 17–18 и продолжение подраздела +41,290. Сопоставлены прямые изделия одной ширины внутри каждой отметки; крышки ответвителей в начале листа 17 имеют основание 100 и единицу шт., стоят до подраздела +38,690 и не восполняют автоматически разницу прямых крышек основания 200 в метрах. Разница количества не доказывает длину участков, которым не хватит крышек. Монтажные планы, узлы, раскрой и запас не проверены. Не установлены отсутствие пояснений во всём комплекте, фактическая недопоставка или нарушение конкретного ГОСТ. Нельзя автоматически требовать докупить ровно 7 м.",
+          "wording": "Согласовать метраж лотков 3530410 и крышек 3552410 с длиной закрываемых участков: на отметке +38,690 указано 130/126 м, +41,290 — 57/55 м, +44,650 — 41/40 м. Разница по этим трём подразделам составляет 7 м. Уточнить запас и участки без крышек до корректировки количества."
+        }
+      ],
+      "disposition": "assessed_preserve_cover_quantity_question_no_proven_shortage"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+      "authoritative_TEXT": "### BLOCK #194 [TEXT]: blk_1da24da5ad594599aa59defe9fde265b\n\n> **Created:** 2026-10-20 12:14:52 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7VXf6Iu_MCyqIHkKEF7P)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 6 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Провод установочный гибкий с изоляцией из безгалогенной полимерной композиции | ПуГВнг(A)-HF |  |  |  |  |  |  |\n|  | 1х35 |  |  | АО «Завод «Энергокабель» | м | 45 |  |  |\n|  | 1х95 |  |  | АО «Завод «Энергокабель» | м | 90 |  |  |\n|  | Труба ПЛЛ гибкая гофр. не содержит галогенов Ø32мм, ПВ-0, с протяжкой, цвет белый |  |  | АО ДКС | м | 190 |  |  |\n|  | Труба ПЛЛ гибкая гофр. не содержит галогенов Ø25мм, ПВ-0, с протяжкой, цвет белый |  |  | АО ДКС | м | 2345 |  |  |\n|  | Труба ПЛЛ гибкая гофр. не содержит галогенов Ø32мм, ПВ-0, с протяжкой, цвет белый |  |  | АО ДКС | м | 190 |  |  |\n|  | Клипса с замком держатель двухкомпонентный для труб Ø25мм |  |  | АО ДКС | м | 2345 |  |  |\n|  | Клипса с замком держатель двухкомпонентный для труб Ø32мм |  |  | АО ДКС | м | 190 |  |  |\n|  | Сжим ответвительный У872М |  |  | ЕКФ | шт | 90 |  |  |\n|  | Сжим ответвительный У859М |  |  | ЕКФ | шт | 90 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 43 — Sheet 7\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_e88244dd00b348158ab8aabf0d7863e1",
+      "authoritative_TEXT": "### BLOCK #195 [TEXT]: blk_e88244dd00b348158ab8aabf0d7863e1\n\n> **Created:** 2026-10-20 12:14:53 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/kztgs_02wGUmzPTYv2PG)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1.СО | Stage: Не указано | Sheet: 7 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | 2. Лоток кабельный |  |  |  |  |  |  |  |\n|  | В пом. ВРУ-3 |  |  |  |  |  |  |  |\n|  | Лестничный лоток 100х600, L3000 |  | LL1060 | АО ДКС | м. | 18 |  |  |\n|  | Шайба стопорная М6 |  | СМ220600 | АО ДКС | шт. | 20 |  |  |\n|  | Гайка шестигранная М6 |  | СМ110600 | АО ДКС | шт. | 20 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 20 |  |  |\n|  | П-образный профиль PSM, L700, толщ.2,5 мм |  | BPM2907 | АО ДКС | шт. | 28 |  |  |\n|  | Прижим кабельного лотка |  | LP1000 | АО ДКС | шт. | 56 |  |  |\n|  | Шпилька М8х1000 |  | СМ200801 | АО ДКС | м. | 56 |  |  |\n|  | Шайба с узкими полями М8 |  | СМ240800 | АО ДКС | шт. | 112 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | СМ100600 | АО ДКС | шт. | 56 |  |  |\n|  | Гайка шестигранная М8 |  | СМ110800 | АО ДКС | шт. | 112 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 56 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 56 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6х16 |  | СМ010616 | АО ДКС | шт. | 56 |  |  |\n|  | Угол горизонтальный 90 градусов 100х600 R-300 в комплекте с крепежными элементами и соединительными пластинами, необходимыми для монтажа |  | LC1360K | АО ДКС | шт. | 8 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | В пом. ВРУ-2 |  |  |  |  |  |  |  |\n|  | Лестничный лоток 100х300, L3000 |  | LL1030 | АО ДКС | м. | 36 |  |  |\n|  | Шайба стопорная М6 |  | СМ220600 | АО ДКС | шт. | 812 |  |  |\n|  | Гайка шестигранная М6 |  | СМ110600 | АО ДКС | шт. | 812 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 44 |  |  |\n|  | П-образный профиль PSM, L400, толщ.2,5 мм |  | BPM2904 | АО ДКС | шт. | 48 |  |  |\n|  | Прижим кабельного лотка |  | LP1000 | АО ДКС | шт. | 96 |  |  |\n\n## Page 44 — Sheet 8\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+      "authoritative_TEXT": "### BLOCK #196 [TEXT]: blk_0779457166304b91a87d7b7902f8359f\n\n> **Created:** 2026-10-20 12:14:54 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/mwlrXZq9Nq1Jkm99rtOg)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 8 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Шпилька М8x1000 |  | СМ200801 | АО ДКС | м. | 96 |  |  |\n|  | Шайба с узкими полями М8 |  | СМ240800 | АО ДКС | шт. | 192 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | СМ100600 | АО ДКС | шт. | 96 |  |  |\n|  | Гайка шестигранная М8 |  | СМ110800 | АО ДКС | шт. | 192 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 96 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 96 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6x16 |  | СМ010616 | АО ДКС | шт. | 96 |  |  |\n|  | Угол горизонтальный 90 градусов 100x300 R-300 в комплекте с крепежными элементами и соединительными пластинами, необходимыми для монтажа |  | LC1330K | АО ДКС | шт. | 24 |  |  |\n|  | Соединитель усиленный горизонтальный, GTO 100 L |  | LG1000 | АО ДКС | шт. | 96 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6x20 |  | СМ010620 | АО ДКС | шт. | 768 |  |  |\n|  | Соединитель усиленный горизонтальный, GTO 100 L |  | LG1000 | АО ДКС | шт. | 96 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6x20 |  | СМ010620 | АО ДКС | шт. | 768 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | В пом. ВРУ-К |  |  |  |  |  |  |  |\n|  | Лестничный лоток 100x400, L3000 |  | LL1040 | АО ДКС | м. | 8 |  |  |\n|  | Шайба стопорная М6 |  | СМ220600 | АО ДКС | шт. | 8 |  |  |\n|  | Гайка шестигранная М6 |  | СМ110600 | АО ДКС | шт. | 8 |  |  |\n|  | Винт с крестообразным шлицем М6x10 |  | СМ010610 | АО ДКС | шт. | 8 |  |  |\n|  | П-образный профиль PSM, L500, толщ.2,5 мм |  | BPM2905 | АО ДКС | шт. | 18 |  |  |\n|  | Прижим кабельного лотка |  | LP1000 | АО ДКС | шт. | 36 |  |  |\n|  | Шпилька М8x1000 |  | СМ200801 | АО ДКС | м. | 36 |  |  |\n|  | Шайба с узкими полями М8 |  | СМ240800 | АО ДКС | шт. | 72 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | СМ100600 | АО ДКС | шт. | 36 |  |  |\n|  | Гайка шестигранная М8 |  | СМ110800 | АО ДКС | шт. | 72 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 36 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 36 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6x16 |  | СМ010616 | АО ДКС | шт. | 36 |  |  |\n|  | Угол горизонтальный 90 градусов 100x400 R-300 в комплекте с крепежными элементами и соединительными пластинами, необходимыми для монтажа |  | LC1340K | АО ДКС | шт. | 8 |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 45 — Sheet 9\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_fa3060b62f634a2b8228b10863e0eb99",
+      "authoritative_TEXT": "### BLOCK #200 [TEXT]: blk_fa3060b62f634a2b8228b10863e0eb99\n\n> **Created:** 2026-10-20 12:14:55 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/NXPXF0f9y5XHL0wl9qaG)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1.СО | Stage: Не указано | Sheet: 12 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 28 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 28 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6х16 |  | СМ010616 | АО ДКС | шт. | 28 |  |  |\n|  | Лестничный лоток 100х200, L3000 |  | LL1020 | АО ДКС | м. | 7 |  |  |\n|  | Винт с крестообразным шлицем М6х10 |  | СМ010610 | АО ДКС | шт. | 52 |  |  |\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 7 |  |  |\n|  | Шпилька М8х1000 |  | СМ200801 | АО ДКС | м. | 14 |  |  |\n|  | Угол горизонтальный 90 градусов 100х200 R-300 в комплекте с крепежными элементами и соединительными пластинами, необходимыми для монтажа |  | LC1320K | АО ДКС | шт. | 4 |  |  |\n|  | Вертикальные трассы |  |  |  |  |  |  |  |\n|  | Лестничный лоток 80х300, L3000 |  | LI8030 | АО ДКС | м. | 108 |  |  |\n|  | Лестничный лоток 80х200, L3000 |  | LI8020 | АО ДКС | м. | 72 |  |  |\n|  | Шайба стопорная М6 |  | СМ220600 | АО ДКС | шт. | 232 |  |  |\n|  | Гайка шестигранная М6 |  | СМ110600 | АО ДКС | шт. | 232 |  |  |\n|  | Винт с крестообразным шлицем М6х10 |  | СМ010610 | АО ДКС | шт. | 232 |  |  |\n|  | Лестничный лоток 80х150, L3000 |  | LO9261 | СИСТЕМА КМ | м. | 36 |  |  |\n|  | Короб кабелей ПЭСПЗ Короб прямой СП 300х80 толщина 1,2 мм длина 2м нержавеющая сталь. ООО «ЭКМК» |  |  | ООО \"ЭКМК\" | м | 72 |  |  |\n|  | Профиль IBPM-41, l=1.8м |  | IBPM41180C | АО ДКС | шт. | 36 |  |  |\n|  | Профиль IBPM-41, l=1.0м |  | IBPM41100C | АО ДКС | шт. | 18 |  |  |\n|  | Профиль IBPM-41, l=0.6м |  | IBPM41060C | АО ДКС | шт. | 18 |  |  |\n|  | Профиль IBPM-41, l=0.3м |  | IBPM41030C | АО ДКС | шт. | 36 |  |  |\n|  | Уголок крепежный IBMC-10, двойной |  | IBMC1021C | АО ДКС | шт. | 72 |  |  |\n|  | Профиль IBPM-21, l=1.2м |  | IBPM21120C | АО ДКС | шт. | 18 |  |  |\n|  | Профиль IBPM-21, l=1.8м |  | IBPM21180C | АО ДКС | шт. | 18 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 49 — Sheet 13\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+      "authoritative_TEXT": "### BLOCK #201 [TEXT]: blk_448a82ffb63145aa96b55305485c4ee5\n\n> **Created:** 2026-10-20 12:14:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JdqLMpiuEwYyNCcJQBzQ)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 13 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 56 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 56 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6х16 |  | СМ010616 | АО ДКС | шт. | 56 |  |  |\n|  | Лестничный лоток 100х200, L3000 |  | LL1020 | АО ДКС | м. | 14 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 52 |  |  |\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 14 |  |  |\n|  | Шпилька М8х1000 |  | СМ200801 | АО ДКС | м. | 28 |  |  |\n|  | Угол горизонтальный 90 градусов 100х200 R-300 в комплекте с крепежными элементами и соединительными пластинами, необходимыми для монтажа |  | LC1320K | АО ДКС | шт. | 4 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Вертикальные трассы |  |  |  |  |  |  |  |\n|  | Лестничный лоток 80х300, L3000 |  | LI8030 | АО ДКС | м. | 108 |  |  |\n|  | Лестничный лоток 80х200, L3000 |  | LI8020 | АО ДКС | м. | 72 |  |  |\n|  | Шайба стопорная М6 |  | СМ220600 | АО ДКС | шт. | 232 |  |  |\n|  | Гайка шестигранная М6 |  | СМ110600 | АО ДКС | шт. | 232 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 232 |  |  |\n|  | Лестничный лоток 80х150, L3000 |  | L09261 | СИСТЕМА КМ | м. | 36 |  |  |\n|  | Короб кабелей ПЭСПЗ Короб прямой СП 300х80 толщина 1,2 мм длина 2м нержавеющая сталь. ООО «ЗКМК» |  |  | ООО \"ЗКМК\" | м | 72 |  |  |\n|  | Профиль IBPM-41, l=1.8м |  | IBPM41180C | АО ДКС | шт. | 36 |  |  |\n|  | Профиль IBPM-41, l=1.0м |  | IBPM41100C | АО ДКС | шт. | 18 |  |  |\n|  | Профиль IBPM-41, l=0.6м |  | IBPM41060C | АО ДКС | шт. | 18 |  |  |\n|  | Профиль IBPM-41, l=0.3м |  | IBPM41030C | АО ДКС | шт. | 36 |  |  |\n|  | Уголок крепежный IBMC-10, двойной |  | IBMC1021C | АО ДКС | шт. | 72 |  |  |\n|  | Профиль IBPM-21, l=1.2м |  | IBPM21120C | АО ДКС | шт. | 18 |  |  |\n|  | Профиль IBPM-21, l=1.8м |  | IBPM21180C | АО ДКС | шт. | 18 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | 1 этаж |  |  |  |  |  |  |  |\n|  | Лоток перфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 46 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | СМ100600 | АО ДКС | шт. | 149 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 75 |  |  |\n\n## Page 50 — Sheet 14\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+      "authoritative_TEXT": "### BLOCK #205 [TEXT]: blk_79370c7a344c44559b2d828291b6a1b6\n\n> **Created:** 2026-10-20 12:14:58 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/RGirZTHpKC9sxMGdOMiv)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 17 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Гайка шестигранная М8 |  | СМ110800 | АО ДКС | шт. | 900 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 450 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 450 |  |  |\n|  | Винт с гладкой головкой и квадратным подголовником М6х16 |  | СМ010616 | АО ДКС | шт. | 450 |  |  |\n|  | Отвертитель универсальный 100х80, 1,2 мм, в комплекте с крепежными элементами и соединительными пластинами, необходимыми для монтажа |  | SFN810K | АО ДКС | шт. | 9 |  |  |\n|  | Крышка на отвертитель универсальный с основанием 100, 1,2 мм, в комплекте с крепежными элементами необходимыми для монтажа |  | SKFN100K | АО ДКС | шт. | 9 |  |  |\n|  | Горизонтальный изменяемый угол СРО 0-45 градусов 100х80, 2 мм, в комплекте с крепежными элементами необходимыми для монтажа |  | SVH810K | АО ДКС | шт. | 9 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Техпространство на отм.+38.690 |  |  |  |  |  |  |  |\n|  | Лоток неперфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 130 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | СМ100600 | АО ДКС | шт. | 80 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 203 |  |  |\n|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 126 |  |  |\n|  | Винт для электрического соединения М5х8 |  | СМ030508 | АО ДКС | шт. | 45 |  |  |\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 113 |  |  |\n|  | Шпилька М8х1000 |  | СМ200801 | АО ДКС | м. | 225 |  |  |\n|  | Шайба с узкими полями М8 |  | СМ240800 | АО ДКС | шт. | 450 |  |  |\n|  | Гайка шестигранная М8 |  | СМ110800 | АО ДКС | шт. | 450 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | СМ120600 | АО ДКС | шт. | 225 |  |  |\n|  | Забивной анкер М8 |  | СМ400830 | АО ДКС | шт. | 225 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Техпространство на отм.+41.290 |  |  |  |  |  |  |  |\n|  | Лоток неперфорированный 200х80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 57 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | СМ100600 | АО ДКС | шт. | 35 |  |  |\n|  | Винт с крестообразным шляпцем М6х10 |  | СМ010610 | АО ДКС | шт. | 88 |  |  |\n|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 55 |  |  |\n|  | Винт для электрического соединения М5х8 |  | СМ030508 | АО ДКС | шт. | 20 |  |  |\n\n## Page 54 — Sheet 18\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+      "authoritative_TEXT": "### BLOCK #206 [TEXT]: blk_f3f718605a024394b9026b08fa4c9b20\n\n> **Created:** 2026-10-20 12:14:58 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/0bV2dYWfFJ44vL5nhYdE)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 18 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 50 |  |  |\n|  | Шпилька М8x1000 |  | CM200801 | АО ДКС | м. | 98 |  |  |\n|  | Шайба с узкими полями М8 |  | CM240800 | АО ДКС | шт. | 196 |  |  |\n|  | Гайка шестигранная М8 |  | CM110800 | АО ДКС | шт. | 196 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | CM120600 | АО ДКС | шт. | 98 |  |  |\n|  | Забивной анкер М8 |  | CM400830 | АО ДКС | шт. | 98 |  |  |\n|  | Держатель токоотвода D10-12мм бетонный для плоской крыши |  | 178513 | Bolta | шт. | 104 |  |  |\n|  | Шпилька М8 |  | 178513 | Bolta | шт. | 104 |  |  |\n|  | Гайка М8 |  | 178513 | Bolta | шт. | 104 |  |  |\n|  | Соединитель лотка универсальный СЛУ-50/65(1мм) |  | 178513 | Bolta | шт. | 104 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Техпространство на отм.+44.650 |  |  |  |  |  |  |  |\n|  | Лоток неперфорированный 200x80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 41 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | CM100600 | АО ДКС | шт. | 25 |  |  |\n|  | Винт с крестообразным шлицем М6x10 |  | CM010610 | АО ДКС | шт. | 63 |  |  |\n|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 40 |  |  |\n|  | Винт для электрического соединения М5x8 |  | CM030508 | АО ДКС | шт. | 15 |  |  |\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 41 |  |  |\n|  | Шпилька М8x1000 |  | CM200801 | АО ДКС | м. | 70 |  |  |\n|  | Шайба с узкими полями М8 |  | CM240800 | АО ДКС | шт. | 140 |  |  |\n|  | Гайка шестигранная М8 |  | CM110800 | АО ДКС | шт. | 140 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | CM120600 | АО ДКС | шт. | 70 |  |  |\n|  | Забивной анкер М8 |  | CM400830 | АО ДКС | шт. | 70 |  |  |\n|  | Держатель токоотвода D10-12мм бетонный для плоской крыши |  | 178513 | Bolta | шт. | 82 |  |  |\n|  | Шпилька М8 |  | 178513 | Bolta | шт. | 82 |  |  |\n|  | Гайка М8 |  | 178513 | Bolta | шт. | 82 |  |  |\n|  | Соединитель лотка универсальный СЛУ-50/65(1мм) |  | 178513 | Bolta | шт. | 82 |  |  |\n\n## Page 55 — Sheet 19\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+      "sha256": "a63aa0206c93f1d384029fc98b7d1b4c335e25505edd3672d091df494b1d711a",
+      "primary_adjudication": null,
+      "limits": "Прочитан полный лист 6; между строками Ø32 стоит Ø25, отдельного заголовка участка между ними нет. Это не доказывает отсутствие пояснения в смежной ведомости. Требуемая длина по трассам не установлена. Строка клипс 190 м не подтверждает правильную длину трубы. Нельзя автоматически удалить 190 м.",
+      "wording": "Уточнить назначение двух одинаковых строк гофрированной безгалогенной трубы Ø32 по 190 м в СО, лист 6: являются ли они объёмами разных участков или повтором одной потребности. Формальная сумма строк — 380 м."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+      "sha256": "96f4c1648640eb1c94ca979a73869993ab04a7359a183655ca07a3807fe43e64",
+      "primary_adjudication": null,
+      "limits": "Числа совпадают с длиной строки трубы Ø25 и каждой отдельной строкой Ø32; 190 не равно сумме двух строк Ø32 (380). Такое совпадение не доказывает причину ошибки. Шаг и места креплений не проверены, автоматически заменять м на шт. при сохранении числа нельзя. Возможный учёт комплектной работы на метр также требует явного пояснения. Конкретное нарушение ГОСТ и фактическая ошибка закупки не установлены.",
+      "wording": "Уточнить единицы и количество клипс Ø25/Ø32 на листе 6 СО: указаны 2345 и 190 м, что не задаёт количество отдельных держателей. Представить количество креплений с основанием расчёта."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+      "sha256": "d2fdf2b0a62b954bc12f46539bcc5944fc1413db62c61166ff991b5d317f8177",
+      "primary_adjudication": null,
+      "limits": "Проверены листы 7–8: раздел ВРУ-2 начинается на листе 7, обе пары стоят до следующего заголовка ВРУ-К. Повтор не объясняется переходом между этими двумя помещениями, но может учитывать разные соединения внутри ВРУ-2. Потребность и граница комплектного крепежа углов LC1330K не проверены. Суммы относятся к этим парам, не ко всему проекту; лишняя закупка не доказана.",
+      "wording": "Уточнить повтор пары LG1000 по 96 шт. и СМ010620 по 768 шт. в разделе ВРУ-2, СО лист 8. Две пары дают 192 соединителя и 1536 винтов. Указать участки их применения или подтвердить ошибочное повторение."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+      "sha256": "15432598db63ee87b27c7deece7cbcede488860c1944a00c2f5ef1fa513caa1f",
+      "primary_adjudication": null,
+      "limits": "Проверены полные листы СО 17–18 и продолжение подраздела +41,290. Сопоставлены прямые изделия одной ширины внутри каждой отметки; крышки ответвителей в начале листа 17 имеют основание 100 и единицу шт., стоят до подраздела +38,690 и не восполняют автоматически разницу прямых крышек основания 200 в метрах. Разница количества не доказывает длину участков, которым не хватит крышек. Монтажные планы, узлы, раскрой и запас не проверены. Не установлены отсутствие пояснений во всём комплекте, фактическая недопоставка или нарушение конкретного ГОСТ. Нельзя автоматически требовать докупить ровно 7 м.",
+      "wording": "Согласовать метраж лотков 3530410 и крышек 3552410 с длиной закрываемых участков: на отметке +38,690 указано 130/126 м, +41,290 — 57/55 м, +44,650 — 41/40 м. Разница по этим трём подразделам составляет 7 м. Уточнить запас и участки без крышек до корректировки количества."
+    }
+  ],
+  "limits": [
+    "No new engineer acceptance.",
+    "No procurement, installed quantities or joint-by-joint kit verification.",
+    "Repeated values do not prove duplicate need.",
+    "Authoritative TEXT preserved including different product codes.",
+    "Frozen evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
