@@ -1,0 +1,403 @@
+{
+  "status": "two_AR_geometry_quantities_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "069c754880a893b4664e9d6635cf67a6ee445fc238c49ded17e0631336633586",
+  "queue_after_sha256": "0a5d3ebd80fc90c2712e9b424ba5bf7e9cafa5d09d217884861c3ef33ebcd095",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Ведомости материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Объём утеплителя К-3 не согласован с площадью покрытия и толщиной 130 мм.",
+        "description": "При площади К-3 10,8 м² и сплошной толщине утеплителя 130 мм расчётный объём равен 1,404 м³. В ведомости материалов указано 1,24 м³, что меньше на 0,164 м³, или примерно 11,7%. При использовании площади основных слоёв 10,84 м² из текстовой ведомости результат составляет 1,4092 м³ и также не согласуется с указанным объёмом. Различие площадей 10,8 и 10,84 м² само по себе может быть следствием округления.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к согласованности количеств материалов с геометрическими параметрами проектного решения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-006",
+                "G-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-006",
+                  "G-007"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить фактическую площадь утепляемого участка и наличие исключаемых зон. Пересчитать объём для принятой толщины и исправить ведомость либо пояснить особенности подсчёта.",
+        "risk": "Недостаточная закупка теплоизоляции, дополнительные поставки или уменьшение проектной толщины при монтаже.",
+        "source_finding_ids": [
+          "G-006",
+          "G-007"
+        ],
+        "source_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "related_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-006",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают материал, расчёт и расхождение: для К-3 требуется 10,8 × 0,13 = 1,404 м³, указано 1,24 м³, разница 0,164 м³. Дополнительное выражение разницы в процентах не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают материал, расчёт и расхождение: для К-3 требуется 10,8 × 0,13 = 1,404 м³, указано 1,24 м³, разница 0,164 м³. Дополнительное выражение разницы в процентах не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 79,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR36_B-AR-F-005:d576dd306cbd1e602f34",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "10,8×0,13=1,404м³ против1,24; разность0,164, около11,7%. Для10,84×0,13=1,4092.",
+          "verdict": "confirmed_inputs_and_conditional_decimal_arithmetic",
+          "limits": "График задает130мм и10,8м²;10,84 относится к другим слоям. Обе операции условны: сплошное утепление всей площади и границы слоя не доказаны. Не назначать1,4092 окончательной потребностью."
+        },
+        {
+          "claim": "Уточнить фактическую площадь утепляемого участка и наличие исключаемых зон. Пересчитать объём для принятой толщины и исправить ведомость либо пояснить особенности подсчёта.",
+          "verdict": "supported_scoped_question",
+          "limits": "Уточнить геометрию и правила подсчета до изменения ведомости."
+        },
+        {
+          "claim": "Недостаточная закупка теплоизоляции, дополнительные поставки или уменьшение проектной толщины при монтаже.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактическая закупка и монтаж не проверены; нехватка и уменьшение толщины не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нарушение конкретной нормы не установлено."
+        }
+      ],
+      "unsupported_additions": "График задает130мм и10,8м²;10,84 относится к другим слоям. Обе операции условны: сплошное утепление всей площади и границы слоя не доказаны. Не назначать1,4092 окончательной потребностью.",
+      "novel_useful_content": "known_conditional_quantity_question",
+      "duplicate_burden": "F016 shares K3 scope with F008 but distinct material; F017 separate parapet object.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer decision inferred; prior evidence bytes verified, revised claim arithmetic checked.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "byte_identical_source_reuse_of_prior_graphic_or_TEXT_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "sha256": "c0e65e558fcbde7f84022893578b1c64f1bf53f716100b3106a804db4280d657",
+          "primary_adjudication": null,
+          "limits": "Не назначать одинаковые площади всех слоёв без проверки геометрии; не считать1,4092м³ окончательной потребностью. Процент запаса К-4 не является универсальным допуском дляК-3. Избыток закупки и нехватка утеплителя не доказаны.",
+          "wording": "Проверить расчёт количеств К-3: покрытие10,8м², гидроизоляция/геотекстиль10,84м², плитка18,96м², утеплитель1,24м³ при указанном слое130мм. Раскрыть границы площадей, вычеты и запас.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "route": "byte_identical_source_reuse_of_prior_graphic_or_TEXT_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "byte_identical_source_reuse_of_prior_graphic_or_TEXT_review",
+          "observation": "К-3: площадь10,8м², слой6 толщиной130мм.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png"
+        }
+      ],
+      "disposition": "assessed_preserve_geometry_quantity_question_with_scope"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Ведомости материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Площадь отлива Оп-1 не согласована с указанными длиной и шириной.",
+        "description": "В ведомости отделки парапета для Оп-1 приведены размер 690×1 мм, длина 145,44 м и площадь 78,5 м². При трактовке 690 мм как ширины отлива произведение длины на ширину составляет 100,3536 м², то есть около 100,35 м² без добавления отгибов. Разница с ведомостью — около 21,85 м². Геометрию профиля и правила определения площади необходимо проверить по исходной схеме.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к согласованности размеров изделий и количественных показателей ведомостей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-008",
+                "G-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-008",
+                  "G-009"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить значение размера 690 мм, проверить развёртку и длину отлива, пересчитать площадь с учётом принятого способа подсчёта и согласовать ведомость.",
+        "risk": "Ошибка закупочного объёма листового металла, дополнительные затраты и задержки изготовления отливов.",
+        "source_finding_ids": [
+          "G-008",
+          "G-009"
+        ],
+        "source_block_ids": [
+          "blk_82cbe376e70f4cc3833a1203b0d0a0ee"
+        ],
+        "related_block_ids": [
+          "blk_82cbe376e70f4cc3833a1203b0d0a0ee"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_82cbe376e70f4cc3833a1203b0d0a0ee",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение площади Оп-1: при длине 145,44 м и ширине 690 мм расчёт даёт 100,35 м² вместо 78,5 м². Указанная слева разница 21,85 м² не добавляет существенной детализации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение площади Оп-1: при длине 145,44 м и ширине 690 мм расчёт даёт 100,35 м² вместо 78,5 м². Указанная слева разница 21,85 м² не добавляет существенной детализации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 79,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-AR-F-016:fff2912112e6c79e3b46",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Оп-1:145,44м×0,690м=100,3536м² против78,5м²; разность21,8536м².",
+          "verdict": "confirmed_inputs_and_conditional_decimal_arithmetic",
+          "limits": "690мм является горизонтальным габаритом на проверенной схеме; итоговая развёртка, загибы, нахлесты и границы суммарной длины неизвестны. Не назначать100,3536 закупочной площадью."
+        },
+        {
+          "claim": "Уточнить значение размера 690 мм, проверить развёртку и длину отлива, пересчитать площадь с учётом принятого способа подсчёта и согласовать ведомость.",
+          "verdict": "supported_scoped_question",
+          "limits": "Уточнить геометрию и правила подсчета до изменения ведомости."
+        },
+        {
+          "claim": "Ошибка закупочного объёма листового металла, дополнительные затраты и задержки изготовления отливов.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Фактическая закупка и монтаж не проверены; нехватка и уменьшение толщины не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нарушение конкретной нормы не установлено."
+        }
+      ],
+      "unsupported_additions": "690мм является горизонтальным габаритом на проверенной схеме; итоговая развёртка, загибы, нахлесты и границы суммарной длины неизвестны. Не назначать100,3536 закупочной площадью.",
+      "novel_useful_content": "known_conditional_quantity_question",
+      "duplicate_burden": "F016 shares K3 scope with F008 but distinct material; F017 separate parapet object.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer decision inferred; prior evidence bytes verified, revised claim arithmetic checked.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
+          "sha256": "6de616cbb7c5cca66864facc621709f0f7ac35569d40b16b8fded829cd5b3436",
+          "primary_adjudication": null,
+          "limits": "Не считать100,3536м² окончательной площадью заготовки: загибы, нахлёсты, раскрой и область суммарной длины не установлены. Недостаточная закупка не доказана.",
+          "wording": "Уточнить площадь Оп-1:145,44м×0,690м=100,3536м² уже по горизонтальному габариту против78,5м² в ведомости. Проверить длину, развёртку и смысл столбца площади.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
+          "route": "byte_identical_source_reuse_of_prior_graphic_or_TEXT_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_82cbe376e70f4cc3833a1203b0d0a0ee.png",
+          "sha256": "08c59290764e600b59fb738855634a1711743e41159af4b34340953c23237b57",
+          "block_id": "blk_82cbe376e70f4cc3833a1203b0d0a0ee",
+          "route": "byte_identical_source_reuse_of_prior_graphic_or_TEXT_review",
+          "observation": "Оп-1: горизонтальный габарит690, описание690×1мм, длина145,44м, площадь78,5м², крепёж727.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_82cbe376e70f4cc3833a1203b0d0a0ee.png"
+        }
+      ],
+      "disposition": "assessed_preserve_geometry_quantity_question_with_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
