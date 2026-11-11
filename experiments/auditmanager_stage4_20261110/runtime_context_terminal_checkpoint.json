@@ -1,0 +1,65 @@
+{
+  "status": "all_current_recovery_model_queues_terminal",
+  "snapshot": "/tmp/auditmanager_context_terminal_snapshot_20261112.json",
+  "snapshot_sha256": "1358431ad556afc30733620fbf974da3c521f343bfffffe4d26abc32b781f287",
+  "summary": {
+    "successful_packets_replayed": 59,
+    "base_findings": 35,
+    "merged_findings": 85,
+    "pending_candidates": 10,
+    "pending_subclaims": 12,
+    "pending_subclaims_on_known_candidates": 10,
+    "unmatched_pending_receipts": 1,
+    "unmatched_pending_subclaims": 2,
+    "pending_reasons": {
+      "needs_data": 12
+    },
+    "published_addenda": 155,
+    "target_binding_repairs": 180,
+    "unresolved_target_bindings": 0
+  },
+  "queues": [
+    {
+      "root": "/tmp/auditmanager_primary_text_runtime_recovery_results_20261112",
+      "status": "ready_packets_completed_held_pending",
+      "completed_packets": 42,
+      "planned_ready": 42
+    },
+    {
+      "root": "/tmp/auditmanager_primary_text_runtime_recovery_split_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 2,
+      "planned_ready": 2
+    },
+    {
+      "root": "/tmp/auditmanager_runtime_recovery_graphic_detail_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 1,
+      "planned_ready": 1
+    },
+    {
+      "root": "/tmp/auditmanager_context_lineage_fixed_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 4,
+      "planned_ready": 4
+    },
+    {
+      "root": "/tmp/auditmanager_remaining_context_results_20261112",
+      "status": "ready_packets_completed_held_pending",
+      "completed_packets": 8,
+      "planned_ready": 8
+    },
+    {
+      "root": "/tmp/auditmanager_sheet54_tiled_context_results_20261112",
+      "status": "completed_unadjudicated",
+      "completed_packets": 2,
+      "planned_ready": 2
+    }
+  ],
+  "production_acceptance": false,
+  "next_actions": [
+    "Adjudicate retained findings and remaining needs_data against sources and existing engineer feedback.",
+    "Separate unresolved external scope and questions from verified technical findings.",
+    "Run complete six-project comparison only after the corrected mechanism and quality gates are ready."
+  ]
+}

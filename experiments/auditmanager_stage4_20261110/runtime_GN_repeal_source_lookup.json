@@ -5,7 +5,7 @@
   "claim_id": "2",
   "act": "Постановление Главного государственного санитарного врача РФ от 13.02.2018 № 25, пункт 3",
   "official_publication": "https://publication.pravo.gov.ru/Document/View/0001201804230006",
-  "official_fetch": "Web fetch timed out; direct PDF fetch pending at review time.",
+  "official_fetch": "Both web fetch and direct PDF fetch timed out; official full text not obtained.",
   "reproduced_act_url": "https://meganorm.ru/Data2/1/4293737/4293737770.htm",
   "verified_content": "Пункт 3 перечисляет постановление от 30.04.2003 № 76 о введении ГН 2.2.5.1313-03 среди утративших силу.",
   "scope_limits": [
