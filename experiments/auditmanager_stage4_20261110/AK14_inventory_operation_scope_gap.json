@@ -309,6 +309,11 @@
       "file": "backend/app/pipeline/stages/prepare/object_operation_passes.py",
       "function": "build_object_operation_passes",
       "behavior": "Only not_checked and needs_data operations are selected; reported_checked identity operation is excluded."
+    },
+    {
+      "file": "backend/app/pipeline/stages/text_analysis/inventory_enrichment.py",
+      "function": "merge_inventory_analysis",
+      "behavior": "Adds packet-prefixed graphic inventory objects/operations; this independent recovery route may address the missing checks after enrichment succeeds."
     }
   ],
   "conclusion": "Five cabinet objects exist, but their reported identity checks cite TEXT only and do not establish terminal address verification on drawings. The unresolved-operation selector does not reschedule this identity operation.",
@@ -316,8 +321,9 @@
     "These are preserved outputs of a terminally failed inventory trial; the trial is not accepted.",
     "This does not prove the model would miss the defect in a newly configured complete run.",
     "An object may still be scheduled for a different operation; do not equate exclusion of identity operation with exclusion of every check.",
-    "Known engineer case used only for offline mapping, never dispatched."
+    "Known engineer case used only for offline mapping, never dispatched.",
+    "Current inventory_enrichment.merge_inventory_analysis adds separate packet-prefixed objects and operation receipts; completed graphic enrichment may recover these checks even though original TEXT-only objects remain reported_checked. That route did not complete in this failed run and must be tested before changing scheduling globally."
   ],
-  "next_change": "Track required source views and independently checkable operations; a TEXT-only identity receipt must not close an outstanding GRAPHIC address operation. Preserve legitimate text-only checks.",
+  "next_change": "First complete source-only graphic inventory and inspect whether its new objects retain the terminal-address obligation. If that obligation still disappears, track required views/subchecks explicitly; do not invalidate every legitimate text-only identity check.",
   "production_acceptance": false
 }
