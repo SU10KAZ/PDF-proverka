@@ -1,0 +1,44 @@
+{
+  "status": "source_recovery_running",
+  "observed_at": 1794435322.864192,
+  "queues": [
+    {
+      "queue": "main",
+      "status_path": "/tmp/auditmanager_primary_text_runtime_recovery_results_20261112/status.json",
+      "status": "running",
+      "process": {
+        "pid": 964972,
+        "live": true,
+        "process_state": "S",
+        "identity_matches": true
+      },
+      "planned": 42,
+      "completed": 3,
+      "model": "codex/gpt-6-astra",
+      "reasoning_effort": "high",
+      "preparation_sha256": "b3a0e673ecfa12221f8e9a806c370ed357bf855f880e1d42c3e8e4f0109b2c86",
+      "elapsed_seconds": 150
+    },
+    {
+      "queue": "partitioned",
+      "status_path": "/tmp/auditmanager_primary_text_runtime_recovery_split_results_20261112/status.json",
+      "status": "running",
+      "process": {
+        "pid": 966724,
+        "live": true,
+        "process_state": "S",
+        "identity_matches": true
+      },
+      "planned": 2,
+      "completed": 0,
+      "model": "codex/gpt-6-astra",
+      "reasoning_effort": "high",
+      "preparation_sha256": "b00c3802c0a002886d21b83eafe8177180675c09d69a3a1ab55c4f0513357624",
+      "elapsed_seconds": 23
+    }
+  ],
+  "planned_requests": 44,
+  "original_packets": 43,
+  "partition_note": "One oversized original packet is replaced by two disjoint subclaim scopes. Main queue held entry is resolved only after those separate responses are reviewed.",
+  "production_acceptance": false
+}
