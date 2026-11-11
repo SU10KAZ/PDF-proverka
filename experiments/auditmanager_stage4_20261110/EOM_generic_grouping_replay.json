@@ -1,0 +1,23 @@
+{
+  "receipt": {
+    "status": "applied",
+    "member_ids": [
+      "F-050",
+      "F-051"
+    ],
+    "surviving_id": "F-050",
+    "semantic_certified": false
+  },
+  "classic_findings_preserved_exactly": 49,
+  "final_rows": 50,
+  "all_member_claims_solutions_risks_norms_visible_in_excel": true,
+  "generic_admission_used": true,
+  "source_review_still_explicit_local": true,
+  "new_model_calls": 0,
+  "full_acceptance": false,
+  "remaining": [
+    "Automatic production dispatch and semantic review not wired.",
+    "No independent historical negative grouping pair yet.",
+    "Cable source identifier and completeness limitations remain."
+  ]
+}
