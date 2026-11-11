@@ -1,0 +1,603 @@
+{
+  "status": "three_KM_context_and_accounting_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "10967b00cff2ff7f36da70cce27c61a22e6e7631f2324405c6a601a4e9bc7bc2",
+  "queue_after_sha256": "a47c37fc57a04372ab1cb59a1e786cc773ca4d93b5dea3afa061aa1dcbb7750b",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-003",
+      "finding": {
+        "id": "F-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчетное обоснование",
+        "sheet": "Листы 1, 4, 6, 8, 9, 10",
+        "page": [
+          3,
+          6,
+          8,
+          10,
+          11,
+          12
+        ],
+        "problem": "Не определены расчетные условия ограждений и усилия для проектирования соединений.",
+        "description": "В ведомостях вместо усилий для прикрепления указано «Конструктивно». Определение размеров соединений передано разработчику КМД по расчетным усилиям, отсутствующим в представленном комплекте. Горизонтальная нагрузка на поручни также не указана. Ссылки на КЖ и отдельный комплект КМ8 не устанавливают расчетные условия конкретных ограждений. Недостаточная прочность по представленным данным не доказана.",
+        "norm": "СП 20.13330.2016 (норматив-кандидат), кандидат п. 8.3.1; ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 20.13330.2016",
+            "cited_designation": "СП 20.13330.2016",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить нормативные горизонтальные нагрузки на поручни лестниц для соответствующего назначения помещений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "8.3.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к расчетному обоснованию механической безопасности конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-003"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать принятую нагрузку, усилия для соединений и ссылку на расчет стоек, поручней и креплений. Проверить применимость нормативной нагрузки 0,3 кН/м для жилых лестниц; для иных помещений определить соответствующее значение.",
+        "risk": "Невозможность проверить несущую способность ограждений и обоснованно назначить соединения в КМД.",
+        "source_finding_ids": [
+          "T-003"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_531e843c117243a3b1582cb3399f4681",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "blk_f63af88de2a840e49ca709d736eaa225"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 28,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F003_loads_document_link:978d350d6e39eb1fcf5a",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "KM12_F022_anchor_installation_identity:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "KM_F008_weld_calculation_requirement:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пункт3.1 передаёт расчёт соединений в КМД по усилиям; в проверенной ведомости ОГМ2 указано Конструктивно.",
+          "verdict": "confirmed_local_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Ссылки на КЖ и КМ8 не устанавливают расчётные условия конкретных ограждений.",
+          "verdict": "bounded_link_not_resolved",
+          "limits": "Второй повтор уже учитывает обе ссылки. Их содержимое не проверено; отсутствие установленной связи не доказывает отсутствие расчёта или исходных данных у проектировщика."
+        },
+        {
+          "claim": "Нужен точный адрес применимого расчёта ограждений и усилий.",
+          "verdict": "supported_scoped_question",
+          "limits": "Численные нагрузки поручня и адрес расчёта не установлены в прочитанных фрагментах; содержимое КЖ/КМ8/КМД не проверено. Сам перенос проверки в КМД не доказан как дефект."
+        },
+        {
+          "claim": "Недостаточная прочность стоек, сварки и анкеров.",
+          "verdict": "not_established_and_explicitly_not_asserted",
+          "limits": "Не назначать0,3кН/м или толщины швов без проверки назначения и применимого требования."
+        },
+        {
+          "claim": "Применить 0,3 кН/м для жилых лестниц.",
+          "verdict": "candidate_to_verify_not_accepted_requirement",
+          "limits": "В решении это предложено проверить, а не назначено. Первичный пункт и назначение каждого участка здесь не установлены; число не включать в универсальный допуск или доказанный дефект."
+        }
+      ],
+      "unsupported_additions": "Локальный пробел в связях или учёте не доказывает глобальное отсутствие расчёта, нехватку поставки либо недостаточную прочность. Новые нормативные кандидаты не подтверждены этой проверкой.",
+      "novel_useful_content": "Сохраняется ограниченный вопрос первого повтора; новые самостоятельные подтверждённые технические дефекты не установлены.",
+      "duplicate_burden": "group_r2_F003_F023_with_distinct_anchor_parameters_preserved",
+      "profile_and_section": "questions_and_clarifications; preserve scoped requests, no proven strength or supply defect",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F003_loads_document_link.json",
+          "sha256": "c6dc587ee5359dc549bda0a342845dbff0d8941417085f9949b3e6e5f8eb6691",
+          "primary_adjudication": null,
+          "limits": [
+            "Ссылка на нагрузки существует: пункт1.6 прямо указывает альбомыКЖ. Нельзя утверждать отсутствие любых ссылок на исходные данные.",
+            "Конкретная нагрузка поручня, её сочетания и номер расчёта в прочитанных указаниях и семи ведомостях листа4 не установлены. Это не доказывает отсутствие расчёта вКЖ/КМ8/КМД.",
+            "Пункт3.1 предусматривает расчётное определение/проверку соединений вКМД; сам такой порядок не установлен как дефект.",
+            "Значение0.3кН/м из исходного кандидата не проверено по первичному нормативному источнику и назначению участка; не переносится в эталон, правило или допуск.",
+            "Недостаточная прочность, опасность и обязательность изменения именноКМ1.2 не доказаны."
+          ],
+          "wording": "Уточнить конкретный расчёт или листКЖ/КМ8 с нагрузками на ограждения и усилиями для соединений, передаваемыми разработчикуКМД. Пункт1.6 отсылает за нагрузками вКЖ, но в прочитанных ведомостях листа4 вместо численныхQ/N/M указано«Конструктивно»; применимость и содержание исходного расчёта пока не проверены."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json",
+          "sha256": "b9d5cb7748465536b642a9edc3df0d3d5d897d8df415e46fe603482443a9aaa5",
+          "primary_adjudication": null,
+          "limits": [
+            "ИсторическиОтклонено:инженер сослался наКМ8 и совпадениеF-002/F-003. Это профильное решение,не доказательство безопасности или выполнения конкретного расчёта. СодержаниеКМ8 и исходныеF-002/F-003 не проверены.",
+            "Вобщихуказаниях есть отсылка кКЖ за нагрузками и кКМД за проверкой соединений; глобальное отсутствие нагрузки/расчёта не доказано.",
+            "На пяти просмотренных узлах нет явно заданных глубины установки,полной толщины,класса и расчётного состояния бетона; недоступностьКЖне доказывает отсутствия этих данных во всём проекте.",
+            "УсловиеETAбез трещин подтверждено дляпрочитанного документа. Расчётное состояние проектного бетона,точная модификация/артикул и применимость этойредакции кизделию не установлены.",
+            "Нельзя приравнивать90 вM10×90 кhnom90. Проверены три варианта установки,но конкретный допускаемый вариант при длине90 и пластине10 не идентифицирован.",
+            "Локальные45мм не универсальное краевое расстояние; сравнение сcminзависит от установки и момента затяжки. Минимальные расстояния не заменяют расчёт группы анкеров.",
+            "Допуск аналогов есть,но критерии эквивалентности в связанных документах не проверены; нельзя считать любой аналог допустимым или запрещённым."
+          ],
+          "wording": "Для проверки крепленийHSA-M10×90 предоставить адрес расчётаКМ8/КМД, усилия и сочетания, параметры бетонного основания, точное исполнение анкера и вариант установки. Геометрия четырёх анкеров с шагом70мм на пластине120×120×10 задана; она сама не подтверждает несущую способность. Справочные90/80/160мм нельзя назначать автоматически по маркировкеM10×90."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F008_weld_calculation_requirement.json",
+          "sha256": "76a198553e6e2fd04bef42ef3c57894d433c24e7a4c6943a44fafc3d6ccda164",
+          "primary_adjudication": null,
+          "limits": [
+            "Пункт3.1 предусматривает определение/проверку швов вКМД по расчётным усилиям; пункт3.5 требует расчёт, ограничение1.2t и минимальные значения по указанной таблице. Нельзя представлять1.2t единственным требованием проекта.",
+            "При условномt=3мм значение1.2t=3.6мм — только арифметика условия, не назначенный расчётный катет и не доказательство несущей способности.",
+            "В прочитанной ведомостиОГМ1 листа4 усилиеКонструктивно, численные катеты не приведены. Это не доказывает отсутствие параметров во всех узлах и комплектах.",
+            "Реестр содержитКМ8 с конструктивными расчётами. Поиск имёнКМ8/КМД/km8/kmd вexperiments и каталогеsources не дал файлов; этот поиск не доказывает отсутствие расчётов у проектировщика или внутри архивов.",
+            "СП16 и таблица38 здесь независимо не проверялись; конкретное нормативное нарушение и необходимость менять именноКМ не установлены.",
+            "Не доказаны недостаточная прочность, невозможность изготовления или фактический дефект."
+          ],
+          "wording": "Уточнить, в каких расчётах и чертежахКМД определены размеры швов и передаваемые усилия для соединений ограждений. Проект требует расчётного назначения и проверки, но готовые расчётные параметры по прочитанным материалам не подтверждены. Ограничение1.2t само по себе не является проверкой прочности."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-003",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-003_bounded_context_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Спецификация",
+        "sheet": "Листы 2, 4, 6, 8, 9, 10",
+        "page": [
+          4,
+          6,
+          8,
+          10,
+          11,
+          12
+        ],
+        "problem": "В сводной спецификации не выделен лист толщиной 3 мм для заглушек.",
+        "description": "Примечания требуют заглушки из листа толщиной 3 мм; отдельные ведомости включают детали 3×40×40 мм. В технической спецификации указан только лист толщиной 10 мм. Общая потребность в заглушках для требуемых торцов не сведена.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту учета материалов для предусмотренных чертежами деталей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить количество заглушек с учетом примыканий ограждений и включить лист толщиной 3 мм в сводную спецификацию.",
+        "risk": "Неучтенная закупка материала и пропуск заглушек при изготовлении.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 56,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F010_end_caps_material_accounting:f1072b185954c64a3f41",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В сводной есть лист 10 мм, отдельная строка 3 мм отсутствует.",
+          "verdict": "confirmed_bounded_TEXT_absence",
+          "limits": ""
+        },
+        {
+          "claim": "Заглушки не предусмотрены проектом.",
+          "verdict": "refuted_by_counterevidence",
+          "limits": "ОГМ1 С2 и С3 содержат по шесть 3×40×40; ещё девять ведомостей имеют строки заглушек. Примечание 4 требует закрывать свободные торцы."
+        },
+        {
+          "claim": "Заглушки не учтены в итоговой массе и поставке.",
+          "verdict": "not_established",
+          "limits": "В сводной имеется коэффициент K=1.0403 с нераскрытым назначением. Он не доказывает ни учёт, ни неучёт заглушек. Закупочные ведомости не проверены."
+        },
+        {
+          "claim": "Уточнить учёт листа 3 мм и количество по фактически свободным торцам.",
+          "verdict": "supported_scoped_question",
+          "limits": "Перед добавлением материала проверить существующий способ учёта, исключить двойной подсчёт."
+        },
+        {
+          "claim": "ГОСТ 21.110-2013 п.4.1 устанавливает нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Новый норматив-кандидат отличается от первого повтора; прежняя оценка ссылки ГОСТ21.502 не переносится. Решение о нарушении по новому пункту не принято."
+        },
+        {
+          "claim": "Нужно безусловно добавить лист3мм в сводную.",
+          "verdict": "conditional_action_check_existing_accounting_first",
+          "limits": "Отдельной строки нет, но назначение K=1.0403 не раскрыто. Сначала установить способ учёта и фактические свободные торцы, затем исправить спецификацию без двойного учёта. Число22 и масса0,829кг во втором повторе не заявлены."
+        }
+      ],
+      "unsupported_additions": "Локальный пробел в связях или учёте не доказывает глобальное отсутствие расчёта, нехватку поставки либо недостаточную прочность. Новые нормативные кандидаты не подтверждены этой проверкой.",
+      "novel_useful_content": "Сохраняется ограниченный вопрос первого повтора; новые самостоятельные подтверждённые технические дефекты не установлены.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "questions_and_clarifications; preserve scoped requests, no proven strength or supply defect",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_02786cefba4641928c7e149eda44f872",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_4b49406098054a4da822e4286031df67",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_9da5632926f24581897a4eaebfd14c09",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_4412076f7a7349f587fb211ff8b4af08",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_767f34cdd83944c9bfffd5deab397aee",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_f8cad33a4f74403cb982ba27beeb20fc",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_fe9c8af96413404a8b896cd8382fc410",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7fc4d0805a89466695360d1c96b75a3b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_4e4e96f61e414814a73cc4d46c2d0ffa",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_df88245dc58542b5ace64cd60723f153",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_b2ea5b80b2d4480e907cb019c19a01f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F010_end_caps_material_accounting.json",
+          "sha256": "b32312f6cad2d814ffc5e487eaa8e55ef5b42e961a8126469f22ee529d1cf693",
+          "primary_adjudication": null,
+          "limits": [
+            "ОГМ2 иОГМ5 листа4 не имеют отдельных строк заглушек, но это само по себе не доказывает их нехватку: примыкания и свободные торцы отличаются.",
+            "Поиск явной строкиЗаглушка в TEXT выявил11 ведомостей с такими строками; это не подсчёт уникальных изделий, суммарного количества деталей или всех открытых торцов.",
+            "Отдельная масса листа3мм не выделена в сводной таблице. При этом имеется масса конструкций сK=1.0403; назначение добавки не раскрыто, поэтому не доказаны ни учёт, ни неучёт заглушек в итоговой массе.",
+            "КМД, закупка и фактическая комплектация не проверены. Нельзя утверждать отсутствие решения по закрытию торцов или предписывать замену листа10мм на3мм."
+          ],
+          "wording": "Уточнить учёт заглушек из листа3мм: примечание листа4 предписывает их на концах стоек и свободных торцах поручней; ведомостьОГМ1 содержит6 деталей3×40×40, но сводная спецификация выделяет только лист10мм. Пояснить учёт материала и сверить количество с фактически свободными торцами до добавления новых строк."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-007",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-007_bounded_context_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-023",
+      "finding": {
+        "id": "F-023",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "other",
+        "problem": "Не заданы проверяемые условия применения анкеров HSA-M10×90 и критерии их замены.",
+        "description": "В строке 251 указан производитель Hilti и серия HSA с разрешением применять аналоги; в строке 305 указан типоразмер HSA-M10×90. Однако представленный контекст не содержит ссылки на техническую документацию или подтверждение характеристик конкретного исполнения, расчетной несущей способности, требований к классу и трещиноватости бетона, эффективной глубине анкеровки, минимальной толщине основания и монтажному моменту затяжки. Общая ссылка на стандарт анкеров в строке 128 этих параметров не устанавливает. Уточнение к F-003 касается выбора и условий установки анкера; недостаточная прочность установленного крепления по представленным данным не доказана.",
+        "page": null,
+        "norm": "СП 513.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Указать документ с подтвержденными характеристиками выбранного анкера, расчетные сопротивления и условия их применимости. Задать требования к бетону, глубине установки, расстояниям до краев и между анкерами, толщине основания и монтажу. Для аналога установить критерии эквивалентности и подтвердить расчетом работу анкерной группы.",
+        "risk": "Выбор неподходящего аналога или установка вне допустимых условий может привести к потере несущей способности крепления ограждения.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": null,
+            "md_lines": "строки 124-128"
+          },
+          {
+            "type": "text",
+            "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+            "page": null,
+            "md_lines": "строки 239-251"
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+            "page": null,
+            "md_lines": "строки 305-308"
+          }
+        ],
+        "source_stage": "alia_km_steel_audit",
+        "sheet": "Листы 1, 2",
+        "candidate_norm_references": [
+          {
+            "designation": "СП 513.1325800.2022",
+            "cited_designation": "СП 513.1325800.2022",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 58,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM12_F022_anchor_installation_identity:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Указаны Hilti HSA или аналогичные и HSA-M10×90.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Отсутствие производителя опровергается пунктом4.4. Номер строки MD не является устойчивым идентификатором; привязано к блокам."
+        },
+        {
+          "claim": "В прочитанных общих указаниях и СО не задан точный документ характеристик выбранного исполнения и параметры его установки.",
+          "verdict": "bounded_context_gap",
+          "limits": "Это не доказательство отсутствия данных в КЖ/КМ8/КМД или документации изготовителя. Применимая модификация, состояние бетона и условия установки требуют связи с расчётом."
+        },
+        {
+          "claim": "Уточнить исполнение, характеристики основания, параметры монтажа и критерии эквивалентности.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не превращать90 в маркировке в универсальную глубину анкеровки; не назначать минимальные расстояния без конкретного исполнения. Подробная геометрия узла в этом замечании не приведена."
+        },
+        {
+          "claim": "Несущая способность недостаточна.",
+          "verdict": "not_established_and_explicitly_not_asserted",
+          "limits": ""
+        },
+        {
+          "claim": "Необходимы проверяемые условия монтажа, включая момент затяжки и расстояния между анкерами.",
+          "verdict": "supported_scoped_context_request_not_verified_global_absence",
+          "limits": "Параметры конкретного исполнения и применимость к основанию не установлены. Не назначать числовые значения по общей марке HSA-M10×90; отсутствие их в двух текстовых блоках не означает отсутствие во всех узлах, КЖ или расчёте."
+        }
+      ],
+      "unsupported_additions": "Локальный пробел в связях или учёте не доказывает глобальное отсутствие расчёта, нехватку поставки либо недостаточную прочность. Новые нормативные кандидаты не подтверждены этой проверкой.",
+      "novel_useful_content": "Сохраняется ограниченный вопрос первого повтора; новые самостоятельные подтверждённые технические дефекты не установлены.",
+      "duplicate_burden": "group_r2_F003_F023_with_distinct_anchor_parameters_preserved",
+      "profile_and_section": "questions_and_clarifications; preserve scoped requests, no proven strength or supply defect",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM12_F022_anchor_installation_identity.json",
+          "sha256": "b9d5cb7748465536b642a9edc3df0d3d5d897d8df415e46fe603482443a9aaa5",
+          "primary_adjudication": null,
+          "limits": [
+            "ИсторическиОтклонено:инженер сослался наКМ8 и совпадениеF-002/F-003. Это профильное решение,не доказательство безопасности или выполнения конкретного расчёта. СодержаниеКМ8 и исходныеF-002/F-003 не проверены.",
+            "Вобщихуказаниях есть отсылка кКЖ за нагрузками и кКМД за проверкой соединений; глобальное отсутствие нагрузки/расчёта не доказано.",
+            "На пяти просмотренных узлах нет явно заданных глубины установки,полной толщины,класса и расчётного состояния бетона; недоступностьКЖне доказывает отсутствия этих данных во всём проекте.",
+            "УсловиеETAбез трещин подтверждено дляпрочитанного документа. Расчётное состояние проектного бетона,точная модификация/артикул и применимость этойредакции кизделию не установлены.",
+            "Нельзя приравнивать90 вM10×90 кhnom90. Проверены три варианта установки,но конкретный допускаемый вариант при длине90 и пластине10 не идентифицирован.",
+            "Локальные45мм не универсальное краевое расстояние; сравнение сcminзависит от установки и момента затяжки. Минимальные расстояния не заменяют расчёт группы анкеров.",
+            "Допуск аналогов есть,но критерии эквивалентности в связанных документах не проверены; нельзя считать любой аналог допустимым или запрещённым."
+          ],
+          "wording": "Для проверки крепленийHSA-M10×90 предоставить адрес расчётаКМ8/КМД, усилия и сочетания, параметры бетонного основания, точное исполнение анкера и вариант установки. Геометрия четырёх анкеров с шагом70мм на пластине120×120×10 задана; она сама не подтверждает несущую способность. Справочные90/80/160мм нельзя назначать автоматически по маркировкеM10×90."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-026",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-023_bounded_context_question"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
