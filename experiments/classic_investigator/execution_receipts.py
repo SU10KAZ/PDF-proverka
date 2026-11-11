@@ -58,3 +58,61 @@ def summarize_methods(output_dir, config, stage_results):
                 issues.append({'reason':'final_edits_unresolved',**details['final_checks']})
     return {'declared_methods_execution_complete':not issues,'issues':issues,'details':details,'artifact_sha256':artifacts,
             'semantic_acceptance':False,'boundary':'Execution receipts only. Planned operations and successful calls do not establish engineering truth, candidate retention, or whole-project coverage.'}
+
+
+def summarize_request_usage(request_root):
+    """Sum transport attempt receipts exactly once, including failures/retries.
+
+    Stage counters may omit nested callbacks or already include retry totals;
+    never add them here. Token cache fields are subsets, not extra input tokens.
+    Summed call duration is not wall time when requests run concurrently.
+    """
+    import math
+    root=Path(request_root)
+    fields=('input_tokens','output_tokens','cached_tokens','cache_write_tokens',
+            'reasoning_tokens','cost_usd','duration_ms')
+    total={k:0 for k in fields};groups={};issues=[];files={};requests=attempts=failures=0
+    def read(path):
+        try:
+            raw=path.read_bytes();files[str(path.relative_to(root))]=hashlib.sha256(raw).hexdigest()
+            return json.loads(raw)
+        except (OSError,ValueError) as exc:
+            issues.append({'file':str(path.relative_to(root)),'reason':'unreadable_receipt','detail':type(exc).__name__})
+            return None
+    for folder in sorted(p for p in root.iterdir() if p.is_dir()) if root.exists() else []:
+        requests+=1
+        request=read(folder/'request.json');rows=read(folder/'attempts.json')
+        if not isinstance(request,dict) or not isinstance(rows,list) or not rows:
+            issues.append({'request':folder.name,'reason':'missing_or_invalid_request_attempts'});continue
+        indexes=[]
+        for row in rows:
+            if not isinstance(row,dict):
+                issues.append({'request':folder.name,'reason':'invalid_attempt'});continue
+            index=row.get('attempt');indexes.append(index)
+            if type(index) is not int or index<1 or indexes.count(index)>1:
+                issues.append({'request':folder.name,'reason':'duplicate_or_invalid_attempt_number'});continue
+            attempts+=1;failures+=row.get('is_error') is True
+            response=read(folder/f'response_{index}.json')
+            if not isinstance(response,dict):issues.append({'request':folder.name,'attempt':index,'reason':'response_missing_or_invalid'})
+            model=row.get('reported_model') or (response or {}).get('model') or row.get('model') or 'unknown'
+            cost_source=row.get('cost_source') or 'unknown'
+            if cost_source=='unknown':issues.append({'request':folder.name,'attempt':index,'reason':'cost_provenance_unknown'})
+            key=(model,cost_source)
+            group=groups.setdefault(key,{'model':model,'cost_source':cost_source,'attempts':0,**{k:0 for k in fields}})
+            group['attempts']+=1
+            usage=row.get('usage')
+            for field in fields:
+                value=usage.get(field) if isinstance(usage,dict) else None
+                if type(value) not in (int,float) or not math.isfinite(value) or value<0:
+                    issues.append({'request':folder.name,'attempt':index,'field':field,'reason':'usage_missing_or_invalid'});continue
+                total[field]+=value;group[field]+=value
+        if indexes!=list(range(1,len(rows)+1)):
+            issues.append({'request':folder.name,'reason':'attempt_sequence_incomplete'})
+        expected={f'response_{i}.json' for i in indexes if type(i) is int and i>0}
+        if {p.name for p in folder.glob('response_*.json')}!=expected:
+            issues.append({'request':folder.name,'reason':'response_attempt_set_mismatch'})
+    if not requests:issues.append({'reason':'no_transport_requests_recorded'})
+    return {'accounting_complete':not issues,'request_count':requests,'attempt_count':attempts,
+            'failed_attempt_count':failures,'totals':total,'by_model_and_cost_source':list(groups.values()),
+            'issues':issues,'artifact_sha256':files,
+            'boundary':'Transport receipts only. Summed duration is not wall time. Cache/reasoning tokens are not added again. Subscription cost_usd=0 is not proof of zero resource cost. Missing receipts make totals lower bounds.'}

@@ -9,7 +9,7 @@ import sys
 import time
 from investigate import ROOT, read, write, sha, configure as configure_transport
 from subscription_retry import retry_subscription_call
-from execution_receipts import summarize_methods
+from execution_receipts import summarize_methods, summarize_request_usage
 
 MODELS = {'text_analysis':'codex/gpt-6.1-sol','block_batch':'ensemble/codex-only',
           'findings_merge':'codex/gpt-6-sol','findings_critic':'codex/gpt-6-sol',
@@ -207,7 +207,12 @@ async def run(work,disc):
                 method_execution=method_receipts,final_sha256=sha(out/'03_findings.json'))
     except Exception as exc:
         state.update(status='failed',error=f'{type(exc).__name__}: {exc}');raise
-    finally:state['finished']=time.time();save()
+    finally:
+        state['finished']=time.time()
+        state['request_usage']=summarize_request_usage(root/'requests'/disc)
+        if state.get('status')=='completed_unadjudicated' and not state['request_usage']['accounting_complete']:
+            state['status']='completed_with_incomplete_usage'
+        save()
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('command',choices=['freeze','run']);p.add_argument('--work',type=Path,required=True);p.add_argument('--discipline',choices=['AK','ITP','AR','KM','VK','EOM'])

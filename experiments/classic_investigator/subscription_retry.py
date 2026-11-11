@@ -55,6 +55,8 @@ async def retry_subscription_call(call, *args, stop_requested, on_attempt, sleep
         on_attempt({
             'timestamp': time.time(), 'stage': kwargs.get('stage'),
             'model': kwargs.get('model') or getattr(result, 'model', None),
+            'reported_model': getattr(result, 'model', None),
+            'cost_source': getattr(result, 'cost_source', None),
             'attempt': attempt, 'is_error': bool(getattr(result, 'is_error', False)),
             'retry_reason': reason or None, 'next_delay_seconds': RETRY_DELAY_SECONDS if reason and not exhausted else None,
             'retry_budget_exhausted': exhausted,
