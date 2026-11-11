@@ -1,0 +1,836 @@
+{
+  "status": "six_specification_questions_scoped",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "89a98ebb36da1a4f036fa236477a827a33edcee973880479edae93af270cf097",
+  "queue_after_sha256": "78665f2436f01dba6354d11860da88825e1dd75c965b7604b8575cd26c83b8ef",
+  "reviewer": "Codex same-version evidence and current claim/action comparison",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Лист 6",
+        "page": 42,
+        "problem": "Вероятно продублирована гофрированная труба диаметром 32 мм.",
+        "description": "Одинаковая безгалогенная гофрированная труба диаметром 32 мм дважды включена по 190 м без различия назначения или исполнения. Буквальное суммирование дает 380 м.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить правила определения количества и группирования одинаковых материалов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить обе строки с ведомостью трасс; устранить повтор либо явно указать разные участки и подтвердить суммарную длину.",
+        "risk": "Избыточная закупка до 190 м трубы при подтверждении дублирования.",
+        "source_finding_ids": [
+          "T-018"
+        ],
+        "source_block_ids": [
+          "blk_1da24da5ad594599aa59defe9fde265b"
+        ],
+        "related_block_ids": [
+          "blk_1da24da5ad594599aa59defe9fde265b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F034_specification_quantity:cc93bff16c691fce3df8",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Две строкиØ32 по190м;190+190=380м.",
+          "verdict": "confirmed_bounded_TEXT_or_arithmetic",
+          "limits": "Подтверждены одинаковые характеристики и числа в данном подразделе."
+        },
+        {
+          "claim": "Сверить участки; удалить только подтверждённый дубль.",
+          "verdict": "supported_scoped_question",
+          "limits": "Разные участки или одна повторная потребность не установлены. Условие в риске сохранено; фактическая закупка190м не проверена."
+        },
+        {
+          "claim": "Избыточная закупка до 190 м трубы при подтверждении дублирования.",
+          "verdict": "conditional_or_unverified_consequence_not_observed_fact",
+          "limits": "Разные участки или одна повторная потребность не установлены. Условие в риске сохранено; фактическая закупка190м не проверена."
+        }
+      ],
+      "unsupported_additions": "see_atomic_scope_and_consequence_limits",
+      "novel_useful_content": "known_specification_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_scoped_question_per_row_not_count_per_repeated_item",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No engineer acceptance invented; prior same-version primary TEXT review reused after byte verification.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+          "sha256": "a63aa0206c93f1d384029fc98b7d1b4c335e25505edd3672d091df494b1d711a",
+          "primary_adjudication": null,
+          "limits": "Прочитан полный лист 6; между строками Ø32 стоит Ø25, отдельного заголовка участка между ними нет. Это не доказывает отсутствие пояснения в смежной ведомости. Требуемая длина по трассам не установлена. Строка клипс 190 м не подтверждает правильную длину трубы. Нельзя автоматически удалить 190 м.",
+          "wording": "Уточнить назначение двух одинаковых строк гофрированной безгалогенной трубы Ø32 по 190 м в СО, лист 6: являются ли они объёмами разных участков или повтором одной потребности. Формальная сумма строк — 380 м.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F034_specification_quantity.json",
+          "route": "byte_identical_authoritative_evidence_to_prior_review"
+        }
+      ],
+      "disposition": "assessed_preserve_specification_question_no_automatic_quantity_change"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Лист 6",
+        "page": 42,
+        "problem": "Количество крепежных клипс указано в метрах.",
+        "description": "Для клипс диаметром 25 и 32 мм приведены единица измерения «м» и количества 2345 и 190. Штучное количество креплений по принятому шагу не раскрыто.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить указание единиц измерения и количества изделий в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-019"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-019"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Рассчитать количество клипс по шагу крепления и заменить единицу измерения на штуки.",
+        "risk": "Ошибки заказа и недостаточное комплектование креплений труб.",
+        "source_finding_ids": [
+          "T-019"
+        ],
+        "source_block_ids": [
+          "blk_1da24da5ad594599aa59defe9fde265b"
+        ],
+        "related_block_ids": [
+          "blk_1da24da5ad594599aa59defe9fde265b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F038_specification_quantity:2bf971bcf81224ba57b8",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "КлипсыØ25/32 указаны вм,2345/190.",
+          "verdict": "confirmed_bounded_TEXT_or_arithmetic",
+          "limits": "Записи не задают число отдельных держателей."
+        },
+        {
+          "claim": "Уточнить способ учёта,рассчитать крепления по трассам и шагу.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не переносить2345/190 в штуки механически. Возможность комплексной позиции наметр требует описания,заказ икомплектность не проверены."
+        },
+        {
+          "claim": "Ошибки заказа и недостаточное комплектование креплений труб.",
+          "verdict": "conditional_or_unverified_consequence_not_observed_fact",
+          "limits": "Не переносить2345/190 в штуки механически. Возможность комплексной позиции наметр требует описания,заказ икомплектность не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_scope_and_consequence_limits",
+      "novel_useful_content": "known_specification_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_scoped_question_per_row_not_count_per_repeated_item",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No engineer acceptance invented; prior same-version primary TEXT review reused after byte verification.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_1da24da5ad594599aa59defe9fde265b",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+          "sha256": "96f4c1648640eb1c94ca979a73869993ab04a7359a183655ca07a3807fe43e64",
+          "primary_adjudication": null,
+          "limits": "Числа совпадают с длиной строки трубы Ø25 и каждой отдельной строкой Ø32; 190 не равно сумме двух строк Ø32 (380). Такое совпадение не доказывает причину ошибки. Шаг и места креплений не проверены, автоматически заменять м на шт. при сохранении числа нельзя. Возможный учёт комплектной работы на метр также требует явного пояснения. Конкретное нарушение ГОСТ и фактическая ошибка закупки не установлены.",
+          "wording": "Уточнить единицы и количество клипс Ø25/Ø32 на листе 6 СО: указаны 2345 и 190 м, что не задаёт количество отдельных держателей. Представить количество креплений с основанием расчёта.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F038_specification_quantity.json",
+          "route": "byte_identical_authoritative_evidence_to_prior_review"
+        }
+      ],
+      "disposition": "assessed_preserve_specification_question_no_automatic_quantity_change"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Листы 7, 8",
+        "page": [
+          43,
+          44
+        ],
+        "problem": "В подразделе помещения ВРУ-2 вероятно повторен комплект соединителей и винтов.",
+        "description": "Соединитель LG1000 по 96 шт. и винт М6×20 по 768 шт. приведены подряд дважды: суммарно 192 соединителя и 1536 винтов. Указанные ранее 812 гаек и шайб М6 соответствуют 44 винтам М6×10 и одному набору из 768 винтов М6×20, что дополнительно указывает на возможный повтор.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить количество и комплектность изделий в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-020"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сопоставить количество соединений с трассами и узлами, исключить повтор либо раскрыть дополнительный объем и согласовать крепеж.",
+        "risk": "Избыточная закупка 96 соединителей и 768 винтов при подтверждении повтора.",
+        "source_finding_ids": [
+          "T-020"
+        ],
+        "source_block_ids": [
+          "blk_e88244dd00b348158ab8aabf0d7863e1",
+          "blk_0779457166304b91a87d7b7902f8359f"
+        ],
+        "related_block_ids": [
+          "blk_e88244dd00b348158ab8aabf0d7863e1",
+          "blk_0779457166304b91a87d7b7902f8359f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e88244dd00b348158ab8aabf0d7863e1",
+            "page": 43
+          },
+          {
+            "type": "text",
+            "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+            "page": 44
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F035_specification_quantity:0498a98c0a043fe1e66d",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В разделеВРУ2 повторены96LG1000 и768М6×20;итоги192/1536;44+768=812гаек/шайб.",
+          "verdict": "confirmed_bounded_TEXT_or_arithmetic",
+          "limits": "Граница раздела и арифметика подтверждены поTEXT."
+        },
+        {
+          "claim": "Сопоставить узлы,заводскую комплектность иучастки доудаления.",
+          "verdict": "supported_scoped_question",
+          "limits": "Баланс метизов поддерживает вопрос,но не доказывает дубль безузлов и комплектности. Условие подтверждения вриске сохранено."
+        },
+        {
+          "claim": "Избыточная закупка 96 соединителей и 768 винтов при подтверждении повтора.",
+          "verdict": "conditional_or_unverified_consequence_not_observed_fact",
+          "limits": "Баланс метизов поддерживает вопрос,но не доказывает дубль безузлов и комплектности. Условие подтверждения вриске сохранено."
+        }
+      ],
+      "unsupported_additions": "see_atomic_scope_and_consequence_limits",
+      "novel_useful_content": "known_specification_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_scoped_question_per_row_not_count_per_repeated_item",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No engineer acceptance invented; prior same-version primary TEXT review reused after byte verification.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_e88244dd00b348158ab8aabf0d7863e1",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_0779457166304b91a87d7b7902f8359f",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+          "sha256": "d2fdf2b0a62b954bc12f46539bcc5944fc1413db62c61166ff991b5d317f8177",
+          "primary_adjudication": null,
+          "limits": "Проверены листы 7–8: раздел ВРУ-2 начинается на листе 7, обе пары стоят до следующего заголовка ВРУ-К. Повтор не объясняется переходом между этими двумя помещениями, но может учитывать разные соединения внутри ВРУ-2. Потребность и граница комплектного крепежа углов LC1330K не проверены. Суммы относятся к этим парам, не ко всему проекту; лишняя закупка не доказана.",
+          "wording": "Уточнить повтор пары LG1000 по 96 шт. и СМ010620 по 768 шт. в разделе ВРУ-2, СО лист 8. Две пары дают 192 соединителя и 1536 винтов. Указать участки их применения или подтвердить ошибочное повторение.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F035_specification_quantity.json",
+          "route": "byte_identical_authoritative_evidence_to_prior_review"
+        }
+      ],
+      "disposition": "assessed_preserve_specification_question_no_automatic_quantity_change"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Листы 12, 13",
+        "page": [
+          48,
+          49
+        ],
+        "problem": "Повтор раздела вертикальных трасс не имеет пояснения о принадлежности секциям.",
+        "description": "Дважды приведены одинаковые количества: лоток 80×300 — 108 м, 80×200 — 72 м, 80×150 — 36 м, короб ПЭСПЗ — 72 м, а также одинаковые комплекты профилей и крепежа. Принадлежность повторов разным секциям не указана.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить однозначность группирования и подсчета материалов по частям объекта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать разбивку по секциям С2 и С3 и подтвердить количества расчетом трасс либо удалить дублирующий раздел.",
+        "risk": "Двойной учет материалов и завышение стоимости вертикальных трасс.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [
+          "blk_fa3060b62f634a2b8228b10863e0eb99",
+          "blk_448a82ffb63145aa96b55305485c4ee5"
+        ],
+        "related_block_ids": [
+          "blk_fa3060b62f634a2b8228b10863e0eb99",
+          "blk_448a82ffb63145aa96b55305485c4ee5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_fa3060b62f634a2b8228b10863e0eb99",
+            "page": 48
+          },
+          {
+            "type": "text",
+            "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+            "page": 49
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Повторены108/72/36м лотков,72мкороба иколичествапрофилей.",
+          "verdict": "confirmed_bounded_TEXT_or_arithmetic",
+          "limits": "Локальные подразделы не раскрывают секции;полное тождество комплектов не установлено."
+        },
+        {
+          "claim": "Уточнить принадлежность иобъёмы;не удалять раздел безподтверждения.",
+          "verdict": "supported_scoped_question",
+          "limits": "ВTEXT различаютсяLO9261/L09261 иЭКМК/ЗКМК. Две секции являются возможным объяснением,а не установленной разбивкой. Двойнойзаказ и завышениестоимости не доказаны."
+        },
+        {
+          "claim": "Двойной учет материалов и завышение стоимости вертикальных трасс.",
+          "verdict": "conditional_or_unverified_consequence_not_observed_fact",
+          "limits": "ВTEXT различаютсяLO9261/L09261 иЭКМК/ЗКМК. Две секции являются возможным объяснением,а не установленной разбивкой. Двойнойзаказ и завышениестоимости не доказаны."
+        },
+        {
+          "claim": "Комплекты полностью одинаковы иих можно удалить какдубль.",
+          "verdict": "overbroad_identity_and_unsupported_deletion",
+          "limits": "Подтверждены совпадающие количества,неполное тождество всех обозначений илипотребностей."
+        }
+      ],
+      "unsupported_additions": "see_atomic_scope_and_consequence_limits",
+      "novel_useful_content": "known_specification_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_scoped_question_per_row_not_count_per_repeated_item",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No engineer acceptance invented; prior same-version primary TEXT review reused after byte verification.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_fa3060b62f634a2b8228b10863e0eb99",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        }
+      ],
+      "disposition": "assessed_preserve_specification_question_no_automatic_quantity_change"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-022",
+      "finding": {
+        "id": "F-022",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Спецификация материалов",
+        "sheet": "Листы 13, 15, 16, 17, 18",
+        "page": [
+          49,
+          51,
+          52,
+          53,
+          54
+        ],
+        "problem": "Один артикул лотка присвоен перфорированному и неперфорированному исполнениям.",
+        "description": "Артикул ДКС 3530410 на первом и жилых этажах относится к перфорированному изделию, а на отметках +38,690, +41,290 и +44,650 — к неперфорированному. Каталожное исполнение по предоставленным материалам не установлено.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность наименования, исполнения и кода продукции.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-022"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить артикул с каталогом изготовителя и указать соответствующие коды для каждого принятого исполнения лотка.",
+        "risk": "Поставка лотков с неподходящим исполнением и переделка трасс.",
+        "source_finding_ids": [
+          "T-022"
+        ],
+        "source_block_ids": [
+          "blk_448a82ffb63145aa96b55305485c4ee5",
+          "blk_7d46590ad5b64af08f435cadad0053cd",
+          "blk_e106d0b41bf9480aaf187ef2259994db",
+          "blk_79370c7a344c44559b2d828291b6a1b6",
+          "blk_f3f718605a024394b9026b08fa4c9b20"
+        ],
+        "related_block_ids": [
+          "blk_448a82ffb63145aa96b55305485c4ee5",
+          "blk_7d46590ad5b64af08f435cadad0053cd",
+          "blk_e106d0b41bf9480aaf187ef2259994db",
+          "blk_79370c7a344c44559b2d828291b6a1b6",
+          "blk_f3f718605a024394b9026b08fa4c9b20"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+            "page": 49
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7d46590ad5b64af08f435cadad0053cd",
+            "page": 51
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e106d0b41bf9480aaf187ef2259994db",
+            "page": 52
+          },
+          {
+            "type": "text",
+            "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+            "page": 53
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F036_tray_code_description:da6b33367ef613f75477",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Один3530410 имеет разные описания перфорации на первом этаже и+38,690/+41,290/+44,650.",
+          "verdict": "confirmed_bounded_TEXT_or_arithmetic",
+          "limits": "Подтверждён конфликт описаний одинакового кода. Расширение на все жилые этажи отдельно не подтверждено этим набором источников."
+        },
+        {
+          "claim": "Согласовать выбранное исполнение по участкам икаталогуконкретногоизготовителя.",
+          "verdict": "supported_scoped_question",
+          "limits": "Правильный артикул или описание не установлены,фактическая поставка ипеределка не проверены."
+        },
+        {
+          "claim": "Поставка лотков с неподходящим исполнением и переделка трасс.",
+          "verdict": "conditional_or_unverified_consequence_not_observed_fact",
+          "limits": "Правильный артикул или описание не установлены,фактическая поставка ипеределка не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_scope_and_consequence_limits",
+      "novel_useful_content": "known_specification_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_scoped_question_per_row_not_count_per_repeated_item",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No engineer acceptance invented; prior same-version primary TEXT review reused after byte verification.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_448a82ffb63145aa96b55305485c4ee5",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+          "sha256": "4e9118267e89143c1c088e4a42e68b3b72d0bd1650e9b643f6bc1993fcf2eb85",
+          "primary_adjudication": null,
+          "limits": "Прочитаны листы СО 13, 17 и 18. На первом этаже указано 46 м, в трёх техпространствах 130/57/41 м. Эти количества относятся к разным участкам и не являются дублями. Подтверждено различие описания перфорации при одинаковом коде и поставщике, а не правильное каталоговое исполнение. Каталог, требуемое исполнение по трассам и согласованный заказ не проверены; ошибочным может быть код либо наименование. Неправильная фактическая поставка и конкретное нормативное нарушение не доказаны. Другие этажи этим решением не охвачены.",
+          "wording": "Согласовать исполнение и код лотка 200×80 L3000 толщиной 1,0 мм: артикул ДКС 3530410 указан для перфорированного лотка первого этажа и неперфорированных лотков техпространств +38,690, +41,290 и +44,650. Установить требуемое исполнение по участкам и привести наименования и коды в соответствие.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F036_tray_code_description.json",
+          "route": "byte_identical_authoritative_evidence_to_prior_review"
+        }
+      ],
+      "disposition": "assessed_preserve_specification_question_no_automatic_quantity_change"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-024",
+      "finding": {
+        "id": "F-024",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектность кабельных трасс",
+        "sheet": "Листы 17, 18",
+        "page": [
+          53,
+          54
+        ],
+        "problem": "Длины крышек меньше длин соответствующих прямых лотков без пояснения.",
+        "description": "На отметке +38,690 предусмотрено 126 м крышек на 130 м лотков, на +41,290 — 55 на 57 м, на +44,650 — 40 на 41 м. Общая разница составляет 7 м. Намеренно открытые участки в переданных сведениях не обозначены.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить полноту комплектования кабеленесущих систем.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-024"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать участки без крышек и обоснование их исполнения либо дополнить спецификацию; для ОКЛ проверить соответствие документации принятой системы.",
+        "risk": "Неполное закрытие трасс и отклонение от принятого исполнения кабельной линии.",
+        "source_finding_ids": [
+          "T-024"
+        ],
+        "source_block_ids": [
+          "blk_79370c7a344c44559b2d828291b6a1b6",
+          "blk_f3f718605a024394b9026b08fa4c9b20"
+        ],
+        "related_block_ids": [
+          "blk_79370c7a344c44559b2d828291b6a1b6",
+          "blk_f3f718605a024394b9026b08fa4c9b20"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+            "page": 53
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F037_tray_cover_scope:5eaa42d72fba7e53d76e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лотки/крышки130/126,57/55,41/40м;суммарнаяразница7м.",
+          "verdict": "confirmed_bounded_TEXT_or_arithmetic",
+          "limits": "Подтверждены три адресные пары иарифметика прямых изделий."
+        },
+        {
+          "claim": "Уточнить открытыеучастки,запас икомплектность доизмененияколичества.",
+          "verdict": "supported_scoped_question",
+          "limits": "Разница7м не доказывает недостачу,применимость конкретнойОКЛ ифактическое неполноезакрытие не проверены."
+        },
+        {
+          "claim": "Неполное закрытие трасс и отклонение от принятого исполнения кабельной линии.",
+          "verdict": "conditional_or_unverified_consequence_not_observed_fact",
+          "limits": "Разница7м не доказывает недостачу,применимость конкретнойОКЛ ифактическое неполноезакрытие не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_scope_and_consequence_limits",
+      "novel_useful_content": "known_specification_question_no_new_physical_defect_proven",
+      "duplicate_burden": "one_scoped_question_per_row_not_count_per_repeated_item",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No engineer acceptance invented; prior same-version primary TEXT review reused after byte verification.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_79370c7a344c44559b2d828291b6a1b6",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+          "route": "byte_identical_authoritative_evidence_to_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+          "sha256": "15432598db63ee87b27c7deece7cbcede488860c1944a00c2f5ef1fa513caa1f",
+          "primary_adjudication": null,
+          "limits": "Проверены полные листы СО 17–18 и продолжение подраздела +41,290. Сопоставлены прямые изделия одной ширины внутри каждой отметки; крышки ответвителей в начале листа 17 имеют основание 100 и единицу шт., стоят до подраздела +38,690 и не восполняют автоматически разницу прямых крышек основания 200 в метрах. Разница количества не доказывает длину участков, которым не хватит крышек. Монтажные планы, узлы, раскрой и запас не проверены. Не установлены отсутствие пояснений во всём комплекте, фактическая недопоставка или нарушение конкретного ГОСТ. Нельзя автоматически требовать докупить ровно 7 м.",
+          "wording": "Согласовать метраж лотков 3530410 и крышек 3552410 с длиной закрываемых участков: на отметке +38,690 указано 130/126 м, +41,290 — 57/55 м, +44,650 — 41/40 м. Разница по этим трём подразделам составляет 7 м. Уточнить запас и участки без крышек до корректировки количества.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F037_tray_cover_scope.json",
+          "route": "byte_identical_authoritative_evidence_to_prior_review"
+        }
+      ],
+      "disposition": "assessed_preserve_specification_question_no_automatic_quantity_change"
+    }
+  ],
+  "limits": [
+    "No automatic row deletion or procurement adjustment.",
+    "Same numbers do not establish same physical scope.",
+    "No current manufacturer catalogue assertion made."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
