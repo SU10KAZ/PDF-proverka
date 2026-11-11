@@ -1,0 +1,747 @@
+{
+  "status": "last_two_EOM_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "91108ea7acc217969c85a9aa2c36df09ed57ae88db04dc3c4bee1b6d2f4051fe",
+  "queue_after_sha256": "b01551bbc5e4f726ec73e771106a9862838d508d2143b3ed05591720db65322d",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-043",
+      "finding": {
+        "id": "F-043",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Кабеленесущие системы",
+        "sheet": "Листы 25, 26, 27, 28, 29, 30, 31",
+        "page": [
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33
+        ],
+        "problem": "Исполнение лотка аварийного освещения систематически различается в легендах, планах и монтажных узлах.",
+        "description": "На листах 25–31 аварийный лоток в сечениях, выносках планов или узлах крепления указан неперфорированным 100×80 мм с крышкой, а в условных обозначениях — перфорированным с крышкой. Проверка нескольких блоков одной страницы и повторных узлов разных страниц показывает повторение одного противоречия.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить согласованность принятого исполнения изделия с его идентификацией в комплектовочной документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-040",
+                "G-041",
+                "G-042",
+                "G-043",
+                "G-044",
+                "G-045",
+                "G-046",
+                "G-047",
+                "G-048",
+                "G-049",
+                "G-050",
+                "G-051",
+                "G-052",
+                "G-053",
+                "G-055",
+                "G-057",
+                "G-058",
+                "G-059",
+                "G-060",
+                "G-061"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-040",
+                  "G-041",
+                  "G-042",
+                  "G-043",
+                  "G-044",
+                  "G-045",
+                  "G-046",
+                  "G-047",
+                  "G-048",
+                  "G-049",
+                  "G-050",
+                  "G-051",
+                  "G-052",
+                  "G-053",
+                  "G-055",
+                  "G-057",
+                  "G-058",
+                  "G-059",
+                  "G-060",
+                  "G-061"
+                ],
+                "designation_source": "Подбор при объединении замечаний"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить принятое исполнение аварийного лотка, согласовать его со спецификацией и документацией кабельной системы, затем исправить легенды, планы и повторяющиеся узлы всех затронутых листов.",
+        "risk": "Закупка разных исполнений одного изделия, замены материалов и переделка смонтированных трасс.",
+        "source_finding_ids": [
+          "G-040",
+          "G-041",
+          "G-042",
+          "G-043",
+          "G-044",
+          "G-045",
+          "G-046",
+          "G-047",
+          "G-048",
+          "G-049",
+          "G-050",
+          "G-051",
+          "G-052",
+          "G-053",
+          "G-055",
+          "G-057",
+          "G-058",
+          "G-059",
+          "G-060",
+          "G-061"
+        ],
+        "source_block_ids": [
+          "blk_30fff9afce94400da47f707afe842467",
+          "blk_093ddb2393604f25acc1035ea56fb849",
+          "blk_f2d7503ca4194cdd9f74db689da88907",
+          "blk_df95942d720b43bea700fb8897d65cd8",
+          "blk_dc3fcd7dcce44a8994616c5102f52467",
+          "blk_03a27c5915f346d8a6dcae1a7ff5c0b2",
+          "blk_5426f9963660497388fb57433dcdabc8",
+          "blk_f64f2569076a40c1b64bf31ea10e312c",
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "blk_e711cefb283642b380ccb060295464b5",
+          "blk_aadc46b32a1e430dabaf320154f219d3",
+          "blk_eb3872bfde2f4951ba95726c8226a252"
+        ],
+        "related_block_ids": [
+          "blk_30fff9afce94400da47f707afe842467",
+          "blk_093ddb2393604f25acc1035ea56fb849",
+          "blk_f2d7503ca4194cdd9f74db689da88907",
+          "blk_df95942d720b43bea700fb8897d65cd8",
+          "blk_dc3fcd7dcce44a8994616c5102f52467",
+          "blk_03a27c5915f346d8a6dcae1a7ff5c0b2",
+          "blk_5426f9963660497388fb57433dcdabc8",
+          "blk_f64f2569076a40c1b64bf31ea10e312c",
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "blk_e711cefb283642b380ccb060295464b5",
+          "blk_aadc46b32a1e430dabaf320154f219d3",
+          "blk_eb3872bfde2f4951ba95726c8226a252"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_30fff9afce94400da47f707afe842467",
+            "page": 27
+          },
+          {
+            "type": "image",
+            "block_id": "blk_093ddb2393604f25acc1035ea56fb849",
+            "page": 28
+          },
+          {
+            "type": "image",
+            "block_id": "blk_f2d7503ca4194cdd9f74db689da88907",
+            "page": 29
+          },
+          {
+            "type": "image",
+            "block_id": "blk_df95942d720b43bea700fb8897d65cd8",
+            "page": 29
+          },
+          {
+            "type": "text",
+            "block_id": "blk_dc3fcd7dcce44a8994616c5102f52467",
+            "page": 30
+          },
+          {
+            "type": "text",
+            "block_id": "blk_03a27c5915f346d8a6dcae1a7ff5c0b2",
+            "page": 30
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5426f9963660497388fb57433dcdabc8",
+            "page": 31
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f64f2569076a40c1b64bf31ea10e312c",
+            "page": 31
+          },
+          {
+            "type": "text",
+            "block_id": "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+            "page": 32
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e711cefb283642b380ccb060295464b5",
+            "page": 32
+          },
+          {
+            "type": "text",
+            "block_id": "blk_aadc46b32a1e430dabaf320154f219d3",
+            "page": 33
+          },
+          {
+            "type": "text",
+            "block_id": "blk_eb3872bfde2f4951ba95726c8226a252",
+            "page": 33
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-040",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-041",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-042",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-043",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-044",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-045",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-046",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-047",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-048",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-049",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-050",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-051",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-052",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-053",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-055",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-057",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-058",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-059",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-060",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-061",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно противоречие на листе 25: в сечении 1-1 лоток аварийного электроосвещения неперфорированный 100×80 с крышкой, в условных обозначениях — перфорированный. Детализация эквивалентна; различается только оценка тяжести.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одно противоречие на листе 26: аварийный лоток на плане и в узле крепления указан как неперфорированный 100×80 с крышкой, а в условных обозначениях — как перфорированный с крышкой. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Одинаковое противоречие исполнения аварийного лотка: неперфорированный 100×80 с крышкой на плане и в узле крепления, перфорированный с крышкой в условных обозначениях.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F026_emergency_tray_legend:2474510e8b112f4c5cb1",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На листах 25–31 узлы аварийного лотка неперфорированные 100×80 с крышкой, легенды называют его перфорированным.",
+          "verdict": "confirmed_same_version_prior_seven_sheet_review",
+          "limits": "Все семь графических источников и TEXT легенд побайтно совпадают с ранее поштучно проверенными. Повторный просмотр всех семи изображений в этом ходе не заявляется."
+        },
+        {
+          "claim": "Уточнить принятое исполнение и согласовать повторяющиеся узлы и легенды.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не выбирать исполнение автоматически по большинству подписей. Расхождение одного повторенного решения не семь независимых дефектов."
+        },
+        {
+          "claim": "Неправильная закупка, переделка трасс или недостаточная огнестойкость.",
+          "verdict": "not_established",
+          "limits": "Состав ОКЛ, фактические заказы и монтаж не проверены. Все выноски всех планов не просмотрены; проверены узлы и легенды, дополнительно планы 26/30 в прежней оценке."
+        }
+      ],
+      "unsupported_additions": "see_scoped_claim_limits",
+      "novel_useful_content": "known_document_coordination_or_editorial_question",
+      "duplicate_burden": "one_repeated_tray_conflict_or_one_reference_entry",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer acceptance inferred; prior reviewed source bytes verified; current wording assessed.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_872faca585ad457a85fb3f4317e5204f",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_30c3e91c26c449ddb87f446adebcc565",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_9c3e78c2b49648b2a27d7ed24419b085",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_6cd52bd841fd4f20a588470a7d2cffa0",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_9f725ad5f4db4f1cb30f65d3996bef1a",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_9a8e7a071de44461b3354914fcc75638",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_5f26ab1f1e0840589df99e9a183396f3",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json",
+          "sha256": "534e82c9adb2dbcd334fd051e503f06a2a98d77822fcd5164d1370eb54b3fb56",
+          "primary_adjudication": null,
+          "limits": "Подтверждено расхождение обозначений на четырёх листах, не техническая непригодность лотка. Семикратность не подтверждена непосредственным просмотром графики остальных трёх листов. Ошибочная закупка или монтаж не установлены. Нумерация листов по штампам MD, не порядковые страницы PDF.",
+          "wording": "На листах 26, 27, 28 и 30 в узлах крепления аварийный лоток 100×80 с крышкой назван неперфорированным, а в условных обозначениях аварийный лоток назван перфорированным. Согласовать обозначения с выбранным исполнением изделия.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F026_emergency_tray_legend.json",
+          "route": "byte_identical_source_reuse_of_documented_prior_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_30fff9afce94400da47f707afe842467.png",
+          "sha256": "0f6d88d4ad80a0268a61bcbaff5ae01132e540d034df71afff8ee214a7b377e0",
+          "block_id": "blk_30fff9afce94400da47f707afe842467",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "observation": "Directly inspected labels and dimensions; seven nodes plus sheet30plan. See per_sheet_controls and atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_30fff9afce94400da47f707afe842467.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_093ddb2393604f25acc1035ea56fb849.png",
+          "sha256": "931f1c92e6962808fda59c5a722b2a0590482ac89d38d7df27299e59a79585b0",
+          "block_id": "blk_093ddb2393604f25acc1035ea56fb849",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "observation": "Directly inspected labels and dimensions; seven nodes plus sheet30plan. See per_sheet_controls and atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_093ddb2393604f25acc1035ea56fb849.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_df95942d720b43bea700fb8897d65cd8.png",
+          "sha256": "9c179dc8febc1d076a7fa049b19d8213420711d284b96652d62698fd1ed9f2a8",
+          "block_id": "blk_df95942d720b43bea700fb8897d65cd8",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "observation": "Directly inspected labels and dimensions; seven nodes plus sheet30plan. See per_sheet_controls and atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_df95942d720b43bea700fb8897d65cd8.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_03a27c5915f346d8a6dcae1a7ff5c0b2.png",
+          "sha256": "3a13c743037789f95804113a46005fff071210a09dd4a937ca965b7c5cb6c068",
+          "block_id": "blk_03a27c5915f346d8a6dcae1a7ff5c0b2",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "observation": "Directly inspected labels and dimensions; seven nodes plus sheet30plan. See per_sheet_controls and atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_03a27c5915f346d8a6dcae1a7ff5c0b2.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f64f2569076a40c1b64bf31ea10e312c.png",
+          "sha256": "5a20429a8fe817d8a4598bc833c2b61d14e498bbea10e37ceda2aaa6ab272f43",
+          "block_id": "blk_f64f2569076a40c1b64bf31ea10e312c",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "observation": "Directly inspected labels and dimensions; seven nodes plus sheet30plan. See per_sheet_controls and atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f64f2569076a40c1b64bf31ea10e312c.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e711cefb283642b380ccb060295464b5.png",
+          "sha256": "6ac42104d2ebcc099caceb068f5d19877bbf5fca2fb146f6762538b6eccfc7be",
+          "block_id": "blk_e711cefb283642b380ccb060295464b5",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "observation": "Directly inspected labels and dimensions; seven nodes plus sheet30plan. See per_sheet_controls and atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e711cefb283642b380ccb060295464b5.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eb3872bfde2f4951ba95726c8226a252.png",
+          "sha256": "b1a575ea797f1cf2ba18e9f456e301c4ebfa77ed48f3ea95098b663e5d926e91",
+          "block_id": "blk_eb3872bfde2f4951ba95726c8226a252",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "observation": "Directly inspected labels and dimensions; seven nodes plus sheet30plan. See per_sheet_controls and atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eb3872bfde2f4951ba95726c8226a252.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eecde8b541dd4b21a39a0ba7f0260bba.png",
+          "sha256": "58f04159974238fb85bdd458104de7801890fe710573f4047cedd64138fcf7f7",
+          "block_id": "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "observation": "Directly inspected labels and dimensions; seven nodes plus sheet30plan. See per_sheet_controls and atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eecde8b541dd4b21a39a0ba7f0260bba.png"
+        }
+      ],
+      "disposition": "assessed_preserve_repeated_tray_or_reference_question"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-048",
+      "finding": {
+        "id": "F-048",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "Для РД 34.21.122-87 приведено название другого документа.",
+        "description": "Строка MD 339: «| РД 34.21.122-87 | Инструкция по устройству молниезащиты зданий, сооружений и промышленных коммуникаций |  |». Название РД 34.21.122-87 — «Инструкция по устройству молниезащиты зданий и сооружений». Приведенное в строке название повторяет название СО 153-34.21.122-2003 из строки 338: «| СО 153-34.21.122-2003. | Инструкция по устройству молниезащиты зданий, сооружений и промышленных коммуникаций |  |». Это ошибка наименования; само совместное включение двух разных документов не доказывает дублирования или нормативного конфликта.",
+        "page": 2,
+        "norm": "РД 34.21.122-87 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Указать для РД 34.21.122-87 название «Инструкция по устройству молниезащиты зданий и сооружений».",
+        "risk": "Смешение двух документов при выборе требований к молниезащите.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+            "page": 2,
+            "md_lines": "строки 338-339"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet_unavailable": true,
+        "sheet_unavailable_reason": "page_not_in_map",
+        "candidate_norm_references": [
+          {
+            "designation": "РД 34.21.122-87",
+            "cited_designation": "РД 34.21.122-87",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 34,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "formal_reference_category"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F049_lightning_reference_title:106f839cb3a98ca97f29",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Название строки РД повторяет расширенное название соседнего СО.",
+          "verdict": "confirmed_authoritative_TEXT_prior_same_version",
+          "limits": "Обозначения РД и СО различаются; это не доказанный дубль."
+        },
+        {
+          "claim": "Название РД относится к зданиям и сооружениям, без добавления промышленных коммуникаций.",
+          "verdict": "confirmed_primary_document_reproduction",
+          "limits": "Повторно открыт заголовок РД на PDF странице7/печатной68. Название сборника на обложке не подменяет название документа."
+        },
+        {
+          "claim": "Исправить название при сохранении обозначения.",
+          "verdict": "supported_editorial_question",
+          "limits": "Техническая ошибка молниезащиты, юридическая отмена документа или конфликт совместного применения не установлены."
+        }
+      ],
+      "unsupported_additions": "see_scoped_claim_limits",
+      "novel_useful_content": "known_document_coordination_or_editorial_question",
+      "duplicate_burden": "one_repeated_tray_conflict_or_one_reference_entry",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer acceptance inferred; prior reviewed source bytes verified; current wording assessed.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_b6605a23b38f4e00b2f8076b62b21532",
+          "route": "byte_identical_source_reuse_of_documented_prior_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+          "sha256": "4584797c55ba058a83a66f9c599d6383a81c40397467675ecfb4e337504858db",
+          "primary_adjudication": null,
+          "limits": "Оба обозначения сохранены в проекте и позволяют идентифицировать документы. Причина совпадения названий — например, копирование — не установлена. Неверный выбор метода расчёта, неправильное устройство молниезащиты и фактическая невозможность идентификации не доказаны. Проверены титульные данные копий документов, а не актуальный юридический статус, обязательность или возможность совместного применения РД/СО; вывод об отменеРД из предисловияСО не делается.",
+          "wording": "В ведомости ссылочных документов ЭОМ2-1, лист1, исправить наименование строкиРД34.21.122-87 на «Инструкция по устройству молниезащиты зданий и сооружений». Слова о промышленных коммуникациях относятся к названию соседней строкиСО153-34.21.122-2003. Замечание к оформлению ссылки.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F049_lightning_reference_title.json",
+          "route": "byte_identical_source_reuse_of_documented_prior_review"
+        },
+        {
+          "url": "https://files.stroyinf.ru/Data2/1/4294853/4294853905.pdf",
+          "accessed": "2026-11-11",
+          "source_type": "primary_document_reproduction_third_party_host",
+          "pdf_page_1_based": 7,
+          "printed_page": 68,
+          "observation": "ЗаголовокРД34.21.122-87 содержитзданияисооружения,безпромышленныхкоммуникаций.",
+          "inspection": "PDF text reopened current review: page7 printed68 confirms RD title; no fresh raster claimed."
+        }
+      ],
+      "disposition": "assessed_preserve_repeated_tray_or_reference_question"
+    }
+  ],
+  "model_calls": 0,
+  "web_calls": 1,
+  "production_acceptance": false
+}
