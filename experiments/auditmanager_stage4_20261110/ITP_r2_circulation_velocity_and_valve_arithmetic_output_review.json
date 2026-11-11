@@ -1,0 +1,511 @@
+{
+  "status": "three_ITP_arithmetic_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "5d1a4afc3573292cd667ebed1bbf3035d9df528eb61599b013513e56997694b1",
+  "queue_after_sha256": "3e8b64dbddabcf757351caf6aef80f01b54c573433a5c18823b2f0bfb2a6598f",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Циркуляция ГВС",
+        "sheet": "Листы 12, 13",
+        "page": [
+          50,
+          51
+        ],
+        "problem": "В расчёте циркуляции ГВС имеются ошибки округления, подстановки и размерностей.",
+        "description": "Без усечения теплопотери составляют 0,033667/0,017500/0,006500 Гкал/ч, а расходы по принятой формуле — 4,377/2,275/0,845 м³/ч вместо 4,29/2,21/0,78. Выражение 1,3×0,016×1000/10 равно 2,08, а не 2,21. Формула максимального расхода «1,5×Qцирк» не согласована по размерности. Выбранные для первой зоны 4,31 м³/ч немного ниже исправленного расчётного значения.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Корректность расчётного обоснования циркуляционных расходов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-014"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить формулы и единицы, выполнять округление после расчёта и проверить рабочие точки насосов по уточнённым расходам.",
+        "risk": "Недостаточная циркуляция и снижение температуры горячей воды.",
+        "source_finding_ids": [
+          "T-014"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 81,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-011:f633e04640a9e4e3c71a",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-011:13234a067319a117c786",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Без промежуточного округления опубликованная формула даёт4,376666…;2,275;0,845.",
+          "verdict": "confirmed_arithmetic_under_project_formula",
+          "limits": "Это не подтверждение теплофизической модели,единиц или обязательных уставок."
+        },
+        {
+          "claim": "1,3×0,016×1000/10=2,21.",
+          "verdict": "refuted_arithmetic",
+          "limits": "Результат2,08;2,21 получается при0,017,которое указано строкой выше. Место опечатки окончательно не выбрано."
+        },
+        {
+          "claim": "4,29и0,78не воспроизводятся из записанных промежуточных значений.",
+          "verdict": "refuted_if_assumed",
+          "limits": "Из0,033и0,006они получаются верно;разница с полным расчётом связана с промежуточной точностью."
+        },
+        {
+          "claim": "4,31м³/ч первой зоны ниже4,376666…на≈0,06667.",
+          "verdict": "confirmed_numeric_comparison",
+          "limits": "Точка задана при18,57м,расчётHнас15,24м;без характеристики насоса/системы сравнение расходов не доказывает недостаточную производительность."
+        },
+        {
+          "claim": "Нужно проверить точность расчёта и рабочие режимы.",
+          "verdict": "supported_scoped_question",
+          "limits": "Допустимая погрешность и физическое влияние не определены;замена насосов не обоснована."
+        },
+        {
+          "claim": "ФормулаGциркмакс=1,5×Qциркне согласована по размерности.",
+          "verdict": "confirmed_written_dimension_inconsistency",
+          "limits": "В том же блокеQциркобозначенГкал/ч, а результат записанм/ч; тепловой поток не преобразуется в объёмный расход одним безразмерным1,5. Не установлено, ошибочен ли символQили пропущено преобразование; не заменять формулу догадкой. Отдельная формула минимального расхода уже содержитΔt."
+        },
+        {
+          "claim": "Теплопотери0,033667/0,017500/0,006500 подтверждены.",
+          "verdict": "confirmed_arithmetic_under_stated_formula",
+          "limits": "0,2×(0,202/0,105/0,039)/1,2. Исправленные расходы относятся к этой формуле, а не независимо подтверждённым рабочим уставкам."
+        }
+      ],
+      "unsupported_additions": "Численная невоспроизводимость не доказывает отказ системы; неопределённые другие ошибки не увеличивают число находок; вывод оценщика не приписывать прогону, который его не выдал.",
+      "novel_useful_content": "Во втором повторе явно обнаружены дополнительные подстановки и размерность формулы; новая скорость проверена условным пересчётом.",
+      "duplicate_burden": "distinct_circulation_arithmetic_average_network_flow_and_common_maximum_scope; no_count_inflation_from_three_zones",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fed30df45d124919a8b7cc13253733b1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-011.json",
+          "sha256": "8a084a320ad746b20cbd7831a159cca9581237cd62b98235ce6b11553998e0de",
+          "primary_adjudication": null,
+          "limits": "Без промежуточного округления получаются 4,376666…; 2,275; 0,845 м³/ч. Это расчёт по опубликованным исходным данным, не утверждение об обязательных новых уставках. 4,29 и 0,78 правильно получены из уже округлённых 0,033 и 0,006. Допустимая точность и влияние на систему не установлены; неправильная настройка и необходимость замены насосов не доказаны. Нормативное нарушение не заявляется.",
+          "wording": "Согласовать расчёт циркуляции ГВС: во второй зоне результат 2,21 соответствует Qцирк=0,017 из предыдущей строки, но в подстановке стоит 0,016, что даёт 2,08. Уточнить запись Gцирк макс=1,5×Qцирк, где Qцирк определена как тепловая мощность, и используемую точность промежуточных вычислений."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-013",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fed30df45d124919a8b7cc13253733b1",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-014_arithmetic_and_units_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Гидравлический расчёт",
+        "sheet": "Листы 6, 7, 8, 9",
+        "page": [
+          44,
+          45,
+          46,
+          47
+        ],
+        "problem": "Скорости воды не воспроизводятся по приведённым расходам и диаметрам.",
+        "description": "Для 0,90 м³/ч в трубе 76×3 мм получается около 0,065 м/с вместо 0,12; для 61,12 м³/ч в трубе 219×6 мм — 0,505 вместо 0,66; для 261,5 м³/ч в трубе 325×7 мм — 0,956 вместо 1,01. В тепловых формулах не разграничены массовый и объёмный расходы с учётом плотности воды.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Воспроизводимость расчётного обоснования параметров трубопроводов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-020"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить расчётные свойства воды, согласовать единицы расходов и внутренние диаметры, пересчитать скорости и потери давления.",
+        "risk": "Ошибки гидравлического баланса и выбора насосных напоров.",
+        "source_finding_ids": [
+          "T-020"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-025:c98f6c16f19022b52eb6",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ПЗ подписывает результаты Q×1000/Δt как м³/ч; подбор теплообменника вентиляции использует т/ч.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Разные единицы в документах требуют явной связи, но сами по себе не доказывают некорректную физическую модель всех расчётов."
+        },
+        {
+          "claim": "При буквальном объёмном расходе 61,12 м³/ч и внутреннем диаметре 219−2×6=207 мм скорость равна 0,504487 м/с против записанных 0,66.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "При 0,90 м³/ч и внутреннем диаметре 76−2×3=70 мм скорость равна 0,064961 м/с против записанных 0,12.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Значения плотности и теплоёмкости не раскрыты в показанных формулах.",
+          "verdict": "confirmed_bounded_formula_scope",
+          "limits": "Это допускает вопрос о принятом приближении и единицах. Принятые свойства воды, их допуски и нормативная допустимость приближения здесь не установлены."
+        },
+        {
+          "claim": "Расчёт скорости доказывает ошибку диаметра, режима работы либо потерь давления.",
+          "verdict": "not_established",
+          "limits": "Пересчитаны опубликованные числа при Dвн=Dнар−2s. Допуски, другой расчётный проход, шероховатость, длины и полный баланс не проверены; потери нельзя автоматически масштабировать по разности скоростей."
+        },
+        {
+          "claim": "Нужно согласовать единицы, проходные сечения и исходный гидравлический расчёт.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не назначать замену трубы по одной невоспроизводимой скорости."
+        },
+        {
+          "claim": "Упоминание 0,90 м³/ч покрывает историческое замечание об объёме системы третьей зоны.",
+          "verdict": "not_supported_as_independent_detection",
+          "limits": "F-020 сравнивает скорость, а не объёмы анкет и подбора. Связь с B-ITP-F-020 является контекстной; сам баланс объёмов разобран в F-040."
+        },
+        {
+          "claim": "Для261,5м³/ч в325×7скорость0,956 вместо1,01м/с.",
+          "verdict": "confirmed_conditional_arithmetic_new_section",
+          "limits": "Dвн=311мм;v=0,956221563м/с при буквальном объёмном расходе. Нужны согласованные свойства воды и расчётный проход; это не доказательство неправильного диаметра или потерь."
+        },
+        {
+          "claim": "Вентиляция61,12м³/ч в219×6даёт0,505м/с.",
+          "verdict": "approximation_with_last_digit_difference",
+          "limits": "Точный результат0,504487;обычное округление до0,001даёт0,504, а не0,505. Незначительная неточность не отменяет расхождение с0,66;не засчитывать её самостоятельным дефектом проекта."
+        }
+      ],
+      "unsupported_additions": "Численная невоспроизводимость не доказывает отказ системы; неопределённые другие ошибки не увеличивают число находок; вывод оценщика не приписывать прогону, который его не выдал.",
+      "novel_useful_content": "Во втором повторе явно обнаружены дополнительные подстановки и размерность формулы; новая скорость проверена условным пересчётом.",
+      "duplicate_burden": "Two scoped velocity calculations; shared makeup flow does not count as recovery of the separate system-volume target. Other three historical velocity calculations absent from this output are not credited.",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-025.json",
+          "sha256": "d4942202ecc3470ab136bd00705df8420c3161499013567a2ff122a7c3c8a603",
+          "primary_adjudication": {
+            "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/ITP72b_primary_TEXT.json",
+            "sha256": "c8023442394ed2250416f2dab16df23a9a0683f86e3485cf50664aca3dccb4e7"
+          },
+          "limits": "Пересчёт использует опубликованный объёмный расход и внутренний диаметр Dнар−2s; фактические допуски, отложения, другой расчётный проход и режим не установлены. Это несогласованность записи, не доказательство неверной работы или необходимости замены труб. Удельные потери, шероховатость, длины и увязка сети не проверены; автоматически пересчитывать потери пропорционально скорости нельзя.",
+          "wording": "Согласовать скорости с указанными расходами и размерами труб:325×7 при261,5м³/ч —0,956 вместо1,01м/с;159×4,5 при74,15 —1,166 вместо1,25;219×6 при76,40 и61,12 —0,631 и0,504 вместо одинаковых0,66;76×3 при0,90 —0,065 вместо0,12. Проверить применённые проходные сечения и исходный гидравлический расчёт."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-020",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-020_arithmetic_and_units_scope"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Расчёт регулирующих клапанов",
+        "sheet": "Листы 14, 15, 16, 17",
+        "page": [
+          52,
+          53,
+          54,
+          55
+        ],
+        "problem": "Расчёт требуемой пропускной способности клапанов содержит арифметические ошибки.",
+        "description": "Для отопления третьей зоны 9,55/√0,5=13,51 м³/ч, а не 14,45. Меньшие ошибки имеются в других строках. При подстановке расход ГВС третьей зоны меняется с 9,05 на 9,08, отопления первой зоны — с 74,15 на 74,12 м³/ч. Авторитет клапанов по сопротивлениям регулируемых участков не показан.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.75,
+            "reason": "Корректность расчёта регулирующей арматуры.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-021"
+                ],
+                "designation_source": "Нормативная ссылка исходного текстового замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить арифметику и подстановки; проверить авторитет клапанов по полным сопротивлениям соответствующих участков.",
+        "risk": "Недостоверная оценка регулирующей способности и устойчивости работы контуров.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 47,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "ITP40:24bca8b6c47714314059",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "9,55/√0,5=14,45.",
+          "verdict": "refuted_arithmetic",
+          "limits": "Вычисление даёт13,50674968;ошибка подтверждена вПЗлист16."
+        },
+        {
+          "claim": "ВыбранныйKvs16становится заведомо неверным из-за этой ошибки.",
+          "verdict": "not_established",
+          "limits": "16выше и13,5067и14,45;для оценки регулирования нужны характеристики и баланс участка. Выдача правильно не объявляет типоразмер ошибочным только по отличию от0,5бар."
+        },
+        {
+          "claim": "Записанные потери на выбранных клапанах лежат в пределах0,188–0,490бар.",
+          "verdict": "confirmed_document_values_and_bounded_recalculation",
+          "limits": "Подставлены именно числа опубликованных выражений;это не физическая валидация модели."
+        },
+        {
+          "claim": "При подстановкеГВС3меняется9,05на9,08,отопление1—74,15на74,12.",
+          "verdict": "confirmed_explicitly_detected_in_r2",
+          "limits": "В первом повторе это было дополнительным наблюдением оценщика; во втором эти два расхождения прямо присутствуют в выдаче. Засчитывать как найденные вторым повтором в соответствующем объёме, не приписывать первому."
+        },
+        {
+          "claim": "Баланс и авторитет клапанов отсутствуют во всех документах проекта.",
+          "verdict": "not_established_global_absence",
+          "limits": "В просмотренных расчётах14–17приведены расчётKvи потери;полный баланс регулируемых участков не найден здесь. СмежныйАТМ явно упомянут,но не проверен."
+        },
+        {
+          "claim": "Исправить арифметику и запросить обоснование регулирования.",
+          "verdict": "supported_scoped_question",
+          "limits": "Нельзя автоматически менять диаметры,уставки или требовать ровно0,5бар."
+        },
+        {
+          "claim": "Нестабильное регулирование фактически установлено.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Меньшие ошибки имеются в других строках.",
+          "verdict": "not_individually_specified_or_accepted",
+          "limits": "Обобщение без адресов и чисел не добавляет подтверждённых находок. Сохранить проверенный расчёт9,55/√0,5=13,50674968 и две конкретные замены исходных чисел."
+        }
+      ],
+      "unsupported_additions": "Численная невоспроизводимость не доказывает отказ системы; неопределённые другие ошибки не увеличивают число находок; вывод оценщика не приписывать прогону, который его не выдал.",
+      "novel_useful_content": "Во втором повторе явно обнаружены дополнительные подстановки и размерность формулы; новая скорость проверена условным пересчётом.",
+      "duplicate_burden": "arithmetic_and_control_authority_distinct_from_F018_product_identity; do_not_count_each_recalculation_as_new_finding",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-019",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1d2ac679be7149c5b52b643219c82454",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-021_arithmetic_and_units_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
