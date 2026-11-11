@@ -1,0 +1,38 @@
+{
+  "status": "source_candidate_ready_final_release_pending",
+  "control": "inv_036 velocity; does not replace H-ITP-72 wall question",
+  "model": "codex/gpt-6-astra",
+  "effort": "high",
+  "model_calls": 2,
+  "action": "revise",
+  "report_section": "technical_findings",
+  "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+  "profile_reason": "Подтвержденный предмет замечания — воспроизводимость одной расчетной строки; необходимое действие — согласовать три взаимосвязанных параметра, причем значение скорости однозначно вычисляется при подтверждении двух исходных величин. Категория относится к этому локальному действию. Замечание остается техническим, поскольку касается расчетного обоснования трубопровода, а редакционная природа расхождения не установлена.",
+  "facts": "Published 9.55 m3/h and 76 x 3 mm give 0.6893 m/s, not 0.74 m/s; arithmetic independently checked. Cause and system consequences remain unestablished.",
+  "context_boundary": "16 images attached; three image-limit omissions disclosed; model did not request further sources. No project-wide completeness claim.",
+  "usage": {
+    "input_tokens": 157143,
+    "output_tokens": 6872,
+    "cached_tokens": 20480,
+    "duration_ms": 165157
+  },
+  "cost_boundary": "Subscription usage; reported zero monetary cost is not zero resource cost.",
+  "final_output_applied": false,
+  "full_acceptance": false,
+  "artifact_sha256": {
+    "initial_request.json": "cabbec21422a8aea237ac230a95d738c5e6c1f934e16f8ab078c244da6420a79",
+    "finding.json": "acb0fce09f475e07c30e4820eb996351801170d70e0cdb7244556d68daf3f8f0",
+    "manifest.json": "40c6e3ab1420e62271debfb8c8083be59605e5356e31c58b5313a8ce266e128e",
+    "queue.json": "e8e0206ec3abd991dcdfc2adb85fe54b5cd4ecc06dcd01814c16f37c6090508d",
+    "workflow/00_followup.json": "b9fdd2af257301b0afca83cec64845f3851b58c64241a0c43a450ab4a92f297a",
+    "workflow/binding.json": "72b3b6960ffc20d5bc05776d54b6823fadb69b32b67d7aab62ecc8d605ab1da1",
+    "workflow/00_validation.json": "1664edb185d6ae1cafe171f1484ced617d326991b1fb9545c0a114afefa5ce9a",
+    "workflow/candidate.json": "35a6e06b0cf36968e448c16c19c512df584718891623d602acb3bc08ab2e22d9",
+    "workflow/00_review/request.json": "b130b9cb918fa7409c7ed48a9eb5fc0fbe0acf3bba847dbbccc4b0521e5384d4",
+    "workflow/00_review/attempt.json": "79eca8f7bb18ca7f352cc239a1e8f888339c38d8232c40ef7bc657eea554a69e",
+    "workflow/00_review/result.json": "d0eb087561ee431ce10c9c4f1b47c127ee0d773e6926d941b07405fbe8f8c988",
+    "workflow/05_adjudication/request.json": "94cc550a1be9647e38a976cc53d5e59155f7fafc356b41a887728444cee96b25",
+    "workflow/05_adjudication/attempt.json": "32317ef828856c1a6a1bcbc3c816716a0a192ef0817291996071a1a7cab9c8c9",
+    "workflow/05_adjudication/result.json": "aa9cb205d9c37370ff1cbdcc49b016ecc4f4d421401d8c44df6cfe51e0b33ce3"
+  }
+}

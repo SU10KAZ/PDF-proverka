@@ -1,0 +1,55 @@
+{
+  "source_root": "/tmp/auditmanager_itp_pipe_runtime_followup_20261111",
+  "source_candidate_sha256": "4397bf2965d4bb07158b7aaea49783efbdbb12cd0f435a26024cf949199c39d8",
+  "source_finding_id": "O-5c5253f9af43d74568fa5b9e",
+  "request_sha256": "b2c958ece7453977753f5f412f1c02d7d0fd6c3994716cb6bbe0e123e191976d",
+  "original_graphic_bindings": [
+    {
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_0103a941fa5a4b0d9141a4149e927bff.png",
+      "sha256": "575f507f221264fd1e47645909c32df2199a1b91a0bffeb32836fa1def8462a2"
+    },
+    {
+      "block_id": "blk_049ee88c136045da9910995a4c44a1e8",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_049ee88c136045da9910995a4c44a1e8.png",
+      "sha256": "8a15e36bf264f5c708284942ff853a4afdb5ffa7e7fe329a36da355a7686ed59"
+    },
+    {
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+      "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19"
+    },
+    {
+      "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+      "path": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/03_analysis/runs/control/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+      "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af"
+    }
+  ],
+  "model": "codex/gpt-6-astra",
+  "automatic_retries": 0,
+  "max_images": 16,
+  "history_or_engineer_answers_supplied": false,
+  "evaluator_corrections_supplied": false,
+  "message_chars": 49486,
+  "initial_unavailable_images": [
+    {
+      "block_id": "blk_049ee88c136045da9910995a4c44a1e8",
+      "sha256": "4d21d1238b664d9f261c1c997e1a343697a3d485dcd58c9649a74d1a2d25c4ac",
+      "reason": "image_limit"
+    },
+    {
+      "block_id": "blk_049ee88c136045da9910995a4c44a1e8",
+      "sha256": "3b764f118927bae7bb6b9671579d5862f9e9af15bb3e92686d48dac80d395c2a",
+      "reason": "image_limit"
+    },
+    {
+      "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+      "reason": "image_limit"
+    }
+  ],
+  "allow_budgeted_images": true,
+  "images": 16,
+  "image_bytes": 24105466,
+  "known_candidate_control": true,
+  "semantic_acceptance": false
+}
