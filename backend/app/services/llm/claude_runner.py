@@ -755,11 +755,11 @@ async def _run_codex_targeted_findings_merge(
                 if followup is not None:
                     passes.append(followup)
             if targeted_pass.stage.startswith("object_operations_"):
-                from backend.app.pipeline.stages.prepare.object_operation_passes import validate_object_operation_payload
-                payload = validate_object_operation_payload(targeted_pass, payload)
-                from backend.app.pipeline.stages.prepare.object_operation_followup import build_object_operation_followup
-                followup, retrieval = build_object_operation_followup(targeted_pass, targeted_result.json_data)
-                payload["context_retrieval"] = retrieval
+                from backend.app.pipeline.stages.prepare.object_operation_disposition import advance_operation_pass
+                payload, followup = advance_operation_pass(
+                    targeted_pass, targeted_result.json_data,
+                    enable_disposition=os.environ.get("AUDIT_OBJECT_TERMINAL_DISPOSITION", "0") == "1",
+                )
                 if followup is not None:
                     passes.append(followup)
             targeted_payloads.append((targeted_pass.stage, payload))

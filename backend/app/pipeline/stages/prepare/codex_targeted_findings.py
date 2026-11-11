@@ -887,6 +887,7 @@ def combine_findings_with_targeted(
                 "pending": payload.get("operation_pending", []), "semantic_verified": False,
                 "candidate_ledger": payload.get("operation_candidate_ledger", []),
                 "context_retrieval": payload.get("context_retrieval"),
+                "unverified_terminal_dispositions": payload.get("terminal_dispositions", []),
             })
         if stage.startswith("candidate_recovery_") and isinstance(payload, dict):
             from backend.app.pipeline.stages.findings_merge.recovery_links import apply_duplicate_links

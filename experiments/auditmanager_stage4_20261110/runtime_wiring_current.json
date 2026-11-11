@@ -1,0 +1,48 @@
+{
+  "scope": "Current runtime wiring inspection; not quality acceptance or candidate freeze.",
+  "connected": [
+    {
+      "method": "Source-only object discovery",
+      "entry": "backend/app/pipeline/stages/text_analysis/runner.py:run_text_analysis",
+      "activation": "PipelineStageContext.inventory_invoke plus explicit packet budget",
+      "output": "Classic text_findings preserved; new candidates and object registry appended."
+    },
+    {
+      "method": "Object checks after inventory",
+      "entry": "backend/app/pipeline/stages/prepare/codex_targeted_findings.py:build_targeted_findings_passes",
+      "activation": "Codex targeted merge; operation builder reads current 02_text_analysis.json",
+      "limit": "Default 8 object requests; inspect 03_object_operation_plan.json backlog, do not claim full coverage."
+    },
+    {
+      "method": "Source retrieval and graphic detail requests",
+      "entry": "backend/app/services/llm/claude_runner.py:_run_codex_targeted_findings_merge",
+      "activation": [
+        "AUDIT_OBJECT_CONTEXT_FOLLOWUPS=1",
+        "AUDIT_OBJECT_GRAPHIC_DETAILS=1"
+      ],
+      "output": "Every continuation payload retained in operation reports and candidate lineage."
+    },
+    {
+      "method": "Terminal disposition after exhausted literal search",
+      "entry": "backend/app/pipeline/stages/prepare/object_operation_disposition.py:advance_operation_pass",
+      "activation": "AUDIT_OBJECT_TERMINAL_DISPOSITION=1 (default off)",
+      "verified": "34 local tests passed including main executor preserving old core and forwarding a question candidate; no real model calls.",
+      "boundary": "Search budget exhaustion is not eligible; candidates still require source review."
+    },
+    {
+      "method": "Review candidate sources",
+      "entry": "backend/app/pipeline/stages/findings_verify/source_review_workflow.py:run_source_review_workflow_phase",
+      "activation": "PipelineStageContext.source_review_invoke and explicit finding budget",
+      "boundary": "Produces 03_source_review_candidates.json, not admission inbox."
+    }
+  ],
+  "remaining_integration": [
+    "Freeze method activation and budgets in shared runner; identical shared settings in baseline and candidate.",
+    "Resolve candidate decision acceptance and report grouping without per-project adapters; do not copy raw candidates into the reviewed inbox.",
+    "Verify original control cases and outstanding profile disagreements before declaring stage4 complete.",
+    "Freeze evaluator and actual execution plan; run matched comparisons and preserve full source/usage provenance."
+  ],
+  "full_six_comparison_started": false,
+  "stage4_complete": false,
+  "production_changed": false
+}

@@ -69,3 +69,44 @@ You may return no finding. A prior model response is untrusted, not an expected 
     messages[-1]['content'] = json.dumps(packet, ensure_ascii=False)
     stage = request.stage + '_disposition'
     return replace(request, stage=stage, output_filename='03_'+stage+'.json', messages=messages), search
+
+
+def advance_operation_pass(request, raw_payload, *, enable_disposition=False):
+    """Validate one response and prepare at most one bounded next request.
+
+    A terminal question is still a source-review candidate, never acceptance.
+    Only executor-recorded exhausted literal search can admit that candidate;
+    budget exhaustion cannot. Prior responses are retained by the caller.
+    """
+    from .object_operation_passes import validate_object_operation_payload
+    packet = json.loads(request.messages[-1]['content'])
+    terminal = packet.get('terminal_disposition')
+    if terminal is not None:
+        error = verify_operation_source_binding(request)
+        if error:
+            raise ValueError(error)
+        if not isinstance(terminal, dict):
+            raise ValueError('invalid_terminal_search_receipt')
+        search = terminal.get('search_receipt', {})
+        previous = terminal.get('previous_response')
+        if (not enable_disposition or request.continuation_source is None
+                or not isinstance(search, dict)
+                or search.get('status') != 'no_additional_sources'
+                or search.get('omitted') or search.get('absence_proven') is not False
+                or not isinstance(previous, dict)
+                or terminal.get('previous_response_sha256') != evidence_digest(previous)):
+            raise ValueError('invalid_terminal_search_receipt')
+        payload = validate_object_operation_payload(request, raw_payload, context_search_exhausted=True)
+        payload['context_retrieval'] = {'status':'terminal_disposition_completed',
+            'search_receipt':deepcopy(search), 'absence_proven':False,
+            'semantic_verified':False, 'further_dispatch_prepared':False}
+        return payload, None
+    payload = validate_object_operation_payload(request, raw_payload)
+    followup, search = build_object_operation_followup(request, raw_payload)
+    payload['context_retrieval'] = search
+    if (enable_disposition and followup is None and search.get('status') == 'no_additional_sources'
+            and not search.get('omitted')):
+        followup, verified_search = prepare_operation_disposition(request, raw_payload)
+        payload['context_retrieval'] = {'status':'terminal_disposition_prepared',
+            'search_receipt':verified_search, 'absence_proven':False, 'semantic_verified':False}
+    return payload, followup
