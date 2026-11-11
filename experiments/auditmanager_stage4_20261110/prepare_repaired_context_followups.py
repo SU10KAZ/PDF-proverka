@@ -12,7 +12,7 @@ def prepare(previous_preparation, destination):
     from backend.app.pipeline.stages.prepare.codex_targeted_findings import CodexTargetedPass
     destination.mkdir(exist_ok=False)
     (destination / 'requests').mkdir()
-    rows = []
+    rows, not_scheduled = [], []
     for old in json.loads(previous_preparation.read_text())['requests']:
         parent = old['parent']
         request = verify_packet({'path': parent['request_path'], 'sha256': parent['request_sha256']})
@@ -24,7 +24,8 @@ def prepare(previous_preparation, destination):
         validated = validate_recovery_payload(targeted, response)
         followup, receipt = build_context_followup(targeted, validated)
         if followup is None:
-            raise ValueError(f'Followup no longer schedules: {receipt}')
+            not_scheduled.append({'parent': parent, 'receipt': receipt})
+            continue
         packet = {'stage': followup.stage, 'output_filename': followup.output_filename,
             'messages': followup.messages, 'image_hashes': {str(p): sha(Path(p)) for p in followup.image_paths},
             'model': 'codex/gpt-6-astra', 'reasoning_effort': 'high', 'allowed_tools': ''}
@@ -38,7 +39,7 @@ def prepare(previous_preparation, destination):
             'transport_size_ready': size <= budget and chars < 1_000_000,
             'parent': parent, 'context_retrieval': receipt})
     write(destination / 'preparation.json', {'history_supplied': False, 'production_acceptance': False,
-        'supersedes_preparation': str(previous_preparation), 'supersedes_sha256': sha(previous_preparation), 'requests': rows})
+        'supersedes_preparation': str(previous_preparation), 'supersedes_sha256': sha(previous_preparation), 'requests': rows, 'not_scheduled': not_scheduled})
     return [{k: row[k] for k in ('path', 'message_characters', 'images', 'image_bytes', 'transport_size_ready')} for row in rows]
 
 
