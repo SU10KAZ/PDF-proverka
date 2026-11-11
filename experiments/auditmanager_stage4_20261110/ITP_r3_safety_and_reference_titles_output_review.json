@@ -1,0 +1,717 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "337694028e3e0c8e918d1c131f8040993c33c22a9e7d0389cdb2eff340a137b6",
+  "queue_after_sha256": "c2d770d9f75ef6a47b79d62cb61a944aaf3cf7a3ea66d6f15fb7893f887d1757",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Испытания трубопроводов",
+        "sheet": "Листы 1, 3",
+        "page": [
+          7,
+          41
+        ],
+        "problem": "Единое пробное давление ниже рабочего давления первичного контура.",
+        "description": "Для всех трубопроводов назначено пробное давление 12,5 с ошибочной единицей «кг/см». Если подразумевается 12,5 кгс/см², оно ниже заданных рабочих давлений 17,5–17,9 атм. Границы испытательных участков и ограничения подключённого оборудования не согласованы.",
+        "norm": "СП 74.13330.2023 (норматив-кандидат), пункт не подтверждён; ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 74.13330.2023",
+            "cited_designation": "СП 74.13330.2023",
+            "candidate_relevance": 0.75,
+            "reason": "Установить применимые требования к испытаниям участков тепловой сети и назначению пробных давлений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить обоснование безопасности испытаний и соответствие рабочим параметрам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Назначить испытательные давления отдельно по контурам, определить отключаемое оборудование и исправить единицы измерения.",
+        "risk": "Недостоверная проверка прочности либо повреждение оборудования при неправильно организованных испытаниях.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_90da5d0d361c48008030c2bf87767ced",
+          "blk_9167c15ea57c423ea6ad708738bb420f",
+          "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "blk_9e12a8bcbfb24db49d81af74c06e24f0"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 41
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Общее указание задаёт испытание трубопроводов при 12,5 с единицей «кг/см».",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Единицу сохранять буквально; не исправлять молча по предположению."
+        },
+        {
+          "claim": "Если имелось в виду кгс/см², 12,5 ниже приведённых рабочих 17,5–17,9 атм.",
+          "verdict": "conditional_comparison_only",
+          "limits": "Текущая формулировка сохраняет условность и исходные единицы. Общий испытательный участок, режим и методика не установлены."
+        },
+        {
+          "claim": "Для всех трубопроводов назначено это давление; границы и ограничения не согласованы.",
+          "verdict": "overgeneralized_bounded_instruction",
+          "limits": "Абзац общий, но это не доказывает отсутствие отдельной программы по контурам во всех комплектах. Сохранить вопрос о единице и области действия."
+        },
+        {
+          "claim": "Назначить давления по контурам и определить отключаемое оборудование.",
+          "verdict": "supported_followup_not_verified_design",
+          "limits": "Конкретные давления и программа изоляции требуют исходных условий; фактические повреждения или непроверенная прочность не доказаны."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ, отсутствие ВРУ, общая программа испытаний, применимость нормативных пунктов и действующий правовой статус ссылок.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Документальные противоречия и вопросы безопасности сохраняются в пределах доказательств; названия норм относятся к отдельным вопросам и уточнениям. Фактические разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F005_test_pressure_scope.json",
+          "sha256": "a7d32222f7f10b1f04ca6b13c42a7ababe200a411e6d0b42cce5ff47abb8648d",
+          "primary_adjudication": null,
+          "limits": "Не установлены расчётные давления для назначения испытания, границы испытательных участков, применимый нормативный пункт и отдельная программа испытаний. В авторитетном TEXT давления источника записаны в атм; эти единицы сохранены. Кг/см нельзя молча заменить на кгс/см². Не доказаны фактическое испытание при12,5, недостаточная прочность, наличие скрытого дефекта или опасное состояние. Не назначать новое давление и порядок отключения оборудования по одному сравнению чисел.",
+          "wording": "В общих указаниях ПД-00542664-ИТП.ТМ, лист1, пробное давление трубопроводов записано «12,5 кг/см» без обозначения контура. Уточнить единицу и область действия указания, согласовав испытательные параметры ввода и внутренних контуров: на аксонометрии Т1/Т2 обозначены17,5/17,9 кгс/см². Ссылку на отдельную программу испытаний, если она предусмотрена, указать в документации."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-006",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-004"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_safety_and_reference_titles"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-006",
+      "finding": {
+        "id": "F-006",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Электробезопасность",
+        "sheet": "Лист 17",
+        "page": 55,
+        "problem": "Предписана замена предохранителей при включённом питании без необходимых условий безопасности.",
+        "description": "Пункт 8.4 пояснительной записки требует заменять предохранители в блоках питания при включённом питании. Условия допустимости такой операции и защитные меры не приведены.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Предписать замену со снятием напряжения. Специальные исключения описывать только при наличии применимых оснований, процедуры и защитных мер.",
+        "risk": "Поражение персонала электрическим током и возникновение электрической дуги.",
+        "source_finding_ids": [
+          "T-006"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_67b9571de5e74033b6c491043f8c87d1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 55
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пункт8.4 требует замену предохранителей блоков питания при включённом питании.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Условия конкретной операции не описаны."
+        },
+        {
+          "claim": "Защитные меры не приведены.",
+          "verdict": "true_only_for_specific_operation",
+          "limits": "В разделе есть общие меры8.1,8.5,8.6. Нельзя утверждать отсутствие мер во всём разделе."
+        },
+        {
+          "claim": "Снятие напряжения как общий порядок; специальные исключения требуют оснований, процедуры и мер.",
+          "verdict": "scoped_recommendation_not_equipment_verified",
+          "limits": "Третий повтор вернул оговорку об исключениях. Конструкция, напряжение и нагрузка конкретного блока не проверены; нормативная применимость не установлена."
+        },
+        {
+          "claim": "Поражение током и дуга.",
+          "verdict": "hypothetical_risk_not_observed",
+          "limits": "Фактическое событие и критическая тяжесть для конкретной цепи не доказаны."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ, отсутствие ВРУ, общая программа испытаний, применимость нормативных пунктов и действующий правовой статус ссылок.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Документальные противоречия и вопросы безопасности сохраняются в пределах доказательств; названия норм относятся к отдельным вопросам и уточнениям. Фактические разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_67b9571de5e74033b6c491043f8c87d1",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+          "sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477",
+          "primary_adjudication": null,
+          "limits": "Прямое предписание подтверждено, но конструкция предохранителей, напряжение, доступность токоведущих частей и режим нагрузки не установлены. Критичность и нарушение конкретного пункта ПУЭ не доказаны. Нельзя утверждать, что раздел не содержит никаких защитных мер: пункты 8.1, 8.5, 8.6 описывают общие правила, подготовку персонала и заземление. Пункт 8.3 касается кабельных работ и не является прямым запретом любой другой операции под напряжением.",
+          "wording": "Уточнить пункт 8.4 ПЗ, лист 17: «Замена предохранителей в блоках питания выполнять при включенном питании». Согласовать порядок обслуживания с конкретными блоками питания и инструкциями изготовителя; в текущем пункте условия применимости этого предписания не раскрыты."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+          "sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477",
+          "primary_adjudication": null,
+          "limits": "Прямое предписание подтверждено, но конструкция предохранителей, напряжение, доступность токоведущих частей и режим нагрузки не установлены. Критичность и нарушение конкретного пункта ПУЭ не доказаны. Нельзя утверждать, что раздел не содержит никаких защитных мер: пункты 8.1, 8.5, 8.6 описывают общие правила, подготовку персонала и заземление. Пункт 8.3 касается кабельных работ и не является прямым запретом любой другой операции под напряжением.",
+          "wording": "Уточнить пункт 8.4 ПЗ, лист 17: «Замена предохранителей в блоках питания выполнять при включенном питании». Согласовать порядок обслуживания с конкретными блоками питания и инструкциями изготовителя; в текущем пункте условия применимости этого предписания не раскрыты."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-008",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-005"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_safety_and_reference_titles"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Электроснабжение",
+        "sheet": "Лист 19",
+        "page": [
+          57,
+          150
+        ],
+        "problem": "Категория надёжности электроснабжения ИТП противоречит техническому заданию.",
+        "description": "Пояснительная записка назначает II категорию. Пункт 5.2.6.1 технического задания требует I категорию, технологическое резервирование и отдельное ВРУ с учётом электроэнергии. Фактические решения смежного раздела не представлены.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать с разделом электроснабжения категорию, резервирование и состав ВРУ; привести записку и задания к единому решению.",
+        "risk": "Недостаточная надёжность питания насосов и автоматики, перерывы теплоснабжения.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_2a57b9d72094420086e4401e9bfbbc9e",
+          "blk_8a446a40473d48d18d60edba74661d9e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 57
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 150
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-007:0725100843103b391be5",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ПЗ указываетIIкатегорию;ТЗ5.2.6.1 —I, резервирование, отдельноеВРУ иучёт.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Третий повтор явно вернул требованияВРУ и учёта, отсутствовавшие в формулировке второго."
+        },
+        {
+          "claim": "Решения смежного раздела не представлены.",
+          "verdict": "bounded_to_reviewed_package",
+          "limits": "Отсутствие в проверенном пакете не означает отсутствие раздела или оборудования в проекте."
+        },
+        {
+          "claim": "Согласовать категорию, резервирование иВРУ сэлектротехническим разделом.",
+          "verdict": "supported_document_discrepancy",
+          "limits": "Фактическая недостаточная надёжность и перерывы питания не установлены."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ, отсутствие ВРУ, общая программа испытаний, применимость нормативных пунктов и действующий правовой статус ссылок.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Документальные противоречия и вопросы безопасности сохраняются в пределах доказательств; названия норм относятся к отдельным вопросам и уточнениям. Фактические разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_8a446a40473d48d18d60edba74661d9e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_2a57b9d72094420086e4401e9bfbbc9e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json",
+          "sha256": "80725162dc61ad03bf5e1c5301f9349e232eb695808ce2d524e94a2fb8b35d9c",
+          "primary_adjudication": null,
+          "limits": "Подтверждено противоречие требований. Фактическая недостаточная надёжность не доказана без схем питания и резервирования. Требование отдельного ВРУ и учёта приведено в ТЗ, но их отсутствие не установлено; отдельное замечание об отсутствии не выпускать.",
+          "wording": "Согласовать задание на электроснабжение ИТП: ПЗ, лист 19, задаёт категорию II, а ТЗ, п. 5.2.6.1, — первую категорию с технологическим резервированием. Отразить согласованное решение в смежном электротехническом разделе."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-009",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-006"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_safety_and_reference_titles"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-053",
+      "finding": {
+        "id": "F-053",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "В ведомости неверно указано наименование СП 510.1325800.2022.",
+        "description": "Строка MD 243: «|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |». Наименование СП 510.1325800.2022 — «Тепловые пункты и системы внутреннего теплоснабжения». Это наименование также приведено в описаниях примечаний проекта в строках MD 969 и 998. Ведомость и примечания называют один документ по-разному.",
+        "page": null,
+        "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "В строке ведомости СП 510.1325800.2022 указать точное наименование «Тепловые пункты и системы внутреннего теплоснабжения».",
+        "risk": "Ошибочная идентификация нормативного документа при проверке и использовании ведомости.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+            "page": null,
+            "md_lines": "строка 243"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 1",
+        "candidate_norm_references": [
+          {
+            "designation": "СП 510.1325800.2022",
+            "cited_designation": "СП 510.1325800.2022",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 2,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "formal_reference_category",
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость называетСП510.1325800.2022 «Проектирование тепловых пунктов».",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Официальное полное название подтверждалось ранее первичной карточкой; новой проверки действия норм нет."
+        },
+        {
+          "claim": "Название «Тепловые пункты и системы внутреннего теплоснабжения» есть в примечаниях проекта.",
+          "verdict": "confirmed_prior_GRAPHIC_identical_bytes",
+          "limits": "Описания изображенийMD969/998 сами не авторитетныйTEXT. Основание — прежний просмотр указанных в evidence изображений; привязку к каждой из двух строкMD отдельно не подтверждать."
+        },
+        {
+          "claim": "Исправить название в ведомости.",
+          "verdict": "supported_editorial_question",
+          "limits": "Полное обозначение с годом совпадает; невозможность идентификации или технический дефект не доказаны. Отдельный раздел вопросов и уточнений."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ, отсутствие ВРУ, общая программа испытаний, применимость нормативных пунктов и действующий правовой статус ссылок.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Документальные противоречия и вопросы безопасности сохраняются в пределах доказательств; названия норм относятся к отдельным вопросам и уточнениям. Фактические разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F053_standard_title.json",
+          "sha256": "48b25ee12d05eb09a1826215610c1a59dfe0f759cbf315a2d0f57949a5950513",
+          "primary_adjudication": null,
+          "limits": "Полное числовое обозначение и год одинаковы: применение разных документов, невозможность идентификации и последствия для монтажа не доказаны. Проверка не подтверждает правильность ссылки на7.2 или технического решения двери/шва. Исходную привязку к строке969/другому плану не переносить: здесь подтверждён конкретный план лист3. B-ITP-F-034 содержит тот же тезис и дополнительные непроверенные вопросы, поэтому целиком не закрывается.",
+          "wording": "В ведомости ссылочных документов ИТП.ТМ, лист1, и общих данных ИТП.ТМ.ПЗ, лист3, привести название СП510.1325800.2022 к официальному: «Тепловые пункты и системы внутреннего теплоснабжения». В просмотренном плане ИТП, лист3, это название уже приведено. Замечание относится к оформлению ссылок."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+          "primary_adjudication": null,
+          "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+          "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+          "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713",
+          "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Bottom35% viewed: note explicitly gives full title of SP510. No verification of clause7.2 substance in this title review.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_981b77a31c254f73aa67261d897a2987.png",
+          "sha256": "3cb700af6b7c1b3c41c11860f02195a7927e36c84a4e7a027629c4995c1c6aed",
+          "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Bottom35% viewed: note explicitly gives full title of SP510. No verification of clause7.2 substance in this title review.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_981b77a31c254f73aa67261d897a2987.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-056",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-056"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_safety_and_reference_titles"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-054",
+      "finding": {
+        "id": "F-054",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "В монтажных указаниях неверно назван СНиП 3.05.03-85.",
+        "description": "Строка MD 264: «Монтаж и пуск в эксплуатацию провести в соответствии со СП 74.13330.2023 \"Тепловые сети\", СНиП 3.05.03-85 \"Правила производства и приемки работ\", СНиП 12-03-2001 Часть 1. \"Безопасность труда в строительстве. Общие требования,\" СНиП 12-04-2002 Часть 2. \"Безопасность труда в строительстве. Строительное производство\". По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см. Длительность испытаний определяется временем, необходимым для осмотра трубопровода, но не менее 10 мин.». Наименование СНиП 3.05.03-85 — «Тепловые сети»; приведённое название «Правила производства и приемки работ» не является названием этого документа.",
+        "page": null,
+        "norm": "СНиП 3.05.03-85 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Исправить наименование СНиП 3.05.03-85 в монтажных указаниях на «Тепловые сети».",
+        "risk": "Затруднение однозначного определения документа, на который ссылаются монтажные указания.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+            "page": null,
+            "md_lines": "строка 264"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 1",
+        "candidate_norm_references": [
+          {
+            "designation": "СНиП 3.05.03-85",
+            "cited_designation": "СНиП 3.05.03-85",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 78,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction",
+            "operations"
+          ],
+          "formalism_flags": [
+            "formal_reference_category",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Монтажные указания называютСНиП3.05.03-85 «Правила производства и приемки работ».",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Название документа «Тепловые сети» подтверждалось прежней исторической каталоговой проверкой."
+        },
+        {
+          "claim": "Исправить историческое название документа.",
+          "verdict": "supported_editorial_question",
+          "limits": "Не переносить текущий правовой статус из каталога иной юрисдикции. Новая проверка применимости не проводилась."
+        },
+        {
+          "claim": "Общий абзац сдавлением12,5 делает этот вопрос дублемF005.",
+          "verdict": "not_equivalent_claim",
+          "limits": "Числовое испытательное указание и название документа — разные предметы. Редакционный вопрос не технический дефект."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ, отсутствие ВРУ, общая программа испытаний, применимость нормативных пунктов и действующий правовой статус ссылок.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Документальные противоречия и вопросы безопасности сохраняются в пределах доказательств; названия норм относятся к отдельным вопросам и уточнениям. Фактические разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-057",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-057"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_safety_and_reference_titles"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Five current ITP findings assessed against frozen prior claim reviews; changed conditions, unit wording and reintroduced VRU requirements reviewed separately. All local evidence hashes and r3 MD/PNG identity checked. Historical norm-title evidence reused only for identity, not present legal status. No new graphic inspection or engineer decision."
+}
