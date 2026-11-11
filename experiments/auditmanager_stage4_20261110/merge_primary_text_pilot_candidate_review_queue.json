@@ -1384,7 +1384,11 @@
       ],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_retained_graphic_candidate_review.json",
       "assessment": "retention_reason_overstates_graphic_proof",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_motor_and_dimension_graphic_followup.json",
+        "assessment": "confirmed_graphic_to_text_motor_endpoint_conflict"
+      }
     },
     {
       "source_id": "G-071",
@@ -1400,7 +1404,11 @@
       ],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
       "assessment": "text_core_preserved_graphic_part_pending",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_motor_and_dimension_graphic_followup.json",
+        "assessment": "confirmed_graphic_to_text_motor_endpoint_conflict"
+      }
     },
     {
       "source_id": "G-072",
@@ -1829,7 +1837,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_motor_and_dimension_graphic_followup.json",
+        "assessment": "confirmed_common_datum_dimension_conflict"
+      }
     },
     {
       "source_id": "G-103",
@@ -1840,7 +1852,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_motor_and_dimension_graphic_followup.json",
+        "assessment": "confirmed_common_datum_dimension_conflict"
+      }
     },
     {
       "source_id": "G-104",
