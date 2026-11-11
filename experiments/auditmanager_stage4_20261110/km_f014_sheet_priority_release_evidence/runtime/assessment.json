@@ -1,0 +1,22 @@
+{
+  "status": "runtime_final_release_and_excel_passed",
+  "baseline_rows": 26,
+  "output_rows": 26,
+  "other_25_classic_findings_unchanged": true,
+  "all_visible_claim_fields_checked": true,
+  "rerun_idempotent": true,
+  "new_model_calls": 0,
+  "recorded_calls_replayed": [
+    {
+      "phase": "final_release_check",
+      "request_sha256": "ad05d537e9e55cb22efd62227d677df64361355543737fdec2027175bf618d9f"
+    }
+  ],
+  "known_F014_core_retained_with_revised_wording": true,
+  "autonomous_context_retrieval_proven": false,
+  "known_target_snapshot_adapter": true,
+  "whole_audit_discovery": false,
+  "full_stage4_acceptance": false,
+  "output_sha256": "13f59133cb74438eb1496ad91c211b11ad2e5ea7f1589b2b207b056686f4f66f",
+  "xlsx_sha256": "5386a4e89e4ca13f970abc6d38c43637c8f9b8dd8a71dbad5f8a4135f1e34641"
+}

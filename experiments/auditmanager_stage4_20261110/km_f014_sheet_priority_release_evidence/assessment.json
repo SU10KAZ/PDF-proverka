@@ -1,0 +1,117 @@
+{
+  "status": "known_candidate_query_to_excel_control_passed",
+  "baseline_action": "defer",
+  "corrected_action": "revise_then_release",
+  "native_initial_source_links_only": true,
+  "exact_initial_model_response_replayed": true,
+  "native_query_driven_retrieval_observed": true,
+  "original_image_limit": 8,
+  "followup_image_limit": 8,
+  "final_checker_image_count": 15,
+  "original_model_queries_unchanged": true,
+  "final_report_rows": 26,
+  "other_25_findings_unchanged": true,
+  "rerun_idempotent": true,
+  "excel_visible_claim_fields_checked": true,
+  "new_blind_finding_claimed": false,
+  "full_method_acceptance": false,
+  "production_changed": false,
+  "usage": {
+    "old_native_workflow": {
+      "calls": [
+        {
+          "path": "/tmp/auditmanager_km_f014_original_refs_20261111/workflow/00_review/result.json",
+          "model": "codex/gpt-6-astra",
+          "input_tokens": 15411,
+          "output_tokens": 4477,
+          "cached_tokens": 10240,
+          "duration_ms": 120265,
+          "cost_source": "subscription"
+        },
+        {
+          "path": "/tmp/auditmanager_km_f014_original_refs_20261111/workflow/01_review/result.json",
+          "model": "codex/gpt-6-astra",
+          "input_tokens": 25359,
+          "output_tokens": 5251,
+          "cached_tokens": 8192,
+          "duration_ms": 153613,
+          "cost_source": "subscription"
+        },
+        {
+          "path": "/tmp/auditmanager_km_f014_original_refs_20261111/workflow/05_adjudication/result.json",
+          "model": "codex/gpt-6-astra",
+          "input_tokens": 29975,
+          "output_tokens": 2266,
+          "cached_tokens": 8192,
+          "duration_ms": 61583,
+          "cost_source": "subscription"
+        }
+      ],
+      "count": 3,
+      "input_tokens": 70745,
+      "output_tokens": 11994,
+      "summed_duration_ms": 335461
+    },
+    "new_fresh_followups_and_adjudication": {
+      "calls": [
+        {
+          "path": "/tmp/auditmanager_km_f014_sheet_priority_20261111/workflow/01_review/result.json",
+          "model": "codex/gpt-6-astra",
+          "input_tokens": 27276,
+          "output_tokens": 4165,
+          "cached_tokens": 10240,
+          "duration_ms": 112634,
+          "cost_source": "subscription"
+        },
+        {
+          "path": "/tmp/auditmanager_km_f014_sheet_priority_20261111/workflow/02_review/result.json",
+          "model": "codex/gpt-6-astra",
+          "input_tokens": 30102,
+          "output_tokens": 4272,
+          "cached_tokens": 8192,
+          "duration_ms": 105436,
+          "cost_source": "subscription"
+        },
+        {
+          "path": "/tmp/auditmanager_km_f014_sheet_priority_20261111/workflow/05_adjudication/result.json",
+          "model": "codex/gpt-6-astra",
+          "input_tokens": 33962,
+          "output_tokens": 3291,
+          "cached_tokens": 10240,
+          "duration_ms": 85981,
+          "cost_source": "subscription"
+        }
+      ],
+      "count": 3,
+      "input_tokens": 91340,
+      "output_tokens": 11728,
+      "summed_duration_ms": 304051
+    },
+    "new_final_check": {
+      "calls": [
+        {
+          "path": "/tmp/auditmanager_km_f014_sheet_priority_final_release_20261111/native/workflow/initial/result.json",
+          "model": "codex/gpt-6-astra",
+          "input_tokens": 46761,
+          "output_tokens": 4553,
+          "cached_tokens": 15360,
+          "duration_ms": 119579,
+          "cost_source": "subscription"
+        }
+      ],
+      "count": 1,
+      "input_tokens": 46761,
+      "output_tokens": 4553,
+      "summed_duration_ms": 119579
+    },
+    "replayed_initial_not_charged_twice": true,
+    "monetary_cost_unknown_subscription": true
+  },
+  "limits": [
+    "Single known-case controlled trajectory; model variability not quantified.",
+    "New workflow consumed extra backlog and an additional review; efficiency is not accepted from this result.",
+    "Final checker may inspect more images than an intermediate review; its distinct scope and cost are recorded.",
+    "Original F014 remains unsuitable as a proven false-positive control.",
+    "Frozen evaluator v2 and active baseline capsules remain unchanged."
+  ]
+}
