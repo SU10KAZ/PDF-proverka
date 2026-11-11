@@ -1,0 +1,98 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-014",
+      "status": "confirmed_document_conflict",
+      "review_reason": "По графике и строкам КЖ подтверждены восемь различных неэкранированных однопарных линий по 15 м: П4.1.3-3/-4/-5/-8 и П4.1.4-2/-3/-6/-8. Итого 120 м против 50 м в локальной ведомости. Три экранированные однопарные линии П4.1.3-1/-2 и П4.1.4-1 дают 20+15+15=50 м против 105 м. Двухпарные линии не смешивались с однопарными. В добавлении фраза «суммы непосредственно показаны» уточнена: суммы вычислены, готовых итогов на графике нет. Требование согласовать документы обосновано, физическая недопоставка или избыток не установлены.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_b2b11f12b2c24e10bebb7fb32c3680f5.png",
+        "block_id": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+        "sha256": "152537eff5e3477a461f86fc4fdafc54ba9263ebc2c6808265bf971fcf635e3f",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "start": 164256,
+          "end": 165306,
+          "sha256": "eb8219223c85a754e8271cf00e9e61bbf126add7049791b793e257c21203c799"
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "start": 359757,
+          "end": 362359,
+          "sha256": "d9c8c004ef361fdd6514b9362032368014c1396ed53f2bd1add7e1d2cc141be1"
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "start": 362382,
+          "end": 364936,
+          "sha256": "bad8a4b40df7d500a6d1ff5b64535863568c7b033350a98dd12ef8f0d9d8956e"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-016",
+      "status": "confirmed_totals_with_route_conflict",
+      "review_reason": "Обе суммы подтверждены: 3×1,5 — питание Y1 и M2 по 20 м плюс Y2–Y6 по 120 м, итого 640 против 620 м; 4×2,5 — M1 и M5 по 20 м, два межшкафных участка по 120 м и два моторных участка по 15 м, итого 310 против 290 м. В КЖ длины двух межшкафных участков равны 15 м, двух моторных — 120 м; на схеме наоборот. Первоначальный текст описывает КЖ, добавление — графику, но не объясняет их конфликт. Полезные количественные расхождения сохранить; при согласовании явно выделить несовпадение привязки длин, не объявлять документы согласованными по маршрутам. Термин «недостача» в добавлении ограничен документами, физическая поставка не проверена.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_cd9d763d198246859c3df42c18b5c3d8.png",
+        "block_id": "blk_cd9d763d198246859c3df42c18b5c3d8",
+        "sha256": "05e8996615a803ac8aeeb4c80430160eb8954f89bc42940d73a0c5613da7b8d0",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "start": 176574,
+          "end": 177529,
+          "sha256": "ee153e0b59868f1bb29e3da948a7656934de77c8d3fc74a910f1fafd027c1f96"
+        },
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "start": 370196,
+          "end": 372801,
+          "sha256": "b5e521e815309dac1f60fb36a24bebbc022e45ca24b3aac340c64346dda8d69e"
+        },
+        {
+          "block_id": "blk_3705aceeb77e406ebacc38fcaf7f2d28",
+          "start": 372825,
+          "end": 375340,
+          "sha256": "2455e59c3b09dd464411e5c27c18c1d3b66b836c6b2bf48cb6d0ed188e6b8ba8"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-075",
+      "status": "confirmed_document_conflict",
+      "review_reason": "На графике отдельно прослежены M1 и M5 по 20 м, два межшкафных кабеля по 330 м и два участка от ПЧ к M2/M3 по 15 м, все ППГнг(А)-HF 4×2,5. Сумма 730 м, авторитетная локальная ведомость содержит 700 м. Разность 30 м равна двум моторным участкам; двойного счёта одного участка нет. Условное согласование ведомости до 730 м при сохранении схемы обосновано. Арифметическое совпадение не доказывает историческую причину ошибки или отсутствие кабелей во всей поставке; эти пределы опубликованный текст сохраняет.",
+      "direct_graphic": {
+        "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_397f9663589b40bfbde9b898e99e5117.png",
+        "block_id": "blk_397f9663589b40bfbde9b898e99e5117",
+        "sha256": "96df1986c5929c97c62369499fd26e3a7eb38071d3066a995f0aff8684fc9893",
+        "directly_viewed": true,
+        "detail": "original"
+      },
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+          "start": 208813,
+          "end": 209875,
+          "sha256": "790ebe535af11ad7173cfbf7ee27799c8d17f23d450890bcd28fe40d0989c532"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false
+}

@@ -148,8 +148,14 @@
       "finding_id": "F-014",
       "problem": "Метражи двух исполнений контрольного кабеля ШАУВ-2-К4ПЧ расходятся с журналом.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "По графике и строкам КЖ подтверждены восемь различных неэкранированных однопарных линий по 15 м: П4.1.3-3/-4/-5/-8 и П4.1.4-2/-3/-6/-8. Итого 120 м против 50 м в локальной ведомости. Три экранированные однопарные линии П4.1.3-1/-2 и П4.1.4-1 дают 20+15+15=50 м против 105 м. Двухпарные линии не смешивались с однопарными. В добавлении фраза «суммы непосредственно показаны» уточнена: суммы вычислены, готовых итогов на графике нет. Требование согласовать документы обосновано, физическая недопоставка или избыток не установлены.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_cable_segment_totals_source_review_20261112.json",
+        "sha256": "9ad092d7df9cc45ceb7418337721bf30b811f89dba67f6cb55eba9cc30c93fe0"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-015",
@@ -168,8 +174,14 @@
       "finding_id": "F-016",
       "problem": "Локальные количества силовых кабелей Па3.1/Ва3.1 не соответствуют журналу.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_totals_with_route_conflict",
+      "engineer_decision": null,
+      "review_reason": "Обе суммы подтверждены: 3×1,5 — питание Y1 и M2 по 20 м плюс Y2–Y6 по 120 м, итого 640 против 620 м; 4×2,5 — M1 и M5 по 20 м, два межшкафных участка по 120 м и два моторных участка по 15 м, итого 310 против 290 м. В КЖ длины двух межшкафных участков равны 15 м, двух моторных — 120 м; на схеме наоборот. Первоначальный текст описывает КЖ, добавление — графику, но не объясняет их конфликт. Полезные количественные расхождения сохранить; при согласовании явно выделить несовпадение привязки длин, не объявлять документы согласованными по маршрутам. Термин «недостача» в добавлении ограничен документами, физическая поставка не проверена.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_cable_segment_totals_source_review_20261112.json",
+        "sha256": "9ad092d7df9cc45ceb7418337721bf30b811f89dba67f6cb55eba9cc30c93fe0"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-017",
@@ -841,8 +853,14 @@
       "finding_id": "F-075",
       "problem": "Количество кабеля ППГнг(А)-HF 4×2,5 в ведомости на 30 м меньше суммы длин на схеме.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "На графике отдельно прослежены M1 и M5 по 20 м, два межшкафных кабеля по 330 м и два участка от ПЧ к M2/M3 по 15 м, все ППГнг(А)-HF 4×2,5. Сумма 730 м, авторитетная локальная ведомость содержит 700 м. Разность 30 м равна двум моторным участкам; двойного счёта одного участка нет. Условное согласование ведомости до 730 м при сохранении схемы обосновано. Арифметическое совпадение не доказывает историческую причину ошибки или отсутствие кабелей во всей поставке; эти пределы опубликованный текст сохраняет.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_cable_segment_totals_source_review_20261112.json",
+        "sha256": "9ad092d7df9cc45ceb7418337721bf30b811f89dba67f6cb55eba9cc30c93fe0"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-076",
@@ -937,14 +955,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 53,
-  "unchecked": 32,
+  "reviewed": 56,
+  "unchecked": 29,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 53,
-  "unchecked_findings": 32
+  "reviewed_findings": 56,
+  "unchecked_findings": 29
 }
