@@ -1,0 +1,82 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-003",
+      "status": "confirmed_composite_address_conflicts",
+      "review_reason": "Все три текстовые части подтверждены: Пкр4.1 перечень M1/M2 вентиляторы,M3 насос, но КЖ адресует обе линии-9 4×2,5 и-13 3×1,5 кM2; Пкр5.1 перечень M1/M3 вентиляторы,M2 насос, КЖ-9→M2 и-13→МЗ; Пн5.1 перечень M1–M4 вентиляторы,M5 насос, КЖ-8 и-21 обе→M1 при разных кабелях. Для Пкр5.1 просмотренная графика непосредственно связывает-9 с резервнымM3 через23–25/PE, а-13 с насосомM2 через33/34/PE. Это подтверждает адресный конфликт, не физическую ошибку монтажа. Буквальное МЗ и различиеНФ/HF в КЖ сохранены. По одному сечению нельзя доказать назначение двигателя или назначить исправление. Для Пн5.1 не назначать автоматическиM5 правильным: отдельно проверенное F-071 показывает собственный повторM2 на схеме. Требование согласовать все документы корректно. Общая начальная оговорка о непроверенной графике устарела как минимум для обеих линийПкр5.1; при редактуре ограничения указывать отдельно для каждой установки.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_c0ed6bca935843c18344796377677f2f.png",
+          "block_id": "blk_c0ed6bca935843c18344796377677f2f",
+          "sha256": "f26dd1d18d31cb5990d87ed8aabf21c5f613e4d999eba6691f469af00408ab5c",
+          "directly_viewed": true,
+          "detail": "original",
+          "view_provenance": "Directly viewed in this thread during F-044 source chain review."
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "start": 68996,
+          "end": 70524,
+          "sha256": "625faac070b211124bd6f483123026b629ac9c41c783315534595c616c3f0b53"
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "start": 362382,
+          "end": 364936,
+          "sha256": "bad8a4b40df7d500a6d1ff5b64535863568c7b033350a98dd12ef8f0d9d8956e"
+        },
+        {
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "start": 364959,
+          "end": 367536,
+          "sha256": "8119671a9968d59ce3cfe60c745ccae86606267b06862faf90e5d7da6edc4236"
+        },
+        {
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "start": 91955,
+          "end": 93486,
+          "sha256": "9931f4018fce25202788e97c4d8a7b61300375b0a1fc3385fd67997c9ca1d840"
+        },
+        {
+          "block_id": "blk_ba2cc771448645a5b9a7203af971680b",
+          "start": 378755,
+          "end": 381099,
+          "sha256": "96832c724418c339748260de373f6c9c568894c44dee52feff60ae5b6f6eddd4"
+        },
+        {
+          "block_id": "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "start": 381123,
+          "end": 383713,
+          "sha256": "05212a0872f405c40460b1fc0db4baeecc7892fa7c11657ddbaa23e127300f4f"
+        },
+        {
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "start": 104170,
+          "end": 105770,
+          "sha256": "5be80448091f1a0c2c64a6a22de38c3ad3f4fb8e7c8e860357e2548d15804be5"
+        },
+        {
+          "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+          "start": 386225,
+          "end": 388823,
+          "sha256": "af8c3da575f14b3d3a955c606593f3a598fd73d6e40b77d6c98c037ebcd156d6"
+        },
+        {
+          "block_id": "blk_0074662f330048ff843342b285e6a016",
+          "start": 388847,
+          "end": 391415,
+          "sha256": "e413c6826328e6f83c910a093c4cd12807eb0a6baef63636e380a400e12494a0"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false,
+      "per_system_correction_requires_reconciliation": true
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false
+}
