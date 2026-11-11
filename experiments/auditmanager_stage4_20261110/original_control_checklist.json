@@ -270,7 +270,7 @@
       "hypothesis": "H04",
       "kind": "positive_controls",
       "original_control": "ЭОМ: FRHF5×35 двух линий не закрывается строкойHF5×35.",
-      "evidence_state": "partial_control_grouping_held_source_identity_unresolved",
+      "evidence_state": "partial_cable_F050_scope_deferred_F051_final_check_pending",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_reviewed_cable_output_replay.json",
@@ -303,6 +303,10 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_group_source_context_evidence/assessment.json",
           "sha256": "b922f493ab930c42f2e11cc741525bbd310334a9bc1651eb983fb97a2ae5e189"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_f050_stamp_evidence/assessment.json",
+          "sha256": "bf12b5f43773742b7c9b3907280a54f365d66c18bbe0467dcae1242523be380a"
         }
       ],
       "full_acceptance_proven": false
@@ -748,7 +752,7 @@
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
     "partial_GVS_reported_velocity_released_wall_not_emitted": 1,
-    "partial_control_grouping_held_source_identity_unresolved": 1,
+    "partial_cable_F050_scope_deferred_F051_final_check_pending": 1,
     "partial_instance_identity_question_preserved": 1,
     "synthetic_contract_only": 1
   },

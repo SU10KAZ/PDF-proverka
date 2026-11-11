@@ -1,0 +1,52 @@
+{
+  "status": "deferred_document_applicability_unresolved",
+  "finding_id": "F-050",
+  "historical_control": "H-EOM-11 / H04-P01",
+  "action": "defer",
+  "reason": "Параметры С2513 и состав представленной группы FRHF подтверждены, но применимость этой спецификации к проверяемой схеме не установлена. Авторитетные штампы указывают для схемы ПД-00580716-ЗОМ 2-1, стадию Р, а для ведомости прилагаемых документов — ПД-00580716-ЭОМ 2-1, стадию П; стадия спецификации не указана. Эти различия нельзя исправлять предположением, но они также не доказывают неприменимость спецификации. Просмотрены все 16 изображений: планы, другие схемы и узлы огнезащиты не устанавливают недостающую связь документов. Единственное заявленное основание технического замечания C05 остается неподтвержденным. Поэтому замечание отложено, а не опровергнуто и не переведено в инженерный вопрос. Нужна конкретная дополнительная операция: получить ведомость прилагаемых документов комплекта, указанного в штампе листа 2.2, и сведения о редакциях схемы и спецификации. Это позволит проверить общий объем учета. Записанный поиск по кабельному журналу и огнестойкости эту проверку не заменяет.",
+  "source_gap_fixed": "Prepared-MD stamps are now explicitly supplied; old source review was not retroactively credited.",
+  "retained_facts": [
+    "С2513 has FRHF 5x35, 65 m in supplied graphic",
+    "Supplied FRHF subsection lacks 5x35",
+    "HF 5x35 172 m is a different execution and does not prove coverage"
+  ],
+  "unresolved": "Applicability and agreed revisions of the scheme and specification, with literal ЗОМ/ЭОМ and Р/П differences preserved.",
+  "context_revision": 4,
+  "context_stop": "followup_limit_reached",
+  "model_requested_queries": [
+    {
+      "claim_id": "F-050-C05",
+      "query": "Ведомость прилагаемых документов ПД-00580716-ЗОМ 2-1 стадии Р"
+    },
+    {
+      "claim_id": "F-050-C05",
+      "query": "Регистрация изменений листа 2.2 и ПД-00580716-ЭОМ 2-1.СО"
+    }
+  ],
+  "budget_reset": false,
+  "not_proved": [
+    "False original finding",
+    "Physical shortage of 65 m or 160 m",
+    "Completeness of the document-scope search",
+    "Improvement from removing this accepted historical theme"
+  ],
+  "engineering_question": "Provide a document or explicit project clarification linking sheet 2.2 to specification ЭОМ 2-1.СО in the same applicable revision; independent audit executors must not receive evaluation answers.",
+  "benchmark_original_retained": true,
+  "full_acceptance": false,
+  "artifact_sha256": {
+    "completion.json": "ca1643cb622e943e7014f15a2b2f48280ccf53aae4b450e518f88b47c4b76994",
+    "manifest.json": "3ce221f635b7370dddc2291240a54a7f0b2203c93f1249ca23ea6f0a885ccf3e",
+    "queue.json": "9368fedb286341c978d4aec4d5198e2716027005b979ce1d90a511ded9e87c22",
+    "request.json": "aa878ad9a5483ff7ea61d031a9f9c3268140f236f3fd645d19eb59cd87641ca6",
+    "workflow/00_followup.json": "c002e3067874962242025cbf36973cbe7d678c49bba313dc3abd7b847c8d6c60",
+    "workflow/binding.json": "0dbb5882f8857bd9fe7f10b825a1d274a70c1ddc591b2b857ea38d3eff207760",
+    "workflow/00_validation.json": "8c7276bfa82c8240658ef8c918def9e0cb6e1896876064e90d22d9dc55b55667",
+    "workflow/candidate.json": "f7f69288b6c4134582a6633fec3660d974ff035a75c6673faa5ecd64c23afaea",
+    "workflow/00_review/request.json": "a26e2e767531cb30f3fc84223c1e7e8ca665d047d7b4ac325babe50672cae3e4",
+    "workflow/00_review/attempt.json": "87d34501be53a7e8350f0b4975a8ea2882f3dc6fad377c3365ecc94389388913",
+    "workflow/00_review/result.json": "97cde9921f7cbea07c68d9b177845a34a51f926523eff0a540c1b2add821eb61",
+    "workflow/05_adjudication/request.json": "d7fe03ea71034a0df6fb2f060caae33753afe8d3515f5d0821f732282a8ad9ea",
+    "workflow/05_adjudication/attempt.json": "f81185b42481bcca4110378415c2c8f57b16b79d138f973d4e6f4949f27c044d",
+    "workflow/05_adjudication/result.json": "58c2ab0bf75316400888e8cb3937f0aca8e9ad9d8762318c0d9e61586f875847"
+  }
+}
