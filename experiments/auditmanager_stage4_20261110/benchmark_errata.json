@@ -23,6 +23,36 @@
       "requires_engineer_or_source_resolution": "Установить по выноскам и деталировке границы ОГМ4/ОГМ5/ОГМ6 на схеме +9.110; ошибка основания снятия сама по себе не подтверждает исходное замечание.",
       "historical_engineer_decision": null,
       "full_claim_now_confirmed": false
+    },
+    {
+      "candidate_id": "B-EOM-F-032",
+      "target_ids": [
+        "EOM_F032_commercial_area_inputs:16faed04bf572c1876a5",
+        "EOM_F032_commercial_area_inputs:147160644f952ff76e59"
+      ],
+      "control_id": "H01-P02",
+      "status": "disputed_output_section_only",
+      "original_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F032_commercial_area_inputs.json",
+        "sha256": "5162f21dcede7066fb3d1512cd551bef5cf76a3746d6360ac9d9959a69283c99"
+      },
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/EOM_F032_profile_disagreement.json",
+        "sha256": "371ed514ef02e39af40324d3cc6037d2db83166cea033155917855088fe50af3"
+      },
+      "prior_profile": "questions",
+      "current_source_review_profile": "technical_findings",
+      "reason": "Both reviews preserve the actual area discrepancies and limit consequences. Whether this is a minor question or a technical input conflict is disputed; absence of a proved equipment fault does not by itself settle routing. No separate engineer decision for classical F032 has been established.",
+      "evaluation_action": "Hold only report-section accuracy for this candidate until a corrected evaluator is frozen. Continue independently scoring factual preservation and unsupported power/equipment claims. Do not change runtime wording to fit the old section label.",
+      "excluded_metric_dimensions": [
+        "report_section_accuracy"
+      ],
+      "retained_metric_dimensions": [
+        "factual_preservation",
+        "unsupported_consequences"
+      ],
+      "engineer_decision": null,
+      "full_claim_now_confirmed": false
     }
   ],
   "required_before_comparison": "Apply these evaluator holds and freeze a corrected evaluation release before acceptance metrics; never send errata to independent audit executors."
