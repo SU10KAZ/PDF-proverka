@@ -1,0 +1,23 @@
+{
+  "reports": [
+    {
+      "member_ids": [
+        "F-021",
+        "F-023"
+      ],
+      "status": "not_eligible",
+      "reason": "group_section_or_severity_not_compatible",
+      "model_calls": 0
+    },
+    {
+      "member_ids": [
+        "F-050",
+        "F-051"
+      ],
+      "status": "not_applied",
+      "model_action": "needs_context"
+    }
+  ],
+  "full_project_acceptance": false,
+  "original_report_mutated": false
+}

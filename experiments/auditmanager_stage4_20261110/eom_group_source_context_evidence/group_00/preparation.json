@@ -1,0 +1,9 @@
+{
+  "member_ids": [
+    "F-021",
+    "F-023"
+  ],
+  "status": "not_eligible",
+  "reason": "group_section_or_severity_not_compatible",
+  "model_calls": 0
+}

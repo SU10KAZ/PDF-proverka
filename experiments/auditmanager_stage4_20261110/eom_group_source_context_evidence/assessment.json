@@ -1,0 +1,61 @@
+{
+  "status": "group_not_admitted_after_index_context",
+  "original_rows": 51,
+  "final_rows": 51,
+  "all_original_findings_preserved": true,
+  "review_checks": {
+    "shared_issue": {
+      "status": "needs_data",
+      "reason": "В представленном подразделе FRHF действительно нет строки 5x35. Однако для признания двух замечаний проявлениями одной документальной несогласованности нужна подтверждённая применимость этой спецификации к источнику F-050. Совпадения исполнения и сечения недостаточно."
+    },
+    "corrective_action": {
+      "status": "pass",
+      "reason": "Общее действие предусматривает отдельную привязку каждой цепи, проверку остальных листов и связанных документов, условное внесение изменений и исключение двойного учёта. Оно не предписывает замену FRHF на HF или безусловное добавление количества."
+    },
+    "individual_scopes": {
+      "status": "pass",
+      "reason": "Предложение сохраняет две отдельные цепи, а договор представления сохраняет их исходные адреса и описания. Изображения показывают разные схемные контексты. Фасад ВРУ-3 является дополнительным видом того же устройства и не даёт оснований считать дополнительные кабельные линии."
+    },
+    "uncertainty_and_quantities": {
+      "status": "fail",
+      "reason": "Заголовок корректно ограничивает отсутствие позиции представленным подразделом листа 5, не суммирует 65 и 95 м в дефицит и не утверждает дефект поставки. Однако он без оговорки распространяет установленную несогласованность на обе цепи, хотя связь источника F-050 с этой спецификацией остаётся неподтверждённой. Сохранение оговорки внутри дочернего описания не устраняет усиление утверждения в общем заголовке."
+    },
+    "source_scope_and_identity": {
+      "status": "needs_data",
+      "reason": "Для F-051 обозначение комплекта согласуется с приложенной спецификацией. Для F-050 буквальное обозначение штампа отличается: «ЗОМ 2-1». Ведомость подтверждает наличие ВРУ-2 на двух листах в ЭОМ 2-1, но не подтверждает принадлежность именно приложенного графического блока этому комплекту. Нужна документальная привязка данного блока или подтверждение отношения обозначений ЗОМ 2-1 и ЭОМ 2-1; самостоятельно исправлять их нельзя."
+    }
+  },
+  "source_navigation": "The literal VRU-2 drawing-index query found an existing authoritative block; addition did not yield model approval of this unqualified group heading.",
+  "scope_boundary": "Grouping remains withheld. Neither the literal code difference nor the model hold proves the underlying cable discrepancy false. The independent engineering interpretation of document identity remains unresolved.",
+  "prior_local_grouping_superseded_as_acceptance_evidence": true,
+  "prior_artifacts_preserved": [
+    "EOM_generic_grouping_replay.json",
+    "EOM_grouping_phase_replay.json",
+    "EOM_model_grouped_output_replay.json"
+  ],
+  "accepted_behavior": "Preserve separate useful findings when the shared heading would erase a member-level uncertainty. Do not force a smaller row count.",
+  "positive_grouping_control": "AK five-cabinet workflow running separately; outcome not assumed.",
+  "model": "codex/gpt-6-astra",
+  "input_tokens": 27244,
+  "output_tokens": 2275,
+  "duration_ms": 52662,
+  "model_calls": 1,
+  "monetary_cost": "unknown subscription cost; CLI zero is not free service",
+  "known_development_control": true,
+  "benchmark_modified": false,
+  "full_stage4_acceptance": false,
+  "production_changed": false,
+  "files": {
+    "context_search.json": "73fae2eaa5e85395bd4d6e1366de642dfab148a759fbbfbfd7310ebc0be04a32",
+    "group_00/preparation.json": "c3a9fb306e8ae311cd8918af7da6cf2972742d2f06005349861fb7ef1cbff999",
+    "group_01/attempt.json": "20d4de4fb6aaa2207442d3f0ef273a204d7386ef80fc997e49d1593909ca797f",
+    "group_01/decision.json": "c18bfed14c1e02668e7d2e9894afac5010ae7f62c209e3d0262d20053158ad3c",
+    "group_01/output_preview.json": "a9b606a30c1274b3e48aa09070d09448713c7385ec6c9318dbeea182cf22e96d",
+    "group_01/preparation.json": "b4db5dc2a59e4a4a7c8f70ea27382541af7112c74ffd086a081ed082d5cf74ce",
+    "group_01/receipt.json": "1f12a15d1c637a024a419b6ada6fdb726fd96681b17711d30e7b66f3bd5e38fb",
+    "group_01/request.json": "dc8b0b0a15a762b5fededebf417f64493f084ce72a3188e34554076cde9a1cae",
+    "group_01/result.json": "36c436a4030c415d16d61e59732feaf22ac9df8cbf8052c095bce6088a20a7ba",
+    "group_01/result_binding.json": "16da9d8930b36f1b7dfcbd96f07f79a61f0a7bc057d65d4ecc61bdfe036d4104",
+    "summary.json": "78c1a1936f6e46a6239d27006508b72c7cf634a3c84931f4e6cbcce12f438edd"
+  }
+}
