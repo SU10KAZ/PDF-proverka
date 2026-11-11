@@ -1,0 +1,1101 @@
+{
+  "status": "eighteen_candidate_records_ten_issue_groups_graphically_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-016",
+      "pointer": "/block_analyses/6/findings/0",
+      "original_candidate": {
+        "id": "G-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "На листе 11 обозначения двигателей в перечне элементов противоречат функциональной схеме: М2 показан у насоса, М4 — у вентилятора Ва3.1р, тогда как перечень относит М1–М3 к вентиляторам, а М4 — к насосу. Показанный на схеме двигатель М5 в перечне не указан.\n\nРекомендация: Согласовать обозначения, назначение и количество двигателей в функциональной схеме и перечне элементов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_2aeda93ede5444ebb33f638cd45586f2",
+        "value_found": "М1–М3 — Электродвигатель вентилятора — 3; М4 — Электродвигатель насоса — 1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одинаковые расхождения схемы и перечня: М2 показан у насоса, М4 — у вентилятора Ва3.1р, М5 отсутствует в перечне.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_to_text_motor_identity_conflict",
+      "reason": "Лист11: М2 стоит у циркуляционного насоса водяного узла; М4 у двигателя Ва3.1р; М5 показан вторым двигателем Па3.1. TEXT перечня относит М1–М3 к вентиляторам, М4 к насосу и не содержитМ5. Теперь обе стороны расхождения проверены, но правильную нумерацию и комплектацию не выбираем автоматически.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+        "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+        "bytes": 449887,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "md_span_sha256": "a095f446652b758a685d03bc90668ce5aac64a5ca33ba35da21f5304c95b3af3",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-017",
+      "pointer": "/block_analyses/6/findings/1",
+      "original_candidate": {
+        "id": "G-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "На листе 11 обозначения двигателей на функциональной схеме противоречат перечню элементов: М2 показан у насоса, М4 — у вентилятора Ва3.1р, тогда как перечень относит М2 к вентиляторам, а М4 — к насосу. Показанный на схеме двигатель М5 в перечне отсутствует.\n\nРекомендация: Согласовать обозначения, назначение и количество двигателей на схеме и в перечне элементов листа 11.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_2aeda93ede5444ebb33f638cd45586f2",
+        "value_found": "М2; М4; М5; «M1-M3 — Электродвигатель вентилятора — 3»; «M4 — Электродвигатель насоса — 1»",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одинаковые расхождения схемы и перечня: М2 показан у насоса, М4 — у вентилятора Ва3.1р, М5 отсутствует в перечне.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_to_text_motor_identity_conflict",
+      "reason": "Лист11: М2 стоит у циркуляционного насоса водяного узла; М4 у двигателя Ва3.1р; М5 показан вторым двигателем Па3.1. TEXT перечня относит М1–М3 к вентиляторам, М4 к насосу и не содержитМ5. Теперь обе стороны расхождения проверены, но правильную нумерацию и комплектацию не выбираем автоматически.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+        "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+        "bytes": 449887,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_4b31b3207abe4695bdb1d9d9c4b5df2f",
+          "md_span_sha256": "a095f446652b758a685d03bc90668ce5aac64a5ca33ba35da21f5304c95b3af3",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-018",
+      "pointer": "/block_analyses/6/findings/2",
+      "original_candidate": {
+        "id": "G-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_identification",
+        "finding": "На функциональной схеме листа 11 перепутаны подписи состояния основного и резервного вытяжных вентиляторов. Линия 16 от М3 вентилятора Ва3.1 названа состоянием резервного вентилятора, а линия 19 от М4 вентилятора Ва3.1р — состоянием основного.\n\nРекомендация: Привести подписи сигналов 16 и 19 в соответствие с обозначениями основного Ва3.1 и резервного Ва3.1р вентиляторов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_2aeda93ede5444ebb33f638cd45586f2",
+        "value_found": "16 — «Состояние рез. вентилятора (работа/авария)»; 19 — «Состояние осн. вентилятора (работа/авария)»",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:004",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на перестановку подписей: сигнал 16 от М3/Ва3.1 назван резервным, сигнал 19 от М4/Ва3.1р — основным.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_main_reserve_signal_label_conflict",
+      "reason": "Лист11: вертикальная связь М3 основного Ва3.1 ведёт к16, где написано состояние резервного вентилятора; связь М4 Ва3.1р ведёт к19 с подписью основного. Проверены источник, номер и соответствующий столбец матрицы. Фактическое программирование контроллера не проверено.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+        "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+        "bytes": 449887,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-019",
+      "pointer": "/block_analyses/6/findings/3",
+      "original_candidate": {
+        "id": "G-019",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_assignment",
+        "finding": "На функциональной схеме листа 11 перепутаны подписи основного и резервного вытяжных вентиляторов в таблице сигналов: канал 16 двигателя М3 вентилятора Ва3.1 назван резервным, а канал 19 двигателя М4 вентилятора Ва3.1р — основным.\n\nРекомендация: Согласовать подписи каналов 16 и 19 с обозначениями основного и резервного вентиляторов и их графическими связями.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_2aeda93ede5444ebb33f638cd45586f2",
+        "value_found": "16 — Состояние рез. вентилятора (работа/авария); 19 — Состояние осн. вентилятора (работа/авария)",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:004"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на перестановку подписей: сигнал 16 от М3/Ва3.1 назван резервным, сигнал 19 от М4/Ва3.1р — основным.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_main_reserve_signal_label_conflict",
+      "reason": "Лист11: вертикальная связь М3 основного Ва3.1 ведёт к16, где написано состояние резервного вентилятора; связь М4 Ва3.1р ведёт к19 с подписью основного. Проверены источник, номер и соответствующий столбец матрицы. Фактическое программирование контроллера не проверено.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+        "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+        "bytes": 449887,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-020",
+      "pointer": "/block_analyses/6/findings/4",
+      "original_candidate": {
+        "id": "G-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pressure_switch_connection",
+        "finding": "На функциональной схеме листа 11 у реле PDS3 и PDS4 перепутана полярность подключения к вытяжным вентиляторам: «+» подключён со стороны всасывания, «−» — со стороны выброса. При таком подключении рабочий перепад имеет отрицательный знак и не соответствует заданной положительной уставке 100 Па.\n\nРекомендация: Подключить положительные входы PDS3 и PDS4 к стороне нагнетания, а отрицательные — к стороне всасывания соответствующих вентиляторов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_2aeda93ede5444ebb33f638cd45586f2",
+        "value_found": "PDS3; PDS4; ΔP=100Па; «−» слева, «+» справа",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:005",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_drawn_pressure_port_polarity_conflict",
+      "reason": "Лист11: вытяжной поток показан от помещения справа к выбросу слева. У PDS3 иPDS4 знак плюс находится на правом отборе перед соответствующим вентилятором, минус — на левом после него; уставка указана100 Па. При указанном направлении и подключении p(+)−p(−) имеет противоположный ожидаемому на вентиляторе знак. Подтверждена несогласованность изображённых подключений; реальный монтаж, модель реле и его логика не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2aeda93ede5444ebb33f638cd45586f2.png",
+        "sha256": "d0f9f765c667d76811d4d0c925856a8e231e2481cadde9208b2bafa310e6d7e9",
+        "bytes": 449887,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-021",
+      "pointer": "/block_analyses/8/findings/0",
+      "original_candidate": {
+        "id": "G-021",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pressure_range",
+        "finding": "Для PDS3 системы Пкр5.1 указан разный диапазон давления: на функциональной схеме листа 13 — 20–200 Па, в перечне элементов и спецификации шкафа ШАУВ-2-К5ПЧ — 50–500 Па. Документация содержит противоречивые требования к прибору контроля перепада давления на вентиляторе.\n\nРекомендация: Согласовать диапазон PDS3 в функциональной схеме, перечне элементов и позиции 7.3 спецификации шкафа ШАУВ-2-К5ПЧ.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_4e142b330766407099c7d561f0a8eb6a",
+        "value_found": "Перепад давления на вентиляторе системы (20…200 Па); PDS1-PDS3 — Датчик давления дифференциальный 50-500 Па",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одно противоречие диапазона PDS3: 20–200 Па на функциональной схеме листа 13 и 50–500 Па в перечне элементов и позиции 7.3 спецификации. Детализация и рекомендации эквивалентны.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_to_text_pressure_range_conflict",
+      "reason": "Лист13: связь PDS3 ведёт к12, подпись матрицы20–200 Па; перечень PDS1–PDS3 и позиция7.3 спецификации задают50–500 Па. Расхождение подтверждено. Уставка на рисунке50 Па не позволяет объявлять прибор неработоспособным лишь по различию диапазонов.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+        "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+        "bytes": 287273,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "md_span_sha256": "436b32a34dbf989d2e1f1e1a26d2e31afc1c5d693db1ac14d3aeef8962cc4b74",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        },
+        {
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "md_span_sha256": "329c7db63dc9f545eb3700042e8d9a0331f6f15a399bd0e5fa50c7466d371690",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-022",
+      "pointer": "/block_analyses/8/findings/1",
+      "original_candidate": {
+        "id": "G-022",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "instrument_range_mismatch",
+        "finding": "Для PDS3 системы Пкр5.1 на функциональной схеме, лист 13, указан диапазон 20–200 Па, а в перечне элементов и спецификации предусмотрен прибор 50–500 Па. Диапазон прибора контроля перепада давления на вентиляторе задан противоречиво.\n\nРекомендация: Согласовать диапазон PDS3 в функциональной схеме, перечне элементов и позиции 7.3 спецификации.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_4e142b330766407099c7d561f0a8eb6a",
+        "value_found": "Перепад давления на вентиляторе системы (20…200 Па); PDS1-PDS3 — Датчик давления дифференциальный 50-500 Па",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-022",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одно противоречие диапазона PDS3: 20–200 Па на функциональной схеме листа 13 и 50–500 Па в перечне элементов и позиции 7.3 спецификации. Детализация и рекомендации эквивалентны.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_to_text_pressure_range_conflict",
+      "reason": "Лист13: связь PDS3 ведёт к12, подпись матрицы20–200 Па; перечень PDS1–PDS3 и позиция7.3 спецификации задают50–500 Па. Расхождение подтверждено. Уставка на рисунке50 Па не позволяет объявлять прибор неработоспособным лишь по различию диапазонов.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4e142b330766407099c7d561f0a8eb6a.png",
+        "sha256": "4abaff5efb5a1c9a6466cb37fc407035b9aa2c5cb6afe3a9dfa885c05c4aff01",
+        "bytes": 287273,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "md_span_sha256": "436b32a34dbf989d2e1f1e1a26d2e31afc1c5d693db1ac14d3aeef8962cc4b74",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        },
+        {
+          "block_id": "blk_576ad6ac1cff48f79ac223f56ba405ae",
+          "md_span_sha256": "329c7db63dc9f545eb3700042e8d9a0331f6f15a399bd0e5fa50c7466d371690",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-023",
+      "pointer": "/block_analyses/9/findings/0",
+      "original_candidate": {
+        "id": "G-023",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "В перечне элементов листа 14 для ТЕ3 и ТЕ4 указано количество 1, хотя на схеме предусмотрены два отдельных канальных датчика температуры — по одному в системах П5.1.1 и П5.1.3.\n\nРекомендация: Исправить количество датчиков в строке ТЕ3, ТЕ4 на 2.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+        "value_found": "ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-023",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:006",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают количество 1 вместо 2 в строке ТЕ3, ТЕ4 перечня элементов листа 14.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_two_sensors_against_text_quantity_one",
+      "reason": "Лист14: ТЕ3 отдельно показан после П5.1.1 со связью12, ТЕ4 после П5.1.3 со связью20. TEXT перечня содержит ТЕ3,ТЕ4 количество1. Графическая часть ранее сохранённого F-007 подтверждена. Это ошибка согласования перечня, а не доказанная нехватка закупленных датчиков.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+        "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+        "bytes": 389518,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "md_span_sha256": "d71823e7c1eb93a6e6c7621d67769b762f7bbb4af7e5736e6ad707cbe36a9e7c",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "D-451cf4437752785fcf014651",
+      "pointer": "/block_analyses/9/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "В перечне элементов листа 14 для ТЕ3, ТЕ4 указано количество 1, хотя на функциональной схеме показаны два отдельных датчика температуры приточного воздуха: ТЕ3 системы П5.1.1 и ТЕ4 системы П5.1.3.",
+        "norm_quote": null,
+        "value_found": "ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1",
+        "recommendation": "Исправить количество канальных датчиков ТЕ3, ТЕ4 в перечне элементов на 2.",
+        "claim_type": "contradiction",
+        "problem_class": "equipment_quantity_mismatch",
+        "affected_entity": "ТЕ3 и ТЕ4, перечень элементов листа 14",
+        "evidence_quote": "На схеме ТЕ3 и ТЕ4 показаны на выходах двух разных систем и подключены к отдельным сигналам 12 и 20; в перечне элементов строка «ТЕ3,ТЕ4» содержит количество «1».",
+        "evidence_kind": "same_page",
+        "context_status": "sufficient",
+        "confidence": 0.99,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:003",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:006"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают количество 1 вместо 2 в строке ТЕ3, ТЕ4 перечня элементов листа 14.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "assessment": "confirmed_graphic_two_sensors_against_text_quantity_one",
+      "reason": "Лист14: ТЕ3 отдельно показан после П5.1.1 со связью12, ТЕ4 после П5.1.3 со связью20. TEXT перечня содержит ТЕ3,ТЕ4 количество1. Графическая часть ранее сохранённого F-007 подтверждена. Это ошибка согласования перечня, а не доказанная нехватка закупленных датчиков.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+        "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+        "bytes": 389518,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "md_span_sha256": "d71823e7c1eb93a6e6c7621d67769b762f7bbb4af7e5736e6ad707cbe36a9e7c",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-024",
+      "pointer": "/block_analyses/9/findings/1",
+      "original_candidate": {
+        "id": "G-024",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_type",
+        "finding": "На функциональной схеме, лист 14, команда «Электр. воздухонагреватель пуск/стоп» системы П5.1.3 отнесена к дискретным входам DI вместо выходов DO.\n\nРекомендация: Перенести команду управления электронагревателем в строку DO и скорректировать количество входов и выходов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+        "value_found": "Электр. воздухонагреватель пуск/стоп; DI",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-024",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:004",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на отнесение команды «Электр. воздухонагреватель пуск/стоп» системы П5.1.3 к DI вместо DO.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_command_channel_inconsistency",
+      "reason": "Лист14: сигнал17 подписан Электр. воздухонагреватель пуск/стоп, точка стоит в DI, в DO отсутствует. Подтверждена несогласованность команды и направления канала. Корректное исправление и физический интерфейс нагревателя должны быть согласованы, а не выведены из одной матрицы.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+        "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+        "bytes": 389518,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-025",
+      "pointer": "/block_analyses/9/findings/2",
+      "original_candidate": {
+        "id": "G-025",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "io_mapping",
+        "finding": "На функциональной схеме, лист 14, управление электронагревателем П5.1.3 «пуск/стоп» (позиция 17) отнесено к дискретному входу DI. Дискретный выход DO для этой команды в матрице не обозначен.\n\nРекомендация: Указать команду управления электронагревателем в строке DO и скорректировать итоговое количество входов и выходов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+        "value_found": "Электр. воздухонагреватель пуск/стоп",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-025",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:004"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на отнесение команды «Электр. воздухонагреватель пуск/стоп» системы П5.1.3 к DI вместо DO.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_command_channel_inconsistency",
+      "reason": "Лист14: сигнал17 подписан Электр. воздухонагреватель пуск/стоп, точка стоит в DI, в DO отсутствует. Подтверждена несогласованность команды и направления канала. Корректное исправление и физический интерфейс нагревателя должны быть согласованы, а не выведены из одной матрицы.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+        "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+        "bytes": 389518,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-026",
+      "pointer": "/block_analyses/9/findings/3",
+      "original_candidate": {
+        "id": "G-026",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_mapping",
+        "finding": "На функциональной схеме, лист 14, для ПЧ вентилятора П5.1.1 заявлено управление 0–100%, но в столбце 10 отсутствует аналоговый выход AO. Указанные два AO распределены между клапаном теплоносителя и ПЧ системы П5.1.3.\n\nРекомендация: Показать канал задания скорости ПЧ системы П5.1.1 и привести распределение и количество выходов в соответствие с принятым способом управления.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+        "value_found": "Управление ПЧ пуск/стоп, 0-100%; AO 2",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-026",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:005",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 0.99,
+          "reason": "Оба замечания описывают отсутствие AO в столбце 10 для управления ПЧ системы П5.1.1 на 0–100%. Уточнение распределения двух AO не меняет сути и объёма исправления.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_missing_AO_for_declared_modulating_command",
+      "reason": "Лист14: колонка10 SC UZ1 имеет описание пуск/стоп,0–100%, точки DI и DO, но не AO. Две точки AO относятся к7 (клапан) и18 (SC UZ2); итогAO=2 им соответствует. Подтверждён пропуск аналогового задания в изображённой матрице при заявленном регулировании; реальное отсутствие иного способа задания скорости не доказано.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+        "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+        "bytes": 389518,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-027",
+      "pointer": "/block_analyses/9/findings/4",
+      "original_candidate": {
+        "id": "G-027",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "io_mapping",
+        "finding": "На функциональной схеме, лист 14, для ПЧ SC UZ1 вентилятора П5.1.1 заявлено управление «пуск/стоп, 0–100%», однако в столбце 10 обозначены только DI и DO. Аналоговый выход для задания скорости отсутствует в матрице, тогда как для аналогичной команды SC UZ2 он обозначен.\n\nРекомендация: Согласовать способ задания скорости SC UZ1 с матрицей сигналов и скорректировать количество AO при аналоговом управлении.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+        "value_found": "Управление ПЧ пуск/стоп, 0-100%",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-027",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:005"
+          ],
+          "confidence": 0.99,
+          "reason": "Оба замечания описывают отсутствие AO в столбце 10 для управления ПЧ системы П5.1.1 на 0–100%. Уточнение распределения двух AO не меняет сути и объёма исправления.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_missing_AO_for_declared_modulating_command",
+      "reason": "Лист14: колонка10 SC UZ1 имеет описание пуск/стоп,0–100%, точки DI и DO, но не AO. Две точки AO относятся к7 (клапан) и18 (SC UZ2); итогAO=2 им соответствует. Подтверждён пропуск аналогового задания в изображённой матрице при заявленном регулировании; реальное отсутствие иного способа задания скорости не доказано.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+        "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+        "bytes": 389518,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-028",
+      "pointer": "/block_analyses/10/findings/0",
+      "original_candidate": {
+        "id": "G-028",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_identification",
+        "finding": "На функциональной схеме Пн5.1 и Вн5.1, лист 15, перепутаны наименования сигналов состояния основных и резервных вентиляторов. Сигналы 11 и 26 от основных двигателей М1 и М3 названы состоянием резервных вентиляторов, а сигналы 14 и 29 от резервных М2 и М4 — состоянием основных.\n\nРекомендация: Согласовать наименования сигналов 11, 14, 26 и 29 с обозначениями основных и резервных вентиляторов на схеме.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1421872a752e4019a31247d056c0e9bc",
+        "value_found": "11, 26 — «Состояние рез. вентилятора (работа/авария)»; 14, 29 — «Состояние осн. вентилятора (работа/авария)»",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:004"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одинаковую перестановку подписей: сигналы 11 и 26 основных М1 и М3 названы резервными, а 14 и 29 резервных М2 и М4 — основными.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_main_reserve_signal_label_conflict",
+      "reason": "Лист15: М1 основного Пн5.1→11 и М3 основного Вн5.1→26 подписаны состоянием резервного. М2 Пн5.1рез→14 и М4 Вн5.1р→29 подписаны состоянием основного. Прослежены четыре связи; фактическая логика диспетчеризации не проверялась.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+        "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+        "bytes": 515334,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-030",
+      "pointer": "/block_analyses/10/findings/2",
+      "original_candidate": {
+        "id": "G-030",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_identification",
+        "finding": "На функциональной схеме Пн5.1 и Вн5.1, лист 15, перепутаны подписи состояния основных и резервных вентиляторов: для основных М1 и М3 указано состояние резервного вентилятора, для резервных М2 и М4 — основного.\n\nРекомендация: Привести подписи сигналов 11, 14, 26 и 29 в соответствие с обозначениями основных и резервных вентиляторов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1421872a752e4019a31247d056c0e9bc",
+        "value_found": "11, 26 — «Состояние рез. вентилятора (работа/авария)»; 14, 29 — «Состояние осн. вентилятора (работа/авария)»",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:004",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одинаковую перестановку подписей: сигналы 11 и 26 основных М1 и М3 названы резервными, а 14 и 29 резервных М2 и М4 — основными.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_main_reserve_signal_label_conflict",
+      "reason": "Лист15: М1 основного Пн5.1→11 и М3 основного Вн5.1→26 подписаны состоянием резервного. М2 Пн5.1рез→14 и М4 Вн5.1р→29 подписаны состоянием основного. Прослежены четыре связи; фактическая логика диспетчеризации не проверялась.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+        "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+        "bytes": 515334,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-029",
+      "pointer": "/block_analyses/10/findings/1",
+      "original_candidate": {
+        "id": "G-029",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "На функциональной схеме Пн5.1 и Вн5.1, лист 15, четырём преобразователям частоты присвоены повторяющиеся обозначения SC UZ2 и SC UZ3. Это противоречит перечню элементов того же листа, где предусмотрены четыре позиции SCUZ1–SCUZ4.\n\nРекомендация: Присвоить четырём преобразователям уникальные обозначения и согласовать их с перечнем элементов SCUZ1–SCUZ4.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1421872a752e4019a31247d056c0e9bc",
+        "value_found": "SC UZ2; SC UZ3; SC UZ2; SC UZ3",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:005",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на повторение SC UZ2 и SC UZ3 у четырёх преобразователей и несоответствие перечню SCUZ1–SCUZ4.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_duplicate_drive_designations",
+      "reason": "Лист15: четыре отдельных круга ПЧ в столбцах11,14,26,29 имеют обозначения UZ2,UZ3,UZ2,UZ3. TEXT перечня задаёт SCUZ1–SCUZ4,4 шт. Повторные обозначения подтверждены; назначение конкретных новых номеров требует согласования.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+        "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+        "bytes": 515334,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "md_span_sha256": "8d4511f31a23119486849d20df103f04eb5925adfa135a47a9a1722b4f7a3d86",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-031",
+      "pointer": "/block_analyses/10/findings/3",
+      "original_candidate": {
+        "id": "G-031",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "На функциональной схеме Пн5.1 и Вн5.1, лист 15, четыре преобразователя частоты обозначены повторяющимися позициями SC UZ2 и SC UZ3. Перечень элементов этого листа задаёт четыре отдельные позиции SCUZ1–SCUZ4, поэтому обозначения схемы и перечня не согласованы.\n\nРекомендация: Присвоить четырём преобразователям уникальные позиционные обозначения и согласовать их с перечнем элементов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1421872a752e4019a31247d056c0e9bc",
+        "value_found": "SC UZ2; SC UZ3; SC UZ2; SC UZ3; «SCUZ1 -SCUZ4»",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:005"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на повторение SC UZ2 и SC UZ3 у четырёх преобразователей и несоответствие перечню SCUZ1–SCUZ4.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_duplicate_drive_designations",
+      "reason": "Лист15: четыре отдельных круга ПЧ в столбцах11,14,26,29 имеют обозначения UZ2,UZ3,UZ2,UZ3. TEXT перечня задаёт SCUZ1–SCUZ4,4 шт. Повторные обозначения подтверждены; назначение конкретных новых номеров требует согласования.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+        "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+        "bytes": 515334,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "md_span_sha256": "8d4511f31a23119486849d20df103f04eb5925adfa135a47a9a1722b4f7a3d86",
+          "inspection_scope": "relevant authoritative TEXT rows"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-032",
+      "pointer": "/block_analyses/10/findings/4",
+      "original_candidate": {
+        "id": "G-032",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pressure_switch_connection",
+        "finding": "На функциональной схеме Пн5.1 и Вн5.1, лист 15, подключения PDS4 и PDS5 показаны с обратной полярностью: «+» подключён со стороны помещения перед вытяжными вентиляторами, а «−» — со стороны выброса после них. При работе вентиляторов перепад на реле будет отрицательным вместо заданных +100 Па.\n\nРекомендация: Поменять местами подключения «+» и «−» у PDS4 и PDS5, подключив «+» к стороне нагнетания.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_1421872a752e4019a31247d056c0e9bc",
+        "value_found": "PDS4; PDS5; ΔP=100Па",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-032",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_drawn_pressure_port_polarity_conflict",
+      "reason": "Лист15: Вн5.1/Вн5.1р забирают воздух из помещения справа и выбрасывают слева. PDS4/PDS5 соединены плюсом справа перед вентилятором и минусом слева после, при подписи100 Па. Подтверждено графическое противоречие знака перепада ожидаемому при данном направлении; реальные импульсные линии и алгоритм реле не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1421872a752e4019a31247d056c0e9bc.png",
+        "sha256": "01df062af51ba73ad732466032fb5f069e063a2d7675b87028dd13af44f514b5",
+        "bytes": 515334,
+        "inspection": "direct visual inspection of stored original IMAGE crop, tracing connections"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}

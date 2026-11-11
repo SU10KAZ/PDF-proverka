@@ -717,7 +717,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_to_text_motor_identity_conflict"
+      }
     },
     {
       "source_id": "G-017",
@@ -728,7 +732,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_to_text_motor_identity_conflict"
+      }
     },
     {
       "source_id": "G-018",
@@ -739,7 +747,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_main_reserve_signal_label_conflict"
+      }
     },
     {
       "source_id": "G-019",
@@ -750,7 +762,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_main_reserve_signal_label_conflict"
+      }
     },
     {
       "source_id": "G-020",
@@ -761,7 +777,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_drawn_pressure_port_polarity_conflict"
+      }
     },
     {
       "source_id": "G-021",
@@ -772,7 +792,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_to_text_pressure_range_conflict"
+      }
     },
     {
       "source_id": "G-022",
@@ -783,7 +807,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_to_text_pressure_range_conflict"
+      }
     },
     {
       "source_id": "G-023",
@@ -799,7 +827,11 @@
       ],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_retained_graphic_candidate_review.json",
       "assessment": "text_core_preserved_graphic_claim_pending",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_two_sensors_against_text_quantity_one"
+      }
     },
     {
       "source_id": "G-024",
@@ -810,7 +842,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_command_channel_inconsistency"
+      }
     },
     {
       "source_id": "G-025",
@@ -821,7 +857,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_command_channel_inconsistency"
+      }
     },
     {
       "source_id": "G-026",
@@ -832,7 +872,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_missing_AO_for_declared_modulating_command"
+      }
     },
     {
       "source_id": "G-027",
@@ -843,7 +887,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_missing_AO_for_declared_modulating_command"
+      }
     },
     {
       "source_id": "D-451cf4437752785fcf014651",
@@ -854,7 +902,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
       "assessment": "text_core_preserved_graphic_part_pending",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_two_sensors_against_text_quantity_one"
+      }
     },
     {
       "source_id": "G-028",
@@ -865,7 +917,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_main_reserve_signal_label_conflict"
+      }
     },
     {
       "source_id": "G-029",
@@ -876,7 +932,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_duplicate_drive_designations"
+      }
     },
     {
       "source_id": "G-030",
@@ -887,7 +947,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_main_reserve_signal_label_conflict"
+      }
     },
     {
       "source_id": "G-031",
@@ -898,7 +962,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_graphic_duplicate_drive_designations"
+      }
     },
     {
       "source_id": "G-032",
@@ -909,7 +977,11 @@
       "model_final_links": [],
       "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_needs_data_disposition_review.json",
       "assessment": "deferral_justified_for_actual_merge_packet_not_factual_refutation",
-      "all_original_claims_semantically_verified": false
+      "all_original_claims_semantically_verified": false,
+      "graphic_followup": {
+        "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_sheets11_15_graphic_followup.json",
+        "assessment": "confirmed_drawn_pressure_port_polarity_conflict"
+      }
     },
     {
       "source_id": "G-033",
