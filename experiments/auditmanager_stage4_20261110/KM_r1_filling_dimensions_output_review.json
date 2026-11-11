@@ -1,0 +1,204 @@
+{
+  "status": "source_checked_KM_filling_dimensions",
+  "queue_before_sha256": "84efc33d852a583c968adb4137029d1561aeb5c8218ee2695821c40a1b341ab6",
+  "queue_after_sha256": "8dcfeb04458a6160516f518528cf2bdc34d0dc4e8b0789590b9e146550673b75",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-023",
+      "finding": {
+        "id": "F-023",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Размеры деталей",
+        "sheet": "Лист 8",
+        "page": 10,
+        "problem": "Длина заполнения ОГМ2 и ОГМ4 различается на видах и в ведомостях.",
+        "description": "Для элементов заполнения позиции 5 на видах указан размер 800 мм, а в ведомостях — 850 мм. Разница 50 мм затрагивает 20 элементов ОГМ2 и 14 элементов ОГМ4 по соответствующим ведомостям.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к согласованности размеров элементов на чертежах и в ведомостях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-032",
+                "G-033"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-032",
+                  "G-033"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить длину деталей позиции 5 по согласованной геометрии и исправить виды и ведомости ОГМ2 и ОГМ4.",
+        "risk": "Изготовление заполнения неверной длины, отходы металла и переделка изделий.",
+        "source_finding_ids": [
+          "G-032",
+          "G-033"
+        ],
+        "source_block_ids": [
+          "blk_ae8f7849e07147388fc213cff1fbb43f"
+        ],
+        "related_block_ids": [
+          "blk_ae8f7849e07147388fc213cff1fbb43f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-032",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-033",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на расхождение 800/850 мм для поз. 5 ОГМ2 и ОГМ4. Правое дополнительно определяет объём затронутых элементов: 20 для ОГМ2 и 14 для ОГМ4, что подтверждается ведомостями.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на расхождение 800/850 мм для поз. 5 ОГМ2 и ОГМ4. Правое дополнительно определяет объём затронутых элементов: 20 для ОГМ2 и 14 для ОГМ4, что подтверждается ведомостями.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На видах ОГМ2/ОГМ4 размер заполнения800, в ведомостях позиция5 имеет L=0,850м",
+          "verdict": "supported_document_discrepancy",
+          "limits": "Границы заготовки, обработка торцов и КМД отдельно не проверены; правильная длина изготовления автоматически не выбрана."
+        },
+        {
+          "claim": "20 элементов ОГМ2 и14 ОГМ4",
+          "verdict": "supported_schedule_quantities",
+          "limits": "Количество в двух ведомостях не доказывает число ошибочно изготовленных деталей или общий объём заказа с повторяемостью."
+        },
+        {
+          "claim": "Неверное изготовление, отходы и переделка",
+          "verdict": "hypothetical_consequence_not_observed"
+        }
+      ],
+      "unsupported_additions": "manufacturing_outcome_not_established",
+      "novel_useful_content": "source_supported_document_discrepancy_novelty_unestablished",
+      "duplicate_burden": "two_marks_already_grouped_with_addresses_preserved",
+      "profile_and_section": "technical_document_coordination_legacy_main_route",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+          "authoritative_TEXT": "### BLOCK #63 [TEXT]: blk_5cfdfbf86f25415f8d3b061e8a1a4187\n\n> **Created:** 2026-10-21 13:32:44 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/nM3yT8MXzE1jgffKQKjB)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 8 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...8 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ2\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наименование или марка металла | Примечание | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ2 |  | 1 | 40x3 | Конструктивно |  |  | C245 | L=0,950м | 6 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=3,625м | 1 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=0,640м | 5 |\n|  | Лист | 4 | 10х120х120 |  |  |  | C245 |  | 6 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=0,850м | 20 |\n|  |  | 6 | 40x3 |  |  |  | C245 | L=0,800м | 1 |\n|  |  | 7 | 25x3 |  |  |  | C245 | L=1,065м | 1 |\n|  | Анкер |  | HSA-M10х90 |  |  |  |  |  | 24 |\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_4412076f7a7349f587fb211ff8b4af08",
+          "authoritative_TEXT": "### BLOCK #66 [TEXT]: blk_4412076f7a7349f587fb211ff8b4af08\n\n> **Created:** 2026-10-21 13:32:44 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JuHa3sVdFJu6-UXqd0Qk)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 8 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...8 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ4\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ4 |  | 1 | 40x3 | Конструктивно |  |  | C245 | L=0,950м | 7 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=3,665м | 1 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=0,640м | 4 |\n|  | Лист | 4 | 10x120x120 |  |  |  | C245 |  | 7 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=0,850м | 14 |\n|  |  | 6 | 25x3 |  |  |  | C245 | L=0,305м | 2 |\n|  | Заглушка |  | 3x40x40 |  |  |  | C245 |  | 1 |\n|  | Анкер |  | HSA-M10x90 |  |  |  |  |  | 28 |\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_ae8f7849e07147388fc213cff1fbb43f.png",
+          "sha256": "9664d6b9aeebe4c304c9d74752c73721bbd895159848eb6250dd9c7bade895d3",
+          "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+          "directly_viewed": true,
+          "detail": "original",
+          "observation": "На отдельных видах ОГМ2 и ОГМ4 показаны вертикальные элементы с выносками позиции5 и размером800 между наклонными верхним и нижним элементами; это не габарит стойки950. Лист8 подтверждён метаданными MD."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-023"
+        }
+      ],
+      "disposition": "source_supported_preservation_candidate_with_manufacturing_limits"
+    }
+  ],
+  "limits": [
+    "No PDF text re-extraction; schedule TEXT remains authoritative.",
+    "No automatic 850-to-800 correction or proven manufacturing defect.",
+    "No new engineer acceptance or production changes."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
