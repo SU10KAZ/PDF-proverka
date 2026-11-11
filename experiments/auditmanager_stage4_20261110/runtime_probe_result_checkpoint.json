@@ -1,0 +1,120 @@
+{
+  "status": "response_sealed_structural_errors_found_recovery_not_dispatched",
+  "summary": {
+    "candidate_count": 147,
+    "findings": 35,
+    "reported_decisions": {
+      "retained": 27,
+      "needs_data": 117,
+      "duplicate": 2
+    },
+    "candidates_without_subclaims": 12,
+    "candidates_with_pending_subclaims": 117,
+    "pending_subclaims": 149,
+    "not_checked_decisions": 13,
+    "usage": {
+      "model": "codex/gpt-6-astra",
+      "duration_ms": 1398609,
+      "input_tokens": 373233,
+      "output_tokens": 69292,
+      "cached_tokens": 372992
+    }
+  },
+  "response_sha256": "f05c9fa1cbca76982f68571f1e5f799c29f005e5a5e7eaaebdafc2078c9c8351",
+  "structural_review": {
+    "path": "/tmp/auditmanager_primary_text_runtime_probe_20261112/structural_review.json",
+    "sha256": "75bc5c8cedd4bde1177b77cf78adec338b727546626b31917abf0b15446cce66"
+  },
+  "unmatched_receipts": 11,
+  "missing_or_misaddressed_decompositions": [
+    {
+      "origin": "prescan",
+      "pointer": "/prescan_review_requests/0",
+      "source_id": "P-80198eb0a0c3dd9d6bcca394"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/55/findings/0",
+      "source_id": "G-098"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/55/findings/1",
+      "source_id": "G-099"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/60/findings/0",
+      "source_id": "G-100"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/60/findings/1",
+      "source_id": "G-101"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/63/findings/1",
+      "source_id": "G-103"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/64/findings/0",
+      "source_id": "G-104"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/64/deferred_findings/0",
+      "source_id": "D-792d00bce4b70937c9f38806"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/66/findings/0",
+      "source_id": "G-105"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/66/findings/1",
+      "source_id": "G-106"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/68/findings/0",
+      "source_id": "G-107"
+    },
+    {
+      "origin": "graphic",
+      "pointer": "/block_analyses/68/deferred_findings/0",
+      "source_id": "D-bb7d7e1bec45b1e1cc322381"
+    }
+  ],
+  "pointer_shift_observation": "Several late GRAPHIC receipts use block_analyses index one lower than the frozen candidate pointer. Candidate IDs remain explicit for ordinary G candidates. At least one wrong pointer names a different existing candidate; identity binding must be checked before interpreting subclaim closure.",
+  "recovery_packets": 43,
+  "oversized_recovery_packets": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_20261112/requests/candidate_recovery_a3da27e91b027081.json",
+      "sha256": "0ed8849a8f74df2ec538d8ab63ac67e97f629a628da9187e48e2485a229e3e4f",
+      "message_characters": 96720,
+      "images": 2,
+      "image_bytes": 16961324,
+      "image_budget": 16000000,
+      "isolated_large_image": false,
+      "candidate_ids": [
+        "G-090",
+        "G-091",
+        "G-092",
+        "G-093"
+      ],
+      "pending_subclaims": 6,
+      "transport_size_ready": false
+    }
+  ],
+  "required_next_actions": [
+    "Bind explicit candidate IDs against unique source identities and validate pointer/ID agreement; preserve raw receipts. Do not guess deferred candidate identity.",
+    "Split the two-image oversized recovery request without losing pending claims or falsely declaring both images inspected.",
+    "Review all 35 proposed findings against sources and engineer targets.",
+    "Run source-backed recovery only after binding and input-budget checks."
+  ],
+  "model_quality_accepted": false,
+  "production_acceptance": false
+}
