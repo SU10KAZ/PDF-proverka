@@ -1,0 +1,929 @@
+{
+  "status": "four_quantity_and_supply_scope_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "a0bce44d80f2f6597d1116708b8772f7bc5925537698fd87c80126c27062c24a",
+  "queue_after_sha256": "8b9abc4b4d8d1b4bd4f3fe583d39abc4ddb38046fc3d9876a9b2859bc8445b10",
+  "reviewer": "coordinator_authoritative_TEXT_and_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Комплектность оборудования",
+        "sheet": "Листы 23, 9",
+        "page": [
+          27,
+          102
+        ],
+        "problem": "Не определена поставка термостатов защиты тепловых завес.",
+        "description": "Перечень элементов предусматривает два термостата RAK-TW.5000S-H. В разделе 17 спецификации они отсутствуют, а ссылка на комплектную поставку не приведена. Пригодность диапазона настройки выбранной модели также требует подтверждения.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту спецификации и обозначение комплектной поставки приборов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Включить два термостата в поставку либо указать комплектность и документ учёта; проверить диапазон по документации изготовителя.",
+        "risk": "Поставка завес без предусмотренных устройств защиты от замораживания.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "related_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+            "page": 27
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "absence_guard_downgraded": true,
+        "absence_guard_original_severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "absence_guard_evidence": "В перечне элементов листа 23 указаны термостаты TS1, TS2 марки RAK-TW.5000S-H в количестве двух штук."
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Перечень лист23 задаёт TS1/TS2 RAK-TW.5000S-H количеством2; раздел17СО содержит только концевой выключатель и блок диспетчеризации.",
+          "verdict": "confirmed_authoritative_TEXT_local_scope",
+          "limits": ""
+        },
+        {
+          "claim": "В строке термостатов ссылка на комплектную поставку отсутствует.",
+          "verdict": "confirmed_local_row_scope",
+          "limits": "Соседние строки двигателей и клапанов имеют ссылки наОВ; их нельзя автоматически распространить на термостаты."
+        },
+        {
+          "claim": "Схема показывает TS1/TS2 и подпись защиты теплообменника T=5°C.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "Модель термостата непригодна по диапазону или два прибора фактически не поставлены.",
+          "verdict": "not_established",
+          "limits": "Паспорт модели и документы поставки здесь не проверены. Уточнение приПНР не доказывает пригодность диапазона."
+        },
+        {
+          "claim": "Установить тип и документ учёта двух термостатов, затем согласовать поставку.",
+          "verdict": "supported_scope_question",
+          "limits": "Сохранить вопрос, не приписывать подтверждённую недопоставку или новый технический дефект без проверки комплектности."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "Unmapped source-supported scope question; no new engineer acceptance or confirmed physical shortage.",
+      "duplicate_burden": "Two thermostats form one supply-scope question; no blanket application to other heaters.",
+      "profile_and_section": "questions_clarifications_supply_scope",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+          "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+          "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Four distinct curtain motors M3–M6; two mixing nodes with Y1/Y2; TS1/TS2; protection label T=5°C. Graphic observations use schematic and signal matrix, not raster correction of TEXT table."
+        }
+      ],
+      "disposition": "assessed_preserve_thermostat_supply_question_datasheet_pending"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "sheet": "Лист 23",
+        "page": 27,
+        "problem": "На листе 23 в перечне элементов для двигателей М3–М6 указано количество 2, тогда как на функциональной схеме показаны четыре двигателя: М3, М4, М5 и М6 для завес У4.3–У4.6. Количество в перечне занижено на 2.",
+        "description": "На листе 23 в перечне элементов для двигателей М3–М6 указано количество 2, тогда как на функциональной схеме показаны четыре двигателя: М3, М4, М5 и М6 для завес У4.3–У4.6. Количество в перечне занижено на 2.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность количеств оборудования с позициями схемы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-053",
+                "G-054"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Привести количество двигателей М3–М6 в перечне элементов в соответствие со схемой: 4 шт.",
+        "risk": "Ошибки комплектования и стоимости оборудования.",
+        "source_finding_ids": [
+          "G-053",
+          "G-054"
+        ],
+        "source_block_ids": [
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "related_block_ids": [
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+            "page": 27
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-009",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-053",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-054",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на количество М3–М6: в перечне 2 двигателя, на схеме 4; рекомендуют указать 4 шт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на количество М3–М6: в перечне 2 двигателя, на схеме 4; рекомендуют указать 4 шт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "cost"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "M3–M6: перечень2, схема4",
+          "verdict": "confirmed_TEXT_GRAPHIC_quantity_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Двигатели предусмотрены комплектно с завесами, клапаны — со смесительными узлами; перечень относит поставку кОВ.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Выявлена фактическая недопоставка двигателей или избыточная закупка клапанов.",
+          "verdict": "not_established",
+          "limits": "Не провереныОВ, заводская комплектация и заказ. Схема не является автоматически единственным правильным документом."
+        },
+        {
+          "claim": "Согласовать перечень со схемой и смежным разделом, сохранив оба предмета расхождения.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Нарушен конкретный пунктГОСТ21.110.",
+          "verdict": "not_established",
+          "limits": "Норматив-кандидат не является проверенным требованием."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F-009/F-010 are two atomic discrepancies of one curtain coordination theme; retain both meanings without double-counting theme.",
+      "profile_and_section": "technical_core_preserve_OV_supply_boundary",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+          "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154",
+          "primary_adjudication": null,
+          "limits": [
+            "Доказаны два документальных расхождения, объединённые в одну тему с сохранением обоих атомов.",
+            "Двигатели комплектны с завесами, клапаны — со смесительными узлами; перечень относит их к ОВ. Недопоставка, избыточная закупка и изменение стоимости не доказаны.",
+            "Не предписывать закупку двух двигателей или исключение двух клапанов без согласования ОВ и заводской комплектации. Нельзя автоматически считать схему единственным правильным документом.",
+            "Конкретный пункт ГОСТ21.110-2013 и его применимость не проверены; нормативное нарушение не включать в подтверждённый вывод. Решения инженера по этим кандидатам нет."
+          ],
+          "wording": "Согласовать количества в перечне листа23 со схемой завес У4.3–У4.6: для M3–M6 указано2 двигателя при четырёх показанных на схеме, для Y1/Y2 указано4 регулирующих клапана при двух показанных смесительных узлах с одним таким клапаном в каждом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+          "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+          "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Four distinct curtain motors M3–M6; two mixing nodes with Y1/Y2; TS1/TS2; protection label T=5°C. Graphic observations use schematic and signal matrix, not raster correction of TEXT table."
+        }
+      ],
+      "disposition": "assessed_preserve_curtain_quantity_conflict_no_purchase_claim"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "sheet": "Лист 23",
+        "page": 27,
+        "problem": "На листе 23 в перечне элементов для регулирующих клапанов Y1, Y2 указано количество 4. На функциональной схеме показаны только два таких клапана — по одному в каждом из двух смесительных узлов; количество в перечне не соответствует схеме.",
+        "description": "На листе 23 в перечне элементов для регулирующих клапанов Y1, Y2 указано количество 4. На функциональной схеме показаны только два таких клапана — по одному в каждом из двух смесительных узлов; количество в перечне не соответствует схеме.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность количеств оборудования с позициями схемы.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-055",
+                "G-056"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать перечень элементов со схемой, указав для Y1, Y2 количество 2 шт.",
+        "risk": "Ошибки комплектования и стоимости оборудования.",
+        "source_finding_ids": [
+          "G-055",
+          "G-056"
+        ],
+        "source_block_ids": [
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "related_block_ids": [
+          "blk_523708af1c384b0e8bc6767d93644336"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+            "page": 27
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-009",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-055",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-056",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение для Y1, Y2: в перечне 4 клапана, на схеме 2 в двух смесительных узлах; рекомендуют указать 2 шт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение для Y1, Y2: в перечне 4 клапана, на схеме 2 в двух смесительных узлах; рекомендуют указать 2 шт.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "cost"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Y1/Y2: перечень4, схема2",
+          "verdict": "confirmed_TEXT_GRAPHIC_quantity_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Двигатели предусмотрены комплектно с завесами, клапаны — со смесительными узлами; перечень относит поставку кОВ.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Выявлена фактическая недопоставка двигателей или избыточная закупка клапанов.",
+          "verdict": "not_established",
+          "limits": "Не провереныОВ, заводская комплектация и заказ. Схема не является автоматически единственным правильным документом."
+        },
+        {
+          "claim": "Согласовать перечень со схемой и смежным разделом, сохранив оба предмета расхождения.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Нарушен конкретный пунктГОСТ21.110.",
+          "verdict": "not_established",
+          "limits": "Норматив-кандидат не является проверенным требованием."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F-009/F-010 are two atomic discrepancies of one curtain coordination theme; retain both meanings without double-counting theme.",
+      "profile_and_section": "technical_core_preserve_OV_supply_boundary",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+          "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154",
+          "primary_adjudication": null,
+          "limits": [
+            "Доказаны два документальных расхождения, объединённые в одну тему с сохранением обоих атомов.",
+            "Двигатели комплектны с завесами, клапаны — со смесительными узлами; перечень относит их к ОВ. Недопоставка, избыточная закупка и изменение стоимости не доказаны.",
+            "Не предписывать закупку двух двигателей или исключение двух клапанов без согласования ОВ и заводской комплектации. Нельзя автоматически считать схему единственным правильным документом.",
+            "Конкретный пункт ГОСТ21.110-2013 и его применимость не проверены; нормативное нарушение не включать в подтверждённый вывод. Решения инженера по этим кандидатам нет."
+          ],
+          "wording": "Согласовать количества в перечне листа23 со схемой завес У4.3–У4.6: для M3–M6 указано2 двигателя при четырёх показанных на схеме, для Y1/Y2 указано4 регулирующих клапана при двух показанных смесительных узлах с одним таким клапаном в каждом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+          "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+          "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Four distinct curtain motors M3–M6; two mixing nodes with Y1/Y2; TS1/TS2; protection label T=5°C. Graphic observations use schematic and signal matrix, not raster correction of TEXT table."
+        }
+      ],
+      "disposition": "assessed_preserve_curtain_quantity_conflict_no_purchase_claim"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Количество оборудования",
+        "sheet": "Листы 8, 10, 21, 1, 2",
+        "page": [
+          12,
+          14,
+          25,
+          94,
+          95,
+          101
+        ],
+        "problem": "В спецификации есть лишние либо неидентифицированные датчики температуры.",
+        "description": "Для ШАУВ-2-К4ПЧ наружный датчик повторён в позициях 2.5 и 2.7 при одном ТЕ1 в перечне. Для ШАУВ-4-К4ПЧ предусмотрены два накладных датчика при одном ТЕ2; для ШАУВ-3-К6ПЧ — два канальных при одном ТЕ3.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить обоснованность количества и идентификацию приборов в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Удалить повторы либо присвоить дополнительным датчикам позиции и показать их назначение и подключения.",
+        "risk": "Избыточная закупка и неопределённость назначения приборов.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
+        ],
+        "related_block_ids": [
+          "blk_0457419703024673bb4328b18d47501e",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_a4846024d95044a09f7a24d76da41c31",
+          "blk_192d323532434ee1aba250ffaac80b47",
+          "blk_3dfcda405820460b84179ebf65d182d1",
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+            "page": 94
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+            "page": 95
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+            "page": 101
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ШАУВ-2-К4ПЧ: СО2.5/2.7 по одному наружному датчику; переченьлист8 одинТЕ1.",
+          "verdict": "confirmed_authoritative_TEXT_document_quantity_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "ШАУВ-4-К4ПЧ: СО4.8 два накладныхDT-H2/Pt; переченьлист10 одинТЕ2.",
+          "verdict": "confirmed_authoritative_TEXT_document_quantity_conflict",
+          "limits": "КанальныеТЕ3/ТЕ4 имеют количество2 отдельно; их нельзя смешивать с накладными."
+        },
+        {
+          "claim": "ШАУВ-3-К6ПЧ: СО15.7 два канальныхPt1000 зонд260мм; переченьлист21 одинТЕ3.",
+          "verdict": "confirmed_authoritative_TEXT_document_quantity_conflict",
+          "limits": "Раздел15 начинается на предыдущем листеСО; принадлежность строки проверена по заголовку и продолжению до раздела16."
+        },
+        {
+          "claim": "Дополнительные датчики однозначно лишние и подлежат удалению.",
+          "verdict": "not_established",
+          "limits": "Резерв, изготовитель, поставка и полная совокупность подключений не проверены. В этой проверке первично сопоставлены текстовые перечни; графические исторические выводы не выданы за новый осмотр."
+        },
+        {
+          "claim": "Установить назначение дополнительных позиций или согласовать количество.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "Сохранить три независимых предмета сверки внутри составной строки; не считать разность доказанным перерасходом."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "Three cabinet-specific quantity atoms in one output row; same TE number in another cabinet is not the same object.",
+      "profile_and_section": "technical_core_preserve_inventory_scope",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_0457419703024673bb4328b18d47501e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+          "sha256": "48b97c42cfa0b0277fb9cf701da41869de070db06fd4ec75fb99b0a388d1e722",
+          "primary_adjudication": null,
+          "limits": [
+            "Канальные TE3/TE4 — два отдельных прибора: их количество2 в перечне согласуется с поз.4.7 СО. Их нельзя включать в накладные датчики или переносить их количество в поз.4.8.",
+            "Сопоставлены назначение,шкаф и тип прибора; графические выводы относятся к просмотренной схеме, не ко всем документам объекта.",
+            "Заводская комплектация,резервные изделия,внешние подключения и фактическая поставка здесь не проверены. Не предписывать безусловное удаление второго датчика.",
+            "Решение инженера по blind-кандидату и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать количество накладных датчиков температуры шкафа ШАУВ-4-К4ПЧ: перечень листа10 задаёт один TE2, что соответствует функциональной схеме; позиция4.8 СО содержит два DT-H2/Pt. Уточнить назначение второго датчика либо исправить количество."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+          "sha256": "7dfe111f83f7d778b22f32158e23e25225b08f4f4ec3226926ddce63dfb1ef6a",
+          "primary_adjudication": null,
+          "limits": [
+            "Проверен весь раздел журнала П4.1.3/П4.1.4 на листах5–6 до перехода к Пкр4.1. Датчик TE1 следующего раздела относится к другому шкафу ШАУВ-3-К4ПЧ и в этот подсчёт не включён.",
+            "Разные назначения двух позиций СО в просмотренных строках не указаны. Резервная поставка, документация изготовителя и фактический заказ не проверены; автоматически удалять вторую позицию нельзя.",
+            "Использование общего значения TE1 программой двух установок не проверено. Наличие одного графического датчика не подтверждает алгоритм контроллера.",
+            "Нарушение конкретного пункта ГОСТ21.110 не установлено. Самостоятельное решение инженера по этому blind-кандидату не найдено."
+          ],
+          "wording": "Для ШАУВ-2-К4ПЧ согласовать количество датчиков наружного воздуха: перечень листа8 и функциональная схема предусматривают один TE1, а позиции2.5 и2.7 СО — по одному датчику с одинаковым наименованием и без разных назначений. Кабельный журнал содержит одну соответствующую линию П4.1.3-1. Уточнить назначение второй позиции либо исправить количество."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+          "sha256": "c9bf31b3153a37963b0821177ba1398e145ddd70d03bda5a6432545628397940",
+          "primary_adjudication": null,
+          "limits": [
+            "Раздел15 начинается на листе7 СО и продолжается на листе8 до позиции15.10; строка15.7 не относится к следующему шкафу раздела16.",
+            "В перечне модель записана ДТ-K2/Pt, в СО DT-K2/Pt; сопоставление выполнено также по шкафу, назначению, Pt1000 и длине260мм. Это не общая нормализация обозначений каталогов.",
+            "На листе27 КЖ имеется линия Пкрб.1-4 к ТЕ3 от ШАУВ-З-К6ПЧ. Написания б/6 и З/3 сохранены из авторитетного TEXT; связь с целевой системой контекстная, не основание исправлять TEXT. Основное расхождение подтверждено без этой нормализации.",
+            "Не проверены вся поставка, заводская комплектация и резервные изделия; безусловное удаление второго датчика не обосновано. Не утверждается отсутствие второго датчика во всех документах.",
+            "Решение инженера по blind-кандидату и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Лист21, Пкр6.1/Вм6.1, шкаф ШАУВ-3-К6ПЧ: согласовать количество канальных датчиков температуры. Перечень содержит один TE3, что соответствует функциональной схеме; позиция15.7 СО содержит два датчика Pt1000 с зондом260мм. Указать назначение второго прибора либо исправить количество."
+        }
+      ],
+      "disposition": "assessed_preserve_three_sensor_quantity_conflicts_no_automatic_deletion"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+      "authoritative_TEXT": "### BLOCK #85 [TEXT]: blk_6e54eb477b59421dbea94ef657f05a46\n\n> **Created:** 2026-09-28 07:28:59 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/aEXir6fsqCnZegZabYnz)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: П | Sheet: 23 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Книга 1. Автоматизация комплексная внутренних инженерных систем. Подземная автостоянка в осях П.24-П.48. Тепловые завесы У4.3, У4.4, У4.5, У4.6. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Перечень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| TS1, TS2 | Термостат защиты от замораживания RAK-TW. 5000S-H | 2 |  |\n| Y1, Y2 | Регулирующий клапан с электроприводом в комплекте смесительного узла с насосом | 4 | Учтено в разделе ЗАВ-РД-ОВ1.2-ПА |\n| M1, M2 | Электродвигатель циркуляционного насоса в комплекте смесительного узла с насосом | 2 | Учтено в разделе ЗАВ-РД-ОВ1.2-ПА |\n| M3-M6 | Электродвигатель вентилятора в комплекте с завесой | 2 | Учтено в разделе ЗАВ-РД-ОВ1.2-ПА |\n| SQ1 | Концевой выключатель ВП-15К21 | 1 |  |\n|  |  |  |  |\n|  |  |  |  |\n|  |  |  |  |\n\n###### Примечание:\n\n1. Предельные рабочие значения измеряемых величин уточняются при ПНР.\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+      "authoritative_TEXT": "### BLOCK #251 [TEXT]: blk_b8f98350127c4603bb6811846ec13309\n\n> **Created:** 2026-09-28 07:29:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JD825dNrJgioLdV32EKM)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 9 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 17 | Тепловые завесы |  |  |  |  |  |  |  |\n| 17.1 | Концевой выключатель | ВП15К21 |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 17.2 | Блок диспетчеризации МК | КЭВ-Б/ЛОК-МК |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 18 | Основное оборудование сплин систем |  |  |  |  |  |  |  |\n| 18.1 | Согласователь работы 2-х кондиционеров | TD0027170RU | БУРР | Haier | шт. | 3 |  |  |\n| 18.2 | Адаптер |  |  | Haier | шт. | 6 |  |  |\n| 19 | Система контроля загазованности |  |  |  |  |  |  |  |\n| 19.1 | Блок питания и сигнализации БПС-3-И | ИБЯЛ.426479.046-01 |  | Аналитприбор | шт. | 3 |  |  |\n| 19.2 | Сигнализатор загазованности СТГ-3-И-СО | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.3 | Коробка соединительная КСИ | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.4 | Светозвуковой оповещатель \"Внимание! Загазованность!\" | \"ЛЮКС-24-К МС\" |  | Электротехника и Автоматика | шт. | 1 |  |  |\n| 20 | Система противодымной вентиляции |  |  |  |  |  |  |  |\n| 20.1 | Термопреобразователь сопротивления канальный, чувствительный элемент NTC10К, длина погружной части датчика 200 мм | МВТ 3280 | 097У0112 | Ридан | шт. | 6 |  |  |\n| 21 | Кабели и провода |  |  |  |  |  |  |  |\n| 21.1 | Кабель силовой с медными жилами | ППГнг(А)-HF 3x1,5 |  | Ивановский кабельный завод | м | 3945 |  |  |\n| 21.2 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x2,5 |  | Ивановский кабельный завод | м | 2060 |  |  |\n| 21.3 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x4,0 |  | Ивановский кабельный завод | м | 60 |  |  |\n| 21.4 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 1x2x0,75 |  | Паритет | м | 7040 |  |  |\n| 21.5 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 4x2x0,75 |  | Паритет | м | 20 |  |  |\n\n## Page 103 — Sheet 10\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_0457419703024673bb4328b18d47501e",
+      "authoritative_TEXT": "### BLOCK #28 [TEXT]: blk_0457419703024673bb4328b18d47501e\n\n> **Created:** 2026-09-28 07:28:41 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/9Z7-VfG1AcoQ_XZM-q1M)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 8 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П4.1.3, П4.1.4. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2, ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 2 |  |\n| ТС1 | Теромастат | 1 | (комплектно с электронагревателем) |\n| PDS2, PDS4 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| PDS1, PDS3 | Датчик давления дифференциальный 50-500 Па | 2 |  |\n| У1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В | 1 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| У2, У3 | Электропривод воздушной заслонки без возвратной пружиной, плавное регулирование 24 В | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001Н | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+      "authoritative_TEXT": "### BLOCK #34 [TEXT]: blk_47212e9079d1485c9c43fc3d1e9cd108\n\n> **Created:** 2026-09-28 07:28:43 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/NlKfDyVRoRzqHvD2zgXd)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 10 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П4.1.1, Пм4.1 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Перечень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 2 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| ТС2 | Термостат | 2 | (комплектно с электронагревателем) |\n| PDS2 | Датчик давления дифференциальный 20-200 Па | 1 |  |\n| PDS1,PDS3, PDS4 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| Y1-Y2 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| Y3 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M3 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1 | Регулятор скорости, СИ-РСY10 | 1 |  |\n| SC UZ2 | Преобразователь частоты 2,2кВт 380В, E5-MINI-003H | 1 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+      "authoritative_TEXT": "### BLOCK #77 [TEXT]: blk_a4846024d95044a09f7a24d76da41c31\n\n> **Created:** 2026-09-28 07:28:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/325PakIrroDWBxM_v3bR)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 21 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Пкр6.1, вытяжная система Вм6.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS1, PDS4 | Датчик давления дифференциальный 50-500 Па | 2 |  |\n| PDS2, PDS3 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| У1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В DA5FU230-DS | 1 |  |\n| У2 | Электропривод воздушной заслонки | 1 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| У3 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M3 | Электродвигатель вентилятора | 3 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M4 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 1 |  |\n| SC UZ1, SC UZ3 | Преобразователь частоты 5,5 кВт 380В, E5-MINI-007H | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+      "authoritative_TEXT": "### BLOCK #243 [TEXT]: blk_192d323532434ee1aba250ffaac80b47\n\n> **Created:** 2026-09-28 07:29:53 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/CuZAWD4qJIfGJo7uW_rS)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.СО | Stage: Р | Sheet: 1 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Спецификация оборудования, изделий и материалов | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n|  | Приборы и средства автоматизации |  |  |  |  |  |  |  |\n| 1 | Шкаф ШАУВ-1-К4ПЧ |  |  |  |  |  |  |  |\n| 1.1 | Шкаф управления с контроллером Феникс шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 1.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 3 |  | Установлен внутри щита (для В4.1.1,В4.1.2, В4.1.4) |\n| 1.3 | Преобразователь частоты 1,5кВт 380В | Веспер | E5-MINI-002H | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для Вм4.1) |\n| 1.4 | Преобразователь частоты 2,2кВт 380В | Веспер | E5-MINI-003H | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для Вм4.1.1) |\n| 1.5 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 5 |  |  |\n| 1.6 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 5 |  |  |\n| 2 | Шкаф ШАУВ-2-К4ПЧ |  |  |  |  |  |  |  |\n| 2.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 2.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для П4.1.3 и П4.1.4) |\n| 2.3 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 2.4 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 2.5 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 2.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 2.7 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 95 — Sheet 2\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+      "authoritative_TEXT": "### BLOCK #244 [TEXT]: blk_3dfcda405820460b84179ebf65d182d1\n\n> **Created:** 2026-09-28 07:29:54 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/HNRF3na7P7Ulq8KMslWd)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 2 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 3 | Шкаф ШАУВ-3-К4ПЧ |  |  |  |  |  |  |  |\n| 3.1 | Шкаф управления с контроллером Феникс шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.2 | Преобразователь частоты 3,7 кВт 380В | Веспер | E5-MINI-005H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пкр 4.1) |\n| 3.3 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 3.4 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.5 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.6 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.7 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 3.8 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 1 |  |  |\n| 4 | Шкаф ШАУВ-4-К4ПЧ |  |  |  |  |  |  |  |\n| 4.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 4.2 | Регулятор скорости |  | СИ-PCY10 | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для П4.1.1) |\n| 4.3 | Преобразователь частоты 2,2кВт 380В | Веспер | E5-MINI-003H | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для Пм4.1) |\n| 4.4 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 4.5 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 4.6 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 4.7 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 4.8 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 4.9 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 96 — Sheet 3\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+      "authoritative_TEXT": "### BLOCK #250 [TEXT]: blk_5bb120b4d9cd4ceebfc4c15a896ddd48\n\n> **Created:** 2026-09-28 07:29:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Il42bXgbeCRz2m_c0713)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 8 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 15.4 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 15.5 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 15.6 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 15.7 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 15.8 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 15.9 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 15.10 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 1 |  |  |\n| 16 | Шкаф ШАУВ-1-К6АС |  |  |  |  |  |  |  |\n| 16.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 16.2 | Преобразователь частоты 3,7 кВт 380В | Веспер | E5-MINI-005H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри отдельного щита по месту (для Ва 4.1) |\n| 16.3 | Преобразователь частоты 2,2 кВт 380В | Веспер | E5-MINI-003H | Савэл-Инжиниринг | шт. | 2 |  | внутри щита (для Па 4.1) |\n| 16.4 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 4 |  |  |\n| 16.5 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 16.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 16.7 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 16.8 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 16.9 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 6 |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 102 — Sheet 9\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+      "authoritative_TEXT": "### BLOCK #249 [TEXT]: blk_5b5187b5afb740efb6423fa40c399349\n\n> **Created:** 2026-09-28 07:29:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Ai4m95GeXlUED68CKooh)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 7 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 13 | Шкаф ШАУВ-1-К6ПЧ |  |  |  |  |  |  |  |\n| 13.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 13.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 3 |  | Установлен внутри щита (для В6.1.1,В6.1.2,В6.1.4) |\n| 13.3 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 13.4 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 3 |  |  |\n| 14 | Шкаф ШАУВ-2-К6ПЧ |  |  |  |  |  |  |  |\n| 14.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 14.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пб.1.1, Пб.1.4) |\n| 14.3 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 14.4 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 14.5 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 14.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 14.7 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 14.8 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 15 | Шкаф ШАУВ-3-К6ПЧ |  |  |  |  |  |  |  |\n| 15.1 | Шкаф управления с контроллером Феникс шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 15.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для Вм6.1) |\n| 15.3 | Преобразователь частоты 5,5 кВт 380В | Веспер | E5-MINI-007H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пкрб.1) |\n\n## Page 101 — Sheet 8\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+      "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+      "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Four distinct curtain motors M3–M6; two mixing nodes with Y1/Y2; TS1/TS2; protection label T=5°C. Graphic observations use schematic and signal matrix, not raster correction of TEXT table."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+      "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+      "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Four distinct curtain motors M3–M6; two mixing nodes with Y1/Y2; TS1/TS2; protection label T=5°C. Graphic observations use schematic and signal matrix, not raster correction of TEXT table."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+      "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+      "block_id": "blk_523708af1c384b0e8bc6767d93644336",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Four distinct curtain motors M3–M6; two mixing nodes with Y1/Y2; TS1/TS2; protection label T=5°C. Graphic observations use schematic and signal matrix, not raster correction of TEXT table."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F009_F010_curtain_quantities.json",
+      "sha256": "e529470f6f3da971b8308855d675cc4bf91e1a69e5f30a031c95a68db74da154",
+      "primary_adjudication": null,
+      "limits": [
+        "Доказаны два документальных расхождения, объединённые в одну тему с сохранением обоих атомов.",
+        "Двигатели комплектны с завесами, клапаны — со смесительными узлами; перечень относит их к ОВ. Недопоставка, избыточная закупка и изменение стоимости не доказаны.",
+        "Не предписывать закупку двух двигателей или исключение двух клапанов без согласования ОВ и заводской комплектации. Нельзя автоматически считать схему единственным правильным документом.",
+        "Конкретный пункт ГОСТ21.110-2013 и его применимость не проверены; нормативное нарушение не включать в подтверждённый вывод. Решения инженера по этим кандидатам нет."
+      ],
+      "wording": "Согласовать количества в перечне листа23 со схемой завес У4.3–У4.6: для M3–M6 указано2 двигателя при четырёх показанных на схеме, для Y1/Y2 указано4 регулирующих клапана при двух показанных смесительных узлах с одним таким клапаном в каждом."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+      "sha256": "48b97c42cfa0b0277fb9cf701da41869de070db06fd4ec75fb99b0a388d1e722",
+      "primary_adjudication": null,
+      "limits": [
+        "Канальные TE3/TE4 — два отдельных прибора: их количество2 в перечне согласуется с поз.4.7 СО. Их нельзя включать в накладные датчики или переносить их количество в поз.4.8.",
+        "Сопоставлены назначение,шкаф и тип прибора; графические выводы относятся к просмотренной схеме, не ко всем документам объекта.",
+        "Заводская комплектация,резервные изделия,внешние подключения и фактическая поставка здесь не проверены. Не предписывать безусловное удаление второго датчика.",
+        "Решение инженера по blind-кандидату и конкретное нормативное нарушение не установлены."
+      ],
+      "wording": "Согласовать количество накладных датчиков температуры шкафа ШАУВ-4-К4ПЧ: перечень листа10 задаёт один TE2, что соответствует функциональной схеме; позиция4.8 СО содержит два DT-H2/Pt. Уточнить назначение второго датчика либо исправить количество."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+      "sha256": "7dfe111f83f7d778b22f32158e23e25225b08f4f4ec3226926ddce63dfb1ef6a",
+      "primary_adjudication": null,
+      "limits": [
+        "Проверен весь раздел журнала П4.1.3/П4.1.4 на листах5–6 до перехода к Пкр4.1. Датчик TE1 следующего раздела относится к другому шкафу ШАУВ-3-К4ПЧ и в этот подсчёт не включён.",
+        "Разные назначения двух позиций СО в просмотренных строках не указаны. Резервная поставка, документация изготовителя и фактический заказ не проверены; автоматически удалять вторую позицию нельзя.",
+        "Использование общего значения TE1 программой двух установок не проверено. Наличие одного графического датчика не подтверждает алгоритм контроллера.",
+        "Нарушение конкретного пункта ГОСТ21.110 не установлено. Самостоятельное решение инженера по этому blind-кандидату не найдено."
+      ],
+      "wording": "Для ШАУВ-2-К4ПЧ согласовать количество датчиков наружного воздуха: перечень листа8 и функциональная схема предусматривают один TE1, а позиции2.5 и2.7 СО — по одному датчику с одинаковым наименованием и без разных назначений. Кабельный журнал содержит одну соответствующую линию П4.1.3-1. Уточнить назначение второй позиции либо исправить количество."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+      "sha256": "c9bf31b3153a37963b0821177ba1398e145ddd70d03bda5a6432545628397940",
+      "primary_adjudication": null,
+      "limits": [
+        "Раздел15 начинается на листе7 СО и продолжается на листе8 до позиции15.10; строка15.7 не относится к следующему шкафу раздела16.",
+        "В перечне модель записана ДТ-K2/Pt, в СО DT-K2/Pt; сопоставление выполнено также по шкафу, назначению, Pt1000 и длине260мм. Это не общая нормализация обозначений каталогов.",
+        "На листе27 КЖ имеется линия Пкрб.1-4 к ТЕ3 от ШАУВ-З-К6ПЧ. Написания б/6 и З/3 сохранены из авторитетного TEXT; связь с целевой системой контекстная, не основание исправлять TEXT. Основное расхождение подтверждено без этой нормализации.",
+        "Не проверены вся поставка, заводская комплектация и резервные изделия; безусловное удаление второго датчика не обосновано. Не утверждается отсутствие второго датчика во всех документах.",
+        "Решение инженера по blind-кандидату и конкретное нормативное нарушение не установлены."
+      ],
+      "wording": "Лист21, Пкр6.1/Вм6.1, шкаф ШАУВ-3-К6ПЧ: согласовать количество канальных датчиков температуры. Перечень содержит один TE3, что соответствует функциональной схеме; позиция15.7 СО содержит два датчика Pt1000 с зондом260мм. Указать назначение второго прибора либо исправить количество."
+    }
+  ],
+  "limits": [
+    "Thermostat datasheet and actual supply not verified.",
+    "Supplier reserve or packaging cannot be excluded by count alone.",
+    "F-013 graphics not newly inspected; text discrepancy independently retained.",
+    "Frozen evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
