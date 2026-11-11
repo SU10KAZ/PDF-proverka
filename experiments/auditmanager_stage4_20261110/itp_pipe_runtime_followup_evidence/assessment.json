@@ -1,0 +1,52 @@
+{
+  "status": "bounded_followup_completed_original_wall_control_unresolved",
+  "model": "codex/gpt-6-astra",
+  "effort": "high",
+  "new_model_calls": 1,
+  "source_md_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+  "context_revision": 3,
+  "context_stop": "revision_limit",
+  "budget_reset": false,
+  "new_candidate": {
+    "object_id": "inv_036",
+    "published_flow_m3_h": 9.55,
+    "published_outer_diameter_mm": 76,
+    "published_wall_mm": 3,
+    "published_velocity_m_s": 0.74,
+    "recomputed_velocity_m_s": 0.6893105245023131,
+    "exact_quotes_present": true,
+    "quotes": [
+      "Gот max = (Qот max × 1000)/(τ₁ - τ₂) = (0,191 × 1000)/(90 - 70) = 9,55 м³ / ч;",
+      "Выбираем трубопровод: Ø76 × 3,0 мм. Δh=13,1 кгс/м² м, v=0,74 м/сек."
+    ],
+    "reported_section": "technical_findings",
+    "semantic_release_complete": false,
+    "routing": "review_required_documentary_inconsistency_without_established_system_consequence"
+  },
+  "original_wall_control": {
+    "id": "H05P02/H-ITP-72",
+    "status": "not_recovered_by_this_operation",
+    "reason": "Runtime retains a separate velocity candidate; physical assignment of specification thickness to the selected segment remains needs_data. This is not a refutation of the benchmark documentary question.",
+    "next_action": "Review preservation of the documentary question separately from unscored pump and physical segment consequences; do not reset this operation budget to chase those consequences."
+  },
+  "usage": {
+    "input_tokens": 100246,
+    "output_tokens": 3796,
+    "cached_tokens": 10240,
+    "duration_ms": 88527,
+    "cost_usd": 0.0,
+    "cost_source": "subscription"
+  },
+  "cost_boundary": "Subscription cost_usd=0 does not establish zero resource cost.",
+  "full_acceptance": false,
+  "historical_answers_supplied": false,
+  "artifact_sha256": {
+    "binding.json": "87ac94be9206c6083cefed1da6d3ae8b703b99237155ccb8e297ec4cd38bd46a",
+    "request.json": "74af5e5e49f4221659a7971fd1be894fef2de125cd06c4283c339929c759c58a",
+    "parent_validation.json": "d10c0d801064e590a3a7959cbf22a16ef2a00cccd2d49521522311b5b823de84",
+    "result.json": "eb1bd161bb58d6476420367bbafa3ad9bd840f92f6d858a5cdb3f8f69b93cf02",
+    "result_binding.json": "83320e231e9d9d036b33727d07abc3f47dac72b7d5e09ad403ff55bbd80b6fee",
+    "validated.json": "4397bf2965d4bb07158b7aaea49783efbdbb12cd0f435a26024cf949199c39d8",
+    "completion.json": "3a35d9de98d82fa99aaabe8727c3b9ba34e48f8db3274de9c1f0e27d81df53e3"
+  }
+}
