@@ -1,0 +1,229 @@
+{
+  "status": "recorded_title_metadata_question_review",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "3069bb95fca5a16825e32ad176d2ea7ace0e5d6734f21e7ca3cae60e604bee9b",
+  "queue_after_sha256": "bdf7e17e3b9ca4deec566a54580d826c425dbc1e2c5c1c9980b39a7cc93f512d",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-036",
+      "finding": {
+        "id": "F-036",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Основные надписи",
+        "sheet": "Листы 1, 16, 18",
+        "page": [
+          5,
+          20,
+          76
+        ],
+        "problem": "Текстовые реквизиты схемы не соответствуют её принадлежности корпусу 5.",
+        "description": "Ведомость относит схему к Пу5.1, Ву5.1 и Всу5.1, но извлечённые реквизиты называют Пл3.1, Вк3.1 и Всу3.1. Журнал ШАУВ-5-К5ПЧ соответствует системам корпуса 5. Требуется проверка основной надписи оригинала.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 5.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить заполнение основной надписи и наименование чертежа.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-035"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-035"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "5.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить основную надпись с оригиналом и привести наименование схемы к фактическим системам.",
+        "risk": "Ошибочная идентификация чертежа при выдаче в монтаж.",
+        "source_finding_ids": [
+          "T-035"
+        ],
+        "source_block_ids": [
+          "blk_183b00bc56b74dc4b19072a6f269822e"
+        ],
+        "related_block_ids": [
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_183b00bc56b74dc4b19072a6f269822e",
+          "blk_5d9307558672478196f75e1763b09764",
+          "blk_6995cff7e34a4a41b99ec565101c4e02"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_183b00bc56b74dc4b19072a6f269822e",
+            "page": 20
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Поле Наименование листа в MD блока листа16 содержит Пл3.1/Вк3.1/Всу3.1.",
+          "verdict": "confirmed_recorded_stamp_metadata",
+          "limits": "Авторитетный TEXT не изменялся и не перепроверялся распознаванием растра."
+        },
+        {
+          "claim": "Ведомость лист16 и раздел журнала ШАУВ-5-К5ПЧ относятся к Пу5.1/Ву5.1/Всу5.1.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Графическая функциональная схема показывает Пу5.1/Ву5.1/Всу5.1 и шкаф ШАУВ-5-К5ПЧ.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Проверено содержание схемы, не физический штамп."
+        },
+        {
+          "claim": "Нужно согласовать записанное название листа с реестром и показанными системами.",
+          "verdict": "supported_metadata_coordination_question",
+          "limits": ""
+        },
+        {
+          "claim": "В оригинальном физическом штампе точно те же ошибочные обозначения.",
+          "verdict": "not_independently_verified",
+          "limits": "Записанное поле MD не выдаётся за отдельный осмотр физического штампа. Не переизвлекать TEXT ради исправления признанного авторитетным источника."
+        },
+        {
+          "claim": "Приложена схема другой системы или допущен неправильный монтаж.",
+          "verdict": "not_established",
+          "limits": "Содержание графики согласуется с ведомостью и журналом; фактическое применение документа не исследовано."
+        },
+        {
+          "claim": "ГОСТ Р21.101-2020 п.5.2.1 проверен как нарушенный.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Пункт и цитата не проверены."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_question_preserved_no_new_technical_defect",
+      "duplicate_burden": "One title metadata question; not three system failures and not a defect in cable journal sheet18.",
+      "profile_and_section": "questions_clarifications_recorded_title_metadata",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_183b00bc56b74dc4b19072a6f269822e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5d9307558672478196f75e1763b09764",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F034_sheet_title_scope.json",
+          "sha256": "6585e034e65b924f17e740e1048b28a2d32e06e1ef4f41226e46f88f3bc4292a",
+          "primary_adjudication": null,
+          "limits": [
+            "Расхождение подтверждено между ведомостью и записанным полем Stamp в MD. Не заявляется самостоятельная визуальная проверка полного штампа исходного PDF. Подготовленный TEXT не исправлялся и не переизвлекался.",
+            "Содержание графического фрагмента согласуется с ведомостью. Не установлено, что вместо нужной схемы приложена схема другого объекта или системы.",
+            "Прежнее модельное утверждение, что Пл3.1/Вк3.1/Всу3.1 не встречаются в MD, не воспроизводится на текущем источнике: они буквально присутствуют в метаданных блока. Причина прежнего пропуска поиска не установлена.",
+            "Неверный выбор схемы монтажником, фактический монтаж и решение инженера не установлены."
+          ],
+          "wording": "Уточнить название листа16: строка16 ведомости и обозначения схемы относятся к Пу5.1/Ву5.1/Всу5.1, тогда как поле «Наименование листа» подготовленного MD для блока листа16 содержит Пл3.1/Вк3.1/Всу3.1. Зафиксировать единое название, сохранив связь с фактически показанными системами."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+          "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+          "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Pu5.1, Vu5.1, Vsu5.1; cabinet ShAUV5K5PCh. Graphic content agrees with register; physical title stamp not reviewed."
+        }
+      ],
+      "disposition": "assessed_preserve_recorded_sheet_title_question_not_wrong_scheme"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_183b00bc56b74dc4b19072a6f269822e",
+      "authoritative_TEXT": "### BLOCK #58 [TEXT]: blk_183b00bc56b74dc4b19072a6f269822e\n\n> **Created:** 2026-09-28 07:28:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/4yMS8alg0HWImVMDXDiD)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 16 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Пл3.1, вытяжные системы Вк3.1, Всу3.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Условные обозначения:\n\nП – Приточная система\n\nВ – Вытяжная система\n\nТЕ – Датчик температуры\n\nTS – Термостат защиты от перегрева\n\nУ – Электропривод воздушной заслонки\n\nPDS – Дифференциальное реле давления на вентиляторе\n\nМ – Двигатель вентилятора\n\nSC UZ – Частотный преобразователь\n\n– Вентилятор канальный;\n\n– Электродвигатель\nвентилятора;\n\n– Фильтр воздушный;\n\n– Заслонка с электроприводом\nс возвратной пружиной;\n\n– Нагревательная секция\nэлектрического нагревателя.\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+      "authoritative_TEXT": "### BLOCK #5 [TEXT]: blk_6e394962eb18407fb17b09f063c30a5c\n\n> **Created:** 2026-09-28 07:28:34 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/x0yTm1Z-V876FTgNyMd9)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 1 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Общие данные (начало) | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### Ведомость рабочих чертежей основного комплекса\n\n| Лист | Наименование | Примечание |\n|---|---|---|\n| 1 | Общие данные (начало) |  |\n| 2 | Общие данные (продолжение) |  |\n| 3 | Общие данные (продолжение) |  |\n| 4 | Общие данные (окончание) |  |\n| 5 | Схема структурная |  |\n| 6 | Схема структурная системы газоанализа |  |\n| 7 | Вытяжные системы В4.1.1, В4.1.2, В4.1.4, Вм4.1., Вм4.1.1 Функциональная схема автоматизации |  |\n| 8 | Приточные системы П4.1.3, П4.1.4. Функциональная схема автоматизации |  |\n| 9 | Приточная система Пкр4.1 Функциональная схема автоматизации |  |\n| 10 | Приточные системы П4.1.1, Пм4.1 Функциональная схема автоматизации |  |\n| 11 | Приточная система Па3.1, вытяжная система Ва3.1. Функциональная схема автоматизации |  |\n| 12 | Вытяжные системы В5.1.1, В5.1.2, Вм5.1 Функциональная схема автоматизации |  |\n| 13 | Приточная система Пкр5.1 Функциональная схема автоматизации |  |\n| 14 | Приточные системы П5.1.1, П5.1.3 Функциональная схема автоматизации |  |\n| 15 | Приточная система Пн5.1, вытяжная система Вн5.1. Функциональная схема автоматизации |  |\n| 16 | Приточная система Пу5.1, вытяжные системы Ву5.1, Всу5.1. Функциональная схема автоматизации |  |\n| 17 | Приточная система По5.1, вытяжные системы Во5.1, Вос5.1. Функциональная схема автоматизации |  |\n| 18 | Приточная система Па4.1, вытяжная система Ва4.1. Функциональная схема автоматизации |  |\n| 19 | Вытяжные системы В6.1.1, В6.1.2, В6.1.4 Функциональная схема автоматизации |  |\n| 20 | Приточные системы Пб.1.1, Пб.1.4 Функциональная схема автоматизации |  |\n| 21 | Приточная система Пкр6.1, вытяжная система Вмб.1. Функциональная схема автоматизации |  |\n| 22 | Приточная система Па5.1, вытяжная система Ва5.1. Функциональная схема автоматизации |  |\n| 23 | Тепловые завесы У4.3, У4.4, У4.5, У4.6. Функциональная схема автоматизации |  |\n| 24 | Противодымная приточная система ПД 4.1.4, ПД4.1.21.2, ПД 5.1.4, ПД5.1.21.2, ПД 6.1.4, ПД6.1.21.2. Функциональная схема автоматизации |  |\n| 25 | Шкаф автоматики и управления ШАУВ-1-К4ПЧ. Схема внешних подключений |  |\n| 26 | Шкаф автоматики и управления ШАУВ-2-К4ПЧ. Схема внешних подключений |  |\n| 27 | Шкаф автоматики и управления ШАУВ-3-К4ПЧ. Схема внешних подключений |  |\n| 28 | Шкаф автоматики и управления ШАУВ-4-К4ПЧ. Схема внешних подключений |  |\n| 29 | Шкаф автоматики и управления ШАУВ-1-К4АС. Схема внешних подключений |  |\n| 30 | Шкаф автоматики и управления ШАУВ-1-К5ПЧ. Схема внешних подключений |  |\n| 31 | Шкаф автоматики и управления ШАУВ-2-К5ПЧ. Схема внешних подключений |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_5d9307558672478196f75e1763b09764",
+      "authoritative_TEXT": "### BLOCK #225 [TEXT]: blk_5d9307558672478196f75e1763b09764\n\n> **Created:** 2026-09-28 07:29:44 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/yn01j-DY-loxxzIHcd4h)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА.КЖ | Stage: Не указано | Sheet: 18 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Маркировка кабеля | Трасса |  | Кабель |  |  |  |  |  | Примечание |\n|---|---|---|---|---|---|---|---|---|---|\n|  |  |  | по проекту |  |  | проложен |  |  |  |\n|  | Начало | Конец | Марка | Количество кабелей и сечение жил | Длина, м | Марка | Количество кабелей и сечение жил | Длина, м |  |\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| Системы Пу5.1, Ву5.1 и Всу5.1 |  |  |  |  |  |  |  |  |  |\n| Пу5.1-1 | ШАУВ-5-К5ПЧ | ТЕ1 | КСПЭВПГнг(А)-HF | 1х2х0,75 | 15 | труба гофр. | КСПЭВПГнг(А)-HF 1х2х0,75 | 15 |  |\n| Пу5.1-2 | ШАУВ-5-К5ПЧ | ТС1 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15 |  |\n| Пу5.1-3 | ШАУВ-5-К5ПЧ | PDS1 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15 |  |\n| Пу5.1-4 | ШАУВ-5-К5ПЧ | M1 | ППГнг(А)-HF | 4х2,5 | 15 | труба гофр. | ППГнг(А)-HF 4х2,5 | 15 |  |\n| Пу5.1-5 | ШАУВ-5-К5ПЧ | XТ1 | ППГнг(А)-HF | 3х1,5 | 15 | труба гофр. | ППГнг(А)-HF 3х1,5 | 15 |  |\n| Пу5.1-6 | ШАУВ-5-К5ПЧ | XТ1 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15 |  |\n| Пу5.1-7 | ШАУВ-5-К5ПЧ | Электронагреватель системы Пу5.1 | ППГнг(А)-HF | 4х4,0 | 15 | труба гофр. | ППГнг(А)-HF 4х4,0 | 15 |  |\n| Ву5.1-1 | ШАУВ-5-К5ПЧ | PDS2 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15 |  |\n| Ву5.1-2 | ШАУВ-5-К5ПЧ | M2 | ППГнг(А)-HF | 4х2,5 | 15 | труба гофр. | ППГнг(А)-HF 4х2,5 | 15 |  |\n| Ву5.1-3 | ШАУВ-5-К5ПЧ | XТ2 | ППГнг(А)-HF | 3х1,5 | 15 | труба гофр. | ППГнг(А)-HF 3х1,5 | 15 |  |\n| Ву5.1-4 | ШАУВ-5-К5ПЧ | XТ2 | КСПВПГнг(А)-HF | 1х2х0,75 | 15 | труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 15 |  |\n| Всу5.1-1 | ШАУВ-5-К5ПЧ | PDS3 | КСПВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 400x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 20/5 |  |\n| Всу5.1-2 | ШАУВ-5-К5ПЧ | M3 | ППГнг(А)-HF | 4х2,5 | 25 | лоток 400x100, труба гофр. | ППГнг(А)-HF 4х2,5 | 20/5 |  |\n| Всу5.1-3 | ШАУВ-5-К5ПЧ | XТ3 | ППГнг(А)-HF | 3х1,5 | 25 | лоток 400x100, труба гофр. | ППГнг(А)-HF 3х1,5 | 20/5 |  |\n| Всу5.1-4 | ШАУВ-5-К5ПЧ | XТ3 | КСПВПГнг(А)-HF | 1х2х0,75 | 25 | лоток 400x100, труба гофр. | КСПВПГнг(А)-HF 1х2х0,75 | 20/5 |  |\n\n## Page 77 — Sheet 19\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+      "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+      "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Pu5.1, Vu5.1, Vsu5.1; cabinet ShAUV5K5PCh. Graphic content agrees with register; physical title stamp not reviewed."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F034_sheet_title_scope.json",
+      "sha256": "6585e034e65b924f17e740e1048b28a2d32e06e1ef4f41226e46f88f3bc4292a",
+      "primary_adjudication": null,
+      "limits": [
+        "Расхождение подтверждено между ведомостью и записанным полем Stamp в MD. Не заявляется самостоятельная визуальная проверка полного штампа исходного PDF. Подготовленный TEXT не исправлялся и не переизвлекался.",
+        "Содержание графического фрагмента согласуется с ведомостью. Не установлено, что вместо нужной схемы приложена схема другого объекта или системы.",
+        "Прежнее модельное утверждение, что Пл3.1/Вк3.1/Всу3.1 не встречаются в MD, не воспроизводится на текущем источнике: они буквально присутствуют в метаданных блока. Причина прежнего пропуска поиска не установлена.",
+        "Неверный выбор схемы монтажником, фактический монтаж и решение инженера не установлены."
+      ],
+      "wording": "Уточнить название листа16: строка16 ведомости и обозначения схемы относятся к Пу5.1/Ву5.1/Всу5.1, тогда как поле «Наименование листа» подготовленного MD для блока листа16 содержит Пл3.1/Вк3.1/Всу3.1. Зафиксировать единое название, сохранив связь с фактически показанными системами."
+    }
+  ],
+  "limits": [
+    "No TEXT re-extraction or recognition correction.",
+    "Recorded metadata conflict does not prove incorrect physical stamp or wrong installation.",
+    "No frozen evaluator or production change."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
