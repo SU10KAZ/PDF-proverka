@@ -1,0 +1,56 @@
+{
+  "scope": "One known graphic annotation; equal request and image for source-only reading, not full-audit or statistical model comparison.",
+  "requests_identical": true,
+  "image_sha256": "cfbaf9c7231db3ceea4e5d2325a789c2b814a55479c0a915e374b71f82bbeb5e",
+  "results": {
+    "astra": {
+      "model": "codex/gpt-6-astra",
+      "json_data": {
+        "verbatim_annotation": "Т411 ø45х2,5оц ГВС, циркуляционный жилья\n1-ая зона Т=55 °С, G=2,73 м³/ч, Р=8,06 бар",
+        "object_mark": "Т411",
+        "diameter_literal": "ø45х2,5оц",
+        "service_literal": "ГВС, циркуляционный жилья, 1-ая зона",
+        "temperature_literal": "Т=55 °С",
+        "flow_literal": "G=2,73 м³/ч",
+        "pressure_literal": "Р=8,06 бар",
+        "reading_uncertainties": []
+      },
+      "duration_ms": 17451,
+      "input_tokens": 10940,
+      "output_tokens": 410,
+      "response_id": "01a1c830-1d88-7252-8643-058392e37805",
+      "cost_source": "subscription"
+    },
+    "claude": {
+      "model": "claude/claude-sonnet-5-5",
+      "json_data": {
+        "verbatim_annotation": "Т411 Ø45х2,5оц ГВС, циркуляционный жилья\n1-ая зона T=55 °C, G=2,73 м³/ч, P=8,06 бар",
+        "object_mark": "Т411",
+        "diameter_literal": "Ø45х2,5оц",
+        "service_literal": "ГВС, циркуляционный жилья, 1-ая зона",
+        "temperature_literal": "T=55 °C",
+        "flow_literal": "G=2,73 м³/ч",
+        "pressure_literal": "P=8,06 бар",
+        "reading_uncertainties": [
+          "The font is a stylized, thin, serif-like CAD font. I cannot tell whether the first character of 'Т411' is Cyrillic 'Т' or Latin 'T', and the same applies to the 'T' in 'T=55' and the 'x/х' in 'Ø45х2,5оц'. I transcribed the Cyrillic forms in the object mark and diameter, and Latin 'T' in 'T=55', but this is a script choice, not something I could confirm.",
+          "In 'циркуляционный', the final 'ый' is drawn in a compressed way in this font. I read it as 'ый', but the letter shapes are tightly packed.",
+          "The 'оц' suffix after '2,5' is read as the two Cyrillic letters 'о' and 'ц'. Its meaning is not interpreted here.",
+          "The superscript in 'м³/ч' is small. I read it as '3', and it appears slightly raised and compressed.",
+          "The decimal separators are commas in all numeric values (2,5; 2,73; 8,06), as printed.",
+          "The green triangle at the left edge is a leader arrowhead, not text, and is not transcribed."
+        ]
+      },
+      "duration_ms": 9496,
+      "input_tokens": 1001,
+      "output_tokens": 1038,
+      "response_id": "93ec6d56-faab-4167-8f6f-e9c194c67e67",
+      "cost_source": "subscription"
+    }
+  },
+  "source_reading": "2,73",
+  "full_context_astra_review": "2,78 despite oriented detail being attached",
+  "cause_boundary": "Suggests context/presentation or prior-claim anchoring; one case does not distinguish causal mechanisms.",
+  "next_hypothesis": "Read disputed graphic literals separately without candidate wording, then reconcile source-bound readings and arithmetic before admission. Do not hard-code this number.",
+  "autonomous_crop_selection_proven": false,
+  "full_acceptance": false
+}

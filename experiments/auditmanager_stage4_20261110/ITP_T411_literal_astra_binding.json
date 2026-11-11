@@ -1,0 +1,23 @@
+{
+  "request_sha256": "3b2c25c9f6e4cc0dccd4550bbc00c9219ddb3c18ba2e5d909fbea2012d04c92c",
+  "model": "codex/gpt-6-astra",
+  "image_sha256": "cfbaf9c7231db3ceea4e5d2325a789c2b814a55479c0a915e374b71f82bbeb5e",
+  "source_provenance": {
+    "source_pdf": "/home/coder/auditmanager/corpus-audits/20261106_classic_investigation/classic_control/inputs/ITP/versions/v003/02_work/document.pdf",
+    "source_pdf_sha256": "6d77bc0942e795ff2a6018b1ce65d45d5080e7aa220041da6dbbdd37a74c8b40",
+    "page_index": 7,
+    "clip": [
+      789.5587056875229,
+      110.92755238215129,
+      839.5587056875229,
+      330.9275523821513
+    ],
+    "scale": 4,
+    "rotation_for_reading": 90,
+    "source_block": "blk_0103a941fa5a4b0d9141a4149e927bff",
+    "pdf_text_extracted": false
+  },
+  "expected_answer_or_prior_responses_supplied": false,
+  "automatic_retries": 0,
+  "scope": "Known-source literal reading; not blind project discovery or full model comparison."
+}

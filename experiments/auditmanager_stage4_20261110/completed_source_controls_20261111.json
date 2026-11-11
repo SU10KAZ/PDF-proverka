@@ -1,0 +1,189 @@
+{
+  "controls": [
+    {
+      "source": "/tmp/auditmanager_itp_automatic_t411_detail_review_20261111",
+      "archive": "itp_automatic_t411_detail_evidence",
+      "status": "candidate_ready",
+      "admission_receipts": [
+        {
+          "finding_id": "ITP-automatic-T411",
+          "status": "applied",
+          "action": "revise"
+        }
+      ],
+      "files": [
+        {
+          "path": "finding.json",
+          "sha256": "6b4d71f487e09065990dd3706e361e50e03bc11819d8b30705f1cd5dccb162ce"
+        },
+        {
+          "path": "initial_request.json",
+          "sha256": "692f57bca6729ee411b48e528678e69395f10c9f3295dac579b912bfcb116107"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "6e18b721336b829ddea596eac20ee8eff1bfc54e2fa1c3c6df541fe0c71b3bce"
+        },
+        {
+          "path": "queue.json",
+          "sha256": "96a4f9028a0bc017f73296a4073328fbd1aff60af27d1a1ad5d50eafb846eb01"
+        },
+        {
+          "path": "workflow/00_followup.json",
+          "sha256": "5ae59b2b4ec51cc294a6fd8a26e680afe1e83a8c790568b36a37c5678ecefaea"
+        },
+        {
+          "path": "workflow/00_review/attempt.json",
+          "sha256": "0046ab8f00669b1c2949d158db99d179a059cea2b4b022b29944131d422d0787"
+        },
+        {
+          "path": "workflow/00_review/request.json",
+          "sha256": "7663e0a723ecb0c358897613fc39658e3968f5a97bfb0f7533d82bbc1d5cc20d"
+        },
+        {
+          "path": "workflow/00_review/result.json",
+          "sha256": "b9327e45fa3e2bc3cc22bc5df621ec193200a5ff575226d073baf8b60e7d125e"
+        },
+        {
+          "path": "workflow/00_validation.json",
+          "sha256": "86bf71c596a24bc6dad1e9816e69fb5b6f7a809ec31c941cea557b27cac65fc0"
+        },
+        {
+          "path": "workflow/05_adjudication/attempt.json",
+          "sha256": "ce4b91a976a9d32780278742e98d746173a7cc85afb37efcf3b3a30a3c5e7ce3"
+        },
+        {
+          "path": "workflow/05_adjudication/request.json",
+          "sha256": "fd9f5601465bc2660f4eeb5fec304cdb9883f98c270db12c944ea31704a52900"
+        },
+        {
+          "path": "workflow/05_adjudication/result.json",
+          "sha256": "e39c2a410ccdfa7be4b775923b3d4f4d45d5e80ac04fb21ae574582a6ace0395"
+        },
+        {
+          "path": "workflow/binding.json",
+          "sha256": "338fbb7c7657e3d040aa7647cedb40028a4020edce7aa2b51ad0f560ffd6c083"
+        },
+        {
+          "path": "workflow/candidate.json",
+          "sha256": "5094fcd3a8e8742ab79cadff7fa16ee3021e2937a226aef6701f0c19ceb48de3"
+        }
+      ]
+    },
+    {
+      "source": "/tmp/auditmanager_km_lk6_quantity_full_context_review_20261111",
+      "archive": "km_lk6_quantity_full_context_evidence",
+      "status": "candidate_ready",
+      "admission_receipts": [
+        {
+          "finding_id": "KM-LK6-anchor-quantity",
+          "status": "applied",
+          "action": "revise"
+        }
+      ],
+      "files": [
+        {
+          "path": "finding.json",
+          "sha256": "8282adef7247bb46e672ada9753da7f7f3a7081d181c139256e230ca8bae58ed"
+        },
+        {
+          "path": "initial_request.json",
+          "sha256": "4b7e99da19efd6615df9ab7fd52429bfd51ba3efd7b0779952ac3ad84825a808"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "260ddc4ae6c3ed0c574d3b3bfb62c59b2aa1fb6ec995f83c8aa77c57a88b7491"
+        },
+        {
+          "path": "queue.json",
+          "sha256": "d005fa65875b8e66f4a6623304bf24af95307dedf4ef6efd2694a68699dd6af9"
+        },
+        {
+          "path": "workflow/00_followup.json",
+          "sha256": "5f39c44ea161b505326f925745d8f41886146d252f1aa376aaf16fc0e0e2b9fb"
+        },
+        {
+          "path": "workflow/00_quote_spacing.json",
+          "sha256": "28f936dbcf41952d86bcda92434020b84eb9a580c01036e95f417ef2c8d07082"
+        },
+        {
+          "path": "workflow/00_repaired_validation.json",
+          "sha256": "39094c642b086d7139bc977d63a69575059152177841be4b69318bdedf0126da"
+        },
+        {
+          "path": "workflow/00_review/attempt.json",
+          "sha256": "e37e7957042d0cb016f7d46e49a472fb249020f1f4ee7a72449f7e4deb9ba742"
+        },
+        {
+          "path": "workflow/00_review/request.json",
+          "sha256": "7e24a03ea9a851c37d1010c6ad588b969ac18856dac4c0b49dd562ac9f0a7668"
+        },
+        {
+          "path": "workflow/00_review/result.json",
+          "sha256": "7b30f768cf5664b7a30baf5ec2739a065778b69872f13655c5f8109c0338c2ea"
+        },
+        {
+          "path": "workflow/00_validation.json",
+          "sha256": "401e1a9d9e6be66c7952503e976c572a9e4dec6df08a9ae7044e6624e3467a51"
+        },
+        {
+          "path": "workflow/01_followup.json",
+          "sha256": "bf8ae90a5902149b42d2fb4fcd7e3329c00835d90037bce02f8530056861f0ff"
+        },
+        {
+          "path": "workflow/01_review/attempt.json",
+          "sha256": "366fbd700ee2e0514498bf1be6e4f8faa51a2ec5bfa5e96e6951e34ed25e1c32"
+        },
+        {
+          "path": "workflow/01_review/request.json",
+          "sha256": "c3b6b017070a86edba4dd6d1f4cdd52820e81ffd0f9e1cea09fb78647c5f3c26"
+        },
+        {
+          "path": "workflow/01_review/result.json",
+          "sha256": "5107464df49ac4524fc1fd6606c41c9e5b83f99a9b06ad51f7cae271813aa06f"
+        },
+        {
+          "path": "workflow/01_validation.json",
+          "sha256": "083cea32a36d6671ebb35ef685c4760f4e16f54988cf25b0702bd95d05385dca"
+        },
+        {
+          "path": "workflow/05_adjudication/attempt.json",
+          "sha256": "7daa389d88fac571586fbca7b4bac0bcaeb493c529c7899b52b3336bbcc723ee"
+        },
+        {
+          "path": "workflow/05_adjudication/request.json",
+          "sha256": "27603ad0c7b8f8cfc8d1637d803a5a17ca5cd4259e101bfe4a050b9d7afe4593"
+        },
+        {
+          "path": "workflow/05_adjudication/result.json",
+          "sha256": "e5715b866fca9d6b81610ca4f11bc40e71a65b9cd826e66926b6698839ab5e2e"
+        },
+        {
+          "path": "workflow/binding.json",
+          "sha256": "3d729b3ace9a05cf78c5bb3a3bdc91bb8800c8a980da200c96871fc0a95affa8"
+        },
+        {
+          "path": "workflow/candidate.json",
+          "sha256": "f8f113db4120c936cdf2510ed285ca2ec7a207ed1c42c15f1607c47bd88f14df"
+        },
+        {
+          "path": "workflow/initial_review_reuse.json",
+          "sha256": "c0b50992d10c05654ab8e37b885bc1fb4f63d81d4ea7b45f47c9d29824050e7c"
+        }
+      ]
+    }
+  ],
+  "itp": {
+    "accepted": false,
+    "reason": "Even with the oriented source crop attached as image 10, final wording retains 2.78 and delta 3.11; source reads 2.73. Successful workflow admission is not factual acceptance.",
+    "extra_detail_attached": true,
+    "next_control": "Identical source-only request to Astra and Claude; no prior answer or expected value."
+  },
+  "km": {
+    "model_disposition": "revise: retain OGM26/OGM25 marking conflict; quantity 228 and delta 40 conditional only",
+    "quantity_shortage_confirmed": false,
+    "new_graphic_link_requires_independent_check": true,
+    "full_project_output_acceptance": false
+  },
+  "full_acceptance": false
+}

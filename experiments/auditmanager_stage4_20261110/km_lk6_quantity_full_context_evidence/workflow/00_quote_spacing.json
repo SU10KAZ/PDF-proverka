@@ -1,0 +1,14 @@
+{
+  "repairs": [
+    {
+      "claim_index": 3,
+      "evidence_index": 0,
+      "block_id": "blk_b9096ac74f95416da66cc607a9828c3f",
+      "original_quote": "| ОГМ21 | лист 10 | Ограждение металлическое ОГМ21 | 1 |  | |",
+      "exact_source_quote": "| ОГМ21 | лист 10 | Ограждение металлическое ОГМ21 | 1 |  |  |",
+      "reason": "unique_table_row_same_ordered_cells_only_outer_cell_spacing"
+    }
+  ],
+  "raw_response_mutated": false,
+  "semantic_verified": false
+}
