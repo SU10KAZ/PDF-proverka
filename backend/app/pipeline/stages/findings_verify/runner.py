@@ -72,6 +72,8 @@ class FindingsVerifyResult:
     source_review_workflows_failed: int = 0
     source_review_applied: int = 0
     source_review_not_applied: int = 0
+    reviewed_groups_applied: int = 0
+    reviewed_groups_not_applied: int = 0
     error: Optional[str] = None
 
 
@@ -326,6 +328,21 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
         await ctx.log(f"Решения проверки источников не применены: {exc}", "warn")
         result.error = (result.error + f"; source_review: {exc}") if result.error else f"source_review: {exc}"
 
+    # Explicit grouping inbox only; raw proposals never authorize a merge.
+    try:
+        from ..findings_merge.reviewed_grouping import run_group_admission_phase
+        from backend.app.pipeline.stages.prepare.graph_builder import resolve_document_markdown
+        md_path = resolve_document_markdown(Path(output_dir))
+        grouping = await asyncio.to_thread(run_group_admission_phase, Path(output_dir),
+            md_path.read_text(encoding="utf-8") if md_path else "")
+        result.reviewed_groups_applied = grouping["applied"]
+        result.reviewed_groups_not_applied = grouping["not_applied"]
+        if not grouping["skipped"]:
+            await ctx.log(f"Проверенная группировка: применено {grouping['applied']}, не применено {grouping['not_applied']}")
+    except (OSError, ValueError, TypeError, KeyError, AttributeError) as exc:
+        await ctx.log(f"Группировка не применена: {exc}", "warn")
+        result.error = (result.error + f"; reviewed_grouping: {exc}") if result.error else f"reviewed_grouping: {exc}"
+
     # Report the final number after explicit admission, not the pre-filter count.
     try:
         final_document = json.loads(findings_path.read_text(encoding='utf-8'))
@@ -354,6 +371,8 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
             "source_review_workflows_failed": result.source_review_workflows_failed,
             "source_review_applied": result.source_review_applied,
             "source_review_not_applied": result.source_review_not_applied,
+            "reviewed_groups_applied": result.reviewed_groups_applied,
+            "reviewed_groups_not_applied": result.reviewed_groups_not_applied,
             "absence_candidates": result.absence_candidates,
             "absence_downgraded": result.absence_downgraded,
         },

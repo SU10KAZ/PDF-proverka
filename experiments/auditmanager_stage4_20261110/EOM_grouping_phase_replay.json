@@ -1,0 +1,12 @@
+{
+  "scope": "Actual optional grouping admission phase and Excel, not full verifier-stage model replay.",
+  "group_applied": true,
+  "rerun_idempotent": true,
+  "prior_classic_findings_unchanged": 49,
+  "final_rows": 50,
+  "member_text_visible": true,
+  "raw_proposals_cannot_trigger_phase": true,
+  "new_model_calls": 0,
+  "full_acceptance": false,
+  "remaining": "Automatic preparation and semantic adjudication of group inbox remain separate work; explicit local review reused."
+}

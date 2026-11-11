@@ -44,3 +44,28 @@ def test_unapproved_or_lossy_group_preserves_original(bad):
     if bad in ('different_section','different_severity','overflow'):d['members_sha256']=evidence_digest(doc['findings'][:2])
     out,r=apply_reviewed_group(doc,p,d,md)
     assert out==doc and r['status']=='not_applied'
+
+
+def test_phase_is_opt_in_idempotent_and_rejects_changed_sources(tmp_path):
+    import json
+    from backend.app.pipeline.stages.findings_merge.reviewed_grouping import run_group_admission_phase
+    doc,p,d,md=case();path=tmp_path/'03_findings.json';path.write_text(json.dumps(doc));raw=path.read_bytes()
+    assert run_group_admission_phase(tmp_path,md)['skipped'] and path.read_bytes()==raw
+    (tmp_path/'03_group_review_admissions.json').write_text(json.dumps([{'proposal':p,'decision':d}]))
+    assert run_group_admission_phase(tmp_path,md+'changed')['not_applied']==1 and path.read_bytes()==raw
+    assert run_group_admission_phase(tmp_path,md)['applied']==1
+    grouped=path.read_bytes()
+    assert run_group_admission_phase(tmp_path,md)['already_applied']==1 and path.read_bytes()==grouped
+    assert run_group_admission_phase(tmp_path,md+'changed')['not_applied']==1 and path.read_bytes()==grouped
+
+
+def test_overlapping_groups_never_choose_first_winner(tmp_path):
+    import json
+    from backend.app.pipeline.stages.findings_merge.reviewed_grouping import run_group_admission_phase
+    doc,p,d,md=case();path=tmp_path/'03_findings.json';path.write_text(json.dumps(doc));raw=path.read_bytes()
+    second={**p,'member_ids':['B','C']}
+    (tmp_path/'03_group_review_admissions.json').write_text(json.dumps([
+        {'proposal':p,'decision':d},{'proposal':second,'decision':d}]))
+    r=run_group_admission_phase(tmp_path,md)
+    assert r['applied']==0 and r['not_applied']==2 and path.read_bytes()==raw
+    assert all(x['reason']=='overlapping_group_proposals' for x in r['receipts'])

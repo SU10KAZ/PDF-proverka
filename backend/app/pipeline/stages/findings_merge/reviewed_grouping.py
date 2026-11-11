@@ -54,14 +54,17 @@ def apply_reviewed_group(document, proposal, decision, source_md):
         merged['problem']=proposal['shared_issue']
         merged['solution']=proposal['common_corrective_action']
         # Explicit member-level text remains visible, not only in a hidden archive.
+        labels=dict(problem='Проблема',description='Описание',solution='Решение',risk='Риск',consequence='Последствия',norm='Норма',norm_quote='Цитата нормы',sheet='Лист',page='Страница',location='Место')
         lines=[]
         for f in members:
             lines.append(f"[{f['id']}]")
             for key in ('problem','description','solution','risk','consequence','norm','norm_quote','sheet','page','location'):
                 if f.get(key) not in (None,''):
-                    lines.append(f'{key}: {f[key]}')
+                    lines.append(f'{labels[key]}: {f[key]}')
         merged['description']='\n'.join(lines)
         if any(len(str(merged.get(k,'')))>32767 for k in ('problem','description','solution','risk','norm','norm_quote')):
+            raise ValueError('group_exceeds_excel_cell_limit')
+        if len(merged['description'])+len(str(merged.get('norm','')))+8>32767:
             raise ValueError('group_exceeds_excel_cell_limit')
         merged['grouping_original_findings']=deepcopy(members)
         merged['merged_original_finding_ids']=[f['id'] for f in members]
@@ -73,3 +76,43 @@ def apply_reviewed_group(document, proposal, decision, source_md):
         return result,{'status':'applied','member_ids':member_ids,'surviving_id':members[0]['id'],'semantic_certified':False}
     except (ValueError,TypeError,KeyError,AttributeError) as exc:
         return original,{'status':'not_applied','reason':str(exc)}
+
+
+def run_group_admission_phase(output_dir, source_md):
+    """Apply an explicit review inbox after source reviews; absent inbox is a no-op."""
+    import json
+    from pathlib import Path
+    from collections import Counter
+    root=Path(output_dir);inbox=root/'03_group_review_admissions.json'
+    if not inbox.exists():return {'skipped':True,'applied':0,'not_applied':0,'already_applied':0}
+    entries=json.loads(inbox.read_text())
+    if not isinstance(entries,list) or any(not isinstance(e,dict) for e in entries):
+        raise ValueError('invalid_group_review_inbox')
+    counts=Counter()
+    for entry in entries:
+        proposal=entry.get('proposal')
+        ids=proposal.get('member_ids',[]) if isinstance(proposal,dict) else []
+        if isinstance(ids,list):counts.update(i for i in ids if isinstance(i,str))
+    path=root/'03_findings.json';before=json.loads(path.read_text());result=deepcopy(before);receipts=[]
+    for entry in entries:
+        proposal,decision=entry.get('proposal'),entry.get('decision')
+        ids=proposal.get('member_ids',[]) if isinstance(proposal,dict) else []
+        if isinstance(ids,list) and any(isinstance(i,str) and counts[i]>1 for i in ids):
+            receipts.append({'status':'not_applied','reason':'overlapping_group_proposals'});continue
+        already=False
+        for finding in result.get('findings',[]):
+            provenance=finding.get('grouping_provenance',{})
+            if (isinstance(decision,dict) and decision.get('source_md_sha256')==hashlib.sha256(source_md.encode()).hexdigest()
+                and provenance.get('proposal')==proposal and provenance.get('decision')==decision
+                and finding.get('grouping_original_findings')
+                and evidence_digest(finding['grouping_original_findings'])==decision.get('members_sha256')):
+                already=True;break
+        if already:
+            receipts.append({'status':'already_applied','member_ids':ids});continue
+        result,receipt=apply_reviewed_group(result,proposal,decision,source_md);receipts.append(receipt)
+    if result!=before:
+        temporary=path.with_suffix('.group_review.tmp')
+        temporary.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');temporary.replace(path)
+    report={'skipped':False,**{k:sum(r['status']==k for r in receipts) for k in ('applied','not_applied','already_applied')},'receipts':receipts}
+    (root/'03_group_review_admission_results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+    return report
