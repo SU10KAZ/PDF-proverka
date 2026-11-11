@@ -1,0 +1,262 @@
+{
+  "status": "four_candidate_records_three_issue_groups_graphically_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-094",
+      "pointer": "/block_analyses/36/findings/0",
+      "original_candidate": {
+        "id": "G-094",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "interface_connection",
+        "finding": "На схеме внешних подключений БД-ТЗ1, лист 41, линия RS-485 к шкафу ЩД-АСУД.И.5.1ПЧ подключена к клеммам «КВ», «Uпд». Эти же обозначения использованы для контактных входов концевого выключателя ворот и пожарной сигнализации; обозначение интерфейса противоречит указанным клеммам подключения.\n\nРекомендация: Исправить подключение линии RS-485, указав клеммы интерфейса согласно документации БД-ТЗ1 и согласовав их со схемой шкафа ЩД-АСУД.И.5.1ПЧ.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_e7bf605cde374aec808e8a5deb78ce97",
+        "value_found": "RS-485 (в шкаф ЩД-АСУД.И.5.1ПЧ); КВ Uпд",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-094",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "graphic_terminal_label_concern_confirmed_manufacturer_mapping_pending",
+      "reason": "Лист 41: колонка RS-485 в шкаф ЩД-АСУД.И.5.1ПЧ заканчивается на паре КВ/Uпд блока БД-ТЗ1; такими же буквальными подписями снабжены соседние пары концевого выключателя и пожарного входа. Наблюдение кандидата о повторении подписей подтверждено. Оно не доказывает внутреннее назначение клемм или неправильный монтаж. Заводская схема КЭВ-БЛОК-МК и схема шкафа диспетчеризации не проверены; точное исправление и электрическая несовместимость остаются непроверенными. До этой сверки выдача как вопрос о согласовании интерфейса.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+        "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+        "bytes": 289146,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-095",
+      "pointer": "/block_analyses/36/findings/1",
+      "original_candidate": {
+        "id": "G-095",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "protective_earthing",
+        "finding": "На схеме внешних подключений БД-ТЗ1, лист 41, не показано подключение защитной жилы кабеля У4-2 со стороны блока диспетчеризации. У насосов М1 и М2 обозначены клеммы PE и жилы 3, однако со стороны БД-ТЗ1 показаны только жилы 1 и 2 на клеммах H2/Р и N.\n\nРекомендация: Показать подключение защитной жилы У4-2 к PE и непрерывную защитную цепь к обоим насосам.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_e7bf605cde374aec808e8a5deb78ce97",
+        "value_found": "У4-2; ППГнг(А)-HF 3x1.5; L N PE; H2/Р N",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-095",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_drawn_pe_termination_omission_actual_continuity_unknown",
+      "reason": "Лист 41: у M1 и M2 показаны L,N,PE и номера жил 1,2,3. У нижнего окончания общей линии У4-2 на БД-ТЗ1 показаны только жилы 1,2 на H2/Р,N; PE для этой отходящей линии не обозначен. Кабель подписан ППГнг(А)-HF 3х1,5, 10 м; ведомость TEXT подтверждает трёхжильное исполнение. PE входа питания изображён отдельно слева и не задаёт явно точку присоединения защитной жилы У4-2. Подтверждено отсутствие обозначения на данном чертеже, не отсутствие защитной жилы в кабеле и не доказанный обрыв реального заземления. Заводская схема и монтаж не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+        "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+        "bytes": 289146,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_419647cb4cd74c26b4c46942b49756e7",
+          "heading": "### BLOCK #142 [TEXT]: blk_419647cb4cd74c26b4c46942b49756e7",
+          "start": 229567,
+          "end": 230549,
+          "sha256": "c3670ecf2daf86385c5d2ae61e8fe2236e93dbe3bf18f76d10af184f88d3c3a5",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-096",
+      "pointer": "/block_analyses/38/findings/0",
+      "original_candidate": {
+        "id": "G-096",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "reference_conflict",
+        "finding": "На листе 42 для электропитания БУРР-1М указан раздел 21/24-ГК-К5-ЭМ, тогда как примечание 2 относит питающие кабели к разделу 13АВ-РД-ЭМ-К5. Ссылки на раздел электроснабжения на одном листе не согласованы.\n\nРекомендация: Указать согласованный шифр раздела, предусматривающего питание БУРР-1М, в схеме и примечании 2.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_8de25b2b318647aeac8b3298fe03a98c",
+        "value_found": "Электропитание 220В предусмотрено в разделе 21/24-ГК-К5-ЭМ",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-096",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое расхождение ссылок на электроснабжение БУРР-1М: 21/24-ГК-К5-ЭМ в схеме и 13АВ-РД-ЭМ-К5 в примечании 2 листа 42. Детализация и рекомендации эквивалентны.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "different_reference_codes_confirmed_scope_overlap_unresolved",
+      "reason": "Лист 42: графическая подпись питания БУРР-1М указывает 21/24-ГК-К5-ЭМ. Примечание 2 TEXT указывает 13АВ-РД-ЭМ-К5 для питающих и межблочных кабелей между внутренними и наружными блоками. Различие шифров подтверждено, но не установлено, распространяется ли второе указание именно на питание БУРР, а не только на кондиционеры. Поэтому тезис о двух противоречащих ссылках на один кабель не подтверждён полностью. Требуется уточнить область примечания и действующий раздел ЭМ; автоматически унифицировать ссылки нельзя. Возможный чужой шифр — вопрос согласования, а не доказанное отсутствие питания.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+        "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+        "bytes": 35243,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+          "heading": "### BLOCK #147 [TEXT]: blk_400b84df0f63420ab16fb5c330de54b7",
+          "start": 236534,
+          "end": 237498,
+          "sha256": "54822425fb9795f776b11b525a1c941394c4b23afedd4c625b0de1a7a7b154aa",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-097",
+      "pointer": "/block_analyses/38/findings/1",
+      "original_candidate": {
+        "id": "G-097",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cross_references",
+        "finding": "На листе 42 указаны разные обозначения раздела электроснабжения: питание БУРР-1М отнесено к 21/24-ГК-К5-ЭМ, а прокладка питающих кабелей в примечании 2 — к 13АВ-РД-ЭМ-К5. Ссылки не позволяют однозначно определить раздел, предусматривающий питание блока.\n\nРекомендация: Согласовать ссылки на раздел электроснабжения в схеме подключения БУРР-1М и примечании 2 листа 42.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_8de25b2b318647aeac8b3298fe03a98c",
+        "value_found": "21/24-ГК-К5-ЭМ; 13АВ-РД-ЭМ-К5",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-097",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое расхождение ссылок на электроснабжение БУРР-1М: 21/24-ГК-К5-ЭМ в схеме и 13АВ-РД-ЭМ-К5 в примечании 2 листа 42. Детализация и рекомендации эквивалентны.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "different_reference_codes_confirmed_scope_overlap_unresolved",
+      "reason": "Лист 42: графическая подпись питания БУРР-1М указывает 21/24-ГК-К5-ЭМ. Примечание 2 TEXT указывает 13АВ-РД-ЭМ-К5 для питающих и межблочных кабелей между внутренними и наружными блоками. Различие шифров подтверждено, но не установлено, распространяется ли второе указание именно на питание БУРР, а не только на кондиционеры. Поэтому тезис о двух противоречащих ссылках на один кабель не подтверждён полностью. Требуется уточнить область примечания и действующий раздел ЭМ; автоматически унифицировать ссылки нельзя. Возможный чужой шифр — вопрос согласования, а не доказанное отсутствие питания.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+        "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+        "bytes": 35243,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+          "heading": "### BLOCK #147 [TEXT]: blk_400b84df0f63420ab16fb5c330de54b7",
+          "start": 236534,
+          "end": 237498,
+          "sha256": "54822425fb9795f776b11b525a1c941394c4b23afedd4c625b0de1a7a7b154aa",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}
