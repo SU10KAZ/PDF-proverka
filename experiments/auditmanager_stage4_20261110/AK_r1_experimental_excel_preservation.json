@@ -1,0 +1,75 @@
+{
+  "status": "current_exporter_replay_on_sealed_AK_final",
+  "source_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+  "source_sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+  "xlsx_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/export_preservation_check.xlsx",
+  "xlsx_sha256": "c78093b8773dca80a90ce4801a9bc5ceb3ff6d64eae54ce7aa07c31c7d27c1cd",
+  "exporter_path": "backend/app/pipeline/stages/report/generate_excel_report.py",
+  "exporter_sha256": "1b8a2b557dad416c649d1c1c1166496055b81f78d7e7f6f09aee53e0e57309b1",
+  "all_rows_preserved": 28,
+  "problem_description_solution_match_exporter_functions": true,
+  "source_unchanged": true,
+  "actual_section_by_id": {
+    "F-001": "findings",
+    "F-002": "findings",
+    "F-003": "findings",
+    "F-004": "findings",
+    "F-006": "findings",
+    "F-010": "findings",
+    "F-011": "findings",
+    "F-012": "findings",
+    "F-013": "findings",
+    "F-014": "findings",
+    "F-015": "findings",
+    "F-016": "findings",
+    "F-017": "findings",
+    "F-018": "findings",
+    "F-021": "findings",
+    "F-024": "findings",
+    "F-025": "findings",
+    "F-026": "findings",
+    "F-027": "findings",
+    "F-028": "findings",
+    "F-005": "questions",
+    "F-007": "questions",
+    "F-008": "questions",
+    "F-009": "questions",
+    "F-019": "questions",
+    "F-020": "questions",
+    "F-022": "questions",
+    "F-023": "questions"
+  },
+  "explicit_question_ids": [
+    "F-005",
+    "F-007",
+    "F-008",
+    "F-009",
+    "F-019",
+    "F-020",
+    "F-022",
+    "F-023"
+  ],
+  "semantic_routing_issues": {
+    "technical_in_questions": [
+      "F-009"
+    ],
+    "missing_questions_metadata": [
+      "F-001",
+      "F-002"
+    ],
+    "editorial_in_technical": [
+      "F-027"
+    ],
+    "interface_questions_presented_as_technical": [
+      "F-015",
+      "F-017"
+    ]
+  },
+  "limits": [
+    "Checks saved workbook values, not visual layout or deployed portal.",
+    "Exporter correctly follows supplied routing; does not establish semantic classification.",
+    "All28rows preserved does not recover missing detector candidates."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
