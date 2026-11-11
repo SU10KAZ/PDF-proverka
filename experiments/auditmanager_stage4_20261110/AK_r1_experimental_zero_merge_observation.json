@@ -1,0 +1,56 @@
+{
+  "status": "intermediate_failure_observation_not_final_trial_verdict",
+  "run": "AK_r1_classic_current",
+  "stage": "findings_merge",
+  "sources": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794421719150038973/request.json",
+      "sha256": "8f54fd2ca027e26f8c4048443b9f8f9341711d63da2579e43e52fcc0a7f357ad"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794421719150038973/response_1.json",
+      "sha256": "1f22718a129c3e8332472be89838b7a872719b50ab2d647cf15de8eace88144d"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794421719150038973/attempts.json",
+      "sha256": "7101ac2dfd3bc76861be50f6c4d3befb92839c5b22951aeb74fe36a200cc9991"
+    }
+  ],
+  "observed": {
+    "published_findings": 0,
+    "candidate_decisions": 146,
+    "decisions": {
+      "needs_data": 146
+    },
+    "origins": {
+      "text": 28,
+      "graphic": 118
+    },
+    "image_hashes_count": 0,
+    "allowed_tools": "",
+    "attempts": 1,
+    "api_error": false
+  },
+  "model_explanation": [
+    "Предоставлены результаты двух этапов анализа, реестры и отдельные цитаты. Полный первичный текст документа, изображения и граф документа в текущем сообщении отсутствуют.",
+    "Изображения не приложены; графические соединения, позиционные обозначения, размерные цепи и количество изображённых объектов непосредственно не проверены.",
+    "Ссылки на исходные блоки, пересказы детекторов и отметки завершённого анализа не приняты за независимое подтверждение замечаний.",
+    "Все 28 текстовых, 107 опубликованных графических и 11 отложенных кандидатов учтены индивидуально. Отсутствие опубликованных итоговых замечаний означает недостаточность проверяемых источников, а не отсутствие ошибок проекта.",
+    "Пустые source_refs в решениях означают отсутствие непосредственно просмотренных первичных блоков. Идентификаторы источников, названные в исходных кандидатах, не выданы за просмотренные.",
+    "Файлы, внешние источники и инструменты не использовались. Запросы к OpenRouter не выполнялись.",
+    "Массив items_verified_from_blocks пуст. Оснований повышать серьёзность текстовых замечаний по результатам графического подтверждения нет.",
+    "Нормативные пункты, цитаты и статус редакций независимо не проверены."
+  ],
+  "limitations": [
+    "Model explanation of missing primary text has not yet been independently checked against the complete request.",
+    "Zero findings is an intermediate merge result; subsequent targeted checks may add findings.",
+    "Candidate truth and useful-finding losses require sealed-output comparison.",
+    "API success is not engineering or completeness acceptance."
+  ],
+  "next_actions": [
+    "Trace merge prompt requirements and actual source handoff.",
+    "Check whether deferred candidates are recovered by declared subsequent methods.",
+    "Assess final preservation against frozen benchmark; do not overwrite or silently repair this trial output."
+  ],
+  "production_acceptance": false
+}
