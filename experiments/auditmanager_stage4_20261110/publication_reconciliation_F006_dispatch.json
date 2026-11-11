@@ -1,0 +1,18 @@
+{
+  "status_at_observation": "running",
+  "preparation_path": "/tmp/auditmanager_publication_reconciliation_F006_20261112/preparation.json",
+  "preparation_sha256": "298e2d5d204cc6dddc5927ad2480e1931e3f78ddcba329ac656546d44e014315",
+  "request_path": "/tmp/auditmanager_publication_reconciliation_F006_20261112/request.json",
+  "request_sha256": "e055325e852a4ba79d6b1ee44b469a26ec8ba064184b807a00ac88fc10a062fd",
+  "run_directory": "/tmp/auditmanager_publication_reconciliation_F006_20261112_run",
+  "session_id": 22911,
+  "pid": 1033349,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "planned_packets": 1,
+  "selection": "DEV-known F-006; not independent validation",
+  "engineer_answers_supplied": false,
+  "coordinator_conclusions_supplied": false,
+  "production_acceptance": false,
+  "next_action": "Poll existing session, then run evaluate_publication_reconciliation and inspect result against primary sources; do not redispatch while alive."
+}
