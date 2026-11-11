@@ -1,0 +1,72 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-027",
+      "status": "confirmed_document_conflict_with_stale_caveat",
+      "review_reason": "Позиции16.2/16.3 спецификации шкафаШАУВ-1-К6АС указывают Ва4.1/Па4.1. Таблица применимости относит этот шкаф кПа5.1/Ва5.1,аК5АС кПа4.1/Ва4.1. Перечень листа22 относится кПа5.1/Ва5.1. На ранее просмотренной схеме подключений листа40 M1/M5 относятся кПа5.1,M2/M3 кВа5.1 при шкафеК6АС. На непосредственно просмотренном detail_tile_10 выноскаШАУВ-1-К6АС содержит маркиПа5.1-1…12 иВа5.1-1…14. Конфликт адресных примечаний подтверждён. Перенос мощностей между шкафами не обоснован. Начальная оговорка о непроверенных листах40/54 устарела.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_sheet54_full_graphic_tiles_20261112/detail_tile_10.png",
+          "sha256": "c67cde503f77ea9928ccbb7bbbbabd841e1d5933ec3166f44b451ab88d06fcd4",
+          "block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+          "directly_viewed": true,
+          "detail": "original",
+          "manifest_path": "/tmp/auditmanager_sheet54_full_graphic_tiles_20261112/manifest.json",
+          "manifest_sha256": "4da91e0d6291b463a6a8a83115b931181917524073b5b4200963b4035bc00f63"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "start": 450496,
+          "end": 453053,
+          "sha256": "7dc30790d0460b8b69ccda4911412d2c42fc3d54faa0a0e8c40c635860a3ee62"
+        },
+        {
+          "block_id": "blk_f9a46b38e8aa4c498ede6fbe4a461052",
+          "start": 352024,
+          "end": 353143,
+          "sha256": "1ad58436b00d69bdba01d1e31bf44c081f0461fd32b3e4e7673f9f6508775eb2"
+        },
+        {
+          "block_id": "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "start": 142937,
+          "end": 144509,
+          "sha256": "e138dd729abdf4498a2680064d062e68b35e96d3dae67e4a534d453eee2b8574"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-082",
+      "status": "confirmed_scope_question_with_stale_reference",
+      "review_reason": "На непосредственно просмотренном фрагменте корпуса1 шесть отдельных пар завеса–пульт подУ1.1–У1.6 и пять подУ2.1,У2.2,У3,У4,У5. Все11пультов подписаныПУ-У1.1. Подсчёт выполнен по одному фрагменту без сложения перекрывающихся деталей. Легенда определяетПУ-Уп как пульт,но не устанавливает ответственностьАК2-ПА за каждую завесу корпуса1. Повтор обозначения подтверждён; глобальная уникальность и принадлежность комплекту не доказаны. Оставить вопрос об адресации и ответственном комплекте. Не выдавать11отдельных технических нарушений. УпоминаниеF-036 и служебныхparent:... относится к внутренним идентификаторам и должно быть исключено из пользовательского описания.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/detail_tile_0.png",
+          "sha256": "196e110a08c546487d43b4181e2b14f28f142c935e73ef998e1c4a58da5bf5b8",
+          "block_id": "blk_0792816c162c469289b461843d2c307b",
+          "directly_viewed": true,
+          "detail": "original",
+          "manifest_path": "/tmp/auditmanager_runtime_recovery_graphic_details_20261112/tiles/manifest.json",
+          "manifest_sha256": "7c5e918d277e164cb72075ffbc7b4dcdb69eb042c790192a96c99328a1f268cc"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_e7af9d2de9a4471daa970c45845957e5",
+          "start": 45025,
+          "end": 48296,
+          "sha256": "eea7175ba2ede6f18ea35e509483befc94533de5d5c2e7621b8db63862b3d6c6"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false
+}

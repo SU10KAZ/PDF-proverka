@@ -1,5 +1,5 @@
 {
-  "status": "output_quality_review_in_progress",
+  "status": "all_output_rows_assessed_with_explicit_evidence_limits",
   "findings_path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
   "findings_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
   "rows": [
@@ -357,8 +357,14 @@
       "finding_id": "F-027",
       "problem": "В примечаниях спецификации ШАУВ-1-К6АС названы системы другой зоны.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_with_stale_caveat",
+      "engineer_decision": null,
+      "review_reason": "Позиции16.2/16.3 спецификации шкафаШАУВ-1-К6АС указывают Ва4.1/Па4.1. Таблица применимости относит этот шкаф кПа5.1/Ва5.1,аК5АС кПа4.1/Ва4.1. Перечень листа22 относится кПа5.1/Ва5.1. На ранее просмотренной схеме подключений листа40 M1/M5 относятся кПа5.1,M2/M3 кВа5.1 при шкафеК6АС. На непосредственно просмотренном detail_tile_10 выноскаШАУВ-1-К6АС содержит маркиПа5.1-1…12 иВа5.1-1…14. Конфликт адресных примечаний подтверждён. Перенос мощностей между шкафами не обоснован. Начальная оговорка о непроверенных листах40/54 устарела.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_final_plan_details_source_review_20261112.json",
+        "sha256": "de3b35dde00c390db66e5a90b18c869150f7659cc8533199f3b9a1931ba1cb9d"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-028",
@@ -1078,8 +1084,14 @@
       "finding_id": "F-082",
       "problem": "У одиннадцати отдельно изображённых пультов завес корпуса 1 повторено обозначение «ПУ-У1.1».",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_scope_question_with_stale_reference",
+      "engineer_decision": null,
+      "review_reason": "На непосредственно просмотренном фрагменте корпуса1 шесть отдельных пар завеса–пульт подУ1.1–У1.6 и пять подУ2.1,У2.2,У3,У4,У5. Все11пультов подписаныПУ-У1.1. Подсчёт выполнен по одному фрагменту без сложения перекрывающихся деталей. Легенда определяетПУ-Уп как пульт,но не устанавливает ответственностьАК2-ПА за каждую завесу корпуса1. Повтор обозначения подтверждён; глобальная уникальность и принадлежность комплекту не доказаны. Оставить вопрос об адресации и ответственном комплекте. Не выдавать11отдельных технических нарушений. УпоминаниеF-036 и служебныхparent:... относится к внутренним идентификаторам и должно быть исключено из пользовательского описания.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_final_plan_details_source_review_20261112.json",
+        "sha256": "de3b35dde00c390db66e5a90b18c869150f7659cc8533199f3b9a1931ba1cb9d"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-083",
@@ -1119,14 +1131,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 83,
-  "unchecked": 2,
+  "reviewed": 85,
+  "unchecked": 0,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 83,
-  "unchecked_findings": 2
+  "reviewed_findings": 85,
+  "unchecked_findings": 0
 }
