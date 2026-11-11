@@ -66,8 +66,14 @@
       "finding_id": "F-006",
       "problem": "Для ШАУВ-4-К4ПЧ переставлены количества датчиков разных диапазонов.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_with_stale_caveat",
+      "engineer_decision": null,
+      "review_reason": "Перечень листа10 задаёт PDS2 20–200Па в количестве1 и PDS1/PDS3/PDS4 50–500Па в количестве3. Спецификация ШАУВ-4-К4ПЧ позиции4.4/4.5 задаёт соответственно3 и1. На непосредственно просмотренной схеме PDS2/PDS4 связаны с колонками8/18, обе20–200Па; PDS1/PDS3 — с4/12, обе50–500Па. Графическое распределение2+2 отличается и от перечня1+3, и от спецификации3+1, при одинаковом общем количестве4. Уставки50Па у PDS2 и100Па у PDS4 не подменяют диапазоны и не доказывают непригодность50–500Па. Согласование каждого прибора оправдано; нельзя произвольно выбрать одну таблицу правильной или объявить общую недопоставку. Начальная оговорка о непроверенной графике устарела после дополнений.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_sensor_range_counts_review_20261112.json",
+        "sha256": "381e0f39815205625beeda70e5f91066dcddbf42f5569d243494d83846ce6125"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-007",
@@ -1075,14 +1081,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 76,
-  "unchecked": 9,
+  "reviewed": 77,
+  "unchecked": 8,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 76,
-  "unchecked_findings": 9
+  "reviewed_findings": 77,
+  "unchecked_findings": 8
 }
