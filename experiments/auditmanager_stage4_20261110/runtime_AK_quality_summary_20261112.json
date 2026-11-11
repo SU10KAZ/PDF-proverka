@@ -1,0 +1,432 @@
+{
+  "status": "source_quality_assessment_complete_remediation_pending",
+  "ledger": {
+    "path": "experiments/auditmanager_stage4_20261110/runtime_AK_output_quality_review_in_progress.json",
+    "sha256": "0d3de84b6442873e882b1545ace3d47a682cd2158e545af69229ee392531fdc9"
+  },
+  "sealed_findings": {
+    "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+    "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+  },
+  "total_assessed": 85,
+  "unchecked": 0,
+  "status_counts": {
+    "confirmed_cable_mark_variants_with_identifier_correction": 1,
+    "confirmed_composite_address_conflicts": 1,
+    "confirmed_conflict_with_location_correction": 1,
+    "confirmed_conflict_with_stale_context_limit": 1,
+    "confirmed_document_configuration_ambiguity": 1,
+    "confirmed_document_conflict": 28,
+    "confirmed_document_conflict_repeated_location": 3,
+    "confirmed_document_conflict_solution_scope_caveat": 1,
+    "confirmed_document_conflict_with_publication_cleanup": 2,
+    "confirmed_document_conflict_with_stale_caveat": 8,
+    "confirmed_document_conflict_with_stale_reference": 1,
+    "confirmed_document_conflict_wrong_section": 2,
+    "confirmed_document_label_direction_conflict": 1,
+    "confirmed_drawing_omission": 1,
+    "confirmed_labels_scope_question_route_unresolved": 2,
+    "confirmed_matrix_omission_scope_limited": 1,
+    "confirmed_polarity_conflict_consequence_conditional": 4,
+    "confirmed_scope_question": 1,
+    "confirmed_scope_question_with_stale_reference": 1,
+    "confirmed_specification_omission_with_scope_limit": 1,
+    "confirmed_textual_logic_requires_scope_caveat": 1,
+    "confirmed_totals_with_route_conflict": 1,
+    "correct_question_scope": 8,
+    "fact_confirmed_scope_unresolved": 1,
+    "false_absence_of_package_reference": 1,
+    "refuted_graphic_interpretation": 1,
+    "source_supported_question_compliance_unresolved": 1,
+    "source_text_checked_normative_basis_unverified": 2,
+    "stale_question_overlaps_confirmed_findings": 1,
+    "unsupported_symbol_equivalence_preserve_legend_question": 1,
+    "unsupported_technical_promotion": 5
+  },
+  "clear_refuted_findings": [
+    "F-013",
+    "F-040"
+  ],
+  "unsupported_technical_promotions": [
+    "F-037",
+    "F-045",
+    "F-050",
+    "F-052",
+    "F-057"
+  ],
+  "mixed_supported_and_unsupported": [
+    "F-060"
+  ],
+  "actions": [
+    {
+      "id": "AK-Q01",
+      "stage": "context retrieval / filtering",
+      "proposed_behavior": "Перед выводом об отсутствии связи проверить явные отсылки к другому комплекту. Сохранять подтверждённые конфликты одного объекта между документами.",
+      "affected_findings": [
+        "F-013"
+      ],
+      "preserve_controls": [
+        "F-065",
+        "F-085"
+      ],
+      "evidence": [
+        {
+          "finding_id": "F-013",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e",
+          "direct_graphic": {
+            "path": "/home/coder/auditmanager/corpus-audits/20261109_stage1_source_review/review/jobs/B-AK-000/images/blk_206d5fa1055148c5b12414a2919fbe84_6471b342ae3c.png",
+            "sha256": "e201c2c8758083ae833e2bc3ab4c1904a3319761855ad5e875dc2acc0a74a7d7",
+            "block_id": "blk_206d5fa1055148c5b12414a2919fbe84",
+            "directly_viewed": true,
+            "observation": "Группа5.1,5.2,…5.17,5.18 с КСИ выделена областью «см. книга1 АК1-ПА». Первый датчик связан с X3 шлейфа2 БПС-3-И-1 (СУ-К33), далее изображена последовательная связь. Монтажных длин этой группы на просмотренном фрагменте нет."
+          }
+        }
+      ],
+      "verification": "F-013 не остаётся техническим дефектом; F-065 и F-085 сохраняют конфликт и доказательства.",
+      "evidence_limit": "Контроли проверены по источникам, но не являются подтверждённой инженером парой одинакового типа.",
+      "implementation_status": "proposed_not_implemented"
+    },
+    {
+      "id": "AK-Q02",
+      "stage": "graphic interpretation / filtering",
+      "proposed_behavior": "Не приравнивать разные условные обозначения. Проверять локальную легенду и соединения; в составном замечании отклонять только опровергнутую часть.",
+      "affected_findings": [
+        "F-040",
+        "F-060"
+      ],
+      "preserve_controls": [
+        "F-074",
+        "F-076"
+      ],
+      "evidence": [
+        {
+          "finding_id": "F-040",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_recovery_G011_G013_source_review.json",
+          "sha256": "1d65bff3f2f37f47485dc4950afdf668b790255145e572e8ad7912386381a852"
+        },
+        {
+          "finding_id": "F-060",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_polarity_and_symbol_review_20261112.json",
+          "sha256": "98bc26641d8a59e57a1d42f9cf392cfc3452ae061559407d9131073831196fb2"
+        }
+      ],
+      "verification": "Снять неверный тип нагревателя F-040; у F-060 оставить вопрос легенды; сохранить конфликты подключения F-074/F-076.",
+      "evidence_limit": "Нет инженерно подтверждённой пары на одинаковые символы; контролируется сохранение соседних полезных графических находок.",
+      "implementation_status": "proposed_not_implemented"
+    },
+    {
+      "id": "AK-Q03",
+      "stage": "specialist review / final routing",
+      "proposed_behavior": "Отделять команду управления от сигнала обратной связи. Без подтверждения функции канала направлять неоднозначность в вопросы, не объявлять отсутствие DO нарушением.",
+      "affected_findings": [
+        "F-037",
+        "F-045",
+        "F-050",
+        "F-052",
+        "F-057"
+      ],
+      "preserve_controls": [
+        "F-054",
+        "F-058",
+        "F-059"
+      ],
+      "evidence": [
+        {
+          "finding_id": "F-037",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+          "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+        },
+        {
+          "finding_id": "F-045",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+          "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+        },
+        {
+          "finding_id": "F-050",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+          "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+        },
+        {
+          "finding_id": "F-052",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+          "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+        },
+        {
+          "finding_id": "F-057",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+          "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+        }
+      ],
+      "verification": "Пять неоднозначных трактовок не публикуются как дефекты; явные конфликты номеров DI/DO остаются.",
+      "evidence_limit": "Контроль номера канала не доказывает наличие положительного случая отсутствующей команды; такая пара ещё нужна.",
+      "implementation_status": "proposed_not_implemented"
+    },
+    {
+      "id": "AK-Q04",
+      "stage": "merge / final publication",
+      "proposed_behavior": "Формировать актуальный вывод по каждой части замечания. Исходный текст и история остаются в provenance; устаревшие оговорки не выдаются как действующие. Каждая часть должна иметь явный исход: сохранена, уточнена, вопрос, опровергнута или не проверена.",
+      "affected_findings": [
+        "F-003",
+        "F-005",
+        "F-006",
+        "F-007",
+        "F-017",
+        "F-027",
+        "F-032",
+        "F-033",
+        "F-051",
+        "F-053"
+      ],
+      "preserve_controls": [
+        "F-001",
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "finding_id": "F-003",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_three_system_motor_addresses_review_20261112.json",
+          "sha256": "a02621123650a66e5bb173b3dcd6381deb555b43f24bc19157d6f1ef5b293bca"
+        },
+        {
+          "finding_id": "F-005",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_motor_roles_and_intercabinet_address_review_20261112.json",
+          "sha256": "e87abf3fed2242eb7549b48cbb4dd4116f1e7c9e6f77a1e20a554eb217b142b8"
+        },
+        {
+          "finding_id": "F-006",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_pressure_sensor_range_counts_review_20261112.json",
+          "sha256": "381e0f39815205625beeda70e5f91066dcddbf42f5569d243494d83846ce6125"
+        },
+        {
+          "finding_id": "F-007",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_two_channel_sensors_quantity_review_20261112.json",
+          "sha256": "7c78a399a2644480d46413d767282ea4e98d918bbf1d3ac2d898f623df59576e"
+        },
+        {
+          "finding_id": "F-017",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_po51_cable_and_sensor_address_review_20261112.json",
+          "sha256": "14e9b7332000d8725586695ebd97ebd0ec2e81942228ce6ab12d0ea640da4a06"
+        },
+        {
+          "finding_id": "F-027",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_final_plan_details_source_review_20261112.json",
+          "sha256": "de3b35dde00c390db66e5a90b18c869150f7659cc8533199f3b9a1931ba1cb9d"
+        },
+        {
+          "finding_id": "F-032",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_po51_cable_and_sensor_address_review_20261112.json",
+          "sha256": "14e9b7332000d8725586695ebd97ebd0ec2e81942228ce6ab12d0ea640da4a06"
+        },
+        {
+          "finding_id": "F-033",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_po51_cable_and_sensor_address_review_20261112.json",
+          "sha256": "14e9b7332000d8725586695ebd97ebd0ec2e81942228ce6ab12d0ea640da4a06"
+        },
+        {
+          "finding_id": "F-051",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_thermostat_identity_chain_review_20261112.json",
+          "sha256": "0c315567a1401eb63a2985cdd27e1810746f5f510579e3b7c1016dd0f64007a5"
+        },
+        {
+          "finding_id": "F-053",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_thermostat_identity_chain_review_20261112.json",
+          "sha256": "0c315567a1401eb63a2985cdd27e1810746f5f510579e3b7c1016dd0f64007a5"
+        }
+      ],
+      "verification": "После переработки остаются все подтверждённые конфликты; непроверенные части не получают статус проверенных; неизменные замечания не теряются.",
+      "evidence_limit": "Наличие addendum и совпадение строки не доказывают семантическую правильность финального вывода.",
+      "implementation_status": "proposed_not_implemented"
+    },
+    {
+      "id": "AK-Q05",
+      "stage": "merge / final publication",
+      "proposed_behavior": "Ссылки на замечания связывать со стабильной идентичностью и текущим ID; внутренние parent-идентификаторы хранить в истории, а не в пользовательском тексте.",
+      "affected_findings": [
+        "F-082",
+        "F-084"
+      ],
+      "preserve_controls": [
+        "F-085"
+      ],
+      "evidence": [
+        {
+          "finding_id": "F-082",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_final_plan_details_source_review_20261112.json",
+          "sha256": "de3b35dde00c390db66e5a90b18c869150f7659cc8533199f3b9a1931ba1cb9d"
+        },
+        {
+          "finding_id": "F-084",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_supply_scope_and_cabinet_identity_review_20261112.json",
+          "sha256": "f8d7706edb65f26589b8aa4d2a40c7cf291ed49f8a09ba1479560b43c4c53806"
+        }
+      ],
+      "verification": "После перенумерации ссылки не ведут к чужому объекту; источник и содержание замечания сохраняются.",
+      "evidence_limit": "Нельзя удалять любой текст F-xxx регулярным выражением: возможны полезные корректные ссылки.",
+      "implementation_status": "proposed_not_implemented"
+    },
+    {
+      "id": "AK-Q06",
+      "stage": "merge / duplicate handling",
+      "proposed_behavior": "Объединять повтор одного конфликта с сохранением всех мест. Вопрос, уже разрешённый найденными доказательствами, присоединять к подтверждённому выводу.",
+      "affected_findings": [
+        "F-009",
+        "F-063",
+        "F-064",
+        "F-078",
+        "F-079",
+        "F-081"
+      ],
+      "preserve_controls": [
+        "F-042",
+        "F-047"
+      ],
+      "evidence": [
+        {
+          "finding_id": "F-009",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+          "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+        },
+        {
+          "finding_id": "F-063",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+          "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+        },
+        {
+          "finding_id": "F-064",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_curtain_and_signal_scope_review_20261112.json",
+          "sha256": "0b647ccb14c976cd8a2878f6bbb314809a292cf0abb317b79e9fd3acae8c8631"
+        },
+        {
+          "finding_id": "F-078",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_passage_nodes_source_review_20261112.json",
+          "sha256": "a1a27817cf754e076e547697c08a84a1c1a12f9d44ec9b08f5fdc692661335ea"
+        },
+        {
+          "finding_id": "F-079",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_passage_nodes_source_review_20261112.json",
+          "sha256": "a1a27817cf754e076e547697c08a84a1c1a12f9d44ec9b08f5fdc692661335ea"
+        },
+        {
+          "finding_id": "F-081",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_passage_nodes_source_review_20261112.json",
+          "sha256": "a1a27817cf754e076e547697c08a84a1c1a12f9d44ec9b08f5fdc692661335ea"
+        }
+      ],
+      "verification": "F-078/079/081 дают один конфликт с тремя местами; F-009 не повторяет разрешённый вопрос; разные установки F-042/047 не склеиваются.",
+      "evidence_limit": "Совпадение текста или марки само по себе не устанавливает идентичность объекта.",
+      "implementation_status": "proposed_not_implemented"
+    },
+    {
+      "id": "AK-Q07",
+      "stage": "specialist review / final routing",
+      "proposed_behavior": "Разделять факт повторной марки, область уникальности и доказанный конфликт. Нормативную ссылку без проверки применимости не повышать до установленного нарушения.",
+      "affected_findings": [
+        "F-020",
+        "F-021",
+        "F-022",
+        "F-068",
+        "F-069",
+        "F-077",
+        "F-082",
+        "F-083"
+      ],
+      "preserve_controls": [
+        "F-065",
+        "F-085"
+      ],
+      "evidence": [
+        {
+          "finding_id": "F-020",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_smoke_control_cable_question_review_20261112.json",
+          "sha256": "3b5db66d3aff64e437958dd7d728bc14b11fe682339d6d01dfb9a629f2dc3822"
+        },
+        {
+          "finding_id": "F-021",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_normative_reference_evidence_limits_20261112.json",
+          "sha256": "fc82f48454a8241f9e5a0e32d3486a913c0bc54e2c0bfee62306ac322e2c208f"
+        },
+        {
+          "finding_id": "F-022",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_normative_reference_evidence_limits_20261112.json",
+          "sha256": "fc82f48454a8241f9e5a0e32d3486a913c0bc54e2c0bfee62306ac322e2c208f"
+        },
+        {
+          "finding_id": "F-068",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_connections_review_20261112.json",
+          "sha256": "e87abd3dfd7817f35d33ef96c4a62fb2abf192217e0e14bdfb8228fd17fc688e"
+        },
+        {
+          "finding_id": "F-069",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_graphic_connections_review_20261112.json",
+          "sha256": "e87abd3dfd7817f35d33ef96c4a62fb2abf192217e0e14bdfb8228fd17fc688e"
+        },
+        {
+          "finding_id": "F-077",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_supply_scope_and_cabinet_identity_review_20261112.json",
+          "sha256": "f8d7706edb65f26589b8aa4d2a40c7cf291ed49f8a09ba1479560b43c4c53806"
+        },
+        {
+          "finding_id": "F-082",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_final_plan_details_source_review_20261112.json",
+          "sha256": "de3b35dde00c390db66e5a90b18c869150f7659cc8533199f3b9a1931ba1cb9d"
+        },
+        {
+          "finding_id": "F-083",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_G003_scope_source_review.json",
+          "sha256": "946d70947f88c902541e5f7115b61774c38dd9a4e6cd28b217e72b5d6953aaaa"
+        }
+      ],
+      "verification": "Неопределённая область/норма остаётся вопросом; подтверждённая идентичность объекта позволяет сохранить технический конфликт.",
+      "evidence_limit": "Текущий юридический статус норм не проверен; инженерная полезность вопросов не измерена.",
+      "implementation_status": "proposed_not_implemented"
+    },
+    {
+      "id": "AK-Q08",
+      "stage": "evidence reconciliation / final publication",
+      "proposed_behavior": "Сохранять буквальные значения источников и точно указывать лист. При расхождении трасс не подменять исходную строку предполагаемым исправлением.",
+      "affected_findings": [
+        "F-016",
+        "F-019",
+        "F-034"
+      ],
+      "preserve_controls": [
+        "F-014",
+        "F-066",
+        "F-067",
+        "F-075"
+      ],
+      "evidence": [
+        {
+          "finding_id": "F-016",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_cable_segment_totals_source_review_20261112.json",
+          "sha256": "9ad092d7df9cc45ceb7418337721bf30b811f89dba67f6cb55eba9cc30c93fe0"
+        },
+        {
+          "finding_id": "F-019",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_cable_mark_variants_source_review_20261112.json",
+          "sha256": "d7a75481f2d75611692f009d9f65ac5f389f101d4f8c92b074cd8d94ca3981ec"
+        },
+        {
+          "finding_id": "F-034",
+          "path": "experiments/auditmanager_stage4_20261110/runtime_AK_two_thermostats_repeated_journal_review_20261112.json",
+          "sha256": "67ba21ad18f8d96fc0533fe04fe1dd4c989255a04e2ce518b408bc5544c516f9"
+        }
+      ],
+      "verification": "Исправить ошибочный идентификатор/место в выводе; сохранить исходные MD и графические значения отдельно; не потерять подтверждённую арифметику.",
+      "evidence_limit": "Арифметическое расхождение не доказывает фактическую недопоставку или отсутствие допустимого запаса.",
+      "implementation_status": "proposed_not_implemented"
+    }
+  ],
+  "production_acceptance": false,
+  "precision": null,
+  "engineer_acceptance": null,
+  "limits": [
+    "85 assessed is not 85 accepted or true.",
+    "Actions overlap; their counts must not be summed as defects.",
+    "Known AK sources are development regression, not blind validation.",
+    "This assessment does not close stage 4 or the six-discipline plan.",
+    "No filter effectiveness or engineer workload improvement measured."
+  ],
+  "next_step": "Implement evidence-bound per-subclaim publication reconciliation, then replay the sealed AK output and measure retained coverage, false claims, routing and duplicates before further full trials."
+}
