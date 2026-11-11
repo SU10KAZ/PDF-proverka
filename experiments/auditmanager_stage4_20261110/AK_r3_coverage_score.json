@@ -7,27 +7,25 @@
     "technical": {
       "counts": {
         "denominator": 55,
-        "availability_unchecked": 13,
-        "unchecked": 13,
-        "availability_available": 42,
-        "partial": 14,
-        "full": 28
+        "availability_available": 55,
+        "full": 35,
+        "absent": 3,
+        "partial": 17
       },
-      "review_complete": false,
-      "full_match_rate": null,
+      "review_complete": true,
+      "full_match_rate": 0.6363636363636364,
       "meaning": "fully preserved target rate"
     },
     "question": {
       "counts": {
         "denominator": 23,
-        "availability_available": 16,
-        "partial": 5,
-        "full": 11,
-        "availability_unchecked": 7,
-        "unchecked": 7
+        "availability_available": 23,
+        "partial": 7,
+        "full": 12,
+        "absent": 4
       },
-      "review_complete": false,
-      "full_match_rate": null,
+      "review_complete": true,
+      "full_match_rate": 0.5217391304347826,
       "meaning": "fully preserved target rate"
     },
     "negative": {
@@ -43,7 +41,7 @@
     }
   },
   "section_accuracy_counts": {
-    "unchecked": 39
+    "unchecked": 47
   },
   "filter_effectiveness": null,
   "production_acceptance": false,
