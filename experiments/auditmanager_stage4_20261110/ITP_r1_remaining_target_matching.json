@@ -1,0 +1,720 @@
+{
+  "status": "completed_coordinator_coverage_review",
+  "discipline": "ITP",
+  "repeat": 1,
+  "mapped_atoms": [
+    {
+      "target_id": "ITP44_GVS_maxima:2ad6745f21c33bf142fc",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP44_GVS_maxima.json",
+          "sha256": "44c276625c7e8a17cde89f7d22fabb997b8e89f85b6f6ec3145ef251f5ef1584"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "F-034 прямо признаёт общий максимум 1,081 в анкете и общих данных. Ложное отсутствие исходного значения не повторено; необходимость дополнительного вопроса F-034 оценивается отдельно.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP68_grooved_scope:98fe6084bffb8305b8ed",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP68_grooved_scope.json",
+          "sha256": "99115cd8d26c814d789321933bae0f8e25a5bb13ded0fd458ae71bd361177c69"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Область требования ТЗ 5.3.1.4 и четыре строки муфт суммарно 819 шт. не сопоставлены. F-024 относится к другой теме совместимости DN65.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP72_wall_and_velocity.json",
+          "sha256": "475f5d890f33898ddc718d97ca9a785222529966ef0a5f87a312705ee21bd388"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Стенки 3,0 в расчёте и 3,5 в спецификации для названных диаметров не сопоставлены. F-020 о скорости не заменяет этот вопрос; идентичность участков остаётся неустановленной.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP72_wall_and_velocity:5acf5de70b5d5444dfb8",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP72_wall_and_velocity.json",
+          "sha256": "475f5d890f33898ddc718d97ca9a785222529966ef0a5f87a312705ee21bd388"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Обобщение всех графических участков 57/76/89 до стенки 3,5 мм не повторено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F002_pump_pressure_selection:63286b8abd3e157f4c25",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-002",
+        "F-003",
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F002_pump_pressure_selection.json",
+          "sha256": "285f145dedcc2e37880b8f9aff5f28843c48abf036fe352239e5ef2e1d3f9eab"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Все три сопоставления давлений насосов присутствуют. F-003 сохраняет вопрос местного давления, но F-002 и решения о подборе исполнения звучат безусловнее ограниченного вывода о несогласованности данных; режимы сети и котельной не разведены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F003_main_circuit_components:52cbecb1ef185b3847ce",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F003_main_circuit_components.json",
+          "sha256": "496838d6085febe6249ffc96981a652f3aff44dde82bc08fbb5d5f657a6a527c"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Фильтры, вставки и обратные затворы DN300 PN16 сопоставлены с давлением контура. Нет точной привязки позиций 63/96/103, количества и ветвей К14; в вывод добавлены другие изделия. Не засчитывается доказанное превышение у каждой детали.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F004_safety_valve_setpoints:d5f708be41c1a1f2266c",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Общая формулировка уставок 20 бар включает отопление III зоны и не учитывает схематические 16 бар позиции 45. Прямого утверждения о 20 бар именно на схеме нет: отмечено частичное повторение чрезмерного обобщения, не точное совпадение ложного тезиса.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F005_test_pressure_scope:88ef772ecba424138f46",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F005_test_pressure_scope.json",
+          "sha256": "a7d32222f7f10b1f04ca6b13c42a7ababe200a411e6d0b42cce5ff47abb8648d"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Ошибочная единица 12,5 кг/см и отсутствие границ в указании сохранены. Однако заголовок и слова для всех трубопроводов предрешают область испытания; нормативные основания назначения нового давления не установлены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F006_fuse_instruction:427e462f69e3375e880c",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+          "sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Заголовок без мер защиты расширяет тезис, но описание привязано к пункту 8.4 и условиям операции. Полное отсутствие защиты во всём разделе явно не заявлено; отмечено только частичное пересечение.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F009_GVS_inlet_temperature:06cdf2a18fcf30aafead",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-041"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F009_GVS_inlet_temperature.json",
+          "sha256": "3105d42ff9d51573ed429301e98e68c83ef5967b37dd3d7f64806bb506c6d000"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Температуры 16,54 и 5 сохранены, смешение признано возможным. Но отсутствие раскрытого баланса утверждается без ограничения просмотренными фрагментами; отдельные исходные опросные листы не проверены. Полное совпадение с ограниченным вопросом не засчитано.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F028_reducer_designations:2f16d360921aab6e9949",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+          "sha256": "948c401ded92dc7baf8da111f58e08619ee6485d56c8a1167192c2fd338a3e81"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Обозначения переходов 45×20 и 57×20 не проверены в выдаче; другие размеры из F-023 не заменяют этот вопрос.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F028_reducer_designations:fab751f2686c38838e0b",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-023"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+          "sha256": "948c401ded92dc7baf8da111f58e08619ee6485d56c8a1167192c2fd338a3e81"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Числа 114×89/168×76 и трубы 108/159 сопоставлены. Прямое сопряжение не установлено, но текст описывает несогласованные присоединительные размеры и риск невозможности сборки без этой оговорки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F032_channel_standard_scope:8edf0d0f42a81f234dc5",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-036"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F032_channel_standard_scope.json",
+          "sha256": "2a2861ef488cb53b24ae648891bf66e9912e56d0c64403e708afb229da0649d4"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Сохранено противоречие названия горячекатаного швеллера 100×50×5 и ссылки на ГОСТ 8278 для гнутого профиля. Масса и несущая способность не объявлены проверенными.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F033_replaced_product_standards:3f903a601969ba823079",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-035"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F033_replaced_product_standards.json",
+          "sha256": "d8b8c313183679e564f305522d3a0c60a3ac6011a65f0e86b54d4d0a7278e6ff"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "ГОСТ 12820-80 и 14918-80 названы, но нет точной привязки к ограниченным строкам фланцев и стали. Замена документов обозначена как возможная, без установленного статуса из эталона.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:3e12bcf3c651d348af23",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-036"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Неполнота реквизитов правил эксплуатации названа без ограничения ПЗ и без явной связи с имеющимся приказом 115 в ведомости. Локальный вопрос сохранён лишь частично.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:5c96f17d8af25d1ba443",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-035"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Приказ 115 выделен для проверки, но подтверждённая отмена с датой и актом 511 не установлена в выдаче. Осторожное предположение не приравнивается к завершённой проверке.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F034_mixed_norm_references:2bca6641f93ace5ac5a6",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-036"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Правила учёта без реквизитов названы, но область ПЗ не ограничена и отдельный УУТЭ не учтён. Не засчитывается отсутствие реквизитов во всех документах.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F036_gauge_range_allocation.json",
+          "sha256": "414eb7b03e2e13826337c12f9b097562f2a8efcf45dbcb35da7ab6ce225e9a83"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "175 манометров 1,6 МПа и четыре 2,5 МПа сопоставлены с требованием позиционной привязки. Непригодность всех приборов прямо не признана установленной; добавленные воздухоотводчики требуют отдельной оценки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-056"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F053_standard_title.json",
+          "sha256": "48b25ee12d05eb09a1826215610c1a59dfe0f759cbf315a2d0f57949a5950513"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Название СП 510 в ведомости сопоставлено с примечаниями. Вторая конкретная ошибочная ссылка в ПЗ не выявлена; общее предложение унификации не заменяет её обнаружение.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F001_heat_exchanger_pressure:composite:1",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-001",
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Давление теплообменников 16 кгс/см² и 16,3 бар отопления III зоны присутствуют в разных замечаниях. Связь расчёта w203119578 с К3 и вторичной стороной не выполнена; совпадение чисел не засчитано как полная междокументная сверка.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F001_heat_exchanger_pressure:composite:2",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-001",
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Предел теплообменников и напоры ГВС III зоны присутствуют, но w203119581 не связан с К8 в проверке давления. F-003 относится к насосу, а не к этой стороне теплообменника.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F001_heat_exchanger_pressure:composite:3",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-001"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F001_heat_exchanger_pressure.json",
+          "sha256": "4e0904c855cbabe7a1e935c7562cd77ba63769b3a5e3682a94a0ec0300170a5c"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Первичные давления сопоставлены с 16 кгс/см², подмена пределом фланцев или пробным давлением исключена. Не раскрыта привязка К1/К3/К8; замена подборов предписана до разрешения исходных режимов.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F004_safety_valve_setpoints:composite:1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Различие 20 бар спецификации и 16 бар схемы для одной позиции 45 отсутствует. Общее замечание F-007 о 20 бар не является обнаружением этого конфликта.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F004_safety_valve_setpoints:composite:2",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-007",
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F004_safety_valve_setpoints.json",
+          "sha256": "53d8fe2d5df4264ff8c2c4d475c3a3c30fcdee8c60cc3b7e04c4b777b8efb754"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "20 бар защиты ГВС III зоны и предел насоса 16 бар названы. Нет позиции 40 и установленной связи защищаемого объёма с К17; F-007 утверждает превышение защищаемого оборудования без проверки границ защиты.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/ITP_review.json",
+  "review_ledger_sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "ITP",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 19,
+          "availability_available": 19,
+          "partial": 8,
+          "full": 8,
+          "absent": 3
+        },
+        "review_complete": true,
+        "full_match_rate": 0.42105263157894735,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 56,
+          "availability_available": 56,
+          "partial": 23,
+          "absent": 9,
+          "full": 24
+        },
+        "review_complete": true,
+        "full_match_rate": 0.42857142857142855,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 12,
+          "availability_available": 12,
+          "absent": 10,
+          "partial": 2
+        },
+        "review_complete": true,
+        "full_match_rate": 0.0,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 32
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Все 87 целей сопоставлены с итоговой выдачей; это покрытие эталона, не приёмка качества полного аудита.",
+    "Новые утверждения, категории выдачи, последствия и дубли требуют отдельной оценки.",
+    "Частичное совпадение отрицательной цели не равно точному повторению опровергнутого тезиса.",
+    "Нулевое повторение конкретной ошибки не доказывает работу фильтра.",
+    "Исторические решения инженеров сохранены; сопоставление координатором не является новой инженерной приёмкой."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "completed_ledger": {
+    "path": "experiments/auditmanager_stage4_20261110/ITP_r1_completed_coverage_ledger.json",
+    "sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2"
+  }
+}
