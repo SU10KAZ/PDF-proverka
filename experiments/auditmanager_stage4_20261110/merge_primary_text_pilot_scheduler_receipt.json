@@ -1,0 +1,20 @@
+{
+  "status": "pilot_scheduler_started_waiting_for_active_audit",
+  "pid": 885588,
+  "started_receipt": "/tmp/auditmanager_merge_primary_text_pilot_20261111/pilot_started.json",
+  "started_sha256": "84beecf8d0ddc9463c2ef5263344c6a0b86d80b9dd8a4769fa0626d5a5638195",
+  "status_path": "/tmp/auditmanager_merge_primary_text_pilot_20261111/pilot_status.json",
+  "log_path": "/tmp/auditmanager_merge_primary_text_pilot_20261111/process.log",
+  "observed_status": "waiting_for_old_collection",
+  "attempts_at_observation": 0,
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "high",
+  "pilot_arms": [
+    "control",
+    "primary_text"
+  ],
+  "max_attempts_per_arm": 3,
+  "retry_delay_seconds": 10,
+  "prerequisite": "Both dispatched old-series audits finish successfully, collector exits after planned stop, seals verify. No full-audit overlap.",
+  "production_acceptance": false
+}
