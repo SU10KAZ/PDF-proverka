@@ -1,0 +1,471 @@
+{
+  "status": "two_straight_member_outputs_checked_with_actual_nodes",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "32d4a77678e6e2dd72a25de5b32ce6bfc31bca35e1e7f979635e78098d4d77ad",
+  "queue_after_sha256": "32c0e9c9b4bf34bba2b4a43c701aabbbc7e95789665c48546813de300e5e2728",
+  "reviewer": "coordinator_direct_GRAPHIC_TEXT_and_historical_reason_review",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-024",
+      "finding": {
+        "id": "F-024",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Размеры деталей",
+        "sheet": "Листы 4, 9",
+        "page": [
+          6,
+          11
+        ],
+        "problem": "Требуется проверить соответствие размера поручня ОГМ9 длине детали с учётом концевых сопряжений.",
+        "description": "На развёртке ОГМ9 указан размер 3400 мм, а для позиции 2 в ведомости — 3300 мм. Разница составляет 100 мм. Сопоставление детекторов дополнено указанием на ссылки «по Д(4)» и «по Е(4)»: без границ детали и размеров сопряжений нельзя установить, является ли разница ошибкой либо следствием конструкции соединений. Прямые изображения этих размеров на данном этапе отсутствуют.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к указанию размеров деталей, узлов сопряжений и их согласованию с ведомостями.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-034"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-034"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сопоставить размер 3400 мм с границами позиции 2 по узлам Д и Е листа 4. При подтверждении ошибки исправить чертёж или ведомость; при конструктивно обусловленной разнице уточнить размерные привязки.",
+        "risk": "При ошибке длины возможны неверная заготовка поручня и переделка; до проверки сопряжений наличие дефекта не установлено.",
+        "source_finding_ids": [
+          "G-034"
+        ],
+        "source_block_ids": [
+          "blk_eb2afbd2b4c14b3ba20b6cea72f825b8"
+        ],
+        "related_block_ids": [
+          "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "blk_2a44dd3981b94cc2bc63d79e8d2f2264"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+            "page": 11
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания указывают на разницу 100 мм между размером 3400 мм на развертке ОГМ9 и L=3,300м для поз. 2 в ведомости. Правое существенно дополняет левое ссылками «по Д(4)», «по Е(4)» и необходимостью проверить конструкцию соединений для установления причины расхождения.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM6_F018_straight_handrail_rejection_review:41b349266f7d7fa6803b",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ОГМ9: размер верхнего прямого элемента позиции2 на виде 3400мм, ведомость 3300мм.",
+          "verdict": "confirmed_GRAPHIC_TEXT_difference",
+          "limits": "Размерная линия относится к прямому верхнему элементу между его концами; 100мм — подтверждённая разность, не универсальный допуск."
+        },
+        {
+          "claim": "Снятие разности из-за ноги U-образного колена100мм.",
+          "verdict": "not_supported_by_actual_referenced_nodes",
+          "limits": "Вид ссылается на Д(4) у торца и Е(4) по длине. Д показывает прямой торец с заглушкой; Е — сварное примыкание профиля к трубе. U-образные сопряжения находятся в других узлах Б/В."
+        },
+        {
+          "claim": "Нужно согласовать размер вида и длину ведомости.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "Объяснение инженера не подтверждено связанными узлами; фактический брак, отсутствие любых компенсирующих элементов во всех комплектах и обязательное удлинение на100мм не доказаны."
+        },
+        {
+          "claim": "При ошибке возможна переделка или неверная заготовка.",
+          "verdict": "conditional_risk_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Прямые изображения размеров на данном этапе отсутствуют.",
+          "verdict": "not_a_project_data_absence",
+          "limits": "Изображения есть в запечатанном наборе и прямо просмотрены сейчас. Видимость этих изображений конкретному вызову объединения/уточнения не установлена; локальная нехватка входа вызова не должна становиться глобальным основанием снятия."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_technical_atom_preserved_with_excessive_uncertainty_in_output",
+      "duplicate_burden": "same_technical_family_different_marks_group_OGM9_10_without_losing_addresses_OGM4_still_missing",
+      "profile_and_section": "technical_document_conflict_keep_reference_nodes",
+      "engineer_reuse": {
+        "original_decision": "Отклонено",
+        "original_id": "UA-006",
+        "original_reason": "Отклонено так как, ПД-00580716-КМ1.2, V1, стр. 10 (лист 8) и стр. 11 (лист 9), чертежи и ведомости элементов ОГМ4, ОГМ9 и ОГМ10, поз. 2. Размеры 3765, 3400 и 3065 мм проставлены от оси U-образного колена до свободного торца поручня под заглушку (узел Д), а поручень приваривается встык к ноге колена длиной 100 мм, поэтому заготовка короче на 100 мм (3765 − 100 = 3665). Тот же вычет 100 мм на каждый стык с коленом выдержан у всех марок листов 8 и 9, поэтому исправление проекта не требуется.",
+        "original_comment": "совпадает с F-020 и F-026 из старого аудита.",
+        "current_assessment": "Сохранить исходное Отклонено как историю. Причина о U-колене не подтверждена Д/Е; это не новое принятие инженером. Исторический дубль F020/F026 отдельно не доказан."
+      },
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7fc4d0805a89466695360d1c96b75a3b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json",
+          "sha256": "332c6b03682d0728dc030587f7934bbd6c930302eda3c3c261bee60353061ea3",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены числовые расхождения и несоответствие объяснения снятия показанным ссылочным узлам. Не установлены фактический брак, невозможность монтажа и обязательное увеличение заготовок на100мм.",
+            "Полное отсутствие компенсирующих деталей во всех комплектах не доказано; КМД и смежные комплекты не проверены.",
+            "Отсутствие диаметра в TEXT ведомостейОГМ4/10 не исправлялось. Связанный графический узелЕ отдельно задаётØ40×3.",
+            "Историческое совпадение сF-020/F-026 — заявление инженера; исходные строки старого аудита ещё не сопоставлены. Дублирование не равно технической ложности."
+          ],
+          "wording": "Согласовать длины прямых верхних элементов поз.2: ОГМ4 лист8 —3765мм на виде и3665мм в ведомости; ОГМ9 лист9 —3400/3300мм; ОГМ10 лист9 —3065/2965мм. Ссылочные узлыД(4) иЕ(4) не подтверждают объяснение вычета100мм ногой U-образного колена. Установить согласованную длину для изготовления и привести обозначения в соответствие."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eb2afbd2b4c14b3ba20b6cea72f825b8.png",
+          "sha256": "8b54d8e786656ea8fcc6d152e9ab679a8548b41d18b30941543a9ab011f61ef0",
+          "block_id": "blk_eb2afbd2b4c14b3ba20b6cea72f825b8",
+          "route": "direct_GRAPHIC_review",
+          "observation": "ОГМ9: 3400мм вдоль позиции2; торец поД(4), промежуточное сопряжение поЕ(4)."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cfd1c741a6fa4cd99c3eccd1d42afc7d.png",
+          "sha256": "b9a65fa02aecbc35f4fa72c98c2daba4002bbbc9a303ffadda7617686ee52c84",
+          "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "route": "direct_GRAPHIC_review",
+          "observation": "УзелД: прямой торец, заглушка; отдельная нога U-колена100мм не показана. Б/В относятся к другим сопряжениям."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2a44dd3981b94cc2bc63d79e8d2f2264.png",
+          "sha256": "c8c5cf85a7f8ca54b2c70c785e03337957faa5bfe285b4d8058bdcbc00a1eee3",
+          "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+          "route": "direct_GRAPHIC_review",
+          "observation": "УзелЕ: сварное примыкание профиля25×3 к трубеØ40×3; 4-4 показывает сечение, не стомиллиметровую вставку."
+        }
+      ],
+      "disposition": "assessed_preserve_straight_member_conflict_no_automatic_100mm_dismissal"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Размеры деталей",
+        "sheet": "Лист 9",
+        "page": 11,
+        "problem": "Размер поручня ОГМ10 не согласован с длиной позиции 2 в ведомости.",
+        "description": "На чертеже ОГМ10 указан размер поручня 3065 мм, а в ведомости позиции 2 — 2,965 м, то есть 2965 мм. Расхождение составляет 100 мм. Перед корректировкой необходимо проверить, относятся ли оба значения к одинаковым границам детали с учётом сопряжений.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к согласованности размеров деталей на чертежах и в ведомостях элементов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-035",
+                "G-036"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-035",
+                  "G-036"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить границы измерения поручня и согласовать размер на чертеже ОГМ10 с длиной позиции 2 в ведомости.",
+        "risk": "Неверная длина заготовки поручня и дополнительные затраты на подгонку или замену.",
+        "source_finding_ids": [
+          "G-035",
+          "G-036"
+        ],
+        "source_block_ids": [
+          "blk_44d5d64039f74e2188935e15eabafb7d"
+        ],
+        "related_block_ids": [
+          "blk_44d5d64039f74e2188935e15eabafb7d"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_44d5d64039f74e2188935e15eabafb7d",
+            "page": 11
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-035",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-036",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одинаковое расхождение длины поручня ОГМ10 поз. 2 на листе 9: 3065 мм на чертеже и 2965 мм в ведомости, разница 100 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одинаковое расхождение длины поручня ОГМ10 поз. 2 на листе 9: 3065 мм на чертеже и 2965 мм в ведомости, разница 100 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 65,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM6_F018_straight_handrail_rejection_review:41b349266f7d7fa6803b",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ОГМ10: размер верхнего прямого элемента позиции2 на виде 3065мм, ведомость 2965мм.",
+          "verdict": "confirmed_GRAPHIC_TEXT_difference",
+          "limits": "Размерная линия относится к прямому верхнему элементу между его концами; 100мм — подтверждённая разность, не универсальный допуск."
+        },
+        {
+          "claim": "Снятие разности из-за ноги U-образного колена100мм.",
+          "verdict": "not_supported_by_actual_referenced_nodes",
+          "limits": "Вид ссылается на Д(4) у торца и Е(4) по длине. Д показывает прямой торец с заглушкой; Е — сварное примыкание профиля к трубе. U-образные сопряжения находятся в других узлах Б/В."
+        },
+        {
+          "claim": "Нужно согласовать размер вида и длину ведомости.",
+          "verdict": "supported_technical_document_conflict",
+          "limits": "Объяснение инженера не подтверждено связанными узлами; фактический брак, отсутствие любых компенсирующих элементов во всех комплектах и обязательное удлинение на100мм не доказаны."
+        },
+        {
+          "claim": "При ошибке возможна переделка или неверная заготовка.",
+          "verdict": "conditional_risk_not_observed",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_technical_atom_preserved_with_excessive_uncertainty_in_output",
+      "duplicate_burden": "same_technical_family_different_marks_group_OGM9_10_without_losing_addresses_OGM4_still_missing",
+      "profile_and_section": "technical_document_conflict_keep_reference_nodes",
+      "engineer_reuse": {
+        "original_decision": "Отклонено",
+        "original_id": "UA-006",
+        "original_reason": "Отклонено так как, ПД-00580716-КМ1.2, V1, стр. 10 (лист 8) и стр. 11 (лист 9), чертежи и ведомости элементов ОГМ4, ОГМ9 и ОГМ10, поз. 2. Размеры 3765, 3400 и 3065 мм проставлены от оси U-образного колена до свободного торца поручня под заглушку (узел Д), а поручень приваривается встык к ноге колена длиной 100 мм, поэтому заготовка короче на 100 мм (3765 − 100 = 3665). Тот же вычет 100 мм на каждый стык с коленом выдержан у всех марок листов 8 и 9, поэтому исправление проекта не требуется.",
+        "original_comment": "совпадает с F-020 и F-026 из старого аудита.",
+        "current_assessment": "Сохранить исходное Отклонено как историю. Причина о U-колене не подтверждена Д/Е; это не новое принятие инженером. Исторический дубль F020/F026 отдельно не доказан."
+      },
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_f8cad33a4f74403cb982ba27beeb20fc",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json",
+          "sha256": "332c6b03682d0728dc030587f7934bbd6c930302eda3c3c261bee60353061ea3",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены числовые расхождения и несоответствие объяснения снятия показанным ссылочным узлам. Не установлены фактический брак, невозможность монтажа и обязательное увеличение заготовок на100мм.",
+            "Полное отсутствие компенсирующих деталей во всех комплектах не доказано; КМД и смежные комплекты не проверены.",
+            "Отсутствие диаметра в TEXT ведомостейОГМ4/10 не исправлялось. Связанный графический узелЕ отдельно задаётØ40×3.",
+            "Историческое совпадение сF-020/F-026 — заявление инженера; исходные строки старого аудита ещё не сопоставлены. Дублирование не равно технической ложности."
+          ],
+          "wording": "Согласовать длины прямых верхних элементов поз.2: ОГМ4 лист8 —3765мм на виде и3665мм в ведомости; ОГМ9 лист9 —3400/3300мм; ОГМ10 лист9 —3065/2965мм. Ссылочные узлыД(4) иЕ(4) не подтверждают объяснение вычета100мм ногой U-образного колена. Установить согласованную длину для изготовления и привести обозначения в соответствие."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_44d5d64039f74e2188935e15eabafb7d.png",
+          "sha256": "181fa50b5add5677cb3cee995f8dbedc0bc4d5ed139cf415d6480c418391318d",
+          "block_id": "blk_44d5d64039f74e2188935e15eabafb7d",
+          "route": "direct_GRAPHIC_review",
+          "observation": "ОГМ10: 3065мм вдоль позиции2; торец поД(4), промежуточное сопряжение поЕ(4)."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cfd1c741a6fa4cd99c3eccd1d42afc7d.png",
+          "sha256": "b9a65fa02aecbc35f4fa72c98c2daba4002bbbc9a303ffadda7617686ee52c84",
+          "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "route": "direct_GRAPHIC_review",
+          "observation": "УзелД: прямой торец, заглушка; отдельная нога U-колена100мм не показана. Б/В относятся к другим сопряжениям."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2a44dd3981b94cc2bc63d79e8d2f2264.png",
+          "sha256": "c8c5cf85a7f8ca54b2c70c785e03337957faa5bfe285b4d8058bdcbc00a1eee3",
+          "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+          "route": "direct_GRAPHIC_review",
+          "observation": "УзелЕ: сварное примыкание профиля25×3 к трубеØ40×3; 4-4 показывает сечение, не стомиллиметровую вставку."
+        }
+      ],
+      "disposition": "assessed_preserve_straight_member_conflict_no_automatic_100mm_dismissal"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+      "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "block_id": "blk_7fc4d0805a89466695360d1c96b75a3b",
+      "authoritative_TEXT": "### BLOCK #82 [TEXT]: blk_7fc4d0805a89466695360d1c96b75a3b\n\n> **Created:** 2026-10-21 13:32:47 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/qgp-5zyGzto9Oy65PPRh)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 9 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 9...16 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ9\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ9 | □ | 1 | 40x3 | Конструктивно |  |  | C245 | L=1,180м | 6 |\n|  | ○ | 2 | 40x3 |  |  |  | C245 | L=3,300м | 1 |\n|  | □ | 3 | 25x3 |  |  |  | C245 | L=0,640м | 4 |\n|  | Лист | 4 | 10x120x120 |  |  |  | C245 |  | 6 |\n|  | □ | 5 | 25x3 |  |  |  | C245 | L=1,025м | 13 |\n|  | □ | 6 | 25x3 |  |  |  | C245 | L=0,305м | 1 |\n|  | Анкер |  | HSA-M10x90 |  |  |  |  |  | 24 |\n|  | Заглушка |  | 3x40x40 |  |  |  | C245 |  | 1 |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+      "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+      "block_id": "blk_f8cad33a4f74403cb982ba27beeb20fc",
+      "authoritative_TEXT": "### BLOCK #80 [TEXT]: blk_f8cad33a4f74403cb982ba27beeb20fc\n\n> **Created:** 2026-10-21 13:32:47 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/c7H2K-38dSe-aN_G9oOE)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 9 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 9...16 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ10\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ10 |  | 1 | 40x3 | Конструктивно |  |  | C245 | L=1,180м | 5 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=2,965м | 1 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=0,640м | 4 |\n|  | Лист | 4 | 10х120х120 |  |  |  | C245 |  | 5 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=1,025м | 12 |\n|  | Анкер |  | HSA-M10х90 |  |  |  |  |  | 20 |\n|  | Заглушка |  | 3x40x40 |  |  |  | C245 |  | 1 |\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM6_F018_straight_handrail_rejection_review.json",
+      "sha256": "332c6b03682d0728dc030587f7934bbd6c930302eda3c3c261bee60353061ea3",
+      "primary_adjudication": null,
+      "limits": [
+        "Подтверждены числовые расхождения и несоответствие объяснения снятия показанным ссылочным узлам. Не установлены фактический брак, невозможность монтажа и обязательное увеличение заготовок на100мм.",
+        "Полное отсутствие компенсирующих деталей во всех комплектах не доказано; КМД и смежные комплекты не проверены.",
+        "Отсутствие диаметра в TEXT ведомостейОГМ4/10 не исправлялось. Связанный графический узелЕ отдельно задаётØ40×3.",
+        "Историческое совпадение сF-020/F-026 — заявление инженера; исходные строки старого аудита ещё не сопоставлены. Дублирование не равно технической ложности."
+      ],
+      "wording": "Согласовать длины прямых верхних элементов поз.2: ОГМ4 лист8 —3765мм на виде и3665мм в ведомости; ОГМ9 лист9 —3400/3300мм; ОГМ10 лист9 —3065/2965мм. Ссылочные узлыД(4) иЕ(4) не подтверждают объяснение вычета100мм ногой U-образного колена. Установить согласованную длину для изготовления и привести обозначения в соответствие."
+    }
+  ],
+  "limits": [
+    "No runtime cause assigned without request trace.",
+    "No automatic acceptance or universal 100mm subtraction.",
+    "Original engineer rejection preserved separately from later source review.",
+    "Missing OGM4 atom is not recovered merely by reviewing OGM9/10."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
