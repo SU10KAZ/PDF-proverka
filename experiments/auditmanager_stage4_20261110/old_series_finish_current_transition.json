@@ -1,0 +1,28 @@
+{
+  "requested_at": 1794427236.9571843,
+  "action": "finish_current_run_then_stop_old_version_dispatch",
+  "active_run_pid": 836457,
+  "active_run_work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_inventory",
+  "reason": "First paired AK control failed preservation and runtime; corrected recovery handling and runtime profile metadata require a new frozen comparison. Do not spend remaining full audits on the known-defective implementation.",
+  "goal_continues": true,
+  "six_disciplines_scope_preserved": true,
+  "kill_current_process": false,
+  "evidence": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/AK_r1_first_paired_coverage_regression.json",
+      "sha256": "ed2a9ee9e088f0b756e314e4907348dd5d58ec269a9b3b33ebc5a859f11bf9cc"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/AK_r1_paired_runtime_comparison.json",
+      "sha256": "dc71a8074a70427901f88d03f0b34a6b73f9e36ef261b057c99ee30a0413d35b"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/AK_experiment_metadata_vs_normal_detection.json",
+      "sha256": "cf48065d4fb62dc697926b268cc9e34e98c6d8f6be832c3082ca6ecab99cc171"
+    }
+  ],
+  "scheduler_control_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/EXPERIMENTAL_STOP_REQUESTED.json",
+  "scheduler_control_sha256": "0e6703232cc7d0a8e79679ec069ca1a44384f4872bdd4c69478ba67f8e23396b",
+  "remaining_old_version_runs_status": "not_dispatched_superseded_pending_new_protocol",
+  "production_acceptance": false
+}
