@@ -1,0 +1,190 @@
+{
+  "status": "official_catalog_reference_typo_review",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "62eb4a0d295212dd51f1966f5114f45bd1c6d548926c018da2a9e9000986556c",
+  "queue_after_sha256": "a131bf19d1218ed81f9e49b4340155fc75978a4e569483485b0fc3de28603b21",
+  "reviewer": "coordinator_authoritative_TEXT_official_catalog_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 2",
+        "page": 6,
+        "problem": "Возможно ошибочное обозначение стандарта по документации автоматизации.",
+        "description": "В общих указаниях приведено «ГОСТ 21.4.08-2013». По названию подразумевается ГОСТ 21.408-2013. Ошибка оригинала не отделена от возможной ошибки распознавания.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), кандидат п. 1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить обозначение и область применения стандарта на рабочую документацию автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить запись с оригиналом и исправить обозначение при подтверждении опечатки.",
+        "risk": "Неоднозначность нормативного основания документации.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [
+          "blk_adc4052a68344abf9c8f56861b9294d1"
+        ],
+        "related_block_ids": [
+          "blk_adc4052a68344abf9c8f56861b9294d1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 35,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "editorial_issue"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В авторитетном MD записано ГОСТ21.4.08-2013 с названием документа по автоматизации.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Официальное обозначение стандарта с этим названием — ГОСТ21.408-2013.",
+          "verdict": "confirmed_official_catalog",
+          "limits": "Карточка Росстандарта просмотрена11.11.2026; проверены обозначение и название, не конкретное нарушение требований."
+        },
+        {
+          "claim": "Уточнить обозначение ссылки.",
+          "verdict": "supported_editorial_question",
+          "limits": "Не исправлять исходный MD в доказательствах; выдавать предлагаемую редакционную правку отдельно."
+        },
+        {
+          "claim": "Запись вызвана ошибкой OCR.",
+          "verdict": "not_established",
+          "limits": "Источник ошибки не установлен; авторитетный TEXT не переизвлекается и не исправляется по растру."
+        },
+        {
+          "claim": "Опечатка доказывает неправильное проектирование или монтаж.",
+          "verdict": "not_established",
+          "limits": "По названию документ идентифицируется; техническое последствие не доказано."
+        },
+        {
+          "claim": "Пункт1 стандарта проверен как нарушенное требование.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Карточка реквизитов не является доказательством нарушения пункта."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_editorial_question_no_new_technical_defect",
+      "duplicate_burden": "Group minor normative-reference edits with F066 if both retained; not a separate technical safety defect.",
+      "profile_and_section": "questions_clarifications_normative_reference_edit",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+          "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66",
+          "primary_adjudication": null,
+          "limits": [
+            "Официальные карточки подтверждают реквизиты, но не доказывают нарушение конкретных технических требований в проекте.",
+            "В разделе заземления есть собственные указания и ссылка на СП 76.13330.2016; отсутствие точного пункта ПУЭ не означает отсутствия требований.",
+            "Текст ПУЭ и нормативное требование приводить полное название СП не проверены. Сокращение названия не выпускать отдельным техническим дефектом.",
+            "Решение инженера по этому слепому кандидату отсутствует; историческое принятие не приписывается."
+          ],
+          "wording": "Исправить обозначение ГОСТ 21.4.08-2013 на ГОСТ 21.408-2013 в общих указаниях. Уточнить адрес ссылки «гл.7 ПУЭ» в разделе заземления. Объединить эти редакционные уточнения в один вопрос по реквизитам; техническое нарушение заземления данным замечанием не установлено."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/ad7aee01-bcb3-495e-a46f-6393783f864c",
+          "access_date": "2026-11-11",
+          "route": "official_catalog_direct_web_open",
+          "verified_fact": "ГОСТ21.408-2013 identifies the standard on working documentation of process automation.",
+          "limits": "Bibliographic identity only; no project technical compliance adjudicated."
+        }
+      ],
+      "disposition": "assessed_preserve_officially_verified_reference_typo_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+      "authoritative_TEXT": "### BLOCK #9 [TEXT]: blk_adc4052a68344abf9c8f56861b9294d1\n\n> **Created:** 2026-09-28 07:28:35 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/DxxKjCWnx2vfdb_5iF80)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 2 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Общие данные (продолжение) | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n##### 1. Общие указания\n\nНастоящая Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13Аи 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Летняя.\n\nРабочая документация разработана на основании и в соответствии:\n\n- стадии П получившей положительное заключение экспертизы;\n\n- ГОСТ Р 21.101-2020 \"Основные требования к проектной и рабочей документации\";\n\n- ГОСТ 21.4.08-2013 \"Правила выполнения рабочей документации автоматизации технологических процессов\";\n\n- СП 7.13130.2013 \"Отопление, вентиляция и кондиционирование\";\n\n- СП 77.13330.2016 \"Актуализированная редакция СНиП 3.05.07-85. Системы автоматизации\";\n\n- СП 76.13330.2016 \"Актуализированная редакция СНиП 3.05.06-85. Электротехнические устройства\";\n\n- ПУЭ \"Правила устройства электроустановок. Издание 7\";\n\n- ГОСТ 31565-2012 \"Кабельные изделия. Требования пожарной безопасности\";\n\n- технического задания на проектирование;\n\n- принятых архитектурно-планировочных решений.\n\nТехнические решения, принятые в рабочих чертежах, соответствуют требованиям экологическим, санитарно-гигиеническим, противопожарным и другим действующим норм и правил, и обеспечивают безопасность для жизни и здоровья людей эксплуатацию объекта при соблюдении предусмотренных рабочими чертежами мероприятий.\n\n##### 2. Основные технические решения\n\nДля корпуса 4 подземная часть автоматизации подлежат:\n\n- вытяжная система В4.1.1, обслуживающая блок кладовых, хран. тележек, велосипедная, ПУИ;\n\n- вытяжная система В4.1.2, помещение ЭОМ, помещение ревизий;\n\n- вытяжная система В4.1.4, Электрощитовая ГРЩ блока 13В;\n\n- вытяжная система Вм4.1, Мусоросборная камера, хранение мусора;\n\n- вытяжная система Вм4.1.1 Мусоросборная камера. Пристройка 4.1;\n\n- приточная система Пкр4.1, Пом.ревизий, коридор, ЛХ. 2-18эт. Надземная часть;\n\n- приточная система П4.1.3, Венткамеры. ;\n\n- приточная система П4.1.4, Электрощитовая ГРЩ блока 13В;\n\n- приточная система П4.1.1, Блок кладовых, хран.тележек, велосипедная, ПУИ, ЛХ.;\n\n- приточная система Пм4.1, Мусоросборная камера. Хранение мусора..;\n\n- вытяжная система В5.1.1, Блок кладовых, хран. тележек, велосипедная, ПУИ.;\n\n- вытяжная система В5.1.2, Помещение ЭОМ;\n\n- вытяжная система Вм.5.1, Мусорокамера;\n\n- приточная система П5.1.3, Венткамеры. ;\n\n- приточная система П5.1.1, Блок кладовых, хран.тележек,велосипедная, ПУИ, ЛХ;\n\n- приточная система Пн5.1 Помещение водомерного узла и насосных станций;\n\n- вытяжная система Вн5.1 Помещение водомерного узла и насосных станций;\n\n- приточная система Пу5.1 Управляющая компания;\n\n- приточная система Ву5.1 Управляющая компания;\n\n- приточная система Всу5.1 Управляющая компания. С/У;\n\n- приточная система По5.1 Пост охраны;\n\n- приточная система Во5.1 Пост охраны. ;\n\n- приточная система Вос5.1 Пост охраны. С/У;\n\n- вытяжная система В6.1.1, Блок кладовых;\n\n- вытяжная система В6.1.2, Помещение ЭОМ;\n\n- вытяжная система В6.1.4, Венкамера ПД;\n\n- приточная система Пб.1.1, Блок кладовых, хран.тележек, велосипедная, ПУИ, ЛХ ;\n\n- приточная система Пб.1.4, Венткамеры.;\n\n- приточная система Пкрб.1 Пом.ревизий, коридор, ЛХ. 2-28эт. Надземная часть;\n\n- приточная система Вмб.1 Мусоросборная камера.\n\n###### 2.1. Приточные системы\n\nАвтоматизация приточно-вытяжной системы выполняется на базе шкафа автоматики компании\n\n"
+    },
+    {
+      "url": "https://protect.gost.ru/gost/details/ad7aee01-bcb3-495e-a46f-6393783f864c",
+      "access_date": "2026-11-11",
+      "route": "official_catalog_direct_web_open",
+      "verified_fact": "ГОСТ21.408-2013 identifies the standard on working documentation of process automation.",
+      "limits": "Bibliographic identity only; no project technical compliance adjudicated."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F030_norm_reference_precision.json",
+      "sha256": "32df975482d60115b26fde3ead456940a614b04a95e4e8968b209c1ace3a9a66",
+      "primary_adjudication": null,
+      "limits": [
+        "Официальные карточки подтверждают реквизиты, но не доказывают нарушение конкретных технических требований в проекте.",
+        "В разделе заземления есть собственные указания и ссылка на СП 76.13330.2016; отсутствие точного пункта ПУЭ не означает отсутствия требований.",
+        "Текст ПУЭ и нормативное требование приводить полное название СП не проверены. Сокращение названия не выпускать отдельным техническим дефектом.",
+        "Решение инженера по этому слепому кандидату отсутствует; историческое принятие не приписывается."
+      ],
+      "wording": "Исправить обозначение ГОСТ 21.4.08-2013 на ГОСТ 21.408-2013 в общих указаниях. Уточнить адрес ссылки «гл.7 ПУЭ» в разделе заземления. Объединить эти редакционные уточнения в один вопрос по реквизитам; техническое нарушение заземления данным замечанием не установлено."
+    }
+  ],
+  "limits": [
+    "No OCR correction of authoritative TEXT.",
+    "No technical violation inferred from bibliographic typo.",
+    "No frozen evaluator or production change."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
