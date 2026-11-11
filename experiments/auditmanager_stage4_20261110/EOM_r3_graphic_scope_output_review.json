@@ -1,0 +1,1016 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/EOM_output_review_queue.json",
+  "queue_before_sha256": "3565d453203eda4f3a3c3f2ea5b3a249d1083af34b63b1d3e3fda2d573e8c742",
+  "queue_after_sha256": "37c3bed8e094e7d52ab74db31c28dbded522bb5de2dbb33f35aae6ed45fd60d3",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-036",
+      "finding": {
+        "id": "F-036",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Заземление",
+        "sheet": "Листы 7, 8",
+        "page": [
+          10,
+          11
+        ],
+        "problem": "В схемах 1.ЩС и 1.ЩС-УК выявлено повторное соединение N и PE.",
+        "description": "Переданный анализ связей фиксирует соединение N–PE в обоих щитах при пятипроводном питании с раздельными нейтральным и защитным проводниками. Для 1.ЩС-УК указан питающий кабель 5×4 мм². По общим данным разделение PEN выполнено ранее, в ГРЩ. Непосредственная визуальная перепроверка соединений на текущем этапе не выполнялась.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.7.135",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 1.0,
+            "reason": "Проверить запрет объединения нейтрального и защитного проводников после точки разделения PEN.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-023",
+                "G-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-023",
+                  "G-024"
+                ],
+                "designation_source": "Нормативное указание исходных замечаний"
+              }
+            },
+            "clause_candidate": "1.7.135",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить соединения по оригинальным схемам, исключить перемычки N–PE и обеспечить изоляцию шины N от PE и корпуса при раздельном питании.",
+        "risk": "Протекание рабочего тока по защитным проводникам, появление опасных потенциалов и нарушение работы защиты.",
+        "source_finding_ids": [
+          "G-023",
+          "G-024"
+        ],
+        "source_block_ids": [
+          "blk_fbd847573ddd408aae3067c0c1bb9dde",
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "related_block_ids": [
+          "blk_fbd847573ddd408aae3067c0c1bb9dde",
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_fbd847573ddd408aae3067c0c1bb9dde",
+            "page": 10
+          },
+          {
+            "type": "text",
+            "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+            "page": 11
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-023",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-024",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на повторное соединение N–PE в щите 1.ЩС-УК при питании кабелем 5 х 4 и ссылаются на ПУЭ 1.7.135. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F015_neutral_PE_unresolved_topology:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пятипроводные вводы, отдельныеN/PE и разделение ранее вГРЩ.",
+          "verdict": "confirmed_same_version_source_context",
+          "limits": "Эти сведения не доказывают перемычки внутри щитов."
+        },
+        {
+          "claim": "Структурный разбор фиксируетN–PE в обоих щитах.",
+          "verdict": "unresolved_graphic_topology",
+          "limits": "Концы близких линий ввода/QFD1 не установлены однозначно. Повтор модели не независимое доказательство. Текущая оговорка об отсутствии визуальной проверки не подтверждает тезис."
+        },
+        {
+          "claim": "Исключить перемычкиN–PE.",
+          "verdict": "unsupported_until_connection_identified",
+          "limits": "Сначала нужна идентификация конкретного соединения по читаемому узлу. Не считать проверенным и опровергнутым; недостаточно данных."
+        },
+        {
+          "claim": "Опасные потенциалы и рабочие токиPE.",
+          "verdict": "not_established_physical_consequence",
+          "limits": "Монтаж и измерения не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Неустановленная топологияN–PE остаётся неопределённостью. Номера помещений не доказывают неправильную монтажную основу; типовые узлы требуют привязки.",
+      "novel_useful_content": "Сохранены ограниченные документальные конфликты; дополнительный контекст оценщика не считается находкой текущей модели.",
+      "duplicate_burden": "F042лист32 отличается от рабочего лоткаF041лист26. F044пересекается с темой артикулаF016, но добавляет связь узла иСО; считать атомарные тезисы, не строки.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f248e51f2f7f40e0bd78f45f651d9d74",
+          "route": "same_version_prior_direct_evidence",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json",
+          "sha256": "b4c38d74f02f8e2978cabce4ea20aa5f68dec66f0c1afeebb72e0fec1a03b824",
+          "primary_adjudication": null,
+          "limits": "Требование раздельных проводников подтверждено TEXT. Наличие перемычки не подтверждено и не опровергнуто. Примечания1–5 не предписывают соединение N/PE, но отсутствие такого указания не опровергает графический дефект. Векторная и монтажная схемы, смежный том ГРЩ и фактический монтаж не проверены. Не установлены ток PE, напряжение на корпусах и нормативное нарушение. Нельзя требовать удаления конкретной линии до установления её назначения.",
+          "wording": "Общие указания предусматривают раздельные N и PE после ГРЩ. На схеме1.ЩС узлы ввода и QFD1 расположены близко и не позволяют однозначно прочитать взаимное соединение проводников по доступному растру. Уточните топологию этого узла на монтажной или векторной схеме и при необходимости разнесите обозначения.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F015_neutral_PE_unresolved_topology.json",
+          "route": "same_version_prior_direct_evidence"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fbd847573ddd408aae3067c0c1bb9dde.png",
+          "sha256": "6c610cf7b193518b3cf25efbc313a316d21adfdc4eba7fab5b7bdf664946c475",
+          "block_id": "blk_fbd847573ddd408aae3067c0c1bb9dde",
+          "route": "same_version_prior_direct_evidence",
+          "observation": "Separate N/PE labels and five-core feeder visible; close overlapping inlet/QFD1 nodes do not establish unambiguous electrical endpoints.",
+          "inspection_crop": {
+            "path": "/tmp/eom_shs_npe.png",
+            "sha256": "d07551caae42671cdf13b3f6cfe5d601230d7618b740ce84d1334935f0072034",
+            "source_pixel_box": [
+              285,
+              170,
+              430,
+              245
+            ],
+            "resized_to": [
+              1160,
+              600
+            ],
+            "purpose": "graphic topology inspection; no TEXT recognition correction"
+          },
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fbd847573ddd408aae3067c0c1bb9dde.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-037",
+          "source": "frozen_r2_atomic_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+          "sha256": "4dae62b85d910dd66905114bbc9d7a86c0919e16b1a5348c663cdbce947d7ea8",
+          "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+          "route": "same_version_prior_direct_evidence",
+          "observation": "Separate N/PE labels and five-core feeder visible; close overlapping inlet/QFD1 nodes do not establish unambiguous electrical endpoints.",
+          "inspection_crop": {
+            "path": "/tmp/eom_uk_npe.png",
+            "sha256": "b4ca57dbc0f6d68d47a87cfcabdfa00cc4935bb73a06890e34bf06b29fae4e7d",
+            "source_pixel_box": [
+              285,
+              170,
+              430,
+              245
+            ],
+            "resized_to": [
+              1160,
+              600
+            ],
+            "purpose": "graphic topology inspection; no TEXT recognition correction"
+          },
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-038",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_graphic_scope"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-040",
+      "finding": {
+        "id": "F-040",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Обозначения оборудования",
+        "sheet": "Лист 18",
+        "page": 20,
+        "problem": "Два наружных блока кондиционирования имеют одинаковое индивидуальное обозначение.",
+        "description": "На плане двум отдельным наружным блокам AJ068TXJ3KH/EA присвоено обозначение К3.2.406, что не позволяет однозначно различить оборудование и его подключения.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Найти требования к однозначной идентификации оборудования в рабочих чертежах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-032"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-032"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить принадлежность наружных блоков по смежному комплекту и согласовать индивидуальные обозначения на планах и схемах.",
+        "risk": "Перепутанные подключения и затруднения при обслуживании.",
+        "source_finding_ids": [
+          "G-032"
+        ],
+        "source_block_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "related_block_ids": [
+          "blk_4b5016856cc94ec088efe86a8ec2a925"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+            "page": 20
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-032",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM111_outdoor_unit_identifier:43d787c7eed47d02cc3b",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Два разных наружных блока имеютК3.2.406.",
+          "verdict": "confirmed_same_version_graphic",
+          "limits": "Одинаковая модель допустима; вопрос о позиционной марке. На плане также естьК3.2.403."
+        },
+        {
+          "claim": "Уточнить принадлежность и обозначения.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не назначатьК3.2.405 без связи со смежным комплектом. Текущая строка не восстанавливает полный контекст403/405; исправленное подключение, лишний блок и недостача не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Неустановленная топологияN–PE остаётся неопределённостью. Номера помещений не доказывают неправильную монтажную основу; типовые узлы требуют привязки.",
+      "novel_useful_content": "Сохранены ограниченные документальные конфликты; дополнительный контекст оценщика не считается находкой текущей модели.",
+      "duplicate_burden": "F042лист32 отличается от рабочего лоткаF041лист26. F044пересекается с темой артикулаF016, но добавляет связь узла иСО; считать атомарные тезисы, не строки.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+          "sha256": "8c56324a1cdd435e58e33992a1133a3b6069ba04fab79a7dff7986472a091e25",
+          "primary_adjudication": null,
+          "limits": "Просмотрен исходный графический блок целиком. Подтверждены отдельные символы с одинаковым позиционным обозначением и подпись общей зоны; это не повторный вид одного блока. Одинаковая модель у разных блоков допустима и не является предметом замечания. Правильное обозначение каждой позиции не установлено. Отсутствие К3.2.405 ограничено просмотренным планом, не всем проектом. Три изображённых блока могут соответствовать трём квартирам при ошибке одной выноски; недостача блока для 405 и избыточность для 406 не доказаны. Схемы индивидуальных связей, документация кондиционирования и спецификация поставки не проверены. Текстовые таблицы на изображении не использованы для исправления авторитетного TEXT.",
+          "wording": "Уточнить маркировку наружных блоков в зоне для квартир 403, 405, 406: два отдельных блока имеют обозначение К3.2.406 и модель AJ068TXJ3KH/EA, третий — К3.2.403. На этом плане выноска К3.2.405 отсутствует. Согласовать индивидуальные обозначения с документацией кондиционирования.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM111_outdoor_unit_identifier.json",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4b5016856cc94ec088efe86a8ec2a925.png",
+          "sha256": "2e0bd13fc244dcc5539122bfb527216b63c083db40abc0768c3eabecde126aa5",
+          "block_id": "blk_4b5016856cc94ec088efe86a8ec2a925",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review",
+          "observation": "Три наружных блока у зоны403/405/406;две отдельные выноскиК3.2.406 сAJ068TXJ3KH/EA,третьяК3.2.403.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4b5016856cc94ec088efe86a8ec2a925.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-042",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_graphic_scope"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-042",
+      "finding": {
+        "id": "F-042",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабеленесущие системы",
+        "sheet": "Лист 32",
+        "page": 34,
+        "problem": "Исполнение рабочего лотка 200×80 мм на плане не соответствует монтажному узлу.",
+        "description": "На плане указаны неперфорированные лотки 100×80 и 200×80 мм. Узел крепления того же листа предусматривает перфорированный лоток 200×80 мм для рабочего освещения и силового электрооборудования.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Найти требования к согласованности плана трасс и монтажных узлов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-056"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-056"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить исполнение рабочего лотка и согласовать план, узел крепления и поставочную позицию.",
+        "risk": "Монтаж другого исполнения трассы и необходимость замены материалов.",
+        "source_finding_ids": [
+          "G-056"
+        ],
+        "source_block_ids": [
+          "blk_d9914764582f403a86e29268814873e5"
+        ],
+        "related_block_ids": [
+          "blk_d9914764582f403a86e29268814873e5",
+          "blk_bb3cd83619514b819a9363e911911e71"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d9914764582f403a86e29268814873e5",
+            "page": 34
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-056",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Лист32:план неперфорированные100×80/200×80, узел рабочий перфорированный200×80.",
+          "verdict": "confirmed_same_version_document_discrepancy",
+          "limits": "Отдельный лист32; не дублирует рабочий лоток листа26 изF041."
+        },
+        {
+          "claim": "Согласовать рабочий лоток.",
+          "verdict": "supported_scoped_question",
+          "limits": "Прежний повтор также находил ширину аварийного лотка200 против100; текущая строка её не сообщает. Не добавлять найденное оценщиком как обнаружение модели. Правильное исполнение и фактический монтаж не установлены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Неустановленная топологияN–PE остаётся неопределённостью. Номера помещений не доказывают неправильную монтажную основу; типовые узлы требуют привязки.",
+      "novel_useful_content": "Сохранены ограниченные документальные конфликты; дополнительный контекст оценщика не считается находкой текущей модели.",
+      "duplicate_burden": "F042лист32 отличается от рабочего лоткаF041лист26. F044пересекается с темой артикулаF016, но добавляет связь узла иСО; считать атомарные тезисы, не строки.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d9914764582f403a86e29268814873e5.png",
+          "sha256": "4b934a134466402e400953ce778af5e7eaee5ef0a82c5df788d36bf2035b6f49",
+          "block_id": "blk_d9914764582f403a86e29268814873e5",
+          "route": "same_version_verified_current_direct_image_or_TEXT_review",
+          "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d9914764582f403a86e29268814873e5.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_bb3cd83619514b819a9363e911911e71.png",
+          "sha256": "45fcb6a900be2cdc063760826292de47db2e5eb8e35f40df163b9808450e7094",
+          "block_id": "blk_bb3cd83619514b819a9363e911911e71",
+          "route": "same_version_verified_current_direct_image_or_TEXT_review",
+          "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_bb3cd83619514b819a9363e911911e71.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-045",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_graphic_scope"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-043",
+      "finding": {
+        "id": "F-043",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Координация документации",
+        "sheet": "Листы 19, 30",
+        "page": [
+          21,
+          32
+        ],
+        "problem": "План и экспликации листа 30 относятся к разным этажам.",
+        "description": "На плане показаны квартиры №388–390 секции С2 и №431–437 секции С3, а экспликация седьмого этажа содержит №391–393 и №438–444. Номера МОП на плане — 261 и 361, в экспликации — 271 и 371. Переданный анализ сопоставляет квартиры №431–437 с шестым этажом по плану силовых сетей на листе 19.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.95,
+            "reason": "Найти требования к согласованности планов, экспликаций и идентификации помещений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-048",
+                "G-050"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-048",
+                  "G-050"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить нужную этажную основу, согласовать план, экспликации и нумерацию помещений с архитектурным комплектом и силовыми сетями.",
+        "risk": "Привязка кабельных трасс и оборудования к неверному этажу или помещению.",
+        "source_finding_ids": [
+          "G-048",
+          "G-050"
+        ],
+        "source_block_ids": [
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba"
+        ],
+        "related_block_ids": [
+          "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "blk_e592650ad6c04f319521ddf0f1d1f654"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+            "page": 32
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e592650ad6c04f319521ddf0f1d1f654",
+            "page": 21
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-048",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-050",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают несоответствие этажей плана и экспликаций листа 30. Левое дополнительно указывает расхождение номеров МОП 261, 361 и 271, 371; правое — квартир №388–390 и №391–393 секции С2.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают несоответствие этажей плана и экспликаций листа 30. Левое дополнительно указывает расхождение номеров МОП 261, 361 и 271, 371; правое — квартир №388–390 и №391–393 секции С2.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F028_apartment_plan_identity:bbc814c9d763c8f736f7",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "План388–390/431–437 против экспликации7этажа391–393/438–444.",
+          "verdict": "confirmed_same_version_graphic_TEXT_discrepancy",
+          "limits": "Подтверждены номера, не причина копирования. Допустимость типовой основы и правильная версия неизвестны."
+        },
+        {
+          "claim": "МОП361–364 против371–374; на листе19 квартира437 относитсяк6этажу.",
+          "verdict": "confirmed_bounded_identifier_context",
+          "limits": "Дополнительную пару261/271 и отнесение всех431–437 к6этажу используемые доказательства отдельно не подтверждают."
+        },
+        {
+          "claim": "Согласовать основу и экспликации.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не изменять трассы автоматически; неправильный фактический этаж монтажа не доказан."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Неустановленная топологияN–PE остаётся неопределённостью. Номера помещений не доказывают неправильную монтажную основу; типовые узлы требуют привязки.",
+      "novel_useful_content": "Сохранены ограниченные документальные конфликты; дополнительный контекст оценщика не считается находкой текущей модели.",
+      "duplicate_burden": "F042лист32 отличается от рабочего лоткаF041лист26. F044пересекается с темой артикулаF016, но добавляет связь узла иСО; считать атомарные тезисы, не строки.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_3b7d36dd231a433fb3d2e3c1873475b3",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_a5a42cbd9c1d43818816944aeb681a28",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json",
+          "sha256": "d3b57fbf21e0f9bdc4d803134c2255b9a4b4d5f6ff34b7610023e084aa0eb2bf",
+          "primary_adjudication": null,
+          "limits": "Подтверждены разные наборы идентификаторов; по метаданным оба фрагмента относятся к листу30. Сам основной штамп не просмотрен на полном листе. Возможная устаревшая подоснова — гипотеза, а не доказанная причина. Не установлено, какой источник правильный, не выполнена пообъектная привязка квартирных цепей к АР. Ошибка трасс, схем подключения или фактического монтажа не доказана; автоматически перенумеровывать квартиры нельзя.",
+          "wording": "На плане листа30 указаны квартиры388–390 и431–437, а в экспликации «7 этажа» того же листа —391–393 и438–444. Ведомость называет лист30 планом кабеленесущих систем типового7–9 этажа. Согласуйте этаж и нумерацию подосновы с экспликацией и архитектурным планом, уточнив применимость типового решения.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F028_apartment_plan_identity.json",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eecde8b541dd4b21a39a0ba7f0260bba.png",
+          "sha256": "58f04159974238fb85bdd458104de7801890fe710573f4047cedd64138fcf7f7",
+          "block_id": "blk_eecde8b541dd4b21a39a0ba7f0260bba",
+          "route": "same_version_verified_current_direct_graphic_or_TEXT_review",
+          "observation": "Apartment numbers388–390,431–437 visible on the plan; comparison uses authoritativeTEXT tables separately.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_eecde8b541dd4b21a39a0ba7f0260bba.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_header": "### BLOCK #160 [TEXT]: blk_9f669e3d958a48fbadb3b480d69971fa",
+          "route": "authoritative_TEXT_MOP_numbers_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-044",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_graphic_scope"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-044",
+      "finding": {
+        "id": "F-044",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация кабеленесущих систем",
+        "sheet": "Лист 34",
+        "page": [
+          36,
+          54
+        ],
+        "problem": "Лоток на отметке +44,650 задан разными исполнениями в узле и спецификации.",
+        "description": "Монтажный узел плана кабеленесущих систем на отметке +44,650 содержит универсальный перфорированный лоток. Спецификация для технического пространства на той же отметке предусматривает неперфорированный лоток 200×80 мм.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить соответствие наименования и технической характеристики изделия решению рабочего чертежа.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-057",
+                "G-058"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-057",
+                  "G-058"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать исполнение лотка на отметке +44,650 в узле, плане и спецификации, проверить соответствующий артикул.",
+        "risk": "Поставка лотка другого исполнения и дополнительные затраты на замену.",
+        "source_finding_ids": [
+          "G-057",
+          "G-058"
+        ],
+        "source_block_ids": [
+          "blk_e9d70b5ef3504a009fe4711839535a08"
+        ],
+        "related_block_ids": [
+          "blk_e9d70b5ef3504a009fe4711839535a08",
+          "blk_98d4345a297e4e8bbc1874df817069d5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e9d70b5ef3504a009fe4711839535a08",
+            "page": 36
+          },
+          {
+            "type": "text",
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-057",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-058",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно несоответствие: в узле на отметке +44.650 указан перфорированный лоток, а в спецификации — неперфорированный 200×80 мм. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно несоответствие: в узле на отметке +44.650 указан перфорированный лоток, а в спецификации — неперфорированный 200×80 мм. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 81,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Узел перфорированный; СО+44,650 неперфорированный200×80.",
+          "verdict": "confirmed_same_version_document_discrepancy",
+          "limits": "Привязка узла к листу34 из сохранённых метаданных, а не отсутствующего на вырезке штампа."
+        },
+        {
+          "claim": "Согласовать исполнение и артикул.",
+          "verdict": "supported_scoped_question",
+          "limits": "Уточнить применимость типового узла; правильный каталог и поставка не установлены. Не менятьСО автоматически."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Неустановленная топологияN–PE остаётся неопределённостью. Номера помещений не доказывают неправильную монтажную основу; типовые узлы требуют привязки.",
+      "novel_useful_content": "Сохранены ограниченные документальные конфликты; дополнительный контекст оценщика не считается находкой текущей модели.",
+      "duplicate_burden": "F042лист32 отличается от рабочего лоткаF041лист26. F044пересекается с темой артикулаF016, но добавляет связь узла иСО; считать атомарные тезисы, не строки.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+          "route": "same_version_verified_current_direct_image_or_TEXT_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e9d70b5ef3504a009fe4711839535a08.png",
+          "sha256": "03ba8e98ce77522284cecb783768d9f302dc7dd6b716f84fc6ff94411c3bbdce",
+          "block_id": "blk_e9d70b5ef3504a009fe4711839535a08",
+          "route": "same_version_verified_current_direct_image_or_TEXT_review",
+          "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e9d70b5ef3504a009fe4711839535a08.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-046",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_graphic_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Five current graphic findings independently assessed against identical authoritative source bytes and frozen prior reviews. No new norm validation, raster correction or engineer acceptance."
+}
