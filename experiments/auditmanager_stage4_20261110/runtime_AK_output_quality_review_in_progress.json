@@ -892,15 +892,27 @@
       "finding_id": "F-078",
       "problem": "Узел А не согласован с требованием примечания 3 о металлических трубах в проходах.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_repeated_location",
+      "engineer_decision": null,
+      "review_reason": "На листе 50 узел А непосредственно показывает групповой кабельный проход в лотке, пену и герметик FIREFIX; металлическая труба или гильза не обозначена. Авторитетное примечание 3 требует металлические трубы для проходов через стены и перекрытия без исключения для узла А. Несогласованность проектных указаний подтверждена. Это не доказательство недостаточной огнестойкости: сертификат, фактическая проходка и требуемый предел не проверялись; примечание 12 отсылает к КР.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_passage_nodes_source_review_20261112.json",
+        "sha256": "a1a27817cf754e076e547697c08a84a1c1a12f9d44ec9b08f5fdc692661335ea"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-079",
       "problem": "Узел А не согласован с требованием металлических труб в примечании 3.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_repeated_location",
+      "engineer_decision": null,
+      "review_reason": "На листе 52 узел А непосредственно показывает групповой кабельный проход в лотке, пену и герметик FIREFIX; металлическая труба или гильза не обозначена. Авторитетное примечание 3 требует металлические трубы для проходов через стены и перекрытия без исключения для узла А. Несогласованность проектных указаний подтверждена. Это не доказательство недостаточной огнестойкости: сертификат, фактическая проходка и требуемый предел не проверялись; примечание 12 отсылает к КР. Соседний узел Б явно содержит подпись «Закладная гильза (труба металлическая)»; перенос отсутствия трубы с узла А на весь лист был бы ложным.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_passage_nodes_source_review_20261112.json",
+        "sha256": "a1a27817cf754e076e547697c08a84a1c1a12f9d44ec9b08f5fdc692661335ea"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-080",
@@ -919,8 +931,14 @@
       "finding_id": "F-081",
       "problem": "Узел А не согласован с требованием примечания 3 о металлических трубах в проходах.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_repeated_location",
+      "engineer_decision": null,
+      "review_reason": "На листе 54 узел А непосредственно показывает групповой кабельный проход в лотке, пену и герметик FIREFIX; металлическая труба или гильза не обозначена. Авторитетное примечание 3 требует металлические трубы для проходов через стены и перекрытия без исключения для узла А. Несогласованность проектных указаний подтверждена. Это не доказательство недостаточной огнестойкости: сертификат, фактическая проходка и требуемый предел не проверялись; примечание 12 отсылает к КР. Соседний узел Б явно содержит подпись «Закладная гильза (труба металлическая)»; перенос отсутствия трубы с узла А на весь лист был бы ложным.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_passage_nodes_source_review_20261112.json",
+        "sha256": "a1a27817cf754e076e547697c08a84a1c1a12f9d44ec9b08f5fdc692661335ea"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-082",
@@ -967,14 +985,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 58,
-  "unchecked": 27,
+  "reviewed": 61,
+  "unchecked": 24,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 58,
-  "unchecked_findings": 27
+  "reviewed_findings": 61,
+  "unchecked_findings": 24
 }

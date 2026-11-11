@@ -1,0 +1,101 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-078",
+      "status": "confirmed_document_conflict_repeated_location",
+      "review_reason": "На листе 50 узел А непосредственно показывает групповой кабельный проход в лотке, пену и герметик FIREFIX; металлическая труба или гильза не обозначена. Авторитетное примечание 3 требует металлические трубы для проходов через стены и перекрытия без исключения для узла А. Несогласованность проектных указаний подтверждена. Это не доказательство недостаточной огнестойкости: сертификат, фактическая проходка и требуемый предел не проверялись; примечание 12 отсылает к КР.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_3a652e527d9242058c018c7b7199b5e6.png",
+          "block_id": "blk_3a652e527d9242058c018c7b7199b5e6",
+          "sha256": "ce4011bdd397822bd1415ce8299474c19d7861a5e21a423e3e89817d37e5fdf1",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_0f3dd0d612604a15b2e186aea9a6dde1",
+          "start": 289343,
+          "end": 291710,
+          "sha256": "dafb4018698d054c8fc483d71a2d41f0cab7b371acab5024d38a7e03d964cb3c"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false,
+      "duplicate_group": "AK_passage_node_A_note_3",
+      "location_sheet": 50
+    },
+    {
+      "finding_id": "F-079",
+      "status": "confirmed_document_conflict_repeated_location",
+      "review_reason": "На листе 52 узел А непосредственно показывает групповой кабельный проход в лотке, пену и герметик FIREFIX; металлическая труба или гильза не обозначена. Авторитетное примечание 3 требует металлические трубы для проходов через стены и перекрытия без исключения для узла А. Несогласованность проектных указаний подтверждена. Это не доказательство недостаточной огнестойкости: сертификат, фактическая проходка и требуемый предел не проверялись; примечание 12 отсылает к КР. Соседний узел Б явно содержит подпись «Закладная гильза (труба металлическая)»; перенос отсутствия трубы с узла А на весь лист был бы ложным.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_3ce77761b19f4562bb8fdf7579aa80ec.png",
+          "block_id": "blk_3ce77761b19f4562bb8fdf7579aa80ec",
+          "sha256": "5715b293f381de3b0236db974c89465d002f5d00307768861965a5664f4d05bc",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_d2dbea3364034dd3bcc80d3c1c8f3fe3",
+          "start": 314795,
+          "end": 317164,
+          "sha256": "73846f9560f0f9e8f6e93071b0887f8c50877ed4ebe6010b0091b145e0fa1f8c"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false,
+      "duplicate_group": "AK_passage_node_A_note_3",
+      "location_sheet": 52
+    },
+    {
+      "finding_id": "F-081",
+      "status": "confirmed_document_conflict_repeated_location",
+      "review_reason": "На листе 54 узел А непосредственно показывает групповой кабельный проход в лотке, пену и герметик FIREFIX; металлическая труба или гильза не обозначена. Авторитетное примечание 3 требует металлические трубы для проходов через стены и перекрытия без исключения для узла А. Несогласованность проектных указаний подтверждена. Это не доказательство недостаточной огнестойкости: сертификат, фактическая проходка и требуемый предел не проверялись; примечание 12 отсылает к КР. Соседний узел Б явно содержит подпись «Закладная гильза (труба металлическая)»; перенос отсутствия трубы с узла А на весь лист был бы ложным.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_256f5749f1274c84b54b8873170bdccc.png",
+          "block_id": "blk_256f5749f1274c84b54b8873170bdccc",
+          "sha256": "3a813bc3ba16aa30dea69307e3280aacb6b3b046a0760404547dd96da9831436",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_77d8c6a52e15473eb0dda8aa27b37511",
+          "start": 349643,
+          "end": 352023,
+          "sha256": "912863fade8be5cb2d729c1ea85a7491ae1316ab4da5a64dc99187b7c980c0f0"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false,
+      "duplicate_group": "AK_passage_node_A_note_3",
+      "location_sheet": 54
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false,
+  "merge_recommendation": {
+    "finding_ids": [
+      "F-078",
+      "F-079",
+      "F-081"
+    ],
+    "behavior": "Объединить одинаковое несогласование узла А и примечания 3 в одно замечание с перечнем листов 50, 52, 54 и отдельными ссылками на каждый источник. Не удалять сведения о местоположениях. Не утверждать, что все проходки проекта лишены металлических труб.",
+    "unique_problem_count": 1,
+    "verified_locations": 3
+  },
+  "source_control_pair": {
+    "positive": "Узел А на листах 52/54 не обозначает металлическую трубу при общем требовании примечания 3.",
+    "negative": "Узел Б на тех же изображениях явно обозначает металлическую гильзу; замечание об отсутствии обозначения трубы к нему неприменимо.",
+    "limit": "Это контрольная пара по непосредственно просмотренным источникам, а не пара исторических решений инженера; эффективность фильтра на независимом прогоне не измерена."
+  }
+}
