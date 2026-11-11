@@ -1,0 +1,73 @@
+{
+  "source_md": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "findings_path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+  "findings_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-001",
+      "status": "confirmed_document_conflict",
+      "reason": "Две строки одной марки П4.1.3-9 от ШАУВ-2-К4ПЧ к электронагревателю содержат4×2,5 и4×4,0 по15м. Локальный перечень содержит15м4×4,0. Выдача не объявляет расчётную достаточность сечения и не считает строки двумя физическими кабелями. Решение согласовать после проверки мощности/защиты соответствует границам доказательств.",
+      "decision_path": "experiments/auditmanager_stage1_20261109/decisions/AK_F012_cable_section_conflict.json",
+      "decision_sha256": "adda5976fdc931fee477376e4e53dc398de605c62cba05511adc92776b58090d",
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "start": 359757,
+          "end": 362360,
+          "sha256": "74fe20bf3c904aaeae69cdac02377902e0d520c3f868fe3596480ec68c4a2080"
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "start": 362382,
+          "end": 364937,
+          "sha256": "9b0b5aba012506722ab74cf47246c1b3b8482a6c30b5e816b371cceff75337ac"
+        },
+        {
+          "block_id": "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "start": 164256,
+          "end": 165307,
+          "sha256": "c34742a55bd1489d791e14b7061b5f6e552b772bedc7ef9114bd502924783139"
+        }
+      ],
+      "review_scope": "All published claims and recommendation checked against authoritative TEXT. No new physical installation or procurement claim.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-002",
+      "status": "confirmed_document_conflict",
+      "reason": "В авторитетном MD повторяются семь марок на листах7/8 и четырнадцать на25/26. Выдача сохраняет различия разбивки трасс и написаний и требует установить действующие записи. Она не требует удаления всего листа8 и не заявляет доказанного двойного заказа. Отсутствие сумм165/210 снижает полноту атомного покрытия, но не делает опубликованное замечание ложным.",
+      "decision_path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+      "decision_sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297",
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "start": 364959,
+          "end": 367537,
+          "sha256": "975063e2adae4b8c02f24eed4974057572db37cf61e1d080fdc04f17e5ea2508"
+        },
+        {
+          "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "start": 367559,
+          "end": 370174,
+          "sha256": "f7cd85130bc00a614f3f556a71e5c85d80fa00c2916bd40952a47b4b32c0fb24"
+        },
+        {
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "start": 407398,
+          "end": 409901,
+          "sha256": "667bd98433b9d4158e0dc1fe8f4efee69f31f7fe34f1986a9d3083eeb2bbafe9"
+        },
+        {
+          "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "start": 409924,
+          "end": 412459,
+          "sha256": "8928a3869851d451ad82d1b136421f955eec882943f7972b1ca8719b49f8d77f"
+        }
+      ],
+      "review_scope": "All published claims and recommendation checked against authoritative TEXT. No new physical installation or procurement claim.",
+      "engineer_decision": null
+    }
+  ],
+  "production_acceptance": false
+}

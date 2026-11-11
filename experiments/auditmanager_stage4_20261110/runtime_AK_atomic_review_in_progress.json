@@ -26,7 +26,8 @@
         }
       ],
       "reason": "Сохранены марки Ва3.1 в КЖ и соседние Ва4.1-3/-4, но не сопоставлены три графические марки Ва4.1-3ПЧ/-4ПЧ/-RS. Сравнение 10м/330м не заменяет конфликта марки схемы и журнала.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
@@ -51,7 +52,8 @@
         }
       ],
       "reason": "F-075 считает два участка ПЧ→M2/M3 по15м, но отсутствие индивидуальных марок не отмечено. F-005 обсуждает другие, межшкафные марки. Баланс730/700 не заменяет этот атом.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
@@ -78,7 +80,8 @@
         }
       ],
       "reason": "Отмечено, что концы длинных силовых строк КЖ не указывают двигатели. Не установлено отсутствие самостоятельных строк именно для двух участков ПЧ→M2/M3 по15м; F-075 рассматривает локальную ведомость, а не полноту раздела КЖ.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
@@ -100,7 +103,11 @@
         }
       ],
       "reason": "Сохранены шкаф ШАУВ-1-К5АС, шесть графических участков2×20+2×330+2×15=730м и локальные700м. Частное объяснение о пропуске именно двух15м требует отдельной оговорки; факт расхождения количеств сохранён.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-075": "technical_findings"
+      }
     },
     {
       "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
@@ -123,7 +130,12 @@
         }
       ],
       "reason": "F-018 сохраняет отсутствие3×2,5 в сводной спецификации при локальных20м и10м; F-017 отдельно сохраняет конфликт исполнения По5.1-9. Недопоставка30м и безусловная замена4×4 не утверждаются.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-018": "technical_findings",
+        "F-017": "technical_findings"
+      }
     },
     {
       "target_id": "AK14:65ea2c2649999f640c83",
@@ -146,7 +158,8 @@
         }
       ],
       "reason": "Восстановлены два адреса из пяти: ШАУВ-4-К4ПЧ лист28 и ШАУВ-3-К5ПЧ лист32. Полнота системной темы по пяти схемам не достигнута.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK57:9851f2c4946bad03af44",
@@ -170,7 +183,8 @@
         }
       ],
       "reason": "Сохранены PDS4 Пм4.1, PDS3 Пкр4.1 и PDS3 Пкр5.1 — три из шести адресов. F-056/F-061 относятся к другим системам листов18/22 и не заменяют PDS2/PDS3/PDS4 Па3.1/Ва3.1/Ва3.1р. Не засчитывать тематическое сходство как полное покрытие.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK57:a998dcf058f81b7ac194",
@@ -192,7 +206,11 @@
         }
       ],
       "reason": "В основном описании есть перечень1/3 и СО3/1, в дополнении — графическая таблица2/2 с адресами PDS. Все три состава сохранены; общее количество4 и неопределённость правильного исполнения явно указаны.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-006": "technical_findings"
+      }
     },
     {
       "target_id": "AK57:d6f8484b24bc88adcab5",
@@ -218,7 +236,8 @@
       ],
       "reason": "F-039/F-044/F-056/F-061 прямо различают диапазон и уставку,50/100Па не объявлены вне50–500Па. Неполнота положительного покрытия AK57 учитывается отдельно.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
@@ -240,7 +259,11 @@
         }
       ],
       "reason": "Четыре ПЧ двух систем Пн5.1/Вн5.1 с UZ2/UZ3/UZ2/UZ3 сопоставлены с перечнем UZ1–UZ4; сохранена неоднозначность соответствия.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-048": "technical_findings"
+      }
     },
     {
       "target_id": "AK65_F043_UZ_identity:ab637698bce5025cb6df",
@@ -266,7 +289,8 @@
       ],
       "reason": "F-048 сохраняет расхождение UZ2/UZ3/UZ2/UZ3 с UZ1–UZ4; ложного утверждения о совпадении нет.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK7:4c7010afca7e2923c94b",
@@ -292,7 +316,8 @@
       ],
       "reason": "F-046 указывает две точки AO в колонках7/18 и отсутствие AO в10; ложный подсчёт трёх нанесённых точек не повторён.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
@@ -314,7 +339,8 @@
         }
       ],
       "reason": "Есть61/43 сигнализатора и вопрос о18, но43 КСИ не сохранены; утверждение о неуказанной принадлежности группы противоречит эталонной явной ссылке на АК1-ПА. Не считать этот вопрос корректным только по разделу выдачи.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK_F001_F002_CO_package_boundary:f0a1212b87b41e035c75",
@@ -340,7 +366,8 @@
       ],
       "reason": "F-013 не утверждает буквальное отсутствие подключения вообще: оно названо неустановленным. Однако ложная фраза о неуказанной принадлежности другому комплекту и избыточный запрос схемы остаются отдельной ошибкой качества; отсутствие этого узкого отрицательного атома не оправдывает F-013.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
@@ -363,7 +390,8 @@
         }
       ],
       "reason": "В разных строках сохранены описание без внешнего питания и графическое220В БУРР, но явная сверка этих сторон и QF1 в итоговом выводе не выполнена. F-077 посвящён ссылкам на комплекты.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
@@ -385,7 +413,11 @@
         }
       ],
       "reason": "Сохранены БУРР-1М/два БИС-1М Алекс электроникс против Haier TD0027170RU/адаптеров СО, без доказательства несовместимости изделий.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-012": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
@@ -407,7 +439,11 @@
         }
       ],
       "reason": "Примечание для1 сплит системы при паре кондиционеров сохранено, но отдельный вопрос о единице комплекта включён в техническую строку.",
-      "section_assessment": "question_embedded_in_technical"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "question_embedded_in_technical",
+      "actual_output_sections": {
+        "F-012": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
@@ -429,7 +465,11 @@
         }
       ],
       "reason": "Шкаф ШАУВ-4-К4ПЧ, поз.4.8=2 накладных датчика против одного ТЕ2 сохранены. Не утверждается фактическая лишняя поставка.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "route_mismatch_observed",
+      "actual_output_sections": {
+        "F-008": "questions"
+      }
     },
     {
       "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
@@ -451,7 +491,11 @@
         }
       ],
       "reason": "Две позиции наружного датчика2.5/2.7 сопоставлены с одним ТЕ1 того же шкафа ШАУВ-2-К4ПЧ; назначение дополнительного изделия не выдумано.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "route_mismatch_observed",
+      "actual_output_sections": {
+        "F-008": "questions"
+      }
     },
     {
       "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
@@ -473,7 +517,11 @@
         }
       ],
       "reason": "Лист14, количество1 в перечне и2 в СО8.6 дополнены отдельными ТЕ3 П5.1.1/ТЕ4 П5.1.3 с сигналами12/20. Закупочная нехватка не утверждается.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-007": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
@@ -495,7 +543,11 @@
         }
       ],
       "reason": "Лист20, перечень1 и СО14.6=2 дополнены отдельными ТЕ3 П6.1.1/ТЕ4 П6.1.4 и сигналами11/20. Сохраняется область одного шкафа.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-007": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
@@ -517,7 +569,11 @@
         }
       ],
       "reason": "Пустое количество комплектного ТС2 вынесено в вопросы, отдельно от капиллярного ТС1 и позиции14.8; отсутствие защиты или необходимость второго капиллярного реле не утверждаются.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-031": "questions"
+      }
     },
     {
       "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
@@ -539,7 +595,11 @@
         }
       ],
       "reason": "Поз.15.7=2 канальных датчика сопоставлена с одним ТЕ3 шкафа ШАУВ-3-К6ПЧ; резерв и фактическая поставка оставлены неопределёнными.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "route_mismatch_observed",
+      "actual_output_sections": {
+        "F-008": "questions"
+      }
     },
     {
       "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
@@ -561,7 +621,11 @@
         }
       ],
       "reason": "M3–M6 показаны по одному у четырёх завес, перечень2. Нехватка фактической поставки ОВ не утверждается. Старый F-009 с оговоркой не обновлён и создаёт дублирующее уточнение.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-063": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
@@ -583,7 +647,11 @@
         }
       ],
       "reason": "Два клапана Y1/Y2 у насосов M1/M2 против количества4 перечня сохранены; безусловное сокращение закупки не предписано.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-064": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
@@ -605,7 +673,11 @@
         }
       ],
       "reason": "Обе группы У1–У4 и У4.3–У4.6 сохранены как вопрос соответствия, буква У не объявлена нарушением.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-010": "questions"
+      }
     },
     {
       "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
@@ -631,7 +703,8 @@
       ],
       "reason": "Нет утверждения об отсутствии всех подключений второго узла завес. F-076 касается конкретной защитной жилы, а F-010 — марок; эти темы не равнозначны исходной ложной предпосылке.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
@@ -656,7 +729,8 @@
         }
       ],
       "reason": "F-010 сохраняет разные марки завес, F-076 — защитную жилу У4-2. Вопрос учёта межприборных участков Y1–Y2, M1–M2, TS1–TS2 в длинах КЖ не выдан.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
@@ -678,7 +752,11 @@
         }
       ],
       "reason": "Один идентификатор П4.1.3-9, одна длина15м, разные сечения4×2,5/4×4,0 и локальный перечень4×4,0 сохранены без превращения повтора в две физические линии.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-001": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
@@ -700,7 +778,8 @@
         }
       ],
       "reason": "Семь марок и адреса листов7/8 сохранены, различия строк отмечены. Сумма165м и её расчёт в итоговой строке отсутствуют; полный атом с количественным итогом не засчитан.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
@@ -722,7 +801,8 @@
         }
       ],
       "reason": "14 повторных марок и листы25/26 сохранены; итог210м и расчёт14×15 не выведены. Не засчитывать полноту количественного атома.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
@@ -748,7 +828,8 @@
       ],
       "reason": "F-002 прямо перечисляет различающиеся разбивки длин, НФ/HF и TS1/ТС1. Дословная идентичность первого набора не утверждается.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
@@ -770,7 +851,8 @@
         }
       ],
       "reason": "Пкр4.1-13→M2 в КЖ сопоставлен с M3 перечня; графическое подтверждение этой линии в итоговом тексте не восстановлено. Дополнения Пкр5.1 не заменяют адрес Пкр4.1.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
@@ -796,7 +878,8 @@
       ],
       "reason": "F-003 указывает линию Пкр4.1-13 и конфликт её конечной позиции; отсутствие линии вообще не утверждается. Непроверенная графическая сторона остаётся частичным положительным покрытием.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
@@ -818,7 +901,11 @@
         }
       ],
       "reason": "Обе линии Пкр5.1-9/-13 сопоставлены с внешней схемой, назначением двигателей и буквальными строками КЖ; клеммы23–25/33–34 сохранены.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-003": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
@@ -844,7 +931,8 @@
       ],
       "reason": "F-003 содержит M1/M5, но F-071 дополняет тот же насос графической M2. По совокупности полной выдачи конфликт не ограничен только парой M1/M5; разнесение по строкам учитывается отдельно.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
@@ -867,7 +955,12 @@
         }
       ],
       "reason": "M1 насоса Пн5.1 в КЖ, M5 перечня/функционального назначения и M2 насоса во внешних подключениях сохранены совокупностью двух строк; не сводить тройное расхождение к паре.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-003": "technical_findings",
+        "F-071": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
@@ -889,7 +982,11 @@
         }
       ],
       "reason": "Графическое дополнение устанавливает M2 насосом водяного контура Па3.1 против строки M1–M3 вентиляторов перечня.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-004": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
@@ -911,7 +1008,11 @@
         }
       ],
       "reason": "M4 связан с Ва3.1р на графике, в перечне это насос; назначения сохранены без вывода о фактическом неправильном подключении.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-004": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
@@ -933,7 +1034,11 @@
         }
       ],
       "reason": "M5 обнаружен на схеме Па3.1 и в КЖ Па3.1-12, при отсутствии позиции в полном перечне M1–M3/M4. Количество ПЧ не использовано как доказательство числа работающих двигателей.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-004": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
@@ -955,7 +1060,11 @@
         }
       ],
       "reason": "Позиции16.2/16.3 Ва4.1/Па4.1 сопоставлены с шкафом ШАУВ-1-К6АС и Па5.1/Ва5.1; добавлены графические подтверждения листов40 и54.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "route_mismatch_observed",
+      "actual_output_sections": {
+        "F-027": "questions"
+      }
     },
     {
       "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
@@ -982,7 +1091,11 @@
         }
       ],
       "reason": "Графическое дополнение прямо связывает По5.1-9 с3×2,5 и клеммами34/35/PE; основное описание сохраняет4×4,0 и10м в КЖ. Это одна линия, не две альтернативно подсчитанные поставки.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-017": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
@@ -1008,7 +1121,8 @@
       ],
       "reason": "Тезис о кабеле к M4 именно5×4 длиной15м в выдаче отсутствует. Другие сечения и двигатели не подставляются вместо этого адреса.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F021_cable_reading_balance:c6f3ad54ccd603f4f796",
@@ -1034,7 +1148,8 @@
       ],
       "reason": "Отсутствие кабеля M4 в проверенной локальной ведомости75м не заявлено. Замечания о других кабельных балансах имеют иные границы.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
@@ -1056,7 +1171,11 @@
         }
       ],
       "reason": "Восемь однопарных неэкранированных линий по15м дают120м против50м перечня того же шкафа; разность70м ограничена проектными документами.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-014": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
@@ -1078,7 +1197,11 @@
         }
       ],
       "reason": "Три однопарные экранированные линии20+15+15=50м сопоставлены с105м перечня, отдельный тип кабеля не смешан с неэкранированным.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-014": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
@@ -1100,7 +1223,11 @@
         }
       ],
       "reason": "BSD4120 локальных таблиц и BSD2120/ BSD-21 позиции22.6 СО сохранены с адресами, взаимозаменяемость не утверждается.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-025": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
@@ -1122,7 +1249,8 @@
         }
       ],
       "reason": "Сохранены15 плит/15 консолей и условие4 консоли наопору;15 подвесов и60 анкеров количественного атома не выведены. Нехватка45 консолей без проверки применимости не заявлена.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK_F025_area_arithmetic:eaa42cc0bf57fa49a886",
@@ -1148,7 +1276,8 @@
       ],
       "reason": "Ошибочная сумма площадей кладовых453,2 вместо453,1 не выдана; геометрия помещений этим не проверена.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F025_area_arithmetic:5ba1a83908ceb33758ab",
@@ -1174,7 +1303,8 @@
       ],
       "reason": "Ошибочная сумма МОП583,3 вместо583,5 не выдана.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F025_area_arithmetic:88b00bcefd42161838b4",
@@ -1200,7 +1330,8 @@
       ],
       "reason": "Ошибочный общий итог19058,7 вместо19058,8 не выдан.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
@@ -1222,7 +1353,11 @@
         }
       ],
       "reason": "Оператор ИЛИ между обратной водой≤20 и наружным воздухом≤3 сохранён вместе с полным открытием клапана и отключением регулирования; запрошены условия выхода.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-024": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F026_protection_boolean_condition:b69337bb34f8d41b6d57",
@@ -1248,7 +1383,8 @@
       ],
       "reason": "F-024 описывает открытие клапана и отключение регулирования по условию ИЛИ, а не немедленный останов вентилятора только по наружной температуре.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
@@ -1270,7 +1406,11 @@
         }
       ],
       "reason": "Сохранены Спрут Т-06 в алгоритме и МВТ3280 NTC10К СО20.1. Неизвестность обработки сигнала в смежном шкафу отделена от документального расхождения.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-011": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F027_sensor_interface_scope:eb93f9ee7771db58e73f",
@@ -1296,7 +1436,8 @@
       ],
       "reason": "F-011 говорит о необходимости обработки терморезистивного сигнала и нераскрытом смежном шкафе; непосредственное доказанное подключение к катушке без обработки не утверждается.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F028_change_register_scope:da80e943594aac429110",
@@ -1318,7 +1459,11 @@
         }
       ],
       "reason": "Шифр АК-КЗ в реестре АК2-ПА и содержание замены Modbus/CAN/Ethernet сохранены как вопрос уточнения принадлежности. Предыдущая запись о техническом разделе была ошибкой оценивания; исправлено по report_section=questions.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-028": "questions"
+      }
     },
     {
       "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
@@ -1340,7 +1485,8 @@
         }
       ],
       "reason": "Ссылка на ГН и вопрос актуализации сохранены, но утрата силы в итоговом тексте прямо оставлена непроверенной. Поздняя отдельная справка аудитора не добавляется к результату прогона задним числом.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK_F029_CO_reference_and_parameter_scope:7752ed01f36756fff7f3",
@@ -1366,7 +1512,8 @@
       ],
       "reason": "F-022 связывает ТУ-газ-86 только с высотой1,5м; обоснование площади200м² этим ТУ не приписывает.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
@@ -1388,7 +1535,8 @@
         }
       ],
       "reason": "Неполные реквизиты ТУ-газ-86 сохранены; отдельное обоснование200м² на сигнализатор не представлено в этой строке. Высота1,5м не объявлена ошибкой.",
-      "section_assessment": "correct"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct"
     },
     {
       "target_id": "AK_F029_CO_reference_and_parameter_scope:9a595b6986b86b78f7cb",
@@ -1414,7 +1562,8 @@
       ],
       "reason": "Выдача не объявляет пороги и высоту противоречащими изготовителю; F-022 прямо оставляет ошибочность высоты недоказанной.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
@@ -1436,7 +1585,11 @@
         }
       ],
       "reason": "Ошибочное обозначение ГОСТ21.4.08-2013 сохранено как уточнение реквизитов, не техническое нарушение.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-022": "questions"
+      }
     },
     {
       "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
@@ -1461,7 +1614,8 @@
         }
       ],
       "reason": "F-022 сохраняет опечатку ГОСТ и реквизиты ТУ, но неопределённый адрес «гл.7 ПУЭ» в разделе заземления не рассматривает.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
@@ -1483,7 +1637,11 @@
         }
       ],
       "reason": "Повтор позиции21.10 у разных интерфейсных кабелей3×2×0,78 и2×2×0,78 сохранён.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "route_mismatch_observed",
+      "actual_output_sections": {
+        "F-026": "questions"
+      }
     },
     {
       "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
@@ -1505,7 +1663,11 @@
         }
       ],
       "reason": "Код35341 сопоставлен с лотком100×100 и треугольной биркой как двумя разными изделиями.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "route_mismatch_observed",
+      "actual_output_sections": {
+        "F-026": "questions"
+      }
     },
     {
       "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
@@ -1527,7 +1689,11 @@
         }
       ],
       "reason": "КодBSD2120 у подвеса и стальной трубыДу32 сохранён как конфликт идентификатора разных изделий.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "route_mismatch_observed",
+      "actual_output_sections": {
+        "F-026": "questions"
+      }
     },
     {
       "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
@@ -1549,7 +1715,11 @@
         }
       ],
       "reason": "Сохранены различия КСПВПГ и КСПВППГ между локальными перечнями и СО, без доказательства фактической конструктивной неэквивалентности.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "route_mismatch_observed",
+      "actual_output_sections": {
+        "F-019": "questions"
+      }
     },
     {
       "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
@@ -1571,7 +1741,11 @@
         }
       ],
       "reason": "Графические дополнения содержат четыре конкретные линии листа37, окончания,30м и КСПВПГ; основное описание сохраняет вариант КСВПГ в КЖ. Исходные буквальные строки остаются в доказательствах.",
-      "section_assessment": "route_mismatch_observed"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "route_mismatch_observed",
+      "actual_output_sections": {
+        "F-019": "questions"
+      }
     },
     {
       "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
@@ -1593,7 +1767,11 @@
         }
       ],
       "reason": "Точная графическая ссылка21/24-ГК-К5-ЭМ сохранена; исходное описание отделяет различие ссылок от доказанного противоречия одной цепи. Дополнения требуют отдельной проверки силы вывода.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-077": "questions"
+      }
     },
     {
       "target_id": "AK_F033_power_reference_scope:2ec9d727804fc985242e",
@@ -1618,7 +1796,8 @@
         }
       ],
       "reason": "F-023/F-077 обсуждают ссылки на комплекты электропитания. Шаблонная ссылка «лист6 примера РД pdf» в разделе7 не отмечена.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
@@ -1643,7 +1822,8 @@
         }
       ],
       "reason": "Выдача не сопоставляет поле Наименование листа MD для листа16 Пл3.1/Вк3.1/Всу3.1 с ведомостью Пу5.1/Ву5.1/Всу5.1. Находки по сигналам этого листа не заменяют редакционное уточнение.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
@@ -1665,7 +1845,11 @@
         }
       ],
       "reason": "Два разных ПЧ П4.1.3/П4.1.4 имеют SC UZ1 в одном шкафу, перечень предусматривает SC UZ1/SC UZ2.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-036": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
@@ -1687,7 +1871,11 @@
         }
       ],
       "reason": "Колонки11/13 Y2/Y3, подпись состояния0–100% и AO сохранены. Реальная обратная связь и необходимость отдельного входа оставлены неопределёнными.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-038": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
@@ -1713,7 +1901,8 @@
       ],
       "reason": "Нет тезиса о подключении TE2 к воздуховоду после нагревателя в исходном адресном случае. F-033 о конце линии По5.1-1 не является этим утверждением.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
@@ -1738,7 +1927,8 @@
         }
       ],
       "reason": "Замечания по П4.1.1 есть, но назначение обслуживаемых помещений из общих указаний не сопоставлено с подписью схемы листа10. Пкр4.1 не используется как адресный контроль.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
@@ -1764,7 +1954,15 @@
         }
       ],
       "reason": "Найдены все пять адресов DI без DO, но четыре строки ошибочно отнесены к техническим. F-050 без проверки интерфейса предписывает перенос DI→DO и пересчёт итогов; это не улучшение качества при полном покрытии факта.",
-      "section_assessment": "mixed_questions_promoted_to_technical"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "mixed_questions_promoted_to_technical",
+      "actual_output_sections": {
+        "F-041": "questions",
+        "F-045": "technical_findings",
+        "F-050": "technical_findings",
+        "F-052": "technical_findings",
+        "F-057": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
@@ -1786,7 +1984,11 @@
         }
       ],
       "reason": "Ва3.1/M3→16 и Ва3.1р/M4→19 сохранены как несовпадение подписей со статическими обозначениями агрегатов.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-042": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F041_fan_role_labels:8239404083a86b949049",
@@ -1812,7 +2014,8 @@
       ],
       "reason": "F-047 использует11/14/26/29; ошибочные колонки давления15/30 не названы состояниями вентиляторов.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
@@ -1834,7 +2037,11 @@
         }
       ],
       "reason": "Состояния Пн5.1/Вн5.1 сохранены в колонках11/14/26/29; ошибочные колонки15/30 не использованы вместо состояний.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-047": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
@@ -1859,7 +2066,8 @@
         }
       ],
       "reason": "Замечания по PDS касаются диапазонов, полярности и маркировки. Узкое определение PDS только для вентилятора в легенде листа11 при PDS1 на фильтре не отмечено.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
@@ -1881,7 +2089,11 @@
         }
       ],
       "reason": "TS2 Пу5.1 функциональной схемы сопоставлен с ТС1 перечня и линией Пу5.1-2 в КЖ; повторная проверка добавила внешний TS1.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-051": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
@@ -1903,7 +2115,11 @@
         }
       ],
       "reason": "Для По5.1 сохранены TS2 функциональной схемы, ТС1 перечня/КЖ и TS1 внешней схемы; адрес По5.1-2 установлен.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-053": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
@@ -1925,7 +2141,11 @@
         }
       ],
       "reason": "Буквальный PDS45 в строке Вос5.1-1 сопоставлен с PDS5 на функциональной и внешней схемах; клеммы14/15 приведены.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-032": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
@@ -1947,7 +2167,11 @@
         }
       ],
       "reason": "UZ1–UZ53 при количестве3 сохранены как редакционный вопрос; дополнения подтверждают графическиеUZ1/UZ2/UZ3 без вывода о53 физических ПЧ.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-030": "questions"
+      }
     },
     {
       "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
@@ -1969,7 +2193,11 @@
         }
       ],
       "reason": "Сохранены DI10 против12 точек с учётом отдельного сигнала Пожар; фактическая нехватка входов контроллера не утверждается.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-058": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
@@ -1995,7 +2223,8 @@
       ],
       "reason": "F-058 считает12точек DI с Пожаром при итоге10; исходный неполный подсчёт11/10 не повторён.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
@@ -2017,7 +2246,11 @@
         }
       ],
       "reason": "DO5 против шести точек2/8/10/11/14/16 сохранён как внутреннее расхождение таблицы, без вывода о комплектации шкафа.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-059": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
@@ -2039,7 +2272,8 @@
         }
       ],
       "reason": "Сохранён раздел вопросов и наличие электрического нагревателя в легенде. Однако утверждение о соответствии рабочего символа символу легенды выходит за пределы эталона, где тождество начертания не доказано.",
-      "section_assessment": "correct_section_overclaim_in_text"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "correct_section_overclaim_in_text"
     },
     {
       "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
@@ -2061,7 +2295,11 @@
         }
       ],
       "reason": "ШУ-ПД4.14 и ЩУ-ПД4.1.4 связаны с одной системой и линией ПД4.1.4-1, сохранены как вопрос согласования марки.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-084": "questions"
+      }
     },
     {
       "target_id": "AK_F052_local_cable_balance:61ee4b031d84d67a9995",
@@ -2087,7 +2325,8 @@
       ],
       "reason": "Нет суммы пяти приводов по35м=175м в исходном локальном случае. F-015 с35м и разницей20м относится к другой конкретной линии, F-016 — другим шкафным балансам.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
@@ -2112,7 +2351,8 @@
         }
       ],
       "reason": "Локальный баланс пяти силовых линий листа25:165м против155м не выдан. F-015/F-016/F-066/F-067/F-075 относятся к другим исполнениям, шкафам или суммам.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
@@ -2140,7 +2380,8 @@
       ],
       "reason": "Сохранены ШАУВ-4-К4ПЧ, лист28, повтор29/30 у M1/M2 и уточнение у изготовителя. Раздел technical_findings расходится с question этого атома; пересекающийся AK14 имеет иной маршрут. Требуется разрешение конфликта эталона, а не автоматическое наказание модели.",
       "section_assessment": "unchecked",
-      "section_assessment_detail": "evaluator_route_overlap_requires_adjudication"
+      "section_assessment_detail": "evaluator_route_overlap_requires_adjudication",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
@@ -2168,7 +2409,8 @@
       ],
       "reason": "Сохранены ШАУВ-3-К5ПЧ, лист32, повтор23/24 у PDS4/PDS5, отсутствие различающих адресов и оговорка о неустановленном физическом объединении. Маршрут пересекается с технической темой AK14; конфликт эталона отдельно.",
       "section_assessment": "unchecked",
-      "section_assessment_detail": "evaluator_route_overlap_requires_adjudication"
+      "section_assessment_detail": "evaluator_route_overlap_requires_adjudication",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
@@ -2196,7 +2438,8 @@
       ],
       "reason": "Сохранены ШАУВ-3-К5ПЧ, лист32, повтор29–31 у M1/M2 и требование уточнения полных адресов. Физическое объединение не утверждается. Маршрут пересекается с технической темой AK14; конфликт эталона отдельно.",
       "section_assessment": "unchecked",
-      "section_assessment_detail": "evaluator_route_overlap_requires_adjudication"
+      "section_assessment_detail": "evaluator_route_overlap_requires_adjudication",
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
@@ -2218,7 +2461,11 @@
         }
       ],
       "reason": "Сохранён конфликт M2 у двух разных двигателей одного шкафа, с различением функций и цепей. Фактическая ошибка монтажа не утверждается.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-071": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
@@ -2240,7 +2487,11 @@
         }
       ],
       "reason": "Сохранён самостоятельный конфликт Y7 у клапана теплоносителя и воздушного клапана с разными подключениями.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-072": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
@@ -2262,7 +2513,11 @@
         }
       ],
       "reason": "КЖ По5.1-1→ТЕ1 и дополнение внешней схемы→TE2 сохранены. После получения графики исходный вопрос не повышен до подтверждённого документального расхождения.",
-      "section_assessment": "technical_retained_as_question"
+      "section_assessment": "incorrect",
+      "section_assessment_observation": "technical_retained_as_question",
+      "actual_output_sections": {
+        "F-033": "questions"
+      }
     },
     {
       "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
@@ -2284,7 +2539,11 @@
         }
       ],
       "reason": "ТС1 в двух листах КЖ для Пб.1.4-2 сохранён; графическое дополнение даёт П6.1.4-2→TS2, назначения двух защит различены.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-034": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
@@ -2308,7 +2567,13 @@
         }
       ],
       "reason": "Сохранены все три листа50,52,54 и узкая формулировка согласования узла с примечанием. Три строки соответствуют одной эталонной теме; не считать тремя независимыми дефектами.",
-      "section_assessment": "correct"
+      "section_assessment": "correct",
+      "section_assessment_observation": "correct",
+      "actual_output_sections": {
+        "F-078": "technical_findings",
+        "F-079": "technical_findings",
+        "F-081": "technical_findings"
+      }
     },
     {
       "target_id": "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
@@ -2334,7 +2599,8 @@
       ],
       "reason": "Требование переносить любое упоминание ГОСТ/СП в ведомость ссылочных документов не выдано. F-028 касается реестра отклонений, это другой документ.",
       "section_assessment": "unchecked",
-      "filter_credit": false
+      "filter_credit": false,
+      "section_assessment_observation": "unchecked"
     },
     {
       "target_id": "AK_F065_norm_replacement_applicability:d53a7df3ef467306402d",
@@ -2359,7 +2625,8 @@
         }
       ],
       "reason": "Вопрос применимой редакции ГОСТ Р21.101-2020 с контекстом замены и даты введения не выдан. Другие нормативные вопросы F-021/F-022 не покрывают этот стандарт.",
-      "section_assessment": "unchecked"
+      "section_assessment": "unchecked",
+      "section_assessment_observation": "unchecked"
     }
   ],
   "limits": [

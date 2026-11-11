@@ -7,15 +7,27 @@
       "finding_id": "F-001",
       "problem": "Для линии П4.1.3-9 заданы два сечения.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Две строки одной марки П4.1.3-9 от ШАУВ-2-К4ПЧ к электронагревателю содержат4×2,5 и4×4,0 по15м. Локальный перечень содержит15м4×4,0. Выдача не объявляет расчётную достаточность сечения и не считает строки двумя физическими кабелями. Решение согласовать после проверки мощности/защиты соответствует границам доказательств.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_text_findings_source_review_20261112.json",
+        "sha256": "81e583b420abb071f88f36272799c7d45afe8981a319d69f05d32d7c5a224c8c"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-002",
       "problem": "Повторены строки кабельного журнала без указания действующей записи.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "В авторитетном MD повторяются семь марок на листах7/8 и четырнадцать на25/26. Выдача сохраняет различия разбивки трасс и написаний и требует установить действующие записи. Она не требует удаления всего листа8 и не заявляет доказанного двойного заказа. Отсутствие сумм165/210 снижает полноту атомного покрытия, но не делает опубликованное замечание ложным.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_text_findings_source_review_20261112.json",
+        "sha256": "81e583b420abb071f88f36272799c7d45afe8981a319d69f05d32d7c5a224c8c"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-003",
@@ -675,5 +687,7 @@
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
-  ]
+  ],
+  "reviewed_findings": 12,
+  "unchecked_findings": 73
 }

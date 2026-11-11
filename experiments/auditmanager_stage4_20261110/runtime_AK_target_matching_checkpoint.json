@@ -1,7 +1,7 @@
 {
   "status": "provisional_semantic_matching_not_trial_acceptance",
   "review_path": "experiments/auditmanager_stage4_20261110/runtime_AK_atomic_review_in_progress.json",
-  "review_sha256": "f91f65e96f6d54f3134e1c1842923c189606018db22974699a5889f73b03e848",
+  "review_sha256": "c50efdba70c5fc3e6bac00a5de6947606a6e95f33cc95ffeb12413153cc2abae",
   "reviewed_targets": 100,
   "output_findings": 85,
   "counts": {
@@ -26,7 +26,7 @@
     "F-068/F-069 overlap technical AK14 and question F054/F055 targets. Their section accuracy remains subject to evaluator reconciliation."
   ],
   "next_steps": [
-    "Resolve route assessment schema and overlapping gold routes without changing sealed model output.",
+    "Resolve overlapping terminal-number gold routes; section assessment schema now validated by score_atomic_review.",
     "Finish per-finding source-quality review, including new findings and unsupported additions.",
     "Compare with baseline at equal atom scope and include runtime cost before candidate acceptance."
   ],
