@@ -10,7 +10,7 @@ OUT=Path(__file__).parent
 EVIDENCE={
  ('H05','positive_controls',1):('partial_GVS_conflict_reported_pipe_and_pump_scope_pending',['ITP_GVS_combined_output_replay.json','ITP_GVS_circulation_output_replay.json','ITP_gvs_graphic_window_assessment.json','ITP_pipe_graphic_window_assessment.json']),
  ('H06','negative_controls_and_limits',1):('bounded_inventory_identity_control',['ITP_pipe_distinct_materials_assessment.json','ITP_pipe_inv_008_validated.json']),
- ('H06','positive_controls',1):('partial_control_pending_applicability_question_admission',['EOM_manufacturer_applicability_assessment.json','EOM_manufacturer_applicability_result.json']),
+ ('H06','positive_controls',1):('bounded_control_recorded',['EOM_manufacturer_applicability_assessment.json','EOM_manufacturer_applicability_result.json','EOM_manufacturer_question_output_replay.json','EOM_shunt_identity_negative_pair.json']),
  ('H01','positive_controls',1):('bounded_facts_recorded_F032_routing_disputed',['EOM_F001_question_output_replay.json','EOM_F030_question_output_replay.json','EOM_F032_output_replay.json','EOM_F032_profile_disagreement.json','benchmark_errata.json']),
  ('H06','negative_controls_and_limits',0):('bounded_control_recorded',['EOM_shunt_identity_negative_pair.json','EOM_manufacturer_applicability_assessment.json']),
  ('H03','positive_controls',1):('partial_instance_identity_question_preserved',['EOM_instance_question_output_replay.json','EOM_instance_followup2_validated.json']),

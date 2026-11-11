@@ -524,15 +524,23 @@
       "hypothesis": "H06",
       "kind": "positive_controls",
       "original_control": "ЭОМ: совместимость расцепителя сQF3.20 проверить по конкретному изготовителю.",
-      "evidence_state": "partial_control_pending_applicability_question_admission",
+      "evidence_state": "bounded_control_recorded",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_manufacturer_applicability_assessment.json",
-          "sha256": "f90a29b5f15f91b3d754a462e0a29f585c2cde8e0e3a2f8746274be2e5a87979"
+          "sha256": "a83de192bcc044cde9c8fa52983f6a4b549f7a3c7e6c298712ead8a5761240d4"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_manufacturer_applicability_result.json",
           "sha256": "08bab1e0d88cfc3cc843d91debc9252114b35444d1eb9b0e927bc83c2735aab1"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_manufacturer_question_output_replay.json",
+          "sha256": "e315a6bf3d2cbcd715ddad5cbd2605f354f5ab73d1c49d6d33d50f82ab8b73e0"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_shunt_identity_negative_pair.json",
+          "sha256": "05b8365fc77f5c8d0a2f8c0cb3948bd30c4f8481963804de5436e6a62ea3dd3c"
         }
       ],
       "full_acceptance_proven": false
@@ -572,7 +580,7 @@
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_manufacturer_applicability_assessment.json",
-          "sha256": "f90a29b5f15f91b3d754a462e0a29f585c2cde8e0e3a2f8746274be2e5a87979"
+          "sha256": "a83de192bcc044cde9c8fa52983f6a4b549f7a3c7e6c298712ead8a5761240d4"
         }
       ],
       "full_acceptance_proven": false
@@ -671,7 +679,7 @@
     }
   ],
   "counts": {
-    "bounded_control_recorded": 22,
+    "bounded_control_recorded": 23,
     "bounded_facts_recorded_F032_routing_disputed": 1,
     "bounded_inventory_identity_control": 1,
     "bounded_known_candidate_control": 1,
@@ -679,7 +687,6 @@
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
     "partial_GVS_conflict_reported_pipe_and_pump_scope_pending": 1,
-    "partial_control_pending_applicability_question_admission": 1,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
     "partial_instance_identity_question_preserved": 1,

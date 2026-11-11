@@ -7,11 +7,12 @@
     "RN300-2P condition is restricted to documented accessory/execution; EKF not established.",
     "Actual QF3.20 manufacturer/article selection unresolved."
   ],
-  "candidate_status": "not_admitted",
+  "candidate_status": "reviewed_question_exported",
   "remaining": [
-    "Verify candidate semantics against sources and source-review admission.",
-    "Model report_section is free prose, not canonical questions routing.",
-    "Separate VRU3 QF3.17 identity control pending."
+    "Full independent discovery and catalogue retrieval policy in comparative run remain unproved.",
+    "Actual selected apparatus/accessory articles remain an engineer clarification, not a proven incompatibility."
   ],
-  "full_acceptance": false
+  "full_acceptance": false,
+  "output_evidence": "EOM_manufacturer_question_output_replay.json",
+  "negative_identity_control": "EOM_shunt_identity_negative_pair.json"
 }

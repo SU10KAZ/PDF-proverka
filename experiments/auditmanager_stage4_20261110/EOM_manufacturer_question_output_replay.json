@@ -1,0 +1,32 @@
+{
+  "sealed_candidate_sha256": "2009fd47bf4c77b6a0bfb175da67be19a66b9ad4b481afae3fde8d2e0f3a849e",
+  "baseline_sha256": "0fbd8959a9c0be7e25acc0bddc2d82cf04a7c1a5747e5f2e5bbc1df99df4845f",
+  "raw_candidate_status": "candidate_ready",
+  "raw_receipts": [
+    {
+      "finding_id": "EOM-QF320-manufacturer-question",
+      "status": "applied",
+      "action": "question"
+    }
+  ],
+  "local_admission_receipts": [
+    {
+      "finding_id": "EOM-QF320-manufacturer-question",
+      "status": "applied",
+      "action": "question"
+    }
+  ],
+  "new_model_calls": 0,
+  "prior_findings_unchanged": 51,
+  "final_findings": 52,
+  "final_question_id": "F-052",
+  "question_exported_separately": true,
+  "source_catalogue_preserved": true,
+  "full_acceptance_proven": false,
+  "limitations": [
+    "Known-source bounded control, not a blind whole-project audit.",
+    "Manufacturer restriction is scoped to the supplied DEKraft accessory; actual project article and EKF compatibility remain unresolved.",
+    "No physical incompatibility or project-wide missing selection is established.",
+    "Experimental composition of real admission, merge and export functions; production dispatcher integration remains pending."
+  ]
+}
