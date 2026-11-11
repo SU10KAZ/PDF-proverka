@@ -1,5 +1,6 @@
 """Serial direct-Astra pilot after successful completion of the old collection."""
 import asyncio
+import argparse
 from dataclasses import asdict
 import json
 import os
@@ -9,7 +10,7 @@ import time
 
 from .materialize_trial_inputs import sha
 from .observe_baseline_collection import process
-from .verify_experimental_seals import verify
+from .verify_experimental_seals import verify, verify_run
 
 HERE = Path(__file__).resolve().parent
 COLLECTION = Path('/tmp/auditmanager_comparative_trial_context_v3_20261111')
@@ -37,7 +38,28 @@ def write_status(state):
     temp.replace(path)
 
 
-async def main():
+def reviewed_failure_seals(state, receipt_path):
+    receipt = json.loads(receipt_path.read_text())
+    if state.get('status') != 'failed_requires_inspection':
+        raise ValueError('Expected reviewed terminal collection failure')
+    runs = state.get('runs', [])
+    if len(runs) != 2 or runs[-1].get('execution_status') != 'failed' or runs[-1].get('exit_code') != 1:
+        raise ValueError('Unexpected terminal failed run')
+    status_path = Path(runs[-1]['work'])/'classic_control/status/AK.json'
+    if str(status_path) != receipt['status_path'] or sha(status_path) != receipt['status_sha256']:
+        raise ValueError('Reviewed failure differs')
+    if sha(status_path) != runs[-1]['status_sha256']:
+        raise ValueError('Collection failure binding differs')
+    if sha(Path(receipt['process_log_path'])) != receipt['process_log_sha256']:
+        raise ValueError('Reviewed failure log changed')
+    successful = verify_run(runs[0], runs[0])
+    return {'status': 'reviewed_terminal_failure_allows_independent_pilot_only',
+            'review_receipt': str(receipt_path), 'review_sha256': sha(receipt_path),
+            'verified_successful_runs': [successful], 'failed_run': runs[-1],
+            'failed_audit_accepted': False}
+
+
+async def main(reviewed_failure=None):
     receipt_path = HERE / 'merge_primary_text_pilot_preparation.json'
     snapshot_path = HERE / 'corrected_candidate_catalog_snapshot_provenance.json'
     receipt = json.loads(receipt_path.read_text())
@@ -50,6 +72,7 @@ async def main():
     for item in receipt['requests'].values():
         if sha(Path(item['path'])) != item['sha256']:
             raise ValueError('Prepared request changed')
+    OUTPUT.mkdir(parents=True, exist_ok=True)
     with (OUTPUT / 'pilot_started.json').open('x') as stream:
         json.dump({'pid': os.getpid(), 'started': time.time(), 'script_sha256': sha(Path(__file__)),
                    'preparation_sha256': receipt_hash, 'snapshot_sha256': snapshot_hash}, stream)
@@ -67,12 +90,15 @@ async def main():
             observations += [process(r.get('pid'), 'paired_runner') for r in collection.get('runs', [])]
             state.update(observed_at=time.time(), collection_processes=observations)
             write_status(state)
+            if reviewed_failure is not None and all(p.get('live') is False for p in observations):
+                seals = reviewed_failure_seals(collection, reviewed_failure)
+                break
             if prerequisite(collection, observations) == 'ready':
+                seals = verify(COLLECTION)
+                if len(seals['verified_runs']) != 2 or seals['pending_records']:
+                    raise ValueError('Old runs not sealed')
                 break
             await asyncio.sleep(10)
-        seals = verify(COLLECTION)
-        if len(seals['verified_runs']) != 2 or seals['pending_records']:
-            raise ValueError('Old runs not sealed')
         with (OUTPUT / 'preceding_collection_seals.json').open('x') as stream:
             json.dump(seals, stream, ensure_ascii=False, indent=2)
         # All backend imports come from the frozen code, not changing main.
@@ -122,4 +148,9 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', type=Path, default=OUTPUT)
+    parser.add_argument('--reviewed-failure', type=Path)
+    args = parser.parse_args()
+    OUTPUT = args.output.resolve()
+    asyncio.run(main(args.reviewed_failure))
