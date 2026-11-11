@@ -1,0 +1,780 @@
+{
+  "status": "twelve_candidate_records_seven_issue_groups_graphically_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-051",
+      "pointer": "/block_analyses/16/findings/0",
+      "original_candidate": {
+        "id": "G-051",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "io_count_mismatch",
+        "finding": "В таблице сигналов шкафа ШАУВ-3-К6ПЧ указано DI=10 и DO=5, однако точками обозначены 12 дискретных входов и 6 дискретных выходов. Итоговое количество каналов не соответствует показанным подключениям.\n\nРекомендация: Исправить итоги на DI=12 и DO=6 и согласовать количество каналов с комплектацией шкафа.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_7785cb8293734c16b18fc1aff53c761f",
+        "value_found": "DI 10; DO 5",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-051",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "extension",
+          "role": "extends",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на DI=10 при 12 подключениях шкафа ШАУВ-3-К6ПЧ. Левое дополнительно отмечает DO=5 при 6 подключениях.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_channel_total_mismatch",
+      "reason": "Лист 21: точки DI стоят в колонках 3,4,5,6,8,10,11,12,15,16,17 и Пожар от АПС: всего 12 против итога 10. Точки DO стоят в колонках 2,8,10,11,14,16: всего 6 против итога 5. G-053 подтверждён в части DI; G-051 в обеих частях. Фактическая комплектация контроллера не проверена.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+        "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+        "bytes": 373809,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-053",
+      "pointer": "/block_analyses/16/findings/2",
+      "original_candidate": {
+        "id": "G-053",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "signal_count",
+        "finding": "На функциональной схеме, лист 21, для шкафа ШАУВ-3-К6ПЧ указано 10 дискретных входов DI, однако в строке DI обозначено 12 подключений. Итоговое количество входов не соответствует матрице сигналов.\n\nРекомендация: Согласовать итоговое количество DI с 12 обозначенными подключениями и составом входов шкафа.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_7785cb8293734c16b18fc1aff53c761f",
+        "value_found": "DI 10",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-053",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "extension",
+          "role": "base",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на DI=10 при 12 подключениях шкафа ШАУВ-3-К6ПЧ. Левое дополнительно отмечает DO=5 при 6 подключениях.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_channel_total_mismatch",
+      "reason": "Лист 21: точки DI стоят в колонках 3,4,5,6,8,10,11,12,15,16,17 и Пожар от АПС: всего 12 против итога 10. Точки DO стоят в колонках 2,8,10,11,14,16: всего 6 против итога 5. G-053 подтверждён в части DI; G-051 в обеих частях. Фактическая комплектация контроллера не проверена.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+        "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+        "bytes": 373809,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-052",
+      "pointer": "/block_analyses/16/findings/1",
+      "original_candidate": {
+        "id": "G-052",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_designation",
+        "finding": "На функциональной схеме Пкр6.1, лист 21, водяной нагреватель обозначен символом, расшифрованным в легенде как секция электрического нагревателя. Эта расшифровка противоречит показанным подключениям теплоносителя и составу смесительного узла.\n\nРекомендация: Привести условное обозначение нагревателя и его расшифровку в соответствие с показанным водяным теплообменником.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_7785cb8293734c16b18fc1aff53c761f",
+        "value_found": "Нагревательная секция электрического нагревателя.",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-052",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "refuted_narrow_symbol_identity_claim",
+      "reason": "Лист 21: нагреватель Пкр6.1 соединён с теплоносителем 85/60, насосом M4 и клапаном Y3; волнистая линия внутри его ромба продолжается к TS1 и изображает капилляр термостата. В легенде электрического нагревателя есть отдельный угловатый знак молнии. Тождество этих символов, заявленное кандидатом, не подтверждается прямым сравнением: за электрический знак принята линия TS1. Отсутствие отдельной расшифровки водяного символа в этой легенде не доказывает исходный тезис и не проверялось как самостоятельное нормативное нарушение.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+        "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+        "bytes": 373809,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-054",
+      "pointer": "/block_analyses/17/findings/0",
+      "original_candidate": {
+        "id": "G-054",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "instrument_range",
+        "finding": "На листе 22 диапазон реле перепада давления на вентиляторах PDS2–PDS4 в таблице сигналов указан как 20–200 Па, а в перечне элементов для этих приборов задан диапазон 50–500 Па. Документация содержит разные диапазоны для одних и тех же приборов.\n\nРекомендация: Согласовать диапазоны PDS2–PDS4 в таблице сигналов и перечне элементов с выбранными приборами.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+        "value_found": "системы (20…200 Па); PDS1-PDS4 — Датчик давления дифференциальный 50-500 Па",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-054",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое расхождение диапазонов PDS2–PDS4: 20–200 Па в таблице сигналов и 50–500 Па в перечне элементов.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_pressure_range_conflict",
+      "reason": "Лист 22: PDS2, PDS3, PDS4 прослежены к колонкам 10,20,26 матрицы с диапазоном 20–200 Па. Перечень TEXT задаёт PDS1–PDS4 50–500 Па. Несогласованность диапазонов подтверждена. Уставки этих трёх реле на схеме 100 Па попадают в оба диапазона; отказ работы из различия диапазонов не следует. Примечание об уточнении рабочих значений при ПНР само по себе не устраняет противоречие.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+        "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+        "bytes": 442044,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "heading": "### BLOCK #82 [TEXT]: blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "start": 142937,
+          "end": 144510,
+          "sha256": "6eca1527008bea626aa85ed6277acc0c6a1fc53538745d5202bab87065194eb0",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-055",
+      "pointer": "/block_analyses/17/findings/1",
+      "original_candidate": {
+        "id": "G-055",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pressure_range_mismatch",
+        "finding": "На листе 22 для PDS2–PDS4 в таблице сигналов указан диапазон перепада давления 20–200 Па, а в перечне элементов — 50–500 Па. Диапазоны для одних и тех же приборов не согласованы.\n\nРекомендация: Согласовать диапазоны PDS2–PDS4 в таблице сигналов и перечне элементов с выбранными приборами.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+        "value_found": "системы (20…200 Па); PDS1-PDS4 — Датчик давления дифференциальный 50-500 Па",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-055",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое расхождение диапазонов PDS2–PDS4: 20–200 Па в таблице сигналов и 50–500 Па в перечне элементов.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_pressure_range_conflict",
+      "reason": "Лист 22: PDS2, PDS3, PDS4 прослежены к колонкам 10,20,26 матрицы с диапазоном 20–200 Па. Перечень TEXT задаёт PDS1–PDS4 50–500 Па. Несогласованность диапазонов подтверждена. Уставки этих трёх реле на схеме 100 Па попадают в оба диапазона; отказ работы из различия диапазонов не следует. Примечание об уточнении рабочих значений при ПНР само по себе не устраняет противоречие.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+        "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+        "bytes": 442044,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "heading": "### BLOCK #82 [TEXT]: blk_3963ce75beb642a0a5fe85d9dada94b3",
+          "start": 142937,
+          "end": 144510,
+          "sha256": "6eca1527008bea626aa85ed6277acc0c6a1fc53538745d5202bab87065194eb0",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-056",
+      "pointer": "/block_analyses/17/findings/2",
+      "original_candidate": {
+        "id": "G-056",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "pressure_switch_connection",
+        "finding": "На функциональной схеме автоматизации Па5.1/Ва5.1, лист 22, у реле PDS3 и PDS4 перепутана полярность подключения: «+» подключён со стороны всасывания, «−» — со стороны нагнетания вытяжных вентиляторов. При работе вентиляторов перепад на реле будет противоположен заданному положительному порогу 100 Па.\n\nРекомендация: Подключить «+» PDS3 и PDS4 к стороне нагнетания, а «−» — к стороне всасывания соответствующих вентиляторов.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_4f10f081ebcc4fb1a837e257963d7fc8",
+        "value_found": "PDS3, PDS4; ΔP=100Па",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-056",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_drawn_pressure_polarity_conflict",
+      "reason": "Лист 22: вытяжной поток Ва5.1/Ва5.1р идёт от автостоянки справа к выбросу слева. У PDS3/PDS4 знак плюс расположен справа на стороне до вентилятора, минус слева после вентилятора; подписан положительный порог 100 Па. Подтверждено противоречие нарисованной полярности ожидаемому перепаду на вентиляторе. Фактический монтаж, модель и логика контактов реле не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_4f10f081ebcc4fb1a837e257963d7fc8.png",
+        "sha256": "b03511ac642ab24fdaa24a9d185a64762293b7541e98e56a1aecdee11f2b15af",
+        "bytes": 442044,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-057",
+      "pointer": "/block_analyses/18/findings/0",
+      "original_candidate": {
+        "id": "G-057",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "На листе 23 в перечне элементов для электродвигателей М3–М6 указано количество 2, тогда как на функциональной схеме показаны четыре двигателя: М3, М4, М5 и М6. Количество в перечне занижено на 2.\n\nРекомендация: Привести количество электродвигателей М3–М6 в перечне элементов в соответствие со схемой — 4 шт.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_523708af1c384b0e8bc6767d93644336",
+        "value_found": "М3-М6 — Электродвигатель вентилятора в комплекте с завесой — 2",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-057",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковое расхождение: для М3–М6 в перечне указано 2 двигателя вместо четырёх на схеме; исправление — 4 шт.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_motor_quantity_conflict",
+      "reason": "Лист 23: отдельные M3,M4,M5,M6 изображены у завес У4.3,У4.4,У4.5,У4.6; каждому соответствует отдельная коммутационная плата и линия управления. Авторитетный TEXT перечня содержит M3–M6 с количеством 2. Документная несогласованность подтверждена. Указание комплектной поставки с завесой и учёта в другом разделе ограничивает вывод: реальная недопоставка двух двигателей не доказана; требуется согласовать единицу учёта и перечень.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+        "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+        "bytes": 389592,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "heading": "### BLOCK #85 [TEXT]: blk_6e54eb477b59421dbea94ef657f05a46",
+          "start": 148290,
+          "end": 149706,
+          "sha256": "50cff33a69d3ed35abc74e1632dd352f24d3050eaa6e518a118c83495e06d357",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "D-88572b5b92a44934d1200f63",
+      "pointer": "/block_analyses/18/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "На листе 23 в перечне элементов для электродвигателей М3–М6 указано количество 2, тогда как на функциональной схеме показаны четыре двигателя: М3, М4, М5 и М6 — по одному для каждой завесы У4.3–У4.6.",
+        "norm_quote": null,
+        "value_found": "М3-М6 | Электродвигатель вентилятора в комплекте с завесой | 2",
+        "recommendation": "Привести количество электродвигателей М3–М6 в перечне элементов в соответствие со схемой: 4 шт.",
+        "claim_type": "contradiction",
+        "problem_class": "equipment_quantity_mismatch",
+        "affected_entity": "Электродвигатели М3–М6 тепловых завес У4.3–У4.6",
+        "evidence_quote": "В перечне элементов для М3–М6 указано «2»; на схеме отдельно изображены и обозначены М3, М4, М5, М6 в четырёх тепловых завесах.",
+        "evidence_kind": "block_image",
+        "context_status": "sufficient",
+        "confidence": 0.99,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:001",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковое расхождение: для М3–М6 в перечне указано 2 двигателя вместо четырёх на схеме; исправление — 4 шт.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "assessment": "confirmed_graphic_text_motor_quantity_conflict",
+      "reason": "Лист 23: отдельные M3,M4,M5,M6 изображены у завес У4.3,У4.4,У4.5,У4.6; каждому соответствует отдельная коммутационная плата и линия управления. Авторитетный TEXT перечня содержит M3–M6 с количеством 2. Документная несогласованность подтверждена. Указание комплектной поставки с завесой и учёта в другом разделе ограничивает вывод: реальная недопоставка двух двигателей не доказана; требуется согласовать единицу учёта и перечень.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+        "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+        "bytes": 389592,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "heading": "### BLOCK #85 [TEXT]: blk_6e54eb477b59421dbea94ef657f05a46",
+          "start": 148290,
+          "end": 149706,
+          "sha256": "50cff33a69d3ed35abc74e1632dd352f24d3050eaa6e518a118c83495e06d357",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-058",
+      "pointer": "/block_analyses/18/findings/1",
+      "original_candidate": {
+        "id": "G-058",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "На листе 23 в перечне элементов для регулирующих клапанов Y1, Y2 указано количество 4. На функциональной схеме изображены два регулирующих клапана с электроприводами — Y1 и Y2, по одному на каждый смесительный узел.\n\nРекомендация: Согласовать перечень элементов со схемой, указав для Y1, Y2 количество 2 шт.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_523708af1c384b0e8bc6767d93644336",
+        "value_found": "Y1, Y2 | Регулирующий клапан с электроприводом в комплекте смесительного узла с насосом | 4",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-058",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:004"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковое расхождение: для Y1, Y2 в перечне указано 4 клапана при двух на схеме, по одному на каждый смесительный узел.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_valve_quantity_conflict",
+      "reason": "Лист 23: показаны два регулирующих клапана с приводами Y1 и Y2, по одному в двух смесительных узлах, каждый обслуживает пару завес. Другие запорные элементы не обозначены Y1/Y2 и не являются дополнительными регулирующими клапанами с приводом. Авторитетный TEXT задаёт Y1,Y2 количеством 4. Несогласованность подтверждена, но из-за комплектной поставки и учёта в разделе ОВ фактическая избыточная закупка не доказана.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+        "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+        "bytes": 389592,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "heading": "### BLOCK #85 [TEXT]: blk_6e54eb477b59421dbea94ef657f05a46",
+          "start": 148290,
+          "end": 149706,
+          "sha256": "50cff33a69d3ed35abc74e1632dd352f24d3050eaa6e518a118c83495e06d357",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "D-beded76386513df5c54dedef",
+      "pointer": "/block_analyses/18/deferred_findings/1",
+      "original_candidate": {
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "На листе 23 в перечне элементов для регулирующих клапанов Y1, Y2 указано количество 4, тогда как на функциональной схеме показаны два клапана с электроприводами — по одному в каждом из двух смесительных узлов. Перечень и схема расходятся на 2 клапана.",
+        "norm_quote": null,
+        "value_found": "Y1, Y2 — Регулирующий клапан с электроприводом в комплекте смесительного узла с насосом — 4",
+        "recommendation": "Согласовать количество регулирующих клапанов в перечне с двумя показанными на схеме клапанами Y1 и Y2.",
+        "claim_type": "contradiction",
+        "problem_class": "equipment_quantity_mismatch",
+        "affected_entity": "Регулирующие клапаны с электроприводами Y1, Y2",
+        "evidence_quote": "В перечне элементов строка «Y1, Y2» содержит количество «4»; на схеме показаны один регулирующий клапан Y1 при насосе М1 и один регулирующий клапан Y2 при насосе М2.",
+        "evidence_kind": "block_image",
+        "context_status": "sufficient",
+        "confidence": 0.98,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:004",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковое расхождение: для Y1, Y2 в перечне указано 4 клапана при двух на схеме, по одному на каждый смесительный узел.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "assessment": "confirmed_graphic_text_valve_quantity_conflict",
+      "reason": "Лист 23: показаны два регулирующих клапана с приводами Y1 и Y2, по одному в двух смесительных узлах, каждый обслуживает пару завес. Другие запорные элементы не обозначены Y1/Y2 и не являются дополнительными регулирующими клапанами с приводом. Авторитетный TEXT задаёт Y1,Y2 количеством 4. Несогласованность подтверждена, но из-за комплектной поставки и учёта в разделе ОВ фактическая избыточная закупка не доказана.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_523708af1c384b0e8bc6767d93644336.png",
+        "sha256": "bc70f7fbc843372acb07c297277a072cf87540191b25c40dc6dbae73a6215f89",
+        "bytes": 389592,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "heading": "### BLOCK #85 [TEXT]: blk_6e54eb477b59421dbea94ef657f05a46",
+          "start": 148290,
+          "end": 149706,
+          "sha256": "50cff33a69d3ed35abc74e1632dd352f24d3050eaa6e518a118c83495e06d357",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-059",
+      "pointer": "/block_analyses/19/findings/0",
+      "original_candidate": {
+        "id": "G-059",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_marking",
+        "finding": "Марка шкафа управления системы ПД4.1.4 не согласована: на функциональной схеме, лист 24, указан «ШУ-ПД4.14», а в кабельном журнале, лист 35, конечным устройством кабеля от ТЕ1 этой системы указан «ЩУ-ПД4.1.4».\n\nРекомендация: Привести обозначение шкафа управления системы ПД4.1.4 к единой марке на функциональной схеме и в кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_dc32b584ce9748a5b520a300112b12de",
+        "value_found": "ШУ-ПД4.14; ЩУ-ПД4.1.4",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-059",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое несоответствие марки одного шкафа: «ШУ-ПД4.14» на листе 24 и «ЩУ-ПД4.1.4» в кабельном журнале на листе 35.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cabinet_designation_conflict",
+      "reason": "Лист 24: подпись шкафа ШУ-ПД4.14 под системой ПД4.1.4 отличается от ЩУ-ПД4.1.4 в конечном устройстве строки ПД4.1.4-1 кабельного журнала листа 35. Связь установлена по системе и датчику TE1, не только по похожему написанию. Подтверждена несогласованность маркировки; существование двух физических шкафов не следует.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+        "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+        "bytes": 96214,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "heading": "### BLOCK #242 [TEXT]: blk_a256f98d4e01408d90baba99d8b2cc19",
+          "start": 430911,
+          "end": 432749,
+          "sha256": "a0c2f57dfe554d763ea9544d0a85b338c752587308acc9e09f534a8833dec026",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-060",
+      "pointer": "/block_analyses/19/findings/1",
+      "original_candidate": {
+        "id": "G-060",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_marking",
+        "finding": "Шкаф управления системой ПД4.1.4 обозначен на функциональной схеме листа 24 как «ШУ-ПД4.14», а в кабельном журнале на листе 35 — «ЩУ-ПД4.1.4». Обозначения одного шкафа не согласованы.\n\nРекомендация: Согласовать обозначение шкафа системы ПД4.1.4 на функциональной схеме и в кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_dc32b584ce9748a5b520a300112b12de",
+        "value_found": "ШУ-ПД4.14",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-060",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое несоответствие марки одного шкафа: «ШУ-ПД4.14» на листе 24 и «ЩУ-ПД4.1.4» в кабельном журнале на листе 35.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cabinet_designation_conflict",
+      "reason": "Лист 24: подпись шкафа ШУ-ПД4.14 под системой ПД4.1.4 отличается от ЩУ-ПД4.1.4 в конечном устройстве строки ПД4.1.4-1 кабельного журнала листа 35. Связь установлена по системе и датчику TE1, не только по похожему написанию. Подтверждена несогласованность маркировки; существование двух физических шкафов не следует.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+        "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+        "bytes": 96214,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "heading": "### BLOCK #242 [TEXT]: blk_a256f98d4e01408d90baba99d8b2cc19",
+          "start": 430911,
+          "end": 432749,
+          "sha256": "a0c2f57dfe554d763ea9544d0a85b338c752587308acc9e09f534a8833dec026",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false,
+  "control_pair": {
+    "negative_candidate": "G-052",
+    "positive_candidates": [
+      "G-051",
+      "G-053"
+    ],
+    "same_source_image": {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+      "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+      "bytes": 373809,
+      "inspection": "direct visual inspection of original stored IMAGE crop"
+    },
+    "proposed_behavior": "Перед замечанием о неверном символе проследить линию термостата и сравнить форму знака с локальной легендой. Отдельно считать точки каждого типа канала и сопоставлять итог, не подавляя все находки листа из-за ошибки распознавания одного символа.",
+    "historical_engineer_decisions": "not_mapped_pending",
+    "acceptance_scope": "source_verified_DEV_pair_only_not_blind_validation",
+    "regression_risk": "Не считать все зигзагообразные линии капиллярами: требуется проследить связь с термостатом; самостоятельный знак электрического нагрева проверяется отдельно."
+  }
+}
