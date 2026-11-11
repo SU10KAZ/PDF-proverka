@@ -14,7 +14,7 @@ def sha(path):
 def main():
     OUT.mkdir(exist_ok=True)
     records = []
-    for discipline in ('AK', 'ITP', 'AR', 'KM'):
+    for discipline in ('AK', 'ITP', 'AR', 'KM', 'VK', 'EOM'):
         work = ROOT / (discipline.lower() + '_r1_classic') / 'classic_control'
         state = json.loads((work / 'status' / (discipline + '.json')).read_text())
         assert state['status'] == 'completed_unadjudicated'
@@ -53,7 +53,7 @@ def main():
                'exporter': str(exporter), 'exporter_sha256': sha(exporter),
                'model_calls': 0, 'production_acceptance': False,
                'limits': ['Current exporter replay, not a historical deployed UI test.',
-                          'No findings were reclassified; all four outputs lack explicit section metadata.',
+                          'No findings were reclassified; all six outputs lack explicit section metadata.',
                           'Checks saved workbook cells, IDs and headings; no visual layout acceptance.',
                           'Preserved rows do not prove findings are technically valid.']}
     Path(__file__).with_name('baseline_r1_question_export_check.json').write_text(
