@@ -1,0 +1,88 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-019",
+      "status": "confirmed_cable_mark_variants_with_identifier_correction",
+      "review_reason": "Спецификация21.4/21.5 буквально содержит КСПВППГ, локальные перечни КСПВПГ; КЖ содержит варианты КСВПГ,КСПВП иНФ. Для четырёх линий В6.1.1-4,В6.1.2-1,В6.1.2-4,В6.1.4-1 КЖ задаёт КСВПГнг(A)-HF1×2×0,75 по30м. На изображении эти линии непосредственно прослежены к контактамY1/XT1,PDS2,Y2/XT2,PDS3 соответственно и подписаны КСПВПГнг(A)-HF1×2×0,75 по30м. Для входаСКЗ шкафаК6АС КЖ содержит СУКЗ-1,КСПВПнг(A)-HF,45м; графика содержит КСПВПГнг(A)-HF,45м и клеммы47/48. Важно: графическая марка читается СУК3-1, а не «СКЗ-1», как в дополнении модели; связь установлена по назначению входа,шкафу,длине и клеммам,а буквальные различия нужно сохранить. Основной конфликт марок подтверждён, но каталоговая эквивалентность и правильное заводское исполнение не проверены. Не объявлять варианты недопустимыми автоматически и не смешивать экранированные исполнения. Общая оговорка о непроверенной графике устарела; исправить ошибочную передачу марки входной линии в добавлении.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_b8712be58c8b43f6ac75cfa6420d5479.png",
+          "block_id": "blk_b8712be58c8b43f6ac75cfa6420d5479",
+          "sha256": "1e2341ee22473618e8dd909d53c863618bd86d002b9d77d0b4b5e71ef6e9c0ba",
+          "directly_viewed": true,
+          "detail": "original"
+        },
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_47163e69651c48528b3e054d5a5db095.png",
+          "block_id": "blk_47163e69651c48528b3e054d5a5db095",
+          "sha256": "131e5d9fdb382783b427b7c629211a4b804f903499135c5ad64f08a3638d7210",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "start": 453077,
+          "end": 455493,
+          "sha256": "fa592b9db81b4f51a139955acd760c277513af5d28f8b42d652ac4bfbfec2f3c"
+        },
+        {
+          "block_id": "blk_019b790b96c0452e9b83c348ec3d429c",
+          "start": 353185,
+          "end": 354925,
+          "sha256": "15015ce27605ee5e7b5c93fcefdd179265b11a7377fe33baee9beefc63cde4df"
+        },
+        {
+          "block_id": "blk_13604b1cfe21408f85c2bc28e358b012",
+          "start": 160088,
+          "end": 161006,
+          "sha256": "dbb435febade2ed1f9631e315e7a117a50f0a5a3560da0ba7dcf5302c8f09f48"
+        },
+        {
+          "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+          "start": 423798,
+          "end": 425995,
+          "sha256": "87d4564d313009fdbe3604782bc01c9e6431ea0bd2615f43e28902cb26805541"
+        },
+        {
+          "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "start": 428379,
+          "end": 430887,
+          "sha256": "e62b3f6cf7e761432f13c308bf95f07d85d9ffe6229722fdfcfbe45fb4f89e09"
+        },
+        {
+          "block_id": "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "start": 403514,
+          "end": 405255,
+          "sha256": "73923d258f45c152fd95a0c6938b4a8cb16bb0831369cf568d6b01478621a337"
+        },
+        {
+          "block_id": "blk_a3ebf964570e4e669569795872f6001b",
+          "start": 214129,
+          "end": 215046,
+          "sha256": "8d5ebf1513f61d76158290d5b1c311b2539bc5a02bf9f1a32e8ec3fdf3ce031b"
+        },
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "start": 430911,
+          "end": 432676,
+          "sha256": "6825b5ab5e54c91c7334d32faa0d1bb3fb659cdc9825daf4e3b2b15b55b428e7"
+        },
+        {
+          "block_id": "blk_82df3363fc824144b9390f2cd6635937",
+          "start": 225546,
+          "end": 226450,
+          "sha256": "38f1d1f7b8d366f6ba65582881cc8911a1bc21143c0aced6da74a18496b19876"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false,
+      "manufacturer_equivalence_verified": false
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false
+}

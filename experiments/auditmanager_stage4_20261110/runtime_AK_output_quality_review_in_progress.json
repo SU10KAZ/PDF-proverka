@@ -249,8 +249,14 @@
       "finding_id": "F-019",
       "problem": "Требуется унифицировать заводские обозначения контрольных кабелей.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_cable_mark_variants_with_identifier_correction",
+      "engineer_decision": null,
+      "review_reason": "Спецификация21.4/21.5 буквально содержит КСПВППГ, локальные перечни КСПВПГ; КЖ содержит варианты КСВПГ,КСПВП иНФ. Для четырёх линий В6.1.1-4,В6.1.2-1,В6.1.2-4,В6.1.4-1 КЖ задаёт КСВПГнг(A)-HF1×2×0,75 по30м. На изображении эти линии непосредственно прослежены к контактамY1/XT1,PDS2,Y2/XT2,PDS3 соответственно и подписаны КСПВПГнг(A)-HF1×2×0,75 по30м. Для входаСКЗ шкафаК6АС КЖ содержит СУКЗ-1,КСПВПнг(A)-HF,45м; графика содержит КСПВПГнг(A)-HF,45м и клеммы47/48. Важно: графическая марка читается СУК3-1, а не «СКЗ-1», как в дополнении модели; связь установлена по назначению входа,шкафу,длине и клеммам,а буквальные различия нужно сохранить. Основной конфликт марок подтверждён, но каталоговая эквивалентность и правильное заводское исполнение не проверены. Не объявлять варианты недопустимыми автоматически и не смешивать экранированные исполнения. Общая оговорка о непроверенной графике устарела; исправить ошибочную передачу марки входной линии в добавлении.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_cable_mark_variants_source_review_20261112.json",
+        "sha256": "d7a75481f2d75611692f009d9f65ac5f389f101d4f8c92b074cd8d94ca3981ec"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-020",
@@ -1113,14 +1119,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 82,
-  "unchecked": 3,
+  "reviewed": 83,
+  "unchecked": 2,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 82,
-  "unchecked_findings": 3
+  "reviewed_findings": 83,
+  "unchecked_findings": 2
 }
