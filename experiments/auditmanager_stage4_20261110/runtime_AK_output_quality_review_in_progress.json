@@ -134,8 +134,14 @@
       "finding_id": "F-012",
       "problem": "Исполнение управления кондиционерами не согласовано.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_configuration_ambiguity",
+      "engineer_decision": null,
+      "review_reason": "Авторитетный перечень листа42 содержит один БУРР-1М и два БИС-1М Алекс электроникс, примечание1 — радиоканал между ними. Спецификация18.1/18.2 содержит три согласователя TD0027170RU Haier и шесть адаптеров Haier. Общие данные описывают совместную работу двух кондиционеров и заявляют отсутствие дополнительных устройств сопряжения и внешнего источника питания. Примечание3 листа42 говорит о комплекте для одной сплит-системы. Подтверждена неоднозначность выбранного исполнения и единицы комплектности; отношение1:2 в локальном перечне и3:6 в сводном само по себе не является ошибкой количества, поскольку три повторяющихся комплекта возможны. Значение «внешний источник питания» нельзя без паспорта отождествлять с отсутствием сетевого ввода220В. Замечание корректно требует согласовать исполнение, питание, интерфейсы и адреса комплектов, не объявляя изделия несовместимыми или закупку недостаточной. Реальные характеристики изделий по каталогам не проверялись и не нужны для подтверждения различий проектных документов.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_air_conditioning_configuration_review_20261112.json",
+        "sha256": "040a33499a39f3a4a4db40ce9141d65c3c9e907f83d9e77fb346d8c42f66a689"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-013",
@@ -1069,14 +1075,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 75,
-  "unchecked": 10,
+  "reviewed": 76,
+  "unchecked": 9,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 75,
-  "unchecked_findings": 10
+  "reviewed_findings": 76,
+  "unchecked_findings": 9
 }
