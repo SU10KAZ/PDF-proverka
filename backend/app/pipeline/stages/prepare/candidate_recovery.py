@@ -162,15 +162,21 @@ def validate_recovery_payload(targeted_pass, payload):
         # Some providers return the explicit source_refs contract instead of
         # evidence. Adapt only supplied addresses; never synthesize quotations
         # or interpret address validity as factual verification.
-        if isinstance(item, dict) and not item.get('evidence'):
+        if isinstance(item, dict) and (
+                not item.get('evidence') or isinstance(item.get('evidence'), str)):
             refs = item.get('source_refs')
             if (isinstance(refs, list) and refs
                     and all(isinstance(ref, str) and ref in packet['allowed_source_refs'] for ref in refs)):
                 image_ids = set(packet['attached_image_block_ids_in_order'])
+                original_evidence = item.get('evidence')
                 item = {**item, 'evidence': [
                     {'block_id': ref, 'type': 'graphic' if ref in image_ids else 'text',
                      'origin': 'model_source_refs'} for ref in dict.fromkeys(refs)],
                     'recovery_evidence_adapted_from': 'source_refs'}
+                if isinstance(original_evidence, str):
+                    # Retain the model's explanation without inventing a
+                    # per-source quotation or treating it as verified evidence.
+                    item['recovery_original_evidence_text'] = original_evidence
         reason = None
         if not isinstance(item, dict):
             reason = 'invalid_finding'

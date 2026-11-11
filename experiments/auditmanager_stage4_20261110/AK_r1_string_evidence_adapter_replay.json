@@ -1,0 +1,27 @@
+{
+  "status": "saved_response_replay_admission_only",
+  "request_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794423877473635963/request.json",
+  "request_sha256": "23d79ba84b20568d6694fe35bd00a7559ed5decddbeab32723dbb237c1e49c7b",
+  "response_artifact_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_8b38ddf3cba607c1.json",
+  "response_artifact_sha256": "61651f68ebf135b9b7db7504707710f65afc17d86334d642003d43cf6eb87be0",
+  "previous_admission_receipt": "AK_r1_all_primary_recovery_admission_replay.json",
+  "source_ids": [
+    "G-084",
+    "G-085"
+  ],
+  "before_admitted": 0,
+  "after_admitted": 1,
+  "original_response_unchanged": true,
+  "original_evidence_text_preserved": true,
+  "generated_quotes": false,
+  "semantic_verified": false,
+  "model_calls": 0,
+  "frozen_experiment_unchanged": true,
+  "tests": "22 passed: candidate recovery, bounded format repair, context retrieval",
+  "limits": [
+    "Admission is not factual confirmation or final useful retention.",
+    "This example is sheet36; do not credit another sheet merely for matching730/700 values.",
+    "Other malformed findings without explicit valid per-finding references still require bounded repair."
+  ],
+  "production_acceptance": false
+}

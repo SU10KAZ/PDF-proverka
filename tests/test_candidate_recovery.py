@@ -125,3 +125,30 @@ def test_source_refs_adapter_preserves_addresses_without_inventing_quotes():
     rejected = validate_recovery_payload(request, {'findings': [{**finding, 'source_refs': ['g', 'unknown']}]})
     assert rejected['findings'] == []
     assert rejected['recovery_pending'][0]['reason'] == 'missing_inspected_source_reference'
+
+
+def test_text_evidence_with_explicit_refs_is_preserved_without_quote_invention():
+    from backend.app.pipeline.stages.prepare.codex_targeted_findings import CodexTargetedPass
+    packet = {'candidate': {'source_id': 'G-084', 'origin': 'graphic', 'pointer': '/findings/0'},
+              'attached_image_block_ids_in_order': ['g'],
+              'allowed_source_refs': ['g', 't'], 'existing_findings': []}
+    request = CodexTargetedPass('candidate_recovery_test', 'test.json',
+                               [{'role': 'user', 'content': json.dumps(packet)}], ())
+    finding = {'source_finding_ids': ['G-084'], 'source_refs': ['g', 't'],
+               'evidence': 'Six lengths sum to 730; schedule says 700.'}
+    accepted, = validate_recovery_payload(request, {'findings': [finding]})['findings']
+    assert accepted['recovery_original_evidence_text'] == finding['evidence']
+    assert [e['block_id'] for e in accepted['evidence']] == ['g', 't']
+    assert all('quote' not in e for e in accepted['evidence'])
+    assert accepted['recovery_semantic_verified'] is False
+    assert isinstance(finding['evidence'], str)
+    for refs in ([], ['unknown'], ['g', 'unknown']):
+        assert not validate_recovery_payload(request, {'findings': [
+            {**finding, 'source_refs': refs}]})['findings']
+    # Do not replace a structured evidence array that cites a wrong source.
+    assert not validate_recovery_payload(request, {'findings': [
+        {**finding, 'evidence': [{'block_id': 'unknown'}]}]})['findings']
+    packet['attached_image_block_ids_in_order'] = []
+    request = CodexTargetedPass('candidate_recovery_test', 'test.json',
+                               [{'role': 'user', 'content': json.dumps(packet)}], ())
+    assert not validate_recovery_payload(request, {'findings': [finding]})['findings']
