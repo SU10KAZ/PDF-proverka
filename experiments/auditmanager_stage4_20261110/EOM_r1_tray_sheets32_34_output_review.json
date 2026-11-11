@@ -1,0 +1,445 @@
+{
+  "status": "two_tray_discrepancies_reviewed_against_graphics_and_TEXT",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "200c8d2d821a53d10ca9c324575cc70e1276fc3e55f5517882ba9ab55a0da187",
+  "queue_after_sha256": "938d916ecaffe0de369142591f5db30fb873694eb691868a4081accd5b715a55",
+  "reviewer": "coordinator_direct_graphic_and_TEXT_review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-046",
+      "finding": {
+        "id": "F-046",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабеленесущие системы",
+        "sheet": "Лист 32",
+        "page": 34,
+        "problem": "Типы и размеры лотков на плане не соответствуют узлу крепления.",
+        "description": "На плане указаны неперфорированные лотки 200×80 и 100×80 мм с крышками. В узле крепления на том же листе предусмотрены перфорированный 200×80 мм для рабочих сетей и неперфорированный 200×80 мм для аварийного освещения. Расходятся исполнение рабочего лотка и ширина аварийного.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать тип и размер каждой трассы на плане и в узле, проверить вместимость, крепления и соответствующие позиции спецификации.",
+        "risk": "Поставка неподходящих лотков и монтаж по несогласованным размерам.",
+        "source_finding_ids": [
+          "G-060",
+          "G-061"
+        ],
+        "source_block_ids": [
+          "blk_d9914764582f403a86e29268814873e5"
+        ],
+        "related_block_ids": [
+          "blk_d9914764582f403a86e29268814873e5",
+          "blk_bb3cd83619514b819a9363e911911e71"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d9914764582f403a86e29268814873e5",
+            "page": 34
+          },
+          {
+            "type": "text",
+            "block_id": "blk_bb3cd83619514b819a9363e911911e71",
+            "page": 34
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-060",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-061",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое несоответствие: на плане неперфорированные лотки 200х80 и 100х80, в узле крепления — перфорированный 200х80 для рабочих сетей и неперфорированный 200х80 для аварийного освещения. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое несоответствие: на плане неперфорированные лотки 200х80 и 100х80, в узле крепления — перфорированный 200х80 для рабочих сетей и неперфорированный 200х80 для аварийного освещения. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На плане листа32 указаны неперфорированные лотки200×80 и100×80 с крышками.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": "По цветным трассам и выноскам200×80 относится к синей,100×80 к красной трассе."
+        },
+        {
+          "claim": "В узле того же листа рабочая синяя трасса — перфорированный200×80, аварийная красная — неперфорированный200×80.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "Расходятся исполнение рабочего и ширина аварийного лотка.",
+          "verdict": "confirmed_internal_document_discrepancy",
+          "limits": "Размер200 также показан размерной линией узла; это не только нечёткое чтение подписи."
+        },
+        {
+          "claim": "Нужно согласовать принятые исполнения и проверить применимость креплений.",
+          "verdict": "supported_scoped_question",
+          "limits": "Правильный вариант, вместимость и несущая способность в этой проверке не рассчитаны."
+        },
+        {
+          "claim": "Недостаточная огнестойкость или фактическая ошибка монтажа.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Выдача маркирует перечисленные графические источники как type=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "В MD эти блоки IMAGE; текстовое описание графики не заменяет просмотр. Оценка выполнена по изображениям; исходная выдача не изменена."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_document_discrepancy_engineering_usefulness_unestablished",
+      "duplicate_burden": "F044_sheets25_to31_does_not_include_sheet32_or34; F016_article_identity_related_to_F047_but_distinct_source_comparison; consolidate_tray_coordination_with_sheet_list",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d9914764582f403a86e29268814873e5.png",
+          "sha256": "4b934a134466402e400953ce778af5e7eaee5ef0a82c5df788d36bf2035b6f49",
+          "block_id": "blk_d9914764582f403a86e29268814873e5",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_bb3cd83619514b819a9363e911911e71.png",
+          "sha256": "45fcb6a900be2cdc063760826292de47db2e5eb8e35f40df163b9808450e7094",
+          "block_id": "blk_bb3cd83619514b819a9363e911911e71",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews."
+        }
+      ],
+      "disposition": "assessed_unmapped_tray_plan_node_discrepancy_preserve"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-047",
+      "finding": {
+        "id": "F-047",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Кабеленесущие системы",
+        "sheet": "Лист 34",
+        "page": [
+          36,
+          54
+        ],
+        "problem": "Исполнение лотка на отметке +44,650 различается в монтажном узле и спецификации.",
+        "description": "В узле плана кабеленесущих систем указан универсальный перфорированный лоток. Для техпространства на той же отметке спецификация предусматривает неперфорированный лоток 200×80 мм длиной 3000 мм и толщиной 1,0 мм. Номер листа спецификации в переданном перечне графических блоков отсутствует.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Соответствие спецификации принятому в чертежах исполнению изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-062",
+                "G-063"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-062",
+                  "G-063"
+                ],
+                "designation_source": "Подбор кандидата при консолидации"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить требуемое исполнение для отметки +44,650 и согласовать узел, спецификацию и код изделия.",
+        "risk": "Закупка и установка лотка, отличающегося от принятого монтажного решения.",
+        "source_finding_ids": [
+          "G-062",
+          "G-063"
+        ],
+        "source_block_ids": [
+          "blk_e9d70b5ef3504a009fe4711839535a08"
+        ],
+        "related_block_ids": [
+          "blk_e9d70b5ef3504a009fe4711839535a08",
+          "blk_98d4345a297e4e8bbc1874df817069d5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_e9d70b5ef3504a009fe4711839535a08",
+            "page": 36
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-062",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-063",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое противоречие для отметки +44.650: в узле указан перфорированный лоток, в спецификации — неперфорированный 200×80 мм. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое противоречие для отметки +44.650: в узле указан перфорированный лоток, в спецификации — неперфорированный 200×80 мм. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Узел листа34 на отметке+44,650 подписан универсальный перфорированный лоток.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "СО для+44,650 содержит неперфорированный200×80 L3000 толщина1,0мм,код3530410.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Номер листа СО отсутствует в проекте.",
+          "verdict": "refuted_if_generalized",
+          "limits": "В переданном графическом перечне он мог отсутствовать, но авторитетныйTEXT блока206 содержит Sheet18; исправлять привязку выдачи на лист18, а не просить отсутствующий источник."
+        },
+        {
+          "claim": "План листа34 также содержит неперфорированный200×80 Н350.",
+          "verdict": "confirmed_reviewer_additional_graphic_context",
+          "limits": "Дополнительная сверка оценщика поддерживает вопрос к типовому узлу; не засчитывается как отдельная находка модели."
+        },
+        {
+          "claim": "Согласовать область применения узла и принятое исполнение.",
+          "verdict": "supported_scoped_question",
+          "limits": "Наличие типового узла не доказывает,что уже заказан или смонтирован неправильный лоток. Нельзя автоматически менять СО на перфорированный."
+        },
+        {
+          "claim": "Изделие3530410 имеет конкретное каталожное исполнение.",
+          "verdict": "not_verified_here",
+          "limits": "Паспорт производителя не проверен; конфликт артикулаF016 связан, но не заменяет сверку узла."
+        },
+        {
+          "claim": "Выдача маркирует перечисленные графические источники как type=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "В MD эти блоки IMAGE; текстовое описание графики не заменяет просмотр. Оценка выполнена по изображениям; исходная выдача не изменена."
+        },
+        {
+          "claim": "Нормативные кандидаты.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_document_discrepancy_engineering_usefulness_unestablished",
+      "duplicate_burden": "F044_sheets25_to31_does_not_include_sheet32_or34; F016_article_identity_related_to_F047_but_distinct_source_comparison; consolidate_tray_coordination_with_sheet_list",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e9d70b5ef3504a009fe4711839535a08.png",
+          "sha256": "03ba8e98ce77522284cecb783768d9f302dc7dd6b716f84fc6ff94411c3bbdce",
+          "block_id": "blk_e9d70b5ef3504a009fe4711839535a08",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98d4345a297e4e8bbc1874df817069d5.png",
+          "sha256": "bcc196bf431748d56d4e42026c58883d2d00f8c87a6fafbfce4550c5ed2d1de2",
+          "block_id": "blk_98d4345a297e4e8bbc1874df817069d5",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews."
+        }
+      ],
+      "disposition": "assessed_unmapped_tray_node_specification_question_preserve"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_f3f718605a024394b9026b08fa4c9b20",
+      "authoritative_TEXT": "### BLOCK #206 [TEXT]: blk_f3f718605a024394b9026b08fa4c9b20\n\n> **Created:** 2026-10-20 12:14:58 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/0bV2dYWfFJ44vL5nhYdE)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 18 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 50 |  |  |\n|  | Шпилька М8x1000 |  | CM200801 | АО ДКС | м. | 98 |  |  |\n|  | Шайба с узкими полями М8 |  | CM240800 | АО ДКС | шт. | 196 |  |  |\n|  | Гайка шестигранная М8 |  | CM110800 | АО ДКС | шт. | 196 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | CM120600 | АО ДКС | шт. | 98 |  |  |\n|  | Забивной анкер М8 |  | CM400830 | АО ДКС | шт. | 98 |  |  |\n|  | Держатель токоотвода D10-12мм бетонный для плоской крыши |  | 178513 | Bolta | шт. | 104 |  |  |\n|  | Шпилька М8 |  | 178513 | Bolta | шт. | 104 |  |  |\n|  | Гайка М8 |  | 178513 | Bolta | шт. | 104 |  |  |\n|  | Соединитель лотка универсальный СЛУ-50/65(1мм) |  | 178513 | Bolta | шт. | 104 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Техпространство на отм.+44.650 |  |  |  |  |  |  |  |\n|  | Лоток неперфорированный 200x80 L3000 толщина 1,0 мм |  | 3530410 | АО ДКС | м. | 41 |  |  |\n|  | Гайка с насечкой, препятствующей откручиванию М6 |  | CM100600 | АО ДКС | шт. | 25 |  |  |\n|  | Винт с крестообразным шлицем М6x10 |  | CM010610 | АО ДКС | шт. | 63 |  |  |\n|  | Крышка на лоток с заземлением осн. 200 L3000, толщина 1,0мм |  | 3552410 | АО ДКС | м. | 40 |  |  |\n|  | Винт для электрического соединения М5x8 |  | CM030508 | АО ДКС | шт. | 15 |  |  |\n|  | П-образный профиль PSM, L300, толщ.2,5 мм |  | BPM2903 | АО ДКС | шт. | 41 |  |  |\n|  | Шпилька М8x1000 |  | CM200801 | АО ДКС | м. | 70 |  |  |\n|  | Шайба с узкими полями М8 |  | CM240800 | АО ДКС | шт. | 140 |  |  |\n|  | Гайка шестигранная М8 |  | CM110800 | АО ДКС | шт. | 140 |  |  |\n|  | Шайба М6 кузовная DIN9021 |  | CM120600 | АО ДКС | шт. | 70 |  |  |\n|  | Забивной анкер М8 |  | CM400830 | АО ДКС | шт. | 70 |  |  |\n|  | Держатель токоотвода D10-12мм бетонный для плоской крыши |  | 178513 | Bolta | шт. | 82 |  |  |\n|  | Шпилька М8 |  | 178513 | Bolta | шт. | 82 |  |  |\n|  | Гайка М8 |  | 178513 | Bolta | шт. | 82 |  |  |\n|  | Соединитель лотка универсальный СЛУ-50/65(1мм) |  | 178513 | Bolta | шт. | 82 |  |  |\n\n## Page 55 — Sheet 19\n\n"
+    }
+  ],
+  "graphic_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d9914764582f403a86e29268814873e5.png",
+      "sha256": "4b934a134466402e400953ce778af5e7eaee5ef0a82c5df788d36bf2035b6f49",
+      "block_id": "blk_d9914764582f403a86e29268814873e5",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_bb3cd83619514b819a9363e911911e71.png",
+      "sha256": "45fcb6a900be2cdc063760826292de47db2e5eb8e35f40df163b9808450e7094",
+      "block_id": "blk_bb3cd83619514b819a9363e911911e71",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e9d70b5ef3504a009fe4711839535a08.png",
+      "sha256": "03ba8e98ce77522284cecb783768d9f302dc7dd6b716f84fc6ff94411c3bbdce",
+      "block_id": "blk_e9d70b5ef3504a009fe4711839535a08",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98d4345a297e4e8bbc1874df817069d5.png",
+      "sha256": "bcc196bf431748d56d4e42026c58883d2d00f8c87a6fafbfce4550c5ed2d1de2",
+      "block_id": "blk_98d4345a297e4e8bbc1874df817069d5",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Tray callouts, node labels and drawing context inspected directly; see atomic claim reviews."
+    }
+  ],
+  "historical_scope_sources": [],
+  "limits": [
+    "No catalogue, structural capacity, fire performance or actual installation acceptance.",
+    "Unmapped findings do not receive fabricated engineer approval.",
+    "Frozen runtime and evaluator unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
