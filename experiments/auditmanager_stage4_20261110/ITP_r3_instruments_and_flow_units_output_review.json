@@ -1,0 +1,431 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "cab5663294b7af7a7c0d22691e0da2f79fbf199545eaa8edc004c1357d90c15f",
+  "queue_after_sha256": "cf30092eb374c378decf5470cb0d8daeb6f33e105682c72c64b2dc2059b9e5ef",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Гидравлический расчёт",
+        "sheet": "Листы 5, 6, 7, 8, 9",
+        "page": [
+          43,
+          44,
+          45,
+          46,
+          47
+        ],
+        "problem": "Расходы, скорости и потери давления рассчитаны несогласованно.",
+        "description": "Результат формулы Q×1000/Δt подписан как объёмный расход без учёта плотности. Даже по указанным объёмным расходам труба 325×7 при 261,5 м³/ч даёт около 0,956 вместо 1,01 м/с, а труба 76×3 при 0,90 м³/ч — около 0,065 вместо 0,12 м/с. Для сторон вентиляции с разными расходами приведены одинаковые скорости и удельные потери. По принятой упрощённой формуле суммарный расход составляет 261,45 вместо 261,50.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к расчётному обоснованию гидравлических параметров.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-014"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Разделить массовые и объёмные расходы, указать свойства воды при расчётных температурах и пересчитать скорости и потери по внутренним диаметрам.",
+        "risk": "Ошибочный подбор трубопроводов, насосов и регулирующей арматуры.",
+        "source_finding_ids": [
+          "T-014"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_cc70e063642d457fa0a38b30b1a1a51f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 43
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 47
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-025:c98f6c16f19022b52eb6",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ФормулыQ×1000/Δt подписаны объёмным расходом без явно показанных свойств воды.",
+          "verdict": "confirmed_bounded_formula_scope",
+          "limits": "Подбор использует также массовые единицы. Это вопрос принятой модели/приближений, не доказательство неверности всех расчётов."
+        },
+        {
+          "claim": "Для261,5м³/ч в325×7 v≈0,95622;для0,90 в76×3 v≈0,06496м/с.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "Dвн311/70мм. Не устанавливает фактический проход, шероховатость или потери; нельзя автоматически масштабировать сопротивления по отношению скоростей."
+        },
+        {
+          "claim": "Вентиляция76,40 и61,12 при219×6 имеет одинаковые0,66м/с и2,49ед. потерь.",
+          "verdict": "confirmed_direct_TEXT_block85",
+          "limits": "Для опубликованных объёмов иDвн207мм скорости≈0,63061 и0,50449. Не доказана причина копирования и полный баланс."
+        },
+        {
+          "claim": "Общий расход по5,229×1000/20 равен261,45 вместо261,50.",
+          "verdict": "confirmed_arithmetic_rounding_possible",
+          "limits": "Сумма опубликованных отдельных расходов261,50.0,05может объясняться промежуточным округлением; тотже вопрос естьF043, не второй независимый дефект."
+        },
+        {
+          "claim": "Согласовать единицы, свойства и гидравлику.",
+          "verdict": "supported_scoped_question",
+          "limits": "Неверный типоразмер труб, насосов или клапанов не доказан одним сравнением чисел."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены непригодность всех приборов, отсутствие привязок во всём проекте, фактические потери и неверный подбор труб/насосов.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "F014 total-flow arithmetic overlaps F043; do not count rounding difference as independent defect. Instrument counts do not count failed locations.",
+      "profile_and_section": "Сохранить вопросы о формулах, размерностях и нагрузках. Не превращать арифметическое расхождение в доказанный отказ системы. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20a7f89489d543c5b30e8822dd2999c2",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-025.json",
+          "sha256": "d4942202ecc3470ab136bd00705df8420c3161499013567a2ff122a7c3c8a603",
+          "primary_adjudication": {
+            "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/ITP72b_primary_TEXT.json",
+            "sha256": "c8023442394ed2250416f2dab16df23a9a0683f86e3485cf50664aca3dccb4e7"
+          },
+          "limits": "Пересчёт использует опубликованный объёмный расход и внутренний диаметр Dнар−2s; фактические допуски, отложения, другой расчётный проход и режим не установлены. Это несогласованность записи, не доказательство неверной работы или необходимости замены труб. Удельные потери, шероховатость, длины и увязка сети не проверены; автоматически пересчитывать потери пропорционально скорости нельзя.",
+          "wording": "Согласовать скорости с указанными расходами и размерами труб:325×7 при261,5м³/ч —0,956 вместо1,01м/с;159×4,5 при74,15 —1,166 вместо1,25;219×6 при76,40 и61,12 —0,631 и0,504 вместо одинаковых0,66;76×3 при0,90 —0,065 вместо0,12. Проверить применённые проходные сечения и исходный гидравлический расчёт."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-020",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ddd03131f0fb4dfc8aeeb087ac60a8a0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-044.json",
+          "sha256": "2a46b122ca2c41e1aeff054be481066700a8c8499669287a08bb9f5a89b23a10",
+          "primary_adjudication": null,
+          "limits": "Графические и текстовые значения относятся к вводу ИТП с температурами90/70. Причина различий, история редакций и влияние на типоразмер оборудования не установлены. Не выдавать отдельную ошибку из-за разницы0,05м³/ч: по формуле проекта5,229×1000/20=261,45, а сумма опубликованных расходов261,50 содержит вентиляцию76,40 вместо прямого результата76,35. Округление промежуточного расхода может объяснить0,05, но не разницу исходных нагрузок0,024Гкал/ч.",
+          "wording": "Согласовать нагрузку и расход теплового ввода: на разрезах1-1/2-2 и аксонометрии указаны5,205Гкал/ч и260,25м³/ч, в ПЗ —5,229Гкал/ч и261,50м³/ч. Подтвердить действующие исходные данные и обновить связанные подписи."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_871a2c95697d4a93adb86dd3e2456614.png",
+          "sha256": "97b3068dcdaebbf363f1bc3e40c9605fd90564b7d2b33b3f029d772dd86f97f9",
+          "block_id": "blk_871a2c95697d4a93adb86dd3e2456614",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Heat input leaders show Q5.205 Gcal/h and G260.25 m3/h.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_871a2c95697d4a93adb86dd3e2456614.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+          "sha256": "5046f5ee795097687ef038dbc5f114b238922c100bbbab0af0e84f1089f400af",
+          "block_id": "blk_94b58ecf5d404f7d90c272d267eb2e48",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Heat input leaders show Q5.205 Gcal/h and G260.25 m3/h.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_94b58ecf5d404f7d90c272d267eb2e48.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-044",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-020"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Source numbers verified; physical failure not inferred."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_instruments_and_flow_units"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "КИП и воздухоудаление",
+        "sheet": "Листы 5., 3, 4",
+        "page": [
+          28,
+          41,
+          42,
+          103,
+          109
+        ],
+        "problem": "Диапазоны манометров и давления воздухоотводчиков не распределены по контурам.",
+        "description": "Из 179 манометров только 4 имеют диапазон до 2,5 МПа, остальные 175 — до 1,6 МПа, при наличии контуров с давлением выше 1,6 МПа. Все 38 автоматических воздухоотводчиков указаны на 10 бар. Их размещение по зонам с разными давлениями не позволяет подтвердить пригодность комплекта.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить обоснование выбора приборов и оборудования по максимальным параметрам среды.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-018"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-018"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Составить распределение приборов и воздухоотводчиков по контурам, проверить диапазоны измерений и паспортные давления, скорректировать спецификацию.",
+        "risk": "Выход приборов за диапазон, невозможность контроля давления и разгерметизация воздухоотводчиков.",
+        "source_finding_ids": [
+          "T-018"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_29a310ba9cf94b72b83f0944dfb47467",
+          "blk_a84dc3455457476dadbc35029e2e7ae8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 28
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 103
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F036_gauge_range_allocation:450cb0a7d585250b421e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "СО:4манометра0–2,5МПа и175до1,6МПа, всего179.",
+          "verdict": "confirmed_direct_authoritative_TEXT",
+          "limits": "Предел шкалы25/16бар не паспортная прочность прибора. Не назначать175замен без привязки."
+        },
+        {
+          "claim": "Позиция115:38Airvent-R Ду15,Tmax120°C,Ру10.",
+          "verdict": "confirmed_direct_authoritative_TEXT",
+          "limits": "Артикул065B8323R. Это вся указанная позиция, не доказательство всех комплектных воздухоотводчиков проекта."
+        },
+        {
+          "claim": "Пригодность по точкам с разным давлением не подтверждена.",
+          "verdict": "supported_bounded_assignment_question",
+          "limits": "Впроверенных строкахСО нет распределения; отсутствие привязки во всех чертежах/АТМ не установлено. Ни4манометра25бар не доказывают достаточность, ни38Ру10 —38неисправных точек."
+        },
+        {
+          "claim": "Требуется распределение исполнений по местным максимальным давлениям.",
+          "verdict": "supported_scoped_followup",
+          "limits": "Выход за шкалу, повреждение и утечки не наблюдались; паспортные ограничения и рабочая температура требуют проверки."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены непригодность всех приборов, отсутствие привязок во всём проекте, фактические потери и неверный подбор труб/насосов.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "F014 total-flow arithmetic overlaps F043; do not count rounding difference as independent defect. Instrument counts do not count failed locations.",
+      "profile_and_section": "Сохранить вопросы о формулах, размерностях и нагрузках. Не превращать арифметическое расхождение в доказанный отказ системы. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F036_gauge_range_allocation.json",
+          "sha256": "414eb7b03e2e13826337c12f9b097562f2a8efcf45dbcb35da7ab6ce225e9a83",
+          "primary_adjudication": null,
+          "limits": "Наличие преимущественно шкал до16бар не доказывает работу конкретного манометра за пределом шкалы. Четыре прибора до25бар — количество отдельной позицииСО, не доказанное число всех приборов высокого диапазона во всех комплектах. В подборе SPL RM1500 для теплоснабжения вентиляции явно указан комплектный манометр; его диапазон не указан и к третьим зонам он не относится. Это контрпример к простому подсчёту, а не объяснение достаточности четырёх приборов. Просмотрены три фрагмента схемы, не все задания автоматизации и комплектовочные ведомости.",
+          "wording": "Уточнить распределение манометров позиции111 со шкалой0–2,5МПа (4шт.) и позиции112 со шкалой0–1,6МПа (175шт.) по точкам измерения греющего контура и третьих зон. В связанных расчётах встречаются давления выше16бар; просмотренные символыP не позволяют установить, какая шкала назначена каждой точке."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-022",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-037"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Source numbers verified; physical failure not inferred."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_instruments_and_flow_units"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Two current findings checked against frozen prior reviews and identical source hashes, plus directly read TEXT blocks56/85. Velocities independently recalculated. No complete hydraulic balance, new catalog verification or engineer acceptance."
+}
