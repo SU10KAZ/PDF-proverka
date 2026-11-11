@@ -1,0 +1,23 @@
+{
+  "status": "inventory_run_failed_before_inventory_dispatch",
+  "run": "AK_r1_inventory",
+  "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_inventory/classic_control/status/AK.json",
+  "status_sha256": "ef8de154fd4c6fbe0a7045e40db78e95684c9e761cdfad4900213261cf33453a",
+  "process_log_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_inventory/process.log",
+  "process_log_sha256": "a11e95a7995495bf889057388566d8dabb1f6b6844e50f1ea2296846183c0242",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "block_id": "blk_f42735b18cb140928c3d9f29d2891ae2",
+  "kind": "IMAGE",
+  "content_characters": 2194,
+  "source_char_budget": 60000,
+  "image_bytes": 16352342,
+  "image_byte_budget": 16000000,
+  "model_pilots_dispatched": false,
+  "limits": [
+    "Failed full audit is not a completed comparative sample.",
+    "Do not mark missing final findings as negative detections.",
+    "Paired pilots stopped before dispatch because their successful-completion prerequisite failed.",
+    "No automatic rerun of failed full audit; preserve source and failure before correction."
+  ],
+  "production_acceptance": false
+}
