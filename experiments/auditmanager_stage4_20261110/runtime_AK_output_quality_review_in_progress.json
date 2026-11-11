@@ -375,8 +375,14 @@
       "finding_id": "F-034",
       "problem": "В журнале две разные температурные защиты адресованы ТС1.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_conflict_with_location_correction",
+      "engineer_decision": null,
+      "review_reason": "Перечень различает ТС1 капиллярный и ТС2 комплектный с электронагревателем; легенда различает замораживание и перегрев. На схеме П6.1.1-4 ведёт к TS1 через клеммы 13–14, П6.1.4-2 — к TS2 через 15–16. В авторитетном КЖ П6.1.1-4 к ТС1 находится на листе 24; строка Пб.1.4-2 к ТС1 повторена на листах 25 и 26. Поэтому конфликт адресации второго термостата подтверждён, но фраза публикации может ошибочно приписать обе линии обоим повторённым листам: исправить местоположения явно. Различие написаний Пб/П6 сохранить как исходное, связь обосновывается общим шкафом, системой, соседними адресами и линией -2, а не исправлением авторитетного TEXT. Повторы не означают дополнительные приборы. Начальная оговорка о непроверенной графике устарела; фактическое неправильное подключение не доказано.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_two_thermostats_repeated_journal_review_20261112.json",
+        "sha256": "67ba21ad18f8d96fc0533fe04fe1dd4c989255a04e2ce518b408bc5544c516f9"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-035",
@@ -1045,14 +1051,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 71,
-  "unchecked": 14,
+  "reviewed": 72,
+  "unchecked": 13,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 71,
-  "unchecked_findings": 14
+  "reviewed_findings": 72,
+  "unchecked_findings": 13
 }

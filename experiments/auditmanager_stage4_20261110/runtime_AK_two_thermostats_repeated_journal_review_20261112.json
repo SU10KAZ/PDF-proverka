@@ -1,0 +1,56 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-034",
+      "status": "confirmed_conflict_with_location_correction",
+      "review_reason": "Перечень различает ТС1 капиллярный и ТС2 комплектный с электронагревателем; легенда различает замораживание и перегрев. На схеме П6.1.1-4 ведёт к TS1 через клеммы 13–14, П6.1.4-2 — к TS2 через 15–16. В авторитетном КЖ П6.1.1-4 к ТС1 находится на листе 24; строка Пб.1.4-2 к ТС1 повторена на листах 25 и 26. Поэтому конфликт адресации второго термостата подтверждён, но фраза публикации может ошибочно приписать обе линии обоим повторённым листам: исправить местоположения явно. Различие написаний Пб/П6 сохранить как исходное, связь обосновывается общим шкафом, системой, соседними адресами и линией -2, а не исправлением авторитетного TEXT. Повторы не означают дополнительные приборы. Начальная оговорка о непроверенной графике устарела; фактическое неправильное подключение не доказано.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+          "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "start": 130512,
+          "end": 132109,
+          "sha256": "53c3417b543a056b7217bd6c7bd2974ab4d559a71d1ec5d3b4d84c827585604e"
+        },
+        {
+          "block_id": "blk_e83da12573d946028f8ddab993d9b0a4",
+          "start": 132110,
+          "end": 133259,
+          "sha256": "70869ed2956be99b1e76b003557da5712ac992b2baee440d4036407e7cead732"
+        },
+        {
+          "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "start": 405279,
+          "end": 407374,
+          "sha256": "08464a78fdd4d9860f50d119c8ebc9de9ae65b7408b4c001a51cb51c4ca3d696"
+        },
+        {
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "start": 407398,
+          "end": 409900,
+          "sha256": "dd3d73d839edb23f1b7ff261f6004680071d58ede520975031abf8ec264e3a2f"
+        },
+        {
+          "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "start": 409924,
+          "end": 412458,
+          "sha256": "03f824de3b5fa2d6b8718b8ca8f6a2eab8f54152d370e4a56a6cfca0ea736e7e"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false
+}
