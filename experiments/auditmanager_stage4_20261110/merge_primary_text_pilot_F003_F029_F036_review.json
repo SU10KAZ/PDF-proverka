@@ -1,0 +1,819 @@
+{
+  "status": "nine_more_findings_reviewed_with_partial_claim_and_text_authority_corrections",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "source_md": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "reviews": [
+    {
+      "finding_id": "F-003",
+      "original_model_finding": {
+        "id": "F-003",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Идентификация электродвигателей",
+        "report_section": "technical_findings",
+        "sheet": "Листы 9, 13, 15",
+        "page": [
+          13,
+          17,
+          19,
+          64,
+          65,
+          71,
+          72,
+          74,
+          75
+        ],
+        "problem": "Назначения двигателей в перечнях не согласованы с концами кабелей.",
+        "description": "Для Пкр4.1 перечень задает вентиляторы М1, М2 и насос М3; журнал адресует линии Пкр4.1-9 4×2,5 и Пкр4.1-13 3×1,5 одному М2. Для Пкр5.1 насос — М2, второй вентилятор — М3, но Пкр5.1-9 4×2,5 адресован М2, а Пкр5.1-13 3×1,5 — М3. Для Пн5.1 насос обозначен М5, однако линия Пн5.1.-21 3×1,5 адресована М1, уже указанному для вентилятора в линии Пн5.1.-8. Назначения подтверждены текстовыми перечнями; графическое подключение и статус резервных двигателей не проверены.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать марки двигателей и назначение каждой линии с перечнями, схемами шкафов и заданием ОВ.",
+        "risk": "Ошибочное подключение насосов и вентиляторов, нарушение алгоритмов управления.",
+        "source_finding_ids": [
+          "T-003",
+          "G-070",
+          "G-071"
+        ],
+        "source_block_ids": [
+          "blk_6414183ffe264f65a253b3d6a5155da1",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "blk_ba2cc771448645a5b9a7203af971680b",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "blk_af7d76cf48cd48db813eee8d44227292",
+          "blk_0074662f330048ff843342b285e6a016"
+        ],
+        "related_block_ids": [
+          "blk_28e6a3fa2bff45aabce4aed90feff741",
+          "blk_4e142b330766407099c7d561f0a8eb6a",
+          "blk_1421872a752e4019a31247d056c0e9bc",
+          "blk_c0ed6bca935843c18344796377677f2f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+            "page": 13
+          },
+          {
+            "type": "text",
+            "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+            "page": 65
+          },
+          {
+            "type": "text",
+            "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": "blk_ba2cc771448645a5b9a7203af971680b",
+            "page": 71
+          },
+          {
+            "type": "text",
+            "block_id": "blk_611c64e52f5d4223aaee5cf72c58e34e",
+            "page": 72
+          },
+          {
+            "type": "text",
+            "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+            "page": 19
+          },
+          {
+            "type": "text",
+            "block_id": "blk_0074662f330048ff843342b285e6a016",
+            "page": 75
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "partially_supported_motor_address_conflict_requires_atomic_split",
+      "reason": "Перечни и адреса строк совпадают с цитатами, за исключением буквального МЗ в Пкр5.1-13, которое модель трактует как М3 без оговорки. Для Пкр4.1 и Пн5.1 подтверждены повторные адреса одного двигателя при разных линиях и сечениях; это основание согласовать назначения, но не доказательство физически двойного питания. Для Пкр5.1 разные сечения у насоса М2 и вентилятора М3 сами по себе не доказывают перестановку адресов. Этот тезис нельзя считать подтверждённой технической ошибкой без фазности, назначения цепей и графики. Разделить составное замечание и сохранить границы доказательств.",
+      "evidence": [
+        {
+          "block_id": "blk_6414183ffe264f65a253b3d6a5155da1",
+          "md_span_sha256": "0bb0ca5e49253930e78878942a483ab07dd3b39b46f1473d7b908b37b11fb6ca",
+          "start": 68996,
+          "end": 70617,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "md_span_sha256": "899dc247db77b7021b33a7cc6d7175d2c322ba909f985462c8a43e4e4ac67a8c",
+          "start": 362382,
+          "end": 364959,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "md_span_sha256": "b4b5473c4cbec1f32f175c18d9cbd3e47994ef7113a6d0f0d7db0eca6afb70fe",
+          "start": 364959,
+          "end": 367559,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "md_span_sha256": "436b32a34dbf989d2e1f1e1a26d2e31afc1c5d693db1ac14d3aeef8962cc4b74",
+          "start": 91955,
+          "end": 93580,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_ba2cc771448645a5b9a7203af971680b",
+          "md_span_sha256": "39d1fe27a1fcd7f3045d0461b2ad7267c80a56b6a52465acbc523d66d8762292",
+          "start": 378755,
+          "end": 381123,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "md_span_sha256": "1099e7f6aa7e5f15b5794021aafc5f88050e845bc7aff4e8e8efdadc0854ffa5",
+          "start": 381123,
+          "end": 383737,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_83ff7d2544fe4ddd843f3c1ec01c7087",
+          "md_span_sha256": "8d4511f31a23119486849d20df103f04eb5925adfa135a47a9a1722b4f7a3d86",
+          "start": 104170,
+          "end": 105888,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_af7d76cf48cd48db813eee8d44227292",
+          "md_span_sha256": "ba54a9c95fe6f88a1a046c83c2619d223b1226f3bd8bafaf35b5a35b47008d79",
+          "start": 386225,
+          "end": 388847,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_0074662f330048ff843342b285e6a016",
+          "md_span_sha256": "2abea6dfb638f692b84af0a2016f3c1127a8ce39265d9805f1a4cfe729f88191",
+          "start": 388847,
+          "end": 391439,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-029",
+      "original_model_finding": {
+        "id": "F-029",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Позиционные обозначения",
+        "report_section": "questions",
+        "sheet": "Лист 19",
+        "page": [
+          23,
+          100
+        ],
+        "problem": "Диапазон обозначений ПЧ содержит окончание UZ53 при количестве три.",
+        "description": "Перечень листа 19 содержит «SC UZ1 - SC UZ53» и количество 3. Позиция 13.2 спецификации также содержит три ПЧ для В6.1.1, В6.1.2, В6.1.4. Запись требует уточнения; она не доказывает наличие 53 устройств. Предполагаемое окончание UZ3 необходимо сверить с оригиналом схемы.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проверить конечное обозначение диапазона и исправить перечень по согласованным трем позициям.",
+        "risk": "Неоднозначная идентификация преобразователей в документации.",
+        "source_finding_ids": [
+          "G-045",
+          "G-046"
+        ],
+        "source_block_ids": [
+          "blk_50601fa20414465ea70cc3f42158d923",
+          "blk_5b5187b5afb740efb6423fa40c399349"
+        ],
+        "related_block_ids": [
+          "blk_5999641136b84d1c9a5dd129e06ae055",
+          "blk_50601fa20414465ea70cc3f42158d923",
+          "blk_5b5187b5afb740efb6423fa40c399349"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_50601fa20414465ea70cc3f42158d923",
+            "page": 23
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+            "page": 100
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_with_text_authority_correction",
+      "reason": "В TEXT перечня записано SC UZ1 - SC UZ53 при количестве 3; позиция 13.2 также содержит 3 ПЧ для перечисленных трёх систем. Количество 53 не выводится. Предложение сверить оригинал для исправления распознавания противоречит принятой авторитетности TEXT: нужно уточнение проектного обозначения, а не повторное OCR. Графические связи устройств можно проверять отдельно.",
+      "evidence": [
+        {
+          "block_id": "blk_50601fa20414465ea70cc3f42158d923",
+          "md_span_sha256": "3917571a0824507fc08dc905a816c7ac5cb39a40bd3ff90db144402fef06a463",
+          "start": 125261,
+          "end": 126199,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "md_span_sha256": "52b019673ec133c34788afa344835bcdc2cd45e0dee21d5379a7759ff39eda43",
+          "start": 447851,
+          "end": 450496,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-030",
+      "original_model_finding": {
+        "id": "F-030",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Ведомость кабелей",
+        "report_section": "technical_findings",
+        "sheet": "Лист 27",
+        "page": [
+          31,
+          64,
+          65
+        ],
+        "problem": "Метраж контрольных кабелей Пкр4.1 требует согласования.",
+        "description": "Линии Пкр4.1-1, -2 и -3 имеют КСПЭВПГнг(А)-HF 1×2×0,75 длиной 15 + 10 + 10 = 35 м, а ведомость листа 27 содержит 40 м. Для неэкранированного кабеля журнал содержит четыре линии HF по 10 м и Пкр4.1-12 длиной 10 м с записью НФ; ведомость содержит 45 м HF. Сумма 50 м для неэкранированного исполнения допустима только после подтверждения, что НФ является ошибочным написанием HF. Без этого утверждение о недостаче 5 м одного точного исполнения не доказано.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить марку Пкр4.1-12, согласовать метраж экранированного кабеля и пересчитать неэкранированный кабель по подтвержденным исполнениям.",
+        "risk": "Ошибки метража и смешение обозначений при заказе.",
+        "source_finding_ids": [
+          "G-065",
+          "G-066"
+        ],
+        "source_block_ids": [
+          "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434"
+        ],
+        "related_block_ids": [
+          "blk_fcd31b6618d34e0f982af6c418e3bf37",
+          "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+            "page": 31
+          },
+          {
+            "type": "text",
+            "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+            "page": 64
+          },
+          {
+            "type": "text",
+            "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+            "page": 65
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_quantity_conflict_literal_variants_preserved",
+      "reason": "Три экранированные линии Пкр4.1-1/-2/-3 дают 15+10+10=35 м против 40 м локальной ведомости. Четыре неэкранированные строки HF дают 40 м; Пкр4.1-12 имеет НФ 10 м. Модель правильно не объявляет суммарные 50 м одним точным исполнением и не доказывает недостачу 5 м. Поддержан конфликт документов без вывода о закупке.",
+      "evidence": [
+        {
+          "block_id": "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "md_span_sha256": "29ecee002a7f285f4e8896cca4ee6fa6d568ea8dcbd96d3b50527e5af089f967",
+          "start": 168197,
+          "end": 169204,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "md_span_sha256": "899dc247db77b7021b33a7cc6d7175d2c322ba909f985462c8a43e4e4ac67a8c",
+          "start": 362382,
+          "end": 364959,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "md_span_sha256": "b4b5473c4cbec1f32f175c18d9cbd3e47994ef7113a6d0f0d7db0eca6afb70fe",
+          "start": 364959,
+          "end": 367559,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-031",
+      "original_model_finding": {
+        "id": "F-031",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Адресация датчиков",
+        "report_section": "technical_findings",
+        "sheet": "Листы 17, 35",
+        "page": [
+          21,
+          39,
+          77
+        ],
+        "problem": "Адреса приборов ШАУВ-6-К5ПЧ требуют согласования с перечнем.",
+        "description": "Журнал адресует Вос5.1-1 прибору PDS45, тогда как перечень листа 17 содержит только PDS1–PDS5. Для По5.1-1 в журнале указан ТЕ1; перечень различает ТЕ1 наружного воздуха и ТЕ2 канальный, но отдельного подключения ТЕ2 в подразделе журнала нет. Утверждения о PDS5 и ТЕ2 непосредственно на схемах листов 17 и 35 без изображений не подтверждены. Необходимо установить корректный конечный прибор каждой линии и способ подключения второго температурного датчика.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Сверить Вос5.1-1 и По5.1-1 с перечнем и схемами шкафа, исправить марки и раскрыть подключения ТЕ1 и ТЕ2.",
+        "risk": "Ошибочная адресация сигналов и неопределенность подключения температурного контроля.",
+        "source_finding_ids": [
+          "G-038",
+          "G-079",
+          "G-080",
+          "G-081"
+        ],
+        "source_block_ids": [
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ],
+        "related_block_ids": [
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_c63456cda51644db9470fb57f29b27de",
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_065a335469904b2db1640b480b321503"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+            "page": 21
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+            "page": 77
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_address_conflict_temperature_connection_question",
+      "reason": "Перечень содержит PDS1–PDS5; КЖ19 адресует Вос5.1-1 прибору PDS45. Перечень различает ТЕ1 и ТЕ2, но в разделе систем По5.1/Во5.1/Вос5.1 КЖ19 и продолжении КЖ20 до следующей группы есть только ТЕ1. Отдельное подключение ТЕ2 не найдено в данном подразделе; это вопрос о способе подключения, не доказанное физическое отсутствие. Основной конфликт PDS45 подтверждён; графические адреса не проверены.",
+      "evidence": [
+        {
+          "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "md_span_sha256": "b99d2a6787bffc58cfda56458fac5fc78594aec6fb2dda0225744328ab1f3d65",
+          "start": 114382,
+          "end": 115619,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "md_span_sha256": "7938d16e802cb533ab671403bd96f81c1106e64b80990454535aece2964aa435",
+          "start": 393942,
+          "end": 396424,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+          "md_span_sha256": "d3591abc3e5d02fce7e5bc85ddd138e0293ee0ec29e6c475e14ef1735d5f957b",
+          "start": 396424,
+          "end": 398950,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-032",
+      "original_model_finding": {
+        "id": "F-032",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подключение термостатов",
+        "report_section": "questions",
+        "sheet": "Листы 20, 38",
+        "page": [
+          24,
+          42,
+          82,
+          83,
+          84,
+          100
+        ],
+        "problem": "Требуется уточнить конечный термостат линии П6.1.4-2.",
+        "description": "Перечень листа 20 различает ТС1 — капиллярное реле и ТС2 — термостат, комплектный с электронагревателем; количество ТС2 не заполнено. Журнал адресует ТС1 как линию П6.1.1-4, так и Пб.1.4-2 на повторных листах 25–26. Указание TS2 непосредственно на схеме листа 38 не проверено. Одна отдельная позиция капиллярного реле 14.8 не доказывает недостачу второго термостата, поскольку ТС2 имеет другую границу поставки.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проектировщику АК уточнить адрес П6.1.4-2, заполнить количество комплектного ТС2 и подтвердить его поставку с электронагревателем.",
+        "risk": "Подключение защитного сигнала к неверному прибору или пропуск комплектного подключения.",
+        "source_finding_ids": [
+          "G-087"
+        ],
+        "source_block_ids": [
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "blk_8c1c32681acd42c79d8190b013bbbf0c"
+        ],
+        "related_block_ids": [
+          "blk_40bad73db9d44699955a7a4682f309a8",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_5b5187b5afb740efb6423fa40c399349",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "blk_8c1c32681acd42c79d8190b013bbbf0c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+            "page": 24
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+            "page": 82
+          },
+          {
+            "type": "text",
+            "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+            "page": 83
+          },
+          {
+            "type": "text",
+            "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+            "page": 84
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+            "page": 100
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_thermostat_identity_and_supply_boundary",
+      "reason": "Количество комплектного ТС2 в перечне пустое; отдельный ТС1 капиллярный имеет количество 1. П6.1.1-4 и Пб.1.4-2 адресованы ТС1, вторая строка повторена на КЖ25–26. Позиция 14.8 содержит одно капиллярное реле. Вопрос адресации и количества подтверждён; требование второго отдельно закупаемого капиллярного реле не обосновано границей поставки комплектного ТС2.",
+      "evidence": [
+        {
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "md_span_sha256": "9bca0c4a8f7bc1302052554c4e2c66ab4fa16187d401ede300913c5b8e1ac844",
+          "start": 130512,
+          "end": 132110,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "md_span_sha256": "ff350aaae8c47cfda58794d11ed5804a3c7feb9c5fdeb7671fb97e7923a10d4d",
+          "start": 405279,
+          "end": 407398,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "md_span_sha256": "b4f34e5983b621d2bcff5cbd81930de663eb63591296520b3f61433b5ae81b96",
+          "start": 407398,
+          "end": 409924,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "md_span_sha256": "012e97d64ba8b4f5de93ca8494878494c8fb338087e0f20acee4f8b63ee86f0d",
+          "start": 409924,
+          "end": 412482,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "md_span_sha256": "52b019673ec133c34788afa344835bcdc2cd45e0dee21d5379a7759ff39eda43",
+          "start": 447851,
+          "end": 450496,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-033",
+      "original_model_finding": {
+        "id": "F-033",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Исполнение контрольного кабеля",
+        "report_section": "technical_findings",
+        "sheet": "Лист 29",
+        "page": [
+          33,
+          67,
+          103
+        ],
+        "problem": "Для двухпарной линии Па3.1-8 не согласовано наличие экрана.",
+        "description": "Журнал задает Па3.1-8 от ШАУВ-1-К4АС к ХТ1: КСПВПГнг(А)-HF 2×2×0,75, 20 м. Локальная ведомость этого шкафа содержит только экранированный КСПЭВПГнг(А)-HF 2×2×0,75, 20 м. В сводной спецификации неэкранированного исполнения 2×2×0,75 всего 15 м, а экранированного — 210 м. Нельзя устранять конфликт сложением кабелей разных исполнений.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Определить необходимость экрана по назначению цепи ХТ1 и согласовать журнал, локальную ведомость и спецификацию.",
+        "risk": "Поставка кабеля другого исполнения и нарушение требований к передаче сигнала.",
+        "source_finding_ids": [],
+        "source_block_ids": [
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ],
+        "related_block_ids": [
+          "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_cd9d763d198246859c3df42c18b5c3d8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+            "page": 67
+          },
+          {
+            "type": "text",
+            "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+            "page": 33
+          },
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_shielding_and_quantity_conflict",
+      "reason": "КЖ9 задаёт Па3.1-8 к ХТ1: КСПВПГнг 2×2×0,75 20 м; локальная ведомость содержит КСПЭВПГнг того же размера 20 м. Сводные позиции 21.6 и 21.8 содержат соответственно 15 и 210 м. Расхождение исполнения и количества подтверждено; экранированное и неэкранированное исполнения не суммируются для его снятия. Правильное исполнение требует проектного решения.",
+      "evidence": [
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "md_span_sha256": "26dfc9ca56ee05e38b7bd4580d4210febb93d5e5819aef4477beb3e28dbcdcca",
+          "start": 370196,
+          "end": 372825,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "md_span_sha256": "e3788dedfde0f01103d58813b2328e7dda6e3c771a7ff3720b80b820966d8c79",
+          "start": 176574,
+          "end": 177530,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "md_span_sha256": "71f81fe0f9f2620a2061361bfa8bfc44fb2c69e8d5890679804e1e7ba9c6b35d",
+          "start": 455518,
+          "end": 458041,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-034",
+      "original_model_finding": {
+        "id": "F-034",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Заполнение кабельного журнала",
+        "report_section": "questions",
+        "sheet": null,
+        "page": 92,
+        "problem": "В одной строке СУК1-1 указаны разные конструкции кабеля.",
+        "description": "Для СУК1-1 от СУ-КЗ1 к ШАУВ-1-К5АС длиной 10 м графа «по проекту» содержит КСПВПнг(А)-HF 1×2×0,75, а графа «проложен» — КИС-Пнг(А)-HF 2×2×0,78. Различаются марка, число пар и параметр жилы. Статус графы «проложен» не подтвержден как исполнительная фиксация; фактическая замена кабеля не установлена.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить назначение заполненных граф и согласованное исполнение линии; при наличии замены привести ее проектное основание.",
+        "risk": "Неоднозначность заказа и приемки линии управления вентиляцией от СКЗ.",
+        "source_finding_ids": [],
+        "source_block_ids": [
+          "blk_25cd2a4f5a734187897f8aba96b1dbad"
+        ],
+        "related_block_ids": [
+          "blk_25cd2a4f5a734187897f8aba96b1dbad"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+            "page": 92
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_journal_column_discrepancy",
+      "reason": "Строка СУК1-1 действительно содержит разные марки и параметры в графах по проекту и проложен, длина обеих 10 м. Фактическое исполнение не подтверждено. Сохранить вопрос о согласовании записей; нельзя сообщать о доказанной замене смонтированного кабеля.",
+      "evidence": [
+        {
+          "block_id": "blk_25cd2a4f5a734187897f8aba96b1dbad",
+          "md_span_sha256": "cb38bf51dd1ac96735f0fe9cdc5e934cd640610ab30f8dc6b7632f058ea654d6",
+          "start": 428379,
+          "end": 430911,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-035",
+      "original_model_finding": {
+        "id": "F-035",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Идентификация листа",
+        "report_section": "questions",
+        "sheet": "Лист 16",
+        "page": [
+          5,
+          20,
+          76,
+          98
+        ],
+        "problem": "Требуется проверить название функциональной схемы листа 16.",
+        "description": "Ведомость чертежей относит лист 16 к Пу5.1, Ву5.1, Всу5.1. Те же системы указаны в журнале и примечании к регуляторам ШАУВ-5-К5ПЧ. В приложенном текстовом контексте основной надписи листа 16 указаны Пл3.1, Вк3.1, Всу3.1. Без оригинала нельзя установить, находится ли ошибка в основной надписи или в извлечении ее текста.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Проверить оригинал основной надписи листа 16 и согласовать название с ведомостью и обслуживаемыми системами.",
+        "risk": "Ошибочное отнесение схемы к другому корпусу.",
+        "source_finding_ids": [],
+        "source_block_ids": [
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_e8bf19ac20234427aa1d48bfcac87193",
+          "blk_5d9307558672478196f75e1763b09764",
+          "blk_88d8dd46122c41148a81ba6b14c890eb"
+        ],
+        "related_block_ids": [
+          "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_e8bf19ac20234427aa1d48bfcac87193",
+          "blk_5d9307558672478196f75e1763b09764",
+          "blk_88d8dd46122c41148a81ba6b14c890eb"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+            "page": 5
+          },
+          {
+            "type": "text",
+            "block_id": "blk_e8bf19ac20234427aa1d48bfcac87193",
+            "page": 20
+          },
+          {
+            "type": "text",
+            "block_id": "blk_5d9307558672478196f75e1763b09764",
+            "page": 76
+          },
+          {
+            "type": "text",
+            "block_id": "blk_88d8dd46122c41148a81ba6b14c890eb",
+            "page": 98
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_text_title_conflict_with_authority_correction",
+      "reason": "Ведомость листа 16, КЖ18 и спецификация позиции 10.2 относятся к Пу5.1/Ву5.1/Всу5.1; метаданные TEXT блока листа 16 содержат Пл3.1/Вк3.1/Всу3.1. Расхождение текстового контекста подтверждено. Оговорка о возможной ошибке извлечения не соответствует установленной авторитетности подготовленного TEXT; не следует требовать повторного распознавания. Сохранить вопрос о согласовании названий; графические связи остаются непроверенными.",
+      "evidence": [
+        {
+          "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+          "md_span_sha256": "a83d4dd0aac3eddd0f4b72a8bc555816a5c595241167bad6882f2619b385e67a",
+          "start": 4284,
+          "end": 7372,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_e8bf19ac20234427aa1d48bfcac87193",
+          "md_span_sha256": "23579067fcccde932e55972eae9630931f48b24a71618e2a992a3c36751c22ab",
+          "start": 109231,
+          "end": 110347,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_5d9307558672478196f75e1763b09764",
+          "md_span_sha256": "9be2b763941d54c21f57f2b45077da136c2044b37abe25aa8807102d0434c60f",
+          "start": 391439,
+          "end": 393942,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_88d8dd46122c41148a81ba6b14c890eb",
+          "md_span_sha256": "d15e09f31d0038a913c594447c740a150582e242976df7cc7ad28efc16a8a2ac",
+          "start": 443075,
+          "end": 445314,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    },
+    {
+      "finding_id": "F-036",
+      "original_model_finding": {
+        "id": "F-036",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Адресные ссылки",
+        "report_section": "questions",
+        "sheet": null,
+        "page": [
+          5,
+          8
+        ],
+        "problem": "Описание противодымной автоматики содержит ссылку на пример вместо проектного листа.",
+        "description": "Пункт 7 общих данных направляет к «листу 6 примера РД pdf», статье «ПС» и неполным маркам «-ОВ», «-ЭОМ». Ведомость данного комплекта относит функциональную схему противодымного притока к листу 24, внешние подключения — к листу 47, а лист 6 — к газоанализу. Адреса применяемых решений определены неоднозначно.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Заменить шаблонные ссылки точными обозначениями комплектов и листов, предусматривающих противодымный подогрев, пожарный запуск и силовой шкаф.",
+        "risk": "Использование несоответствующей схемы при согласовании и изготовлении автоматики.",
+        "source_finding_ids": [],
+        "source_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_c68be533b2c24e4799dde6fb256694f4"
+        ],
+        "related_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_c68be533b2c24e4799dde6fb256694f4"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+            "page": 5
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c68be533b2c24e4799dde6fb256694f4",
+            "page": 5
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_on_incomplete_project_references",
+      "reason": "Пункт 7 действительно содержит лист 6 примера РД pdf, статью ПС и неполные ссылки -ОВ/-ЭОМ. Ведомость задаёт лист 6 как газоанализ, лист 24 как функциональную схему противодымного притока и лист 47 как внешние подключения. Вопрос о корректных адресах решений подтверждён, техническая неработоспособность системы из этих ссылок не следует.",
+      "evidence": [
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "md_span_sha256": "2cbc98fcdd0ca377cb4ef3b7a0e6c57c8dfda7905b38e69eaa07a8c00e32c154",
+          "start": 34947,
+          "end": 40661,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+          "md_span_sha256": "a83d4dd0aac3eddd0f4b72a8bc555816a5c595241167bad6882f2619b385e67a",
+          "start": 4284,
+          "end": 7372,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        },
+        {
+          "block_id": "blk_c68be533b2c24e4799dde6fb256694f4",
+          "md_span_sha256": "e983f9b9b4de1036147bdfd9c09345c0e199d21ed71383c5a90f49c538326819",
+          "start": 8332,
+          "end": 10851,
+          "inspection_scope": "relevant authoritative TEXT statements and table rows; no graphic verification"
+        }
+      ],
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending",
+      "graphic_verification": "not_performed"
+    }
+  ],
+  "production_acceptance": false
+}

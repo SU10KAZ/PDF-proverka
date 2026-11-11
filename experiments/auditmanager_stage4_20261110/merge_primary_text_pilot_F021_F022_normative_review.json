@@ -1,0 +1,100 @@
+{
+  "status": "normative_reference_source_review_not_threshold_compliance_assessment",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "source_md": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/02_work/document.md",
+    "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+  },
+  "reviews": [
+    {
+      "finding_id": "F-021",
+      "original_model_finding": {
+        "id": "F-021",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативное основание уставок СО",
+        "report_section": "questions",
+        "sheet": null,
+        "page": 8,
+        "problem": "Требуется проверить нормативное основание порогов СО.",
+        "description": "Пункт 6 общих данных обосновывает пороги 20 и 100 мг/м³ ссылкой на ГН 2.2.5.1313-03. Предыдущий анализ указал утрату силы этого документа, но официальный статус на данном этапе независимо не проверен. Необходимо раздельно обосновать предупредительный и аварийный пороги; 100 мг/м³ нельзя трактовать как допустимую постоянную концентрацию только по этой записи.",
+        "norm": "ГН 2.2.5.1313-03 — указан в проекте; сообщение об утрате силы требует нормативного подтверждения. СанПиН 1.2.3685-21 — кандидат для проверки санитарного основания; статус редакции не установлен.",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГН 2.2.5.1313-03",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить содержание и статус документа, которым проект обосновывает уставки СО.",
+            "clause_candidate": null,
+            "quote_candidate": null,
+            "provenance": {
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "designation_source": "Первичные общие данные проекта"
+            }
+          },
+          {
+            "designation": "СанПиН 1.2.3685-21",
+            "candidate_relevance": 0.7,
+            "reason": "Проверить применимое санитарное основание концентраций СО, не смешивая его с алгоритмом аварийной сигнализации автостоянки.",
+            "clause_candidate": null,
+            "quote_candidate": null,
+            "provenance": {
+              "source_finding_ids": [
+                "T-021"
+              ],
+              "designation_source": "Перечень нормативных кандидатов текстового этапа"
+            }
+          }
+        ],
+        "solution": "Установить применимые нормы и редакции, обновить обоснование и подтвердить обе уставки с учетом назначения помещений и руководства сигнализатора.",
+        "risk": "Необоснованная настройка предупредительной и аварийной сигнализации.",
+        "source_finding_ids": [
+          "T-021"
+        ],
+        "source_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "related_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          }
+        ],
+        "highlight_regions": []
+      },
+      "assessment": "supported_question_outdated_reference_confirmed_thresholds_unverified",
+      "reason": "Пункт 6 действительно обосновывает 20 и 100 мг/м³ ссылкой на ГН 2.2.5.1313-03. Официальное сообщение Роспотребнадзора подтверждает отмену постановления о введении этого документа при введении ГН 2.2.5.3532-18 в 2018 году. Поэтому вопрос об актуальном обосновании поддержан, а прежняя оговорка модели о непроверенном статусе теперь может быть обновлена. Правильность уставок для данного паркинга, текущая применимая нормативная цепочка и допустимость постоянного пребывания не проверены. Отмена ссылки сама по себе не доказывает ошибочность чисел.",
+      "evidence": [
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "md_span_sha256": "2cbc98fcdd0ca377cb4ef3b7a0e6c57c8dfda7905b38e69eaa07a8c00e32c154",
+          "start": 34947,
+          "end": 40661,
+          "inspection_scope": "point 6 authoritative TEXT"
+        }
+      ],
+      "external_source": "https://62.rospotrebnadzor.ru/content/informaciya-o-vvedenii-v-deystvie-gigienicheskih-normativov-gn-2253532-18-predelno",
+      "external_access": "web search returned official article text; direct open returned 502; no claim of successful direct fetch",
+      "engineering_decision_for_pilot_wording": "not_obtained",
+      "historical_engineer_mapping": "pending"
+    }
+  ],
+  "addenda": [
+    {
+      "finding_id": "F-022",
+      "prior_review": "merge_primary_text_pilot_F022_F028_review.json",
+      "assessment": "official_designation_difference_confirmed_TU_reference_still_unresolved",
+      "reason": "Карточка Росстандарта называет ГОСТ 21.408-2013 для указанного в проекте предмета. Отличие от буквального ГОСТ 21.4.08-2013 подтверждено. Это вопрос оформления ссылки, не доказательство технического дефекта и не проверка высоты 1,5 м. Идентификация ТУ-газ-86 остаётся незавершённой.",
+      "external_source": "https://protect.gost.ru/gost/details/ad7aee01-bcb3-495e-a46f-6393783f864c",
+      "external_access": "official page opened; designation and title read"
+    }
+  ],
+  "checked_on": "2026-11-12",
+  "production_acceptance": false
+}

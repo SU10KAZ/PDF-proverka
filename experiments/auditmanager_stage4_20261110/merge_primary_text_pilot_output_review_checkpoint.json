@@ -1,0 +1,277 @@
+{
+  "status": "all_36_outputs_source_reviewed_with_explicit_limits_not_accepted",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "output_finding_count": 36,
+  "reviewed_count": 36,
+  "review_records": [
+    {
+      "finding_id": "F-001",
+      "assessment": "supported_textual_cross_section_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_first_source_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-002",
+      "assessment": "facts_supported_split_technical_and_question",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F002_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-003",
+      "assessment": "partially_supported_motor_address_conflict_requires_atomic_split",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-004",
+      "assessment": "supported_text_identity_conflict_with_narrow_scope",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F004_F006_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-005",
+      "assessment": "supported_text_mark_and_endpoint_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F004_F006_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-006",
+      "assessment": "supported_text_range_quantity_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F004_F006_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-007",
+      "assessment": "supported_textual_quantity_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_first_source_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-008",
+      "assessment": "supported_question_on_unassigned_sensor_quantities",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-009",
+      "assessment": "supported_question_on_position_to_quantity_mapping",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-010",
+      "assessment": "supported_question_on_system_names",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-011",
+      "assessment": "supported_documented_sensor_interface_discrepancy",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-012",
+      "assessment": "supported_documented_conditioner_control_package_discrepancy",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-013",
+      "assessment": "supported_question_on_unresolved_supply_and_connection_scope",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F013_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-014",
+      "assessment": "supported_text_cable_quantity_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-015",
+      "assessment": "supported_text_cable_length_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-016",
+      "assessment": "supported_text_cable_quantity_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-017",
+      "assessment": "supported_text_cable_assortment_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-018",
+      "assessment": "supported_text_missing_summary_cable_item",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-019",
+      "assessment": "supported_question_on_literal_cable_designations",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-020",
+      "assessment": "supported_question_requires_narrower_wording",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-021",
+      "assessment": "supported_question_outdated_reference_confirmed_thresholds_unverified",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F021_F022_normative_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-022",
+      "assessment": "literal_references_confirmed_normative_check_pending",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-023",
+      "assessment": "supported_question_on_cross_discipline_reference_scope",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-024",
+      "assessment": "supported_conditional_algorithm_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-025",
+      "assessment": "supported_text_support_type_conflict_quantity_held",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-026",
+      "assessment": "supported_question_on_reused_codes_and_position_numbers",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-027",
+      "assessment": "supported_question_on_equipment_system_address",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-028",
+      "assessment": "supported_question_on_deviation_register_scope",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-029",
+      "assessment": "supported_question_with_text_authority_correction",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-030",
+      "assessment": "supported_text_quantity_conflict_literal_variants_preserved",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-031",
+      "assessment": "supported_text_address_conflict_temperature_connection_question",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-032",
+      "assessment": "supported_question_on_thermostat_identity_and_supply_boundary",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-033",
+      "assessment": "supported_text_shielding_and_quantity_conflict",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "report_section": "technical_findings"
+    },
+    {
+      "finding_id": "F-034",
+      "assessment": "supported_question_on_journal_column_discrepancy",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-035",
+      "assessment": "supported_text_title_conflict_with_authority_correction",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "report_section": "questions"
+    },
+    {
+      "finding_id": "F-036",
+      "assessment": "supported_question_on_incomplete_project_references",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "report_section": "questions"
+    }
+  ],
+  "review_sources": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_first_source_review.json",
+      "sha256": "39af17187b799972f4351619d057bab96efb2b6ab81b2825bcb0228a508ad703"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F002_review.json",
+      "sha256": "43086a8e8c59a2c9457bb7c5e860558ed90417a14e2ad3c98e644d5b7ac779e0"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F004_F006_review.json",
+      "sha256": "a96993b6bd7d5c2aafdf297a0d50cd6dd8786944ff3d50d3f0dc261a49087a15"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "sha256": "d754905d8cc839ad07d2052f7d576947f3223ac71e6ccb13052d5ac04e210837"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F013_review.json",
+      "sha256": "c3515059834290b1c470600a63fb3fbc53ed305e92b11db6995e7cd75f80d20c"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "sha256": "3393727ca6036eb0cfebb52a1e754a10d452e104d83c81c92485dc28751eea3e"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "sha256": "5217dbf227504ee68ed7af3436b5ad4fff3cfbf252836e4455aadd5aae9f2404"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "sha256": "053ea27ae7749708113e39be62f4e3cfebe62e3ba51852d24acac29572179634"
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F021_F022_normative_review.json",
+      "sha256": "69a176dabae9ff791a0ac75ec971f9a0859058b9a38c7f227356b53ddd87c131"
+    }
+  ],
+  "required_corrections": [
+    "F-002: separate technical discrepancy and duplicate/supply question",
+    "F-003: split compound motor claims; do not infer swapped motor assignments from cable section alone",
+    "F-020: retain documented fire role; ask for duration and line construction",
+    "F-029/F-035: obey authoritative TEXT, remove re-OCR premise"
+  ],
+  "remaining": [
+    "map output atomic claims to existing engineer-reviewed target set",
+    "review all 147 input candidate dispositions including missing prescan and unresolved duplicates",
+    "validate graphic-dependent claims with images when needed",
+    "resolve external references only within applicable project scope",
+    "integrate and test merge primary-source handoff before new full comparison",
+    "complete six-project and independent-project acceptance; production unchanged"
+  ],
+  "production_acceptance": false
+}
