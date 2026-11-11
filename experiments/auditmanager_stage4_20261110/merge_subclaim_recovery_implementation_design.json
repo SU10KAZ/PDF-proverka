@@ -1,0 +1,94 @@
+{
+  "status": "implementation_gap_confirmed_design_ready_not_implemented",
+  "evidence": [
+    {
+      "path": "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+      "sha256": "0f199985f9cd22e851918c04946437773d387cb2661568be76fdff8686e47219"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/prompt_builder.py",
+      "sha256": "92d8f3bb0de886652a5fe4fd16978d87fc966e45dd8c8ab0de49fa119d7a47e0"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/candidate_decisions.py",
+      "sha256": "b0d64a9972bfd77db8d0cf5cc250420d721416eb4ec3f69489be94e6814ba962"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/candidate_coverage.py",
+      "sha256": "41c47aff3345cc0d6a2e764876149d1c320b4e76b15b92f2cad12853f8c847d9"
+    }
+  ],
+  "observed_mechanisms": [
+    {
+      "file": "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+      "function": "build_recovery_passes",
+      "behavior": "Selects status == unlinked_requires_trace or deferred; linked non-deferred candidates are excluded even if only part of their claim survived.",
+      "evidence_code": "candidates = [c for c in coverage['candidates'] if c['status'] == 'unlinked_requires_trace' or c.get('deferred')]"
+    },
+    {
+      "file": "backend/app/pipeline/stages/prepare/prompt_builder.py",
+      "behavior": "Standard findings merge user message is built from 02_text_analysis.json and 01_blocks_analysis.json; the primary TEXT addition tested in the pilot is not present in this message construction.",
+      "scope": "Inspected prompt construction; not a claim about every provider tool capability."
+    },
+    {
+      "file": "backend/app/pipeline/stages/findings_merge/candidate_decisions.py",
+      "function": "reconcile_candidate_decisions",
+      "behavior": "Validates candidate action, reason, references and final links; semantic_verified remains False. No atomic subclaim completion check."
+    }
+  ],
+  "case_receipts": [
+    "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_AK14_engineer_mapping.json",
+    "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_AK57_engineer_mapping.json"
+  ],
+  "planned_changes": [
+    {
+      "place": "merge prompt / candidate decision schema",
+      "behavior": "Require explicit independently checkable subclaims with stable IDs, source requirements, output links and dispositions; retained candidate is not equivalent to all subclaims verified. Preserve primary TEXT verbatim and identify absent images explicitly."
+    },
+    {
+      "place": "build_recovery_passes",
+      "behavior": "Include unresolved subclaims of linked candidates; pass existing confirmed finding as context and request only missing evidence operations. Do not regenerate already confirmed content as another issue."
+    },
+    {
+      "place": "effective_candidate_decisions / reconciliation",
+      "behavior": "Retain unresolved obligations until an explicit addressed outcome supersedes each one. A later candidate-level receipt must not silently erase pending subclaims."
+    },
+    {
+      "place": "final emission and evaluation",
+      "behavior": "Merge verified subclaims back into their finding, retain unresolved material in questions where appropriate, preserve traceability and report both candidate and atomic coverage."
+    }
+  ],
+  "required_tests": [
+    {
+      "scenario": "Linked graphic candidate retained for TEXT quantities but graphical range is needs_data",
+      "expected": "Graphic subclaim scheduled with image; existing TEXT claim preserved without duplicate output."
+    },
+    {
+      "scenario": "Duplicate candidate has a confirmed core and additional unresolved address",
+      "expected": "Deduplication merges confirmed core but does not discard pending address."
+    },
+    {
+      "scenario": "Later receipt lacks explicit subclaim outcomes",
+      "expected": "Outstanding obligations remain pending."
+    },
+    {
+      "scenario": "Image absent or over transport budget",
+      "expected": "Visible unresolved evidence state, no false refutation, no claim that source was inspected."
+    },
+    {
+      "scenario": "All subclaims explicitly resolved with valid links",
+      "expected": "No unnecessary repeat request."
+    },
+    {
+      "scenario": "Malformed or conflicting subclaim IDs",
+      "expected": "Validation error or pending review; no silent completion."
+    }
+  ],
+  "limits": [
+    "Subclaim decomposition itself requires validation; a model may omit an original claim.",
+    "Historic candidate receipts lack the structured field; migration must not infer certainty from prose or retained status.",
+    "Need source budgets and request/token accounting before full comparison.",
+    "This design does not repair missing discovery on the other historical addresses."
+  ],
+  "production_acceptance": false
+}
