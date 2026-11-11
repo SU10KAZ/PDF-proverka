@@ -720,15 +720,27 @@
       "finding_id": "F-066",
       "problem": "Количество неэкранированного кабеля ШАУВ-3-К4ПЧ меньше суммы длин на схеме на 5 м.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "На графике непосредственно прочитаны пять отдельных линий Пкр4.1-4, -5, -6, -7 и -12: КСПВПГнг(А)-HF 1×2×0,75, каждая L=10 м. Сумма 50 м против 45 м в авторитетном TEXT ведомости того же листа. Исполнение HF установлено по графике; равнозначность НФ/HF из другого журнала не предполагалась. Условная корректировка при сохранении проектных длин обоснована; физическая недопоставка не доказана.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_roof_cable_quantities_source_review_20261112.json",
+        "sha256": "6821b6dcb5db00fd972934077ce9dccb2339e294e86a7800963b67216014aca2"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-067",
       "problem": "Количество экранированного однопарного кабеля ШАУВ-3-К4ПЧ превышает сумму длин на схеме на 5 м.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "На графике Пкр4.1-1 имеет однопарный экранированный кабель L=15 м, Пкр4.1-2 и -3 того же исполнения — по 10 м. Сумма 35 м против 40 м в авторитетном TEXT. Пкр4.1-10 — двухпарный экранированный 2×2×0,75 длиной 10 м, в сумму не включается. Решение допускает обоснованный запас 5 м и не требует безусловного уменьшения закупки. Краткий добавленный тезис «Требуется 35 м ... вместо 40 м» следует читать вместе с его условным обоснованием и решением; при редактуре выдачи условие необходимо сохранить.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_roof_cable_quantities_source_review_20261112.json",
+        "sha256": "6821b6dcb5db00fd972934077ce9dccb2339e294e86a7800963b67216014aca2"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-068",
@@ -925,14 +937,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 10,
-  "unchecked": 75,
+  "reviewed": 53,
+  "unchecked": 32,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 51,
-  "unchecked_findings": 34
+  "reviewed_findings": 53,
+  "unchecked_findings": 32
 }
