@@ -1,0 +1,57 @@
+{
+  "status": "experiment_metadata_profile_difference_confirmed",
+  "prior_observation": "AK_profile_fallback_investigation.json",
+  "experimental_metadata": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/01_input/project_info.json",
+    "sha256": "7782d77f5005ca0ecc8363b4329dba03cbb59cac3467fa534e9b23bd7fa60462",
+    "section": "AK",
+    "normalized": null
+  },
+  "ordinary_name_detection": {
+    "code": "SS",
+    "source": "folder_name",
+    "reason": "паттерн «-АК» в имени папки"
+  },
+  "ordinary_profile_role": "Ты -- эксперт-проектировщик по слаботочным системам жилых многоквартирных домов (МКД).\nАнализируешь проектную документацию раздела СС, находишь ошибки и несоответствия нормативной базе РФ.\nДаёшь рекомендации -- строго с привязкой к конкретным пунктам нормативных документов.\n\nТип объектов: жилые многоквартирные дома (МКД) и их инфраструктура.\nРаздел: СС (Слаботочные системы).\n\nОбласти экспертизы:\n- СКС (структурированная кабельная система)\n- Видеонаблюдение (CCTV)\n- СКУД (система контроля и управления доступом)\n- Домофон / видеодомофон\n- ОПС / АУПС (охранно-пожарная сигнализация, автоматическая установка пожарной сигнализации)\n- СОУЭ (система оповещения и управления эвакуацией)\n- Телевидение и радио (антенное хозяйство, кабельное ТВ)\n- Интернет и телефония\n- Диспетчеризация (лифты, ИТП, пожарная автоматика, водомерный узел)\n- АСКУЭ (автоматизированная система коммерческого учёта электроэнергии)",
+  "code_sources": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/prepare_six_runner_metadata.py",
+      "sha256": "ab08ee977251cfbc4ddf45eae569cce708982ac81450c23bae378cc7b8dc47b1"
+    },
+    {
+      "path": "backend/app/services/common/discipline_identity.py",
+      "sha256": "98ea095be83265e05df41ec506aa7a10724426323d3632d7fefccebef961002d"
+    },
+    {
+      "path": "backend/app/services/common/discipline_service.py",
+      "sha256": "985e064de9a3a6473a992c1db96192427634221b889c0720a053895abd6c0d2c"
+    },
+    {
+      "path": "prompts/disciplines/_registry.json",
+      "sha256": "9a926e56e3a8b90c054b70fe4ff2f70673a2aad3f000142209c68f96ebe7daa4"
+    },
+    {
+      "path": "prompts/disciplines/SS/role.md",
+      "sha256": "bce9846d362a4994e82dd6fbc9c026c96de91c8eb27a4c654bb2b403cf48fc7f"
+    },
+    {
+      "path": "tests/test_discipline_registry_ss.py",
+      "sha256": "e0cdc5d525935e99cf2bbdc0ff79bcc98ed8cec570de16b907d4ece3b3d3088f"
+    }
+  ],
+  "cause": "prepare_six_runner_metadata.py copies evaluation discipline AK verbatim into runtime section; AK is not a recognized runtime code. Folder pattern -АК selectsSS, while explicitAK falls back toEOM in non-strict mode.",
+  "interpretation": [
+    "Existing paired runs share identical forced AK metadata, so within-series comparison remains conditional on the same profile.",
+    "Do not infer that ordinary portal AK audits use EOM from these experimental requests. Actual deployed project metadata must be checked separately.",
+    "The registered SS role covers low-current systems and dispatching; no dedicated AK profile currently exists. Its adequacy for automation is not established by registry selection."
+  ],
+  "next_trial_requirements": [
+    "Separate evaluation label AK from runtime profile code.",
+    "Prepare a new immutable input metadata version; do not rewrite current sealed inputs.",
+    "First compare runtimeSS with forcedEOM on matched sources and model settings to establish profile effect.",
+    "Only then compare a dedicated automation profile if justified; do not bundle profile and algorithm changes in one causal claim.",
+    "Validate runtime codes with strict normalization before freezing new trials."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
