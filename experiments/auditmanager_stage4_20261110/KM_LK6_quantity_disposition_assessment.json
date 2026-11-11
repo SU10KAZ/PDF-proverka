@@ -1,0 +1,11 @@
+{
+  "status": "deferred_not_refuted",
+  "admission_action": "defer",
+  "technical_findings_after_admission": 0,
+  "original_preserved_in": "pending_source_findings",
+  "supported_context": "Ten assemblies and summary 188; known subtotal 172, two quantities unestablished.",
+  "unsupported_core": "228 and difference 40 are conditional, not proven.",
+  "control_harness_gap": "Only initially required images copied; later requested graphics unavailable although present in the project.",
+  "next_control": "Same initial request reused; all frozen graphics now locally available for model-requested retrieval.",
+  "full_acceptance": false
+}

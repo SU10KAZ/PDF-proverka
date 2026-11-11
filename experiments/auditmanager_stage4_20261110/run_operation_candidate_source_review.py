@@ -41,6 +41,17 @@ def prepare(args):
         digest=row.get('sha256') or hashlib.sha256(path.read_bytes()).hexdigest()
         copy_bound(path,crops/f'block_{bid}.png',digest)
         original_bindings.append({'block_id':bid,'path':str(path),'sha256':digest})
+    retrieval_bindings=[]
+    if args.populate_context_graphics:
+        for row in index['blocks']:
+            bid=row.get('block_id');filename=row.get('file')
+            if not isinstance(bid,str) or not isinstance(filename,str):continue
+            path=(crops_source/filename).resolve()
+            assert path.is_relative_to(crops_source.resolve())
+            if not path.is_file():continue
+            digest=row.get('sha256') or hashlib.sha256(path.read_bytes()).hexdigest()
+            copy_bound(path,crops/f'block_{bid}.png',digest)
+            retrieval_bindings.append({'block_id':bid,'sha256':digest})
     details=[]
     for i,(bid,path) in enumerate(zip(payload['attached_image_ids_in_order'],operation.image_paths,strict=True)):
         if bid not in required:continue
@@ -86,6 +97,7 @@ def prepare(args):
         'message_chars':sum(len(m['content']) for m in request['messages']),
         'images':len(request['image_paths']),'image_bytes':sum(Path(p).stat().st_size for p in request['image_paths']),
         'known_candidate_control':True,'semantic_acceptance':False,
+        **({'available_context_graphics':retrieval_bindings,'context_graphics_boundary':'Available locally for model-requested retrieval; only attachments in each recorded request are sent.'} if args.populate_context_graphics else {}),
         **({'additional_graphic_manifest_sha256':hashlib.sha256(Path(args.extra_detail_manifest).read_bytes()).hexdigest(),
             'graphic_selection':'Executor-selected orientation/detail control; not an automatic model-requested crop.'} if args.extra_detail_manifest else {})}
     immutable(root/'manifest.json',manifest)
@@ -117,5 +129,6 @@ if __name__=='__main__':
     for name in ('source-root','output-root','md-path','crops-root','source-finding-id','finding-id'):
         p.add_argument('--'+name,required=True)
     p.add_argument('--extra-detail-manifest')
+    p.add_argument('--populate-context-graphics',action='store_true')
     p.add_argument('--execute',action='store_true')
     asyncio.run(main(p.parse_args()))
