@@ -1,0 +1,590 @@
+{
+  "status": "nine_candidate_records_four_issue_groups_graphically_reviewed",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "G-077",
+      "pointer": "/block_analyses/30/findings/0",
+      "original_candidate": {
+        "id": "G-077",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable_specification",
+        "finding": "Для кабеля По5.1-9 к электронагревателю на схеме внешних подключений, лист 35, задан ППГнг(А)-HF 3×2,5, а в кабельном журнале, лист 19, — ППГнг(A)-HF 4×4,0. Для одной линии противоречат друг другу число жил и их сечение.\n\nРекомендация: Уточнить кабель по параметрам электронагревателя и привести схему, кабельный журнал и спецификацию к единому решению.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_065a335469904b2db1640b480b321503",
+        "value_found": "По5.1-9: ППГнг(А)-HF 3x2,5, L=10м; кабельный журнал: 4x4,0, 10 м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-077",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:005"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания фиксируют для По5.1-9 расхождение: ППГнг(А)-HF 3×2,5 на схеме и 4×4,0 в кабельном журнале.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cable_construction_conflict",
+      "reason": "Лист 35: линия По5.1-9 в колонке электронагревателя По5.1 подписана ППГнг(А)-HF 3х2,5 длиной 10 м и показана к L,N,PE. Авторитетный TEXT журнала листа 19 для той же линии и нагревателя содержит ППГнг(A)-HF 4х4,0, 10 м. Подтверждено расхождение числа жил и сечения. Какое исполнение необходимо, без мощности, заводской схемы и расчёта не установлено; фактическая перегрузка или недостаточность сечения не доказаны.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+        "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+        "bytes": 348485,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "heading": "### BLOCK #226 [TEXT]: blk_c63456cda51644db9470fb57f29b27de",
+          "start": 393942,
+          "end": 396424,
+          "sha256": "7938d16e802cb533ab671403bd96f81c1106e64b80990454535aece2964aa435",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-078",
+      "pointer": "/block_analyses/30/findings/1",
+      "original_candidate": {
+        "id": "G-078",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable_specification",
+        "finding": "Для кабеля По5.1-9 к электронагревателю схема внешних подключений ШАУВ-6-К5ПЧ, лист 35, задаёт ППГнг(А)-HF 3×2,5, а кабельный журнал, лист 19, — ППГнг(А)-HF 4×4,0. Число жил и сечение одного кабеля заданы противоречиво.\n\nРекомендация: Уточнить кабель по параметрам электронагревателя и согласовать схему, кабельный журнал и ведомость кабелей.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_065a335469904b2db1640b480b321503",
+        "value_found": "По5.1-9; ППГнг(А)-HF 3x2,5; L=10м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-078",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:005",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания фиксируют для По5.1-9 расхождение: ППГнг(А)-HF 3×2,5 на схеме и 4×4,0 в кабельном журнале.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cable_construction_conflict",
+      "reason": "Лист 35: линия По5.1-9 в колонке электронагревателя По5.1 подписана ППГнг(А)-HF 3х2,5 длиной 10 м и показана к L,N,PE. Авторитетный TEXT журнала листа 19 для той же линии и нагревателя содержит ППГнг(A)-HF 4х4,0, 10 м. Подтверждено расхождение числа жил и сечения. Какое исполнение необходимо, без мощности, заводской схемы и расчёта не установлено; фактическая перегрузка или недостаточность сечения не доказаны.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+        "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+        "bytes": 348485,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "heading": "### BLOCK #226 [TEXT]: blk_c63456cda51644db9470fb57f29b27de",
+          "start": 393942,
+          "end": 396424,
+          "sha256": "7938d16e802cb533ab671403bd96f81c1106e64b80990454535aece2964aa435",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-079",
+      "pointer": "/block_analyses/30/findings/2",
+      "original_candidate": {
+        "id": "G-079",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "Кабель Вос5.1-1 на схеме внешних подключений ШАУВ-6-К5ПЧ, лист 35, подключён к PDS5, а в кабельном журнале, лист 19, его конечным устройством указан PDS45. Обозначения конечного устройства одной линии различаются.\n\nРекомендация: Согласовать обозначение датчика перепада давления для кабеля Вос5.1-1 в схеме и кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_065a335469904b2db1640b480b321503",
+        "value_found": "PDS5; Вос5.1-1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-079",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:007",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_sensor_identity_conflict",
+      "reason": "Лист 35: линия По5.1-1 прослежена к датчику TE2 приточного воздуха По5.1, тогда как журнал листа 19 указывает ТЕ1; линия Вос5.1-1 прослежена к PDS5 на вентиляторе Вос5.1, тогда как журнал указывает PDS45. G-079 подтверждён в части PDS, G-080 в части TE, составной G-081 в обеих частях. Связь определена по маркировке каждой линии и шкафу ШАУВ-6-К5ПЧ; исправление одного документа за счёт другого без согласования не выполнено.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+        "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+        "bytes": 348485,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "heading": "### BLOCK #226 [TEXT]: blk_c63456cda51644db9470fb57f29b27de",
+          "start": 393942,
+          "end": 396424,
+          "sha256": "7938d16e802cb533ab671403bd96f81c1106e64b80990454535aece2964aa435",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-080",
+      "pointer": "/block_analyses/30/findings/3",
+      "original_candidate": {
+        "id": "G-080",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "Кабель По5.1-1 на схеме внешних подключений ШАУВ-6-К5ПЧ, лист 35, подключён к датчику TE2, а в кабельном журнале, лист 19, его конечным устройством указан ТЕ1. Обозначение датчика для одной линии не согласовано.\n\nРекомендация: Установить единое обозначение датчика на схеме и в кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_065a335469904b2db1640b480b321503",
+        "value_found": "TE2; По5.1-1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-080",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:006",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "extension",
+          "role": "base",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания фиксируют TE2 / ТЕ1 для По5.1-1; левое дополнительно содержит расхождение PDS5 / PDS45 для Вос5.1-1.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_sensor_identity_conflict",
+      "reason": "Лист 35: линия По5.1-1 прослежена к датчику TE2 приточного воздуха По5.1, тогда как журнал листа 19 указывает ТЕ1; линия Вос5.1-1 прослежена к PDS5 на вентиляторе Вос5.1, тогда как журнал указывает PDS45. G-079 подтверждён в части PDS, G-080 в части TE, составной G-081 в обеих частях. Связь определена по маркировке каждой линии и шкафу ШАУВ-6-К5ПЧ; исправление одного документа за счёт другого без согласования не выполнено.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+        "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+        "bytes": 348485,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "heading": "### BLOCK #226 [TEXT]: blk_c63456cda51644db9470fb57f29b27de",
+          "start": 393942,
+          "end": 396424,
+          "sha256": "7938d16e802cb533ab671403bd96f81c1106e64b80990454535aece2964aa435",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-081",
+      "pointer": "/block_analyses/30/findings/4",
+      "original_candidate": {
+        "id": "G-081",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "device_identification",
+        "finding": "Обозначения конечных приборов двух кабелей расходятся между схемой внешних подключений ШАУВ-6-К5ПЧ, лист 35, и кабельным журналом, лист 19: По5.1-1 подключён к TE2 на схеме и к ТЕ1 в журнале; Вос5.1-1 — к PDS5 на схеме и к PDS45 в журнале.\n\nРекомендация: Согласовать позиционные обозначения датчиков на схеме и в соответствующих строках кабельного журнала.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_065a335469904b2db1640b480b321503",
+        "value_found": "По5.1-1: TE2 / ТЕ1; Вос5.1-1: PDS5 / PDS45",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-081",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:003",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "extension",
+          "role": "extends",
+          "counterpart_refs": [
+            "codex:006"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания фиксируют TE2 / ТЕ1 для По5.1-1; левое дополнительно содержит расхождение PDS5 / PDS45 для Вос5.1-1.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_sensor_identity_conflict",
+      "reason": "Лист 35: линия По5.1-1 прослежена к датчику TE2 приточного воздуха По5.1, тогда как журнал листа 19 указывает ТЕ1; линия Вос5.1-1 прослежена к PDS5 на вентиляторе Вос5.1, тогда как журнал указывает PDS45. G-079 подтверждён в части PDS, G-080 в части TE, составной G-081 в обеих частях. Связь определена по маркировке каждой линии и шкафу ШАУВ-6-К5ПЧ; исправление одного документа за счёт другого без согласования не выполнено.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+        "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+        "bytes": 348485,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "heading": "### BLOCK #226 [TEXT]: blk_c63456cda51644db9470fb57f29b27de",
+          "start": 393942,
+          "end": 396424,
+          "sha256": "7938d16e802cb533ab671403bd96f81c1106e64b80990454535aece2964aa435",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-082",
+      "pointer": "/block_analyses/30/findings/5",
+      "original_candidate": {
+        "id": "G-082",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "power_supply",
+        "finding": "На схеме внешних подключений ШАУВ-6-К5ПЧ, лист 35, ввод питания обозначен 380 В, однако показано подключение только L, N и PE. Указанное напряжение ввода противоречит изображённой схеме подключения.\n\nРекомендация: Согласовать напряжение и схему подключения ввода с проектом электроснабжения и исполнением шкафа.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_065a335469904b2db1640b480b321503",
+        "value_found": "Ввод эл.питания кат. 2, 2.0 кВт, 380В; L, N, PE",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-082",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:004"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на противоречие между напряжением ввода 380 В и подключением L, N, PE.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_supply_label_terminal_conflict",
+      "reason": "Лист 35: заголовок ввода содержит 380 В, кат.2, 2,0 кВт; внизу этой же линии изображены L,N,PE (L через Q1, N и PE на X1). Подтверждено противоречие подписи ввода и показанной однофазной схемы в проектном контексте. Реальное напряжение, заводское исполнение шкафа и решение раздела ЭМ не проверены; нельзя автоматически заменить ввод на трёхфазный или переписать напряжение.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+        "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+        "bytes": 348485,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-083",
+      "pointer": "/block_analyses/30/findings/6",
+      "original_candidate": {
+        "id": "G-083",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "power_supply",
+        "finding": "На схеме внешних подключений ШАУВ-6-К5ПЧ, лист 35, ввод питания обозначен 380 В, но подключение показано к клеммам L, N, PE, соответствующим однофазному питанию. Обозначение напряжения противоречит показанной схеме ввода.\n\nРекомендация: Согласовать напряжение и схему подключения ввода с проектом электроснабжения и исполнением шкафа.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_065a335469904b2db1640b480b321503",
+        "value_found": "Ввод эл.питания кат. 2, 2.0 кВт, 380В; L, N, PE",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-083",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:004",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на противоречие между напряжением ввода 380 В и подключением L, N, PE.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_supply_label_terminal_conflict",
+      "reason": "Лист 35: заголовок ввода содержит 380 В, кат.2, 2,0 кВт; внизу этой же линии изображены L,N,PE (L через Q1, N и PE на X1). Подтверждено противоречие подписи ввода и показанной однофазной схемы в проектном контексте. Реальное напряжение, заводское исполнение шкафа и решение раздела ЭМ не проверены; нельзя автоматически заменить ввод на трёхфазный или переписать напряжение.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+        "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+        "bytes": 348485,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-084",
+      "pointer": "/block_analyses/31/findings/0",
+      "original_candidate": {
+        "id": "G-084",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity",
+        "finding": "На листе 36 ведомость предусматривает 700 м кабеля ППГнг(А)-HF 4×2,5, тогда как сумма длин на схеме составляет 730 м: 2×20 + 2×330 + 2×15. Не учтены 30 м кабелей между шкафом ШАУВ-1-К5АС.ПЧ и двигателями М2, М3.\n\nРекомендация: Увеличить количество кабеля ППГнг(А)-HF 4×2,5 в ведомости до 730 м с учетом двух участков от шкафа преобразователей частоты до двигателей.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_397f9663589b40bfbde9b898e99e5117",
+        "value_found": "ППГнг(А)-HF 4x2,5; L=15м; L=15м; ведомость: 700 м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-084",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковый недоучет 30 м кабеля ППГнг(А)-HF 4×2,5: два участка по 15 м от ШАУВ-1-К5АС.ПЧ до М2 и М3. Требуемое количество — 730 м вместо 700 м; арифметическая расшифровка справа не добавляет существенной детализации.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cable_total_missing_distinct_segments",
+      "reason": "Лист 36: ППГнг(А)-HF 4х2,5 к M1 и M5 показан по 20 м; два ввода Ва4.1-3ПЧ и Ва4.1-4ПЧ в ШАУВ-1-К5АС.ПЧ — по 330 м; два самостоятельных выхода этого шкафа к M2 и M3 — по 15 м. Выходы отделены клеммами промежуточного шкафа и не являются вторыми подписями тех же вводов. Сумма 2×20+2×330+2×15=730 м; ведомость TEXT содержит 700 м. Подтверждено документное расхождение 30 м. Обязательство отдельной закупки этих участков и фактическая недопоставка не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_397f9663589b40bfbde9b898e99e5117.png",
+        "sha256": "96df1986c5929c97c62369499fd26e3a7eb38071d3066a995f0aff8684fc9893",
+        "bytes": 652891,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+          "heading": "### BLOCK #127 [TEXT]: blk_96a99d46f82645bebdf992507a3e3ec6",
+          "start": 208813,
+          "end": 209876,
+          "sha256": "5f453ea726ab6c1a37d3398a2fb4a03a1b69efc187026c6d6adf28c9a49397ff",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    },
+    {
+      "source_id": "G-085",
+      "pointer": "/block_analyses/31/findings/1",
+      "original_candidate": {
+        "id": "G-085",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity",
+        "finding": "На листе 36 в ведомости указано 700 м кабеля ППГнг(А)-HF 4×2,5 мм², тогда как суммарная длина показанных линий составляет 730 м. Не учтены 30 м двух участков от шкафа частотных преобразователей до двигателей М2 и М3.\n\nРекомендация: Согласовать ведомость со схемой, включив два участка по 15 м и увеличив количество кабеля до 730 м.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_397f9663589b40bfbde9b898e99e5117",
+        "value_found": "ППГнг(А)-HF 4x2,5; L=15м — два участка; ведомость: 700 м.",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-085",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковый недоучет 30 м кабеля ППГнг(А)-HF 4×2,5: два участка по 15 м от ШАУВ-1-К5АС.ПЧ до М2 и М3. Требуемое количество — 730 м вместо 700 м; арифметическая расшифровка справа не добавляет существенной детализации.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "assessment": "confirmed_graphic_text_cable_total_missing_distinct_segments",
+      "reason": "Лист 36: ППГнг(А)-HF 4х2,5 к M1 и M5 показан по 20 м; два ввода Ва4.1-3ПЧ и Ва4.1-4ПЧ в ШАУВ-1-К5АС.ПЧ — по 330 м; два самостоятельных выхода этого шкафа к M2 и M3 — по 15 м. Выходы отделены клеммами промежуточного шкафа и не являются вторыми подписями тех же вводов. Сумма 2×20+2×330+2×15=730 м; ведомость TEXT содержит 700 м. Подтверждено документное расхождение 30 м. Обязательство отдельной закупки этих участков и фактическая недопоставка не проверены.",
+      "image_evidence": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_397f9663589b40bfbde9b898e99e5117.png",
+        "sha256": "96df1986c5929c97c62369499fd26e3a7eb38071d3066a995f0aff8684fc9893",
+        "bytes": 652891,
+        "inspection": "direct visual inspection of original stored IMAGE crop"
+      },
+      "text_evidence": [
+        {
+          "block_id": "blk_96a99d46f82645bebdf992507a3e3ec6",
+          "heading": "### BLOCK #127 [TEXT]: blk_96a99d46f82645bebdf992507a3e3ec6",
+          "start": 208813,
+          "end": 209876,
+          "sha256": "5f453ea726ab6c1a37d3398a2fb4a03a1b69efc187026c6d6adf28c9a49397ff",
+          "authority": "prepared Markdown TEXT"
+        }
+      ],
+      "historical_engineer_mapping": "pending",
+      "physical_installation_verified": false
+    }
+  ],
+  "production_acceptance": false
+}
