@@ -322,7 +322,7 @@
       "hypothesis": "H04",
       "kind": "positive_controls",
       "original_control": "КМ: сохранять повторыОГМ22/25 и вопрос о сомнительных количествах.",
-      "evidence_state": "partial_control_pending_quantity_question",
+      "evidence_state": "bounded_quantity_control_released_profile_disputed",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_quantity_provenance_assessment.json",
@@ -347,6 +347,14 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/assessment.json",
           "sha256": "e109f3e299c3423af0d8b8346bf2e50e33b824b2f4308f876656627e9ca93a71"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_final_check_pair_evidence/assessment.json",
+          "sha256": "6201e65f8e9903f8ce7c7cc898882f986bf1634743bf23c4dc6fa14ebbf3f137"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_citation_completion_evidence/assessment.json",
+          "sha256": "8206373b7864907c4233b47e114c9a90a78085b55980c67168b4b13ba60b47d8"
         }
       ],
       "full_acceptance_proven": false
@@ -707,12 +715,12 @@
     "bounded_facts_recorded_F032_routing_disputed": 1,
     "bounded_inventory_identity_control": 1,
     "bounded_known_candidate_control": 1,
+    "bounded_quantity_control_released_profile_disputed": 1,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
     "partial_GVS_conflict_reported_pipe_and_pump_scope_pending": 1,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
-    "partial_control_pending_quantity_question": 1,
     "partial_instance_identity_question_preserved": 1,
     "synthetic_contract_only": 1
   },
