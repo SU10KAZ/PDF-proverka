@@ -263,15 +263,29 @@
       "finding_id": "F-021",
       "problem": "Нормативное основание уставок СО требует актуализации и проверки применимости.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "source_text_checked_normative_basis_unverified",
+      "engineer_decision": null,
+      "review_reason": "Авторитетный пункт6 действительно содержит пороги20/100мг/м³ и ссылку ГН2.2.5.1313-03. Там прямо различены предупредительный и аварийный сигналы; трактовка100мг/м³ как разрешённой постоянной концентрации не следует из проекта. Однако сообщение «предыдущий анализ сообщает об утрате силы» не сопровождено первичным нормативным источником и не является доказательством. В рамках данной проверки установлена точность цитирования проекта, но официальный статус документа и применимость порогов к дате проекта не проверены. Сохранить ограниченный вопрос о нормативном обосновании, убрать ссылку на непроверенный предыдущий анализ из пользовательского текста либо подкрепить её официальным источником. Не учитывать как подтверждённое нарушение или технически ложную находку.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_normative_reference_evidence_limits_20261112.json",
+        "sha256": "fc82f48454a8241f9e5a0e32d3486a913c0bc54e2c0bfee62306ac322e2c208f"
+      },
+      "source_review_complete_for_published_claims": true,
+      "normative_compliance_verified": false
     },
     {
       "finding_id": "F-022",
       "problem": "Две нормативные ссылки не позволяют однозначно определить документ.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "source_text_checked_normative_basis_unverified",
+      "engineer_decision": null,
+      "review_reason": "Авторитетные общие указания буквально содержат ГОСТ21.4.08-2013 и название правил документации автоматизации; пункт6 содержит1,5м и ссылку ТУ-газ-86 без полного наименования. Эти наблюдения подтверждены, текст не исправлялся по растру. Идентификация правильного ГОСТ, юридическая применимость ТУ и руководство конкретного сигнализатора этой проверкой не установлены. Решение допускает исправление только после идентификации, не назначает иную высоту. Оставить в вопросах об уточнении реквизитов; не считать высоту1,5м технической ошибкой и не переносить её как универсальное ограничение.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_normative_reference_evidence_limits_20261112.json",
+        "sha256": "fc82f48454a8241f9e5a0e32d3486a913c0bc54e2c0bfee62306ac322e2c208f"
+      },
+      "source_review_complete_for_published_claims": true,
+      "normative_compliance_verified": false
     },
     {
       "finding_id": "F-023",
@@ -1093,14 +1107,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 79,
-  "unchecked": 6,
+  "reviewed": 81,
+  "unchecked": 4,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 79,
-  "unchecked_findings": 6
+  "reviewed_findings": 81,
+  "unchecked_findings": 4
 }

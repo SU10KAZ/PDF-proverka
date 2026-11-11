@@ -1,0 +1,49 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-021",
+      "status": "source_text_checked_normative_basis_unverified",
+      "review_reason": "Авторитетный пункт6 действительно содержит пороги20/100мг/м³ и ссылку ГН2.2.5.1313-03. Там прямо различены предупредительный и аварийный сигналы; трактовка100мг/м³ как разрешённой постоянной концентрации не следует из проекта. Однако сообщение «предыдущий анализ сообщает об утрате силы» не сопровождено первичным нормативным источником и не является доказательством. В рамках данной проверки установлена точность цитирования проекта, но официальный статус документа и применимость порогов к дате проекта не проверены. Сохранить ограниченный вопрос о нормативном обосновании, убрать ссылку на непроверенный предыдущий анализ из пользовательского текста либо подкрепить её официальным источником. Не учитывать как подтверждённое нарушение или технически ложную находку.",
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "start": 34947,
+          "end": 40660,
+          "sha256": "d4fa665b1a4da6d83aa4684da1e02c6e967c46a3f8d0e85130c8d406dc2cd2b6"
+        }
+      ],
+      "engineer_decision": null,
+      "normative_compliance_verified": false,
+      "recommended_section": "questions",
+      "remaining_evidence_gap": "Official normative identification/status and applicability at project date not established; no technical violation credit."
+    },
+    {
+      "finding_id": "F-022",
+      "status": "source_text_checked_normative_basis_unverified",
+      "review_reason": "Авторитетные общие указания буквально содержат ГОСТ21.4.08-2013 и название правил документации автоматизации; пункт6 содержит1,5м и ссылку ТУ-газ-86 без полного наименования. Эти наблюдения подтверждены, текст не исправлялся по растру. Идентификация правильного ГОСТ, юридическая применимость ТУ и руководство конкретного сигнализатора этой проверкой не установлены. Решение допускает исправление только после идентификации, не назначает иную высоту. Оставить в вопросах об уточнении реквизитов; не считать высоту1,5м технической ошибкой и не переносить её как универсальное ограничение.",
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+          "start": 11959,
+          "end": 15800,
+          "sha256": "bbd027fd875ce15ce83e2832ea389f395abee7a11230a094984457a7109d4298"
+        },
+        {
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "start": 34947,
+          "end": 40660,
+          "sha256": "d4fa665b1a4da6d83aa4684da1e02c6e967c46a3f8d0e85130c8d406dc2cd2b6"
+        }
+      ],
+      "engineer_decision": null,
+      "normative_compliance_verified": false,
+      "recommended_section": "questions",
+      "remaining_evidence_gap": "Official normative identification/status and applicability at project date not established; no technical violation credit."
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false,
+  "review_scope": "Published-claim evidence assessment, not legal or normative compliance determination."
+}
