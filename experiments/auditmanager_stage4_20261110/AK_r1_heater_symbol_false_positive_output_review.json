@@ -1,0 +1,281 @@
+{
+  "status": "heater_symbol_false_positive_refuted",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "a468474be3f34715b07f53c1301a2222873396db0ed5a2646ef13136f865ccb0",
+  "queue_after_sha256": "8336846533155c728baaa9ced788ca98b4dbf57e91e468840ae16032b54e7524",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_shape_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-051",
+      "finding": {
+        "id": "F-051",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Условные обозначения",
+        "sheet": "Лист 21",
+        "page": 25,
+        "problem": "Водяной нагреватель Пкр6.1 обозначен символом электрического.",
+        "description": "Легенда определяет применённый символ как секцию электрического нагревателя. Схема при этом содержит теплоснабжение 85/60 °C, насос М4 и регулирующий клапан Y3, то есть водяное исполнение.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить однозначность изображения технологического оборудования и поясняющих обозначений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-047"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-047"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Привести символ нагревателя и легенду к фактическому водяному исполнению.",
+        "risk": "Неверная трактовка вида нагрева и требуемых цепей управления.",
+        "source_finding_ids": [
+          "G-047"
+        ],
+        "source_block_ids": [
+          "blk_7785cb8293734c16b18fc1aff53c761f"
+        ],
+        "related_block_ids": [
+          "blk_7785cb8293734c16b18fc1aff53c761f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+            "page": 25
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-047",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Рабочая схемаПкр6.1 содержит контур85/60°C, насосМ4 и клапанY3; перечень относитМ4 кнасосу иУ3 ксмесительному узлу.",
+          "verdict": "confirmed_authoritative_TEXT_direct_GRAPHIC",
+          "limits": ""
+        },
+        {
+          "claim": "На рабочей схеме применён тот же символ, что легенда называет электрическим нагревателем.",
+          "verdict": "refuted_direct_GRAPHIC_shape_comparison",
+          "limits": "В рабочем ромбе справа плавная волнистая линия; в легенде электрического нагревателя справа знак молнии. При увеличении они различаются."
+        },
+        {
+          "claim": "Водяной нагреватель обозначен электрическим и символ требуется заменить.",
+          "verdict": "refuted_as_stated",
+          "limits": "Вывод основан на ложном тождестве двух символов. Не требовать замены корректного водяного узла по этому замечанию."
+        },
+        {
+          "claim": "Легенда на листе содержит электрический нагреватель.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Сам факт наличия такого условного обозначения не доказывает неверное исполнение нагревателя в рабочей схеме."
+        },
+        {
+          "claim": "Ошибочно выбран вид нагрева и требуемые цепи управления.",
+          "verdict": "not_established",
+          "limits": "Водяной контур показан явно. Аппаратное исполнение и монтаж не исследованы."
+        },
+        {
+          "claim": "Нарушен ГОСТ21.408-2013.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; нормативное нарушение не установлено."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "no_new_defect_symbol_identity_refuted",
+      "duplicate_burden": "One false graphical equivalence; do not replace with invented heating design defect.",
+      "profile_and_section": "excluded_refuted_technical_claim",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F050_heater_legend_identity.json",
+          "sha256": "f316e24040e8fd1ffc2a9d7fa9bcf2e56cc64e483684d014745f7f825ce3e5fe",
+          "primary_adjudication": null,
+          "limits": [
+            "Подпись электрического нагревателя в легенде проверена по авторитетному TEXT; сравнение начертания выполнено по GRAPHIC, без исправления TEXT.",
+            "Наличие в легенде дополнительного символа само по себе не доказывает неверное обозначение рабочего оборудования. Требование обязательной полноты или исключения неиспользуемых символов здесь нормативно не проверено.",
+            "НасосM4 и клапанУ3 перечня отнесены к ОВ1.2-ПА; сам смежный комплект, заказ и монтаж не проверены.",
+            "Этот редакционный вопрос не считать техническим дефектом или подтверждённой ошибкой выбора оборудования."
+          ],
+          "wording": "Редакционное уточнение листа21: проверить состав условных обозначений. Легенда содержит электрический нагреватель, тогда как показанная секция Пкр6.1 имеет контур теплоснабжения85/60°C. Символы различаются; ошибочный тип нагревателя или необходимость замены рабочего символа не установлены."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+          "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+          "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Actual heater right-hand wave differs from lightning glyph in electrical-heater legend; water85/60°C connections shown."
+        },
+        {
+          "path": "/tmp/ak_heater_detail.png",
+          "sha256": "2eb2693578e5512a38c5984f30ff0e195a1727e2b9dfb157a46f4ed9ef161cfc",
+          "route": "GRAPHIC_crop_enlarged_for_inspection",
+          "parent_block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "crop_box_pixels": [
+            500,
+            180,
+            600,
+            275
+          ],
+          "scale": 3,
+          "limits": "Source checked at original resolution as well; enlargement not used to alter authoritative TEXT."
+        },
+        {
+          "path": "/tmp/ak_legend_detail.png",
+          "sha256": "d17d4adc5c0997fb573f24278e06d99e51e7da34efe57a2a754ec583a91bcba9",
+          "route": "GRAPHIC_crop_enlarged_for_inspection",
+          "parent_block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "crop_box_pixels": [
+            1290,
+            940,
+            1505,
+            1000
+          ],
+          "scale": 3,
+          "limits": "Source checked at original resolution as well; enlargement not used to alter authoritative TEXT."
+        }
+      ],
+      "disposition": "assessed_refuted_heater_symbol_equivalence_remove"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+      "authoritative_TEXT": "### BLOCK #77 [TEXT]: blk_a4846024d95044a09f7a24d76da41c31\n\n> **Created:** 2026-09-28 07:28:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/325PakIrroDWBxM_v3bR)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 21 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточная система Пкр6.1, вытяжная система Вм6.1. Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обозн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-H2/Pt | 1 |  |\n| ТЕ3 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-K2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| PDS1, PDS4 | Датчик давления дифференциальный 50-500 Па | 2 |  |\n| PDS2, PDS3 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| У1 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В DA5FU230-DS | 1 |  |\n| У2 | Электропривод воздушной заслонки | 1 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| У3 | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M3 | Электродвигатель вентилятора | 3 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| M4 | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 1 |  |\n| SC UZ1, SC UZ3 | Преобразователь частоты 5,5 кВт 380В, E5-MINI-007H | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+      "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+      "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Actual heater right-hand wave differs from lightning glyph in electrical-heater legend; water85/60°C connections shown."
+    },
+    {
+      "path": "/tmp/ak_heater_detail.png",
+      "sha256": "2eb2693578e5512a38c5984f30ff0e195a1727e2b9dfb157a46f4ed9ef161cfc",
+      "route": "GRAPHIC_crop_enlarged_for_inspection",
+      "parent_block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+      "crop_box_pixels": [
+        500,
+        180,
+        600,
+        275
+      ],
+      "scale": 3,
+      "limits": "Source checked at original resolution as well; enlargement not used to alter authoritative TEXT."
+    },
+    {
+      "path": "/tmp/ak_legend_detail.png",
+      "sha256": "d17d4adc5c0997fb573f24278e06d99e51e7da34efe57a2a754ec583a91bcba9",
+      "route": "GRAPHIC_crop_enlarged_for_inspection",
+      "parent_block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+      "crop_box_pixels": [
+        1290,
+        940,
+        1505,
+        1000
+      ],
+      "scale": 3,
+      "limits": "Source checked at original resolution as well; enlargement not used to alter authoritative TEXT."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F050_heater_legend_identity.json",
+      "sha256": "f316e24040e8fd1ffc2a9d7fa9bcf2e56cc64e483684d014745f7f825ce3e5fe",
+      "primary_adjudication": null,
+      "limits": [
+        "Подпись электрического нагревателя в легенде проверена по авторитетному TEXT; сравнение начертания выполнено по GRAPHIC, без исправления TEXT.",
+        "Наличие в легенде дополнительного символа само по себе не доказывает неверное обозначение рабочего оборудования. Требование обязательной полноты или исключения неиспользуемых символов здесь нормативно не проверено.",
+        "НасосM4 и клапанУ3 перечня отнесены к ОВ1.2-ПА; сам смежный комплект, заказ и монтаж не проверены.",
+        "Этот редакционный вопрос не считать техническим дефектом или подтверждённой ошибкой выбора оборудования."
+      ],
+      "wording": "Редакционное уточнение листа21: проверить состав условных обозначений. Легенда содержит электрический нагреватель, тогда как показанная секция Пкр6.1 имеет контур теплоснабжения85/60°C. Символы различаются; ошибочный тип нагревателя или необходимость замены рабочего символа не установлены."
+    }
+  ],
+  "limits": [
+    "False glyph equivalence refuted; no blanket suppression of actual legend conflicts proposed.",
+    "No confirmed positive control for this exact symbol-confusion filter established in this receipt.",
+    "Frozen evaluator, independent inputs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
