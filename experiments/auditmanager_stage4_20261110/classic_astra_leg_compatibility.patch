@@ -1,0 +1,94 @@
+diff --git a/backend/app/pipeline/stages/block_analysis/dual_review.py b/backend/app/pipeline/stages/block_analysis/dual_review.py
+index 595a4064..d7685c88 100644
+--- a/backend/app/pipeline/stages/block_analysis/dual_review.py
++++ b/backend/app/pipeline/stages/block_analysis/dual_review.py
+@@ -112,10 +112,31 @@ def _side_list(spec: Any) -> list[str]:
+ 
+ 
+ def _on_side(finding: dict, spec: Any) -> bool:
+-    return str(finding.get("_detector_model") or "") in _side_list(spec)
++    return str(finding.get("_detector_comparison_id") or finding.get("_detector_model") or "") in _side_list(spec)
++
++
++def _comparison_sides(findings, comparison_models):
++    """Separate repeated model runs only when executor-owned leg IDs exist.
++
++    Labels are comparison identities, never provider model overrides. Legacy
++    same-model findings without leg provenance remain ambiguous and fail closed.
++    """
++    if (isinstance(comparison_models, list) and len(comparison_models) == 2
++            and all(isinstance(v, str) for v in comparison_models)
++            and comparison_models[0] == comparison_models[1]):
++        model = comparison_models[0]
++        sides = [f"{model}::leg:1", f"{model}::leg:2"]
++        if any(f.get('_detector_model') != model
++               or f.get('_detector_comparison_id') not in sides for f in findings):
++            raise ValueError('Repeated model comparison requires executor-owned leg identities')
++        return sides
++    return comparison_models
+ 
+ 
+ def _model_label(model: str) -> str:
++    if '::leg:' in model:
++        base, leg = model.rsplit('::leg:', 1)
++        return f"{_model_label(base)} (ветвь {leg})"
+     if model in _MODEL_LABELS:
+         return _MODEL_LABELS[model]
+     lowered = model.lower()
+@@ -313,6 +334,7 @@ def normalize_review_payload(
+ ) -> dict[str, Any]:
+     """Validate reviewer JSON and derive complete per-finding annotations."""
+     ensure_detector_refs(findings)
++    comparison_models = _comparison_sides(findings, comparison_models)
+     payload = payload if isinstance(payload, dict) else {}
+     by_ref = {
+         str(item.get("_detector_ref")): item
+@@ -567,6 +589,7 @@ async def review_single_findings(
+     оставляет находки детектора как есть (fail-soft).
+     """
+     working = ensure_detector_refs([dict(item) for item in findings if isinstance(item, dict)])
++    comparison_models = _comparison_sides(working, comparison_models)
+     try:
+         max_context_chars = max(
+             1000,
+@@ -633,6 +656,7 @@ def fallback_dual_review(
+ ) -> dict[str, Any]:
+     """Return a complete fail-soft review result without another model call."""
+     working = ensure_detector_refs([dict(item) for item in findings if isinstance(item, dict)])
++    comparison_models = _comparison_sides(working, comparison_models)
+     normalized = normalize_review_payload(
+         _fallback_payload(working, comparison_models),
+         working,
+@@ -688,6 +712,7 @@ async def review_dual_findings(
+     from backend.app.services.llm.codex_runner import run_codex_json_messages
+ 
+     working = ensure_detector_refs([dict(item) for item in findings if isinstance(item, dict)])
++    comparison_models = _comparison_sides(working, comparison_models)
+     try:
+         max_context_chars = max(
+             1000,
+diff --git a/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py b/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py
+index 13eb4d39..8c6abc17 100644
+--- a/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py
++++ b/backend/app/pipeline/stages/block_analysis/gemma_findings_only.py
+@@ -2490,7 +2490,11 @@ def combine_detector_results(
+     paid_cached_output_tokens = 0
+ 
+     _ref_offsets: dict[str, int] = {}
++    model_counts = {model: sum(m == model for m, _ in detector_results) for model, _ in detector_results}
++    model_occurrences: dict[str, int] = {}
+     for detector_model, result in detector_results:
++        model_occurrences[detector_model] = model_occurrences.get(detector_model, 0) + 1
++        comparison_id = f"{detector_model}::leg:{model_occurrences[detector_model]}"
+         _det_key = detector_for_model(detector_model)
+         _ref_base = _ref_offsets.get(_det_key, 0)
+         _last_ref_index = 0
+@@ -2504,6 +2508,8 @@ def combine_detector_results(
+                     continue
+                 tagged = dict(raw)
+                 tagged["_detector_model"] = detector_model
++                if model_counts[detector_model] > 1:
++                    tagged["_detector_comparison_id"] = comparison_id
+                 tagged["_detector_run_id"] = f"{run_id}:{_det_key}"
+                 tagged["_detector_ref"] = (
+                     f"{_det_key}:{_ref_base + raw_index:03d}"

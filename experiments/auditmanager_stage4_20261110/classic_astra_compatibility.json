@@ -1,0 +1,31 @@
+{
+  "status": "historical_source_with_shared_astra_leg_compatibility",
+  "root": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_compatible",
+  "historical_commit": "9076439437baf19aa5bb3c1e2ba55ff2642a7c78",
+  "original_files": 896,
+  "unchanged_files": 894,
+  "changed_files": [
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+      "before": "0a79cc5e883e4be5dbd2a4ee8d4a005a94ee11137fbe092c19603bdbfb5ef11a",
+      "after": "45c0db69e4b0905bf96781aaadd3a0e31b73a5affbdea8152ecfc7edde14535d"
+    },
+    {
+      "path": "backend/app/pipeline/stages/block_analysis/dual_review.py",
+      "before": "1e67664580b968f06a814ca52fb28365e291fe4504c6ba04407539b951fc06c1",
+      "after": "7e74d42dcbfb323377990a0b9278988356b3a5d162c21fc9e12efa4bd8a9e4f6"
+    }
+  ],
+  "patch": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/classic_astra_leg_compatibility.patch",
+  "patch_sha256": "902ab203367d444fe06419c2eb666426d9795968711bacb9f2bb3ded32c06173",
+  "compatibility_commit": "ae11b117",
+  "local_check": {
+    "import_root": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_compatible",
+    "findings_preserved": 2,
+    "matches": 1,
+    "model_calls": 0
+  },
+  "boundary": "Only common comparison-identity fix applied. Model/effort transport configuration and full run protocol remain to be frozen.",
+  "candidate_method_changes_applied_to_classic": false,
+  "comparison_started": false
+}
