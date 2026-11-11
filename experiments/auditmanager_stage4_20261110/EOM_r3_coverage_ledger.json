@@ -218,20 +218,44 @@
     },
     {
       "target_id": "EOM70_F008_consumer_power:d74160d19f75fda36950",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM70_F008_consumer_power.json",
+          "sha256": "4f491caf2dcbd75d1512da43f998abe388b1f23f0362d570367c25c0c8a59887"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-012"
+        }
+      ],
+      "reason": "ЩМ7/7Н:схема20,0 итаблица23,2 явно связаны; итог83,2 сохранён. Дополнительные площади и коэффициенты требуют отдельной оценки, не подтверждаются одним совпадением нагрузки.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "EOM76_B-EOM-F-012:8e69883d4dc84cb69b01",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-032"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM76_B-EOM-F-012.json",
+          "sha256": "b34a2943aefce4b68eb1a8ee496d4ef4c7645c11d945a2c2768827a8fd1c7f80"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-032"
+        }
+      ],
+      "reason": "2ЩСС1:восемь0,40 иодна0,20 дают3,4 против5,4; группы10–13 названы резервом без нагрузки. Подтверждён узкий конфликт итога, не отсутствие2кВт фактической нагрузки.",
       "section_assessment": "unchecked"
     },
     {
@@ -254,11 +278,23 @@
     },
     {
       "target_id": "EOM_F001_cable_description:e57af65ca85f5ab8075c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F001_cable_description.json",
+          "sha256": "905f1f26daecb1841c99b8c7c2a70103cf60d545a0bb95358d82e9267004b5e5"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-008"
+        }
+      ],
+      "reason": "Одна маркаППГнг(A)-HF сопоставлена:ПВХвобщих указаниях против полимерных композиций вСО. Фактическая поставка и пожарные свойства не установлены этим совпадением.",
       "section_assessment": "unchecked"
     },
     {
@@ -272,20 +308,56 @@
     },
     {
       "target_id": "EOM_F009_commercial_identity_supply:2c0ad71382f4e28b3853",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-029",
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json",
+          "sha256": "ce3785a0efeda80ba7dd010d463cb406632919a791bb99394e43c8cd472609c0"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-029"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-011"
+        }
+      ],
+      "reason": "Для10Н сохраненоЩМ10на схеме/ЩМ20втаблице. СвязаннаяF011 сохраняет9потребителей/7щитов, диапазон4–10 и неопределённость поставки2Н/3Н; это разные аспекты одной темы.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "EOM_F009_commercial_identity_supply:ceddc2904fb7fa5d39e4",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011",
+        "F-029"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json",
+          "sha256": "ce3785a0efeda80ba7dd010d463cb406632919a791bb99394e43c8cd472609c0"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-011"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-029"
+        }
+      ],
+      "reason": "Девять2Н–10Н противсеми4Н–10Н явно названы, отсутствие2щитов не объявлено доказанным. СвязаннаяF029 содержит конфликтЩМ10/20; границы поставки остаются вопросом.",
       "section_assessment": "unchecked"
     },
     {
@@ -317,11 +389,23 @@
     },
     {
       "target_id": "EOM_F013_small_load_currents:4191d1c0f009a85947f9",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-033"
+      ],
+      "evidence": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/EOM_F013_small_load_currents.json",
+          "sha256": "91ce3dbd9625bde7420f0793438f84470d7631517c4677e3d72c2623203a6cb6"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672",
+          "finding_id": "F-033"
+        }
+      ],
+      "reason": "Обе нагрузкиЩМ4–10:0,20/0,10кВт,0,22кВ,cos0,90;условные1,01/0,51А против2,0/1,0явно названы. Запас и ошибка защиты не установлены; категоричность добавлений оценивать отдельно.",
       "section_assessment": "unchecked"
     },
     {
