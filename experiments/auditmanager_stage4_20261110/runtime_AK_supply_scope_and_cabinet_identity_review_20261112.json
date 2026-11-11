@@ -1,0 +1,63 @@
+{
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-077",
+      "status": "confirmed_scope_question",
+      "review_reason": "Графика непосредственно указывает питание БУРР-1М 220 В по 21/24-ГК-К5-ЭМ. Авторитетное примечание 2 относит питающие и межблочные кабели к 13АВ-РД-ЭМ-К5, с пояснением о внутренних и наружных блоках. Не установлено, относится ли примечание к БУРР-1М. Сохранение вопроса об области действия обосновано. Категоричный добавленный тезис о противоречии двух ссылок не должен публиковаться отдельно от следующего ограничения: технический дефект одной цепи не подтверждён.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+          "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+          "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+          "start": 236534,
+          "end": 237394,
+          "sha256": "d8348da7180e2f736b7c8b57339c50f4c09ae768499d969d17e44b553d226909"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    },
+    {
+      "finding_id": "F-084",
+      "status": "confirmed_document_conflict_with_stale_reference",
+      "review_reason": "На функциональной схеме непосредственно прочитано ШУ-ПД4.14; система рядом обозначена ПД4.1.4. На схеме подключений шкаф ЩУ-ПД4.1.4, к нему приходит ТЕ1 кабелем ПД4.1.4-1. Авторитетная строка КЖ связывает ТЕ1 (ПД 4.1.4) с ЩУ-ПД4.1.4 той же маркой кабеля. Расхождение обозначений одного шкафа подтверждено, ошибочное физическое подключение не доказано. Два упоминания F-036 в добавлениях — устаревшие внутренние ссылки: опубликованный F-036 относится к повтору SC UZ1, а не этому шкафу. При редактуре убрать или исправить ссылки, сохранив подтверждённое замечание.",
+      "direct_graphics": [
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+          "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+          "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+          "directly_viewed": true,
+          "detail": "original"
+        },
+        {
+          "path": "/tmp/auditmanager_primary_text_runtime_recovery_bound_20261112/work/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+          "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+          "sha256": "9f1c56a09670dc3bf5436ad8a321abef871308f8be8292c116e32b30cad1b5bb",
+          "directly_viewed": true,
+          "detail": "original"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "start": 430911,
+          "end": 432676,
+          "sha256": "6825b5ab5e54c91c7334d32faa0d1bb3fb659cdc9825daf4e3b2b15b55b428e7"
+        }
+      ],
+      "engineer_decision": null,
+      "physical_installation_verified": false
+    }
+  ],
+  "review_authority": "coordinator_source_review_not_engineer_acceptance",
+  "production_acceptance": false
+}

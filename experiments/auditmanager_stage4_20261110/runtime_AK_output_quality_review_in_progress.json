@@ -879,8 +879,14 @@
       "finding_id": "F-077",
       "problem": "Требуется уточнить применимость двух ссылок на электроснабжение на схеме согласователя кондиционеров.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_scope_question",
+      "engineer_decision": null,
+      "review_reason": "Графика непосредственно указывает питание БУРР-1М 220 В по 21/24-ГК-К5-ЭМ. Авторитетное примечание 2 относит питающие и межблочные кабели к 13АВ-РД-ЭМ-К5, с пояснением о внутренних и наружных блоках. Не установлено, относится ли примечание к БУРР-1М. Сохранение вопроса об области действия обосновано. Категоричный добавленный тезис о противоречии двух ссылок не должен публиковаться отдельно от следующего ограничения: технический дефект одной цепи не подтверждён.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_supply_scope_and_cabinet_identity_review_20261112.json",
+        "sha256": "f8d7706edb65f26589b8aa4d2a40c7cf291ed49f8a09ba1479560b43c4c53806"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-078",
@@ -939,8 +945,14 @@
       "finding_id": "F-084",
       "problem": "Обозначение шкафа системы ПД4.1.4 различается в функциональной схеме и документах подключения.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_with_stale_reference",
+      "engineer_decision": null,
+      "review_reason": "На функциональной схеме непосредственно прочитано ШУ-ПД4.14; система рядом обозначена ПД4.1.4. На схеме подключений шкаф ЩУ-ПД4.1.4, к нему приходит ТЕ1 кабелем ПД4.1.4-1. Авторитетная строка КЖ связывает ТЕ1 (ПД 4.1.4) с ЩУ-ПД4.1.4 той же маркой кабеля. Расхождение обозначений одного шкафа подтверждено, ошибочное физическое подключение не доказано. Два упоминания F-036 в добавлениях — устаревшие внутренние ссылки: опубликованный F-036 относится к повтору SC UZ1, а не этому шкафу. При редактуре убрать или исправить ссылки, сохранив подтверждённое замечание.",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_supply_scope_and_cabinet_identity_review_20261112.json",
+        "sha256": "f8d7706edb65f26589b8aa4d2a40c7cf291ed49f8a09ba1479560b43c4c53806"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-085",
@@ -955,14 +967,14 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 56,
-  "unchecked": 29,
+  "reviewed": 58,
+  "unchecked": 27,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 56,
-  "unchecked_findings": 29
+  "reviewed_findings": 58,
+  "unchecked_findings": 27
 }
