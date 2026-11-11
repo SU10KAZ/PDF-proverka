@@ -1,0 +1,32 @@
+{
+  "status": "derived_review_view_with_one_evaluator_correction",
+  "historical_queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "historical_queue_sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+  "corrected_view_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue_corrected_v1.json",
+  "corrected_view_sha256": "c50de94e7e323faf811da720ebb03ac42a32c1bf3b67ffb3da95760bf514ebc8",
+  "corrections": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-018",
+      "before": {
+        "claim": "Экспликация поз33 содержит самостоятельное числовое полеKvs40.",
+        "verdict": "not_explicit_in_checked_row",
+        "limits": "В строке экспликации присутствует маркаVF-3R-50-40;не подменять число в обозначении отдельным паспортным полем. ЧислоKv40явно подтвержденоПЗ."
+      },
+      "after": {
+        "claim": "Экспликация поз33 содержит самостоятельное числовое полеKvs40.",
+        "verdict": "confirmed_authoritative_TEXT_continuation_row",
+        "limits": "В продолжении позиции33 прямо указано Kvs=40 м3/ч, DN50 мм, PN25. Прежняя оценка ошибочно учитывала только первую строку. Это исправление проверяющего, не новая находка модели; фактическое исполнение клапана не установлено."
+      },
+      "source_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "source_sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+    }
+  ],
+  "metric_policy": "Use corrected view for repeat1 factual evaluation; apply the same source fact to all arms. Do not count evaluator-discovered context as model recall.",
+  "historical_sources_mutated": false,
+  "frozen_evaluator_mutated": false,
+  "runtime_mutated": false,
+  "model_calls": 0,
+  "production_acceptance": false
+}
