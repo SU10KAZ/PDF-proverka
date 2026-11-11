@@ -1,0 +1,236 @@
+{
+  "status": "open_engineering_and_source_questions_not_permission_requests",
+  "rows": [
+    {
+      "control_id": "H01-P02",
+      "original_control": "ЭОМ F001/F030/F032: сохранить релевантные источники и уточнённый смысл эталонного вопроса.",
+      "current_evidence_state": "bounded_facts_recorded_F032_routing_disputed",
+      "required_resolution": "Для F032 ЭОМ решить только профиль выдачи: технический конфликт входных площадей или малозначимый вопрос. Факты и неподтверждённые последствия оценивать раздельно.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F001_question_output_replay.json",
+          "sha256": "e1fbac27655c5eea5e250061071926bdcc22195b83bbc26522a52f8d4332920c"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F030_question_output_replay.json",
+          "sha256": "1e4c39094568c4570c1d18c5257256d70034021fea865738a6ea1e8282f12630"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F032_output_replay.json",
+          "sha256": "d5063f39edd4db71c21ff006e5f20d3c74bf317be2a06c4a18122e834a52b1a7"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F032_profile_disagreement.json",
+          "sha256": "371ed514ef02e39af40324d3cc6037d2db83166cea033155917855088fe50af3"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
+          "sha256": "461990a52660c28e36890b425475a2089bf768cae2196b46b341499913d513e6"
+        }
+      ],
+      "engineering_answer": null,
+      "independent_audit_executor_may_receive_this_file": false
+    },
+    {
+      "control_id": "H03-P02",
+      "original_control": "ЭОМ: различить отдельные блоки с одинаковой моделью и повторным позиционнымID.",
+      "current_evidence_state": "partial_instance_identity_question_preserved",
+      "required_resolution": "Установить физические цели двух выносок AJ068TXJ3KH/EA — К3.2.406 на листе18. Не считать два текста двумя блоками. Полезный вопрос уже сохранён.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_instance_question_output_replay.json",
+          "sha256": "05b3b07b56f9cec4747e0cafeee8fc1773d15d37aecafa9f1d418d0e9726a640"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_instance_followup2_validated.json",
+          "sha256": "9fb42c732555b4bc1169be1b5a700c328a20e6f75f59f8622db16b4584388e76"
+        }
+      ],
+      "engineering_answer": null,
+      "independent_audit_executor_may_receive_this_file": false
+    },
+    {
+      "control_id": "H04-P01",
+      "original_control": "ЭОМ: FRHF5×35 двух линий не закрывается строкойHF5×35.",
+      "current_evidence_state": "partial_cable_F051_released_F050_scope_deferred",
+      "required_resolution": "Для С2513/F050 подтвердить документальную связь схемы ЗОМ2-1 стадииР и спецификации ЭОМ2-1.СО той же редакции. F051 уже выпущен; это не закрывает F050.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_reviewed_cable_output_replay.json",
+          "sha256": "9269653c91279ebdcc3794c4e7e4cc8c6a4c4aa91b27e00488cec909cc846478"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_line_address_assessment.json",
+          "sha256": "9146758c9de228ed8d7ff7ea994a5cb3a3de8c5d719fe3a346e299ca599a142f"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_source_workflow_progress.json",
+          "sha256": "5c7dda0edb8427c82d61ff959cb9a891f56e4fdc1a4791fb10ac298ccd95da80"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_classic_grouping_replay.json",
+          "sha256": "0e4fda70c62c4529571d6b65c15b2f9db3ecc073107891e357044911225bb2a8"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_model_grouped_output_replay.json",
+          "sha256": "58893fd508c35bec348bb4b56b3542de6fc52350359e7a12019c33411fa7d637"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_grouping_phase_replay.json",
+          "sha256": "feac95abd09872c9e38d447eba0776d7c859367b6b21afd4a60670ac457e554f"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_group_source_review_evidence/assessment.json",
+          "sha256": "6257b31c818801e0a4ffc650aedad9c8466d423f71ecaf48c21293be8d1b2754"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_group_source_context_evidence/assessment.json",
+          "sha256": "b922f493ab930c42f2e11cc741525bbd310334a9bc1651eb983fb97a2ae5e189"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_f050_stamp_evidence/assessment.json",
+          "sha256": "bf12b5f43773742b7c9b3907280a54f365d66c18bbe0467dcae1242523be380a"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/eom_f051_released_evidence/assessment.json",
+          "sha256": "7fcb7a8738a41881633bce70b3bab162b8105310beedfbd0765c154bedee1daf"
+        }
+      ],
+      "engineering_answer": null,
+      "independent_audit_executor_may_receive_this_file": false
+    },
+    {
+      "control_id": "H04-P03",
+      "original_control": "КМ: сохранять повторыОГМ22/25 и вопрос о сомнительных количествах.",
+      "current_evidence_state": "bounded_quantity_control_released_profile_disputed",
+      "required_resolution": "Определить профиль замечания КМ F005 о неоднозначных количествах, сохранив подтверждённый смысл. Несогласие с профилем не означает ложность.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_quantity_provenance_assessment.json",
+          "sha256": "de36bf5a6cc10c3e648383203c3f5bc06c01b8f6bbf844670dc4aeb4e03fe3a6"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_repeated_instances_source_review.json",
+          "sha256": "e13f3983be53aa4452ae305e8cce41922e7b7b3f22f36f27dfcc8551f9d5f832"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_classic_overlap_review.json",
+          "sha256": "560d5261fea804e893697568d94be0f476a7a18a8838149a862afcbbce14b640"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_LK6_literal_quantity_trace.json",
+          "sha256": "16be4901fb47d533c17e6bcbdaec3c1b7e22080347351f59c93e10be19cc6ca0"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_complete_literal_quantity_trace.json",
+          "sha256": "aafdc71602181f6735d6f9d724f3c421eac55bb202a706449236c67fb3286ea7"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/assessment.json",
+          "sha256": "e109f3e299c3423af0d8b8346bf2e50e33b824b2f4308f876656627e9ca93a71"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_final_check_pair_evidence/assessment.json",
+          "sha256": "6201e65f8e9903f8ce7c7cc898882f986bf1634743bf23c4dc6fa14ebbf3f137"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_citation_completion_evidence/assessment.json",
+          "sha256": "8206373b7864907c4233b47e114c9a90a78085b55980c67168b4b13ba60b47d8"
+        }
+      ],
+      "engineering_answer": null,
+      "independent_audit_executor_may_receive_this_file": false
+    },
+    {
+      "control_id": "H05-P02",
+      "original_control": "ИТП: расходы ветвейГВС сопоставить с режимомК15; толщины3/3.5 связать с теми же участками.",
+      "current_evidence_state": "partial_GVS_reported_velocity_released_wall_not_emitted",
+      "required_resolution": "Для H-ITP-72 установить связь расчётной трубы76×3,0 и строки76×3,5 с тем же участком. Вопрос о стенке не найден в сырых кандидатах; потеря на фильтре не доказана. Выпуск отдельного расхождения скорости не заменяет этот контроль.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_GVS_combined_output_replay.json",
+          "sha256": "c5aad32971d83fd8c6f3e6c102f86fb96a2800e55b1048d2f401454be5a023e8"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_GVS_circulation_output_replay.json",
+          "sha256": "97acc69d9d197de0834fc243a0b3caffacd928d830bdfea5669571bb17ae51a4"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_gvs_graphic_window_assessment.json",
+          "sha256": "9455bbb51307a76c4cf8d5b01e7bd9d8d71d3c60fd8f30928ef86f63cacc5d40"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_pipe_graphic_window_assessment.json",
+          "sha256": "b629e0c2fb4c6181a79ef79849fd7fe988834a3e4cc40289fedde386502dfda1"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_automatic_regions_output_replay.json",
+          "sha256": "692ed7b04c6441340fdea6aa707e00ac2c15dbba78e6f38ad9ce369ad24cecf9"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_automatic_literal_output_replay.json",
+          "sha256": "e476592876418388b4bccae441446c5962ef70c9adbbaf638bcdad4254ee4bdd"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_pipe_candidate_trace.json",
+          "sha256": "70d390ab04f6709ba5eb0925daec64441111509e4d104dd01d0010a8764ac3c5"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_pipe_runtime_followup_evidence/assessment.json",
+          "sha256": "5065f5e7a71bb43d2b2499bdeceb091b46819812ef2130575a3e1a09d96aaa22"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_pipe_velocity_final_release_evidence/assessment.json",
+          "sha256": "17c9ce57630c066e9ac85da592d1fdf6b4880e81b939a83763c3843b2a54b245"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/itp_velocity_released_evidence/assessment.json",
+          "sha256": "a8c1d27de5cc789c33290738996b429562f7a0696541dd992bb7c217337785cb"
+        }
+      ],
+      "engineering_answer": null,
+      "independent_audit_executor_may_receive_this_file": false
+    },
+    {
+      "control_id": "H05-N01",
+      "original_control": "КМ F014: разные последовательные марши не одна деталь.",
+      "current_evidence_state": "disputed_after_independent_checks_identity_unresolved",
+      "required_resolution": "Для F014 КМ установить соответствие выноски ОГМ6 на плане листа5 конкретному маршу и разрезу. Неверное слово «площадка» не опровергает всю претензию. Повторные ответы моделей не дали надёжного соответствия.",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
+          "sha256": "461990a52660c28e36890b425475a2089bf768cae2196b46b341499913d513e6"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_adjacent_flights_validated.json",
+          "sha256": "6d2a7cdfafefb80c6043592c1c8603fa212be43a3a8cc218cb84150c07970655"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_readjudication_evidence/assessment.json",
+          "sha256": "28940f5cef55f377b54d4c48e48f3a2c10f1d69c9c8ed71ef4b6269bcfa846a4"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_claude_same_input_evidence/assessment.json",
+          "sha256": "d1943282efec86d5d25c48d0385c9c37d3b13510336ca53293f21b3dda582f9c"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_claude_same_input_evidence/transport_diagnosis.json",
+          "sha256": "18527763edaf2d0e503977e7991b19d7e1a524ba3ce998e7ee3d8bbc47bdcdb8"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_claude_raw_receipt_evidence/assessment.json",
+          "sha256": "5c416488dcaf25a645df49b332c897d127bfc1c1464eeb4c8e762e5af68d5560"
+        }
+      ],
+      "engineering_answer": null,
+      "independent_audit_executor_may_receive_this_file": false
+    }
+  ],
+  "rules": [
+    "Do not provide this evaluator handoff to independent discovery executors.",
+    "Preserve original claims, engineer decisions and later model conclusions separately.",
+    "No missing answer is interpreted as approval, refutation or a passing control.",
+    "No automatic release, benchmark amendment or production promotion."
+  ],
+  "stage4_complete": false
+}

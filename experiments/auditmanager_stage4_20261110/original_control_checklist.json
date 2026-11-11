@@ -520,7 +520,7 @@
       "hypothesis": "H05",
       "kind": "negative_controls_and_limits",
       "original_control": "КМ F014: разные последовательные марши не одна деталь.",
-      "evidence_state": "disputed_requires_readjudication",
+      "evidence_state": "disputed_after_independent_checks_identity_unresolved",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
@@ -533,6 +533,18 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_readjudication_evidence/assessment.json",
           "sha256": "28940f5cef55f377b54d4c48e48f3a2c10f1d69c9c8ed71ef4b6269bcfa846a4"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_claude_same_input_evidence/assessment.json",
+          "sha256": "d1943282efec86d5d25c48d0385c9c37d3b13510336ca53293f21b3dda582f9c"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_claude_same_input_evidence/transport_diagnosis.json",
+          "sha256": "18527763edaf2d0e503977e7991b19d7e1a524ba3ce998e7ee3d8bbc47bdcdb8"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f014_claude_raw_receipt_evidence/assessment.json",
+          "sha256": "5c416488dcaf25a645df49b332c897d127bfc1c1464eeb4c8e762e5af68d5560"
         }
       ],
       "full_acceptance_proven": false
@@ -752,7 +764,7 @@
     "bounded_inventory_identity_control": 1,
     "bounded_known_candidate_control": 1,
     "bounded_quantity_control_released_profile_disputed": 1,
-    "disputed_requires_readjudication": 1,
+    "disputed_after_independent_checks_identity_unresolved": 1,
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
     "partial_GVS_reported_velocity_released_wall_not_emitted": 1,
