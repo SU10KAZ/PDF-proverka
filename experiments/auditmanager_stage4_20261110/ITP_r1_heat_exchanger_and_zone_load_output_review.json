@@ -1,0 +1,882 @@
+{
+  "status": "four_heat_load_comparisons_separate_unit_and_system_scope",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "20e1508d20b72a9d8e90338d54d8905699ad424138676394dba38587fd4975a1",
+  "queue_after_sha256": "ab2b1976d1767b722948e35448069acdb8ca3051b46df7084281d745b0dc22c1",
+  "reviewer": "coordinator_graphic_TEXT_and_arithmetic",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-045",
+      "finding": {
+        "id": "F-045",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Теплообменники",
+        "sheet": "Лист 7",
+        "page": [
+          8,
+          14,
+          24,
+          48,
+          64
+        ],
+        "problem": "Мощность теплообменника ГВС первой зоны на разрезе отличается от подбора.",
+        "description": "На разрезе 7-7 для поз. 6 указано 0,403 Гкал/ч, а в экспликации и расчёте — округлённо 0,419 Гкал/ч на каждый из двух аппаратов по 50%. Разница составляет около 0,016 Гкал/ч на аппарат.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать мощность поз. 6 на разрезе с расчётным подбором, экспликацией и ПЗ.",
+        "risk": "Неоднозначный заказ теплообменников и неверные данные для наладки.",
+        "source_finding_ids": [
+          "G-009",
+          "G-010"
+        ],
+        "source_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea"
+        ],
+        "related_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 48
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 64
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают расхождение мощности теплообменника ГВС I зоны: 0,403 Гкал/ч на разрезе 7-7 против 0,419 Гкал/ч в экспликации и расчёте; разница 0,016 Гкал/ч на аппарат.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают расхождение мощности теплообменника ГВС I зоны: 0,403 Гкал/ч на разрезе 7-7 против 0,419 Гкал/ч в экспликации и расчёте; разница 0,016 Гкал/ч на аппарат.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_heat_exchanger_labels:92be8d7a03f9ca816e16",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Разрез7-7:ГВСIзона50%,поз6,Q0,403Гкал/ч.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "ЭкспликацияК6иПЗ0,419;подборw203119579—418600ккал/ч=0,4186Гкал/ч.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "0,728×1,15/2=0,4186;разница с0,403равна0,0156,с округлённым0,419—0,016.",
+          "verdict": "confirmed_arithmetic",
+          "limits": "Двааппаратапо50%,не двапо100%."
+        },
+        {
+          "claim": "Согласовать подписи и актуальные исходные данные.",
+          "verdict": "supported_document_discrepancy_question",
+          "limits": "Причина расхождения и окончательная редакция не установлены."
+        },
+        {
+          "claim": "Подбор аппарата неверен,недостаточен или требуется замена.",
+          "verdict": "not_established",
+          "limits": "Несогласованная подпись сама не доказывает фактическую мощность,заказ или работу оборудования."
+        },
+        {
+          "claim": "Выдача помечает графические разрезыtype=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "MDмаркируетIMAGE;оценено по изображениям."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F051_zone_load_and_F052_exchanger_capacity_are_different_quantities; group_with_F050_for_zone3_coordination_without_discarding_subclaims; F045_GVS1_and_F046_heating2_distinct",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a5c04128f54f404e900b3ee4e3a854ba",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0",
+          "primary_adjudication": null,
+          "limits": "Не выдавать различие мощности аппарата и нагрузки потребителя как ошибку подбора. Запас15% в проекте прямо указан; отсутствие надписи о запасе возле отдельной выноски не означает отсутствия запаса в документации. Причина остаточных расхождений подписей не установлена. Неправильная закупка, недостаточная мощность, экономический ущерб и необходимость замены оборудования не доказаны. Независимая инженерная приёмка этих свежих классических строк отсутствует. Число15% — условие этого проекта, не универсальный допуск.",
+          "wording": "Согласовать подписи мощности у теплообменников с ПЗ, экспликацией и подбором: К2 —1,005 на разрезах против1,012 с запасом15%; К6 —0,403 для50% мощности на разрезе против0,419 (подбор0,4186); К1 —1,711 на разрезах против1,707 в ПЗ/экспликации (подбор1,70775). Отдельно обозначать нагрузку потребителя и мощность аппарата с запасом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+          "sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301",
+          "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез7-7:ГВСIзона50%,поз6,Q0,403Гкал/ч."
+        }
+      ],
+      "disposition": "assessed_preserve_heat_load_label_discrepancy_no_equipment_failure_inference"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-046",
+      "finding": {
+        "id": "F-046",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Теплообменники",
+        "sheet": "Лист 7",
+        "page": [
+          8,
+          14,
+          24,
+          60
+        ],
+        "problem": "Мощность теплообменника отопления второй зоны указана неодинаково.",
+        "description": "Разрез 10-10 задаёт для поз. 2 мощность 1,005 Гкал/ч, а экспликация К2 и подбор — 1,012 Гкал/ч. Различие составляет 0,007 Гкал/ч на аппарат.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить принятое исполнение по подбору и исправить мощность на разрезе и в ведомостях.",
+        "risk": "Неоднозначные требования к поставке оборудования.",
+        "source_finding_ids": [
+          "G-011",
+          "G-012"
+        ],
+        "source_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea"
+        ],
+        "related_block_ids": [
+          "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 60
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают расхождение мощности теплообменника отопления II зоны: 1,005 Гкал/ч на разрезе 10-10 против 1,012 Гкал/ч в экспликации. Указание разницы и номера расчёта не меняет сути и детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают расхождение мощности теплообменника отопления II зоны: 1,005 Гкал/ч на разрезе 10-10 против 1,012 Гкал/ч в экспликации. Указание разницы и номера расчёта не меняет сути и детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 37,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": true,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_heat_exchanger_labels:aacac3eb5e641c25a036",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Разрез10-10:отоплениеIIзоны100%,поз2,Q1,005Гкал/ч.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "К2,ПЗиподборw203119577указывают1,012Гкал/ч=1012000ккал/ч.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Разница0,007;0,880×1,15=1,012.",
+          "verdict": "confirmed_arithmetic",
+          "limits": "ПЗпредусматривает100%резерв;количество2не означает удвоенную расчётную нагрузку."
+        },
+        {
+          "claim": "Согласовать подписи и актуальные исходные данные.",
+          "verdict": "supported_document_discrepancy_question",
+          "limits": "Причина расхождения и окончательная редакция не установлены."
+        },
+        {
+          "claim": "Подбор аппарата неверен,недостаточен или требуется замена.",
+          "verdict": "not_established",
+          "limits": "Несогласованная подпись сама не доказывает фактическую мощность,заказ или работу оборудования."
+        },
+        {
+          "claim": "Выдача помечает графические разрезыtype=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "MDмаркируетIMAGE;оценено по изображениям."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F051_zone_load_and_F052_exchanger_capacity_are_different_quantities; group_with_F050_for_zone3_coordination_without_discarding_subclaims; F045_GVS1_and_F046_heating2_distinct",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9ed40ebbf2814eddafb0cf03546ccd0d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+          "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0",
+          "primary_adjudication": null,
+          "limits": "Не выдавать различие мощности аппарата и нагрузки потребителя как ошибку подбора. Запас15% в проекте прямо указан; отсутствие надписи о запасе возле отдельной выноски не означает отсутствия запаса в документации. Причина остаточных расхождений подписей не установлена. Неправильная закупка, недостаточная мощность, экономический ущерб и необходимость замены оборудования не доказаны. Независимая инженерная приёмка этих свежих классических строк отсутствует. Число15% — условие этого проекта, не универсальный допуск.",
+          "wording": "Согласовать подписи мощности у теплообменников с ПЗ, экспликацией и подбором: К2 —1,005 на разрезах против1,012 с запасом15%; К6 —0,403 для50% мощности на разрезе против0,419 (подбор0,4186); К1 —1,711 на разрезах против1,707 в ПЗ/экспликации (подбор1,70775). Отдельно обозначать нагрузку потребителя и мощность аппарата с запасом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+          "sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301",
+          "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез10-10:отоплениеIIзоны100%,поз2,Q1,005Гкал/ч."
+        }
+      ],
+      "disposition": "assessed_preserve_heat_load_label_discrepancy_no_equipment_failure_inference"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-051",
+      "finding": {
+        "id": "F-051",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Тепловые нагрузки",
+        "sheet": "Лист 10",
+        "page": [
+          17,
+          42
+        ],
+        "problem": "Нагрузка отопления третьей зоны на разрезе отличается от ПЗ.",
+        "description": "Разрез 23-23 указывает 0,200 Гкал/ч, ПЗ — 0,191 Гкал/ч. Разница составляет 0,009 Гкал/ч, приблизительно 4,7%. Сопоставление с другими фрагментами листа показывает необходимость общей увязки нагрузки, расхода клапана и мощности теплообменников этой зоны.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать нагрузку с актуальными данными отопления и обновить разрез, ПЗ и связанные подборы.",
+        "risk": "Разные исходные данные для выбора оборудования и наладки третьей зоны.",
+        "source_finding_ids": [
+          "G-024"
+        ],
+        "source_block_ids": [
+          "blk_d0a62bc2e56f4d07bb33a73622429881"
+        ],
+        "related_block_ids": [
+          "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-024",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP40:bbd2b9236034c12aec3c",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Разрез23-23:Т13иТ23отопления3зоныQ0,200Гкал/ч,G10,7м³/ч.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "ПЗвтаблицеотопления3зоны0,191Гкал/ч.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Разница0,009Гкал/ч,около4,71%от0,191.",
+          "verdict": "confirmed_arithmetic",
+          "limits": "Процент не является критерием допуска или доказательством влияния на систему."
+        },
+        {
+          "claim": "Согласовать подписи и актуальные исходные данные.",
+          "verdict": "supported_document_discrepancy_question",
+          "limits": "Причина расхождения и окончательная редакция не установлены."
+        },
+        {
+          "claim": "Подбор аппарата неверен,недостаточен или требуется замена.",
+          "verdict": "not_established",
+          "limits": "Несогласованная подпись сама не доказывает фактическую мощность,заказ или работу оборудования."
+        },
+        {
+          "claim": "Выдача помечает графические разрезыtype=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "MDмаркируетIMAGE;оценено по изображениям."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F051_zone_load_and_F052_exchanger_capacity_are_different_quantities; group_with_F050_for_zone3_coordination_without_discarding_subclaims; F045_GVS1_and_F046_heating2_distinct",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+          "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+            "sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834"
+          },
+          "limits": "Фактический недостаток мощности и отказ регулирования не доказаны; принадлежность исторической записи к дублю UNI-039 остаётся отдельным вопросом. Расходы и нагрузки связаны тематически, но причина различия не установлена. Не объявлять клапан непригодным: выбранное Kv16 больше обоих значений требуемого Kv13,51 и напечатанного14,45. Для0,200 против0,191 разность0,009Гкал/ч, или4,71% относительно0,191; это не допустимый процент и не доказанный запас. Не выпускать отдельный дублирующий дефект.",
+          "wording": "Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы. Дополнительно на разрезе23-23 у Т13/Т23 подписано0,200Гкал/ч при80/60°C против табличных0,191; включить в ту же сверку режима III зоны."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d0a62bc2e56f4d07bb33a73622429881.png",
+          "sha256": "813ec783eeaea997e75b97ece66d75b1bc6508fd8aaf1f02adf4e3dbed719013",
+          "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез23-23:Т13иТ23отопления3зоныQ0,200Гкал/ч,G10,7м³/ч."
+        }
+      ],
+      "disposition": "assessed_preserve_heat_load_label_discrepancy_no_equipment_failure_inference"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-052",
+      "finding": {
+        "id": "F-052",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Теплообменники",
+        "sheet": "Лист 10",
+        "page": [
+          8,
+          17,
+          24,
+          61
+        ],
+        "problem": "Мощность теплообменников отопления третьей зоны на разрезах не соответствует подбору.",
+        "description": "Разрезы 29-29 и 30-30 задают 0,246 Гкал/ч на аппарат, экспликация К3 — округлённо 0,220 Гкал/ч с запасом 15%; точное значение подбора составляет 0,21965 Гкал/ч. Расхождение между округлёнными значениями равно 0,026 Гкал/ч.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить актуальную нагрузку и требуемый запас, подтвердить подбор К3 и исправить мощности на разрезах.",
+        "risk": "Неоднозначная комплектация и несогласованность теплового и гидравлического расчётов.",
+        "source_finding_ids": [
+          "G-027",
+          "G-028"
+        ],
+        "source_block_ids": [
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+        ],
+        "related_block_ids": [
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 61
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-027",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания сопоставляют 0,246 Гкал/ч на разрезах 29-29 и 30-30 с 0,220 Гкал/ч для К3 в экспликации. Указание разницы 0,026 Гкал/ч не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания сопоставляют 0,246 Гкал/ч на разрезах 29-29 и 30-30 с 0,220 Гкал/ч для К3 в экспликации. Указание разницы 0,026 Гкал/ч не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Разрезы29-29и30-30:отоплениеIIIзоны100%,Q0,246Гкал/ч на аппарат.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "К3иПЗ0,220;подборw203119578—219650ккал/ч=0,21965.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "0,191×1,15=0,21965;разница0,246−0,220=0,026,с точнымподбором0,02635.",
+          "verdict": "confirmed_arithmetic",
+          "limits": "15%—запас этого проекта,не универсальное правило.100%резерв не суммируется с рабочим аппаратом."
+        },
+        {
+          "claim": "Согласовать подписи и актуальные исходные данные.",
+          "verdict": "supported_document_discrepancy_question",
+          "limits": "Причина расхождения и окончательная редакция не установлены."
+        },
+        {
+          "claim": "Подбор аппарата неверен,недостаточен или требуется замена.",
+          "verdict": "not_established",
+          "limits": "Несогласованная подпись сама не доказывает фактическую мощность,заказ или работу оборудования."
+        },
+        {
+          "claim": "Выдача помечает графические разрезыtype=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "MDмаркируетIMAGE;оценено по изображениям."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F051_zone_load_and_F052_exchanger_capacity_are_different_quantities; group_with_F050_for_zone3_coordination_without_discarding_subclaims; F045_GVS1_and_F046_heating2_distinct",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9ed40ebbf2814eddafb0cf03546ccd0d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+          "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+          "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрезы29-29и30-30:отоплениеIIIзоны100%,Q0,246Гкал/ч на аппарат."
+        }
+      ],
+      "disposition": "assessed_preserve_heat_load_label_discrepancy_no_equipment_failure_inference"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_1601889b50624245a5c590ad23d87175",
+      "authoritative_TEXT": "### BLOCK #13 [TEXT]: blk_1601889b50624245a5c590ad23d87175\n\n> **Created:** 2026-10-20 11:48:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7IbDVoQ3xVscfL1_2fOb)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 2 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой \"Матвеевское\", Квартал 3, 2-я очередь, корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Индивидуальный тепловой пункт | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nЭкспликация оборудования (начало)\n\n18\n\n| Марка поз. | Обозначение | Наименование | Кол. | Масса ед.кг. | Приме- чение |\n|---|---|---|---|---|---|\n| K1 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 1-ая зона, Q=1,707 Гкал/ч | 2 | 650,88 | с 15 % запасом по нагрузке |\n| K2 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 2-ая зона, Q=1,012 Гкал/ч | 2 | 511,29 | с 15 % запасом по нагрузке |\n| K3 | \"РИДАН\" | Теплообменник пластинчатый системы отопления 3-ая зона, Q=0,220 Гкал/ч | 2 | 180,35 | с 15 % запасом по нагрузке |\n| K4 | \"РИДАН\" | Теплообменник пластинчатый системы отопления ДОО, Q=0,077 Гкал/ч | 2 | 123,09 | с 15 % запасом по нагрузке |\n| K5 | \"РИДАН\" | Теплообменник пластинчатый системы теплоснабжения, Q=1,757 Гкал/ч | 1 | 575,05 | с 15 % запасом по нагрузке |\n| K6 | \"РИДАН\" | Теплообменник пластинчатый системы ГВС I-ая зона, Q=0,419 Гкал/ч | 2 | 139,82 | с 15 % запасом по нагрузке |\n| K7 | \"РИДАН\" | Теплообменник пластинчатый системы ГВС II-ая зона, Q=0,217 Гкал/ч | 2 | 98,48 | с 15 % запасом по нагрузке |\n| K8 | \"РИДАН\" | Теплообменник пластинчатый системы ГВС III-ая зона, Q=0,104 Гкал/ч | 2 | 88,93 | с 15 % запасом по нагрузке |\n| K9 | IL 65/140-7,5/2-R | Насос циркуляционный системы отопления 1-ая зона, Q=82,83 м³/ч, H=22,53 м.в.см., 3x380В, N=7,5 кВт | 2 | 98,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K10 | IL 50/140-4/2-R | Насос циркуляционный системы отопления 2-ая зона, Q=47,08 м³/ч, H=21,29 м.в.см., 3x380В, N=4,0 кВт | 2 | 87,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K11 | IL 40/140-2,2/2-R | Насос циркуляционный системы отопления 3-ая зона, Q=12,42 м³/ч, H=19,29 м.в.см., 3x380В, N=2,2 кВт | 2 | 48,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K12 | IL 40/220-1,5/4-R | Насос циркуляционный системы отопления ДОО, Q=4,42 м³/ч, H=16,98 м.в.см., 3x380В, N=0,55 кВт | 2 | 29,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K13 | IL 65/120-4/2-R | Насос циркуляционный системы теплоснабжения, Q=63,56 м³/ч, H=15,27 м.в.см., 3x380В, N=4,0 кВт | 2 | 70,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K14 | IL 100/160-18,5/2-R | Насос циркуляционный греющего контура, Q=147,83 м³/ч, H=27,92 м.в.см., 3x380В, N=18,5 кВт | 3 | 284,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K15 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 1-ая зона, Q=4,31 м³/ч, H=18,57 м.в.см., 3x380В, N=0,55 кВт | 2 | 49,5 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K16 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 2-ая зона, Q=2,55 м³/ч, H=21,01 м.в.см., 3x380В, N=0,55 кВт | 2 | 29,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K17 | HELIX V 603-1/16/E/KS/400-50-N | Насос циркуляционный системы ГВС 3-ая зона, Q=1,29 м³/ч, H=21,92 м.в.см., 3x380В, N=0,55 кВт | 2 | 30,0 | 1 резер. в комплекте с частотным преобразователем SK-712/w (для 2-х) |\n| K18 |  | Автоматическая установка поддержания давления отопления 1-ая зона в составе: | 1 |  |  |\n| K18.1 | SPL BASIC 2-C-60 | Блок управления с 2-мя насосами N=2x2,2 кВт; 3x380В; 50 Гц; | 1 |  |  |\n| K18.2 | LVF 600 | Основная емкость V=0,6 м³ (Ø780 мм) | 1 | 145,0 |  |\n| K18.3 | SPL RM 80 10бар | Демпферная емкость, V=80л, 10 бар | 1 | 12,0 |  |\n| K19 |  | Автоматическая установка поддержания давления отопления 2-ая зона в составе: | 1 |  |  |\n| K19.1 | SPL BASIC 2-B-125 | Блок управления с 2-мя насосами N=2x2,2 кВт; 3x380В; 50 Гц; | 1 |  |  |\n| K19.2 | LVF 400 | Основная емкость V=0,4 м³ (Ø750 мм) | 1 | 60,0 |  |\n| K19.3 | SPL RM 50 16 бар | Демпферная емкость, V=50л, 16 бар | 1 | 17,0 |  |\n| K20 |  | Автоматическая установка поддержания давления отопления 3-ая зона в составе: | 1 |  |  |\n| K20.1 | SPL BASIC 2-E-1-27 | Блок управления с 2-мя насосами N=2x1,5 кВт; 3x380В; 50 Гц; | 1 |  |  |\n| K20.2 | LVF 200 | Основная емкость V=0,2 м³ (Ø585 мм) | 1 | 48,0 |  |\n| K20.3 | SPL RM 50 25 бар | Демпферная емкость, V=50л, 25 бар | 1 | 30,0 |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_a5c04128f54f404e900b3ee4e3a854ba",
+      "authoritative_TEXT": "### BLOCK #86 [TEXT]: blk_a5c04128f54f404e900b3ee4e3a854ba\n\n> **Created:** 2026-10-20 11:49:27 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/OCaPaaPSgShU_bP0itIP)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 10 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n###### 4. Расчет оборудования теплового пункта.\n\n###### теплообменники ГВС 1-зона:\n\nСистема ГВС присоединена по независимой одноступенчатой схеме через два пластинчатых теплообменника по 50% мощности каждый. Принят запас по производительности 15%.\n\nРасчет теплообменников представлен в проекте:\n\n• **НН№07-41пл.:** производство фирмы «РИДАН», w203119579\nмощность 0,419(с учетом запаса 15%) ГКалл/ч,\nзапас поверхности: 10,5%.\nплощадь поверхности теплообменника –3,24 м²\n\n###### теплообменники ГВС 2-зона:\n\nСистема ГВС присоединена по независимой одноступенчатой схеме через два пластинчатых теплообменника по 50% мощности каждый. Принят запас по производительности 15%.\n\nРасчет теплообменников представлен в проекте:\n\n• **НН№07-21пл.:** производство фирмы «РИДАН», w203119580\nмощность 0,217 (с учетом запаса 15%) ГКалл/ч,\nзапас поверхности: 10,8%.\nплощадь поверхности теплообменника –1,58 м²\n\n###### теплообменники ГВС 3-зона:\n\nСистема ГВС присоединена по независимой одноступенчатой схеме через два пластинчатых теплообменника по 50% мощности каждый. Принят запас по производительности 15%.\n\nРасчет теплообменников представлен в проекте:\n\n• **НН№07-12пл.:** производство фирмы «РИДАН», w203119581\nмощность 0,104 (с учетом запаса 15%) ГКалл/ч,\nзапас поверхности: 12,2%.\nплощадь поверхности теплообменника –0,83 м²\n\n###### теплообменник отопления 1-зона:\n\nРасчет теплообменника представлен в проекте. Расчет произведен на 100% тепловой нагрузки. Принят запас по производительности 15%. Предусмотрен 100% резерв.\n\n• **НН№21-116пл.:** производство фирмы «РИДАН», w203119576\n\n## Page 49 — Sheet 11\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_df17c007b7cf4eef8eca49f51580a275",
+      "authoritative_TEXT": "### BLOCK #102 [TEXT]: blk_df17c007b7cf4eef8eca49f51580a275\n\n> **Created:** 2026-10-20 11:49:34 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/NNb1Ko1pf38TvfbZuLPv)\n\nРасчет №: w203119579 (к ОЛ №01934422)\n\nДата: 24.08.2026\n\nТип НН№07\n\nwww.ridan.ru/nn-07\n\n| Контур; Среда | Горячая сторона | Холодная сторона |\n|---|---|---|\n|  | Вода | Вода |\n| Расход, т/ч | 20,88 | 8,65 |\n| Температура на входе, °С | 90 | 16,54 |\n| Температура на выходе, °С | 70 | 65 |\n| Потери давления, м.вод.ст. | 2,76 | 0,47 |\n| Скорость в порту, м/с | 2,04 | 0,83 |\n| Скорость в каналах, м/с | 0,58 | 0,24 |\n| Тепловая нагрузка, ккал/ч | 418600 |  |\n| Запас площади поверхности, % | 10,5 |  |\n| Коэф. теплопередачи, ккал / (м² ч °С) | 3454 |  |\n| Эффективная площадь, м² | 3,237 |  |\n| Число пластин, компоновка пластин | 41-TMTL18 |  |\n| Внутренний объём, л | 4 | 4 |\n\n| | |\n|---|---|\n| Толщина, материал пластин: | 0.5 мм AISI316L |\n| Материал прокладок: | EPDM |\n| Расчетное/пробное давление, кгс/см²: | 16\\22 |\n| Расчетная температура, °С: | 150 |\n| Масса нетто: | 106,22 кг |\n| Внутренний объем: | 8 л |\n| Длина, L: | 593 мм |\n| Максимальное кол-во пластин:: | 75 |\n\n|  | Описание | Соединения | Ответные фланцы | Межфланцевые прокладки | Покрытие портов |\n|---|---|---|---|---|---|\n| F1 | Вход горячей среды | Соединение фланцевое Ду50, Ру25 РДАМ.711142.029 | Фланец 50-25-01-1-B-Ст.20-IV-dв59 РДАМ.711142.029-08 | Прокладка Б-50-10/160 ПОН-Б ГОСТ 15180-86 |  |\n| F2 | Выход холодной среды | Соединение фланцевое Ду50, Ру25 РДАМ.711142.029 | Фланец 50-25-01-1-B-Ст.20-IV-dв59 РДАМ.711142.029-08 | Прокладка Б-50-10/160 ПОН-Б ГОСТ 15180-86 |  |\n| F3 | Вход холодной среды | Соединение фланцевое Ду50, Ру25 РДАМ.711142.029 | Фланец 50-25-01-1-B-Ст.20-IV-dв59 РДАМ.711142.029-08 | Прокладка Б-50-10/160 ПОН-Б ГОСТ 15180-86 |  |\n| F4 | Выход горячей среды | Соединение фланцевое Ду50, Ру25 РДАМ.711142.029 | Фланец 50-25-01-1-B-Ст.20-IV-dв59 РДАМ.711142.029-08 | Прокладка Б-50-10/160 ПОН-Б ГОСТ 15180-86 |  |\n\nТепловая изоляция, запасные части и дополнительное оборудование (заказываются отдельно от теплообменника по указанным кодам)\n\n| № | Наименование | Код позиции | Кол-во |\n|---|---|---|---|\n| 1 | Тепловая изоляция на тепло, №07, рама 3 | 089N8791 | 1 |\n\nПОСТАВЩИК:\n\nПОКУПАТЕЛЬ:\nданные расчета проверены и согласованы\n\n/ МП\n\n/ МП\n\nФактические значения параметров теплообменника зависят от степени соответствия реальных условий расчетным. Приведенные размеры и масса являются ориентировочными, не могут быть использованы в конструкторских чертежах и уточняются при поставке. Любая информация технического характера, изложенная в данном документе является конфиденциальной информацией. Конфиденциальная информация не может без письменного согласия правообладателя использоваться или копироваться, воспроизводиться, транслироваться или передаваться третьим лицам любым другим способом. Допустима инверсия портов. Для дополнительной информации необходимо обратиться в расчетный центр.\n\n## Page 65\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_9ed40ebbf2814eddafb0cf03546ccd0d",
+      "authoritative_TEXT": "### BLOCK #87 [TEXT]: blk_9ed40ebbf2814eddafb0cf03546ccd0d\n\n> **Created:** 2026-10-20 11:49:27 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/J4H85VDuEuZRYDYP0Z2R)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 11 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nмощность 1,707 (с учетом запаса 15%) ГКалл/ч,\n\nзапас поверхности: 10,2%.\n\nплощадь поверхности теплообменника –31,92 м²\n\n###### теплообменник отопления 2-зона:\n\nРасчет теплообменника представлен в проекте. Расчет произведен на 100% тепловой нагрузки. Принят запас по производительности 15%. Предусмотрен 100% резерв.\n\n• **НН№21-67пл.:** производство фирмы «РИДАН», w**203119577**\n\nмощность 1,012 (с учетом запаса 15%) ГКалл/ч,\n\nзапас поверхности: 10,1%.\n\nплощадь поверхности теплообменника –18,2 м²\n\n###### теплообменник отопления 3-зона:\n\nРасчет теплообменника представлен в проекте. Расчет произведен на 100% тепловой нагрузки. Принят запас по производительности 15%. Предусмотрен 100% резерв.\n\n• **НН№14-27пл.:** производство фирмы «РИДАН», w**203119578**\n\nмощность 0,220 (с учетом запаса 15%) ГКалл/ч,\n\nзапас поверхности: 10,5%.\n\nплощадь поверхности теплообменника –3,85 м²\n\n###### теплообменник отопления ДОО:\n\nРасчет теплообменника представлен в проекте. Расчет произведен на 100% тепловой нагрузки. Принят запас по производительности 15%. Предусмотрен 100% резерв.\n\n• **НН№14-09пл.:** производство фирмы «РИДАН», w**203119860**\n\nмощность 0,077 (с учетом запаса 15%) ГКалл/ч,\n\nзапас поверхности: 12,3%.\n\nплощадь поверхности теплообменника –1,08 м²\n\n###### теплообменник вентиляции:\n\nРасчет теплообменника представлен в проекте. Расчет произведен на 100% тепловой нагрузки. Принят запас по производительности 15%.\n\n• **НН№21-180пл.:** производство фирмы «РИДАН», w**203115749**\n\nмощность 1,757 (с учетом запаса 15%) ГКалл/ч,\n\nзапас поверхности: 10,2%.\n\nплощадь поверхности теплообменника –49,84 м²\n\n## Page 50 — Sheet 12\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_48b334bf03ad483c8e1f72d701f4fc3e",
+      "authoritative_TEXT": "### BLOCK #98 [TEXT]: blk_48b334bf03ad483c8e1f72d701f4fc3e\n\n> **Created:** 2026-10-20 11:49:32 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/2lOdBaMmt9DxexjjG3Z8)\n\nРасчет №: w203119577 (к ОЛ №01934414)\n\nДата: 24.08.2026\n\nwww.ridan.ru/nn-21\n\n| Контур; Среда | Горячая сторона | Холодная сторона |\n|---|---|---|\n|  | Вода | Вода |\n| Расход, т/ч | 50,48 | 50,58 |\n| Температура на входе, °C | 90 | 60 |\n| Температура на выходе, °C | 70 | 80 |\n| Потери давления, м.вод.ст. | 2,76 | 2,89 |\n| Скорость в порту, м/с | 1,84 | 1,83 |\n| Скорость в каналах, м/с | 0,49 | 0,48 |\n| Тепловая нагрузка, ккал/ч | 1012000 |  |\n| Запас площади поверхности, % | 10,1 |  |\n| Коэф. теплопередачи, ккал / (м² ч °C) | 5560 |  |\n| Эффективная площадь, м² | 18,2 |  |\n| Число пластин, компоновка пластин | 67-TMTL50 |  |\n| Внутренний объём, л | 19,8 | 19,8 |\n\n| | |\n|---|---|\n| Толщина, материал пластин: | 0.5 мм AISI316L |\n| Материал прокладок: | EPDM |\n| Расчетное/пробное давление, кгс/см²: | 16\\22 |\n| Расчетная температура, °C: | 150 |\n| Масса нетто: | 384,38 кг |\n| Внутренний объем: | 39,6 л |\n| Длина, L: | 904 мм |\n| Максимальное кол-во пластин:: | 105 |\n\n|  | Описание | Соединения | Ответные фланцы | Межфланцевые прокладки | Покрытие портов |\n|---|---|---|---|---|---|\n| F1 | Вход горячей среды | Соединение фланцевое Ду100, Ру16 ГОСТ 33259-2015 | Фланец 100-16-01-1-B-Ст.20-IV-db110 ГОСТ 33259-2015 | Прокладка А-100-10/16 ПОН-Б ГОСТ 15180-86 |  |\n| F2 | Выход холодной среды | Соединение фланцевое Ду100, Ру16 ГОСТ 33259-2015 | Фланец 100-16-01-1-B-Ст.20-IV-db110 ГОСТ 33259-2015 | Прокладка А-100-10/16 ПОН-Б ГОСТ 15180-86 |  |\n| F3 | Вход холодной среды | Соединение фланцевое Ду100, Ру16 ГОСТ 33259-2015 | Фланец 100-16-01-1-B-Ст.20-IV-db110 ГОСТ 33259-2015 | Прокладка А-100-10/16 ПОН-Б ГОСТ 15180-86 |  |\n| F4 | Выход горячей среды | Соединение фланцевое Ду100, Ру16 ГОСТ 33259-2015 | Фланец 100-16-01-1-B-Ст.20-IV-db110 ГОСТ 33259-2015 | Прокладка А-100-10/16 ПОН-Б ГОСТ 15180-86 |  |\n\nТепловая изоляция, запасные части и дополнительное оборудование (заказываются отдельно от теплообменника по указанным кодам)\n\n| № | Наименование | Код позиции | Кол-во |\n|---|---|---|---|\n| 1 | Тепловая изоляция на тепло, №21, рама 2, PN10, PN16 | 089N8600 | 1 |\n\nПОСТАВЩИК:\n\nПОКУПАТЕЛЬ:\nданные расчета проверены и согласованы\n\n/ МП\n\n/ МП\n\nФактические значения параметров теплообменника зависят от степени соответствия реальным условиям расчетным. Приведенные размеры и масса являются ориентировочными, не могут быть использованы в конструкторских чертежах и уточняются при поставке. Любая информация технического характера, изложенная в данном документе является конфиденциальной информацией. Конфиденциальная информация не может без письменного согласия правообладателя использоваться или копироваться, воспроизводиться, транслироваться или передаваться третьим лицам любым другим способом. Допустима инверсия портов. Для дополнительной информации необходимо обратиться в расчетный центр.\n\n## Page 61\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+      "authoritative_TEXT": "### BLOCK #80 [TEXT]: blk_3050f16afc994b889498a2535ea14a52\n\n> **Created:** 2026-10-20 11:49:24 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/ny5whKce55qRsshMBR4U)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n2.1 Тип здания: жилое с техническими помещениями, автостоянкой и ДОО\n\n2.2. Тепловая нагрузка:\n\nСистема отопления\n\n| Наименование здания (сооружения) | Верхняя отметка системы, м | Параметры местной воды, под/обр С° | Потери напора в системе, м | Расход тепла (Гкал/ч) |\n|---|---|---|---|---|\n| 1-зона, жильё, МОП, технические помещения | +44,78 | 80-60 | 7,2 | 1,240 |\n| 2-зона | +92,14 | 80-60 | 7,4 | 0,880 |\n| 3- зона | +135,83 | 80-60 | 8,4 | 0,191 |\n| Аренда | +7,5 | 80-60 | 4 | 0,058 |\n| Автостоянка | +2,5 | 80-60 | 6 | 0,185 |\n| ДОО | +10 | 75-55 | 6 | 0,067 |\n| **ИТОГО** |  |  |  | **2,621** |\n\nСистема Вентиляция\n\n| Наименование здания (сооружения) | Верхняя отметка системы, м | Параметры местной воды, под/обр С° | Потери напора в системе, м | Расход тепла (Гкал/ч) |\n|---|---|---|---|---|\n| Вентиляция жильё, МОП, технические помещения | +7,5 | 85-60 | 5,5 | 0,121 |\n| Вентиляция аренда | +7,5 | 85-60 | 5,5 | 0,289 |\n| Вентиляция автостоянки | +7,5 | 85-60 | 5,5 | 0,925 |\n| Вентиляция ДОО | +10 | 85-60 | 5,5 | 0,192 |\n| **ИТОГО** |  |  |  | **1,527** |\n\nСистема ГВС\n\n| Наименование здания (сооружения) | Отметка верхнего водоразборного крана, м | Параметры местной воды, под С° | Потери напора в системе, м | Расход тепла макс (Гкал/ч) |\n|---|---|---|---|---|\n| ГВС 1-я зона | +51,97 | 5-65 | 7,24 | 0,728 |\n| ГВС 2-я зона | +103,17 | 5-65 | 8,87 | 0,377 |\n| ГВС 3-я зона | +141,48 | 5-65 | 10,61 | 0,181 |\n| **ИТОГО** |  |  |  | **1,081** |\n| Располагаемый напор ХВС на вводе в ИТП | 1 зона - 95,59 м.в.ст. |  |  |  |\n|  | 2 зона - 146,62 м.в.ст. |  |  |  |\n|  | 3 зона - 179,55 м.в.ст. |  |  |  |\n\n## Page 43 — Sheet 5\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_58a0b41fc3a54ac5aae17d756528384d",
+      "authoritative_TEXT": "### BLOCK #99 [TEXT]: blk_58a0b41fc3a54ac5aae17d756528384d\n\n> **Created:** 2026-10-20 11:49:32 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/hbml9HSXIBSAoji9TAgH)\n\nСовестн. Совмещенный корпус 2 / Отопление зона\n\n**Расчет №: w203119578 (к ОЛ №01934415)**\n\nДата: 24.08.2026\n\nwww.ridan.ru/nn-14\n\nТип НН№14\n\n| Контур; Среда | Горячая сторона | Холодная сторона |\n|---|---|---|\n|  | Вода | Вода |\n| Расход, т/ч | 10,96 | 10,98 |\n| Температура на входе, °C | 90 | 60 |\n| Температура на выходе, °C | 70 | 80 |\n| Потери давления, м.вод.ст. | 2,94 | 2,98 |\n| Скорость в порту, м/с | 1,07 | 1,07 |\n| Скорость в каналах, м/с | 0,5 | 0,5 |\n| Тепловая нагрузка, ккал/ч | 219650 |  |\n| Запас площади поверхности, % | 10,5 |  |\n| Коэф. теплопередачи, ккал / (м² ч °C) | 5705 |  |\n| Эффективная площадь, м² | 3,85 |  |\n| Число пластин, компоновка пластин | 27-TMTL46 |  |\n| Внутренний объём, л | 4,6 | 4,6 |\n\n| | |\n|---|---|\n| Толщина, материал пластин: | 0.5 мм AISI316L |\n| Материал прокладок: | EPDM |\n| Расчетное/пробное давление, кгс/см²: | 16\\22 |\n| Расчетная температура, °C: | 150 |\n| Масса нетто: | 139,35 кг |\n| Внутренний объем: | 9,1 л |\n| Длина, L: | 393 мм |\n| Максимальное кол-во пластин:: | 39 |\n\n|  | Описание | Соединения | Ответные фланцы | Межфланцевые прокладки | Покрытие портов |\n|---|---|---|---|---|---|\n| F1 | Вход горячей среды | Соединение фланцевое Ду50, Ру25 РДАМ.711142.029 | Фланец 50-25-01-1-B-Ст.20-IV-dв59 РДАМ.711142.029-08 | Прокладка Б-50-10/160 ПОН-Б ГОСТ 15180-86 |  |\n| F2 | Выход холодной среды | Соединение фланцевое Ду50, Ру25 РДАМ.711142.029 | Фланец 50-25-01-1-B-Ст.20-IV-dв59 РДАМ.711142.029-08 | Прокладка Б-50-10/160 ПОН-Б ГОСТ 15180-86 |  |\n| F3 | Вход холодной среды | Соединение фланцевое Ду50, Ру25 РДАМ.711142.029 | Фланец 50-25-01-1-B-Ст.20-IV-dв59 РДАМ.711142.029-08 | Прокладка Б-50-10/160 ПОН-Б ГОСТ 15180-86 |  |\n| F4 | Выход горячей среды | Соединение фланцевое Ду50, Ру25 РДАМ.711142.029 | Фланец 50-25-01-1-B-Ст.20-IV-dв59 РДАМ.711142.029-08 | Прокладка Б-50-10/160 ПОН-Б ГОСТ 15180-86 |  |\n\nТепловая изоляция, запасные части и дополнительное оборудование (заказываются отдельно от теплообменника по указанным кодам)\n\n| № | Наименование | Код позиции | Кол-во |\n|---|---|---|---|\n| 1 | Тепловая изоляция на тепло, №14, рама 2 | 089N8764 | 1 |\n\nПОСТАВЩИК:\n\n/ МП\n\nПОКУПАТЕЛЬ:\n\nданные расчета проверены и согласованы\n\n/ МП\n\nФактические значения параметров теплообменника зависят от степени соответствия реальных условий расчетным. Приведенные размеры и масса являются ориентировочными, не могут быть использованы в конструкторских чертежах и уточняются при поставке. Любая информация технического характера, изложенная в данном документе является конфиденциальной информацией. Конфиденциальная информация не может без письменного согласия правообладателя использоваться или копироваться, воспроизводиться, транслироваться или передаваться третьим лицам любым другим способом. Допустима инверсия портов. Для дополнительной информации необходимо обратиться в расчетный центр.\n\n## Page 62\n\n"
+    }
+  ],
+  "graphic_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+      "sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301",
+      "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Разрез7-7:ГВСIзона50%,поз6,Q0,403Гкал/ч."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_5d085f4c917a4e568fd33327e6f8edea.png",
+      "sha256": "b912407176437e746a465c78e72293ad851026cb26d5f2dfb5b3fdcb597f8301",
+      "block_id": "blk_5d085f4c917a4e568fd33327e6f8edea",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Разрез10-10:отоплениеIIзоны100%,поз2,Q1,005Гкал/ч."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d0a62bc2e56f4d07bb33a73622429881.png",
+      "sha256": "813ec783eeaea997e75b97ece66d75b1bc6508fd8aaf1f02adf4e3dbed719013",
+      "block_id": "blk_d0a62bc2e56f4d07bb33a73622429881",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Разрез23-23:Т13иТ23отопления3зоныQ0,200Гкал/ч,G10,7м³/ч."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+      "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+      "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Разрезы29-29и30-30:отоплениеIIIзоны100%,Q0,246Гкал/ч на аппарат."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_heat_exchanger_labels.json",
+      "sha256": "4252147eb2757d40887e8a50eecc143f7e6efddf78bb75732fd87eac598538b0",
+      "primary_adjudication": null,
+      "limits": "Не выдавать различие мощности аппарата и нагрузки потребителя как ошибку подбора. Запас15% в проекте прямо указан; отсутствие надписи о запасе возле отдельной выноски не означает отсутствия запаса в документации. Причина остаточных расхождений подписей не установлена. Неправильная закупка, недостаточная мощность, экономический ущерб и необходимость замены оборудования не доказаны. Независимая инженерная приёмка этих свежих классических строк отсутствует. Число15% — условие этого проекта, не универсальный допуск.",
+      "wording": "Согласовать подписи мощности у теплообменников с ПЗ, экспликацией и подбором: К2 —1,005 на разрезах против1,012 с запасом15%; К6 —0,403 для50% мощности на разрезе против0,419 (подбор0,4186); К1 —1,711 на разрезах против1,707 в ПЗ/экспликации (подбор1,70775). Отдельно обозначать нагрузку потребителя и мощность аппарата с запасом."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+      "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8",
+      "primary_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+        "sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834"
+      },
+      "limits": "Фактический недостаток мощности и отказ регулирования не доказаны; принадлежность исторической записи к дублю UNI-039 остаётся отдельным вопросом. Расходы и нагрузки связаны тематически, но причина различия не установлена. Не объявлять клапан непригодным: выбранное Kv16 больше обоих значений требуемого Kv13,51 и напечатанного14,45. Для0,200 против0,191 разность0,009Гкал/ч, или4,71% относительно0,191; это не допустимый процент и не доказанный запас. Не выпускать отдельный дублирующий дефект.",
+      "wording": "Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы. Дополнительно на разрезе23-23 у Т13/Т23 подписано0,200Гкал/ч при80/60°C против табличных0,191; включить в ту же сверку режима III зоны."
+    }
+  ],
+  "limits": [
+    "Original large schematic preview not used as proof of all identities; bindings use zone,position,explication and calculation numbers.",
+    "No equipment capacity test or actual installation assessed.",
+    "Frozen evaluator,runs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
