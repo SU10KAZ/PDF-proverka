@@ -1,0 +1,36 @@
+{
+  "status": "local_verifier_validation_passed",
+  "verifier_sha256": "c07d0b9898ac85d17e6a1a731a84ed52786c14adfc3b8f0c12a47951ecfc4f1f",
+  "checks": [
+    "Accepted a real completed AK baseline run and verified645request artifacts using the shared completion schema.",
+    "Rejected changed status hash.",
+    "Rejected failed process exit code.",
+    "Rejected changed input manifest hash."
+  ],
+  "experimental_observation": {
+    "status": "experimental_seals_observation_not_acceptance",
+    "trial_sha256": "498365eedd24db107dce07f9079a95f72e7a1205b4bc0a54a5fdbf7693f3cac8",
+    "collection_state": "running",
+    "verified_runs": [],
+    "pending_records": [
+      {
+        "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current",
+        "recorded_status": "running",
+        "pid": 736122,
+        "live_not_checked": true
+      }
+    ],
+    "not_dispatched": 53,
+    "production_acceptance": false,
+    "limits": [
+      "Pending state is not proof of a live process.",
+      "Successful receipts do not establish engineering truth or method benefit.",
+      "This tool reads only; it does not dispatch, restart or alter frozen runs."
+    ]
+  },
+  "limits": [
+    "No completed experimental output yet; candidate-specific successful execution remains untested.",
+    "No model calls, dispatches or source changes."
+  ],
+  "production_acceptance": false
+}
