@@ -756,6 +756,17 @@ def build_findings_merge_messages(
     merge_model = get_stage_model("findings_merge")
     blocks_analysis = _read_findings_merge_blocks(project_id)
 
+    # Opt-in until the six-project comparison accepts the source-handoff change.
+    # Read the same active-version MD as text analysis; never fall back to PDF/OCR.
+    if os.environ.get("AUDIT_MERGE_PRIMARY_TEXT") == "1":
+        from backend.app.pipeline.stages.findings_merge.primary_text import (
+            build_primary_text_messages,
+        )
+        return build_primary_text_messages(
+            system_prompt, text_analysis, blocks_analysis,
+            _read_md_file(project_info, project_id), _CODEX_MERGE_INPUT_BUDGET,
+        )
+
     # Codex CLI жёстко отклоняет ход, чей вход превышает 1 048 576 символов
     # (turn/start: input_too_large). На крупных проектах сырой
     # 01_blocks_analysis.json раздувает merge-промпт за лимит, и свод падает за

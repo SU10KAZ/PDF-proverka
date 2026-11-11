@@ -1,0 +1,48 @@
+{
+  "status": "implemented_opt_in_local_checks_passed_model_validation_pending",
+  "activation": "AUDIT_MERGE_PRIMARY_TEXT=1",
+  "default_enabled": false,
+  "behavior": [
+    "Pass complete verbatim typed TEXT spans from active-version MD with hashes and offsets.",
+    "Preserve JSON values in both analyses; compact whitespace only.",
+    "Exclude non-TEXT descriptions from primary evidence; record excluded span receipts.",
+    "Refuse oversized request before dispatch; do not truncate candidates or source.",
+    "Provider transport acknowledges attached primary text and absent images."
+  ],
+  "tests": {
+    "command": "python -m pytest -q tests/test_merge_primary_text.py tests/test_distributed_workers_findings_merge_provider.py tests/test_subclaim_coverage.py tests/test_candidate_recovery.py",
+    "passed": 90
+  },
+  "known_AK_packet_check": {
+    "message_characters": 980928,
+    "budget": 1000000,
+    "included_TEXT_spans": 184,
+    "excluded_nontext_spans": 70,
+    "model_calls": 0
+  },
+  "files": [
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/primary_text.py",
+      "sha256": "01c0f7f7483439c7f4f49171a8c28e759ea055f51d1da33c40686b8bdd41e7c9"
+    },
+    {
+      "path": "backend/app/pipeline/stages/findings_merge/provider_transport.py",
+      "sha256": "312a46a60ea5b6d579b2e579117fa6ac1f693238860228223c392c5aa9aa662e"
+    },
+    {
+      "path": "backend/app/pipeline/stages/prepare/prompt_builder.py",
+      "sha256": "acf20ecc404a13d36cb6389056bccf1eb276b8c30a976886e734b1e280085496"
+    },
+    {
+      "path": "tests/test_merge_primary_text.py",
+      "sha256": "855838a0d8ead44084241aeca358a00bb87e9332fe5368900f7eed99a3c34829"
+    }
+  ],
+  "limitations": [
+    "No new model run or full-six-project quality result.",
+    "Oversized projects require bounded evidence operations before this mode can dispatch.",
+    "Graphic recovery and atomic coverage require end-to-end validation.",
+    "No deployment."
+  ],
+  "production_acceptance": false
+}

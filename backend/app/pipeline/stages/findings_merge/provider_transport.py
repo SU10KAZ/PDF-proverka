@@ -379,12 +379,24 @@ def build_provider_prompt(messages: Iterable[dict]) -> dict[str, Any]:
     system_raw, payload_text = split_messages(messages)
     system_text, stripped = strip_filesystem_references(system_raw)
 
+    from .primary_text import PRIMARY_TEXT_MARKER, SOURCE_CONTRACT
+    input_note = INPUT_DATA_NOTE
+    if PRIMARY_TEXT_MARKER in payload_text and SOURCE_CONTRACT in system_raw:
+        input_note = input_note.replace(
+            "3. **Project MD file — NOT available in this run.** Use the two artifacts above\n"
+            "   as the only source of facts. Do not claim to have read the source document,\n"
+            "   and do not invent block labels or sheet numbers that are not in them.",
+            "3. **Primary TEXT from project MD — attached below with a source manifest.**\n"
+            "   Only those verbatim spans are inspected text. Drawing images are NOT\n"
+            "   attached; prior graphic descriptions are candidate testimony. Missing\n"
+            "   evidence requires follow-up, not dismissal as technically false.",
+        )
     marker = "## Input Data"
     if marker in system_text:
         head, tail = system_text.split(marker, 1)
-        system_text = f"{head}{INPUT_DATA_NOTE}\n\n{marker}{tail}"
+        system_text = f"{head}{input_note}\n\n{marker}{tail}"
     else:
-        system_text = f"{INPUT_DATA_NOTE}\n\n{system_text}"
+        system_text = f"{input_note}\n\n{system_text}"
     system_text, severity_anchor = _insert_severity_semantics(system_text)
 
     prompt = (
