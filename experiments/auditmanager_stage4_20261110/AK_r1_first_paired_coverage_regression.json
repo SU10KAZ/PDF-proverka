@@ -1,0 +1,1041 @@
+{
+  "status": "first_AK_repeat_regression_not_full_trial_conclusion",
+  "baseline_source": {
+    "discipline": "AK",
+    "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+    "final_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+    "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+    "ledger_sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477"
+  },
+  "candidate_ledger_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/coverage_reviewed_v1.json",
+  "candidate_ledger_sha256": "b6f3e41d7729105697f5132fe2f42d4131c137bf2f1f11c4bfaf22416e1914f5",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "transitions": {
+    "technical": {
+      "partial->absent": 7,
+      "absent->absent": 3,
+      "full->absent": 31,
+      "partial->partial": 3,
+      "full->full": 5,
+      "full->partial": 4,
+      "partial->full": 2
+    },
+    "question": {
+      "partial->absent": 4,
+      "full->full": 4,
+      "full->absent": 10,
+      "absent->absent": 3,
+      "partial->full": 1,
+      "partial->partial": 1
+    },
+    "negative": {
+      "absent->absent": 21,
+      "partial->absent": 1
+    }
+  },
+  "targets": [
+    {
+      "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-023"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "route": "technical",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-023"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-059"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-020"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK14:65ea2c2649999f640c83",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-054"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK57:9851f2c4946bad03af44",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "partial",
+      "baseline_finding_ids": [
+        "F-012",
+        "F-042"
+      ],
+      "candidate_finding_ids": [
+        "F-010",
+        "F-011"
+      ]
+    },
+    {
+      "target_id": "AK57:a998dcf058f81b7ac194",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-012"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK57:d6f8484b24bc88adcab5",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-046"
+      ],
+      "candidate_finding_ids": [
+        "F-013"
+      ]
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:ab637698bce5025cb6df",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK7:4c7010afca7e2923c94b",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+      "route": "question",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-006",
+        "F-007"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:f0a1212b87b41e035c75",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-014"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-014"
+      ],
+      "candidate_finding_ids": [
+        "F-004"
+      ]
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-014"
+      ],
+      "candidate_finding_ids": [
+        "F-005"
+      ]
+    },
+    {
+      "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-013"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-013"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-011"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-011"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-011"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-013"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-009"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-010"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-029"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
+      "route": "negative",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-035"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+      "route": "question",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-035"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-016"
+      ],
+      "candidate_finding_ids": [
+        "F-024"
+      ]
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-015"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-015"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-021"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-021"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-021",
+        "F-057"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-022"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "partial",
+      "baseline_finding_ids": [
+        "F-022"
+      ],
+      "candidate_finding_ids": [
+        "F-003"
+      ]
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "partial",
+      "baseline_finding_ids": [
+        "F-022"
+      ],
+      "candidate_finding_ids": [
+        "F-003"
+      ]
+    },
+    {
+      "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-034"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "partial",
+      "baseline_finding_ids": [
+        "F-019"
+      ],
+      "candidate_finding_ids": [
+        "F-006"
+      ]
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:c6f3ad54ccd603f4f796",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-017"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-017"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-026"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+      "route": "question",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-026"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:eaa42cc0bf57fa49a886",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:5ba1a83908ceb33758ab",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:88b00bcefd42161838b4",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-003"
+      ],
+      "candidate_finding_ids": [
+        "F-009"
+      ]
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:b69337bb34f8d41b6d57",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-004"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:eb93f9ee7771db58e73f",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F028_change_register_scope:da80e943594aac429110",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-032"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-002"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7752ed01f36756fff7f3",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
+      "route": "question",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:9a595b6986b86b78f7cb",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+      "route": "question",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-001"
+      ],
+      "candidate_finding_ids": [
+        "F-001"
+      ]
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-066"
+      ],
+      "candidate_finding_ids": [
+        "F-002"
+      ]
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-027"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-027"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-027"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "partial",
+      "baseline_finding_ids": [
+        "F-025"
+      ],
+      "candidate_finding_ids": [
+        "F-007"
+      ]
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-025"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-030"
+      ],
+      "candidate_finding_ids": [
+        "F-022"
+      ]
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:2ec9d727804fc985242e",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-033"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-036"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-039"
+      ],
+      "candidate_finding_ids": [
+        "F-025"
+      ]
+    },
+    {
+      "target_id": "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-041"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "route": "technical",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+      "route": "question",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "partial",
+      "baseline_finding_ids": [
+        "F-040"
+      ],
+      "candidate_finding_ids": [
+        "F-015",
+        "F-017"
+      ]
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-044"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:8239404083a86b949049",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-044"
+      ],
+      "candidate_finding_ids": [
+        "F-012"
+      ]
+    },
+    {
+      "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
+      "route": "question",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "partial",
+      "baseline_finding_ids": [
+        "F-047"
+      ],
+      "candidate_finding_ids": [
+        "F-016"
+      ]
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+      "route": "technical",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "partial",
+      "baseline_finding_ids": [
+        "F-047"
+      ],
+      "candidate_finding_ids": [
+        "F-018"
+      ]
+    },
+    {
+      "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-024"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-050"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-048"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-048"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+      "route": "question",
+      "baseline_coverage": "partial",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-051"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-053"
+      ],
+      "candidate_finding_ids": [
+        "F-027"
+      ]
+    },
+    {
+      "target_id": "AK_F052_local_cable_balance:61ee4b031d84d67a9995",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "route": "technical",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-054"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-054"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+      "route": "question",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-054"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-057"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-057"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-024"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "full",
+      "baseline_finding_ids": [
+        "F-024"
+      ],
+      "candidate_finding_ids": [
+        "F-028"
+      ]
+    },
+    {
+      "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+      "route": "technical",
+      "baseline_coverage": "full",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [
+        "F-062"
+      ],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
+      "route": "negative",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    },
+    {
+      "target_id": "AK_F065_norm_replacement_applicability:d53a7df3ef467306402d",
+      "route": "question",
+      "baseline_coverage": "absent",
+      "candidate_coverage": "absent",
+      "baseline_finding_ids": [],
+      "candidate_finding_ids": []
+    }
+  ],
+  "decision": "Do not release this candidate: first AK run fails technical preservation. Continue frozen comparison; validate repairs separately before a new frozen trial.",
+  "diagnostic_evidence": [
+    "AK_r1_merge_source_handoff_trace.json",
+    "AK_r1_all_primary_recovery_admission_replay.json"
+  ],
+  "limits": [
+    "Single discipline and repeat; not a population estimate.",
+    "Coverage does not validate novel claims or unsupported additions.",
+    "Absence of negative targets is not proof of effective filtering.",
+    "No attribution of every lost target to a specific mechanism without per-target trace."
+  ],
+  "production_acceptance": false
+}

@@ -1,0 +1,14 @@
+{
+  "status": "prepared_not_adjudicated",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/output_review_queue.json",
+  "initial_receipt_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/output_review_initial_receipt.json",
+  "initial_receipt_sha256": "9ae0be85a610eabb070fc9340252a010ad80ab47f0f15b0b832e7923c87b1a49",
+  "findings": 28,
+  "counts": {
+    "mapped_requires_addition_review": 21,
+    "unmapped_not_yet_classified": 7
+  },
+  "initial_coverage_preserved": true,
+  "model_calls": 0,
+  "production_acceptance": false
+}

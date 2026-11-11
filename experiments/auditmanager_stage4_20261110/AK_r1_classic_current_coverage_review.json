@@ -1,0 +1,1166 @@
+{
+  "status": "manual_coverage_review_not_quality_acceptance",
+  "initial_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/coverage_ledger.json",
+  "initial_sha256": "789e54f338f3958f411dbe456d5850647b0b178562e0dac0a04504a37f3d61ed",
+  "reviewed_path": "/tmp/auditmanager_comparison_evaluation_20261111/experimental/AK_r1_classic_current/coverage_reviewed_v1.json",
+  "reviewed_sha256": "b6f3e41d7729105697f5132fe2f42d4131c137bf2f1f11c4bfaf22416e1914f5",
+  "reviewed_rows": [
+    {
+      "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Три межшкафные марки Ва4.1 схемы расходятся с Ba3.1 в КЖ. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Две линии ПЧ→M2/M3 по15м не имеют индивидуальных марок на схеме. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: В прочитанном разделе Па4.1/Ва4.1 нет самостоятельных строк ПЧ→M2/M3. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Графические участки4×2,5 дают730м, локальная ведомость700м. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Позиция3×2,5 отсутствует в разделе21 СО. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK14:65ea2c2649999f640c83",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Повтор клемм разных независимых цепей без различающего полного адреса. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK57:9851f2c4946bad03af44",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-010",
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-010",
+          "excerpt": "На листе 9 для PDS3 системы Пкр4.1 заданы разные диапазоны: в таблице сигналов, позиция 12 «Перепад давления на вентиляторе системы», указан диапазон 20–200 Па, а в перечне элементов, строка PDS1–PDS3, — 50–500 Па. Требуется согласовать диапазон PDS3 в схеме и перечне элементов. Указанная возле PDS3 уставка ΔP=50 Па входит в оба диапазона; невозможность работы с этой уставкой не установлена. Участок 20–50 Па не охватывается диапазоном из перечня, однако необходимость настройки на этом участке представленными источниками не подтверждена."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-011",
+          "excerpt": "На листе 13 для PDS3 системы Пкр5.1 приведены разные диапазоны перепада давления: в таблице сигналов функциональной схемы, колонка 12 «Перепад давления на вентиляторе системы», указан диапазон 20–200 Па, а в перечне элементов, строка PDS1-PDS3, — 50–500 Па. Требуется согласовать диапазон PDS3 в этих двух представлениях. Уставка ΔP=50 Па возле PDS3 входит в оба диапазона и сама по себе противоречия не образует. Указание о проверке позиции 7.3 спецификации не включено в подтвержденное замечание: эта позиция в предоставленных источниках отсутствует."
+        }
+      ],
+      "reason": "Найдены два PDS3 Пкр4.1/Пкр5.1 из шести адресов. Другие листы18/22 не заменяют отсутствующие четыре адреса.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK57:a998dcf058f81b7ac194",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Состав четырёх приборов ШАУВ-4-К4ПЧ: таблица2/2, перечень1/3, СО3/1. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK57:d6f8484b24bc88adcab5",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Уставки50/100Па находятся вне50–500Па. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-013",
+          "excerpt": "На листе 15 в строке «Приборы по месту» четырём преобразователям частоты систем Пн5.1 и Вн5.1 присвоены повторяющиеся обозначения: SC UZ2, SC UZ3, SC UZ2, SC UZ3. В перечне элементов этого же листа предусмотрены четыре отдельные позиции SCUZ1–SCUZ4. Обозначения схемы не обеспечивают однозначного соответствия перечню.\n\nРекомендация: Присвоить четырём преобразователям отдельные позиционные обозначения и согласовать их с перечнем элементов."
+        }
+      ],
+      "reason": "Четыре ПЧ листа15 с повтором UZ2/UZ3 против UZ1–UZ4 перечня.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:ab637698bce5025cb6df",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Обозначения схемы соответствуют диапазону общего перечня. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK7:4c7010afca7e2923c94b",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: На листе14 показаны три точкиAO при итоге2. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: 61 датчик в таблице против43 датчиков и43 КСИ в СО. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:f0a1212b87b41e035c75",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Подключение группы5 вообще не предусмотрено. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Описание без внешнего питания расходится со схемой БУРР-1М220В/QF1. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-004",
+          "excerpt": "В перечне элементов листа 42 предусмотрены блок БУРР-1М и два исполнительных блока БИС-1М производства «Алекс электроникс», соединяемые по радиоканалу согласно примечанию 1. В спецификации для управления кондиционерами указаны согласователи TD0027170RU Haier и адаптеры Haier. Документы задают различный состав оборудования одной системы управления. Необходимо согласовать выбранное исполнение, состав оборудования и интерфейсы в перечне элементов, спецификации и описании работы."
+        }
+      ],
+      "reason": "Конфликт БУРР/БИС Алекс электроникс с согласователями и адаптерами Haier.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-005",
+          "excerpt": "Уточнить, на одну сплит-систему или на пару кондиционеров приведён перечень элементов листа 42. Примечание 3 относит перечень к одной сплит-системе, тогда как в нём указаны два БИС-1М, а пункт 4 общих данных описывает совместную работу двух кондиционеров. Уточнение необходимо для однозначного определения комплектности; ошибка общего количества оборудования представленными данными не установлена."
+        }
+      ],
+      "reason": "Вопрос о единице комплекта: одна сплит-система против парной работы и двух БИС.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Два накладных датчика в поз.4.8 СО того же шкафа. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Два датчика наружного воздуха в СО одного шкафа. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Лист14: TE3/TE4 — два отдельных прибора, перечень1, СО8.6=2. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Лист20: TE3/TE4 — два отдельных прибора, перечень1, СО14.6=2. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Количество ТС2 на листе20 не заполнено. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: В позиции15.7 два канальных датчика того же назначения и шкафа. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: M3–M6: перечень2, схема4. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Y1/Y2: перечень4, схема2. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Общие данные используют две группы обозначений без явного соответствия. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Подключения второго узла не определены. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Уточнить учёт межприборных кабельных участков. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-024"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-024",
+          "excerpt": "Для одной линии П4.1.3-9 заданы разные сечения кабеля."
+        }
+      ],
+      "reason": "Одна П4.1.3-9 с одинаковыми15м и разными4×2,5/4×4,0; схема и журнал связаны.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Семь повторных марок на листах7/8, 20+20+5×25=165м. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: 14 повторных марок на листах25/26,14×15=210м. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Дословно одинаковые строки первого набора. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Насосная линия Пкр4.1-13 расходится с M3 на схемах. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Линия насоса Пкр4.1 вообще не определена в проекте. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Пкр5.1-9/-13 имеют расходящиеся адреса в КЖ и схемах. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Для насоса Пн5.1 имеется только пара неправильное M1/правильное M5. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Насос Пн5.1 имеет три обозначения M1/M5/M2. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: M2: насос на схеме, вентилятор в перечне. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-003",
+          "excerpt": "Перечень элементов Па3.1/Ва3.1 не согласован с кабельным журналом по составу и привязке двигателей. В перечне указаны три двигателя вентиляторов M1–M3 и двигатель насоса M4; позиция M5 отсутствует. В журнале линия Па3.1-12 подключена к M5, а линия Ва3.1-4 от ШАУВ-1-К4АС.ПЧ — к M4, обозначенному в перечне как двигатель насоса. Дополнительно линия Па3.1-11 подключена к M2 кабелем 3х1,5, однако назначение этого двигателя журналом явно не раскрыто. Требуется согласовать позиции и назначения двигателей в перечне и журнале с принятой схемой основного и резервного оборудования. По представленным данным нельзя устанавливать назначение M2 только по сечению кабеля или определять число работающих двигателей по числу преобразователей."
+        }
+      ],
+      "reason": "M4: насос в перечне и линия Ва3.1-4 в КЖ; назначение вентилятора на функциональной схеме не приведено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-003",
+          "excerpt": "Перечень элементов Па3.1/Ва3.1 не согласован с кабельным журналом по составу и привязке двигателей. В перечне указаны три двигателя вентиляторов M1–M3 и двигатель насоса M4; позиция M5 отсутствует. В журнале линия Па3.1-12 подключена к M5, а линия Ва3.1-4 от ШАУВ-1-К4АС.ПЧ — к M4, обозначенному в перечне как двигатель насоса. Дополнительно линия Па3.1-11 подключена к M2 кабелем 3х1,5, однако назначение этого двигателя журналом явно не раскрыто. Требуется согласовать позиции и назначения двигателей в перечне и журнале с принятой схемой основного и резервного оборудования. По представленным данным нельзя устанавливать назначение M2 только по сечению кабеля или определять число работающих двигателей по числу преобразователей."
+        }
+      ],
+      "reason": "M5 есть в КЖ, отсутствует в перечне; присутствие и роль на функциональной схеме не сохранены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Примечания16.2/16.3 ссылаются наВа4.1/Па4.1. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-006",
+          "excerpt": "В кабельном журнале для линии По5.1-9 от ШАУВ-6-К5ПЧ к электронагревателю системы По5.1 предусмотрен кабель ППГнг(A)-HF 4×4,0 длиной 10 м. В перечне кабелей листа 35 этого исполнения нет; при этом указан ППГнг(A)-HF 3×2,5 длиной 10 м. Отнесение последнего к линии нагревателя представленным текстом не подтверждено. Необходимо согласовать перечень с кабельным журналом, уточнив исполнение кабеля нагревателя по электрической схеме и расчету. Одного согласования метража недостаточно."
+        }
+      ],
+      "reason": "По5.1-9 в КЖ4×4,0/10м; перечень3×2,5/10м без доказанной привязки. Схема конкретной линии не проверена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: КM4 указан5×4,15м. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:c6f3ad54ccd603f4f796",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: КабельM4 отсутствует в локальной ведомости. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Восемь неэкранированных линий по15м дают120м. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Три экранированные однопарные линии20+15+15 дают50м. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Разные марки BSD4120 и BSD2120 в локальной таблице и СО. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: СО: плита15, подвес15, консоль15, анкер60. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:eaa42cc0bf57fa49a886",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Кладовые453,2 вместо453,1. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:5ba1a83908ceb33758ab",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: МОП583,3 вместо583,5. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:88b00bcefd42161838b4",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Общий итог19058,7 вместо19058,8. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-009",
+          "excerpt": "Уточнить контролируемую температуру для рабочей защиты калорифера от замораживания: в перечне функций указана температура воздуха после калорифера, а в алгоритме — температура наружного воздуха ≤3 °C. При буквальном выполнении алгоритма наружная температура ≤3 °C сохраняет условие включения защиты независимо от прогрева калорифера; защита предусматривает полное открытие клапана и отключение регулирования температуры. Согласовать указание контролируемой температуры и уточнить условия выхода из защиты и критерий неэффективности прогрева. В приведённом описании эти условия явно не определены; порог обратного теплоносителя >40 °C указан для завершения предпускового прогрева."
+        }
+      ],
+      "reason": "Сохранено самостоятельное действие наружного порога, отключение регулирования; evidence цитирует обратная вода≤20 ИЛИ наружный воздух≤3.",
+      "section_assessment": "incorrect"
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:b69337bb34f8d41b6d57",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Текст задаёт немедленный останов при наружной≤3. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Алгоритм задаёт Спрут Т-06, СО20.1 задаёт МВТ3280 NTC10К. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:eb93f9ee7771db58e73f",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Схемы доказывают непосредственное подключение терморезистора к катушке без обработки. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F028_change_register_scope:da80e943594aac429110",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Одна строка реестра с обозначениемАК-КЗ. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Акт о введенииГН2.2.5.1313-03 признан утратившим силу. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7752ed01f36756fff7f3",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: ТУ-газ-86 обосновывает одновременно высоту и площадь. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: В разделе6 не раскрыты реквизитыТУ и отдельное основание200м². Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:9a595b6986b86b78f7cb",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Пороговые значения и высота противоречат данным изготовителя. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-001"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-001",
+          "excerpt": "Ошибочное обозначение ГОСТ по оформлению документации автоматизации."
+        }
+      ],
+      "reason": "Точная опечатка ГОСТ21.4.08-2013 сохранена.",
+      "section_assessment": "incorrect"
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-002"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-002",
+          "excerpt": "Неверно указан раздел ПУЭ, содержащий требования к заземлению."
+        }
+      ],
+      "reason": "Неточная ссылка гл.7 ПУЭ в разделе заземления сохранена.",
+      "section_assessment": "incorrect"
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Повтор21.10 у двух разных кабелей. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: 35341 у лотка и бирок. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: BSD2120 у подвеса и трубы. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-007",
+          "excerpt": "Требуется уточнить заводские обозначения контрольных кабелей и согласовать их запись в документах. В спецификации, позиции 21.4–21.5, указано КСПВППГнг(А)-HF; в перечне на листе 25 — КСПВПГнг(A)-HF; в кабельном журнале для линий того же шкафа ШАУВ-1-К4ПЧ — КСВПГнг(A)-HF. Для других цепей журнал содержит КСПВПнг(А)-НФ и КСПВПнг(A)-HF. Также встречаются записи КИС-Пнг(А)-НФ и КИС-Пнг(A)-HF. Просим подтвердить, какие различия обозначают разные исполнения кабелей, а какие требуют редакционного исправления, и привести записи к подтвержденным обозначениям. Без технических условий изготовителей равнозначность или недопустимость этих марок не установлена."
+        }
+      ],
+      "reason": "Есть локальный перечень лист25 и СО21.4 с разными марками1×2×0,75; лист37 эталона не сохранён.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Четыре контрольные линии КЖ отличаются от схемы лист37. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-022"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-022",
+          "excerpt": "На листе 42 требуется уточнить согласованность ссылок на электроснабжение. Справа от цепи питания БУРР-1М через QF1 указано: «Электропитание 220В предусмотрено в разделе 21/24-ГК-К5-ЭМ». В примечании 2 питающие и межблочные кабели отнесены к разделу 13АВ-РД-ЭМ-К5. Распространяется ли примечание 2 на питание БУРР-1М? Если да, следует согласовать шифры; если ссылки относятся к разным работам, следует уточнить границы их применения. Примечание не называет БУРР-1М прямо, поэтому однозначный технический конфликт пока не установлен."
+        }
+      ],
+      "reason": "Ссылка21/24-ГК-К5-ЭМ у БУРР сохранена как вопрос об области применения.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:2ec9d727804fc985242e",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: В разделе7 осталась ссылка на лист6 примера РД pdf. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Поле Наименование листа MD: Пл3.1/Вк3.1/Всу3.1. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-025"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-025",
+          "excerpt": "Два отдельных преобразователя частоты в одном шкафу обозначены SC UZ1."
+        }
+      ],
+      "reason": "Два SC UZ1 листа8 для разных двигателей против SC UZ1/SC UZ2 перечня.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Колонки11/13 названы состоянием0…100% и отмечены AO. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: TE2 подключён к воздуховоду после нагревателя. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: П4.1.1 имеет разные назначения в общих указаниях и на схеме. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-015",
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-015",
+          "excerpt": "В таблице сигналов шкафа ШАУВ-5-К5ПЧ команда «Электр. воздухонагреватель пуск/стоп» системы Пу5.1, столбец 4, отнесена к дискретным входам DI. Выдача команды пуска/останова требует выходного сигнала; распределение противоречит указанному назначению сигнала."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-017",
+          "excerpt": "На листе 17 функциональной схемы системы По5.1 сигнал 7 «Электр. воздухонагреватель пуск/стоп» отмечен в строке дискретных входов DI шкафа ШАУВ-6-К5ПЧ. В строке DO для этого сигнала отметка отсутствует. Указанный тип сигнала не соответствует назначению команды управления нагревателем."
+        }
+      ],
+      "reason": "Сохранены два DI-адреса Пу5.1/По5.1 из пяти; категорический вывод об ошибке выхода оценивать отдельно.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Лист11:16/19 противоположны статическим обозначениям Ва3.1/Ва3.1р. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:8239404083a86b949049",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Лист15: замечание о состояниях относится к11/15/26/30. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-012"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-012",
+          "excerpt": "На листе 15 в таблице сигналов систем Пн5.1 и Вн5.1 переставлены наименования состояния основных и резервных вентиляторов. Линии 11 и 26 связаны с двигателями М1 и М3 вентиляторов Пн5.1 и Вн5.1, но подписаны «Состояние рез. вентилятора (работа/авария)». Линии 14 и 29 связаны с М2 и М4 вентиляторов Пн5.1 рез и Вн5.1р, но подписаны «Состояние осн. вентилятора (работа/авария)».\n\nРекомендация: Согласовать подписи сигналов 11, 14, 26 и 29 с принадлежностью двигателей основным и резервным вентиляторам."
+        }
+      ],
+      "reason": "Колонки11/14/26/29 листа15 с противоположными ролями основных/резервных вентиляторов.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Легенда определяет PDS только на вентиляторе. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-016",
+          "excerpt": "На функциональной схеме термостат защиты электронагревателя Пу5.1 обозначен TS2, а в перечне приборов того же листа единственный термостат, поставляемый комплектно с электронагревателем, обозначен ТС1. Позиционные обозначения прибора не согласованы."
+        }
+      ],
+      "reason": "TS2/ТС1 Пу5.1: схема и перечень сохранены, адресная строка КЖ не включена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-018"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-018",
+          "excerpt": "На листе 17 термостат защиты электронагревателя системы По5.1 обозначен на функциональной схеме как TS 2, а в перечне приборов этого листа единственный термостат, комплектный с электронагревателем, обозначен ТС1. Позиционные обозначения прибора на схеме и в перечне не согласованы."
+        }
+      ],
+      "reason": "TS2/ТС1 По5.1: схема и перечень сохранены, КЖ и TS1 внешней схемы не включены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: PDS45 в строке Вос5.1-1 КЖ. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: ДиапазонUZ1–UZ53 и количество3 в перечне. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: DI10 против12 точек. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Полный итог DI11 и расхождение1. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: DO5 против6 точек. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Легенда содержит электрический нагреватель. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-027"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-027",
+          "excerpt": "Обозначение шкафа управления системой ПД4.1.4 не согласовано между документами: на функциональной схеме 13АВ-РД-АК2-ПА, лист 24, в левой ячейке таблицы сигналов указано «ШУ-ПД4.14 (учтено в разделе ЭМ)», а на схеме внешних подключений того же комплекта, лист 47, внутри контура щита внизу слева — «ЩУ-ПД4.1.4». В кабельном журнале 13АВ-РД-АК2-ПА.КЖ, лист 35, строка кабеля «ПД4.1.4-1» также задает подключение от «ТЕ1 (ПД 4.1.4)» к «ЩУ-ПД4.1.4». Различаются буквенная часть марки и разделение числового индекса.\n\nРекомендация: Согласовать единую марку шкафа системы ПД4.1.4 на функциональной схеме, схеме внешних подключений и в кабельном журнале."
+        }
+      ],
+      "reason": "ШУ-ПД4.14/ЩУ-ПД4.1.4, включая ПД4.1.4-1 КЖ.",
+      "section_assessment": "incorrect"
+    },
+    {
+      "target_id": "AK_F052_local_cable_balance:61ee4b031d84d67a9995",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Все пять приводов имеют по35м, сумма175м. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Ведомость155м, разница10м. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: F054: у M1 и M2 повторены29/30. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: F055: у PDS4/PDS5 повторены23/24. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: F055: у M1/M2 повторены29–31. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: M2 присвоен двум разным устройствам на схеме подключений. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Y7 присвоен двум разным устройствам на схеме подключений. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: По5.1-1→TE2 на внешней схеме, →ТЕ1 в КЖ. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-028"
+      ],
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+          "finding_id": "F-028",
+          "excerpt": "Для кабеля термостата системы П6.1.4 шкафа ШАУВ-2-К6ПЧ указаны разные конечные приборы. На схеме внешних подключений, лист 38, кабель П6.1.4-2 соединяет клеммы 15–16 шкафа с TS2. В кабельном журнале 13АВ-РД-АК2-ПА.КЖ, листы 25 и 26, в строке «Пб.1.4-2» указан конец «ТС1». Функциональная схема, лист 20, подтверждает TS2 в системе П6.1.4 и отдельный TS1 в системе П6.1.1. Расхождение создаёт неоднозначность идентификации прибора при подключении и проверке цепи.\n\nРекомендация: Согласовать обозначение конечного прибора этой цепи в кабельном журнале и схемах."
+        }
+      ],
+      "reason": "П6.1.4-2/Пб.1.4-2 того же шкафа: клеммы15/16 и TS2/ТС1 КЖ25/26; отдельный TS1 первой системы не смешан.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: УзелА и примечание требуют согласования состава или области действия. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: Любое упоминание ГОСТ/СП обязательно переносить в ведомость. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F065_norm_replacement_applicability:d53a7df3ef467306402d",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": "Просмотрены все28 итоговых замечаний. Не сохранён адресный тезис: В общих указаниях указан ГОСТ Р 21.101-2020 как основание разработки. Отсутствие ошибочного тезиса не доказывает работу фильтра.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "AK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "ed93b1a4c951b6286686bbb27dd5db72a3e64cb9c50eef423e3de335cee07c06",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 55,
+          "availability_available": 55,
+          "absent": 41,
+          "partial": 7,
+          "full": 7
+        },
+        "review_complete": true,
+        "full_match_rate": 0.12727272727272726,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 23,
+          "availability_available": 23,
+          "absent": 17,
+          "full": 5,
+          "partial": 1
+        },
+        "review_complete": true,
+        "full_match_rate": 0.21739130434782608,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 22,
+          "availability_available": 22,
+          "absent": 22
+        },
+        "review_complete": true,
+        "full_match_rate": 0.0,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "correct": 8,
+      "incorrect": 4
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Coverage is not approval of novel additions or remedies.",
+    "Twenty-eight findings require separate quality review.",
+    "Negative absence is not filter credit."
+  ],
+  "production_acceptance": false
+}
