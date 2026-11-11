@@ -1,0 +1,853 @@
+{
+  "status": "four_output_reviews_with_object_and_mode_boundaries",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "4048e66a0abb6145a76cc544d414aedf3cffccdaf670c2b63ed9c17246135aa7",
+  "queue_after_sha256": "b0992c7d1e77080cbe6c19a35b37aedce7cc4f0f86c455ec4a6203e4e45bd811",
+  "reviewer": "coordinator_source_bound_review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 4",
+        "page": 7,
+        "problem": "Формулы нагрузок ВРУ-К противоречат составу потребителей и итогам таблицы.",
+        "description": "Для ввода 1 формула даёт 125,1 кВт, тогда как пять нагрузок по 20 кВт дают 100,0 кВт. Для ввода 2 записано 25+25+25+25+25=100 кВт, хотя сумма равна 125 кВт, а строки потребителей дают 83,2 кВт. Послеаварийная формула содержит 225,1 кВт вместо табличных 183,2 кВт.",
+        "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Согласование расчётной нагрузки, проводников и аппаратов защиты.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006",
+                "G-013",
+                "G-014"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить формулы по актуальным нагрузкам РП1 и РП2 и подтвердить выбор кабелей и аппаратов по согласованным значениям.",
+        "risk": "Ошибочное использование устаревших нагрузок при подборе оборудования.",
+        "source_finding_ids": [
+          "T-006",
+          "G-013",
+          "G-014"
+        ],
+        "source_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "related_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:007"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают все три несоответствия формул: 125,1 против 100,0 кВт для ввода 1, ошибочная сумма пяти слагаемых по 25 кВт для ввода 2 с табличными 83,2 кВт и 225,1 против 183,2 кВт в послеаварийном режиме.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают все три несоответствия формул: 125,1 против 100,0 кВт для ввода 1, ошибочная сумма пяти слагаемых по 25 кВт для ввода 2 с табличными 83,2 кВт и 225,1 против 183,2 кВт в послеаварийном режиме.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 93,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-EOM-F-006:70a5bb3630cd86d67bdf",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-EOM-F-006:9b2481431ea0814f9774",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-EOM-F-006:50e2ed9a377d8e0af479",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ввод1: формула125,1кВт против100,0; ввод2: пять25 названы100, таблица83,2; послеаварийные225,1 против183,2.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать формулы с актуальными исходными нагрузками РП1/РП2.",
+          "verdict": "supported_scoped_question",
+          "limits": "Правильные исходные нагрузки не назначаются по одному совпадению суммы;225,1 не обязательная проектная мощность."
+        },
+        {
+          "claim": "Формулы используют устаревшие нагрузки.",
+          "verdict": "unproven_cause",
+          "limits": "Расхождение установлено; хронология исходных нагрузок и причина расхождения не доказаны."
+        },
+        {
+          "claim": "Необходима замена кабелей или аппаратов.",
+          "verdict": "not_established",
+          "limits": "Выдача предлагает подтвердить выбор по согласованным данным; фактическая непригодность оборудования не следует из арифметики."
+        },
+        {
+          "claim": "ПУЭ как нормативное основание.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Конкретный пункт и цитата не представлены; нарушение нормы не засчитывается."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_EOM_output_text",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4",
+          "primary_adjudication": null,
+          "limits": "Исходная проектная нагрузка и необходимость изменения оборудования не установлены; не назначать225,1 автоматически.",
+          "wording": "Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4",
+          "primary_adjudication": null,
+          "limits": "Исходная проектная нагрузка и необходимость изменения оборудования не установлены; не назначать225,1 автоматически.",
+          "wording": "Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+          "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4",
+          "primary_adjudication": null,
+          "limits": "Исходная проектная нагрузка и необходимость изменения оборудования не установлены; не назначать225,1 автоматически.",
+          "wording": "Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2."
+        }
+      ],
+      "disposition": "assessed_preserve_formula_reconciliation_question_qualify_cause"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-031",
+      "finding": {
+        "id": "F-031",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Обозначения электрооборудования",
+        "sheet": "Лист 4",
+        "page": 7,
+        "problem": "Щит помещения 10Н имеет разные обозначения на схеме и в таблице.",
+        "description": "На схеме ВРУ-К указан ЩМ10, в таблице нагрузок для помещения 10Н — ЩМ20.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Уточнить марку щита и привести схему, таблицу и маркировку линии к одному обозначению.",
+        "risk": "Ошибочная идентификация потребителя при монтаже и эксплуатации.",
+        "source_finding_ids": [
+          "G-015"
+        ],
+        "source_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "related_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F009_commercial_identity_supply:2c0ad71382f4e28b3853",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Помещение10Н: на схеме ЩМ10, в таблице ЩМ20.",
+          "verdict": "confirmed_same_object_TEXT_and_graphic",
+          "limits": "Связь установлена через помещение10Н; TEXT не исправляется по изображению."
+        },
+        {
+          "claim": "Согласовать марку и связанные обозначения.",
+          "verdict": "supported_scoped_question",
+          "limits": "Правильная марка не выбирается по большинству документов."
+        },
+        {
+          "claim": "Ошибочная идентификация при монтаже и эксплуатации.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_EOM_output_text",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json",
+          "sha256": "ce3785a0efeda80ba7dd010d463cb406632919a791bb99394e43c8cd472609c0",
+          "primary_adjudication": null,
+          "limits": "Несовпадение имени подтверждено через помещение 10Н. Девять подключённых потребителей не доказывают девять щитов в данной поставке. Семь номеров ЩМ4–ЩМ10 — возможное объяснение количества, не установленная привязка спецификации. Примечание листа 6 прямо говорит об арендаторах, но его схема ограничена ЩМ(4–10); лист 16 говорит о коммерческих помещениях арендаторов и последующей замене щитов арендаторами. Договорные границы поставки и вся смежная документация не проверены. Отсутствие границы поставки во всех документах, недостача двух щитов и двойной заказ не доказаны.",
+          "wording": "Для помещения 10Н на схеме ВРУ-К указан ЩМ10, в таблице нагрузок — ЩМ20; согласуйте обозначение одного объекта. В таблице девять потребителей 2Н–10Н, а в спецификации семь щитов ЩМ. Типовая схема охватывает ЩМ(4–10), примечания упоминают размещение щитов арендаторами. Уточните состав семи специфицированных щитов и ответственность за ЩМ2/ЩМ3."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "route": "directly_viewed_GRAPHIC_prior_turn_same_session",
+          "observation": "На схемеЩМ10 связан с10Н; девять отходящих линий107А; у обоих счётчиков250/5; отдельная левая измерительная группа1ТТ4…1ТТ6 имеет200/5."
+        }
+      ],
+      "disposition": "assessed_preserve_same_room_identifier_question"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-032",
+      "finding": {
+        "id": "F-032",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Учёт электроэнергии",
+        "sheet": "Лист 4",
+        "page": 7,
+        "problem": "Коэффициент трансформации первого ввода ВРУ-К различается на схеме и в расчёте.",
+        "description": "Для 1ТТ4–1ТТ6 на схеме указано 200/5, класс 0,5. В расчёте Wh1 принято 250/5 и коэффициент 50. Расчёт не подтверждает показанное на схеме исполнение.",
+        "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Выбор трансформаторов тока и согласование их параметров с расчётом учёта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-016"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-016"
+                ],
+                "designation_source": "Подбор кандидата при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить единый коэффициент трансформации, проверить выбранное исполнение и согласовать схему, расчёт и параметры счётчика.",
+        "risk": "Ошибки комплектации и настройки коммерческого учёта.",
+        "source_finding_ids": [
+          "G-016"
+        ],
+        "source_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "related_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-016",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F010_meter_CT_identity:3db2ab4cd251ab7a20a8",
+          "route": "negative",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "EOM_F010_meter_CT_identity:428615994b8f295c4f7f",
+          "route": "negative",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Отдельная группа1ТТ4–1ТТ6 имеет200/5; расчёт Wh1 использует250/5 иKтт50.",
+          "verdict": "confirmed_values_but_different_entities",
+          "limits": "200/5 относится к измерительным приборам, а не к показанному счётчику."
+        },
+        {
+          "claim": "У счётчика первого ввода на схеме200/5 и поэтому расчёт не подтверждает исполнение.",
+          "verdict": "refuted_graphic_object_binding",
+          "limits": "У обоих символовкВт·ч подписано250/5; совпадает с расчётом. Наличие200/5 рядом не создаёт противоречия той же цепи."
+        },
+        {
+          "claim": "Нужно установить единый коэффициент для сопоставленных групп и исправить параметры счётчика.",
+          "verdict": "unsupported_action_based_on_wrong_object_relation",
+          "limits": "Разные назначения не требуют одинаковых коэффициентов только по этому сопоставлению."
+        },
+        {
+          "claim": "Ошибки комплектации или настройки коммерческого учёта.",
+          "verdict": "unproven_consequence",
+          "limits": "Вся схема учёта, допустимость перегрузки, фактическая комплектация и настройки не проверены."
+        },
+        {
+          "claim": "Причина ошибки — первичный детектор перепутал принадлежность ТТ.",
+          "verdict": "confirmed_saved_detector_trace",
+          "limits": "Один детектор явно назвал1ТТ4–1ТТ6 цепью счётчика; второй аналога не выдал. Дальнейший конкретный механизм пропуска контроля не установлен."
+        },
+        {
+          "claim": "ПУЭ как нормативное основание.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Конкретный пункт и цитата не представлены; нарушение нормы не засчитывается."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "no_new_useful_content_established",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_EOM_output_text",
+      "profile_and_section": "exclude_refuted_finding",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_c4bc22e5fcba41289a2c7b1d58937079",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F010_meter_CT_identity.json",
+          "sha256": "a703160135a73507c68370fde3502cd18805f7170e1f697e52463ef0a0d5794a",
+          "primary_adjudication": null,
+          "limits": "Опровергнуто только заявленное расхождение коэффициентов цепей учёта. Это не подтверждает правильность всего узла, допустимость 20-процентной перегрузки, фактическую комплектацию, настройку счётчиков или нормативную корректность расчётной методики. Различие между двумя верхними измерительными группами само по себе не доказанная ошибка. Повторяющиеся обозначения групп на схеме не оценивались.",
+          "wording": "Не выпускать B-EOM-F-010: расчёт Wh1/Wh2 использует ТТ 250/5 и коэффициент 50, совпадающие с подписями у счётчиков на схеме. Значение 200/5 относится к отдельной левой группе измерительных ТТ."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F010_meter_CT_identity.json",
+          "sha256": "a703160135a73507c68370fde3502cd18805f7170e1f697e52463ef0a0d5794a",
+          "primary_adjudication": null,
+          "limits": "Опровергнуто только заявленное расхождение коэффициентов цепей учёта. Это не подтверждает правильность всего узла, допустимость 20-процентной перегрузки, фактическую комплектацию, настройку счётчиков или нормативную корректность расчётной методики. Различие между двумя верхними измерительными группами само по себе не доказанная ошибка. Повторяющиеся обозначения групп на схеме не оценивались.",
+          "wording": "Не выпускать B-EOM-F-010: расчёт Wh1/Wh2 использует ТТ 250/5 и коэффициент 50, совпадающие с подписями у счётчиков на схеме. Значение 200/5 относится к отдельной левой группе измерительных ТТ."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "route": "directly_viewed_GRAPHIC_prior_turn_same_session",
+          "observation": "На схемеЩМ10 связан с10Н; девять отходящих линий107А; у обоих счётчиков250/5; отдельная левая измерительная группа1ТТ4…1ТТ6 имеет200/5."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_CT_identity_detection_trace.json",
+          "sha256": "fb757b19d0a20652c4c9a9490237b4c1b94a1261d07344b1296a4580432c6f94",
+          "route": "saved_detector_trace"
+        }
+      ],
+      "disposition": "assessed_refute_CT_ratio_conflict_wrong_object_binding"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-033",
+      "finding": {
+        "id": "F-033",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 4",
+        "page": 7,
+        "problem": "На схеме ВРУ-К ошибочно указан ток отходящих линий 107 А.",
+        "description": "Для ЩМ2–ЩМ10 на схеме указан ток 107,0 А. При трёхфазном питании 380 В, мощности 20 кВт и cosφ=0,85 ток составляет около 35,8 А, что соответствует таблице. Для ЩМ7 при табличных 23,2 кВт получается около 41,5 А. Значение 107 А также превышает показанные номиналы автоматов C40 и C50; это не доказывает недостаточность автоматов при исправленных нагрузках.",
+        "norm": "ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Согласование расчётного тока, проводников и защитных аппаратов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-019",
+                "G-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-019",
+                  "G-020"
+                ],
+                "designation_source": "Подбор кандидата при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать токи по согласованным мощностям, исправить подписи схемы и проверить соответствующие аппараты и кабели.",
+        "risk": "Неверная оценка загрузки линий и ошибочный подбор защиты по подписи схемы.",
+        "source_finding_ids": [
+          "G-019",
+          "G-020"
+        ],
+        "source_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "related_block_ids": [
+          "blk_aac0d4eb9b294c218e9de35c7a5dda11"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания выявляют ошибочный ток 107,0 А отходящих линий. Левое дополнительно сопоставляет его с автоматами C40 и C50, правое уточняет отдельный расчётный ток ЩМ7 — 41,5 А наряду с 35,8 А остальных потребителей.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания выявляют ошибочный ток 107,0 А отходящих линий. Левое дополнительно сопоставляет его с автоматами C40 и C50, правое уточняет отдельный расчётный ток ЩМ7 — 41,5 А наряду с 35,8 А остальных потребителей.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F007_phase_and_temporary_load:9e004a2c0153a24dc3ce",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На девяти линияхЩМ2–ЩМ10 указано107А; видныC40/C50.",
+          "verdict": "confirmed_graphic_labels",
+          "limits": ""
+        },
+        {
+          "claim": "При симметричном трёхфазном380В,20кВт,cos0,85 ток около35,8А;23,2кВт даёт около41,5А.",
+          "verdict": "conditional_arithmetic_confirmed",
+          "limits": "Это условные расчёты, не установленные режимы исходной подписи. Заголовок Ip в авторитетномTEXT имеет единицу кВт и автоматически наА не исправляется."
+        },
+        {
+          "claim": "107А является ошибочным значением и должно быть исправлено на трёхфазное.",
+          "verdict": "insufficient_same_mode_evidence",
+          "limits": "107А воспроизводится при20кВт/(220В×0,85). Примечание типовойЩМ(4–10) прямо предусматривает временное однофазное питание с изоляцией двух фаз. Различие режимов нужно разрешить; нельзя объявить107А правильным только по этому воспроизведению."
+        },
+        {
+          "claim": "Обязательная заменаC40/C50 или недостаточность питания.",
+          "verdict": "not_established",
+          "limits": "Одновременные20кВт во временном режиме не подтверждены; выдача сама ограничивает вывод о недостаточности автоматов."
+        },
+        {
+          "claim": "Запросить допустимую временную нагрузку и раздельные параметры временного/постоянного режимов.",
+          "verdict": "supported_scoped_question",
+          "limits": "Примечание листа6 относится кЩМ4–10; распространение наЩМ2/3 требует отдельного подтверждения. Лист16 подтверждает временные щиты коммерческих помещений без такого точного пообъектного расчёта."
+        },
+        {
+          "claim": "Ошибочный подбор защиты по подписи.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "ПУЭ как нормативное основание.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Конкретный пункт и цитата не представлены; нарушение нормы не засчитывается."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_EOM_output_text",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_919370cbd72648128e20ab1e54cc8be6",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_f2c7e53dd8e74a56bd148d84acd8589b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json",
+          "sha256": "1c27b242ec894d3038ec6afb0afb4a727801b04675928076ed2d19c28944fed1",
+          "primary_adjudication": null,
+          "limits": "107 А воспроизводится как 20 кВт/(220 В×0,85); около 35,75 А — как 20 кВт/(√3×380 В×0,85). Это показывает возможное различие режимов, но не доказывает, что автор проекта именно так получил все подписи. Для 23,2 кВт получается около 41,47 А при симметричном трёхфазном режиме. Табличный заголовок Ip буквально имеет единицу кВт; её нельзя незаметно заменить на А. Значение 35,8 близко условному расчёту, но его точное округление по неизвестным исходным данным не подтверждено. Не установлено, предполагается ли одновременная временная нагрузка 20 кВт. Номиналы автоматов сами по себе не доказывают необходимость замены, отказ или опасность. Разницу 20/23,2 для ЩМ7 рассматривать совместно с H-EOM-70/B-EOM-F-008, не теряя отдельного вопроса о фазности.",
+          "wording": "Уточнить расчётную нагрузку и ток временного однофазного питания ЩМ2–ЩМ10, отдельно от постоянного режима: схема содержит 20,0 кВт и 107,0 А при автоматах C40/C50, а таблица — значения Ip 35,8 и 41,5. Примечание предусматривает временное питание однофазного оборудования с изоляцией двух оставшихся фаз. Указать допустимую временную нагрузку и согласовать подписи с назначением защиты."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "route": "directly_viewed_GRAPHIC_prior_turn_same_session",
+          "observation": "На схемеЩМ10 связан с10Н; девять отходящих линий107А; у обоих счётчиков250/5; отдельная левая измерительная группа1ТТ4…1ТТ6 имеет200/5."
+        }
+      ],
+      "disposition": "assessed_preserve_temporary_mode_question_remove_automatic_three_phase_correction"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_fb5f780dae7a475ca6c249f62b64771e",
+      "authoritative_TEXT": "### BLOCK #23 [TEXT]: blk_fb5f780dae7a475ca6c249f62b64771e\n\n> **Created:** 2026-10-20 12:14:05 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/BjWQyLi73qRs8TokB8NB)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: Р | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Гр.№ | Наименование потребителя | Площадь | Кэф. | Py, кВт | Pp, кВт | Ip, кВт | cos φ | S, кВА |\n|---|---|---|---|---|---|---|---|---|\n| РП1 |  |  |  | 100,0 | 100,0 | 179,0 | 0,85 | 117,6 |\n| 2Н | ЩМ2 | 37,5 | 0,22 | 20,0 | 20,0 | 35,8 | 0,85 | 23,5 |\n| 3Н | ЩМ3 | 66,9 | 0,22 | 20,0 | 20,0 | 35,8 | 0,85 | 23,5 |\n| 4Н | ЩМ4 | 31,4 | 0,22 | 20,0 | 20,0 | 35,8 | 0,85 | 23,5 |\n| 5Н | ЩМ5 | 73,2 | 0,22 | 20,0 | 20,0 | 35,8 | 0,85 | 23,5 |\n| 6Н | ЩМ6 | 60,5 | 0,25 | 20,0 | 20,0 | 35,8 | 0,85 | 23,5 |\n| РП2 |  |  |  | 83,2 | 83,2 | 148,9 | 0,85 | 97,9 |\n| 7Н | ЩМ7 | 105,4 | 0,22 | 23,2 | 23,2 | 41,5 | 0,85 | 27,3 |\n| 8Н | ЩМ8 | 68,6 | 0,22 | 20,0 | 20,0 | 35,8 | 0,85 | 23,5 |\n| 9Н | ЩМ9 | 85,3 | 0,22 | 20,0 | 20,0 | 35,8 | 0,85 | 23,5 |\n| 10Н | ЩМ20 | 79,1 | 0,22 | 20,0 | 20,0 | 35,8 | 0,85 | 23,5 |\n\n| Ввод режим | Методика расчета |  |  | Py, кВт | Pp, кВт | Ip, кВт | cos φ | S, кВА |\n|---|---|---|---|---|---|---|---|---|\n| Ввод 1 | Pp=25+25+25+25+25,1=125,1 кВт | 0 |  | 100,0 | 100,0 | 179,0 | 0,85 | 117,6 |\n| Ввод 2 | Pp=25+25+25+25+25=100 кВт | 0 |  | 83,2 | 83,2 | 148,9 | 0,85 | 97,9 |\n| Посл. авар. | Pp=РП1+РП2=125,1+100=225,1 кВт | 0 |  | 183,2 | 183,2 | 327,9 | 0,85 | 215,5 |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n| Ввод режим | Методика расчета |  |  | Py, кВт | Pp, кВт | Ip, кВт | cos φ | S, кВА |\n|---|---|---|---|---|---|---|---|---|\n| Ввод 1 | с компенсацией реактивной мощности до 0,97 |  |  | 100,0 | 100,0 | 157,6 | 0,97 | 103,6 |\n| Ввод 2 | с компенсацией реактивной мощности до 0,97 |  |  | 83,2 | 83,2 | 129,0 | 0,98 | 84,8 |\n| Авар. | с компенсацией реактивной мощности до 0,97 |  |  | 183,2 | 183,2 | 286,6 | 0,97 | 188,4 |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_c4bc22e5fcba41289a2c7b1d58937079",
+      "authoritative_TEXT": "### BLOCK #24 [TEXT]: blk_c4bc22e5fcba41289a2c7b1d58937079\n\n> **Created:** 2026-10-20 12:14:05 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/xixblpu_fI0Zuq2gGOZM)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: Р | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nПроверка коэффициентов трансформации трансформаторов тока по требованию к учету электроэнергии на стороне 0,4 кВ\n\n| N п/п | Наименование величин | Обозначение | Расчетная формула | Значение – Wh1 (секция I) |  |  |  | Значение – Wh2 (секция II) |  |  |  |  |  |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|  |  |  |  | Pp | Cosf | Sp | Iаб | In1мм | Pp | Cosf | Sp | Iаб | In1мм |\n| 1 | Расчетный ток в линии в рабочем режиме, А | Ip.раб | Sp/(Ul × √3) | Pp=100.00 | 103.1 | =156.6А | Pp=83.30 | 85.0 | =129.1А |  |  |  |  |\n|  |  |  |  | Cosf= 0.97 | 0,38x1,732 |  | Cosf=0,98 | 0,38x1,732 |  |  |  |  |  |\n|  |  |  |  | Sp= 103.1 | (принимаем тр-р тока 250/5 с учетом 20% перегрузки; Ip.аб/1,2 \\< In1мм; 286.6/1,2=238.8 \\< 250) |  |  |  | Sp= 85.0 | (принимаем тр-р тока 250/5 с учетом 20% перегрузки Ip.аб/1,2 \\< In1мм; 286.6/1,2=238.8 \\< 250) |  |  |  |\n|  |  |  |  | Iаб= 286,6 |  |  |  |  | Iаб= 286,6 |  |  |  |  |\n|  |  |  |  | In1мм= 250 |  |  |  |  | In1мм= 250 |  |  |  |  |\n| 2 | Минимальный ток в линии в рабочем режиме, А (при 15% нагрузке) | Ip.мин | Ip.раб.Ic(IIc) x 0,15 | 156.6 x 0,15= 23.5А |  |  |  | 129,1 x 0,15= 19.4А |  |  |  |  |  |\n| 3 | Ток цепи счетчика при рабочей нагрузке, А | Icч.max | Ip.раб/Kтт > In.cч | 156.6/50 = 3.1A > 2A (40% от In.cч) |  |  |  | 129.1/50 = 2.6A > 2A (40% от In.cч) |  |  |  |  |  |\n| 4 | Ток цепи счетчика при минимальной нагрузке, А | Icч.min | Ip.мин/Kтт > Imin.cч | 24/50 = 0.5A > 0,1A |  |  |  | 19/50 = 0.4A > 0,1A |  |  |  |  |  |\n| 5 | Вывод: | Выбранные трансформаторы тока удовлетворяют требованиям ПУЭ, п. 1.5.17 и РМ-2559, п.п. 6.1–6.3, 6.5 |  |  |  |  |  |  |  |  |  |  |  |\n\nIp.аб – расчетный ток в аварийном режиме или наибольший ток на вводе (превышающий Ip раб., например, при пожаре или в других случаях) А;\n\nKтт – коэффициент трансформации выбранного трансформатора тока;\n\nIn1мм – номинальный ток первичной обмотки трансформатора тока, А;\n\nIn.cч – номинальный ток счетчика, А;\n\nIмин – минимальный ток счетчика, при котором он не выходит из класса точности (для электронных счетчиков Imin=0,1 А (РМ-2559))\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_919370cbd72648128e20ab1e54cc8be6",
+      "authoritative_TEXT": "### BLOCK #33 [TEXT]: blk_919370cbd72648128e20ab1e54cc8be6\n\n> **Created:** 2026-10-20 12:14:07 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/qME5YeDVCMZnoMktHl14)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Схема однолинейная принципиальная ЩМ(4-10) | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n*Примечание:*\n\n*На период механизации в коммерческих помещениях арендаторами размещены щиты механизации, которые впоследствии заменяются на постоянный силовой щит арендаторами. Щитами механизации предусматривается питание однофазного оборудования на время ремонта. Оставшиеся две фазы на время ремонта необходимо заизолировать с возможностью использования их в дальнейшем владельцем помещения.*\n\n*Необходимо соблюдать чередование фаз.*\n\n## Page 10 — Sheet 7 — Схема однолинейная принципиальная 1.ЩС\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_f2c7e53dd8e74a56bd148d84acd8589b",
+      "authoritative_TEXT": "### BLOCK #70 [TEXT]: blk_f2c7e53dd8e74a56bd148d84acd8589b\n\n> **Created:** 2026-10-20 12:14:16 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/-ZB6k6HpdcJkpCfMWT_o)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: Р | Sheet: 16 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n*Примечание:*\n\n*На период механизации в коммерческих помещениях арендаторов размещаются щиты механизации, которые впоследствии заменяются на постоянный щит арендаторами.*\n\n*Необходимо предусмотреть чередование фаз подключения.*\n\n*Установка розеток над раковиной или умывальником не допускается.*\n\n**Кабель к рекламным вывескам прокладывается силами арендатора.*\n\n*«Данный лист см. совместно с разделами:*\n\n- АИ0.1 «Чистовая отделка МОП по Дизайн-проекту. Подземные этажи, включая паркинг.»\n\n- АИ1.1-Э «Чистовая отделка Эталонного МОП (Секция 2-3) по Дизайн-проекту....»\n\n- АИ2-ТЗ «Чистовая отделка МОП по Дизайн-проекту. Узлы и сечения отделки. ТЗ на изделия индивидуального изготовления»\n\n*Точное расположение/привязки розеток выполнить в соответствии с вышеуказанными разделами АИ.*\n\n*Соблюдите решения по отделке (в том числе в части высоты потолков, светильников) и расстановке оконечных устройств.»*\n\n"
+    }
+  ],
+  "graphic_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+      "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+      "route": "directly_viewed_GRAPHIC_prior_turn_same_session",
+      "observation": "На схемеЩМ10 связан с10Н; девять отходящих линий107А; у обоих счётчиков250/5; отдельная левая измерительная группа1ТТ4…1ТТ6 имеет200/5."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-EOM-F-006.json",
+      "sha256": "e54fd352c32162f8fbf853d66e150bb4740befe5105708f9849d62b8550656a4",
+      "primary_adjudication": null,
+      "limits": "Исходная проектная нагрузка и необходимость изменения оборудования не установлены; не назначать225,1 автоматически.",
+      "wording": "Согласовать формулы вводов ВРУ-К с числовыми столбцами: пять слагаемых25 дают125, а не100; послеаварийная формула225,1 отличается от табличных183,2."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F009_commercial_identity_supply.json",
+      "sha256": "ce3785a0efeda80ba7dd010d463cb406632919a791bb99394e43c8cd472609c0",
+      "primary_adjudication": null,
+      "limits": "Несовпадение имени подтверждено через помещение 10Н. Девять подключённых потребителей не доказывают девять щитов в данной поставке. Семь номеров ЩМ4–ЩМ10 — возможное объяснение количества, не установленная привязка спецификации. Примечание листа 6 прямо говорит об арендаторах, но его схема ограничена ЩМ(4–10); лист 16 говорит о коммерческих помещениях арендаторов и последующей замене щитов арендаторами. Договорные границы поставки и вся смежная документация не проверены. Отсутствие границы поставки во всех документах, недостача двух щитов и двойной заказ не доказаны.",
+      "wording": "Для помещения 10Н на схеме ВРУ-К указан ЩМ10, в таблице нагрузок — ЩМ20; согласуйте обозначение одного объекта. В таблице девять потребителей 2Н–10Н, а в спецификации семь щитов ЩМ. Типовая схема охватывает ЩМ(4–10), примечания упоминают размещение щитов арендаторами. Уточните состав семи специфицированных щитов и ответственность за ЩМ2/ЩМ3."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F010_meter_CT_identity.json",
+      "sha256": "a703160135a73507c68370fde3502cd18805f7170e1f697e52463ef0a0d5794a",
+      "primary_adjudication": null,
+      "limits": "Опровергнуто только заявленное расхождение коэффициентов цепей учёта. Это не подтверждает правильность всего узла, допустимость 20-процентной перегрузки, фактическую комплектацию, настройку счётчиков или нормативную корректность расчётной методики. Различие между двумя верхними измерительными группами само по себе не доказанная ошибка. Повторяющиеся обозначения групп на схеме не оценивались.",
+      "wording": "Не выпускать B-EOM-F-010: расчёт Wh1/Wh2 использует ТТ 250/5 и коэффициент 50, совпадающие с подписями у счётчиков на схеме. Значение 200/5 относится к отдельной левой группе измерительных ТТ."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F007_phase_and_temporary_load.json",
+      "sha256": "1c27b242ec894d3038ec6afb0afb4a727801b04675928076ed2d19c28944fed1",
+      "primary_adjudication": null,
+      "limits": "107 А воспроизводится как 20 кВт/(220 В×0,85); около 35,75 А — как 20 кВт/(√3×380 В×0,85). Это показывает возможное различие режимов, но не доказывает, что автор проекта именно так получил все подписи. Для 23,2 кВт получается около 41,47 А при симметричном трёхфазном режиме. Табличный заголовок Ip буквально имеет единицу кВт; её нельзя незаметно заменить на А. Значение 35,8 близко условному расчёту, но его точное округление по неизвестным исходным данным не подтверждено. Не установлено, предполагается ли одновременная временная нагрузка 20 кВт. Номиналы автоматов сами по себе не доказывают необходимость замены, отказ или опасность. Разницу 20/23,2 для ЩМ7 рассматривать совместно с H-EOM-70/B-EOM-F-008, не теряя отдельного вопроса о фазности.",
+      "wording": "Уточнить расчётную нагрузку и ток временного однофазного питания ЩМ2–ЩМ10, отдельно от постоянного режима: схема содержит 20,0 кВт и 107,0 А при автоматах C40/C50, а таблица — значения Ip 35,8 и 41,5. Примечание предусматривает временное питание однофазного оборудования с изоляцией двух оставшихся фаз. Указать допустимую временную нагрузку и согласовать подписи с назначением защиты."
+    }
+  ],
+  "conditional_arithmetic": {
+    "single_phase_20kW_220V_cos085": 106.95187165775401,
+    "three_phase_20kW_380V_cos085": 35.74924267428024,
+    "three_phase_23_2kW_380V_cos085": 41.46912150216507
+  },
+  "limits": [
+    "No new engineer decisions.",
+    "Numeric agreement does not establish actual equipment mode.",
+    "Wrong CT comparison refuted without declaring whole metering design valid.",
+    "Frozen runs, evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
