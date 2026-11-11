@@ -1,0 +1,1127 @@
+{
+  "status": "baseline_repeat_review_complete_comparison_pending",
+  "repeat": 2,
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+  "history_verification": {
+    "status": "exact_receipt_replay_verified",
+    "queue_sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+    "transitions": [
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_area_arithmetic_output_review.json",
+        "sha256": "106b43449f0224a9fb660b42cffcf1dc584db1f232328a967d6ee1ea6e17fcdb"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_dimension_control_pair_output_review.json",
+        "sha256": "5c28195228b205306f444ad6163ebc402eefcb98be1095ac231b4cd3228a1f4f"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_Y2_duplicate_false_claim_output_review.json",
+        "sha256": "250d85925b858809268874ee940007adb8e5b7b658673ad6f20fbd82db975def"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_fan_roles_and_drive_identity_output_review.json",
+        "sha256": "16c373ce60bd4915a37f0c1e655d82e499cb431b678d2717e54c4999aa1cb9a4"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_commercial_modes_and_power_output_review.json",
+        "sha256": "04bdee8e6f92b4573202f8ad3c06fc222baada3e4041e1809b1bd8f267fb27d0"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_group_total_and_small_currents_output_review.json",
+        "sha256": "796e7239b23614b2a43440ecb3ada0768a55da1e386aefc2c3c3d2ed4c227d3d"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_phase_current_false_addition_output_review.json",
+        "sha256": "5ad530bacdc5b34b2e499d314eed8694ee9bb36f0a96ba91b016f52639838a3e"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_neutral_topology_and_UK_phase_output_review.json",
+        "sha256": "5902d5ec78b57e7b812a911adb09a6a534b28e555f9b20dfcdaf8fa4d9613407"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_specification_repetition_and_quantity_output_review.json",
+        "sha256": "4766cc61bc823e813d03c9a268a8cc1d8c53f09954e41d3c4a9199751de91b85"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_specification_identity_and_scope_output_review.json",
+        "sha256": "c18e1408ded9aee9b1933bcbde7cfc80a59eb3772aadf6a10fb9f7715e93a3ab"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_load_formula_and_precision_output_review.json",
+        "sha256": "fe739779fba8c3ce0835b4784fbc96bebfd9922cfb04beedfe5fc469f78b7e79"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_CT_modes_and_compensation_output_review.json",
+        "sha256": "4f3a82a5aa05eaae8b5440857f30d0c61af7a2992fd0ded2355f8a84a2cae8a0"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_board_requirements_and_supply_output_review.json",
+        "sha256": "f2f655a58a2566e7940904dc7ba53dcb2cc33146db7dce22abafc31fd313b052"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_commercial_area_method_output_review.json",
+        "sha256": "99d88aa0b862aa0e175eb4c67600d0b715c124190a8f214a751d93f70abdebe0"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_cable_material_and_fire_protection_output_review.json",
+        "sha256": "90c712069443b1106b98e3078aa68f90ef5ac4314794fb99b2637946b4606869"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_apartment_power_and_controller_scope_output_review.json",
+        "sha256": "97b8bd23089038b6d8cea4c4198a85e684bedf9b3c81040e8eeb98d059c50ef3"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_outdoor_units_and_floor_identity_output_review.json",
+        "sha256": "ed776a996e9339c39608d0c9285d3fa9176950f8b85665dab7dc3ee12e5dd495"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_tray_nodes_and_specification_output_review.json",
+        "sha256": "910f4d0b827682cbd9b1deb98cb9ae82aa1e5245aa9597ca86c7f2f92c9488e8"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_reserved_fire_line_output_review.json",
+        "sha256": "525c0e2c71294eef856decc7d9c2b0bd1834a80938eb0ab7c14b4d80e8be4687"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_floor_ranges_and_room_numbers_output_review.json",
+        "sha256": "c4cf63e1ecfe3ae1966f3cb0a8d1d33185b2e7503896b43a7dc3ad357010ccf9"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_commercial_board_identity_output_review.json",
+        "sha256": "ea7dec558a9c8dd44421f3c10341e6d290b22171c48ce056c5454878be0fc7e5"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_grounding_standard_title_output_review.json",
+        "sha256": "57da74b52807e4999a74e12b218700bef703ce190623f2b36a68083498eece25"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_false_standard_replacement_output_review.json",
+        "sha256": "0157443e3d44d4df74941872acc810902c273bb322a7547892ca62f8c739a6b8"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_repeated_trays_and_RD_title_output_review.json",
+        "sha256": "0371ba9e5ac50f46753138422611aab25105311e9b7abdfbe0187fddf309ac4b"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_material_quantities_and_rounding_output_review.json",
+        "sha256": "49d88ad02d43c244960d669c1e86fb8a81c4271cbdc67fc832137cf3d444c944"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_roof_material_consistency_output_review.json",
+        "sha256": "cd5d709a0560a0d8d323a8aea0c5a122917dc09be0d035f8f565e5cb6280b591"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_insulation_volume_and_flashing_area_output_review.json",
+        "sha256": "2be48b93e9fec126555ef92741763b19ce93d17ed31f29f3da5c81ef72c242ec"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_sheet_and_document_references_output_review.json",
+        "sha256": "1cebcd33c775e4545e26dc904b4a0ca93d04a03f1c8240119d3b40ce10df81d5"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_material_identity_and_screen_dimensions_output_review.json",
+        "sha256": "2ddbaac0ec7d23d35d2ced06a66dee77056ec60e3abe5ab5fa8cfd4100f09724"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_reference_scope_and_funnel_note_output_review.json",
+        "sha256": "c7ae55f1757c5396b20028d865facff1701313770b5e3ceeaa57a2efd56fd1e7"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_slope_and_screed_requirement_output_review.json",
+        "sha256": "bd4521af85431f75038046dd70a636dcb2afec3ff55a252896a18ee27cbb0010"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_walkway_quantity_and_legend_output_review.json",
+        "sha256": "1a035f0fa5d1dcb571517e963b4a7262310d414b1905e448189935ed22e7788a"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_mixed_standard_replacements_output_review.json",
+        "sha256": "55a5eeed81ea1bd6ef1a639d581c077b90d463e240eac6998e2796eed81c5f33"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_rounding_levels_and_reference_output_review.json",
+        "sha256": "190a17b88a04e326324ea46691d61ccc7c89b591d9defad0c68f03c64a9466bf"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_pipe_notation_and_component_quantities_output_review.json",
+        "sha256": "9a4588ff1573801f5e884b901a05d104851dbadc5a07afbe1f2257d3079d29cd"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_riser_reference_duplicates_output_review.json",
+        "sha256": "e9665ae2a45b9cfe12c1c9e5049e6ef868cc66755bfb7c7162509754db7dc26b"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_revision_compensator_sensor_inventory_output_review.json",
+        "sha256": "11a42782c2f84e3b08602a9a14f7dfb1a31ad0b009849955c033c5f332e160f8"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_K2_reinforcement_and_insulation_output_review.json",
+        "sha256": "e4807b81418fbd158237aec4eb86e54e503d8f3a9f4ca742a82d7bc26dc5950f"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_slope_and_calculation_levels_output_review.json",
+        "sha256": "59d3a8f515bb9a9d048ce4830c22107dd3437397ba11d29e5507e60b00374633"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_S3_reference_and_incomplete_label_output_review.json",
+        "sha256": "21e26b06b7a0864017d14833c2e6cf27524e46f0c96e49918827c2fcef6962b9"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_test_method_and_funnel_completeness_output_review.json",
+        "sha256": "c18b199ab13ab14c369436808875bbfa255b9d34fd5d2c58b0164f0669e5eb30"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_last_norm_scope_and_interval_output_review.json",
+        "sha256": "93bc9079ad6e941c56ea5e0065a904cfe4724c66e42c14a6ae94f7ac071abd0b"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_description_and_reference_scope_output_review.json",
+        "sha256": "1f748182063816fb10fb84b929f7c70b3cec8de48422b96882ef7932a47ed150"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_landing_dimensions_and_levels_output_review.json",
+        "sha256": "dc62a86c8ed8bbc8912b4862f88fb7d0e84135402d3b11a1ff6779a59d7c9083"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_OGM26_and_march_identity_output_review.json",
+        "sha256": "937b98020dc42f1273f16939d6f2f1d48c486b5d2ddd3f60860f3a36ce7880ee"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_repetitions_and_detail_lengths_output_review.json",
+        "sha256": "56e721cfd2d1a7e25d8b8a31a4b25f857b116bb3e9384f7e8595e081ea21075e"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_loads_caps_and_anchor_context_output_review.json",
+        "sha256": "3e8b7ddf36baec1ec45600554121b947e3e848918f825ae97a258addc6ae44e4"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_norm_references_and_profile_mass_output_review.json",
+        "sha256": "84d848392dfbbcb321c7b2a9a56370702c212fa997d142a2f06821a35510d80f"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_S2_quantity_and_landing_lists_output_review.json",
+        "sha256": "62da3efb2f094f549259d349b02097da854e4659e8372ea60b8515cc2140e230"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_remaining_graphics_weld_and_units_output_review.json",
+        "sha256": "579d5e29f615dd857ace9fdfb627d5848dcb960ec9be877514d1c802c0820310"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_power_supply_and_level_context_output_review.json",
+        "sha256": "62d9d5b57abb468fff430c1882a5b55117765d0d47ecbe9cc415d4eed9ec0874"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_motor_power_insulation_and_supports_output_review.json",
+        "sha256": "485f6eefcab588bc50d38bde9ec58eed18d9b6c26cd5596d71dae95eb2ae136b"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_inventory_tank_labels_and_drainage_output_review.json",
+        "sha256": "0dab2b583924cc9a982188ac8ab7c85d2fb20d3d908f61143e282dc01771e847"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_heating_branch_and_load_labels_output_review.json",
+        "sha256": "9c6c2b877bbce7bbfd5beaf0c4a30ab69025e5c4a09cba00873e8a3a17f1c0d9"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_tank_capacity_and_heat_exchanger_labels_output_review.json",
+        "sha256": "c94c5a1e4ecb6ae654a231102e41668d1ad969a4dbb9e813301873d1cb11ff3d"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_mass_foundation_and_valve_output_review.json",
+        "sha256": "daff38eda4472c2fe95a2a9c5c651a54e3050353b823603b748103696f41b13a"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_hot_water_and_makeup_balances_output_review.json",
+        "sha256": "1cf2c7d52a49f7d3beae85e4e4eb225e483ae8b9c3a47a85069510473dd02c7b"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_circulation_velocity_and_valve_arithmetic_output_review.json",
+        "sha256": "19dc5f583e31513905631edd5c1b33f70ab3834f28b7a12b6cf966ded164924b"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_pump_duties_and_reference_titles_output_review.json",
+        "sha256": "2e28adfc835265321f95951eb195cf860e3fcdc18b74c9f299f4ce8ff91179c5"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_specification_fields_masses_and_totals_output_review.json",
+        "sha256": "c8dd31a2989f44dc1021444595f45e24439311f95dd79248ebc5e9c5727cb57b"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_pressure_selection_and_test_scope_output_review.json",
+        "sha256": "625f63a68a30c4fbe5142b6c649d2aec1714df27fbc467fc1e7e64049c15af22"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_tank_volumes_precharge_and_temperatures_output_review.json",
+        "sha256": "6319ab2ee05db2d81fd409e9ef1017c3f8b5adde957f3a8a6b5c0071cedb1389"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_valve_continuation_rows_and_connections_output_review.json",
+        "sha256": "7e2574e78fb868e4f88b91afe4c008927e630290116b151c975fd0d154f30983"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_gauge_ranges_and_accessory_counts_output_review.json",
+        "sha256": "6f1f599ded7c4ca41d88554386f34b2ca6d2e2f17ea89a3617efba9efa374185"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_new_section15_label_conflicts_output_review.json",
+        "sha256": "6075441cc3d436af64b4c9017235982a0eddaa3eb559ef9cca230d4cfd26bff5"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_reference_generations_and_product_names_output_review.json",
+        "sha256": "f1a7623907bf96e5b2fd644399045a19bb0bfdb9e9ad5561a44b5c64e5920c16"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_pipe_designations_and_NN14_flanges_output_review.json",
+        "sha256": "2fe99c058b039ab8c3303455480550721b126d0acc8decef0b9d6aeeb6866d5f"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_algorithm_and_package_boundaries_output_review.json",
+        "sha256": "2994f0cf160959bd263e25ffaea39ddffe9dad564910f89b37d07caf626e82ca"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_sensor_motor_valve_quantities_output_review.json",
+        "sha256": "0b6d889e9491e939a465f5be207b3c20074dfc939d72baeb1ac3db378f7f8774"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_ranges_packages_cable_variants_output_review.json",
+        "sha256": "6df10ebd913f6b91d57635a499003f3489dfb4c6b422e54fe7f0e414a8bc36a7"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_cable_balances_and_merged_solution_output_review.json",
+        "sha256": "ee391b975afb7de208793fbc1de145853c1017cdc8d7e7ffcb8a674f6d871e46"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_motor_sensor_and_cable_addresses_output_review.json",
+        "sha256": "ad84258e5d38573668acb66090e02c4a83c04828a395074974c9f16cdd0af975"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_support_quantities_and_reference_identity_output_review.json",
+        "sha256": "f761dd4273ffd03a868a3c8e936f336f1731d22bb56824cd13988e61c4f376fa"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_control_labels_and_signal_direction_output_review.json",
+        "sha256": "eef2b3c87326f1dfc6d879d56dc676a9981fa949d38d575cee8fa95af6b6344b"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_addressed_pressure_ranges_and_duty_labels_output_review.json",
+        "sha256": "9224eb07b963fc7bea44b0500a7115f9c72c230b1865fcb2a05135f3bd0a1fcb"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_channel_counts_thermostats_and_heater_symbol_output_review.json",
+        "sha256": "24bdd726e02b32c01a8863518461395c3c1da3510ecdc96c1aa562e1c08b74f2"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_polarity_cabinet_and_terminal_identity_output_review.json",
+        "sha256": "985997c6b484e58592cc38b23f7d02483a56e43cb4d3a600e8b9853b84c1c688"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_device_voltage_and_interface_scope_output_review.json",
+        "sha256": "9032bbf20bd34bcc9271e076e353e29b5b5664178a92c4031eb32d2e094efca3"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_cable_pressure_penetration_and_detector_scope_output_review.json",
+        "sha256": "9c24796fb126d61507a78a3cd57d83bf8344e8384d6555172fdb822280f8a715"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_fire_line_assembly_and_missing_cable_scope_output_review.json",
+        "sha256": "35e3beb8ca1ddb2c7cbe0c7d6e83f193de4634c250f47c9ca07803fab5219de7"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_thermostat_count_address_and_factory_scope_output_review.json",
+        "sha256": "fb007c1c44b2d6bc867b42571d630aa78599dd205fc16e6a4d3fd3399aceec60"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_cable_units_and_composite_editorial_identity_output_review.json",
+        "sha256": "1d6eb97db637f8a34a092a3f275994f50e308897a201a7ff1f70d21ec4b5fff1"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_cross_package_supply_and_register_references_output_review.json",
+        "sha256": "a5fa154ff3c7d8b705036b92f37e65ef08d65fb01cdbf418a1a1cb02f01e535d"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_direct_Pa3_Pa4_pressure_range_output_review.json",
+        "sha256": "68e1998c0c77f120920957d9d05f7f12f346e8cf1600c2128a70768f32c38a46"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_false_missing_AO_points_output_review.json",
+        "sha256": "b50e002acd94d6ef6a27207b91e41444e9d4a2f9d33762d47d62280ba263d8ee"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_steel_pipe_route_quantity_scope_output_review.json",
+        "sha256": "b464db6dddd5e05204cb736bf8c7ace2b25b1470d556aefb81b24d503caeb304"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_repeated_air_conditioner_marks_output_review.json",
+        "sha256": "3c277cdd71eae769be326d64cfb3807c4d6a618c94b91d9e38b7eebae0dbd2f5"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_Pa4_partial_signal_assignment_output_review.json",
+        "sha256": "5d8943c83ed927e63b427118856b340abf92601af32125b0aca5a3093a0190c0"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_drive_assignment_and_external_connection_scope_output_review.json",
+        "sha256": "808506936c8f5184849ab2288e414feb29687e4cb30b6417cb4e576d0746ec07"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_CO_GOST_PUE_reference_scope_output_review.json",
+        "sha256": "6507fca10ac8accb2b21a38a2f3bc625cecf0deabf997045c8d65bb0d0835821"
+      },
+      {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_SP7_title_output_review.json",
+        "sha256": "bf4c30deffaa0f4421d360603ba353cb345e9d6debd067a3d09ee5f1e49fdeb3"
+      }
+    ],
+    "counts": {
+      "AK": {
+        "rows": 74,
+        "assessed": 74,
+        "unchecked": 0
+      },
+      "AR": {
+        "rows": 21,
+        "assessed": 21,
+        "unchecked": 0
+      },
+      "EOM": {
+        "rows": 48,
+        "assessed": 48,
+        "unchecked": 0
+      },
+      "ITP": {
+        "rows": 57,
+        "assessed": 57,
+        "unchecked": 0
+      },
+      "KM": {
+        "rows": 25,
+        "assessed": 25,
+        "unchecked": 0
+      },
+      "VK": {
+        "rows": 28,
+        "assessed": 28,
+        "unchecked": 0
+      }
+    },
+    "quality_acceptance": false,
+    "limits": "Verifies preservation and source binding, not factual truth, usefulness or resolved uncertainty."
+  },
+  "reviewed_findings": 253,
+  "projects": [
+    {
+      "discipline": "AK",
+      "source": {
+        "discipline": "AK",
+        "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "final_sha256": "23f2f26b2037210e7d364cf48c55d42f62832e649a25b10b0f3eb4f1ab8a8c3b",
+        "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_r2_coverage_ledger.json",
+        "ledger_sha256": "449d0c8fb50834c3f647396ff56c34e27bd3c35538560c5367b84f62551a1618",
+        "coverage_status": "reviewed"
+      },
+      "coverage": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "AK",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "23f2f26b2037210e7d364cf48c55d42f62832e649a25b10b0f3eb4f1ab8a8c3b",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 55,
+              "availability_available": 55,
+              "partial": 15,
+              "absent": 3,
+              "full": 37
+            },
+            "review_complete": true,
+            "full_match_rate": 0.6727272727272727,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 23,
+              "availability_available": 23,
+              "partial": 5,
+              "full": 14,
+              "absent": 4
+            },
+            "review_complete": true,
+            "full_match_rate": 0.6086956521739131,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 22,
+              "availability_available": 22,
+              "absent": 20,
+              "full": 1,
+              "partial": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.045454545454545456,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 51
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      },
+      "section_label_adapters": [],
+      "reviewed_output_rows": 74,
+      "review_dispositions": {
+        "assessed_r2_AK_F-001_reference_precision_with_technical_limits": 1,
+        "assessed_r2_AK_F-002_reference_precision_with_technical_limits": 1,
+        "assessed_r2_AK_F-003_algorithm_or_package_scope": 1,
+        "assessed_r2_AK_F-004_algorithm_or_package_scope": 1,
+        "assessed_r2_AK_F-005_bounded_supply_and_assembly_scope": 1,
+        "assessed_r2_AK_F-006_range_package_or_cable_conflict": 1,
+        "assessed_r2_AK_F-007_quantity_conflict_supply_boundary": 1,
+        "assessed_r2_AK_F-008_quantity_conflict_supply_boundary": 1,
+        "assessed_r2_AK_F009_thermostat_count_address_and_factory_scope": 1,
+        "assessed_r2_AK_F-010_quantity_conflict_supply_boundary": 1,
+        "assessed_r2_AK_F-011_quantity_conflict_supply_boundary": 1,
+        "assessed_r2_AK_F-012_algorithm_or_package_scope": 1,
+        "assessed_r2_AK_F-013_algorithm_or_package_scope": 1,
+        "assessed_r2_AK_F-014_range_package_or_cable_conflict": 1,
+        "assessed_r2_AK_F-015_range_package_or_cable_conflict": 1,
+        "assessed_r2_AK_F-016_range_package_or_cable_conflict": 1,
+        "assessed_r2_AK_F-017_address_identity_and_document_scope": 1,
+        "assessed_r2_AK_F-018_address_identity_and_document_scope": 1,
+        "assessed_r2_AK_F-019_cable_balance_or_connection_scope": 1,
+        "assessed_r2_AK_F-020_cable_balance_or_connection_scope": 1,
+        "assessed_r2_AK_F-021_cable_balance_or_connection_scope": 1,
+        "assessed_r2_AK_F-022_cable_balance_or_connection_scope": 1,
+        "assessed_r2_AK_F-023_bounded_cross_document_conflict": 1,
+        "assessed_r2_AK_F-024_cable_balance_or_connection_scope": 1,
+        "assessed_r2_AK_F-025_bounded_supply_and_assembly_scope": 1,
+        "assessed_r2_AK_F-026_address_identity_and_document_scope": 1,
+        "assessed_r2_AK_F-027_address_identity_and_document_scope": 1,
+        "assessed_r2_AK_F028_drive_assignment_and_connection_boundary": 1,
+        "assessed_r2_AK_F-029_support_or_reference_scope": 1,
+        "assessed_r2_AK_F-030_support_or_reference_scope": 1,
+        "assessed_r2_AK_F-031_support_or_reference_scope": 1,
+        "assessed_r2_pipe_balance_question_identity_unresolved": 1,
+        "assessed_r2_AK_F-033_literal_marks_units_and_editorial_scope": 1,
+        "assessed_refuted_arithmetic_remove": 1,
+        "assessed_r2_AK_F035_cross_package_reference_boundaries": 1,
+        "assessed_r2_AK_F-036_literal_marks_units_and_editorial_scope": 1,
+        "assessed_r2_AK_F-037_support_or_reference_scope": 1,
+        "assessed_r2_AK_F-038_control_labels_and_signal_direction": 1,
+        "assessed_r2_repeated_AC_marks_scoped_question": 1,
+        "assessed_r2_AK_F-040_control_labels_and_signal_direction": 1,
+        "assessed_r2_AK_F-041_control_labels_and_signal_direction": 1,
+        "assessed_r2_AK_F-042_control_labels_and_signal_direction": 1,
+        "assessed_r2_AK_F-043_addressed_range_or_duty_label": 1,
+        "assessed_r2_AK_F-044_addressed_range_or_duty_label": 1,
+        "assessed_r2_direct_pressure_range_conflict": 2,
+        "assessed_r2_AK_F-046_addressed_range_or_duty_label": 1,
+        "assessed_r2_AK_F-047_signal_counts_and_graphic_identity": 1,
+        "assessed_r2_refuted_missing_four_AO_points": 1,
+        "assessed_refuted_graphic_column_shift_remove": 2,
+        "assessed_preserve_role_label_conflict_clarify_rotation_scope": 1,
+        "assessed_preserve_drive_identity_conflict_with_local_numbering_scope": 1,
+        "assessed_r2_AK_F-053_signal_counts_and_graphic_identity": 1,
+        "assessed_r2_AK_F-054_signal_counts_and_graphic_identity": 1,
+        "assessed_r2_partial_true_duty_label_false_column_assignment": 1,
+        "assessed_r2_AK_F-057_signal_counts_and_graphic_identity": 1,
+        "assessed_r2_AK_F-058_signal_counts_and_graphic_identity": 1,
+        "assessed_r2_AK_F-059_addressed_range_or_duty_label": 1,
+        "assessed_r2_AK_F-060_polarity_or_terminal_identity": 1,
+        "assessed_r2_AK_F-061_bounded_cross_document_conflict": 1,
+        "assessed_r2_AK_F-062_polarity_or_terminal_identity": 1,
+        "assessed_r2_AK_F-063_polarity_or_terminal_identity": 1,
+        "assessed_r2_AK_F-064_polarity_or_terminal_identity": 1,
+        "assessed_r2_AK_F-065_device_voltage_interface_scope": 1,
+        "assessed_r2_AK_F-066_device_voltage_interface_scope": 1,
+        "assessed_r2_AK_F-067_device_voltage_interface_scope": 1,
+        "assessed_r2_AK_F-068_device_voltage_interface_scope": 1,
+        "assessed_r2_AK_F-069_bounded_cross_document_conflict": 1,
+        "assessed_refuted_dimension_endpoint_mismatch_remove": 1,
+        "assessed_preserve_cabinet_installation_dimension_conflict": 1,
+        "assessed_r2_AK_F-072_bounded_cross_document_conflict": 1,
+        "assessed_r2_SP7_title_editorial_question": 1,
+        "assessed_r2_AK_F-074_reference_precision_with_technical_limits": 1
+      },
+      "held_or_unchecked_targets": [],
+      "limits": "Coverage measures presence of a frozen claim, not correctness of every output addition. Full question coverage is not technical-defect recall."
+    },
+    {
+      "discipline": "ITP",
+      "source": {
+        "discipline": "ITP",
+        "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "final_sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027",
+        "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_r2_coverage_ledger.json",
+        "ledger_sha256": "bd048fa48edc53cc95406086aa67879420eee8ff86c89905f0241e17b33e5445",
+        "coverage_status": "reviewed"
+      },
+      "coverage": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "ITP",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "f1ededae10dfd138122542e760500a9b82c29d39278d20e93748ff459a3cb027",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 19,
+              "availability_available": 19,
+              "partial": 10,
+              "full": 7,
+              "absent": 2
+            },
+            "review_complete": true,
+            "full_match_rate": 0.3684210526315789,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 56,
+              "availability_available": 56,
+              "partial": 25,
+              "full": 19,
+              "absent": 12
+            },
+            "review_complete": true,
+            "full_match_rate": 0.3392857142857143,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 12,
+              "availability_available": 12,
+              "absent": 11,
+              "partial": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 26
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      },
+      "section_label_adapters": [],
+      "reviewed_output_rows": 57,
+      "review_dispositions": {
+        "assessed_r2_ITP_F-001_pressure_selection_and_setpoint_scope": 1,
+        "assessed_r2_ITP_F-002_pressure_selection_and_setpoint_scope": 1,
+        "assessed_r2_ITP_F-003_pressure_selection_and_setpoint_scope": 1,
+        "assessed_r2_ITP_F-004_pressure_selection_and_setpoint_scope": 1,
+        "assessed_r2_ITP_F-005_scoped_document_conflict": 1,
+        "assessed_r2_ITP_F-006_scoped_document_conflict": 1,
+        "assessed_r2_ITP_F-007_tank_selection_inputs_scope": 1,
+        "assessed_r2_ITP_F-008_tank_selection_inputs_scope": 1,
+        "assessed_r2_ITP_F-009_tank_selection_inputs_scope": 1,
+        "assessed_r2_ITP_F-010_scoped_document_conflict": 1,
+        "assessed_r2_ITP_F-011_scoped_document_conflict": 1,
+        "assessed_r2_ITP_F-012_balance_and_operating_mode_scope": 1,
+        "assessed_r2_ITP_F-013_balance_and_operating_mode_scope": 1,
+        "assessed_r2_ITP_F-014_arithmetic_and_units_scope": 1,
+        "assessed_r2_ITP_F-015_pump_or_editorial_scope": 1,
+        "assessed_r2_ITP_F-016_equipment_or_quantity_scope": 1,
+        "assessed_r2_ITP_F-017_pump_or_editorial_scope": 1,
+        "assessed_r2_ITP_F-018_valve_or_connection_identity": 1,
+        "assessed_r2_ITP_F-019_valve_or_connection_identity": 1,
+        "assessed_r2_ITP_F-020_arithmetic_and_units_scope": 1,
+        "assessed_r2_ITP_F-021_arithmetic_and_units_scope": 1,
+        "assessed_r2_ITP_F-022_connection_selection_scope": 1,
+        "assessed_r2_ITP_F-023_valve_or_connection_identity": 1,
+        "assessed_r2_ITP_F-024_equipment_or_quantity_scope": 1,
+        "assessed_r2_ITP_F-025_equipment_or_quantity_scope": 1,
+        "assessed_r2_ITP_F-026_specification_and_mass_scope": 1,
+        "assessed_r2_ITP_F-027_connection_selection_scope": 1,
+        "assessed_r2_ITP_F-028_specification_and_mass_scope": 1,
+        "assessed_r2_ITP_F-029_reference_applicability_scope": 1,
+        "assessed_r2_ITP_F-030_reference_applicability_scope": 1,
+        "assessed_r2_ITP_F-031_reference_applicability_scope": 1,
+        "assessed_r2_ITP_F-032_documentation_scope": 1,
+        "assessed_r2_ITP_F-033_balance_and_operating_mode_scope": 1,
+        "assessed_r2_ITP_F-034_balance_and_operating_mode_scope": 1,
+        "assessed_r2_ITP_F-035_documentation_scope": 1,
+        "assessed_r2_ITP_F036_gauge_accessory_count_question": 1,
+        "assessed_r2_ITP_F037_gauge_ranges_scoped": 1,
+        "assessed_r2_ITP_F-038_specification_and_mass_scope": 1,
+        "assessed_r2_ITP_F-039_documentation_scope": 1,
+        "assessed_r2_ITP_F-040_documentation_scope": 1,
+        "assessed_r2_ITP_F-041_capacity_or_load_label_scope": 1,
+        "assessed_r2_ITP_F-042_capacity_or_load_label_scope": 1,
+        "assessed_r2_ITP_F-043_capacity_or_load_label_scope": 1,
+        "assessed_r2_ITP_F-044_capacity_or_load_label_scope": 1,
+        "assessed_r2_ITP_F-045_capacity_or_load_label_scope": 1,
+        "assessed_r2_ITP_F-046_direct_graphic_label_conflict": 1,
+        "assessed_r2_ITP_F-047_direct_graphic_label_conflict": 1,
+        "assessed_r2_ITP_F-048_graphic_label_discrepancy": 1,
+        "assessed_r2_ITP_F-049_graphic_label_discrepancy": 1,
+        "assessed_r2_ITP_F-050_mass_or_valve_context": 1,
+        "assessed_r2_ITP_F-051_graphic_label_discrepancy": 1,
+        "assessed_r2_ITP_F-052_capacity_or_load_label_scope": 1,
+        "assessed_r2_ITP_F-053_mass_or_valve_context": 1,
+        "assessed_r2_ITP_F054_foundation_dimension_conflict": 1,
+        "assessed_r2_ITP_F-055_mass_or_valve_context": 1,
+        "assessed_r2_ITP_F-056_pump_or_editorial_scope": 1,
+        "assessed_r2_ITP_F-057_pump_or_editorial_scope": 1
+      },
+      "held_or_unchecked_targets": [],
+      "limits": "Coverage measures presence of a frozen claim, not correctness of every output addition. Full question coverage is not technical-defect recall."
+    },
+    {
+      "discipline": "AR",
+      "source": {
+        "discipline": "AR",
+        "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "final_sha256": "19945dcbf049ddaac4c873aa6699b58b1a2bc9085e4788efc9b9d43cd73eda3e",
+        "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r2_completed_coverage_ledger.json",
+        "ledger_sha256": "bd862c6c4d1abe7c57b3c45dc28b488ddb8ddca8f96b5ecff2c2128b7c670795",
+        "coverage_status": "reviewed"
+      },
+      "coverage": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "AR",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "19945dcbf049ddaac4c873aa6699b58b1a2bc9085e4788efc9b9d43cd73eda3e",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 2,
+              "availability_available": 2,
+              "full": 1,
+              "partial": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.5,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 21,
+              "availability_available": 21,
+              "absent": 7,
+              "full": 11,
+              "partial": 3
+            },
+            "review_complete": true,
+            "full_match_rate": 0.5238095238095238,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 10,
+              "availability_available": 10,
+              "absent": 9,
+              "partial": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 12
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      },
+      "section_label_adapters": [],
+      "reviewed_output_rows": 21,
+      "review_dispositions": {
+        "assessed_r2_sheet_register_question_preserved": 1,
+        "assessed_r2_KM_reference_conflict_preserved": 1,
+        "assessed_r2_SP_reference_question_without_applicability_claim": 1,
+        "assessed_r2_mixed_standard_replacements_correct_false_preserve_supported": 1,
+        "assessed_preserve_roof_material_question_with_approval_scope": 2,
+        "assessed_preserve_quantity_question_no_automatic_correction": 3,
+        "assessed_r2_club_classification_cross_profile_question": 1,
+        "assessed_r2_walkway_accounting_question_correct_legend_binding": 1,
+        "assessed_r2_self_reference_question_no_graphic_absence_claim": 1,
+        "assessed_r2_funnel_note_reference_question": 1,
+        "assessed_r2_slope_values_confirmed_requirement_applicability_unresolved": 1,
+        "assessed_r2_preserve_insulation_material_identity_conflict": 1,
+        "assessed_preserve_geometry_quantity_question_with_scope": 2,
+        "assessed_r2_historically_accepted_screen_height_question_preserved": 1,
+        "assessed_r2_screen_filling_identity_question_no_proven_incompatibility": 1,
+        "assessed_r2_screed_M100_candidate_threshold_not_supported": 1,
+        "assessed_r2_OGN4_height_question_preserve_existing_datums": 1
+      },
+      "held_or_unchecked_targets": [],
+      "limits": "Coverage measures presence of a frozen claim, not correctness of every output addition. Full question coverage is not technical-defect recall."
+    },
+    {
+      "discipline": "KM",
+      "source": {
+        "discipline": "KM",
+        "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "final_sha256": "d93486c6a6510ae841be839873e137a44c3241005e6060361017dce855a3e5d1",
+        "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_r2_completed_coverage_ledger.json",
+        "ledger_sha256": "b79de5b362cff64fcc4c4553688eb2040b1fa41bf5c373835deb2262f8c088e5",
+        "coverage_status": "reviewed"
+      },
+      "coverage": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "KM",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "d93486c6a6510ae841be839873e137a44c3241005e6060361017dce855a3e5d1",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 4,
+              "availability_available": 4,
+              "full": 1,
+              "partial": 2,
+              "absent": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.25,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 20,
+              "availability_available": 20,
+              "partial": 11,
+              "absent": 6,
+              "full": 3
+            },
+            "review_complete": true,
+            "full_match_rate": 0.15,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 3,
+              "availability_available": 3,
+              "absent": 3,
+              "held": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 4,
+          "held": 1
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      },
+      "section_label_adapters": [],
+      "reviewed_output_rows": 25,
+      "review_dispositions": {
+        "assessed_r2_KM_F-001_reference_or_conditional_mass_question": 1,
+        "assessed_r2_KM_F-002_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-003_bounded_context_question": 1,
+        "assessed_r2_KM_F-004_quantity_or_level_scope": 1,
+        "assessed_r2_KM_F-005_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-006_reference_or_conditional_mass_question": 1,
+        "assessed_r2_KM_F-007_bounded_context_question": 1,
+        "assessed_weld_context_no_proven_incompatibility": 1,
+        "assessed_r2_KM_F-009_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-010_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-011_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-012_quantity_or_level_scope": 1,
+        "assessed_r2_KM_F-013_reference_or_conditional_mass_question": 1,
+        "assessed_r2_KM_F-014_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-015_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-016_quantity_or_level_scope": 1,
+        "assessed_OGM3_header_one_piece_not_in_authoritative_TEXT": 1,
+        "assessed_r2_KM_F-018_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-019_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-020_scoped_documentation_question": 1,
+        "assessed_OGM7_four_spans_refutes_five_span_claim": 1,
+        "assessed_r2_KM_F-022_scoped_documentation_question": 1,
+        "assessed_r2_KM_F-023_bounded_context_question": 1,
+        "assessed_anchor_units_question_not_mass_total_defect": 1,
+        "assessed_r2_KM_F-025_reference_or_conditional_mass_question": 1
+      },
+      "held_or_unchecked_targets": [
+        {
+          "target_id": "KM_F014_adjacent_flights_identity:b731dff3b4f369ab5f8b",
+          "availability": "unchecked",
+          "coverage": "unchecked",
+          "finding_ids": [],
+          "evidence": [
+            {
+              "source": "sealed_output",
+              "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+              "sha256": "d93486c6a6510ae841be839873e137a44c3241005e6060361017dce855a3e5d1"
+            },
+            {
+              "source": "frozen_target_decision",
+              "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F014_adjacent_flights_identity.json",
+              "sha256": "857bb51fbcda52cbe45356bedd45240cc052c6a5c9a0b10d0dbe639c0492ebfc"
+            }
+          ],
+          "reason": "Замороженный hold: F-015 содержит связанный тезисОГМ6/4, но его нельзя считать повтором технической ошибки по спорному основанию снятия.",
+          "section_assessment": "unchecked"
+        }
+      ],
+      "limits": "Coverage measures presence of a frozen claim, not correctness of every output addition. Full question coverage is not technical-defect recall."
+    },
+    {
+      "discipline": "VK",
+      "source": {
+        "discipline": "VK",
+        "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "final_sha256": "6182e5efe3cb42c6924c22aec4caa065ddd49a6e1130d44dc73a157477cbd9cd",
+        "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r2_completed_coverage_ledger.json",
+        "ledger_sha256": "052cc9870b1727d14ffe47e24e903c2ec899bc59e0e5d3846d4b16b45c78e1da",
+        "coverage_status": "reviewed"
+      },
+      "coverage": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "VK",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "6182e5efe3cb42c6924c22aec4caa065ddd49a6e1130d44dc73a157477cbd9cd",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 2,
+              "availability_available": 2,
+              "partial": 1,
+              "full": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.5,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 26,
+              "availability_available": 26,
+              "partial": 10,
+              "full": 7,
+              "absent": 9
+            },
+            "review_complete": true,
+            "full_match_rate": 0.2692307692307692,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 11,
+              "availability_available": 11,
+              "absent": 11
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 8
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      },
+      "section_label_adapters": [],
+      "reviewed_output_rows": 28,
+      "review_dispositions": {
+        "assessed_r2_refuted_detector_claim_should_not_be_reissued_as_generic_question": 1,
+        "assessed_r2_revision_interval_ambiguity_preserved": 1,
+        "assessed_r2_conditional_multicomponent_inventory_question": 2,
+        "assessed_r2_preserve_sensor_mapping_question_remove_unproven_five_shortage": 1,
+        "assessed_r2_preserve_project_specification_conflict_qualify_order_quantity": 1,
+        "assessed_r2_preserve_bounded_missing_insulation_technical_claim": 1,
+        "assessed_r2_testing_question_existing_methods_preserved": 1,
+        "assessed_r2_rounding_compatible_question_usefulness_unresolved": 1,
+        "assessed_r2_preserve_level_reference_question": 2,
+        "assessed_r2_notation_question_same_object_unproven": 1,
+        "assessed_r2_preserve_quantity_question_qualify_procurement_claim": 1,
+        "assessed_r2_preserve_blank_quantity_question": 1,
+        "assessed_r2_preserve_inventory_question_remove_diameter_and_topology_assumptions": 1,
+        "assessed_r2_preserve_TU_reference_question": 1,
+        "assessed_r2_preserve_funnel_specification_question_with_existing_node": 1,
+        "assessed_r2_preserve_roof_level_question": 1,
+        "assessed_r2_unmapped_graphic_conflict_pending_usefulness_adjudication": 2,
+        "assessed_r2_S3_reference_locations_verified": 1,
+        "assessed_r2_S3_incomplete_label_scoped": 1,
+        "assessed_r2_preserve_reference_correction_group_addresses": 4,
+        "assessed_r2_preserve_label_mapping_allow_explicit_correspondence": 1,
+        "assessed_r2_calculation_label_question_no_proven_computation_error": 1
+      },
+      "held_or_unchecked_targets": [],
+      "limits": "Coverage measures presence of a frozen claim, not correctness of every output addition. Full question coverage is not technical-defect recall."
+    },
+    {
+      "discipline": "EOM",
+      "source": {
+        "discipline": "EOM",
+        "final_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "final_sha256": "4b6101d8efa69bb635f953a84ce8d301b3ab5d0fca05ea0c7263afe52bcc54ca",
+        "ledger_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r2_completed_coverage_ledger.json",
+        "ledger_sha256": "149921326a4c237ab43fd514d1b799ed6437d45e62f66f09f890bdaf91a82e51",
+        "coverage_status": "reviewed"
+      },
+      "coverage": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "EOM",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "4b6101d8efa69bb635f953a84ce8d301b3ab5d0fca05ea0c7263afe52bcc54ca",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 2,
+              "availability_available": 2,
+              "absent": 2
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 52,
+              "availability_available": 52,
+              "full": 32,
+              "partial": 8,
+              "absent": 12
+            },
+            "review_complete": true,
+            "full_match_rate": 0.6153846153846154,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 18,
+              "availability_available": 18,
+              "absent": 17,
+              "partial": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 30,
+          "held": 2
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      },
+      "section_label_adapters": [],
+      "reviewed_output_rows": 48,
+      "review_dispositions": {
+        "assessed_preserve_material_or_routing_question_with_limits": 3,
+        "assessed_refuted_replacement_basis_remove": 2,
+        "assessed_preserve_calculation_or_units_question_with_scope": 4,
+        "assessed_preserve_CT_or_power_question_with_regime_limits": 3,
+        "assessed_preserve_area_method_question_hold_output_section": 1,
+        "assessed_preserve_board_coordination_question_with_limits": 3,
+        "assessed_preserve_floor_or_room_identity_question": 2,
+        "assessed_preserve_specification_question_no_automatic_quantity_change": 6,
+        "assessed_preserve_scoped_specification_question_with_limits": 5,
+        "assessed_preserve_commercial_board_identity_and_supply_question": 1,
+        "assessed_preserve_mode_question_remove_unconditional_three_phase_correction": 1,
+        "assessed_preserve_same_board_power_question": 1,
+        "assessed_preserve_total_load_question_with_reserve_boundary": 1,
+        "assessed_preserve_small_load_parameter_question_not_automatic_current_reduction": 1,
+        "assessed_preserve_reserved_fire_line_question_hold_critical_claim": 1,
+        "assessed_preserve_phase_question_remove_false_group2_phase_assignment": 1,
+        "assessed_unresolved_N_PE_topology_question_not_confirmed_defect": 2,
+        "assessed_preserve_phase_question_with_pole_and_phasor_limits": 1,
+        "assessed_preserve_graphic_question_remove_unproven_parameter_equivalence": 2,
+        "assessed_preserve_graphic_identity_question_with_limits": 2,
+        "assessed_preserve_repeated_tray_or_reference_question": 2,
+        "assessed_preserve_tray_execution_question_with_limits": 2,
+        "assessed_preserve_reference_title_question_correct_model_wording": 1
+      },
+      "held_or_unchecked_targets": [],
+      "limits": "Coverage measures presence of a frozen claim, not correctness of every output addition. Full question coverage is not technical-defect recall."
+    }
+  ],
+  "coverage_counts_by_route": {
+    "technical": {
+      "denominator": 84,
+      "availability_available": 84,
+      "partial": 29,
+      "absent": 8,
+      "full": 47
+    },
+    "question": {
+      "denominator": 198,
+      "availability_available": 198,
+      "partial": 62,
+      "full": 86,
+      "absent": 50
+    },
+    "negative": {
+      "denominator": 76,
+      "availability_available": 76,
+      "absent": 71,
+      "full": 1,
+      "partial": 4,
+      "held": 1
+    }
+  },
+  "production_acceptance": false,
+  "limits": [
+    "One baseline repeat on six DEV-known projects; no candidate improvement measured here.",
+    "Assessed rows can remain uncertain; assessment does not mean engineer acceptance.",
+    "Held targets remain excluded under frozen evaluator rules.",
+    "Absence of a negative claim is not evidence of successful filtering.",
+    "Novel useful findings, duplicate burden and unsupported additions require semantic aggregation; do not count free-form verdict labels as defect totals.",
+    "Questions, technical findings and negative controls have separate denominators.",
+    "Engineer time, comparative retention, cost acceptance and new-project transfer are not established by this report."
+  ]
+}

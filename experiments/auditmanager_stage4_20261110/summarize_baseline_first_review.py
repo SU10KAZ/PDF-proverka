@@ -10,9 +10,13 @@ HERE = Path(__file__).resolve().parent
 QUEUE = Path('/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json')
 
 
-def build():
-    history = verify(QUEUE)
-    queue = json.loads(QUEUE.read_text())
+def build(queue_path=None, initial_path=None):
+    queue_path = Path(queue_path or QUEUE)
+    history = verify(queue_path, initial_path)
+    queue = json.loads(queue_path.read_text())
+    repeats = {row["repeat"] for row in queue["rows"]}
+    assert len(repeats) == 1
+    repeat = next(iter(repeats))
     evaluator = HERE / 'evaluator_release_errata_v2.json'
     assert queue['evaluator_sha256'] == sha(evaluator)
     assert all(r['disposition'] != 'unchecked' and r['claim_reviews'] for r in queue['rows'])
@@ -54,9 +58,10 @@ def build():
             counts.update(project['coverage']['routes'][route]['counts'])
         totals[route] = dict(counts)
     return {
-        'status': 'first_baseline_review_complete_comparison_pending',
+        'status': 'first_baseline_review_complete_comparison_pending' if repeat == 1 else 'baseline_repeat_review_complete_comparison_pending',
+        'repeat': repeat,
         'evaluator_sha256': sha(evaluator),
-        'queue_path': str(QUEUE), 'queue_sha256': sha(QUEUE),
+        'queue_path': str(queue_path), 'queue_sha256': sha(queue_path),
         'history_verification': history,
         'reviewed_findings': len(queue['rows']),
         'projects': projects,
