@@ -1,0 +1,168 @@
+{
+  "status": "partial_coordinator_coverage_review",
+  "discipline": "ITP",
+  "repeat": 1,
+  "reading_progress": {
+    "main_fields_read_for_all_57": true,
+    "fields": [
+      "problem",
+      "description",
+      "solution",
+      "risk"
+    ],
+    "slices": [
+      "F001–019",
+      "F020–038",
+      "F039–057"
+    ],
+    "normative_quotes_all_null": true,
+    "absence_not_yet_scored": true
+  },
+  "mapped_atoms": [
+    {
+      "target_id": "B-ITP-F-007:0725100843103b391be5",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-009",
+        "F-039"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-007.json",
+          "sha256": "80725162dc61ad03bf5e1c5301f9349e232eb695808ce2d524e94a2fb8b35d9c"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "КонфликтIIвПЗ/IвТЗ5.2.6.1 найден; F-039 отдельно требует подтвердить применимостьТЗ из-за этапов1/2. Однако F-009 безусловно требует привести задание кТЗ без этой оговорки; целостная условная рекомендация не сохранена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F006_fuse_instruction:3453d72502ca1458b28c",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-008"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F006_fuse_instruction.json",
+          "sha256": "3f9035b4b5dd1c3025ee792a816175c764cbd6a6ea2492193cf061a4d5025477"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Предписание включённого питания в8.4 точно найдено; текущая неопределённость блоков и условий сохранена частично. Заголовок «без мер защиты» шире исходного пункта и не учитывает общие меры8.1/8.5/8.6. Конкретное нормативное нарушение не засчитывается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "ITP_F010_GVS_formula:e2d706356b5cbdcedb39",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/ITP_F010_GVS_formula.json",
+          "sha256": "370abff31e496cbfad890ab79c2379f01d1dbb05fa320d5f3f64af72a9eac867"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2"
+        }
+      ],
+      "reason": "Перваяступень30°C и одноступенчатое описание сопоставлены; отдельно сохранено, что общий максимальный ввод автоматически не опровергнут. Но условие сначала пояснить физический смысл и применимость формулы заменено требованием пересчитать; полный узкий вопрос эталона не засчитывается.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/ITP_review.json",
+  "review_ledger_sha256": "186be5321b21ecb76fd3bf1210f6ae97c377dfd48b9c9c88ee4027f5267cfd74",
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "ITP",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 19,
+          "availability_available": 1,
+          "partial": 1,
+          "availability_unchecked": 18,
+          "unchecked": 18
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 56,
+          "availability_unchecked": 54,
+          "unchecked": 54,
+          "availability_available": 2,
+          "partial": 2
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 12,
+          "availability_unchecked": 12,
+          "unchecked": 12
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {},
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "limits": [
+    "Проверка покрытия не заменяет инженерную оценку новых рисков и нормативных утверждений.",
+    "Эталон и инструкции выполняемых прогонов не изменялись.",
+    "Прочитаны основные смысловые поля57строк; отсутствие по всей выдаче пока не засчитывается."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
