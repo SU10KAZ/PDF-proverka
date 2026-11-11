@@ -1,0 +1,33 @@
+{
+  "status": "saved_real_query_replay_requested_details_now_attached",
+  "old_attached": [
+    "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+    "blk_6d4c4daf192546de9f1dce661aafe577",
+    "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+    "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+    "blk_2f7923b916294bdcac3dd9b3d5589665",
+    "blk_9dbddaba8e334be3ab857afe48df76ec",
+    "blk_b6c5ef9df6c74b21b52b5a9379ff0481",
+    "blk_ddc4b49561b745ffab319ae7f3b20860"
+  ],
+  "new_attached": [
+    "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+    "blk_6d4c4daf192546de9f1dce661aafe577",
+    "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+    "blk_00eaf91abb0f48a38267e99e757644a1",
+    "blk_eff2811805d64c26b34d72e41ecbb194",
+    "blk_6451cc830d2b45f5bf19bbc352d4a419",
+    "blk_2f6153fc7d8243798ccea08249042194",
+    "blk_c35486f85bac42b799c61a10c630a793"
+  ],
+  "image_limit": 8,
+  "original_images_preserved": true,
+  "both_requested_detail_images_attached": true,
+  "model_queries_unchanged": true,
+  "explicit_document_sheet_hits": 15,
+  "new_model_calls": 0,
+  "semantic_acceptance": false,
+  "full_stage4_acceptance": false,
+  "prior_workflow_unchanged": true,
+  "new_request_requires_fresh_response": true
+}

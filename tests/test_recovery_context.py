@@ -203,3 +203,46 @@ def test_dimension_typography_finds_source_without_equating_execution():
         assert report['hits'][0]['reference_applicability_verified'] is False
     assert not search_md_context(md, ['ППГнг(A)-FRHF'])['hits']
     assert not search_md_context(md, ['Х1'])['hits']
+
+
+def test_explicit_document_sheet_precedes_generic_marks_without_dropping_hits():
+    md = '''## Page 1
+### BLOCK #1 [IMAGE]: other_sheet
+> **Stamp:** Code: DOC-КМ1 | Stage: П | Sheet: 3
+ОГМ 4
+## Page 2
+### BLOCK #2 [IMAGE]: other_document
+> **Stamp:** Code: OTHER-КМ1 | Stage: П | Sheet: 6
+ОГМ 4
+## Page 3
+### BLOCK #3 [IMAGE]: detail
+> **Stamp:** Code: DOC-КМ1 | Stage: П | Sheet: 6
+ОГМ 4
+'''
+    result = search_md_context(md, ['DOC-КМ1 лист 6', 'ОГМ 4'], max_blocks=1)
+    assert [h['block_id'] for h in result['hits']] == ['detail']
+    assert {h['block_id'] for h in result['backlog']} == {'other_sheet', 'other_document'}
+    assert result['query_hit_counts']['DOC-КМ1 лист 6'] == 1
+    assert not result['hits'][0]['reference_applicability_verified']
+    assert not result['absence_proven']
+
+
+def test_document_sheet_navigation_preserves_stage_ambiguity_and_literal_codes():
+    md = '''## Page 1
+### BLOCK #1 [IMAGE]: stage_p
+> **Stamp:** Code: DOC-КМ1 | Stage: П | Sheet: 6
+Detail
+### BLOCK #2 [IMAGE]: stage_r
+> **Stamp:** Code: DOC-КМ1 | Stage: Р | Sheet: 6
+Detail
+### BLOCK #3 [IMAGE]: different_execution
+> **Stamp:** Code: DOC-КМ1.2 | Stage: П | Sheet: 6
+Detail
+'''
+    result = search_md_context(md, ['DOC-КМ1 лист 6'])
+    assert {h['block_id'] for h in result['hits']} == {'stage_p', 'stage_r'}
+    assert {h['source_provenance']['stage'] for h in result['hits']} == {'П', 'Р'}
+    assert all(not h['reference_applicability_verified'] for h in result['hits'])
+    # Latin KM and Cyrillic КМ remain different; no transcription repair.
+    assert search_md_context(md, ['DOC-KM1 лист 6'])['hits'] == []
+    assert search_md_context(md, ['DOC-КМ1 лист 60'])['hits'] == []

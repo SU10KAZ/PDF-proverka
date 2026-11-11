@@ -91,8 +91,14 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
         for q in valid:
             # A compact drawing reference is a navigation hypothesis, not proof
             # that a same-numbered sheet from another stage is applicable.
+            scoped_sheet = re.fullmatch(r'(\S+)\s+лист(?:е|а)?\s+(\d+(?:\.\d+)?)', q, re.I)
             node_ref = re.fullmatch(r'(?:по\s+)?([А-ЯЁA-Z])\s*\((\d+)\)', q, re.I)
-            if (node_ref and provenance.get('sheet') == node_ref[2]
+            if (scoped_sheet and provenance.get('code', '').casefold() == scoped_sheet[1].casefold()
+                    and provenance.get('sheet') == scoped_sheet[2]):
+                # Exact prepared-MD metadata only: no OCR repair, code shortening,
+                # stage equivalence or claim that a same-numbered sheet applies.
+                match_kinds[q] = 'document_sheet_navigation'
+            elif (node_ref and provenance.get('sheet') == node_ref[2]
                     and re.search(r'(?<!\w)' + re.escape(node_ref[1]) + r'(?!\w)', body, re.I)):
                 match_kinds[q] = 'node_sheet_navigation'
             elif page_num in requested_sheet_pages(q):
@@ -124,7 +130,7 @@ def search_md_context(md, queries, *, max_chars=60000, max_blocks=12, exclude_bl
     # Round-robin across queries prevents common phrases from starving exact
     # marks that occur later in the document. Source order remains stable within
     # each query; no text is truncated or synthesized.
-    priorities = {'node_sheet_navigation': -1, 'sheet_reference': 0, 'body_token': 0, 'dimension_format_navigation': 0, 'metadata_token': 1, 'substring': 2}
+    priorities = {'document_sheet_navigation': -2, 'node_sheet_navigation': -1, 'sheet_reference': 0, 'body_token': 0, 'dimension_format_navigation': 0, 'metadata_token': 1, 'substring': 2}
     queues = [sorted((i for i, hit in enumerate(matches_all) if q in hit['queries']),
                      key=lambda i: priorities[matches_all[i]['query_match_kinds'][q]]) for q in valid]
     order, seen = [], set()
