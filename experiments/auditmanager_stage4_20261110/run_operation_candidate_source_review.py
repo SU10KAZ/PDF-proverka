@@ -120,7 +120,7 @@ async def main(args):
         assert Path(args.md_path).read_text()==md
         return result
     result=await run_source_review_workflow(queue,finding,md,crops,Path(args.output_root)/args.workflow_name,
-        invoke=invoke,executor_id='direct-codex-gpt-6-astra-high',max_images=16,repair_quote_spacing=True,literal_image_hashes=args.literal_image_hash,auto_graphic_regions=args.auto_graphic_regions)
+        invoke=invoke,executor_id='direct-codex-gpt-6-astra-high',max_images=16,repair_quote_spacing=True,literal_image_hashes=args.literal_image_hash,auto_graphic_regions=args.auto_graphic_regions,repair_image_refs=True)
     print('COMPLETE',result['status'],flush=True)
 
 

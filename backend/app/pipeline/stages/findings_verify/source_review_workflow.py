@@ -39,7 +39,7 @@ For retain/revise/question provide display_field_reviews as an OBJECT keyed by e
         'image_paths':source_request['image_paths'],'image_bindings':source_request['image_bindings']}
 
 
-async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None, max_images=8, repair_quote_spacing=False, literal_image_hashes=(), auto_graphic_regions=False):
+async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, *, invoke, executor_id, is_cancelled=None, max_images=8, repair_quote_spacing=False, literal_image_hashes=(), auto_graphic_regions=False, repair_image_refs=False):
     """invoke(request, phase) -> provider result dict; caller owns authorization.
 
     Maximum five source reviews (initial plus four context revisions) and one
@@ -147,6 +147,14 @@ async def run_source_review_workflow(queue, finding, md, graphic_dir, work_dir, 
                 response = await call(request, f'region_review_{region_round}', 0)
                 validation = validate_source_review(response,current,[finding],md)
                 _write(root/f'00_region_validation_{region_round}.json', validation)
+                if repair_image_refs and validation['errors'] and all(e.endswith(':graphic_not_supplied') for e in validation['errors']):
+                    from .source_review_image_refs import repair_unknown_image_labels
+                    repaired, receipt = repair_unknown_image_labels(response, request, md)
+                    _write(root/f'00_region_image_refs_{region_round}.json', receipt)
+                    if receipt['repairs']:
+                        checked=validate_source_review(repaired,current,[finding],md)
+                        _write(root/f'00_region_repaired_validation_{region_round}.json', checked)
+                        if not checked['errors']:response,validation=repaired,checked
                 if validation['errors']:raise ValueError('invalid_region_source_review')
         followup=prepare_review_followup(response,current,[finding],md,graphic_dir,max_images=max_images)
         _write(root/f'{step:02d}_followup.json',followup)
