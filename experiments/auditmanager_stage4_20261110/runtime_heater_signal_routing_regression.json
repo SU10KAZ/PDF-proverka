@@ -1,0 +1,44 @@
+{
+  "status": "routing_regression_identified_in_recovered_output",
+  "frozen_control": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+  "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e",
+  "output": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+  "output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "cases": [
+    {
+      "id": "F-041",
+      "report_section": "questions",
+      "problem": "Требуется уточнить назначение сигнала №6 электронагревателя П4.1.1, отмеченного как DI.",
+      "solution": "Уточнить, является сигнал №6 командой или обратной связью; согласовать его наименование, тип канала и итоговые количества входов и выходов."
+    },
+    {
+      "id": "F-045",
+      "report_section": "technical_findings",
+      "problem": "Команда пуска электронагревателя П5.1.3 обозначена как дискретный вход.",
+      "solution": "Согласовать назначение сигнала позиции 17: для команды пуска/останова обозначить DO и скорректировать количества входов и выходов; если предусмотрен вход состояния, исправить подпись и отдельно показать команду управления."
+    },
+    {
+      "id": "F-050",
+      "report_section": "technical_findings",
+      "problem": "Команда пуска электронагревателя Пу5.1 назначена дискретному входу.",
+      "solution": "Перенести сигнал 4 в DO и согласовать реализацию управления нагревателем. При сохранении остальных сигналов изменить итоги на DI — 8 и DO — 7."
+    },
+    {
+      "id": "F-052",
+      "report_section": "technical_findings",
+      "problem": "Команда пуска и останова электронагревателя По5.1 отнесена к входу DI.",
+      "solution": "Согласовать назначение линии 7 со схемой управления нагревателем: для выдачи команды пуска и останова предусмотреть выход управления и исправить таблицу сигналов."
+    },
+    {
+      "id": "F-057",
+      "report_section": "technical_findings",
+      "problem": "Команда пуска электронагревателя П6.1.4 назначена дискретному входу вместо выхода.",
+      "solution": "Назначить выход управления электронагревателем, согласовать тип сигнала 17 и пересчитать итоговые количества DI и DO по принятой схеме управления."
+    }
+  ],
+  "finding": "All five observed matrix facts survived, but four became technical defects. One prescription mandates moving a signal and recalculating totals without establishing whether it is an outgoing command or an incoming state.",
+  "proposed_behavior": "Retain the observed label and DI/DO markings. Where interface direction is unresolved, publish a question requesting interface clarification, preserving the precise equipment address. Do not prescribe controller changes from the label alone.",
+  "regression_test": "Preserve all five question addresses and prevent unverified DI-to-DO prescriptions; retain separately verified matrix arithmetic conflicts F-058/F-059.",
+  "boundary": "No blanket suppression of signal-matrix findings; validate actual function and source scope.",
+  "production_acceptance": false
+}

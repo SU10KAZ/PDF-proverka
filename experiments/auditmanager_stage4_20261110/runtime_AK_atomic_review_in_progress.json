@@ -171,12 +171,25 @@
     },
     {
       "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-048"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+          "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Четыре ПЧ двух систем Пн5.1/Вн5.1 с UZ2/UZ3/UZ2/UZ3 сопоставлены с перечнем UZ1–UZ4; сохранена неоднозначность соответствия.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK65_F043_UZ_identity:ab637698bce5025cb6df",
@@ -495,12 +508,25 @@
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Пкр4.1-13→M2 в КЖ сопоставлен с M3 перечня; графическое подтверждение этой линии в итоговом тексте не восстановлено. Дополнения Пкр5.1 не заменяют адрес Пкр4.1.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
@@ -513,12 +539,25 @@
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Обе линии Пкр5.1-9/-13 сопоставлены с внешней схемой, назначением двигателей и буквальными строками КЖ; клеммы23–25/33–34 сохранены.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
@@ -531,48 +570,114 @@
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-003",
+        "F-071"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "M1 насоса Пн5.1 в КЖ, M5 перечня/функционального назначения и M2 насоса во внешних подключениях сохранены совокупностью двух строк; не сводить тройное расхождение к паре.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Графическое дополнение устанавливает M2 насосом водяного контура Па3.1 против строки M1–M3 вентиляторов перечня.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "M4 связан с Ва3.1р на графике, в перечне это насос; назначения сохранены без вывода о фактическом неправильном подключении.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F016_F017_motor_register.json",
+          "sha256": "852cf84f9d25a55e746ec36e7e3413aebf007c886149d1f55d5426808230bf25"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "M5 обнаружен на схеме Па3.1 и в КЖ Па3.1-12, при отсутствии позиции в полном перечне M1–M3/M4. Количество ПЧ не использовано как доказательство числа работающих двигателей.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-027"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F018_drive_system_assignment.json",
+          "sha256": "62cb406cdf423f7781c27e355c359c2d507189af8b12a26d34f7380119ed6eeb"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Позиции16.2/16.3 Ва4.1/Па4.1 сопоставлены с шкафом ШАУВ-1-К6АС и Па5.1/Ва5.1; добавлены графические подтверждения листов40 и54.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
@@ -907,21 +1012,47 @@
     },
     {
       "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-036"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F035_UZ_identity.json",
+          "sha256": "17877ee974090aeee8c5f2406c725cff99f585b7f47a60d464c265ca844e90ec"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Два разных ПЧ П4.1.3/П4.1.4 имеют SC UZ1 в одном шкафу, перечень предусматривает SC UZ1/SC UZ2.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-038"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F036_damper_signal_direction.json",
+          "sha256": "679a411c9e04b0c8c1987471b621d8fdc5d6935a1db687f71aefcf1cec7b07eb"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Колонки11/13 Y2/Y3, подпись состояния0–100% и AO сохранены. Реальная обратная связь и необходимость отдельного входа оставлены неопределёнными.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
@@ -943,21 +1074,51 @@
     },
     {
       "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-041",
+        "F-045",
+        "F-050",
+        "F-052",
+        "F-057"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+          "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Найдены все пять адресов DI без DO, но четыре строки ошибочно отнесены к техническим. F-050 без проверки интерфейса предписывает перенос DI→DO и пересчёт итогов; это не улучшение качества при полном покрытии факта.",
+      "section_assessment": "mixed_questions_promoted_to_technical"
     },
     {
       "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-042"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Ва3.1/M3→16 и Ва3.1р/M4→19 сохранены как несовпадение подписей со статическими обозначениями агрегатов.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F041_fan_role_labels:8239404083a86b949049",
@@ -970,12 +1131,25 @@
     },
     {
       "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-047"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Состояния Пн5.1/Вн5.1 сохранены в колонках11/14/26/29; ошибочные колонки15/30 не использованы вместо состояний.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
@@ -988,30 +1162,69 @@
     },
     {
       "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-051"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "TS2 Пу5.1 функциональной схемы сопоставлен с ТС1 перечня и линией Пу5.1-2 в КЖ; повторная проверка добавила внешний TS1.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-053"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Для По5.1 сохранены TS2 функциональной схемы, ТС1 перечня/КЖ и TS1 внешней схемы; адрес По5.1-2 установлен.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-032"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+          "sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Буквальный PDS45 в строке Вос5.1-1 сопоставлен с PDS5 на функциональной и внешней схемах; клеммы14/15 приведены.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
@@ -1024,12 +1237,25 @@
     },
     {
       "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-058"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Сохранены DI10 против12 точек с учётом отдельного сигнала Пожар; фактическая нехватка входов контроллера не утверждается.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
@@ -1042,12 +1268,25 @@
     },
     {
       "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-059"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "DO5 против шести точек2/8/10/11/14/16 сохранён как внутреннее расхождение таблицы, без вывода о комплектации шкафа.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
@@ -1239,6 +1478,6 @@
   "status": "partial_review_not_acceptance",
   "source_snapshot": "/tmp/auditmanager_context_terminal_snapshot_20261112.json",
   "source_snapshot_sha256": "1358431ad556afc30733620fbf974da3c521f343bfffffe4d26abc32b781f287",
-  "reviewed_targets": 24,
-  "unchecked_targets": 76
+  "reviewed_targets": 42,
+  "unchecked_targets": 58
 }

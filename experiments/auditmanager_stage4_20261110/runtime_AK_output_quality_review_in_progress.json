@@ -292,8 +292,15 @@
       "finding_id": "F-041",
       "problem": "Требуется уточнить назначение сигнала №6 электронагревателя П4.1.1, отмеченного как DI.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "correct_question_scope",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+        "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+      },
+      "review_reason": "Факт DI/нет DO прочитан, но реальный интерфейс не установлен. Сохранить вопрос о назначении сигнала; безусловное изменение канала не доказано.",
+      "proposed_section": "questions",
+      "preserve_observation": true
     },
     {
       "finding_id": "F-042",
@@ -320,8 +327,15 @@
       "finding_id": "F-045",
       "problem": "Команда пуска электронагревателя П5.1.3 обозначена как дискретный вход.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "unsupported_technical_promotion",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+        "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+      },
+      "review_reason": "Факт DI/нет DO прочитан, но реальный интерфейс не установлен. Сохранить вопрос о назначении сигнала; безусловное изменение канала не доказано.",
+      "proposed_section": "questions",
+      "preserve_observation": true
     },
     {
       "finding_id": "F-046",
@@ -355,8 +369,16 @@
       "finding_id": "F-050",
       "problem": "Команда пуска электронагревателя Пу5.1 назначена дискретному входу.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "unsupported_technical_promotion",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+        "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+      },
+      "review_reason": "Факт DI/нет DO прочитан, но реальный интерфейс не установлен. Сохранить вопрос о назначении сигнала; безусловное изменение канала не доказано.",
+      "proposed_section": "questions",
+      "preserve_observation": true,
+      "unsupported_prescription": "Перенести сигнал 4 в DO и согласовать реализацию управления нагревателем. При сохранении остальных сигналов изменить итоги на DI — 8 и DO — 7."
     },
     {
       "finding_id": "F-051",
@@ -369,8 +391,15 @@
       "finding_id": "F-052",
       "problem": "Команда пуска и останова электронагревателя По5.1 отнесена к входу DI.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "unsupported_technical_promotion",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+        "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+      },
+      "review_reason": "Факт DI/нет DO прочитан, но реальный интерфейс не установлен. Сохранить вопрос о назначении сигнала; безусловное изменение канала не доказано.",
+      "proposed_section": "questions",
+      "preserve_observation": true
     },
     {
       "finding_id": "F-053",
@@ -404,8 +433,15 @@
       "finding_id": "F-057",
       "problem": "Команда пуска электронагревателя П6.1.4 назначена дискретному входу вместо выхода.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "unsupported_technical_promotion",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F040_heater_signal_direction.json",
+        "sha256": "e6a1ac30bfe2a4a409e87861d95c214368b0582358520dd63c5464d1656fcf6e"
+      },
+      "review_reason": "Факт DI/нет DO прочитан, но реальный интерфейс не установлен. Сохранить вопрос о назначении сигнала; безусловное изменение канала не доказано.",
+      "proposed_section": "questions",
+      "preserve_observation": true
     },
     {
       "finding_id": "F-058",
@@ -614,8 +650,8 @@
       "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
     }
   ],
-  "reviewed": 3,
-  "unchecked": 82,
+  "reviewed": 8,
+  "unchecked": 77,
   "production_acceptance": false,
   "limits": [
     "No global precision or recall estimate until full target and output review.",
