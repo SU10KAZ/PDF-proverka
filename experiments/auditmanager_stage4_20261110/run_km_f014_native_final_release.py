@@ -18,7 +18,7 @@ def immutable(path,data):
     if path.exists():assert json.loads(path.read_text())==data,str(path)
     else:path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
 
-async def main(execute):
+async def main(execute, output_root=ROOT):
     os.environ['CODEX_TRANSIENT_RETRIES']='0'
     source=BASE/'inputs/KM/versions/v001/02_work/document.md'
     md=source.read_text();baseline=json.loads((BASE/'snapshots/KM/findings_verify.json').read_text())
@@ -26,7 +26,7 @@ async def main(execute):
         entry=json.loads(path.read_text())['entry'];fid=entry['response']['finding_id']
         original=next(p['finding_snapshot'] for p in entry['queue']['packets'] if p['finding_id']==fid)
         document={**baseline,'findings':[original if f['id']==fid else f for f in baseline['findings']]}
-        prepared=prepare_final_check(entry,document,md);root=ROOT/name;root.mkdir(parents=True,exist_ok=True)
+        prepared=prepare_final_check(entry,document,md);root=output_root/name;root.mkdir(parents=True,exist_ok=True)
         request=prepared['request']
         manifest={'candidate_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
             'binding':prepared['binding'],'message_chars':sum(len(m['content']) for m in request['messages']),
@@ -46,4 +46,6 @@ async def main(execute):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--execute',action='store_true')
-    asyncio.run(main(parser.parse_args().execute))
+    parser.add_argument('--output-root',type=Path,default=ROOT)
+    args=parser.parse_args()
+    asyncio.run(main(args.execute,args.output_root))

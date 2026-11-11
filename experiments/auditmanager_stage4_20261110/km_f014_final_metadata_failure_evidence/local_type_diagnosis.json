@@ -1,0 +1,15 @@
+{
+  "scope": "Local diagnostic only; derived response never admitted or substituted for model result.",
+  "raw_validation_error": "source_not_in_packet",
+  "single_type_change_passes_validation": true,
+  "changes": [
+    {
+      "check_id": "source_support",
+      "evidence_index": 3,
+      "only_change": "text -> metadata"
+    }
+  ],
+  "quote_text_unchanged": true,
+  "all_other_values_unchanged": true,
+  "report_released": false
+}

@@ -1,0 +1,13 @@
+{
+  "status": "final_check_rejected_format_not_technical_refutation",
+  "error": "invalid_final_check_sources: claim_0:source_not_in_packet",
+  "cause": "Final-check instructions offered only text/image, while validator separately requires metadata for stamp quotes. Model emitted an IMAGE-block stamp quote as type=text.",
+  "model_decision": "release",
+  "release_applied": false,
+  "fix": "Explicit metadata option in final-check instructions; validator unchanged. New policy requires a fresh model check, not re-certification of the old response.",
+  "original_response_preserved": true,
+  "frozen_comparison_candidate_changed": false,
+  "new_candidate_revision_required": true,
+  "tests": "20 existing final-check and release-workflow tests passed",
+  "production_changed": false
+}
