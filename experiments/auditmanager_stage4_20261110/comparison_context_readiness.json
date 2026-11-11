@@ -1,0 +1,60 @@
+{
+  "status": "actual_input_contracts_passed",
+  "projects": [
+    {
+      "discipline": "AK",
+      "graphic_blocks": 70,
+      "source_counts": {
+        "raw_vector": 70
+      },
+      "ready": true
+    },
+    {
+      "discipline": "ITP",
+      "graphic_blocks": 48,
+      "source_counts": {
+        "image_only": 15,
+        "raw_vector": 33
+      },
+      "ready": true
+    },
+    {
+      "discipline": "AR",
+      "graphic_blocks": 42,
+      "source_counts": {
+        "structured_architecture": 40,
+        "image_only": 2
+      },
+      "ready": true
+    },
+    {
+      "discipline": "KM",
+      "graphic_blocks": 54,
+      "source_counts": {
+        "structured_structure": 54
+      },
+      "ready": true
+    },
+    {
+      "discipline": "VK",
+      "graphic_blocks": 35,
+      "source_counts": {
+        "structured_water": 32,
+        "raw_vector": 3
+      },
+      "ready": true
+    },
+    {
+      "discipline": "EOM",
+      "graphic_blocks": 85,
+      "source_counts": {
+        "structured_electrical": 29,
+        "raw_vector": 36,
+        "image_only": 20
+      },
+      "ready": true
+    }
+  ],
+  "model_calls": 0,
+  "boundary": "Checks source preparation and package readability; runtime and audit quality remain to be measured."
+}

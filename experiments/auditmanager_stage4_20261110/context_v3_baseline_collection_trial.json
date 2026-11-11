@@ -1,0 +1,162 @@
+{
+  "status": "frozen_comparative_execution",
+  "scope": "baseline_reference_collection_only",
+  "purpose": "Collect the original fixed-classic arm without waiting for engineering resolution of candidate controls. This does not close stage4 or admit candidate methods.",
+  "evaluator": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/evaluator_release_errata_v2.json",
+    "sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76"
+  },
+  "acceptance_protocol": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/original_trial_protocol.json",
+    "sha256": "5186bfa93d8ca0f533b002cad3560eb0da84513ddadd25930b4a4047b238df42"
+  },
+  "source_snapshot": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/classic_catalog_snapshot_provenance.json",
+    "sha256": "c93ead373e6d08cc9a63bf84c1a884f5d3fc8694296fc969980515962542f748"
+  },
+  "candidate_snapshot_reserved_for_later": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/candidate_catalog_snapshot_provenance.json",
+    "sha256": "69dad25af8b3baa6208e3742727282922d65ec83c03ec16a8732c24eaa1f7cc8"
+  },
+  "model": "codex/gpt-6-astra",
+  "effort": "high",
+  "max_request_attempts": 3,
+  "retry_delay_seconds": 10,
+  "graphic_parallelism": 2,
+  "project_parallelism": 1,
+  "dispatch_order": "Repeat 1: AK ITP AR KM VK EOM; repeat 2 same order; repeat 3 same order. Candidate arms require separate admission; timing confounding must be reported.",
+  "source_access": "Inline authoritative MD and supplied images only; no search or external normative vault. Targets requiring unavailable external sources cannot be counted as simple misses; full-profile comparison remains subject to source-availability review.",
+  "codex_cli_version": "codex-cli 0.162.0-alpha.17.2",
+  "engineering_controls_complete": false,
+  "stage4_complete": false,
+  "production_acceptance": false,
+  "results_policy": "Seal outputs and usage. Do not inspect semantic results to tune the reserved candidate before its freeze/admission is settled. Known projects remain DEV-known.",
+  "runs": [
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic",
+      "variant": "classic",
+      "discipline": "AK",
+      "repeat": 1,
+      "input_manifest_sha256": "2022f10cc5def8de0c5c74316d369570d9fe3a5fe44ee8886c518c2be9f6e6d6"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic",
+      "variant": "classic",
+      "discipline": "ITP",
+      "repeat": 1,
+      "input_manifest_sha256": "a3d05074a53638655d196728cc3d4ec1459a868c3479ba53db343da0e6195cb4"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic",
+      "variant": "classic",
+      "discipline": "AR",
+      "repeat": 1,
+      "input_manifest_sha256": "06b3f6e493c59d4810139d0ecd62dd4dd679184534de007d87f095d33bf9806f"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic",
+      "variant": "classic",
+      "discipline": "KM",
+      "repeat": 1,
+      "input_manifest_sha256": "732986af1851c07e0e6d69073766117c03d994c1e7ca80f102d6c3a0e6c0c111"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r1_classic",
+      "variant": "classic",
+      "discipline": "VK",
+      "repeat": 1,
+      "input_manifest_sha256": "3ab5c6cdfc1e29851ff2a9b147cd79c66af1db6ab43c623d9d456f5e64dc6f6b"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic",
+      "variant": "classic",
+      "discipline": "EOM",
+      "repeat": 1,
+      "input_manifest_sha256": "8316011b3565ce7ca20ddad1e4461a4a5f075604c03b685693ed18efb5fcf148"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic",
+      "variant": "classic",
+      "discipline": "AK",
+      "repeat": 2,
+      "input_manifest_sha256": "ecf62d51fb9a3830f882ca81b5fa9a1524fd53ca8a04e630a95d366e21be1d6a"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic",
+      "variant": "classic",
+      "discipline": "ITP",
+      "repeat": 2,
+      "input_manifest_sha256": "8608b114004526cef50f12c2d196addf447e8bb7b340647daca97b703bf26686"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic",
+      "variant": "classic",
+      "discipline": "AR",
+      "repeat": 2,
+      "input_manifest_sha256": "02ba2d09189e5ba4d78b449f595de71030a0a362c81ff5fc17ffaff313d47292"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic",
+      "variant": "classic",
+      "discipline": "KM",
+      "repeat": 2,
+      "input_manifest_sha256": "6489f0295d68302d3f9a4674cd7fc2cdd94799cb4d02b0f555992f82ec389f44"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic",
+      "variant": "classic",
+      "discipline": "VK",
+      "repeat": 2,
+      "input_manifest_sha256": "3ccd0d39e5feb830ed0e87e393ce5469d5ae7af80cdc573bbb8b407659191a24"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic",
+      "variant": "classic",
+      "discipline": "EOM",
+      "repeat": 2,
+      "input_manifest_sha256": "d6c371a1f7ee1f16acd9b6169e86f0bc4380fcffffbf4b5c77d45b7491e941d9"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic",
+      "variant": "classic",
+      "discipline": "AK",
+      "repeat": 3,
+      "input_manifest_sha256": "cec98c493d017f9331ba3bfe183d8f4dad0d0b0b3ab692dfb2827ffe70d18319"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic",
+      "variant": "classic",
+      "discipline": "ITP",
+      "repeat": 3,
+      "input_manifest_sha256": "a40868ca7e2e610c20416421c1ded94c9225362f68f81db730b6cf0e42e4f40d"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r3_classic",
+      "variant": "classic",
+      "discipline": "AR",
+      "repeat": 3,
+      "input_manifest_sha256": "d0a0f68dd3842de99964a1b0ae41ea4f1c4720d5d5895185809e64c988b5ce06"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r3_classic",
+      "variant": "classic",
+      "discipline": "KM",
+      "repeat": 3,
+      "input_manifest_sha256": "701ddcfe6840ea5f32eb4f4261d480c368ea4d35d0aaaab6150ab7e643970e62"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic",
+      "variant": "classic",
+      "discipline": "VK",
+      "repeat": 3,
+      "input_manifest_sha256": "d73fc270586d3cf99179d55e3642c18a6fe8f4ec668a6c81369a0573d04aea0e"
+    },
+    {
+      "work": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic",
+      "variant": "classic",
+      "discipline": "EOM",
+      "repeat": 3,
+      "input_manifest_sha256": "4e7e98147bdeceb2441ebee382d06d5292826bb86b29af50a1a7e0e8f09cba56"
+    }
+  ]
+}

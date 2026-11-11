@@ -1,5 +1,5 @@
 {
-  "status": "local_source_context_build_in_progress",
+  "status": "six_packages_validated_baseline_collection_started",
   "live_exec_session": 69165,
   "inputs": "/tmp/auditmanager_six_candidate_inputs_context_v3_20261111",
   "log": "/tmp/auditmanager_context_v3_build.log",
@@ -8,10 +8,13 @@
   "previous_failure": "Missing block_context_summary.json; zero model requests",
   "catalog_missing_resource_fix": "context_catalog_packaging_provenance.json",
   "remaining": [
-    "Finish all six source context builds and inspect coverage",
-    "Bind catalog resources in full source snapshot and protocol hashes for both comparison arms",
-    "Validate actual pre-model prerequisites and freeze new input revision",
-    "Launch and monitor 18 baseline runs; no method quality acceptance implied"
+    "Complete 18 baseline runs and seal results",
+    "Complete candidate control admission, comparative scoring and transfer validation",
+    "Meet original acceptance gates before production release"
   ],
-  "stage4_complete": false
+  "stage4_complete": false,
+  "local_build_completed": true,
+  "collection_root": "/tmp/auditmanager_comparative_trial_context_v3_20261111",
+  "baseline_supervisor_pid": 3942392,
+  "active_first_run_pid": 3942393
 }

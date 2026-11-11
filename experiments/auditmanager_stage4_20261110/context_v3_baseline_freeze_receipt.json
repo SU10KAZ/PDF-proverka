@@ -1,0 +1,13 @@
+{
+  "status": "baseline_collection_frozen_not_started",
+  "trial": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/baseline_collection_trial.json",
+    "sha256": "e8868d688a4525c54871ff4310b39ea490c225f13129c2fe9e5d6dc0791f4c8b"
+  },
+  "runs": 18,
+  "model": "codex/gpt-6-astra",
+  "effort": "high",
+  "model_calls": 0,
+  "stage4_complete": false,
+  "scope": "Baseline source-scope measurement, not candidate admission or production acceptance."
+}
