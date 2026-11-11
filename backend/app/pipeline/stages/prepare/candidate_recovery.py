@@ -222,5 +222,6 @@ def validate_recovery_payload(targeted_pass, payload):
     return {**payload, 'findings': accepted, 'recovery_pending': pending + unresolved_links + unresolved_addenda,
             'recovery_link_updates': links, 'recovery_addenda_updates': addenda,
             'recovery_new_finding_addenda': new_addenda,
+            'recovery_parent_target_bindings': packet.get('parent_target_bindings', []),
             'recovery_existing_target_ids': [f['id'] for f in packet['existing_findings']
                 if isinstance(f, dict) and isinstance(f.get('id'), str)]}

@@ -236,7 +236,9 @@ def build_context_followup(request, payload):
         'A matching node/sheet number does not establish that a different stage or '
         'revision applies. If the relationship is unproved, retain needs_data; '
         'do not use it to confirm or refute the claim.')
-    packet['previous_decisions'] = decisions
+    packet['previous_decisions'] = deepcopy(decisions)
+    from ..findings_merge.recovery_parent_targets import carry_parent_targets
+    carry_parent_targets(packet, request.stage, payload)
     # Attach only local, explicitly indexed crops from the same frozen index.
     # A summary or an unavailable crop never becomes graphic evidence.
     images = list(request.image_paths)

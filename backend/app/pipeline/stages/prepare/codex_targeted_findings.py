@@ -897,6 +897,7 @@ def combine_findings_with_targeted(
     targeted_stages: list[str] = []
     observer_enabled = _finding_evidence_observer_enabled()
 
+    parent_target_registry = {}
     for stage, raw_payload in targeted_payloads:
         payload = deepcopy(raw_payload)
         recovery_report = None
@@ -912,11 +913,14 @@ def combine_findings_with_targeted(
                 "unverified_terminal_dispositions": payload.get("terminal_dispositions", []),
             })
         if stage.startswith("candidate_recovery_") and isinstance(payload, dict):
+            from backend.app.pipeline.stages.findings_merge.recovery_parent_targets import bind_parent_targets
+            parent_report = bind_parent_targets(payload, parent_target_registry, findings)
             from backend.app.pipeline.stages.findings_merge.recovery_links import apply_duplicate_links
             link_report = apply_duplicate_links(findings, payload.get("recovery_link_updates", []))
             from backend.app.pipeline.stages.findings_merge.recovery_addenda import apply_addenda
             addenda_report = apply_addenda(findings, payload.get("recovery_addenda_updates", []))
             combined.setdefault("candidate_recovery_reports", []).append({
+                "parent_target_binding": parent_report,
                 "link_repairs": link_report, "addenda_publication": addenda_report,
                 "context_retrieval": payload.get("context_retrieval"),
                 "stage": stage, "candidate_decisions": payload.get("candidate_decisions", []),
@@ -962,6 +966,12 @@ def combine_findings_with_targeted(
                                                        local_targets, targeted_findings)
             for kind in ("applied", "pending"):
                 recovery_report["addenda_publication"][kind].extend(publication[kind])
+        from backend.app.pipeline.stages.findings_merge.recovery_links import target_signature
+        for item in targeted_findings:
+            if isinstance(item, dict) and isinstance(item.get("id"), str):
+                for final_id in local_targets.get(item["id"], []):
+                    parent_target_registry.setdefault((stage, item["id"]), []).append({
+                        "source_signature": target_signature(item), "final_id": final_id})
         if added_for_stage:
             targeted_stages.append(stage)
 
