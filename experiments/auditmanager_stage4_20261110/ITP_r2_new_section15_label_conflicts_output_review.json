@@ -1,0 +1,328 @@
+{
+  "status": "two_new_ITP_graphic_label_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "4c86444c54f599e6186076043379e5786d281695ff43ce74f609391cb2124f99",
+  "queue_after_sha256": "08b257b5babeee601d1075836c92ad6dd27400e37250d04477ed9df4711edf7d",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-046",
+      "finding": {
+        "id": "F-046",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка трубопроводов",
+        "sheet": "Лист 8",
+        "page": 15,
+        "problem": "Патрубки отопительного контура обозначены как трубопроводы тепловой сети.",
+        "description": "На разрезе 15-15 патрубки теплообменника отопления первой зоны обозначены Т1-Ø100 на отметке +1,065 и Т2-Ø100 на отметке +0,346. На разрезах 40-40 и 16-16 подключения с теми же диаметрами и отметками обозначены Т11 и Т21. Маркировка смешивает первичный и отопительный контуры.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.85,
+            "reason": "Однозначность обозначений инженерных систем и согласованность изображений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-010"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить подключения с принципиальной схемой и привести марки патрубков на разрезе 15-15 к согласованным Т11 и Т21.",
+        "risk": "Ошибочная идентификация контуров и неправильное подключение при монтаже.",
+        "source_finding_ids": [
+          "G-010"
+        ],
+        "source_block_ids": [
+          "blk_6496640ac5e44e98a89acc7af56d0509"
+        ],
+        "related_block_ids": [
+          "blk_6496640ac5e44e98a89acc7af56d0509"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+            "page": 15
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На15–15патрубкиØ100отопленияIзоны подписаныТ1+1,065иТ2+0,346.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "На этом же разрезе верхние подключения того жеизображённого контура подписаныТ11Ø200+2,450иТ21Ø200+2,150. Верхние соседниеТ1/Т2Ø150 относятся к другим линиям; они не подменены ошибочными нижними выносками."
+        },
+        {
+          "claim": "На40–40и16–16патрубкиØ100на тех же отметках подписаныТ11/Т21.",
+          "verdict": "confirmed_direct_GRAPHIC_cross_view_identity",
+          "limits": "Подтверждены одинаковые отметки,диаметры,назначениеОтоплениеIзона100%Q1,711и геометрия ветвей. Связь не выведена только из близости текста."
+        },
+        {
+          "claim": "Согласовать нижние подписи15–15сТ11/Т21по схеме.",
+          "verdict": "supported_label_correction",
+          "limits": "Маркировка в пределах просмотренных разрезов противоречива. Фактическое соединение отопления с первичным контуром и неправильный монтаж не установлены."
+        },
+        {
+          "claim": "Доказательный блок в исходной выдаче отмеченtext.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "БлокIMAGEпроверен непосредственно по растру; исходная выдача не изменена. Нормативный пункт не проверен."
+        }
+      ],
+      "unsupported_additions": "Маркировочная несогласованность не доказывает физическое смешение систем или фактический монтажный дефект.",
+      "novel_useful_content": "Новое относительно первого повтора локальное межвидовое противоречие маркировки; не дублируетF048оК9Т42.",
+      "duplicate_burden": "F046_heating_port_labels_and_F047_DHW_zone_suffix_distinct_objects",
+      "profile_and_section": "document_coordination_questions; technical consequence not established",
+      "engineer_reuse": "no_new_same_claim_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png",
+          "sha256": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd",
+          "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+          "route": "direct_GRAPHIC_review"
+        },
+        {
+          "path": "/tmp/itp_r2_section15_detail.png",
+          "sha256": "9e871e35164aadc7b645d66b63fd557622391e06a5d5c80ba6f5076ad4b9243b",
+          "route": "direct_GRAPHIC_crop",
+          "crop_box": [
+            1200,
+            0,
+            2310,
+            650
+          ],
+          "source_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-046_direct_graphic_label_conflict"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 2,
+      "finding_id": "F-047",
+      "finding": {
+        "id": "F-047",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Маркировка трубопроводов",
+        "sheet": "Лист 8",
+        "page": 15,
+        "problem": "Участок циркуляции ГВС второй зоны имеет неполную марку.",
+        "description": "На разрезе 15-15 верхний горизонтальный участок обозначен Т4-Ø40 на отметке +1,809, тогда как соединённые участки и выноска системы обозначены Т42.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Единообразие обозначений одного трубопровода на чертеже.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-011"
+                ],
+                "designation_source": "Перечень нормативных документов входного анализа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить обозначение горизонтального участка на принятую марку Т42.",
+        "risk": "Ошибочная идентификация зонального трубопровода при монтаже и обслуживании.",
+        "source_finding_ids": [
+          "G-011"
+        ],
+        "source_block_ids": [
+          "blk_6496640ac5e44e98a89acc7af56d0509"
+        ],
+        "related_block_ids": [
+          "blk_6496640ac5e44e98a89acc7af56d0509"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+            "page": 15
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T104914Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T10:49:14.408928+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Верхняя горизонтальная часть петлиК16на15–15подписанаТ4–Ø40отм.+1,809.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Соседняя вертикаль и нижняя часть той же прослеживаемой петли имеютТ42–Ø40, ответвлениеТ42–Ø50; общая выноска называетциркуляционныйГВС2зоныТ42."
+        },
+        {
+          "claim": "Требуется согласовать локальную подпись сТ42.",
+          "verdict": "supported_local_label_correction",
+          "limits": "Связь установлена по непрерывной обвязке и выноске назначения, не по одному цвету. Это неполная марка, а не доказанная связь с другой системой."
+        },
+        {
+          "claim": "Обслуживание или монтаж уже выполнены ошибочно.",
+          "verdict": "not_established",
+          "limits": "Рабочие акты и фактический монтаж не проверены."
+        },
+        {
+          "claim": "Доказательный блок в исходной выдаче отмеченtext.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "БлокIMAGEпроверен непосредственно по растру; исходная выдача не изменена. Нормативный пункт не проверен."
+        }
+      ],
+      "unsupported_additions": "Маркировочная несогласованность не доказывает физическое смешение систем или фактический монтажный дефект.",
+      "novel_useful_content": "Новый локальный пропуск зонального индекса2 в одной подписи; инженерная значимость отдельно не оценена.",
+      "duplicate_burden": "F046_heating_port_labels_and_F047_DHW_zone_suffix_distinct_objects",
+      "profile_and_section": "document_coordination_questions; technical consequence not established",
+      "engineer_reuse": "no_new_same_claim_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png",
+          "sha256": "7354443aa6ecdf7232110223a7b30b0dd25276027e3006175c728eb1fdc35edd",
+          "block_id": "blk_6496640ac5e44e98a89acc7af56d0509",
+          "route": "direct_GRAPHIC_review"
+        },
+        {
+          "path": "/tmp/itp_r2_section15_detail.png",
+          "sha256": "9e871e35164aadc7b645d66b63fd557622391e06a5d5c80ba6f5076ad4b9243b",
+          "route": "direct_GRAPHIC_crop",
+          "crop_box": [
+            1200,
+            0,
+            2310,
+            650
+          ],
+          "source_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6496640ac5e44e98a89acc7af56d0509.png"
+        }
+      ],
+      "disposition": "assessed_r2_ITP_F-047_direct_graphic_label_conflict"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
