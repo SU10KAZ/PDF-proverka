@@ -1,0 +1,70 @@
+{
+  "status": "partition_prepared_and_tested_not_dispatched",
+  "preparation": "/tmp/auditmanager_primary_text_runtime_recovery_split_20261112/preparation.json",
+  "preparation_sha256": "b00c3802c0a002886d21b83eafe8177180675c09d69a3a1ab55c4f0513357624",
+  "packets": [
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_split_20261112/candidate_recovery_a3da27e91b027081_part01.json",
+      "sha256": "437bbcf0dfc7662a1a863ef544d44e70bfcb5b4cb25e2878ffae947e7ffd4ed6",
+      "image_bytes": 608982,
+      "message_characters": 96362,
+      "transport_size_ready": true,
+      "candidate_ids": [
+        "G-090",
+        "G-091",
+        "G-092",
+        "G-093"
+      ],
+      "assigned_subclaims": [
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/35/findings/0",
+          "id": "2"
+        },
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/35/findings/1",
+          "id": "2"
+        },
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/35/findings/2",
+          "id": "2"
+        },
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/35/findings/3",
+          "id": "2"
+        }
+      ]
+    },
+    {
+      "path": "/tmp/auditmanager_primary_text_runtime_recovery_split_20261112/candidate_recovery_a3da27e91b027081_part02.json",
+      "sha256": "efadbc169c152404205fe56cb82bb6b616bdd0990952ccbd23bd8d596362b4dd",
+      "image_bytes": 16352342,
+      "message_characters": 92355,
+      "transport_size_ready": true,
+      "candidate_ids": [
+        "G-090",
+        "G-091"
+      ],
+      "assigned_subclaims": [
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/35/findings/0",
+          "id": "3"
+        },
+        {
+          "origin": "graphic",
+          "pointer": "/block_analyses/35/findings/1",
+          "id": "3"
+        }
+      ]
+    }
+  ],
+  "assigned_claims": 6,
+  "local_tests_passed": 2,
+  "images_unchanged": true,
+  "history_supplied": false,
+  "production_acceptance": false
+}
