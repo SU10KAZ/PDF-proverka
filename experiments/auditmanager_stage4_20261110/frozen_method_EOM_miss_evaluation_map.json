@@ -1,0 +1,115 @@
+{
+  "status": "frozen_method_mechanisms_mapped_to_two_baseline_misses",
+  "snapshot_provenance": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/candidate_retrieval_v2_snapshot_provenance.json",
+    "sha256": "c1e28d07df8e1badcaf0664e48186cd18b2e022c7fabc1e322e1b1a64556f58a"
+  },
+  "trial": {
+    "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/experimental_collection_trial.json",
+    "sha256": "498365eedd24db107dce07f9079a95f72e7a1205b4bc0a54a5fdbf7693f3cac8"
+  },
+  "code_evidence": [
+    {
+      "source": {
+        "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/object_inventory_passes.py",
+        "sha256": "99b46fe5ac7d2efe85bf00d8aa1c473a988d5259bd80a6bf8057a9dd5943c99e"
+      },
+      "symbol": "build_object_inventory_passes",
+      "mechanism": "Prompt requests every supplied block, object identity/execution, observed parameters and graphic inspection; packet manifest tracks supplied blocks/images.",
+      "limit": "Manifest input coverage is not semantic completeness. No deterministic enumeration of every electrical circuit is enforced."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/text_analysis/inventory_enrichment.py",
+        "sha256": "6541ed0ee8884eb1d8cd219575be70687907949d9f39ab1b4e4b520f6e12eb83"
+      },
+      "symbol": "run_inventory_enrichment / merge_inventory_analysis",
+      "mechanism": "Runs source-only packets, binds request/source hashes, retains classic findings, adds inventory records and candidates.",
+      "limit": "128 packet budget is a cap; extracted object list can still be incomplete."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/text_analysis/object_registry.py",
+        "sha256": "dd1791da8fa1404dcd06db43e929a9c8ddf04bde401729e71dbb06bdb2b4a148"
+      },
+      "symbol": "reconcile_object_registry / OPERATIONS",
+      "mechanism": "Tracks six operations for each valid object, initially not_checked. Model checked statuses become reported_checked; source references are validated.",
+      "limit": "Objects never extracted cannot receive operation rows. reported_checked is not independent semantic proof."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/object_operation_passes.py",
+        "sha256": "a6b866da065e7db1a63bc460eff0abe83c1fe412d8a3f0edadafec3bb52bac8c"
+      },
+      "symbol": "build_object_operation_passes",
+      "mechanism": "Schedules unresolved operations, retrieves context, optionally enables graphic details and followups; budget overflow remains backlog. Prompt requires matching instance/execution/scope.",
+      "limit": "Generic operations do not prove exact circuit-set reconciliation or full cable inventory was performed."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/text_analysis/runner.py",
+        "sha256": "3f9b71c25de54a18d92a8e673b55baf514f895c97087a6fd9eb5bc92edcb9694"
+      },
+      "symbol": "inventory_invoke integration",
+      "mechanism": "Invokes inventory before object balance/quantity/registry evaluation when callback configured.",
+      "limit": "Presence of hook is implementation evidence, not a completed full audit."
+    },
+    {
+      "source": {
+        "path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/findings_verify/runner.py",
+        "sha256": "19662bf46f43a672e62b64bd8fdb6ed62e13459c5b9786c958254bdadbbe88bc"
+      },
+      "symbol": "source_review_invoke integration",
+      "mechanism": "Runs source review on existing findings through explicit callback.",
+      "limit": "Source review does not substitute for initial discovery of candidates absent from output."
+    }
+  ],
+  "comparison_interpretation": {
+    "classic_current": "All optional families off on candidate foundation; separates common-code changes from optional method effects.",
+    "inventory": "Inventory plus dependent operations/context/graphic detail bundle; cannot attribute gain to one submechanism alone.",
+    "source_review": "Review of candidates plus independent final release check; assess false suppression and unsupported additions.",
+    "combined_candidate": "Not admitted in this frozen54-run series."
+  },
+  "case_checks": [
+    {
+      "target": "EOM27_active_socket_circuits:46bf196510e24cc289cf",
+      "baseline_trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_active_circuit_detector_miss_trace.json",
+        "sha256": "849f432598b5b57ed714d26ecadf8ca3e7487955df4fdabe0fdaca8331cea9d4"
+      },
+      "required_evaluation": [
+        "Find registry entries for C2326/C2327 with source addresses and active2kW context.",
+        "Find explicit correspondence to RP3 calculation rows, not merely another load arithmetic warning.",
+        "Verify reserves C2325/C2328 remain distinct.",
+        "Trace candidate through merge and final output; preserve missing-row conflict without automatic+4kW or equipment failure."
+      ],
+      "absence_diagnosis": [
+        "Object missing: extraction coverage failure.",
+        "Object present, operation not_checked/backlogged: scheduling or budget.",
+        "Operation reported checked but no actual comparison: unsupported completion.",
+        "Confirmed candidate present but final absent: inspect merge/filter disposition."
+      ]
+    },
+    {
+      "target": "EOM11:7985c84eea058c206240",
+      "baseline_trace": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_r1_FRHF_specification_detector_miss_trace.json",
+        "sha256": "ec3117cd7dbe217af28c26805b10e2aad42fd3f914a42608c0f97b00cdd8070d"
+      },
+      "required_evaluation": [
+        "Registry distinguishes FRHF5x35 from HF5x35 and includes C2513/C3510.",
+        "Operation retrieves supplied cable subsection and continuation; checks exact execution and section.",
+        "Final scope preserves two addressed lines while avoiding physical160m shortage and claim that all5x35 absent.",
+        "One recovered line is partial coverage; both are needed for full frozen target."
+      ]
+    }
+  ],
+  "evaluation_isolation": "This file is evaluator-only. Do not provide expected IDs, findings or historical decisions to independent audit executors. Do not change frozen code mid-series.",
+  "limits": [
+    "Code inspection establishes wired mechanisms, not their measured effectiveness.",
+    "Historical six projects are DEV regression; portability and production gates remain open."
+  ],
+  "model_calls": 0,
+  "stage4_complete": false,
+  "production_acceptance": false
+}
