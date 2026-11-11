@@ -1,0 +1,119 @@
+{
+  "status": "source_bound_false_candidate_survival_trace",
+  "repeat": 3,
+  "discipline": "EOM",
+  "finding_ids": [
+    "F-023",
+    "F-024"
+  ],
+  "sources": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/02_text_analysis.json",
+      "sha256": "8737e134f157ec7f83dfb5cba1e718c13cef65c7946cadff66e2037077c37395"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings_codex_base.json",
+      "sha256": "1ce6edc355b6d4b64e939551ff6f1a2c16511675e73eadff0c6411844a80c004"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings_targeted_alia_docnorm_audit.json",
+      "sha256": "968a6e1e7f535e7075c19e44c9a33de3eac589da0a6f2e7d34d392175ff17db5"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings_review.json",
+      "sha256": "ed055a8736299d150c84c08300788b97a8472952a68fb4e48639454bab5e236c"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "sha256": "90037d1fcc2a0d27efcc2c398f909ba5a33092f21dd433e24f706fb64dc77672"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/requests/EOM/1794418685942064112/request.json",
+      "sha256": "eb2a29122cd0dc98a038e7fe61b37948699b254edfc79fb4289670d4ea379f19"
+    },
+    {
+      "path": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog/backend/app/pipeline/stages/prepare/codex_targeted_findings.py",
+      "sha256": "301857b35ba09999cba3e4f58d9a61e4157365c0a686c7385947f96e0d836274"
+    }
+  ],
+  "stages": [
+    {
+      "stage": "text_analysis",
+      "ids": [
+        "T-024",
+        "T-025"
+      ],
+      "observation": "Claims replacement of50462-2009 and12.3.003-86; this source text does not itself establish legal replacement."
+    },
+    {
+      "stage": "findings_merge",
+      "ids": [
+        "F-023",
+        "F-024"
+      ],
+      "observation": "Retains candidates while explicitly saying replacement/status independently unverified."
+    },
+    {
+      "stage": "alia_docnorm_audit",
+      "status_hint_excerpt": "## LOCAL VERIFIED NORM STATUS\n- Статусных подсказок для найденных обозначений нет.\n\n",
+      "observation": "No catalogue hints supplied for cited codes. Pass adds title corrections50571andRD34.21; does not issue retractions for existing claims."
+    },
+    {
+      "stage": "combine_findings_with_targeted",
+      "function_line": 823,
+      "observation": "Starts from existing finding list, skips duplicate keys and appends new findings. No targeted retraction operation in this function."
+    },
+    {
+      "stage": "findings_verify",
+      "reviews": [
+        {
+          "finding_id": "F-023",
+          "verdict": "no_evidence",
+          "failed_checks": [
+            "evidence_presence"
+          ],
+          "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "evidence_checked": [],
+          "suggested_fix": null
+        },
+        {
+          "finding_id": "F-024",
+          "verdict": "no_evidence",
+          "failed_checks": [
+            "evidence_presence"
+          ],
+          "reason": "Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+          "evidence_checked": [],
+          "suggested_fix": null
+        }
+      ],
+      "observation": "Both flagged no_evidence. This is an evidence-presence check, not a verified status decision."
+    },
+    {
+      "stage": "final",
+      "findings": [
+        {
+          "id": "F-023",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+          "description": "Для цветовой и буквенно-цифровой идентификации указан ГОСТ Р 50462-2009. В переданном текстовом анализе он отмечен как заменённый ГОСТ 33542-2015. Статус и применимость редакций на этапе объединения независимо не проверены.",
+          "solution": "Подтвердить применимую редакцию и актуализировать нормативную ссылку и монтажные указания."
+        },
+        {
+          "id": "F-024",
+          "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+          "description": "В требованиях безопасности сохранена ссылка на ГОСТ 12.3.003-86. В переданном текстовом анализе он отмечен как заменённый ГОСТ 12.3.003-2015. Применимость к предусмотренной технологии и статус редакций отдельно не проверены.",
+          "solution": "Проверить применимую редакцию и технологию монтажа, затем исправить ссылку."
+        }
+      ],
+      "observation": "Both remain in released output despite unverified premise."
+    }
+  ],
+  "recommended_behavior": "For a claim that a standard is cancelled/replaced, require an exact designation, applicable date/jurisdiction and attributable status source before releasing a correction demand. If evidence is missing, do not invent replacement or describe it as confirmed; retain source-title corrections under their own proof criteria.",
+  "control_pair_boundary": {
+    "negative": "F023replacement premise unsupported by saved primary catalogue evidence; F024changed2015replacement remains unverified.",
+    "useful_neighbor": "F045/F046title corrections are source-supported editorial questions and must survive a change limited to cancellation/replacement claims.",
+    "confirmed_positive_replacement_case": null,
+    "limitation": "Title correction is not a matched positive cancelled-standard case. No complete same-subtype filter pair established here; do not accept a new suppression filter from this trace alone."
+  },
+  "production_acceptance": false
+}
