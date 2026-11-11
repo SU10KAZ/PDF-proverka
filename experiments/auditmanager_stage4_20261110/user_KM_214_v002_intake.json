@@ -1,0 +1,55 @@
+{
+  "status": "user_supplied_KM_source_copy_prepared_exposure_review_pending",
+  "user_source": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К1/versions/v002/01_input",
+  "source_root": "/tmp/auditmanager_user_km_214_v002_20261111/source_only",
+  "construction_object_directory": "214_Alia_ASTERUS",
+  "document_code": "13АВ-РД-КМ-К1",
+  "version": "v002",
+  "discipline": "KM",
+  "files": {
+    "02_work/document.pdf": {
+      "sha256": "0a1b36ae187051e72297dd27e2369666b546b691623b9f4cc715cd866b84d0a0",
+      "bytes": 507016,
+      "source": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К1/versions/v002/02_work/document.pdf"
+    },
+    "02_work/document.md": {
+      "sha256": "3f32e829fac08e0006ca28f2cb2be2b3d2326f7be1fb58332c3ae85efd892ec4",
+      "bytes": 62733,
+      "source": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К1/versions/v002/02_work/document.md"
+    },
+    "02_work/blocks.json": {
+      "sha256": "6077b969dc75802dce096ade0f8cd1846dbac8b3f2340d41b0e4d3445eef47fc",
+      "bytes": 14453,
+      "source": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К1/versions/v002/02_work/blocks.json"
+    },
+    "01_input/project_info.json": {
+      "sha256": "5765ac9665a8dab7a20cda1407a86d266fa1a39111bd128d7b9b33ee6071bafb",
+      "bytes": 1199,
+      "source": "/srv/auditmanager/data/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К1/versions/v002/01_input/project_info.json"
+    }
+  },
+  "input_prepared_bytes_identical": true,
+  "identical_to_six_current_packages": {
+    "pdf": [],
+    "md": []
+  },
+  "selection": "additional_calibration_candidate_not_reserved_independent_object",
+  "prior_document_semantic_exposure": "not_established",
+  "construction_object_prior_exposure": "known_object_214",
+  "source_semantics_read_this_intake": false,
+  "historical_findings_or_engineer_answers_read": false,
+  "images_prepared": false,
+  "document_graph_prepared": false,
+  "model_calls": 0,
+  "original_six_trial_modified": false,
+  "next_steps": [
+    "Check document-level prior exposure using provenance metadata; do not open historical answers for discovery.",
+    "Build source-only graphic/context package with authoritative MD and original graphic images.",
+    "Freeze separate calibration comparison and schedule without overlapping current full audit series."
+  ],
+  "limits": [
+    "Different PDF bytes do not prove different engineering content or independent construction object.",
+    "This package alone does not satisfy the requirement for 18 calibration/reserve packages across six disciplines.",
+    "Do not classify this familiar construction object as a newly independent project merely because the section differs."
+  ]
+}
