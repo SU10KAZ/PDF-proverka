@@ -1,0 +1,248 @@
+{
+  "status": "AR_repeat2_all_output_rows_assessed_not_all_claims_resolved",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "3f67361ddfed0ce290b43d284725a38b936e1c8aa24639008b738253b8964d71",
+  "queue_after_sha256": "730e02c13c060f5859aa933c253baa77585e0ad2569f281f8037d613b87d6f0d",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Листы 1, 7",
+        "page": [
+          3,
+          9
+        ],
+        "problem": "Ссылки на стандарты материалов требуют проверки сведений о замене.",
+        "description": "В документации приведены ГОСТ 30547-97, ГОСТ 30693-2000, ГОСТ 28013-98 и ГОСТ 25820-2014. По входным сведениям их заменяют соответственно ГОСТ 30547-2020, ГОСТ 30693-2023, ГОСТ 28013-2023 и ГОСТ 25820-2021. Актуальность и применимость этих сведений на дату использования документации не проверены.",
+        "norm": "ГОСТ 30547-2020 (норматив-кандидат), пункт не подтверждён; ГОСТ 30693-2023 (норматив-кандидат), пункт не подтверждён; ГОСТ 28013-2023 (норматив-кандидат), пункт не подтверждён; ГОСТ 25820-2021 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 30547-2020",
+            "cited_designation": "ГОСТ 30547-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить сведения о замене ГОСТ 30547-97 и требования к выбранным рулонным материалам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 30693-2023",
+            "cited_designation": "ГОСТ 30693-2023",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить сведения о замене ГОСТ 30693-2000 и требования к выбранным мастикам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 28013-2023",
+            "cited_designation": "ГОСТ 28013-2023",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить сведения о замене ГОСТ 28013-98 и требования к строительным растворам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 25820-2021",
+            "cited_designation": "ГОСТ 25820-2021",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить сведения о замене ГОСТ 25820-2014 и требования к лёгким бетонам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить статусы стандартов и применимые редакции. Согласовать ссылки с характеристиками и документами выбранной продукции; не ограничиваться заменой обозначений.",
+        "risk": "Неоднозначные требования к поставке и приёмке материалов.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_9229dc363c184ae3abca81013e330dfa",
+          "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "blk_da80f01d01214295afe19fe6063fe5e1"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F002_partial_and_territorial_norm_status:a1b917235764b9e63b56",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AR_F002_partial_and_territorial_norm_status:06e66d3f9cf1ce259b54",
+          "route": "negative",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Проект содержитГОСТ30547-97,30693-2000,28013-98,25820-2014.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Первые два в перечне документов; последние два в ведомости материалов."
+        },
+        {
+          "claim": "30547-97 полностью заменён30547-2020.",
+          "verdict": "refuted_claimed_full_replacement",
+          "limits": "Официальная карточка указывает частичную замену32805-2014; полного преемника нет. Не делать вывод о несуществовании любого документа2020 вообще."
+        },
+        {
+          "claim": "30693-2000 заменён30693-2023.",
+          "verdict": "refuted_official_catalog",
+          "limits": "Карточка:действует;заменяющий не указан. ПоправкаИУС7-2023 не равна новой редакции с обозначением30693-2023."
+        },
+        {
+          "claim": "28013-98 заменён28013-2023.",
+          "verdict": "unsupported_successor_correct_territorial_question_retained",
+          "limits": "В карточке полный преемник не указан;дляРФ указанГОСТР58766-2019. Сохраняется вопрос применимого документа для смеси, а не автоматическая замена на2023."
+        },
+        {
+          "claim": "25820-2014 заменён25820-2021.",
+          "verdict": "confirmed_official_catalog_replacement",
+          "limits": "Статус не доказывает непригодность указанного керамзитобетона; применимость к нормативной базе проекта и различия требований не проверены."
+        },
+        {
+          "claim": "Оговорка «по входным сведениям» устраняет ложные сведения о заменах.",
+          "verdict": "false_information_still_present",
+          "limits": "Атрибуция источнику модели не заменяет проверку реквизитов."
+        },
+        {
+          "claim": "Нужно согласовать ссылки с выбранной продукцией после проверки применимости.",
+          "verdict": "supported_scoped_reference_question",
+          "limits": "Сохранить25820 и территориальный вопрос28013;исправить30547 и30693,не снимать всю составную строку."
+        },
+        {
+          "claim": "Доказано техническое нарушение,некачественный материал или обязательность замены изделий.",
+          "verdict": "not_established",
+          "limits": "Паспорта,дата нормативной базы и конкретные различия требований не проверены."
+        }
+      ],
+      "unsupported_additions": "Две ложные полные замены и неподтверждённый преемник28013;одна подтверждённая замена25820. Составную строку исправлять по тезисам.",
+      "novel_useful_content": "По сравнению с первым повтором добавлен подтверждённый преемник25820;два ложных преемника30547/30693 изменили год, но ошибка метода сохранилась.",
+      "duplicate_burden": "Один вопрос актуализации ссылок с отдельными основаниями;четыре ссылки не равны четырём независимым техническим дефектам.",
+      "profile_and_section": "questions_and_clarifications_after_atomic_correction",
+      "engineer_reuse": "Не приписывать инженерное принятие новым преемникам;текущие выводы основаны наTEXT и официальном каталоге.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_2c751cd478764bae9d5e0b1df794ad89",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/2c391324-de10-4c36-9bfa-89a61d1ce505",
+          "route": "official_catalog_direct_web_open",
+          "checked": "2026-11-11",
+          "fact": "30547-97:полный заменяющий не указан;частично32805-2014.",
+          "limits": "Библиографическое подтверждение;не юридический вывод о применимости к конкретному проекту и не проверка качества продукции."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/8bea94a2-17da-452d-8965-915ba60168a4",
+          "route": "official_catalog_direct_web_open",
+          "checked": "2026-11-11",
+          "fact": "30693-2000:действует,заменяющий не указан;поправкаИУС7-2023.",
+          "limits": "Библиографическое подтверждение;не юридический вывод о применимости к конкретному проекту и не проверка качества продукции."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/3d4caa14-1369-4bc4-96b1-6177ead7525d",
+          "route": "official_catalog_direct_web_open",
+          "checked": "2026-11-11",
+          "fact": "28013-98:на территорииРФ пользоватьсяГОСТР58766-2019,полный заменяющий не указан.",
+          "limits": "Библиографическое подтверждение;не юридический вывод о применимости к конкретному проекту и не проверка качества продукции."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/ccf0d5f7-916f-4ff4-888d-df8cd3c576be",
+          "route": "official_catalog_direct_web_open",
+          "checked": "2026-11-11",
+          "fact": "25820-2014:заменён25820-2021.",
+          "limits": "Библиографическое подтверждение;не юридический вывод о применимости к конкретному проекту и не проверка качества продукции."
+        }
+      ],
+      "disposition": "assessed_r2_mixed_standard_replacements_correct_false_preserve_supported"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "AR21/21 rows reviewed. Applicability and engineering usefulness remain unresolved where explicitly stated; no stage completion or quality acceptance."
+}
