@@ -17,7 +17,11 @@ def build():
     sources += ['AK_r1_experimental_zero_merge_observation.json',
                 'AK_r1_merge_source_handoff_trace.json',
                 'AK_r1_all_text_recovery_admission_replay.json',
-                'recovery_format_pilot_preparation.json']
+                'recovery_format_pilot_preparation.json',
+                'AK_r1_classic_current_coverage_review.json',
+                'AK_r1_first_paired_coverage_regression.json',
+                'AK_r1_output_review_completion.json',
+                'AK_r1_all_primary_string_evidence_adapter_replay.json']
     docs={name:read(HERE/name) for name in sources}
     coverage=docs[sources[0]];stability=docs[sources[1]];runtime=docs[sources[2]];sections=docs[sources[3]]
     plan=read(HERE.parent/'auditmanager_stage1_20261109/sequential_plan.json')
@@ -39,8 +43,17 @@ def build():
         ('Предложенные моделью замечания',recovery['raw_findings']),
         ('Проходят структурный контроль доказательств',recovery['admitted_findings']),
         ('Отложены: нет допустимой ссылки внутри evidence замечания',recovery['pending_reasons']['missing_inspected_source_reference'])])
-    body+='<p>Прохождение структурного контроля не подтверждает техническую верность. Ссылки в решении по кандидату не доказывают каждый тезис разделённого замечания. Поздние проходы ещё могут изменить итоговую полноту.</p>'
-    body+='<p>В следующей версии уточнён формат доказательств и добавлен один запрос исправления формата с повторным контролем. 21 локальный тест прошёл; улучшение на реальном модельном ответе ещё не доказано. Подготовлен отдельный пилот АК T-002, пока без отправки. Зафиксированная версия текущей серии не изменена.</p>'
+    body+='<p>Прохождение структурного контроля не подтверждает техническую верность. Ссылки в решении по кандидату не доказывают каждый тезис разделённого замечания.</p>'
+    ak=docs['AK_r1_classic_current_coverage_review.json']['summary']['routes']
+    base_ak=next(p for p in coverage['repeats'][0]['projects'] if p['discipline']=='AK')['routes']
+    body+='<h2>Итог первого экспериментального АК: приёмка не пройдена</h2>'
+    body+=table(['Маршрут','Полностью: базовый / эксперимент','Частично: базовый / эксперимент','Отсутствует: базовый / эксперимент'],[
+        (route,*[str(base_ak[route]['counts'].get(k,0))+' / '+str(ak[route]['counts'].get(k,0)) for k in ('full','partial','absent')]) for route in ('technical','question','negative')])
+    reviewed=docs['AK_r1_output_review_completion.json']
+    body+='<p>Поштучно оценены все '+str(reviewed['findings_assessed'])+' итоговых замечаний. Оценка включает неподтверждённые выводы: назначение DI-сигналов, неверные номера столбцов, пересечение вопросов о кабеле и ошибки разделов выдачи. Новые кандидаты проверены по источникам, но их полезность инженеру ещё не измерена. Один повтор одной дисциплины не заменяет полное испытание.</p>'
+    adapter=docs['AK_r1_all_primary_string_evidence_adapter_replay.json']['by_origin']
+    body+='<h2>Проверка исправления формата на сохранённых ответах</h2>'+table(['Источник','Предложено строк','Проходили контроль','Проходят после исправления'],[(origin,v['raw_findings'],v['before_admitted'],v['after_admitted']) for origin,v in adapter.items()])
+    body+='<p>На 70 сохранённых ответах исправление возвращает к дальнейшей проверке 11 кандидатов с текстовым пояснением и явно указанными допустимыми ссылками. Это не 11 новых подтверждённых дефектов. Исходное пояснение сохраняется; цитаты не создаются. 22 локальных теста прошли. Отдельный модельный пилот исправления ответов без подходящих ссылок ещё не отправлен. Зафиксированная версия текущей серии не изменена.</p>'
     body+='<h2>Покрытие эталона базовым методом</h2>'
     rows=[]
     for r in coverage['repeats']:
