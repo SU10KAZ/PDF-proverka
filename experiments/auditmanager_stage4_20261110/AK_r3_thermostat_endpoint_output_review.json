@@ -1,0 +1,1337 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "d569bc57797129621ad1bb625ee5ddbce2ff29b95f4de8116fb2242b9ec083b5",
+  "queue_after_sha256": "9848995cabdc4db4bc42c45042869f517cab2aed37a5540fe01dbe395606c946",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Защита электронагревателей",
+        "sheet": "Лист 38",
+        "page": [
+          14,
+          24,
+          42,
+          65,
+          66,
+          82,
+          83,
+          84
+        ],
+        "problem": "Количество и подключения защитных термостатов П4.1.1 и П6.1.4 определены неоднозначно.",
+        "description": "Для П4.1.1 ТС2 указан количеством 2, но отдельная цепь ТС2 в журнале не приведена. Для П6.1.4 количество ТС2 не заполнено. Кабель П6.1.4-2 на схеме подключён к TS2, а в журнале — к ТС1, уже относящемуся к водяному калориферу П6.1.1.",
+        "norm": "ГОСТ Р 2.105-2019 (норматив-кандидат), кандидат п. 5.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 2.105-2019",
+            "cited_designation": "ГОСТ Р 2.105-2019",
+            "candidate_relevance": 0.85,
+            "reason": "Однозначное описание количества защит и адресов подключений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010",
+                "G-091",
+                "G-092"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "5.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить число независимых термостатов и показать подключение каждого с едиными позиционными обозначениями.",
+        "risk": "Ошибочное подключение или пропуск цепи защиты электронагревателя.",
+        "source_finding_ids": [
+          "T-010",
+          "G-091",
+          "G-092"
+        ],
+        "source_block_ids": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "blk_40bad73db9d44699955a7a4682f309a8"
+        ],
+        "related_block_ids": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "blk_8c1c32681acd42c79d8190b013bbbf0c",
+          "blk_40bad73db9d44699955a7a4682f309a8"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+            "page": 42
+          },
+          {
+            "type": "text",
+            "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+            "page": 83
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-091",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-092",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение назначения кабеля П6.1.4-2: TS2 на схеме листа 38 и ТС1 в кабельном журнале на листах 25 и 26. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение назначения кабеля П6.1.4-2: TS2 на схеме листа 38 и ТС1 в кабельном журнале на листах 25 и 26. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ТС2 П4.1.1 количеством2 без отдельной строки журнала; ТС2 П6.1.4 с пустым количеством.",
+          "verdict": "confirmed_bounded_TEXT",
+          "limits": "Оба перечня относят ТС2 к комплекту электронагревателя. Отсутствие отдельной внешней линии не доказывает отсутствие защиты."
+        },
+        {
+          "claim": "П6.1.4-2: TS2 схемы против ТС1 журнала при отдельномТС1 П6.1.1.",
+          "verdict": "confirmed_same_source_address_conflict",
+          "limits": "TEXT содержит Пб.1.4-2; связь установлена по шкафу, системе и последовательности, без исправления TEXT."
+        },
+        {
+          "claim": "Показать подключение каждого термостата.",
+          "verdict": "factory_wiring_boundary_required",
+          "limits": "Сначала установить заводские внутренние соединения и необходимые внешние сигналы. Количество2 не доказывает две отдельные внешние линии."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Конфликт номеров не доказывает отсутствие защиты или физическую ошибку подключения. Для дополнительных внешних кабелей нужно установить границы комплектной проводки.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "F-052 — отдельный вопрос согласования марки; прочие адресные конфликты сохранить с границами. Фактическая маршрутизация разделов отчёта не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+          "sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f",
+          "primary_adjudication": null,
+          "limits": [
+            "PDS45 в авторитетном TEXT сохранено буквально; проверка графики относится к самостоятельным схемам, а не исправлению распознавания журнала.",
+            "Нельзя интерпретировать PDS45 как PDS4 и PDS5: соседняя строка Во5.1-1 отдельно относится к PDS4, внешняя схема имеет раздельные линии и клеммы.",
+            "Фактическая маркировка, наличие отдельного PDS45 в иных документах и ошибочное подключение не установлены. Правильное подключение по внешней схеме возможно.",
+            "Нормативный пункт и решение инженера не установлены; вывод ограничен документальным конфликтом одного конечного прибора."
+          ],
+          "wording": "Согласовать конечный прибор линии Вос5.1-1 шкафа ШАУВ-6-К5ПЧ: КЖ лист19 указывает PDS45, тогда как функциональная и внешняя схемы показывают PDS5; внешняя схема задаёт клеммы14/15."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+          "sha256": "7f391d6a377940f60763577625de4cf7ec7cdf80d28ddb2317108f1965f7d1f3",
+          "primary_adjudication": null,
+          "limits": [
+            "Совпадают шкаф, марка линии, длина10м и сечение1×2×0,75, поэтому сопоставлены записи одной линии, а не случайно одинаковые обозначения разных шкафов.",
+            "Наличие двух разных функций в перечне делает существенным номер прибора. Однако это не доказывает фактическое подключение к неверному входу контроллера.",
+            "Правильную окончательную нумерацию следует согласовать с заводской документацией; журнал сам по себе не определяет номер входа контроллера.",
+            "Полнота подключения наружного ТЕ1 в целом здесь не проверена. Нельзя из отсутствия его на одном фрагменте вывести отсутствующий датчик или необходимый дополнительный кабель.",
+            "Текст нормативного пункта ГОСТ21.408-2013 не проверен, нормативное нарушение не установлено. Решение инженера по кандидату отсутствует."
+          ],
+          "wording": "Согласовать конечный прибор линии По5.1-1 шкафа ШАУВ-6-К5ПЧ: внешняя схема указывает TE2 — датчик приточного воздуха, КЖ лист19 указывает ТЕ1. Перечень листа17 различает ТЕ1 наружного воздуха и канальный ТЕ2; функциональная схема показывает TE2 в выходном воздуховоде По5.1."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+          "sha256": "4ae7511ca6056afa1ff0f85c52539b4154b6ba45c99f75bac26d841da23f0d38",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT Пб.1.4-2 сохранён буквально и не исправлен по растру. Сопоставление с П6.1.4-2 установлено по заголовку раздела КЖ лист24 «Системы П6.1.1 и П6.1.4», общему шкафу, последовательности линий и соседним приборам TE4,PDS3–PDS5,M2,XT3,электронагреватель.",
+            "На КЖ лист24 для первой системы П6.1.1-4 указан ТС1, что согласуется с TS1 на внешней схеме. Расхождение касается номера второго прибора, а не только кириллицы/латиницы.",
+            "Дублирование строки на листах25/26 не означает две физические неисправности. Случай фиксируется один раз.",
+            "Фактическая ошибка монтажа, отказ защиты и необходимость замены прибора не доказаны. Окончательные исправления согласовать по заводской схеме и реестру позиций.",
+            "Снятая количественная претензия F059 не является основанием снять этот конфликт идентификации. Решение инженера по F060 не установлено."
+          ],
+          "wording": "Согласовать обозначение конечного прибора второй системы шкафа ШАУВ-2-К6ПЧ: на схеме внешних подключений линия П6.1.4-2 идёт к TS2 на клеммы15/16, в КЖ листы25/26 строка Пб.1.4-2 указывает ТС1. Функциональная схема также показывает TS2 у электрического нагревателя; TS1 относится к первой системе."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+          "block_id": "blk_065a335469904b2db1640b480b321503",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "По5.1-1 connects to TE2; Вос5.1-1 to PDS5. One temperature sensor connection is shown; TS1 separately shown.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+          "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "П6.1.4-2 connects to TS2; П6.1.1-4 to TS1; separate drawn cables and cabinet terminals.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-024",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+          "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+          "block_id": "blk_54608a880c2545aa926c442d213988c3",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "TS1 water-heater freeze protection and TS2 electric-heater overheat protection are distinct functions; external connections shown. Not actual delivery evidence.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+          "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "TS1 water-heater freeze protection and TS2 electric-heater overheat protection are distinct functions; external connections shown. Not actual delivery evidence.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT_new_addressed_register_check",
+          "quote": "### BLOCK #34 [TEXT]: blk_47212e9079d1485c9c43fc3d1e9cd108\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 10 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П4.1.1, Пм4.1 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n| ТС2 | Термостат | 2 | (комплектно с электронагревателем) |",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-009"
+        }
+      ],
+      "disposition": "assessed_r3_endpoint_conflict_preserve_factory_wiring_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-034",
+      "finding": {
+        "id": "F-034",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Измерительные цепи",
+        "sheet": "Листы 17, 35",
+        "page": [
+          21,
+          39,
+          77,
+          78
+        ],
+        "problem": "Адресация температурной линии По5.1 и реле Вос5.1 противоречива.",
+        "description": "Для По5.1 предусмотрены наружный ТЕ1 и канальный ТЕ2, но журнал содержит одну температурную линию По5.1-1 к ТЕ1; схема внешних подключений направляет её к ТЕ2. Следовательно, утверждать отсутствие подключения именно ТЕ2 нельзя: требуется установить цепь каждого датчика. Для Вос5.1-1 схема и функциональный перечень указывают PDS5, журнал — отсутствующий в перечне PDS45.",
+        "norm": "ГОСТ Р 2.105-2019 (норматив-кандидат), кандидат п. 5.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 2.105-2019",
+            "cited_designation": "ГОСТ Р 2.105-2019",
+            "candidate_relevance": 0.9,
+            "reason": "Однозначность адресации и полнота описания измерительных цепей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-033",
+                "G-037",
+                "G-038",
+                "G-083",
+                "G-084",
+                "G-085"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-033"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "5.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить подключение ТЕ1 и ТЕ2 и унифицировать конечные точки По5.1-1 и Вос5.1-1.",
+        "risk": "Подключение не того датчика, потеря измерения температуры или контроля вентилятора.",
+        "source_finding_ids": [
+          "T-033",
+          "G-037",
+          "G-038",
+          "G-083",
+          "G-084",
+          "G-085"
+        ],
+        "source_block_ids": [
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_c63456cda51644db9470fb57f29b27de",
+          "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_065a335469904b2db1640b480b321503"
+        ],
+        "related_block_ids": [
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_c63456cda51644db9470fb57f29b27de",
+          "blk_52c70a7a578c46e28e4087d5b7bd70cb",
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_065a335469904b2db1640b480b321503"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+            "page": 21
+          },
+          {
+            "type": "text",
+            "block_id": "blk_065a335469904b2db1640b480b321503",
+            "page": 39
+          },
+          {
+            "type": "text",
+            "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+            "page": 77
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-037",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-038",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-083",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-084",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-085",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одно расхождение: PDS5 на схеме и PDS45 в качестве адресата кабеля Вос5.1-1. Рекомендации эквивалентны по смыслу.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одно расхождение: PDS5 на схеме и PDS45 в качестве адресата кабеля Вос5.1-1. Рекомендации эквивалентны по смыслу.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:007"
+              ],
+              "confidence": 1.0,
+              "reason": "Справа включено то же расхождение TE2 / ТЕ1 для По5.1-1 и дополнительно расхождение PDS5 / PDS45 для Вос5.1-1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Справа включено то же расхождение TE2 / ТЕ1 для По5.1-1 и дополнительно расхождение PDS5 / PDS45 для Вос5.1-1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "По5.1-1: TE2 внешней схемы против ТЕ1 журнала; перечень различает наружный и канальный датчики.",
+          "verdict": "confirmed_same_source_TEXT_and_GRAPHIC",
+          "limits": "Подтверждена адресация одной линии; отсутствующий наружный датчик во всём проекте не установлен."
+        },
+        {
+          "claim": "Вос5.1-1: PDS5 схемы против PDS45 КЖ.",
+          "verdict": "confirmed_same_source_TEXT_and_GRAPHIC",
+          "limits": "Одна адресная линия, не совместная запись PDS4/PDS5."
+        },
+        {
+          "claim": "Нельзя утверждать отсутствие подключения именноTE2.",
+          "verdict": "supported_boundary_in_current_output",
+          "limits": "Требование установить цепи сохранять без автоматического добавления кабелей."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Конфликт номеров не доказывает отсутствие защиты или физическую ошибку подключения. Для дополнительных внешних кабелей нужно установить границы комплектной проводки.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "F-052 — отдельный вопрос согласования марки; прочие адресные конфликты сохранить с границами. Фактическая маршрутизация разделов отчёта не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_30ab2c5b39b8442baf89f7a9cfe31434",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_07eb5e614f424f588877ee1d3d5ce41b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F045_pressure_switch_endpoint.json",
+          "sha256": "1b628d71c0871ea4fc70d34f43c7229a6c4c15294586da247f4568d964746b4f",
+          "primary_adjudication": null,
+          "limits": [
+            "PDS45 в авторитетном TEXT сохранено буквально; проверка графики относится к самостоятельным схемам, а не исправлению распознавания журнала.",
+            "Нельзя интерпретировать PDS45 как PDS4 и PDS5: соседняя строка Во5.1-1 отдельно относится к PDS4, внешняя схема имеет раздельные линии и клеммы.",
+            "Фактическая маркировка, наличие отдельного PDS45 в иных документах и ошибочное подключение не установлены. Правильное подключение по внешней схеме возможно.",
+            "Нормативный пункт и решение инженера не установлены; вывод ограничен документальным конфликтом одного конечного прибора."
+          ],
+          "wording": "Согласовать конечный прибор линии Вос5.1-1 шкафа ШАУВ-6-К5ПЧ: КЖ лист19 указывает PDS45, тогда как функциональная и внешняя схемы показывают PDS5; внешняя схема задаёт клеммы14/15."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F058_temperature_endpoint.json",
+          "sha256": "7f391d6a377940f60763577625de4cf7ec7cdf80d28ddb2317108f1965f7d1f3",
+          "primary_adjudication": null,
+          "limits": [
+            "Совпадают шкаф, марка линии, длина10м и сечение1×2×0,75, поэтому сопоставлены записи одной линии, а не случайно одинаковые обозначения разных шкафов.",
+            "Наличие двух разных функций в перечне делает существенным номер прибора. Однако это не доказывает фактическое подключение к неверному входу контроллера.",
+            "Правильную окончательную нумерацию следует согласовать с заводской документацией; журнал сам по себе не определяет номер входа контроллера.",
+            "Полнота подключения наружного ТЕ1 в целом здесь не проверена. Нельзя из отсутствия его на одном фрагменте вывести отсутствующий датчик или необходимый дополнительный кабель.",
+            "Текст нормативного пункта ГОСТ21.408-2013 не проверен, нормативное нарушение не установлено. Решение инженера по кандидату отсутствует."
+          ],
+          "wording": "Согласовать конечный прибор линии По5.1-1 шкафа ШАУВ-6-К5ПЧ: внешняя схема указывает TE2 — датчик приточного воздуха, КЖ лист19 указывает ТЕ1. Перечень листа17 различает ТЕ1 наружного воздуха и канальный ТЕ2; функциональная схема показывает TE2 в выходном воздуховоде По5.1."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F060_thermostat_endpoint.json",
+          "sha256": "4ae7511ca6056afa1ff0f85c52539b4154b6ba45c99f75bac26d841da23f0d38",
+          "primary_adjudication": null,
+          "limits": [
+            "TEXT Пб.1.4-2 сохранён буквально и не исправлен по растру. Сопоставление с П6.1.4-2 установлено по заголовку раздела КЖ лист24 «Системы П6.1.1 и П6.1.4», общему шкафу, последовательности линий и соседним приборам TE4,PDS3–PDS5,M2,XT3,электронагреватель.",
+            "На КЖ лист24 для первой системы П6.1.1-4 указан ТС1, что согласуется с TS1 на внешней схеме. Расхождение касается номера второго прибора, а не только кириллицы/латиницы.",
+            "Дублирование строки на листах25/26 не означает две физические неисправности. Случай фиксируется один раз.",
+            "Фактическая ошибка монтажа, отказ защиты и необходимость замены прибора не доказаны. Окончательные исправления согласовать по заводской схеме и реестру позиций.",
+            "Снятая количественная претензия F059 не является основанием снять этот конфликт идентификации. Решение инженера по F060 не установлено."
+          ],
+          "wording": "Согласовать обозначение конечного прибора второй системы шкафа ШАУВ-2-К6ПЧ: на схеме внешних подключений линия П6.1.4-2 идёт к TS2 на клеммы15/16, в КЖ листы25/26 строка Пб.1.4-2 указывает ТС1. Функциональная схема также показывает TS2 у электрического нагревателя; TS1 относится к первой системе."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "sha256": "6de6ad7976187613d9fc6a3475a0068b66990f9b0ee9157214812e46703e83be",
+          "block_id": "blk_065a335469904b2db1640b480b321503",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "По5.1-1 connects to TE2; Вос5.1-1 to PDS5. One temperature sensor connection is shown; TS1 separately shown.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_065a335469904b2db1640b480b321503.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+          "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "П6.1.4-2 connects to TS2; П6.1.1-4 to TS1; separate drawn cables and cabinet terminals.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-024",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-026"
+        }
+      ],
+      "disposition": "assessed_r3_endpoint_conflict_preserve_factory_wiring_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-047",
+      "finding": {
+        "id": "F-047",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка термостатов",
+        "sheet": "Листы 16, 17",
+        "page": [
+          20,
+          21,
+          76,
+          77
+        ],
+        "problem": "Термостаты Пу5.1 и По5.1 имеют разные обозначения на схемах и в перечнях.",
+        "description": "На функциональных схемах термостаты электронагревателей обозначены TS2, а в перечнях приборов и кабельном журнале — ТС1. Для Пу5.1 расхождение затрагивает адресата кабеля Пу5.1-2.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Единство позиционных обозначений приборов защиты.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-032",
+                "G-034",
+                "G-039",
+                "G-040"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-032",
+                  "G-034",
+                  "G-039",
+                  "G-040"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Унифицировать номер каждого термостата во всех документах.",
+        "risk": "Ошибочная идентификация защитного прибора и его цепи.",
+        "source_finding_ids": [
+          "G-032",
+          "G-034",
+          "G-039",
+          "G-040"
+        ],
+        "source_block_ids": [
+          "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "blk_66980560083f4bb483d5ce1f9c8156e2"
+        ],
+        "related_block_ids": [
+          "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "blk_66980560083f4bb483d5ce1f9c8156e2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+            "page": 20
+          },
+          {
+            "type": "text",
+            "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+            "page": 21
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-032",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-039",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-040",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают одинаковое расхождение обозначений термостата: TS2 на схеме и ТС1 в перечне приборов и кабельном журнале. Указание кабеля Пу5.1-2 справа уточняет ту же ссылку.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают одинаковое расхождение обозначений термостата: TS2 на схеме и ТС1 в перечне приборов и кабельном журнале. Указание кабеля Пу5.1-2 справа уточняет ту же ссылку.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одно расхождение марки термостата: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пу5.1/По5.1: TS2 функционально против ТС1 перечня и журнала.",
+          "verdict": "confirmed_same_source_TEXT_and_GRAPHIC",
+          "limits": "Разница номера1/2 сохраняется при нормализации алфавита; оба термостата комплектны с нагревателями."
+        },
+        {
+          "claim": "Унифицировать позиции.",
+          "verdict": "supported_document_identity_correction",
+          "limits": "Не добавлять второй прибор и не перекоммутировать цепь только из номераTS2. Внешняя схема По5.1 сTS1 не раскрыта текущей строкой, дополнительный контекст не засчитывается как её полнота."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Конфликт номеров не доказывает отсутствие защиты или физическую ошибку подключения. Для дополнительных внешних кабелей нужно установить границы комплектной проводки.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "F-052 — отдельный вопрос согласования марки; прочие адресные конфликты сохранить с границами. Фактическая маршрутизация разделов отчёта не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_e8bf19ac20234427aa1d48bfcac87193",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5d9307558672478196f75e1763b09764",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены два документальных расхождения, а не два отсутствующих термостата. Каждый перечень предусматривает один термостат комплектно с электронагревателем.",
+            "Разница номера1/2 не сводится к кириллице/латинице, но одинаковая функция позволяет предполагать разные обозначения одного прибора; наличие второго физического прибора не доказано.",
+            "Фактическое неправильное подключение или отказ защиты не установлены. Не требовать добавления термостата или перекоммутации только по подписи.",
+            "Внешняя схема Пу5.1 здесь не проверена. Название листа16 в метаданных расходится с графикой; этот самостоятельный вопрос сохранён вF034. Систему определяли по обозначениям графики и заголовкуКЖ.",
+            "Решение инженера и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать позиционные обозначения термостатов защиты от перегрева Пу5.1 и По5.1: функциональные схемы показываютTS2, перечни и строкиКЖ Пу5.1-2/По5.1-2 —ТС1. Для По5.1 внешняя схема также показываетTS1. Установить единое обозначение в связанных документах."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены два документальных расхождения, а не два отсутствующих термостата. Каждый перечень предусматривает один термостат комплектно с электронагревателем.",
+            "Разница номера1/2 не сводится к кириллице/латинице, но одинаковая функция позволяет предполагать разные обозначения одного прибора; наличие второго физического прибора не доказано.",
+            "Фактическое неправильное подключение или отказ защиты не установлены. Не требовать добавления термостата или перекоммутации только по подписи.",
+            "Внешняя схема Пу5.1 здесь не проверена. Название листа16 в метаданных расходится с графикой; этот самостоятельный вопрос сохранён вF034. Систему определяли по обозначениям графики и заголовкуКЖ.",
+            "Решение инженера и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать позиционные обозначения термостатов защиты от перегрева Пу5.1 и По5.1: функциональные схемы показываютTS2, перечни и строкиКЖ Пу5.1-2/По5.1-2 —ТС1. Для По5.1 внешняя схема также показываетTS1. Установить единое обозначение в связанных документах."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+          "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+          "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pu5.1 TS2 at electric heater, overheat signal3, SHAUV-5-K5PCh. System identified from graphic, not conflicting stamp metadata.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_66980560083f4bb483d5ce1f9c8156e2.png",
+          "sha256": "dabee90e19aaa31be7c58c1521a95a878bacbb4d195f4173824eddcca53e435c",
+          "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Po5.1 TS2 at electric heater, overheat signal6, SHAUV-6-K5PCh.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_66980560083f4bb483d5ce1f9c8156e2.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-047",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-053"
+        }
+      ],
+      "disposition": "assessed_r3_endpoint_conflict_preserve_factory_wiring_limits"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-052",
+      "finding": {
+        "id": "F-052",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка шкафа противодымной системы",
+        "sheet": "Лист 24",
+        "page": [
+          28,
+          93
+        ],
+        "problem": "Шкаф системы ПД4.1.4 обозначен по-разному на схеме и в журнале.",
+        "description": "Функциональная схема содержит «ШУ-ПД4.14», а получатель сигнала ТЕ1 в журнале обозначен «ЩУ-ПД4.1.4». Различаются буквенная часть и структура номера.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Единство обозначений шкафов и адресов подключений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-059",
+                "G-060"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-059",
+                  "G-060"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать марку шкафа с разделом ЭМ и исправить связанные документы.",
+        "risk": "Ошибочная адресация температурной цепи противодымной системы.",
+        "source_finding_ids": [
+          "G-059",
+          "G-060"
+        ],
+        "source_block_ids": [
+          "blk_dc32b584ce9748a5b520a300112b12de"
+        ],
+        "related_block_ids": [
+          "blk_dc32b584ce9748a5b520a300112b12de",
+          "blk_a256f98d4e01408d90baba99d8b2cc19"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+            "page": 28
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-059",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-060",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение обозначения шкафа системы ПД4.1.4: «ШУ-ПД4.14» на листе 24 и «ЩУ-ПД4.1.4» в кабельном журнале на листе 35. Рекомендации совпадают.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение обозначения шкафа системы ПД4.1.4: «ШУ-ПД4.14» на листе 24 и «ЩУ-ПД4.1.4» в кабельном журнале на листе 35. Рекомендации совпадают.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ШУ-ПД4.14 функциональной схемы против ЩУ-ПД4.1.4 журнала.",
+          "verdict": "confirmed_same_source_TEXT_and_GRAPHIC",
+          "limits": "Контекст системыПД4.1.4 иTE1 позволяет установить связь; два физических шкафа не доказаны."
+        },
+        {
+          "claim": "Согласовать марку сЭМ.",
+          "verdict": "supported_editorial_coordination_question",
+          "limits": "Правильное написание не выбирается автоматически; неисправность противодымной системы не установлена. Внешняя схема согласована с журналом по прежней проверке, но это дополнение проверяющего, не текущей строки."
+        },
+        {
+          "claim": "Фактическая ошибка подключения, отказ защиты и нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Конфликт номеров не доказывает отсутствие защиты или физическую ошибку подключения. Для дополнительных внешних кабелей нужно установить границы комплектной проводки.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "F-052 — отдельный вопрос согласования марки; прочие адресные конфликты сохранить с границами. Фактическая маршрутизация разделов отчёта не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_db759e961c1045b2822ce177cef0a17f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2b217a39b5174211bec9d56597c2ec3e",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F051_cabinet_label_scope.json",
+          "sha256": "a66c212be8c1dde3bd5132cf55aa4a8b92153efad0e9b2b3ce89f39fa3f5b853",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены различия ШУ/ЩУ и4.14/4.1.4. Они не доказывают наличие двух физических шкафов или неправильное подключение.",
+            "TEXT журнала сохранён буквально; графика просмотрена как самостоятельный документ, а не для исправления TEXT.",
+            "Раздел ЭМ, заводская маркировка и внешняя схема этого шкафа здесь не проверены. Не выбирать правильное написание автоматически.",
+            "Решение инженера и конкретное нормативное нарушение не установлены. Полнота противодымной автоматики и её работоспособность данным случаем не проверены."
+          ],
+          "wording": "Унифицировать обозначение шкафа ПД4.1.4 по разделу ЭМ: функциональная схема содержит ШУ-ПД4.14, КЖ лист35 для линии ПД4.1.4-1 от ТЕ1(ПД4.1.4) — ЩУ-ПД4.1.4. Связь датчика с системой понятна, правильное полное обозначение требует согласования."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+          "sha256": "dd058661889a4dc4848d14c89c82942d241702c6c954001e2acef9f5a28b3851",
+          "block_id": "blk_dc32b584ce9748a5b520a300112b12de",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Functional cabinet label ШУ-ПД4.14; system ПД4.1.4; TE1.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_dc32b584ce9748a5b520a300112b12de.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+          "sha256": "9f1c56a09670dc3bf5436ad8a321abef871308f8be8292c116e32b30cad1b5bb",
+          "block_id": "blk_400a32e7aac048e6a9d6da65c598995f",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "External cabinet label ЩУ-ПД4.1.4; TE1 via ПД4.1.4-1 shown.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_400a32e7aac048e6a9d6da65c598995f.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-053",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-062"
+        }
+      ],
+      "disposition": "assessed_r3_endpoint_conflict_preserve_factory_wiring_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current endpoint findings reviewed against frozen prior source inspections. All local hashes and r3 MD/PNG identity checked. No new graphic view or engineer decision claimed."
+}
