@@ -1,0 +1,527 @@
+{
+  "status": "two_valve_identity_and_regime_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "7b09c38548b41ce601281d70983dd74034798bae071199ace7eb5be72788f903",
+  "queue_after_sha256": "20e1508d20b72a9d8e90338d54d8905699ad424138676394dba38587fd4975a1",
+  "reviewer": "coordinator_direct_graphic_TEXT_and_arithmetic",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Регулирующая арматура",
+        "sheet": "Лист 10",
+        "page": [
+          9,
+          17,
+          26,
+          52,
+          53,
+          54
+        ],
+        "problem": "Характеристики и обозначения клапанов ГВС второй зоны и отопления ДОО противоречивы.",
+        "description": "Для клапана ГВС второй зоны в спецификации указан Kvs=4,0 м³/ч вместо 40 м³/ч в ПЗ и экспликации. При расходе 18,85 м³/ч это означает около 22,21 бар вместо 0,222 бар потерь. Обозначения VFM-3R-50-40 и VF-3R-50-40 также различаются. Для клапана ДОО поз. 30 VFM-2R-20-6,3 экспликация задаёт DN25, тогда как расчёт и разрез 24-24 листа 10 — DN20.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать марки, диаметры и пропускные способности клапанов по расчётам и паспортам; исправить спецификацию и экспликацию до закупки.",
+        "risk": "Закупка несовместимой арматуры, чрезмерные потери давления и нарушение регулирования.",
+        "source_finding_ids": [
+          "T-019",
+          "G-020",
+          "G-021"
+        ],
+        "source_block_ids": [
+          "blk_b8c120f6cbc04397b8c5514a03fa3152"
+        ],
+        "related_block_ids": [
+          "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "blk_11981549aceb463ba84c7c0de619d2fc",
+          "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "blk_30789714316b48908c5addc9bfb135d2",
+          "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "blk_e65f4bff781945f19da5a4ec2919b764"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 9
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 26
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение диаметра клапана поз. 30 VFM-2R-20-6,3: DN20 на разрезе и в расчёте против DN25 в экспликации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение диаметра клапана поз. 30 VFM-2R-20-6,3: DN20 на разрезе и в расчёте против DN25 в экспликации.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-014:38dacc087d3a36a03c14",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-015:4a6a012e7c150e2d7f45",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Поз33ГВС2вСО имеетKvs4,0,VFM-3R-50-40;ПЗвыбираетVF-3R-50-40,Kv40.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Экспликация поз33 содержит самостоятельное числовое полеKvs40.",
+          "verdict": "not_explicit_in_checked_row",
+          "limits": "В строке экспликации присутствует маркаVF-3R-50-40;не подменять число в обозначении отдельным паспортным полем. ЧислоKv40явно подтвержденоПЗ."
+        },
+        {
+          "claim": "При18,85расчёт(18,85/4)²≈22,21бар,а(18,85/40)²≈0,222бар.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "Это иллюстрация значения противоречия,не фактическая потеря установленного клапана."
+        },
+        {
+          "claim": "Поз30ДООVFM-2R-20-6,3вэкспликацииDN25,вПЗиразрезе24-24DN20.",
+          "verdict": "confirmed_TEXT_and_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "Обозначения и характеристики требуется согласовать с паспортом.",
+          "verdict": "supported_scoped_question",
+          "limits": "Каталог изделия065Z3360и фактическая поставка не проверены;не объявлять маркуVFM-3Rнесуществующей без источника."
+        },
+        {
+          "claim": "Клапан закуплен неверно либо потеря22,21бар фактически реализуется.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Выдача помечает разрезtype=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "ИсходникIMAGE;проверен непосредственно,исходная выдача сохранена."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F018contains_two_distinct_valve_identities; F050third_zone_regime_distinct_from_F019arithmetic; shared_image_not_duplicate",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-014.json",
+          "sha256": "817028329da55c5233d5125a6095de379052f53a421de663b5fe777d4110921d",
+          "primary_adjudication": null,
+          "limits": "Расхождение в десять раз подтверждено по TEXT. Числа потерь ниже — условная проверка по формуле самого проекта, не доказательство фактически установленного клапана с Kvs 4,0 или неработоспособности системы. Правильность артикула по каталогу не проверена. PN25/PN16 относится к отдельному составному случаю B-ITP-F-015.",
+          "wording": "Согласовать характеристику клапана ГВС второй зоны, поз. 33: экспликация и расчёт задают VF-3R-50-40, Kvs/Kv 40 м³/ч; спецификация содержит VFM-3R-50-40, Kvs 4,0. Уточнить марку и пропускную способность в заказной строке."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-015.json",
+          "sha256": "3d68c70b29aa5dde6b5c09383bfd180c5304a2b38484cedb3cef205a780f25af",
+          "primary_adjudication": null,
+          "limits": "Подтверждены различия проектных записей. Каталожная эквивалентность марок, паспортные присоединения, допустимые режимы и фактическое рабочее давление в каждом узле здесь не проверены. Нельзя автоматически требовать замену всех клапановPN16 наPN25 или объявлять монтаж невозможным. У поз.36 DN15 пропускная способность4,0 совпадает; конфликт чисел для неё не заявлять. КириллическаяВ в TEXT сохранена, не исправлена по растру. Фактическая ошибочная закупка и отказ не доказаны.",
+          "wording": "Согласовать параметры клапанов: поз.30 отопления ДОО VFM-2R-20-6,3 имеетDN20 в расчёте и разрезе24-24, ноDN25 в экспликации; поз.32–34 ГВС имеютPN25 в экспликации иPN16 в спецификации; у соленоидного клапана поз.35 DN20 —Kv8,0 противKvs6,3. Уточнить также обозначения соленоидных клапанов поз.35/36:EV220WR противEV220В."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+          "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+          "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез24-24поз30DN20,Kv6,3;разрезы41-41и42-42поз29DN32,G10,7,Kv16,ΔP0,446."
+        }
+      ],
+      "disposition": "assessed_preserve_valve_identity_and_diameter_question"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-050",
+      "finding": {
+        "id": "F-050",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Регулирующая арматура",
+        "sheet": "Лист 10",
+        "page": [
+          17,
+          54
+        ],
+        "problem": "Расход и потери клапана отопления третьей зоны различаются в разрезах и расчёте.",
+        "description": "Для поз. 29 VFM-2R-32-16 на разрезах 41-41 и 42-42 указаны 10,7 м³/ч и ΔР=0,446. Расчёт использует 9,55 м³/ч и 0,356 бар. В обоих случаях Kv=16 м³/ч; расход отличается на 1,15 м³/ч, приблизительно на 12%.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Установить расчётную нагрузку третьей зоны, принять соответствующий расход и согласовать потери клапана в расчёте и разрезах.",
+        "risk": "Ошибочный гидравлический баланс и настройки регулирования.",
+        "source_finding_ids": [
+          "G-022",
+          "G-023"
+        ],
+        "source_block_ids": [
+          "blk_b8c120f6cbc04397b8c5514a03fa3152"
+        ],
+        "related_block_ids": [
+          "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "blk_d0a62bc2e56f4d07bb33a73622429881",
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 54
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-022",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T063704Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-023",
+              "mode": "independent",
+              "detected_at": "2026-11-11T06:37:04.211877+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение параметров клапана поз. 29 VFM-2R-32-16 при Kv=16 м³/ч: G=10,7 м³/ч и ΔР=0,446 на разрезах против 9,55 м³/ч и 0,356 бар в расчёте.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение параметров клапана поз. 29 VFM-2R-32-16 при Kv=16 м³/ч: G=10,7 м³/ч и ΔР=0,446 на разрезах против 9,55 м³/ч и 0,356 бар в расчёте.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP40:e4eaac37781fedf2ad41",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На разрезах41-41и42-42поз29VFM-2R-32-16:DN32,G10,7,Kv16,ΔP0,446.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "ПЗдляотопления3зоны:G9,55,Kv16,ΔP0,356бар.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "РазностьG1,15м³/ч,относительно9,55около12,04%.",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "ЗначенияΔPполучаются из разныхGприодинаковомKv.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "(10,7/16)²=0,44723,а(9,55/16)²=0,35626. Указанное0,446не точный результат10,7;точность исходных значений неизвестна."
+        },
+        {
+          "claim": "Согласовать исходный режим и параметры клапана.",
+          "verdict": "supported_scoped_question",
+          "limits": "12%—разница опубликованных чисел,не универсальный допустимый предел."
+        },
+        {
+          "claim": "Неверно выбран клапан или не обеспечена тепловая мощность.",
+          "verdict": "not_established",
+          "limits": "Правильный режим и полная характеристика системы не установлены."
+        },
+        {
+          "claim": "Выдача помечает разрезtype=text.",
+          "verdict": "confirmed_evidence_route_mislabel",
+          "limits": "ИсходникIMAGE;проверен непосредственно,исходная выдача сохранена."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "F018contains_two_distinct_valve_identities; F050third_zone_regime_distinct_from_F019arithmetic; shared_image_not_duplicate",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+          "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8",
+          "primary_adjudication": {
+            "path": "experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+            "sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834"
+          },
+          "limits": "Фактический недостаток мощности и отказ регулирования не доказаны; принадлежность исторической записи к дублю UNI-039 остаётся отдельным вопросом. Расходы и нагрузки связаны тематически, но причина различия не установлена. Не объявлять клапан непригодным: выбранное Kv16 больше обоих значений требуемого Kv13,51 и напечатанного14,45. Для0,200 против0,191 разность0,009Гкал/ч, или4,71% относительно0,191; это не допустимый процент и не доказанный запас. Не выпускать отдельный дублирующий дефект.",
+          "wording": "Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы. Дополнительно на разрезе23-23 у Т13/Т23 подписано0,200Гкал/ч при80/60°C против табличных0,191; включить в ту же сверку режима III зоны."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+          "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+          "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Разрез24-24поз30DN20,Kv6,3;разрезы41-41и42-42поз29DN32,G10,7,Kv16,ΔP0,446."
+        }
+      ],
+      "disposition": "assessed_preserve_third_zone_valve_regime_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+      "authoritative_TEXT": "### BLOCK #52 [TEXT]: blk_acc3bf59f8f447f988de16849e40e9f1\n\n> **Created:** 2026-10-20 11:49:14 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/GEEeO7rsl4FMc43uJ2rz)\n> **Stamp:** Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 3. | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. изме-ре-ния | Кол-во | Масса 1 ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| Арматура трубопровода |  |  |  |  |  |  |  |  |\n| 25.1 | Регулирующий блок AFD-R с настройкой 3,0-12; площадь регулирующей диафрагмы 32 см²; цвет пружины красный | AFD-R | 003G1001 | Ридан | шт. | 1 | 7.5 |  |\n| 25.2 | Импульсная трубка AF-R |  | 003G1391R | Ридан | шт. | 1 |  |  |\n| 25/26 | Регулятор давления \"после седя\" VFG2 с металлическим уплотнением затвора DN40, Kvs=20, PN16, Tmax=150,(Pрегул. 3-12 бар), с импульсными трубками Катушка/проставка DN40 | AFD-R/VFG-2R-40-20 |  | Ридан | шт. | 1 | 14 |  |\n| 27 | Клапан регулирующий седельный проходной VFM-2R PN16, Tmax=150С, DN100. Адаптер для присоединения клапана VFM-2R | VFM-2R-100-140 | 065B3502R | Ридан | шт. | 1 | 26 | Отопления 1-зона, с эл.пр.(учтен в АТМ) |\n| 28 | Клапан регулирующий седельный проходной VFM-2R PN16, Tmax=150С, DN80 | VFM-2R-80-88 | 065B3501R | Ридан | шт. | 1 |  | Отопления 2-зона, с эл.пр.(учтен в АТМ) |\n| 29 | Клапан регулирующий седельный проходной ,Py=25бар, Tmax=150°С с электроприводом 220В | VFM-2R-32-16 +эл. пр см АТМ | 065B 3059R | Ридан | шт | 1 | 8,4 | Отопления 3-зона, с эл.пр.(см. в АТМ) |\n| 30 | Клапан регулирующий седельный проходной ,Py=25бар, Tmax=150°С с электроприводом 220В | VFM-2R-20-6,3 (+эл. пр см АТМ) | 065B 3057R | Ридан | шт | 1 | 4,23 | Отопления ДОО ,с эл.пр.(см. в АТМ) |\n| 31 | Клапан регулирующий седельный проходной VFM-2R PN16, Tmax=150С, DN80 | VFM-2R-80-88 | 065B3501R | Ридан | шт. | 2 |  | 2шт по 50%, вентиляция , с эл.пр.(учтен в АТМ) |\n| 32 | Клапан регулирующий VF-3R PN16, Tmax=150С, DN65 | VF-3R-65-52 | 065Z3361R | Ридан | шт. | 1 | 18 | ГВС 1-зона, эл. пр см АТМ |\n| 33 | Клапан регулирующий седельный трехходовой фланцевый VF3 DN50, Kvs=4,0, PN16, Tmax=150 | VFM-3R-50-40 | 065Z3360 | Ридан | шт. | 1 | 13.24 | ГВС 2-зона, +эл. пр см АТМ |\n| 34 | Клапан регулирующий седельный трехходовой фланцевый VF3 DN32, Kvs=16, PN16, Tmax=150 | VF-3R-32-16 | 065Z3358 | Ридан | шт. | 1 | 7.35 | ГВС 3-зона, эл пр АТМ |\n| 35 | Клапан соленоидный, перепад давления 0,3-16 бар, Kvs=6.3м³/ч,максимальное рабочее давление 16 бар (нормально закрытый) | EV220В Ду 20 |  | Ридан | шт | 1 |  | Вентиляции |\n| 36 | Клапан соленоидный, перепад давления 0,3-16 бар, Kvs=4м³/ч,максимальное рабочее давление 16 бар (нормально закрытый) | EV220В Ду 15 |  | Ридан | шт | 1 |  | отопления ДОО |\n| 37 | Предохранительный клапан фланцевый КПП 496 -3Н-65х100 Ду65х100, Рср.=20 бар | ПРЕГРАН КПП 496 Ду65х100 |  | ADL | шт | 1 |  | контура котла |\n| 38 | Предохранительный клапан фланцевый КПП 496-01-16-3Н-025х040-10 Ду25, Рср.=10 бар | КПП 496-01-16-3Н-025х040-10 Ду25, 10бар |  | ADL | шт | 1 |  | ГВС 1-зона |\n| 39 | Предохранительный клапан фланцевый КПП 496-01-16-3Н-16 Ду20, Рср.=16 бар | КПП 496-01-16-3Н-020х032-16 Ду20, 16бар |  | ADL | шт | 1 |  | ГВС 2-зона |\n| 40 | Предохранительный клапан фланцевый КПП 496-01-16-3Н-20 Ду20, Рср.=20 бар | КПП 496-01-16-3Н-020х032-20 Ду20, 20бар |  | ADL | шт | 1 |  | ГВС 3-зона |\n| 41 | Предохранительный клапан фланцевый КПП 496-01-16-3Н-040х65-8 Ду40, Рср.=8 бар | КПП 496-01-16-3Н-040х65-8 Ду40, 8 бар |  | ADL | шт | 1 |  | вентиляции |\n| 42 | Предохранительный клапан фланцевый КПП 496-01-16-3Н-20х32-6 Ду20, Рср.=6 бар | КПП 496-01-16-3Н-020х032-6 Ду20, 6бар |  | ADL | шт | 1 |  | Отопление ДОО |\n| 43 | Предохранительный клапан фланцевый КПП 496-01-16-3Н-032х050-8 Ду32, Рср.=8 бар | КПП 496-01-16-3Н-032х050-8 Ду32, 8 бар |  | ADL | шт | 1 |  | отопления 1-зона |\n| 44 | Предохранительный клапан фланцевый КПП 496-01-16-3Н-032х050-16 Ду32, Рср.=16 бар | КПП 496-01-16-3Н-032х050-16 Ду32, 16 бар |  | ADL | шт | 1 |  | отопления 2-зона |\n| 45 | Предохранительный клапан фланцевый КПП 496-01-16-3Н-20 Ду20, Рср.=20 бар | КПП 496-01-16-3Н-020х032-20 Ду20, 20бар |  | ADL | шт | 1 |  | отопление 3-зона |\n| 46 | Первичный преобразователь теплосчетчика Ду200 | ВИС.Т ПП-200 |  | ЗАО \"ТЕПЛОВИЗОР\" | шт. | 2 | 51 | см. раздел УЧТЭ |\n| 47 | Водосчетчик импульсный Ду 40 | ВСХН-40 |  | НПО Тепловизор | шт. | 1 | 7.8 | на тр-д подпитки ГВС 1-зоны |\n| 48 | Водосчетчик импульсный Ду 32 | ВСХН-32 |  | ЗАО Тепловизор | шт. | 1 | 7.8 | на тр-д подпитки ГВС 2-зоны |\n| 49 | Водосчетчик импульсный Ду 25 | ВСХН-25 |  | Тепловодомер (Россия) | шт. | 1 | 7.8 | на тр-д подпитки ГВС 3-зоны |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+      "authoritative_TEXT": "### BLOCK #16 [TEXT]: blk_30789714316b48908c5addc9bfb135d2\n\n> **Created:** 2026-10-20 11:48:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/nNj4opQ-ZmH_L5r_9MtJ)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 2.1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, межДН ул. Лобачевского и платформой \"Матвеевское\", Квартал 3, 2-я очередь, корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Индивидуальный тепловой пункт | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| | | | | | |\n|---|---|---|---|---|---|\n| 32 | VF-3R-65-52 | Клапан трехходовой системы ГВС 1-ая | 1 | 24,2 |  |\n|  | \"РИДАН\" | зона с эл. приводом (см. АТМ) |  |  |  |\n|  |  | Kvs=52 м3/ч, DN65 мм, PN25 |  |  |  |\n| 33 | VF-3R-50-40 | Клапан трехходовой системы ГВС 2-ая | 1 | 19,5 |  |\n|  | \"РИДАН\" | зона с эл. приводом (см. АТМ) |  |  |  |\n|  |  | Kvs=40 м3/ч, DN50 мм, PN25 |  |  |  |\n| 34 | VF-3R-32-16 | Клапан трехходовой системы ГВС 3-ая | 1 | 11,0 |  |\n|  | \"РИДАН\" | зона с эл. приводом (см. АТМ) |  |  |  |\n|  |  | Kvs=16 м3/ч, DN32 мм, PN25 |  |  |  |\n| 35 | EV220WR | Соленоидный клапан нормально закрытый | 1 | 2,62 |  |\n|  | \"РИДАН\" | уплотнение NBR, DN20 мм, Kv=8,0 м3/ч |  |  |  |\n|  |  | Tмакс=80°C, Pраб=16 бар |  |  |  |\n|  |  | с катушкой ВВ 230 V а.с. 50 Hz |  |  |  |\n| 36 | EV220WR | Соленоидный клапан нормально закрытый | 1 | 0,8 |  |\n|  | \"РИДАН\" | уплотнение NBR, DN15 мм, Kv=4,0 м3/ч |  |  |  |\n|  |  | Tмакс=80°C, Pраб=16 бар |  |  |  |\n|  |  | с катушкой ВВ 230 V а.с. 50 Hz |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n\n## Page 10 — Sheet 3 — ИПТ_План паркинга с расположкой оборудования.\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+      "authoritative_TEXT": "### BLOCK #15 [TEXT]: blk_11981549aceb463ba84c7c0de619d2fc\n\n> **Created:** 2026-10-20 11:48:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Ms-YCCsV2szBs4SRUQOu)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 2.1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, межДН ул. Лобачевского и платформой \"Матвеевское\", Квартал 3, 2-я очередь, корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Индивидуальный тепловой пункт | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n##### Экспликация оборудования (продолжение)\n\n| Марка поз. | Обозначение | Наименование | Кол. | Масса ед.кг. | Приме- ечение |\n|---|---|---|---|---|---|\n| K21 |  | Автоматическая установка поддержания давления греющего контура, В составе: | 1 |  |  |\n| K21.1 | SPL BASIC 2-E-4-21 | Блок управления с 2-мя насосами; Nэл=2х4,0 кВт; 3х380В; 50 Гц; | 1 |  |  |\n| K21.2 | LVF 800 | Основная емкость V=0,8 м³ (Ø780 мм) | 1 | 183 |  |\n| K21.3 | SPL RM 80 25 бар | Демпферная емкость, V=80л, 25 бар | 1 | 46,0 |  |\n| K22 | SPL RM 1500л 10 бар | Бак расширительный V=1500л, 10 бар | 2 | 240,0 |  |\n| K23 | SPL RM 200л 10 бар | Бак расширительный V=200л, 10 бар | 1 | 17,2 |  |\n| K24 | ООО \"Водэко\" | Блочная установка ХВП в составе | 1 |  |  |\n| K24.1 |  | АКВАФЛОУ SA 112-376 | 1 | 440 |  |\n| K24.2 |  | Комплекс дозирования АКВАФЛОУ DC SP 6401 | 1 | 130 |  |\n| K24.3 |  | Комплекс дозирования АКВАФЛОУ DC SP 61 | 1 | 130 |  |\n| 25 | AFD-R/VFG-2R \"РИДАН\" | Регулятор давления \"После себя\" Kvs=20 м³/ч DN40 мм, диапазон настройки P=3-12бар, PN=16 бар | 1 | 14,0 |  |\n| 26 |  | Катушка/проставка DN40 | 1 | - |  |\n| 27 | VFM-2R-100-140 \"РИДАН\" | Клапан запорно регулирующий отопления 1, с эл. приводом (см. АТМ); Kvs=140 м³/ч, DN100 мм | 1 | 54,3 |  |\n| 28 | VFM-2R-80-88 \"РИДАН\" | Клапан запорно регулирующий отопления 2, с эл. приводом (см. АТМ); Kvs=88 м³/ч, DN80 мм | 1 | 32,5 |  |\n| 29 | VFM-2R-32-16 \"РИДАН\" | Клапан запорно регулирующий отопления 3, с эл. приводом (см. АТМ); Kvs=16,0 м³/ч, DN32 мм | 1 | 11,7 |  |\n| 30 | VFM-2R-20-6,3 \"РИДАН\" | Клапан запорно регулирующий отопления ДОО, с эл. приводом (см. АТМ); Kvs=6,3 м³/ч, DN25 мм | 1 | 8,7 |  |\n| 31 | VFM-2R-80-88 \"РИДАН\" | Клапан запорно регулирующий теплоснабжения, с эл. приводом (см. АТМ); Kvs=88 м³/ч, DN80 мм | 2 | 32,5 | по 50% |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+      "authoritative_TEXT": "### BLOCK #90 [TEXT]: blk_296b8547a33a47dbb7a9b8e546d964e0\n\n> **Created:** 2026-10-20 11:49:28 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/CjebKR1bd1NJOlBerXUK)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 14 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nВыбраны насосы отопления: 2 x **IL 40/140-2,2/2-R** (1раб, 1рез.) с характеристиками:\nG=12,42 м³/ч, H=19,29 м.вд.см, N=2,2 кВт. Фирмы «ВИЛО» (арт. 2786083).\n\n###### насосы отопления ДОО:\n\nGом/ макс² = (Qом/ макс × 1000)/(t₁ - t₂') = (0,067 × 1000)/(75 - 55) = 3,35 м³ / ч;\n\nHнас=6м(сист)+3м(ТО)+5м(зап)=14м\n\nВыбраны насосы отопления: 2 x **IL 40/220-1,5/4-R** (1раб, 1рез.) с характеристиками:\nG=4,42 м³/ч, H=16,98 м.вд.см, N=1,5 кВт. Фирмы «ВИЛО» (арт. 2786053).\n\n###### насосы вентиляции:\n\nGвен макс = (Qвен макс × 1000)/(τ₁ - τ₂) = (1,527 × 1000)/(85 - 60) = 61,12 м³ / ч;\n\nHнас=5,5м(сист)+3м(ТО)+5м(зап)=13,5м\n\nВыбраны насосы вентиляции: 2x **IL 65/120-4/2-R** (1раб, 1рез.) с характеристиками:\nG=63,56 м³/ч, H=15,27 м.вд.см, N=4,0 кВт. Фирмы «ВИЛО» (арт. 2786102).\n\n###### КЗР:\n\n###### Система ГВС 1-зона:\n\nKв кэр = GГВС¹/√ΔPклап = (м³ / ч);\n\nGГВС¹ = 36,40 м³/ч,\n\nKв кэр = 36,40/√0,5 = 51,26 (м³ / ч);\n\nВыбираем 3-х ходовой регулирующий клапан «РИДАН» **VF-3R-65-52**, Kv=52 м³/ч, Ду=65 мм с электроприводом (см. АТМ)\n\n###### Потери давления на полностью открытом клапане:\n\nΔPклап = ((Gh макс)/KvS)² = (36,40/52)² = 0,490 бар;\n\n###### Система ГВС 2-зона:\n\nKв кэр = GГВС¹/√ΔPклап = (м³ / ч);\n\nGГВС¹ = 18,85 м³/ч,\n\nKв кэр = 18,85/√0,5 = 26,55 (м³ / ч);\n\nВыбираем 3-х ходовой регулирующий клапан «РИДАН» **VF-3R-50-40**, Kv=40 м³/ч, Ду=50 мм с электроприводом (см. АТМ)\n\n## Page 53 — Sheet 15\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_a757370e84f448d4a31f1a0c146b0d8b",
+      "authoritative_TEXT": "### BLOCK #92 [TEXT]: blk_a757370e84f448d4a31f1a0c146b0d8b\n\n> **Created:** 2026-10-20 11:49:29 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/VgcL6mV3TfoqvKID2q9S)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 16 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (44,00/88)² = 0,250 бар;\n\nСистема отопления 3-зона:\n\nKv кэр = (Gот max)/√ΔPклап = (м³ / ч);\n\nПодбираем КЗР на фактический температурный график тепловой сети 90-70⁰ С\n\nGo/v max = 9,55 м³/ч,\n\nKv кэр = 9,55/√0,5 = 14,45 (м³ / ч);\n\nВыбираем клапан «РИДАН» **VFM-2R-32-16**, Kv=16 м³/ч, Ду=32 мм с электроприводом (см. раздел АТМ)\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (9,55/16)² = 0,356 бар;\n\nСистема отопления ДОО:\n\nKv кэр = (Gот max)/√ΔPклап = (м³ / ч);\n\nПодбираем КЗР на фактический температурный график тепловой сети 90-70⁰ С\n\nGo/v max = 3,35 м³/ч,\n\nKv кэр = 3,35/√0,5 = 4,72 (м³ / ч);\n\nВыбираем клапан «РИДАН» **VFM-2R-20-6,3**, Kv=6,3 м³/ч, Ду=20 мм с электроприводом (см. раздел АТМ)\n\nПотери давления на полностью открытом клапане:\n\nΔPклап = ((Gh max)/KvS)² = (3,35/6,3)² = 0,283 бар;\n\nСистема вентиляции:\n\nKv кэр = (Gот max)/√ΔPклап = (м³ / ч);\n\nПодбираем два КЗР по 50% на фактический температурный график тепловой сети 90-70⁰ С\n\nGo/v max = 38,20 м³/ч,\n\n## Page 55 — Sheet 17\n\n"
+    }
+  ],
+  "graphic_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b8c120f6cbc04397b8c5514a03fa3152.png",
+      "sha256": "a3bf41952d9cfeff4e841c324d545acada3b58d7096ac04bdd9ab6bcebbca137",
+      "block_id": "blk_b8c120f6cbc04397b8c5514a03fa3152",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Разрез24-24поз30DN20,Kv6,3;разрезы41-41и42-42поз29DN32,G10,7,Kv16,ΔP0,446."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-014.json",
+      "sha256": "817028329da55c5233d5125a6095de379052f53a421de663b5fe777d4110921d",
+      "primary_adjudication": null,
+      "limits": "Расхождение в десять раз подтверждено по TEXT. Числа потерь ниже — условная проверка по формуле самого проекта, не доказательство фактически установленного клапана с Kvs 4,0 или неработоспособности системы. Правильность артикула по каталогу не проверена. PN25/PN16 относится к отдельному составному случаю B-ITP-F-015.",
+      "wording": "Согласовать характеристику клапана ГВС второй зоны, поз. 33: экспликация и расчёт задают VF-3R-50-40, Kvs/Kv 40 м³/ч; спецификация содержит VFM-3R-50-40, Kvs 4,0. Уточнить марку и пропускную способность в заказной строке."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-015.json",
+      "sha256": "3d68c70b29aa5dde6b5c09383bfd180c5304a2b38484cedb3cef205a780f25af",
+      "primary_adjudication": null,
+      "limits": "Подтверждены различия проектных записей. Каталожная эквивалентность марок, паспортные присоединения, допустимые режимы и фактическое рабочее давление в каждом узле здесь не проверены. Нельзя автоматически требовать замену всех клапановPN16 наPN25 или объявлять монтаж невозможным. У поз.36 DN15 пропускная способность4,0 совпадает; конфликт чисел для неё не заявлять. КириллическаяВ в TEXT сохранена, не исправлена по растру. Фактическая ошибочная закупка и отказ не доказаны.",
+      "wording": "Согласовать параметры клапанов: поз.30 отопления ДОО VFM-2R-20-6,3 имеетDN20 в расчёте и разрезе24-24, ноDN25 в экспликации; поз.32–34 ГВС имеютPN25 в экспликации иPN16 в спецификации; у соленоидного клапана поз.35 DN20 —Kv8,0 противKvs6,3. Уточнить также обозначения соленоидных клапанов поз.35/36:EV220WR противEV220В."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP40.json",
+      "sha256": "7ecc76f047d6ec2df5084a055f7c92c8815cd16de2704db6999b21c204f43be8",
+      "primary_adjudication": {
+        "path": "experiments/auditmanager_stage1_20261109/followup/ITP40_primary_adjudication.json",
+        "sha256": "a2c3421f55b3430b3c2e3b512e6c99657e98a64fc5d2ad7f136fc97d14164834"
+      },
+      "limits": "Фактический недостаток мощности и отказ регулирования не доказаны; принадлежность исторической записи к дублю UNI-039 остаётся отдельным вопросом. Расходы и нагрузки связаны тематически, но причина различия не установлена. Не объявлять клапан непригодным: выбранное Kv16 больше обоих значений требуемого Kv13,51 и напечатанного14,45. Для0,200 против0,191 разность0,009Гкал/ч, или4,71% относительно0,191; это не допустимый процент и не доказанный запас. Не выпускать отдельный дублирующий дефект.",
+      "wording": "Согласовать параметры отопления III зоны: на разрезах Q=0,246 Гкал/ч и у клапана поз.29 G=10,7 м³/ч, ΔP=0,446; в ПЗ Q=0,191 и G=9,55, ΔP=0,356; подбор теплообменника 0,21965 учитывает запас 15%. Установить назначение нагрузок и единый расчётный режим, затем синхронизировать документы. Дополнительно на разрезе23-23 у Т13/Т23 подписано0,200Гкал/ч при80/60°C против табличных0,191; включить в ту же сверку режима III зоны."
+    }
+  ],
+  "calculations": {
+    "Kvs4_loss": 22.207656250000003,
+    "Kvs40_loss": 0.22207656250000005,
+    "third_zone_section_loss": 0.4472265624999999,
+    "third_zone_PZ_loss": 0.35625976562500006,
+    "flow_difference_percent": 12.04188481675391
+  },
+  "limits": [
+    "No manufacturer passport or delivered item verified.",
+    "Document discrepancies retained without inferred equipment failure.",
+    "Frozen evaluator,runs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
