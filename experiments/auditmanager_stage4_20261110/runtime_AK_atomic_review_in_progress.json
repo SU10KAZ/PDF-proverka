@@ -8,12 +8,25 @@
   "targets": [
     {
       "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-005"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Сохранены марки Ва3.1 в КЖ и соседние Ва4.1-3/-4, но не сопоставлены три графические марки Ва4.1-3ПЧ/-4ПЧ/-RS. Сравнение 10м/330м не заменяет конфликта марки схемы и журнала.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
@@ -35,21 +48,48 @@
     },
     {
       "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-075"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK100_F015_drive_cable_graph.json",
+          "sha256": "b3e2a610f68d4b090891ce33e1f6114ccd8071b80265948ae56f5d10d4f826f5"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Сохранены шкаф ШАУВ-1-К5АС, шесть графических участков2×20+2×330+2×15=730м и локальные700м. Частное объяснение о пропуске именно двух15м требует отдельной оговорки; факт расхождения количеств сохранён.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-018",
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "F-018 сохраняет отсутствие3×2,5 в сводной спецификации при локальных20м и10м; F-017 отдельно сохраняет конфликт исполнения По5.1-9. Недопоставка30м и безусловная замена4×4 не утверждаются.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK14:65ea2c2649999f640c83",
@@ -536,12 +576,30 @@
     },
     {
       "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F020_heater_cable_conflict.json",
+          "sha256": "f6dbf031fc8ba16fd61cd5ebad1825e32f84c0bd4cd39527accb1a6230d293f2"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK137_F019_cable_schedule_scope.json",
+          "sha256": "47375d78a6861a8eef868e86e514f426a43f821e6cd8314e29f5a0b294eb093f"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Графическое дополнение прямо связывает По5.1-9 с3×2,5 и клеммами34/35/PE; основное описание сохраняет4×4,0 и10м в КЖ. Это одна линия, не две альтернативно подсчитанные поставки.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
@@ -563,21 +621,47 @@
     },
     {
       "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Восемь однопарных неэкранированных линий по15м дают120м против50м перечня того же шкафа; разность70м ограничена проектными документами.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-014"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F022_control_cable_balance.json",
+          "sha256": "46cb1bee355ab60c0777b4db91822cd71be21f7b5acb697999581565952adf53"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Три однопарные экранированные линии20+15+15=50м сопоставлены с105м перечня, отдельный тип кабеля не смешан с неэкранированным.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
@@ -752,21 +836,47 @@
     },
     {
       "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+          "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Сохранены различия КСПВПГ и КСПВППГ между локальными перечнями и СО, без доказательства фактической конструктивной неэквивалентности.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
-      "section_assessment": "unchecked"
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F032_cable_brand_conflict.json",
+          "sha256": "d0ba9aaabb16c1ce4b6b16f7aaa9bbe3903ca1b7084bd043e6e1007636fbabfb"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Графические дополнения содержат четыре конкретные линии листа37, окончания,30м и КСПВПГ; основное описание сохраняет вариант КСВПГ в КЖ. Исходные буквальные строки остаются в доказательствах.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
@@ -1129,6 +1239,6 @@
   "status": "partial_review_not_acceptance",
   "source_snapshot": "/tmp/auditmanager_context_terminal_snapshot_20261112.json",
   "source_snapshot_sha256": "1358431ad556afc30733620fbf974da3c521f343bfffffe4d26abc32b781f287",
-  "reviewed_targets": 16,
-  "unchecked_targets": 84
+  "reviewed_targets": 24,
+  "unchecked_targets": 76
 }
