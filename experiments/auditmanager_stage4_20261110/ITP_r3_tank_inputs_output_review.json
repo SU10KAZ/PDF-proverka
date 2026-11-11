@@ -1,0 +1,722 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "0008380c029502b88ed9e900c9fbab2d9d465a5cc9030deb1882e7c81238489b",
+  "queue_after_sha256": "de663fe208304f7f21939d8ea082d1d49edac5adc24f96cc80a7a20d4d839dcb",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Поддержание давления",
+        "sheet": null,
+        "page": [
+          97,
+          100,
+          103,
+          110,
+          111
+        ],
+        "problem": "Баки установок поддержания давления подобраны по заниженным объёмам систем.",
+        "description": "Для первой зоны с арендой и парковкой анкеты дают 24,9255 м³, а подбор использует 20,676 м³; для второй зоны — 15,2 против 13,016 м³; для третьей — 3,7 против 1,883 м³. При коэффициенте расширения 2,258% и запасе 1,3 для первых двух зон требуются около 731,7 и 446,2 л без дополнительного объёма ИТП, тогда как выбраны 600 и 400 л. Даже исходный подбор первой зоны даёт 606,9 л.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к обоснованию расчётов по согласованным исходным данным.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить полный объём каждого контура, включая ИТП, повторить подбор по методике изготовителя и изменить вместимость баков при необходимости.",
+        "risk": "Недостаточная компенсация расширения, нестабильное давление и частые сбросы теплоносителя.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_b4fb33513ca44182af058d09c8ab2dbb"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 97
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 100
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 110
+          }
+        ],
+        "highlight_regions": [],
+        "sheet_unavailable": true,
+        "sheet_unavailable_reason": "page_not_in_map",
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-020:e9f7120697b89e6da747",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-020:2052d4e286115c641e7f",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-020:ddebb96399a114f724d6",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-022:8cd785f32b0f2581717f",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Объёмы зон1/2:20,676/13,016м³ в подборе против24,9255суммарно/15,2 в анкетах.",
+          "verdict": "confirmed_published_inputs",
+          "limits": "24,9255 — сумма жилья, коммерции и парковки, не отдельная строка. Общие границы контура и включённыйИТП не установлены."
+        },
+        {
+          "claim": "Зона3:подбор1883л=1,883м³, анкетаТ1.3/Т2.3 —3,7м³.",
+          "verdict": "confirmed_direct_authoritative_TEXT",
+          "limits": "Блоки141/148. Разница чисел не доказывает одинаковый состав расчётного объёма."
+        },
+        {
+          "claim": "При2,258% и1,3 объёмы731,663127/446,1808л вместо600/400.",
+          "verdict": "conditional_formula_transfer",
+          "limits": "Арифметика подтверждена; нельзя назвать это безусловно требуемой вместимостью без согласования границ и методики. ВесьИТП не добавлять повторно автоматически."
+        },
+        {
+          "claim": "Первый подбор даёт606,9л и выбирает600 при требовании не меньше расчётного.",
+          "verdict": "confirmed_internal_selection_inconsistency",
+          "limits": "Узкий самостоятельный конфликт сохраняется независимо от условного переноса анкетных объёмов."
+        },
+        {
+          "claim": "Уточнить полный объём и повторить подбор.",
+          "verdict": "supported_scoped_question",
+          "limits": "Фактические сбросы и недостаточность полезной вместимости не доказаны;RM80 автоматически к основному баку не прибавлять."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены одинаковые границы всех сравниваемых контуров, обязательные новые вместимости, неверная наладка и фактические сбросы.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "F010 overlaps F050 only on DOO temperature; preserve other load and ventilation-volume atoms.",
+      "profile_and_section": "Сохранить исходные расхождения и самостоятельный выбор600л при606,9л. Условные переносы коэффициентов не превращать в обязательные номиналы. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-022.json",
+          "sha256": "bdc1b9b8e17f8d4f6431e10bb694e9032588c6833ee872e935de193bf6ee30bb",
+          "primary_adjudication": null,
+          "limits": "Не утверждать недостаточную компенсацию в эксплуатации только по разнице номинальных объёмов. Полезная вместимость, рабочие уровни, алгоритм АУПД и согласованные исходные объёмы системы не проверены. Демпферный RM80 указан отдельно: складывать его номинальные80л с600л как доступную компенсацию без схемы и функции нельзя. Коэффициент1,3 взят из листа подбора этого проекта, не универсальный запас; нормативное нарушение не установлено.",
+          "wording": "Согласовать подбор основного бака отопления первой зоны: лист вычисляет606,9л и требует объём не меньше расчётного, но выбирает LVF600; спецификация прямо указывает600л. Разница6,9л требует пояснения принятого решения."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-010",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-007"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Published loads and volumes confirmed; identical circuit boundaries and final design values not established."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Published loads and volumes confirmed; identical circuit boundaries and final design values not established."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_tank_inputs"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Исходные данные подбора баков",
+        "sheet": "Лист 4",
+        "page": [
+          42,
+          94,
+          97,
+          100,
+          103,
+          106,
+          107,
+          110,
+          111,
+          112,
+          113,
+          153
+        ],
+        "problem": "Нагрузки, температуры и объёмы в подборах баков не согласованы с проектом.",
+        "description": "Для греющего контура принято 5,858 вместо 5,229 Гкал/ч; для отопления второй зоны — 0,958 вместо 0,880; третьей — 0,214 вместо 0,191 Гкал/ч. Для бака ДОО принят график 80/60 вместо 75/55 °С, для вентиляции — 80/60 вместо 85/60 °С. Объём вентиляции 27 м³ не раскрыт относительно суммы анкет 14,3 м³.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к достоверности исходных данных расчётного обоснования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Утвердить единый набор нагрузок, графиков и полных объёмов, раскрыть добавочный объём вентиляции и обновить подборы.",
+        "risk": "Неверная вместимость баков и ошибочные настройки поддержания давления.",
+        "source_finding_ids": [
+          "T-010"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_3050f16afc994b889498a2535ea14a52",
+          "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "blk_b8c120f6cbc04397b8c5514a03fa3152"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 42
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 103
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 107
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-020:c729cc29afbee39e2ed0",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-021:61e590ad93c41a790803",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-021:21e573255419bee97d92",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-021:19069482aa6e7267f73b",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-024:f36bd082707154691153",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Подборы:греющий5,858;отопление2зоны0,958;3зоны0,214Гкал/ч, противПЗ5,229/0,880/0,191.",
+          "verdict": "confirmed_direct_authoritative_TEXT",
+          "limits": "Блоки132/138/141 и81. Совпадение названий не устанавливает одинаковые режимы и окончательную редакцию; не выбирать правильное число большинством."
+        },
+        {
+          "claim": "ДОО80/60 против75/55;вентиляция80/60 против85/60°C.",
+          "verdict": "confirmed_document_temperature_conflicts",
+          "limits": "Требования конкретногоТЗ. ДОО частично повторяетF050, где дополнительно проверен разрез."
+        },
+        {
+          "claim": "Вентиляция27м³ в подборе против суммы анкет14,3.",
+          "verdict": "confirmed_inputs_unresolved_scope",
+          "limits": "14,3=1,2+2,7+8,6+1,8 поТ1.4.1–4. Полный объём контура сИТП не установлен; разность не доказанно ошибочна."
+        },
+        {
+          "claim": "Согласовать нагрузки, температуры и полный состав объёмов.",
+          "verdict": "supported_scoped_question",
+          "limits": "Неверная вместимость или настройки не доказаны; F050 объединять лишь по общему температурному атому, сохраняя остальные вопросы."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены одинаковые границы всех сравниваемых контуров, обязательные новые вместимости, неверная наладка и фактические сбросы.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "F010 overlaps F050 only on DOO temperature; preserve other load and ventilation-volume atoms.",
+      "profile_and_section": "Сохранить исходные расхождения и самостоятельный выбор600л при606,9л. Условные переносы коэффициентов не превращать в обязательные номиналы. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fba6f821ad1d450ebfbc5fc330bbc2b2",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_dc124e4fb56849bbba6c4e2db3e948e3",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_950ad44af3d645539b95e38ddad3a8e0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ee2f019eb36f4a43afab4649bd118c31",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4",
+          "primary_adjudication": null,
+          "limits": "Листы подбора датированы30.06.2026 и относят мощность к исходным проектным данным. Дата сама по себе не доказывает устаревшую версию. Общая нагрузка ИТП и нагрузка замкнутого греющего контура требуют подтверждения сопоставимости; запас нельзя автоматически переносить из подбора теплообменников. Различия не доказывают неправильный типоразмер АУПД или необходимость замены. Не дублировать этот вопрос отдельными замечаниями на каждый лист и не повторять уже учтённую тему режимаIIIзоны.",
+          "wording": "Согласовать тепловые мощности, переданные для подбора АУПД: греющий контур5,858 против суммарной нагрузки ПЗ5,229Гкал/ч; отопление1 —1,488/1,483; отопление2 —0,958/0,880; отопление3 —0,214/0,191. Подтвердить состав контуров, режим и наличие расчётного запаса перед пересмотром подбора."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4",
+          "primary_adjudication": null,
+          "limits": "Листы подбора датированы30.06.2026 и относят мощность к исходным проектным данным. Дата сама по себе не доказывает устаревшую версию. Общая нагрузка ИТП и нагрузка замкнутого греющего контура требуют подтверждения сопоставимости; запас нельзя автоматически переносить из подбора теплообменников. Различия не доказывают неправильный типоразмер АУПД или необходимость замены. Не дублировать этот вопрос отдельными замечаниями на каждый лист и не повторять уже учтённую тему режимаIIIзоны.",
+          "wording": "Согласовать тепловые мощности, переданные для подбора АУПД: греющий контур5,858 против суммарной нагрузки ПЗ5,229Гкал/ч; отопление1 —1,488/1,483; отопление2 —0,958/0,880; отопление3 —0,214/0,191. Подтвердить состав контуров, режим и наличие расчётного запаса перед пересмотром подбора."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-021.json",
+          "sha256": "4de51d7e8a5de8999479b34f00948d5d36eef056bc40c021f1e2865cd0ba51d4",
+          "primary_adjudication": null,
+          "limits": "Листы подбора датированы30.06.2026 и относят мощность к исходным проектным данным. Дата сама по себе не доказывает устаревшую версию. Общая нагрузка ИТП и нагрузка замкнутого греющего контура требуют подтверждения сопоставимости; запас нельзя автоматически переносить из подбора теплообменников. Различия не доказывают неправильный типоразмер АУПД или необходимость замены. Не дублировать этот вопрос отдельными замечаниями на каждый лист и не повторять уже учтённую тему режимаIIIзоны.",
+          "wording": "Согласовать тепловые мощности, переданные для подбора АУПД: греющий контур5,858 против суммарной нагрузки ПЗ5,229Гкал/ч; отопление1 —1,488/1,483; отопление2 —0,958/0,880; отопление3 —0,214/0,191. Подтвердить состав контуров, режим и наличие расчётного запаса перед пересмотром подбора."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-024.json",
+          "sha256": "3337cb4eb8166e1d8b866ec77e1b8640adf4f659cec8c3b764d511ddc6bf7fa6",
+          "primary_adjudication": null,
+          "limits": "Для ДОО среднее по данным ПЗ65°C, в подборе70°C; для вентиляции72,5°C против70°C. Нельзя заявлять занижение расширения для обоих случаев. Численное изменение коэффициента расширения и окончательные типоразмеры здесь не установлены. У ДОО разность температур в обоих графиках20°C: одинаковый расход не устраняет различие абсолютных температур. Неверная эксплуатация и нормативное нарушение не доказаны.",
+          "wording": "Согласовать температурные графики для расчётов баков и подписей: отопление ДОО75/55°C в таблице и анкете против80/60°C в подборе бака и разрезе26-26; теплоснабжение вентиляции85/60°C в таблице и анкете против80/60°C в подборе баков. После выбора действующих графиков проверить расчёт совместно с давлениями."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+          "sha256": "f786dc1231b4f708a42bf27adff8870fcdfe8698548f69b0072f51197f87fc19",
+          "block_id": "blk_6d5640f1a71b440cb7ca3f2c177af08a",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Section 26-26: T14 supply heating DOO 80 C, T24 return 60 C; both leaders name heating DOO.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d5640f1a71b440cb7ca3f2c177af08a.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-012",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_32601a7d4ca34927972f1c398ca5621f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_13f4d8b377c94b1eb17013ecfa2d5fb3",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_950ad44af3d645539b95e38ddad3a8e0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ee2f019eb36f4a43afab4649bd118c31",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b4fb33513ca44182af058d09c8ab2dbb",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ca5545c2f2bb4810a870dbaf25ee86db",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-020.json",
+          "sha256": "25569d03518a00948d2c70dcdee62c8ed446fe2afc94ce6ba4635eb668b8176d",
+          "primary_adjudication": null,
+          "limits": "Часовая размерность коэффициента20% в записи не раскрыта: обратный расчёт условный. Сумма первой зоны24,9255 включает жильё20,4255, коммерческие помещения1,0 и автостоянку3,5; принадлежность всех этих объёмов общему контуру должна быть подтверждена схемой. Сумма вентиляции14,3 включает1,2+2,7+8,6+1,8. Нельзя выбирать один объём как правильный по числу совпадений, объявлять бак недостаточным или применять20% как универсальную норму.",
+          "wording": "Согласовать баланс объёмов для подпитки и расширения. При трактовке20% как часовой доли расчёт подпитки подразумевает31,15/18,3/4,5м³ для отопления1/2/3 и18,15м³ для вентиляции. Анкеты дают24,9255/15,2/3,7 и14,3м³; листы подбора используют20,676/13,016/1,883 и27м³. Разделить объёмы потребителей и самого ИТП, затем проверить подпитку и баки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-040",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a203939b21504fa6935b621a29929d7d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7e913f6c32cb4db7aa9d9b8688b6e979",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-009"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_cc70e063642d457fa0a38b30b1a1a51f",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Published loads and volumes confirmed; identical circuit boundaries and final design values not established."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_26b23c5bfabe4917a156a91077b5458d",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Published loads and volumes confirmed; identical circuit boundaries and final design values not established."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c1c89b0e491040bc9c2c3d2dceb2f4e0",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Published loads and volumes confirmed; identical circuit boundaries and final design values not established."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_c25d98d5cc6e4b05a83580352fea374b",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Published loads and volumes confirmed; identical circuit boundaries and final design values not established."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_tank_inputs"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Two current ITP tank-input findings reviewed against frozen prior evidence and identical hashes. Additional authoritative TEXT directly checked for third-zone volume and three system loads. F010 also uses prior makeup-review volume evidence. Conditional arithmetic recalculated, no new raster inspection or engineer acceptance."
+}
