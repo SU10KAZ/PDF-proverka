@@ -1,0 +1,149 @@
+{
+  "status": "AK_Pa4_composite_claim_split_by_direct_graphic",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "62b1baef84626209fc0dac5cd08e56120f5f4802ace7649d77658c48d19a9490",
+  "queue_after_sha256": "d08b82b243cc3565c670e17c409ea161c893f3ee781d2487c84e113d1a6b9dc7",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-055",
+      "finding": {
+        "id": "F-055",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Назначение сигналов",
+        "sheet": "Лист 18",
+        "page": 22,
+        "problem": "Линии заслонки и вентиляторов Па4.1/Ва4.1 имеют неверные назначения.",
+        "description": "Линия 15 от Y3 назначена управлению ПЧ и контролю резервного вентилятора; линия 16 от М2 основного Ва4.1 — управлению заслонкой. Линия 19 от М3 резервного Ва4.1р названа состоянием основного вентилятора.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать назначения линий 15, 16 и 19 с Y3, основным и резервным вентиляторами.",
+        "risk": "Команды и сигналы состояния будут отнесены к неверным устройствам.",
+        "source_finding_ids": [
+          "G-043"
+        ],
+        "source_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "related_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "page": 22
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-043",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Линия15 от Y3 назначена управлению ПЧ и состоянию резервного вентилятора.",
+          "verdict": "refuted_direct_GRAPHIC_column15_is_damper_control",
+          "limits": "Номер15 у линии Y3 соответствует колонке15 «Управление воздушной заслонкой». Соседняя колонка16 содержит ПЧ и состояние вентилятора."
+        },
+        {
+          "claim": "Линия16 от М2 назначена управлению заслонкой.",
+          "verdict": "refuted_direct_GRAPHIC_column16_is_drive_control",
+          "limits": "Колонка16 — «Управление ПЧ пуск/стоп,0–100%; Состояние рез. вентилятора». Функция привода соответствует двигателю, ошибочен вывод о назначении заслонки."
+        },
+        {
+          "claim": "Линия19 от М3 Ва4.1р названа состоянием основного вентилятора.",
+          "verdict": "confirmed_direct_GRAPHIC_duty_label_conflict",
+          "limits": "Ва4.1р/М3 связан с19, где указано «осн.». Сохранить самостоятельный верный тезис внутри составного замечания."
+        },
+        {
+          "claim": "Для основного Ва4.1/М2 колонка16 названа состоянием резервного вентилятора.",
+          "verdict": "confirmed_direct_GRAPHIC_context_not_full_credit_for_wrong_original_claim",
+          "limits": "Это дополнительный уточняющий контекст: исходный тезис про16 ошибочно говорит об управлении заслонкой. Не засчитывать исправленный проверяющим тезис как полностью верный исходный."
+        },
+        {
+          "claim": "Необходимо менять реальные команды либо подключения линий15 и16.",
+          "verdict": "unsupported_remedy_for_refuted_parts",
+          "limits": "Сохранить вопрос подписей рабочих/резервных ролей для16/19. Программа, ротация ролей и монтаж не проверены; номера таблицы не являются доказанными аппаратными адресами."
+        }
+      ],
+      "unsupported_additions": "Не удалять полезный тезис19 вместе с ложными15/16 и не сохранять ложные тезисы из-за верной части. Не трактовать подписи состояний как доказанную ошибку физического подключения.",
+      "novel_useful_content": "Подтверждён отдельный тезис о подписи состояния резервного вентилятора; два тезиса о перестановке назначения линий опровергнуты графикой.",
+      "duplicate_burden": "Одна составная строка: два опровергнутых тезиса и один подтверждённый. Уточнение проверяющим16 не является дополнительной модельной находкой.",
+      "profile_and_section": "preserve_confirmed_duty_label_part_remove_false_column_mapping",
+      "engineer_reuse": "No new engineer decision; direct graphic assessment.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "route": "direct_GRAPHIC_review",
+          "directly_viewed": true,
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "observations": "Прослежены Y3→15, М2 Ва4.1→16, М3 Ва4.1р→19. В таблице15 управление воздушной заслонкой,16 управление ПЧ и состояние рез. вентилятора,19 управление ПЧ и состояние осн. вентилятора."
+        },
+        {
+          "path": "/tmp/ak_r2_pa4_signals.png",
+          "sha256": "3ec451dd99ca7f8b924b64a40c38433eae3c9df451fac04942134ba437e3de30",
+          "route": "direct_GRAPHIC_crop",
+          "directly_viewed": true,
+          "crop_pixels": [
+            650,
+            0,
+            1500,
+            1130
+          ]
+        }
+      ],
+      "disposition": "assessed_r2_partial_true_duty_label_false_column_assignment"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
