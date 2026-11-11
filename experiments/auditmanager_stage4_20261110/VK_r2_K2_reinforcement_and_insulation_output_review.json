@@ -1,0 +1,375 @@
+{
+  "status": "two_VK_K2_project_requirement_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "a5a3b956c25d91ddc90069f981f3dc66486468c08fe9095f198a86ccd7951540",
+  "queue_after_sha256": "8f5dc9399167c959f49ddd0c702543c24b0842b39da7e63cc9a792023932fa8b",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-006",
+      "finding": {
+        "id": "F-006",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Внутренние водостоки",
+        "sheet": "Листы 2, 03, 04",
+        "page": [
+          4,
+          32,
+          33
+        ],
+        "problem": "Спецификация не обеспечивает предусмотренное усиление всех чугунных соединений К2.",
+        "description": "Для диаметров 100, 150 и 200 мм предусмотрено соответственно 7, 33 и 26 соединителей, а усиливающих хомутов — 4, 18 и 26. При усилении каждого соединителя недостаёт 3 хомутов диаметром 100 мм и 15 диаметром 150 мм, всего 18 шт. Заявленное для чугунной части К2 давление 10 бар требует проверки по характеристикам конкретных сборок.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить комплектность соединительных и усиливающих элементов по принятому проектному решению.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать количество хомутов с перечнем соединений и подтвердить допустимое давление сборок для каждого диаметра документацией изготовителя.",
+        "risk": "При отсутствии необходимого усиления соединения могут не выдержать предусмотренные нагрузки при заполнении водостока.",
+        "source_finding_ids": [
+          "T-006"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 64,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F003_reinforcement_counts:7ad222ee93fc76cab7bc",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Rapid DN100/150/200: 7/33/26; Kralle: 4/18/26.",
+          "verdict": "confirmed_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Kombi Kralle предусмотрены на всех соединениях К2 из SML.",
+          "verdict": "confirmed_project_specific_requirement",
+          "limits": "Не распространять на все SML других систем и проектов."
+        },
+        {
+          "claim": "Недостаёт 3+15=18 хомутов.",
+          "verdict": "conditional_quantity_requires_one_to_one_and_supply_scope",
+          "limits": "Разности подтверждены; окончательный заказ требует соответствия один усиливающий хомут на соединитель и проверки комплектования. DN200 не имеет разности. Шесть UNIVERSAL KRALLE в К2.1 не являются автоматической компенсацией К2."
+        },
+        {
+          "claim": "Согласовать ведомость соединений и усиления, проверить характеристики выбранных пар.",
+          "verdict": "supported_scoped_followup",
+          "limits": "Паспорта изделий и допустимое давление здесь не проверялись."
+        },
+        {
+          "claim": "Монтаж без усиления и разгерметизация.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "ГОСТ 21.110-2013 п.4.1",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; нормативный кандидат не засчитывается как проверенное нарушение."
+        },
+        {
+          "claim": "Для магистральных трубопроводовК2 изSML в техпространстве+5,320 указаноРу10Бар.",
+          "verdict": "confirmed_current_authoritative_TEXT",
+          "limits": "Блокblk_c64786c6b8ed4532a0ff7c797c3f335b. Это проектная характеристика;не подтверждение паспортных возможностей выбранных соединений каждого диаметра."
+        },
+        {
+          "claim": "Выбранные сборки заведомо выдерживают либо не выдерживают10бар.",
+          "verdict": "not_established_without_product_evidence",
+          "limits": "Паспорта конкретныхRapid/Kralle,условия монтажа иполнота комплектования не проверены."
+        }
+      ],
+      "unsupported_additions": "Не переносить требования9мм и10бар на другие проекты. Документальное расхождение не доказывает фактический отказ,конденсат или недопоставку.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "technical_core_preserve_conditional_quantity",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_5a8674f9dc2343498ae3b666f20e67c9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F003_reinforcement_counts.json",
+          "sha256": "e9e6f6cdb5f27558c3a138869ea0665a50d8d8baa273e180a4a9b9fcd9542f53",
+          "primary_adjudication": null,
+          "limits": "Подтверждено внутреннее несоответствие требования и количеств в спецификации. Сравнение3/15/0 условно предполагает один усиливающий хомут на соединитель; это не независимый обмер всех соединений и не окончательный заказ. Требование взято из данного проекта, не объявлено универсальным для любых SML. Шесть UNIVERSAL KRALLE DN100 записаны вК2.1 и не подтверждают комплектованиеК2. Последний лист креплений описывает подвесы с резьбовым стержнем и дюбелем, а не дополнительные хомуты усиления стыков. Не проверены отдельные поставки, фактическая установка, характеристики конкретных изделий и давления; разгерметизация не доказана.",
+          "wording": "Согласовать комплектность усиливающих хомутовК2 с указанием устанавливать Kombi Kralle на всех соединениях SML. ВК2 специфицированы Rapid DN100/DN150/DN200 —7/33/26 шт., а усиливающие Kralle тех же диаметров —4/18/26 шт. При одном усиливающем хомуте на каждый указанный соединитель разница составляет3 шт.DN100 и15 шт.DN150. Уточнить комплектование и привести спецификацию в соответствие с принятым решением."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-006",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_project_specification_conflict_qualify_order_quantity"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Изоляция",
+        "sheet": "Листы 2, 01, 02, 03, 04, 05, 06",
+        "page": [
+          4,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35
+        ],
+        "problem": "Предусмотренная антиконденсатная изоляция К2 толщиной 9 мм отсутствует в спецификации.",
+        "description": "Общие указания требуют изоляцию К2 по всей длине вспененным полиэтиленом толщиной 9 мм. В спецификации соответствующий материал не указан. Трубки толщиной 40 мм в разделах К1 и К2.1 не соответствуют этому решению. Сумма длин труб К2 составляет 258,7 м без фасонных частей.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить включение предусмотренных проектом изоляционных материалов и их объёмов в спецификацию.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Добавить изоляцию К2 толщиной 9 мм с разбивкой по диаметрам и уточнить объём с учётом фасонных частей и узлов.",
+        "risk": "Отсутствие изоляции в поставке может привести к образованию конденсата, увлажнению конструкций и дополнительным работам.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_1d17a25462884606ae486c345090fe20",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 54,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F004_insulation_scope:02bb3aef959f1c658194",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Проект требует изолировать К2 по всей длине вспененным полиэтиленом 9 мм Г1.",
+          "verdict": "confirmed_project_specific_requirement",
+          "limits": "Это указание данного проекта; не универсальное требование ко всем водостокам."
+        },
+        {
+          "claim": "В полной шестилистовой спецификации нет соответствующей позиции К2.",
+          "verdict": "supported_bounded_absence",
+          "limits": "Просмотрены TEXT блоки 93–99, включая продолжения и общий лист креплений. Раздел К2 от листа 03 до начала К2.1 на листе 04. Блок 98 содержит разделители."
+        },
+        {
+          "claim": "Изоляция 100×40 мм в К1 и К2.1 не подтверждает учёт требуемой изоляции К2.",
+          "verdict": "supported_scope_distinction",
+          "limits": "1,7 и 1,1 м³ не переводить произвольно в метры и не считать допустимой заменой 9 мм без обоснования."
+        },
+        {
+          "claim": "Сумма труб К2 равна 258,7 м.",
+          "verdict": "arithmetic_confirmed_not_finished_order_quantity",
+          "limits": "104+96,9+0,1+23,4+34,3=258,7; типоразмеры, фасонные части и припуски для заказа отдельно не рассчитаны."
+        },
+        {
+          "claim": "Добавить предусмотренную изоляцию по диаметрам, уточнив фасонные части.",
+          "verdict": "supported_scoped_remedy",
+          "limits": "Если материал учтён отдельной поставкой, указать документ и границы учёта. Гипотетическая отдельная поставка не опровергает отсутствие строки в проверенной СО."
+        },
+        {
+          "claim": "Неполная закупка, конденсат и увлажнение.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Фактические закупка и монтаж не проверены."
+        },
+        {
+          "claim": "ГОСТ 21.110-2013 п.4.1",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативная цитата отсутствует; кандидат не равен доказанному нарушению."
+        },
+        {
+          "claim": "Следует безусловно добавить258,7м изоляции в заказ.",
+          "verdict": "not_established_final_order",
+          "limits": "Это сумма длин труб;нужны диаметры,фасонные части,припуски и границы отдельного учёта. При подтверждённой отдельной поставке достаточно связать документы."
+        }
+      ],
+      "unsupported_additions": "Не переносить требования9мм и10бар на другие проекты. Документальное расхождение не доказывает фактический отказ,конденсат или недопоставку.",
+      "novel_useful_content": "Основной тезис совпадает с первым повтором;новый независимый технический дефект не установлен.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "technical_core_preserve_no_proven_field_failure",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_1d17a25462884606ae486c345090fe20",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_e6ea1f0742914463bbf7ce02d97c5afa",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_9b1d774c2f6c4127b2f8618e3792a647",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_2832f2bda58d416ab8c388c81c339b02",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_8a30696159964429a9b51a5b81e5cb7e",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_0bcb4172b9fc465ca64fe8ab4aafdc27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_5a8674f9dc2343498ae3b666f20e67c9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F004_insulation_scope.json",
+          "sha256": "1aee463c39c642ce1ee9ae8c8f9995e6a86275fba0dbfc86edd2668bb7cc0d39",
+          "primary_adjudication": null,
+          "limits": "Проверены все шесть листов спецификации по авторитетным TEXT, включая продолжения и общий лист креплений; вывод ограничен этим комплектом. Не доказано отсутствие материала в иных закупочных документах, фактическая недопоставка, отсутствие монтажа или неизбежный конденсат. 258,7 м — сумма пяти позиций труб, а не готовый объём заказа изоляции: разные диаметры, фасонные части, припуски и отходы отдельно не рассчитаны. Характеристики9 мм/Г1 взяты из требования данного проекта и не становятся универсальной нормой. Количества1,7 и1,1 м³ других систем не переводились произвольно в метры; допустимость замены9 мм на40 мм не установлена.",
+          "wording": "Согласовать спецификацию с общими указаниями К2: для всей длины водостока предусмотрены трубки из вспененного полиэтилена толщиной9 мм группыГ1, однако соответствующая позиция в проверенной шестилистовой спецификации отсутствует. Сумма длин труб К2 составляет258,7 м; определить количество и типоразмеры изоляции с учётом разных диаметров. Позиции100×40 мм разделовК1 иК2.1 не подтверждают учёт изоляцииК2. При отдельной поставке указать документ и границы учёта."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_source_hashes_and_current_wording_verified",
+          "finding_id": "F-007",
+          "limits": "No new graphic inspection or new engineer verdict claimed."
+        }
+      ],
+      "disposition": "assessed_r2_preserve_bounded_missing_insulation_technical_claim"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "Specification inconsistencies do not prove physical supply failures. Reused evidence bound to identical current source hashes."
+}
