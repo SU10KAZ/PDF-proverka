@@ -1,0 +1,378 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/VK_output_review_queue.json",
+  "queue_before_sha256": "cb6309c8c1dcccc2eb834070315c0f41e1ed7eb14292d3350772d5121c85d9ad",
+  "queue_after_sha256": "503ec9be76cb8927017407c6935356550097fc5170bce39b6e73d94c735fa7d1",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 3,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Комплектность спецификации",
+        "sheet": "Листы 1, 2, 01, 02",
+        "page": [
+          3,
+          4,
+          30,
+          31
+        ],
+        "problem": "Объёмы труб и этажных узлов К1 требуют проверки по фактическим стоякам.",
+        "description": "Для 30 основных стояков указаны 297,7 м полипропиленовой трубы диаметром 110 мм, 17 компенсационных патрубков и 99 противопожарных муфт. Общие указания предусматривают патрубки и муфты на каждом этаже. Для девяти квартирных этажей контрольная оценка составляет 270 этажных узлов. Осевая длина 30 стояков между отметками +7,370 и +34,250 составляет 806,4 м. Эта величина включает фасонные части и не равна закупочной длине; объединения и фактическая протяжённость стояков требуют отдельного учёта.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить требования к полноте и количественному составу спецификации труб и комплектующих.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Выполнить подсчёт труб, компенсационных патрубков и противопожарных муфт по стоякам и этажам с учётом объединений и длин фасонных частей.",
+        "risk": "Недостаточная комплектация системы, дополнительные закупки и пропуск предусмотренных компенсационных и противопожарных элементов.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 99,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F002_revision_compensator_inventory:composite:2",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "СОК1:297,7м110×5,3;17компенсационныхпатрубков;99муфт110/50.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Позиции подтверждены в блоках93/94. Учетверенная длина не множитель числа17."
+        },
+        {
+          "claim": "Компенсаторы на каждом этаже;муфты при полимерных проходах через перекрытия.",
+          "verdict": "confirmed_project_TEXT_conditional_scope",
+          "limits": "Требование муфт привязано к материалу и проходу. Не назначать муфту каждому условному узлу независимо от конфигурации."
+        },
+        {
+          "claim": "30×9=270;30×(34,250−7,370)=806,4м.",
+          "verdict": "arithmetic_confirmed_conditional_model_not_measurement",
+          "limits": "30основных марок в ведомости,этажи2–10дают9уровней,но ведомость содержит также11этаж37,610. Полнота выбранного диапазона,протяжённость каждого стояка и объединения не установлены."
+        },
+        {
+          "claim": "Осевая длина включает фасонные части и не равна закупочной.",
+          "verdict": "supported_limit",
+          "limits": "Величина806,4м не является независимым обмером. Точная недостача труб,патрубков и муфт не доказана;сохранить пообъектный подсчёт как вопрос."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "Сохранить разные системыК1/К2 и разные изделия;270узлов не270независимых дефектов. F004пересекается сF003по стоякам,но относится к трубам,муфтам и компенсаторам.",
+      "profile_and_section": "Вопросы расчётной комплектности и применимости деталей;фактическое распределение разделов не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "direct_authoritative_TEXT_review",
+          "blocks_reviewed": [
+            7,
+            9,
+            10,
+            11,
+            93,
+            94,
+            95,
+            96,
+            99
+          ],
+          "scope": "Source rows and system boundaries; no PDF text extraction or raster TEXT correction."
+        }
+      ],
+      "disposition": "assessed_direct_r3_VK_inventory_limits"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 3,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Материалы водостоков",
+        "sheet": "Листы 2, 03",
+        "page": [
+          4,
+          32
+        ],
+        "problem": "Для четырёх канализационных отводов в К2 не подтверждена пригодность к заявленному давлению.",
+        "description": "В спецификацию К2 включены четыре отвода Polytron Stilte Plus 45° диаметром 110 мм. Для К2 задано давление не менее 1,0 МПа, то есть 10 бар, тогда как в описании К1 для этой серии приведено давление до 0,5 бар. Место установки отводов и допустимое давление конкретных изделий не установлены; применение их на напорном участке требует подтверждения.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.96,
+            "reason": "Проверить требования к прочности и герметичности труб, фасонных частей и соединений внутренних водостоков при расчётном давлении.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Экспертный подбор по документу из ведомости ссылочных документов"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить участки установки четырёх отводов и действующее на них давление. Подтвердить пригодность паспортами либо заменить деталями требуемого класса давления.",
+        "risk": "Разгерметизация отводов или соединений при подпоре и затопление помещений.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F005_fitting_pressure:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ВК2четыреPolytronStiltePlus45°110,STPL1011045;требованиеК2НПВХSDR26PN10не менее1МПа.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "1МПа=10бар. ВК1есть161такойартикул,но это не доказательство пригодностиК2."
+        },
+        {
+          "claim": "В описанииК1для этой серии до0,5бар.",
+          "verdict": "product_specific_attribution_not_proven",
+          "limits": "Общие указания задают давление для групп труб/соединений;это не паспорт конкретного отвода.0,5бар нельзя считать испытанным предельным давлениемSTPL1011045."
+        },
+        {
+          "claim": "Установить адреса и действующее давление,проверить паспорта.",
+          "verdict": "supported_scoped_applicability_question",
+          "limits": "Требование к допустимому давлению не равно постоянному фактическому давлению в самотечнойК2. Не объявлять все четыре отвода заведомо непригодными."
+        },
+        {
+          "claim": "Разгерметизация и затопление.",
+          "verdict": "risk_not_observed",
+          "limits": "Нет проверки паспортов поставки,режимов и испытаний;замена условна после проверки."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "Сохранить разные системыК1/К2 и разные изделия;270узлов не270независимых дефектов. F004пересекается сF003по стоякам,но относится к трубам,муфтам и компенсаторам.",
+      "profile_and_section": "Вопросы расчётной комплектности и применимости деталей;фактическое распределение разделов не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "direct_authoritative_TEXT_review",
+          "blocks_reviewed": [
+            7,
+            9,
+            10,
+            11,
+            93,
+            94,
+            95,
+            96,
+            99
+          ],
+          "scope": "Source rows and system boundaries; no PDF text extraction or raster TEXT correction."
+        }
+      ],
+      "disposition": "assessed_direct_r3_VK_inventory_limits"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 3,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Комплектность спецификации",
+        "sheet": "Листы 01, 02",
+        "page": [
+          30,
+          31
+        ],
+        "problem": "Комплект деталей К1 диаметром DN150 не обеспечен соответствующими трубами и соединителями.",
+        "description": "В К1 перечислены опорные трубы, отводы, тройники и ревизии DN150. В перечне труб указаны только чугунные трубы 100×5 и 125×5 мм; отдельная строка трубы DN150 отсутствует. Соединители Rapid DN150 для К1 также не указаны. Необходимо проверить назначение деталей и полноту соответствующих участков.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить требования к включению труб и соединений для предусмотренных проектом типоразмеров.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить магистрали DN150 со схемами. Добавить необходимые трубы и соединители либо исправить принадлежность ошибочно включённых деталей.",
+        "risk": "Некомплектность поставки и вынужденная замена проектных элементов при монтаже.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "ВК1есть опорные трубы,отводы,тройники,ревизииDN150;отдельные трубыDN150 иRapidDN150не указаны.",
+          "verdict": "confirmed_bounded_authoritative_TEXT",
+          "limits": "Прочитаны блоки93/94до разделителяК1.1:трубыSML100×5и125×5,соединительRapidтолькоDN100. Позиции других систем автоматически не компенсируютК1."
+        },
+        {
+          "claim": "КомплектDN150не обеспечен соответствующими трубами и соединителями.",
+          "verdict": "supported_document_inventory_question",
+          "limits": "Отсутствие отдельных строк не устанавливает реальный узел,комплектную поставку или необходимые длины/стыки. Поэлементный монтаж не восстановлен."
+        },
+        {
+          "claim": "Сверить магистрали;добавить необходимое либо исправить принадлежность деталей.",
+          "verdict": "supported_conditional_remedy",
+          "limits": "Не назначать конкретный дозаказ до топологии и границ поставки. Опорные трубы являются отдельными изделиями,их наличие не определяет длину магистрали."
+        },
+        {
+          "claim": "Некомплектность фактической поставки и вынужденная замена.",
+          "verdict": "risk_not_observed",
+          "limits": "Заказ,поставка и монтаж не проверены. Новое инженерное принятие отсутствует."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "Сохранить разные системыК1/К2 и разные изделия;270узлов не270независимых дефектов. F004пересекается сF003по стоякам,но относится к трубам,муфтам и компенсаторам.",
+      "profile_and_section": "Вопросы расчётной комплектности и применимости деталей;фактическое распределение разделов не проверено.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r3_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "route": "direct_authoritative_TEXT_review",
+          "blocks_reviewed": [
+            7,
+            9,
+            10,
+            11,
+            93,
+            94,
+            95,
+            96,
+            99
+          ],
+          "scope": "Source rows and system boundaries; no PDF text extraction or raster TEXT correction."
+        }
+      ],
+      "disposition": "assessed_direct_r3_VK_inventory_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Three current VK inventory findings assessed with direct authoritative TEXT, system separators and explicit conditional arithmetic. No graphic measurement of all risers, product passport test, legal check or engineer approval."
+}
