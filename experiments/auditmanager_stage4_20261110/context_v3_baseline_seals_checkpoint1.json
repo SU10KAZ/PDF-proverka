@@ -1,0 +1,22 @@
+{
+  "trial_sha256": "e8868d688a4525c54871ff4310b39ea490c225f13129c2fe9e5d6dc0791f4c8b",
+  "verified_runs": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "status_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/status/AK.json",
+      "status_sha256": "65985578df0f69ae910d2c4547dbb699a5d463db6a71705ed1914f831203e469",
+      "final_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+      "snapshot_sha256": "b4677f5677783d1c81656b2249aefd4b739716c214f67b56101ef45913f5cdc9",
+      "snapshot_JSON_matches_output": true,
+      "request_artifacts_verified": 645,
+      "requests": 215,
+      "attempts": 215,
+      "failed_attempts": 0,
+      "wall_seconds": 3343.933670282364,
+      "semantic_results_read": false,
+      "quality_accepted": false
+    }
+  ],
+  "scope": "Bytes and completion receipts only; no discovery quality or method acceptance inferred."
+}
