@@ -1,0 +1,40 @@
+{
+  "status": "four_source_context_followups_dispatched",
+  "preparation": "/tmp/auditmanager_subclaim_context_followups_20261112/preparation.json",
+  "preparation_sha256": "8c248a41bd274a13a9993e04d117605ad229a3eb7f972f3df8c28beae107f028",
+  "model": "codex/gpt-6-astra",
+  "pid": 985243,
+  "history_supplied": false,
+  "production_acceptance": false,
+  "packets": [
+    {
+      "path": "/tmp/auditmanager_subclaim_context_followups_20261112/requests/candidate_recovery_9abbe90f57edee78_context.json",
+      "sha256": "cf42d9f380e9a98e230b915190bb9ca0ff4c78366dda25e88618d5ed3b8144fe",
+      "message_characters": 158237,
+      "images": 3,
+      "image_bytes": 1026723
+    },
+    {
+      "path": "/tmp/auditmanager_subclaim_context_followups_20261112/requests/candidate_recovery_8e1933d07700e1d1_context.json",
+      "sha256": "4de80abeedbee2c4f56b37ae5bba6a6adedfddf03c44eda6d21e0029288d41c3",
+      "message_characters": 135475,
+      "images": 2,
+      "image_bytes": 635700
+    },
+    {
+      "path": "/tmp/auditmanager_subclaim_context_followups_20261112/requests/candidate_recovery_d6b9d85471e11d80_context.json",
+      "sha256": "fda54c357d421a68e4813d5a73a10031a353364b68e082f88177f2b96ee84e02",
+      "message_characters": 144092,
+      "images": 2,
+      "image_bytes": 587414
+    },
+    {
+      "path": "/tmp/auditmanager_subclaim_context_followups_20261112/requests/candidate_recovery_462b47d52cd1cc17_context.json",
+      "sha256": "4afac8e5ac22a5a71f2eeade17f549c01f38682ba424f4bd0de1b7bd9ca44a16",
+      "message_characters": 148526,
+      "images": 2,
+      "image_bytes": 657403
+    }
+  ],
+  "purpose": "Retrieve primary source context requested by unresolved child claims that parent-only routing skipped. No engineering answers supplied."
+}
