@@ -1,0 +1,122 @@
+{
+  "status": "literal_route_crosscheck_of_reviewed_targets",
+  "output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "mismatches": [
+    {
+      "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+      "expected": "technical_findings",
+      "actual": {
+        "F-012": "technical_findings",
+        "F-077": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+      "expected": "questions",
+      "actual": {
+        "F-012": "technical_findings"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+      "expected": "technical_findings",
+      "actual": {
+        "F-008": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+      "expected": "technical_findings",
+      "actual": {
+        "F-008": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+      "expected": "technical_findings",
+      "actual": {
+        "F-008": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+      "expected": "technical_findings",
+      "actual": {
+        "F-027": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+      "expected": "technical_findings",
+      "actual": {
+        "F-026": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+      "expected": "technical_findings",
+      "actual": {
+        "F-026": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+      "expected": "technical_findings",
+      "actual": {
+        "F-026": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+      "expected": "technical_findings",
+      "actual": {
+        "F-019": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+      "expected": "technical_findings",
+      "actual": {
+        "F-019": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+      "expected": "questions",
+      "actual": {
+        "F-041": "questions",
+        "F-045": "technical_findings",
+        "F-050": "technical_findings",
+        "F-052": "technical_findings",
+        "F-057": "technical_findings"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    },
+    {
+      "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+      "expected": "technical_findings",
+      "actual": {
+        "F-033": "questions"
+      },
+      "assessment_scope": "Literal route mismatch, not automatic factual invalidity."
+    }
+  ],
+  "erratum": {
+    "finding": "F-028",
+    "previous_assessment": "editorial_scope_promoted_to_technical",
+    "corrected": "correct_question_scope",
+    "basis": "Sealed output report_section is questions; prior evaluator inference was incorrect."
+  },
+  "production_acceptance": false
+}

@@ -208,13 +208,13 @@
       "finding_id": "F-028",
       "problem": "В реестре отклонений указан другой шифр раздела.",
       "model_report_section": "questions",
-      "status": "editorial_scope_promoted_to_technical",
+      "status": "correct_question_scope",
       "engineer_decision": null,
       "evidence": {
         "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F028_change_register_scope.json",
         "sha256": "4d6c40af5a9db18ddf520f1f06842a8cc958439af0f690fd5cf2020d5b19fc05"
       },
-      "review_reason": "Шифр реестра прочитан, но применимость отклонения не установлена; эталон требует вопрос уточнения принадлежности, а не подтверждённый технический дефект.",
+      "review_reason": "Подтверждено report_section=questions. Предыдущая оценка editorial_scope_promoted_to_technical ошибочна и отозвана; исходный результат модели не менялся.",
       "proposed_section": "questions"
     },
     {

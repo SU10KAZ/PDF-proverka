@@ -261,7 +261,7 @@
         }
       ],
       "reason": "В разных строках сохранены описание без внешнего питания и графическое220В БУРР, но явная сверка этих сторон и QF1 в итоговом выводе не выполнена. F-077 посвящён ссылкам на комплекты.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
@@ -327,7 +327,7 @@
         }
       ],
       "reason": "Шкаф ШАУВ-4-К4ПЧ, поз.4.8=2 накладных датчика против одного ТЕ2 сохранены. Не утверждается фактическая лишняя поставка.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
@@ -349,7 +349,7 @@
         }
       ],
       "reason": "Две позиции наружного датчика2.5/2.7 сопоставлены с одним ТЕ1 того же шкафа ШАУВ-2-К4ПЧ; назначение дополнительного изделия не выдумано.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
@@ -437,7 +437,7 @@
         }
       ],
       "reason": "Поз.15.7=2 канальных датчика сопоставлена с одним ТЕ3 шкафа ШАУВ-3-К6ПЧ; резерв и фактическая поставка оставлены неопределёнными.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
@@ -769,7 +769,7 @@
         }
       ],
       "reason": "Позиции16.2/16.3 Ва4.1/Па4.1 сопоставлены с шкафом ШАУВ-1-К6АС и Па5.1/Ва5.1; добавлены графические подтверждения листов40 и54.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
@@ -1012,8 +1012,8 @@
           "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
         }
       ],
-      "reason": "Шифр АК-КЗ в реестре АК2-ПА и содержание замены Modbus/CAN/Ethernet сохранены, но редакционное уточнение принадлежности выдано техническим замечанием.",
-      "section_assessment": "question_promoted_to_technical"
+      "reason": "Шифр АК-КЗ в реестре АК2-ПА и содержание замены Modbus/CAN/Ethernet сохранены как вопрос уточнения принадлежности. Предыдущая запись о техническом разделе была ошибкой оценивания; исправлено по report_section=questions.",
+      "section_assessment": "correct"
     },
     {
       "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
@@ -1128,7 +1128,7 @@
         }
       ],
       "reason": "Повтор позиции21.10 у разных интерфейсных кабелей3×2×0,78 и2×2×0,78 сохранён.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
@@ -1150,7 +1150,7 @@
         }
       ],
       "reason": "Код35341 сопоставлен с лотком100×100 и треугольной биркой как двумя разными изделиями.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
@@ -1172,7 +1172,7 @@
         }
       ],
       "reason": "КодBSD2120 у подвеса и стальной трубыДу32 сохранён как конфликт идентификатора разных изделий.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
@@ -1194,7 +1194,7 @@
         }
       ],
       "reason": "Сохранены различия КСПВПГ и КСПВППГ между локальными перечнями и СО, без доказательства фактической конструктивной неэквивалентности.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
@@ -1216,7 +1216,7 @@
         }
       ],
       "reason": "Графические дополнения содержат четыре конкретные линии листа37, окончания,30м и КСПВПГ; основное описание сохраняет вариант КСВПГ в КЖ. Исходные буквальные строки остаются в доказательствах.",
-      "section_assessment": "correct"
+      "section_assessment": "route_mismatch_observed"
     },
     {
       "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
