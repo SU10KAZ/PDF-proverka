@@ -1,0 +1,625 @@
+{
+  "status": "output_quality_review_in_progress",
+  "findings_path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+  "findings_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "rows": [
+    {
+      "finding_id": "F-001",
+      "problem": "Для линии П4.1.3-9 заданы два сечения.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-002",
+      "problem": "Повторены строки кабельного журнала без указания действующей записи.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-003",
+      "problem": "Назначения двигателей не согласованы с конечными устройствами кабелей.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-004",
+      "problem": "Перечень двигателей Па3.1/Ва3.1 расходится с кабельным журналом.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-005",
+      "problem": "В подразделе Па4.1/Ва4.1 использованы марки другой системы и неоднозначные межшкафные линии.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-006",
+      "problem": "Для ШАУВ-4-К4ПЧ переставлены количества датчиков разных диапазонов.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-007",
+      "problem": "В двух перечнях для ТЕ3 и ТЕ4 указана одна штука.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-008",
+      "problem": "Требуется назначить дополнительные температурные датчики спецификации.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-009",
+      "problem": "Количество двигателей и клапанов завес требует расшифровки.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-010",
+      "problem": "В описании четырёх завес использованы разные наборы марок.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-011",
+      "problem": "Алгоритм и спецификация задают разные типы температурного прибора.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-012",
+      "problem": "Исполнение управления кондиционерами не согласовано.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-013",
+      "problem": "Не установлена поставка и подключение группы СО 5.1–5.18.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-014",
+      "problem": "Метражи двух исполнений контрольного кабеля ШАУВ-2-К4ПЧ расходятся с журналом.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-015",
+      "problem": "Длина линии Пн5.1.-10 превышает количество того же кабеля в локальном перечне.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-016",
+      "problem": "Локальные количества силовых кабелей Па3.1/Ва3.1 не соответствуют журналу.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-017",
+      "problem": "Для электронагревателя По5.1 не согласованы число жил и сечение кабеля.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-018",
+      "problem": "Исполнение силового кабеля 3×2,5 отсутствует в сводной спецификации.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-019",
+      "problem": "Требуется унифицировать заводские обозначения контрольных кабелей.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-020",
+      "problem": "Требуется подтвердить конструкцию линий температурного контроля противодымных систем.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-021",
+      "problem": "Нормативное основание уставок СО требует актуализации и проверки применимости.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-022",
+      "problem": "Две нормативные ссылки не позволяют однозначно определить документ.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-023",
+      "problem": "Требуется уточнить комплект электропитания шкафов.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-024",
+      "problem": "В алгоритме защиты названы разные точки измерения температуры воздуха.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-025",
+      "problem": "Марка подвеса кровельной опоры расходится со спецификацией.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-026",
+      "problem": "Повторены закупочные обозначения разных изделий и номер кабельной позиции.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-027",
+      "problem": "В примечаниях спецификации ШАУВ-1-К6АС названы системы другой зоны.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-028",
+      "problem": "В реестре отклонений указан другой шифр раздела.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-029",
+      "problem": "Требуется связать комплекты кровельных опор с количеством поставки.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-030",
+      "problem": "Диапазон обозначений преобразователей не согласован с количеством.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-031",
+      "problem": "Требуется уточнить количество комплектного термостата ТС2.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-032",
+      "problem": "Конец линии Вос5.1-1 имеет отсутствующую в перечне марку PDS45.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-033",
+      "problem": "Требуется уточнить подключение ТЕ1 и ТЕ2 шкафа ШАУВ-6-К5ПЧ.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-034",
+      "problem": "В журнале две разные температурные защиты адресованы ТС1.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-035",
+      "problem": "Для двухпарного кабеля Па3.1-8 не согласовано экранирование.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-036",
+      "problem": "Два преобразователя частоты обозначены SC UZ1 при разных позициях в перечне.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-037",
+      "problem": "Сигнал пуска и останова электронагревателя отнесён к дискретному входу.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-038",
+      "problem": "Сигналы состояния заслонок Y2 и Y3 обозначены как аналоговые выходы.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-039",
+      "problem": "Для PDS3 системы Пкр4.1 указаны разные диапазоны давления.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-040",
+      "problem": "Символ нагревателя Пм4.1 противоречит показанному водяному подключению.",
+      "model_report_section": "technical_findings",
+      "status": "refuted_graphic_interpretation",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_recovery_G011_G013_source_review.json",
+        "sha256": "1d65bff3f2f37f47485dc4950afdf668b790255145e572e8ad7912386381a852"
+      },
+      "review_reason": "Снять технический тезис об электрическом символе Пм4.1: прочитана линия от TS1; знак электрического нагревателя в легенде отличается."
+    },
+    {
+      "finding_id": "F-041",
+      "problem": "Требуется уточнить назначение сигнала №6 электронагревателя П4.1.1, отмеченного как DI.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-042",
+      "problem": "Подписи состояния основного и резервного вытяжных вентиляторов переставлены.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-043",
+      "problem": "У PDS3 и PDS4 обратная полярность отбора давления относительно направления вытяжного потока.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-044",
+      "problem": "Для PDS3 системы Пкр5.1 различаются диапазоны в таблице сигналов и перечне элементов.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-045",
+      "problem": "Команда пуска электронагревателя П5.1.3 обозначена как дискретный вход.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-046",
+      "problem": "В матрице не показан канал задания 0–100% для SC UZ1 системы П5.1.1.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-047",
+      "problem": "Переставлены подписи состояния основных и резервных вентиляторов Пн5.1 и Вн5.1.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-048",
+      "problem": "Обозначения четырёх преобразователей частоты повторяются и расходятся с перечнем элементов.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-049",
+      "problem": "У PDS4 и PDS5 вытяжной системы Вн5.1 показана обратная полярность отбора давления.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-050",
+      "problem": "Команда пуска электронагревателя Пу5.1 назначена дискретному входу.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-051",
+      "problem": "Обозначение термостата электронагревателя расходится между схемой и перечнем приборов.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-052",
+      "problem": "Команда пуска и останова электронагревателя По5.1 отнесена к входу DI.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-053",
+      "problem": "Обозначение термостата электронагревателя По5.1 различается на схеме и в перечне приборов.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-054",
+      "problem": "Итог DO шкафа ШАУВ-1-К5АС не соответствует количеству отмеченных подключений.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-055",
+      "problem": "Полярность подключений PDS3 и PDS4 противоположна направлению перепада на вытяжных вентиляторах.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-056",
+      "problem": "Диапазоны PDS2–PDS4 в таблице сигналов и перечне элементов различаются.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-057",
+      "problem": "Команда пуска электронагревателя П6.1.4 назначена дискретному входу вместо выхода.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-058",
+      "problem": "Итог DI=10 не соответствует 12 подключениям в матрице ШАУВ-3-К6ПЧ.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-059",
+      "problem": "Итог DO=5 не соответствует 6 подключениям в матрице ШАУВ-3-К6ПЧ.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-060",
+      "problem": "Требуется согласовать обозначение водяного нагревателя Пкр6.1 с легендой электрического нагревателя.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-061",
+      "problem": "Диапазоны PDS2–PDS4 в таблице сигналов и перечне элементов не согласованы.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-062",
+      "problem": "На схеме вытяжных вентиляторов обратная полярность подключения PDS3 и PDS4.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-063",
+      "problem": "Количество двигателей М3–М6 в перечне не соответствует четырём двигателям на схеме.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-064",
+      "problem": "Перечень содержит четыре регулирующих клапана Y1, Y2 при двух показанных на схеме.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-065",
+      "problem": "Для питающего ввода ШАУВ-1-К4ПЧ указаны разные проекты кабеля.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-066",
+      "problem": "Количество неэкранированного кабеля ШАУВ-3-К4ПЧ меньше суммы длин на схеме на 5 м.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-067",
+      "problem": "Количество экранированного однопарного кабеля ШАУВ-3-К4ПЧ превышает сумму длин на схеме на 5 м.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-068",
+      "problem": "Клеммы 29 и 30 повторно обозначают подключения разных двигателей шкафа ШАУВ-4-К4ПЧ.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-069",
+      "problem": "Повторены обозначения клемм разных цепей ШАУВ-3-К5ПЧ без обозначения отдельных клеммных групп.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-070",
+      "problem": "Кабель контактов Y4 системы Пн5.1 имеет обозначение Ва3.1-18.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-071",
+      "problem": "Позиция M2 присвоена двум разным двигателям одного шкафа.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-072",
+      "problem": "Позиция Y7 присвоена регулирующему и воздушному клапанам.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-073",
+      "problem": "Электронагреватель Пу5.1 изображён символом электродвигателя.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-074",
+      "problem": "Напряжение ввода ШАУВ-6-К5ПЧ не согласовано с обозначениями его проводников.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-075",
+      "problem": "Количество кабеля ППГнг(А)-HF 4×2,5 в ведомости на 30 м меньше суммы длин на схеме.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-076",
+      "problem": "На схеме не показано подключение защитной жилы У4-2 со стороны БД-ТЗ1.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-077",
+      "problem": "Требуется уточнить применимость двух ссылок на электроснабжение на схеме согласователя кондиционеров.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-078",
+      "problem": "Узел А не согласован с требованием примечания 3 о металлических трубах в проходах.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-079",
+      "problem": "Узел А не согласован с требованием металлических труб в примечании 3.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-080",
+      "problem": "Вертикальная размерная цепь установки шкафа противоречива на 600 мм.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-081",
+      "problem": "Узел А не согласован с требованием примечания 3 о металлических трубах в проходах.",
+      "model_report_section": "technical_findings",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-082",
+      "problem": "У одиннадцати отдельно изображённых пультов завес корпуса 1 повторено обозначение «ПУ-У1.1».",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-083",
+      "problem": "Марки «К5.3» и «К5.4» присвоены трём парам кондиционеров в разных помещениях.",
+      "model_report_section": "technical_findings",
+      "status": "fact_confirmed_scope_unresolved",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_G003_scope_source_review.json",
+        "sha256": "946d70947f88c902541e5f7115b61774c38dd9a4e6cd28b217e72b5d6953aaaa"
+      },
+      "review_reason": "Повтор марок подтверждён, область уникальности и конфликт адресов не доказаны. Сохранить вопрос согласования; технический вердикт преждевременен."
+    },
+    {
+      "finding_id": "F-084",
+      "problem": "Обозначение шкафа системы ПД4.1.4 различается в функциональной схеме и документах подключения.",
+      "model_report_section": "questions",
+      "status": "unchecked",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-085",
+      "problem": "На плане двум разным сигнализаторам присвоено обозначение СТГ-3-И-1.13.",
+      "model_report_section": "technical_findings",
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_G105_G106_source_review_and_identity_pair.json",
+        "sha256": "e946e995ebc0f173ce14c245f4e8b822a940a357303dc583219498d82f5b1a7f"
+      },
+      "review_reason": "Два разных сигнальных адреса в КЖ сопоставлены с повтором подписи плана. Сохранить документальное замечание без утверждения ошибки монтажа."
+    }
+  ],
+  "reviewed": 3,
+  "unchecked": 82,
+  "production_acceptance": false,
+  "limits": [
+    "No global precision or recall estimate until full target and output review.",
+    "Existing source reviews are separate from engineer decisions.",
+    "Novel findings without gold correspondence require separate source review; they are not automatically false."
+  ]
+}

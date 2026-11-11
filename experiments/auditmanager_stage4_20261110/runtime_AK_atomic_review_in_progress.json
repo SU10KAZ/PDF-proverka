@@ -1,0 +1,986 @@
+{
+  "schema_version": 1,
+  "discipline": "AK",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "findings_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "reviewer": "coordinator_source_review",
+  "entire_output_reviewed": false,
+  "targets": [
+    {
+      "target_id": "AK100_F015_drive_cable_graph:efafe11e28c59a6064d1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25e2979ee3ab66f2a489",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:25d3c70866a6e840202d",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK100_F015_drive_cable_graph:fe0742f9852fb8e38b7c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK137_F019_cable_schedule_scope:965dfe2323fb3ed7d867",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK14:65ea2c2649999f640c83",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-068",
+        "F-069"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK14.json",
+          "sha256": "bb941339701a63e2ae2989a1dda9e5e8cd9aae4f8eb3639899fd049ebf73280a"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Восстановлены два адреса из пяти: ШАУВ-4-К4ПЧ лист28 и ШАУВ-3-К5ПЧ лист32. Полнота системной темы по пяти схемам не достигнута.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK57:9851f2c4946bad03af44",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK57:a998dcf058f81b7ac194",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK57:d6f8484b24bc88adcab5",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK65_F043_UZ_identity:ab637698bce5025cb6df",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK7:4c7010afca7e2923c94b",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:efb258dccf98c7d0a6b6",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F001_F002_CO_package_boundary:f0a1212b87b41e035c75",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F005_surface_sensor_quantity:fcea008dc598fd3f735c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F006_outdoor_sensor_quantity:47903713db3164da4040",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:1e3aa1f105046f813293",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:4fb5c856d1f172b582e6",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F007_channel_sensor_registers:26bc9f5bd186eaaf9292",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F008_channel_sensor_quantity:26c4a5bebde575347ac1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:42d6010110c9681c5f50",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F009_F010_curtain_quantities:992f176ea6fe0e739eec",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:0e3aed92411e9239d012",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F012_cable_section_conflict:d8abc63b35de5344429e",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:1bdcde828d823ad60230",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:20f330a6ec41c46c93d2",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:39212597d9876ef72032",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:242d00252ded0af6828a",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F014_motor_endpoint_register:aee03c255fd86592a4b2",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:7f0b960cc55694a82ea2",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:fe908a7a7096b7e28465",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F016_F017_motor_register:1ff854ade50118a2119c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F018_drive_system_assignment:87bdbb372232a0489433",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F020_heater_cable_conflict:e7d303bee6d1b202f3e3",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F021_cable_reading_balance:c6f3ad54ccd603f4f796",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:d4470ce9730307aed184",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F022_control_cable_balance:872ea17b985add42621f",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:eaa42cc0bf57fa49a886",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:5ba1a83908ceb33758ab",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F025_area_arithmetic:88b00bcefd42161838b4",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:04fa5c0cbbedc7704f59",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F026_protection_boolean_condition:b69337bb34f8d41b6d57",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:3eb9cafbfcfd6a395bee",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F027_sensor_interface_scope:eb93f9ee7771db58e73f",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F028_change_register_scope:da80e943594aac429110",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:12b5c89d1e7662392715",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7752ed01f36756fff7f3",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:7267cc07801d121c1339",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F029_CO_reference_and_parameter_scope:9a595b6986b86b78f7cb",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:d8c925c3c05abedab516",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F030_norm_reference_precision:42a676fc4e46830e82ee",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:278a606787492fe4ef44",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F032_cable_brand_conflict:84e32b640e5a638d7f8e",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:c270e121c25aaf6bf6db",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F033_power_reference_scope:2ec9d727804fc985242e",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F034_sheet_title_scope:5b85e35147582aeed5fe",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F035_UZ_identity:f588470dec49e00c838c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F036_damper_signal_direction:8298b8f671c60e21b030",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F039_served_rooms_conflict:104a18abde63294c2693",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F040_heater_signal_direction:1d491fb9a87b12f1ff16",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:450e401aa7ad6fcb1bf9",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:8239404083a86b949049",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F041_fan_role_labels:da2f80ba8d7a8a346304",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F042_pressure_legend_scope:965160c2f1623466f1c5",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F045_pressure_switch_endpoint:e05b64792635c3078188",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F046_position_range_editorial:b4c940c8d8fa1d04880c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-060"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F050_heater_legend_identity.json",
+          "sha256": "f316e24040e8fd1ffc2a9d7fa9bcf2e56cc64e483684d014745f7f825ce3e5fe"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Сохранён раздел вопросов и наличие электрического нагревателя в легенде. Однако утверждение о соответствии рабочего символа символу легенды выходит за пределы эталона, где тождество начертания не доказано.",
+      "section_assessment": "correct_section_overclaim_in_text"
+    },
+    {
+      "target_id": "AK_F051_cabinet_label_scope:14a7b3b0df07c8c65374",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F052_local_cable_balance:61ee4b031d84d67a9995",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F053_local_cable_balance:3ea87f3768012a815077",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:d2b00bcc0ceceaf63069",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:62cc730e92af787c8d46",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F054_F055_terminal_number_scope:0fadfeadec26c587750e",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:533a040ad2a021282aad",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-071"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Сохранён конфликт M2 у двух разных двигателей одного шкафа, с различением функций и цепей. Фактическая ошибка монтажа не утверждается.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F056_F057_device_tag_conflicts:7b2f90c52bba62da9242",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-072"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F056_F057_device_tag_conflicts.json",
+          "sha256": "1e9799b638abe543bd0cd7d415116bfb8bb346201fac3bb6fa2be48ec1698065"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Сохранён самостоятельный конфликт Y7 у клапана теплоносителя и воздушного клапана с разными подключениями.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F058_temperature_endpoint:ac7e95bdecfe547be4f1",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F060_thermostat_endpoint:ba9bb7c8b45aef96a3e3",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F061_penetration_detail_scope:5c02072a41acbc8744af",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-078",
+        "F-079",
+        "F-081"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F061_penetration_detail_scope.json",
+          "sha256": "fd69d890fb13cea2f5adfa44fc272a31dc5e66368917c5c7159597065583df04"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_runtime_recovered_findings_20261112.json",
+          "sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387"
+        }
+      ],
+      "reason": "Сохранены все три листа50,52,54 и узкая формулировка согласования узла с примечанием. Три строки соответствуют одной эталонной теме; не считать тремя независимыми дефектами.",
+      "section_assessment": "correct"
+    },
+    {
+      "target_id": "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AK_F065_norm_replacement_applicability:d53a7df3ef467306402d",
+      "availability": "unchecked",
+      "coverage": "unchecked",
+      "finding_ids": [],
+      "evidence": [],
+      "reason": null,
+      "section_assessment": "unchecked"
+    }
+  ],
+  "limits": [
+    "Full match requires all mandatory object, relationship and location context.",
+    "Score unsupported additions and novel findings separately.",
+    "Engineer confirmation is required; model suggestions alone are not final matches."
+  ],
+  "status": "partial_review_not_acceptance",
+  "source_snapshot": "/tmp/auditmanager_context_terminal_snapshot_20261112.json",
+  "source_snapshot_sha256": "1358431ad556afc30733620fbf974da3c521f343bfffffe4d26abc32b781f287"
+}
