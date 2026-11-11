@@ -1,0 +1,337 @@
+{
+  "status": "two_normative_title_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "5045d5d17430c075b22fe0d539765a6cfd258ab0951936e8e6fe0147ac60b11b",
+  "queue_after_sha256": "a46d514670b2a773f3a0edc12a149547d2ee9edc2143f05fd0336b206b89c04b",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_primary_catalog_review",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-056",
+      "finding": {
+        "id": "F-056",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "В ведомости неверно указано наименование СП 510.1325800.2022.",
+        "description": "Строка MD 243: «|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |». Наименование СП 510.1325800.2022 — «Тепловые пункты и системы внутреннего теплоснабжения». Это же наименование приведено в примечаниях проекта, отражённых в строках MD 969 и 998. Ведомость и примечания используют разные названия одного документа.",
+        "page": null,
+        "norm": "СП 510.1325800.2022 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Указать в ведомости наименование «Тепловые пункты и системы внутреннего теплоснабжения» и унифицировать название во всех ссылках комплекта.",
+        "risk": "Неоднозначная идентификация нормативного документа при проверке и использовании РД.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+            "page": null,
+            "md_lines": "строка 243"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 1",
+        "candidate_norm_references": [
+          {
+            "designation": "СП 510.1325800.2022",
+            "cited_designation": "СП 510.1325800.2022",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 2,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "formal_reference_category",
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F053_standard_title:2b8fdfa112de84cdbbba",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Ведомость называет СП510 «Проектирование тепловых пунктов».",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Полное название по официальной карточке Росстандарта — «Тепловые пункты и системы внутреннего теплоснабжения».",
+          "verdict": "confirmed_primary_catalog_title",
+          "limits": ""
+        },
+        {
+          "claim": "То же полное название присутствует в примечаниях двух планов проекта.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Строки969/998 MD относятся к описанию IMAGE, поэтому проверены непосредственно растры, а не принято описание модели за авторитетный TEXT."
+        },
+        {
+          "claim": "Разные названия при одинаковом полном обозначении требуют редакционного согласования.",
+          "verdict": "supported_editorial_question",
+          "limits": "Само по себе не доказывает неверное проектирование или отсутствие применённой нормы."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One title correction across register, PZ and plans; repeated mentions are not independent technical defects.",
+      "profile_and_section": "questions_clarifications_editorial",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F053_standard_title.json",
+          "sha256": "48b25ee12d05eb09a1826215610c1a59dfe0f759cbf315a2d0f57949a5950513",
+          "primary_adjudication": null,
+          "limits": "Полное числовое обозначение и год одинаковы: применение разных документов, невозможность идентификации и последствия для монтажа не доказаны. Проверка не подтверждает правильность ссылки на7.2 или технического решения двери/шва. Исходную привязку к строке969/другому плану не переносить: здесь подтверждён конкретный план лист3. B-ITP-F-034 содержит тот же тезис и дополнительные непроверенные вопросы, поэтому целиком не закрывается.",
+          "wording": "В ведомости ссылочных документов ИТП.ТМ, лист1, и общих данных ИТП.ТМ.ПЗ, лист3, привести название СП510.1325800.2022 к официальному: «Тепловые пункты и системы внутреннего теплоснабжения». В просмотренном плане ИТП, лист3, это название уже приведено. Замечание относится к оформлению ссылок."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+          "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+          "primary_adjudication": null,
+          "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+          "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+          "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713",
+          "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Bottom35% viewed: note explicitly gives full title of SP510. No verification of clause7.2 substance in this title review."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_981b77a31c254f73aa67261d897a2987.png",
+          "sha256": "3cb700af6b7c1b3c41c11860f02195a7927e36c84a4e7a027629c4995c1c6aed",
+          "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Bottom35% viewed: note explicitly gives full title of SP510. No verification of clause7.2 substance in this title review."
+        }
+      ],
+      "disposition": "assessed_confirmed_title_correction_question_section",
+      "external_verification": [
+        {
+          "url": "https://protect.gost.ru/sp/details/e6b363b3-4682-45dc-9258-c165ca7943a3",
+          "accessed": "2026-11-11",
+          "publisher": "Росстандарт",
+          "verified_field": "СП 510.1325800.2022 — Тепловые пункты и системы внутреннего теплоснабжения",
+          "scope": "Title only; not project applicability or clause validation."
+        }
+      ]
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-057",
+      "finding": {
+        "id": "F-057",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "В монтажных указаниях СНиП 3.05.03-85 приписано неверное название.",
+        "description": "Строка MD 264: «Монтаж и пуск в эксплуатацию провести в соответствии со СП 74.13330.2023 \"Тепловые сети\", СНиП 3.05.03-85 \"Правила производства и приемки работ\", СНиП 12-03-2001 Часть 1. \"Безопасность труда в строительстве. Общие требования,\" СНиП 12-04-2002 Часть 2. \"Безопасность труда в строительстве. Строительное производство\". По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см. Длительность испытаний определяется временем, необходимым для осмотра трубопровода, но не менее 10 мин.». Название СНиП 3.05.03-85 — «Тепловые сети»; выражение «Правила производства и приемки работ» не является названием этого документа. Замечание касается идентификации ссылки, а не уже отмеченного в F-006 испытательного давления.",
+        "page": null,
+        "norm": "СНиП 3.05.03-85 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Исправить название СНиП 3.05.03-85 на «Тепловые сети».",
+        "risk": "Ошибочное определение нормативного источника монтажных требований.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+            "page": null,
+            "md_lines": "строка 264"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 1",
+        "candidate_norm_references": [
+          {
+            "designation": "СНиП 3.05.03-85",
+            "cited_designation": "СНиП 3.05.03-85",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 86,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "construction",
+            "operations"
+          ],
+          "formalism_flags": [
+            "formal_reference_category"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Монтажные указания называют СНиП3.05.03-85 «Правила производства и приемки работ».",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Название самого СНиП3.05.03-85 — «Тепловые сети».",
+          "verdict": "confirmed_primary_catalog_historical_title",
+          "limits": "Использована карточка государственного портала Молдовы для идентичности советского документа, не для текущего статуса в РФ."
+        },
+        {
+          "claim": "Исправление названия является самостоятельным редакционным вопросом, а не повтором численного замечания F-006.",
+          "verdict": "supported_editorial_question",
+          "limits": "Общий исходный абзац не означает одинаковый предмет замечания."
+        },
+        {
+          "claim": "Ошибка названия при сохранённом обозначении доказывает высокий технический риск для безопасности.",
+          "verdict": "not_established",
+          "limits": "quality.engineering_relevance=high и practicality_score86 не подтверждены содержанием этой находки; сохранять отдельно от технических нарушений."
+        },
+        {
+          "claim": "Эта проверка подтверждает применимость СНиП сегодня или конкретное нарушение его пункта.",
+          "verdict": "not_established",
+          "limits": "Проверено только название. Не делать автоматическую замену требований по карточке иной юрисдикции."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "Confirmed title correction outside frozen target links; editorial usefulness only, not new technical recall.",
+      "duplicate_burden": "Separate from F-006 test pressure; group editorial norm-title fixes in questions section to limit engineer burden.",
+      "profile_and_section": "questions_clarifications_editorial",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_confirmed_title_correction_relevance_overstated",
+      "external_verification": [
+        {
+          "url": "https://ednc.gov.md/ru/снип-3-05-03-85/",
+          "accessed": "2026-11-11",
+          "publisher": "Государственный портал нормативных документов в строительстве Республики Молдова",
+          "verified_field": "СНиП 3.05.03-85 — Тепловые сети; утверждён Госстроем СССР 31.10.1985 №178",
+          "scope": "Historical document identity only. Foreign jurisdiction status NOT used to infer current Russian applicability."
+        }
+      ]
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_9167c15ea57c423ea6ad708738bb420f",
+      "authoritative_TEXT": "### BLOCK #8 [TEXT]: blk_9167c15ea57c423ea6ad708738bb420f\n\n> **Created:** 2026-10-20 11:48:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/OjdBKXzBJmlFDKa2yGoU)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой \"Матвеевское\", Квартал 3, 2-я очередь, корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Общие данные | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\nВедомость ссылочных и прилагаемых документов:\n\n|  | Обозначение | Наименование | Примечание |\n|---|---|---|---|\n|  |  | Ссылочные документы |  |\n|  | СП 74.13330.2023 | Тепловые сети |  |\n|  | СП 510.1325800.2022 | Проектирование тепловых пунктов |  |\n|  | ПРИКАЗ от 24 марта 2003 г. № 115 | Правила технической эксплуатации тепловых энергоустановок |  |\n|  | Приказ Минтруда 17.12.2020 №924н | Правила по охране труда при эксплуатации объектов теплоснабжения и тепло потребляющих установок |  |\n|  | СП 48.13330.2019 | Свод правил. Организация строительства |  |\n|  | СНиП 12-03-2001 | Безопасность труда в строительстве. Часть 1. Общие требования |  |\n|  | СНиП 12-04-2002 | Безопасность труда в строительстве. Часть 2. Строительное производство |  |\n|  |  | Прилагаемые документы |  |\n| 1 | ПД-00542664-ИТП.ТМ .С | Спецификация оборудования и материалов | 12 листов |\n| 2 | ПД-00542664-ИТП.ТМ .ПЗ | Пояснительная записка | 15 листов |\n| 3 |  | Характеристики оборудования ИТП | 20 листов |\n| 4 |  | Анкеты абонента систем ОВ, ВК | 5 листов |\n| 5 |  | ТЗ. Приложение 2 договору подряда № 15-09/25-РД от 15.09.2025 | 54 листа |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_9e12a8bcbfb24db49d81af74c06e24f0",
+      "authoritative_TEXT": "### BLOCK #79 [TEXT]: blk_9e12a8bcbfb24db49d81af74c06e24f0\n\n> **Created:** 2026-10-20 11:49:24 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7WIqh2Hq8CK342XdP5hO)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ.ПЗ | Stage: Не указано | Sheet: 3 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n##### 1. Общие данные.\n\nПроект индивидуального теплового пункта (ИТП) объекта капитального строительства, расположенного по адресу: г. Москва, муниципальный округ Раменки, ул. Лобачевского, земельный участок 120/2, выполнен в соответствии с действующими в настоящее время строительными нормами и правилами и на основании:\n\n• Технического задания Заказчика. Приложение 2 к договору подряда № 15-09/25-РД от 15.09.2025\n\nПри проектировании использовались следующие нормативные документы:\n\n1. СП 124.13330.2012 «Тепловые сети»;\n\n2. СП 510.1325800.2022 «Проектирование тепловых пунктов»;\n\n3. «Правила эксплуатации теплопотребляющих установок и тепловых сетей»;\n\n4. «Правила учета тепловой энергии и теплоносителя»;\n\n5. Технические правила проектирования, строительства и приемки в эксплуатацию водяных разводящих тепловых сетей и абонентских вводов в г.Москве;\n\n6. СП 61.13330.2012 «Тепловая изоляция оборудования и трубопроводов».\n\n##### 2. Техническая характеристика теплового пункта.\n\nИсточником теплоснабжения является собственная котельная (АИТ) с параметрами:\n\n• в подающем трубопроводе: 17,5 атм.\n\n• в обратном трубопроводе: 17,9 атм.\n\nРасчетный температурный график тепловой сети:\n\n• в подающем трубопроводе теплосети (зима/лето) – 90 / 90°С.\n\n• в обратном трубопроводе теплосети (зима/лето) – 70 / 70 °С.\n\nПодбор оборудования производится по расчётному температурному режиму 90/70°С.\n\n## Page 42 — Sheet 4\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+      "authoritative_TEXT": "### BLOCK #9 [TEXT]: blk_96ab0b973faf4cbaa6f1241aa4df16e9\n\n> **Created:** 2026-10-20 11:48:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JqGQn_WboPXzfoGEC4BH)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой \"Матвеевское\", Квартал 3, 2-я очередь, корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Общие данные | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n##### Указания по монтажу\n\nМонтаж и пуск в эксплуатацию провести в соответствии со СП 74.13330.2023 \"Тепловые сети\", СНиП 3.05.03-85 \"Правила производства и приемки работ\", СНиП 12-03-2001 Часть 1. \"Безопасность труда в строительстве. Общие требования,\" СНиП 12-04-2002 Часть 2. \"Безопасность труда в строительстве. Строительное производство\". По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см. Длительность испытаний определяется временем, необходимым для осмотра трубопровода, но не менее 10 мин.\n\nПеред проведением изоляционных работ, трубопровод необходимо зачистить и покрасить кремний-органической краской (2 слоя) типа КО 8101. Изоляция из негорючих минераловатных цилиндров «ROCKWOOL» (от -180 до +600°С). После монтажа, провести и предъявить технодзору следующие работы:\n\n- гидронефматическую промывку трубопроводов;\n\n- опрессовку трубопроводов;\n\n- скрытые работы по изоляции трубопроводов.\n\nОформить исполнительную документацию, акт готовности к пуску тепла и акт допуска энергонадзора.\n\nИсточником теплоснабжения является собственная котельная (АИТ) с параметрами:\n\n• в подающем трубопроводе: 17,5 атм.\n\n• в обратном трубопроводе: 17,9 атм.\n\nРасчетный температурный график от источника теплоснабжения:\n\n• в подающем трубопроводе теплосети (зима/лето) – 90\n\n• в обратном трубопроводе теплосети (зима/лето) – 70\n\nПроект выполнен на основании Технического задания Заказчика. Приложение 2 к договору подряда № 15-09/25-РД от 15.09.2025\nНастройки предохранительных клапанов выполнить в соответствии с указаниями на принципиальной схеме ИТП\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_693e53fec5744b27b721eb667e933ef5.png",
+      "sha256": "054e48c413554acbe425a0a73a982a4f39c215d2b53aeb5877ccd77d8d686713",
+      "block_id": "blk_693e53fec5744b27b721eb667e933ef5",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Bottom35% viewed: note explicitly gives full title of SP510. No verification of clause7.2 substance in this title review."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_981b77a31c254f73aa67261d897a2987.png",
+      "sha256": "3cb700af6b7c1b3c41c11860f02195a7927e36c84a4e7a027629c4995c1c6aed",
+      "block_id": "blk_981b77a31c254f73aa67261d897a2987",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Bottom35% viewed: note explicitly gives full title of SP510. No verification of clause7.2 substance in this title review."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F053_standard_title.json",
+      "sha256": "48b25ee12d05eb09a1826215610c1a59dfe0f759cbf315a2d0f57949a5950513",
+      "primary_adjudication": null,
+      "limits": "Полное числовое обозначение и год одинаковы: применение разных документов, невозможность идентификации и последствия для монтажа не доказаны. Проверка не подтверждает правильность ссылки на7.2 или технического решения двери/шва. Исходную привязку к строке969/другому плану не переносить: здесь подтверждён конкретный план лист3. B-ITP-F-034 содержит тот же тезис и дополнительные непроверенные вопросы, поэтому целиком не закрывается.",
+      "wording": "В ведомости ссылочных документов ИТП.ТМ, лист1, и общих данных ИТП.ТМ.ПЗ, лист3, привести название СП510.1325800.2022 к официальному: «Тепловые пункты и системы внутреннего теплоснабжения». В просмотренном плане ИТП, лист3, это название уже приведено. Замечание относится к оформлению ссылок."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F034_mixed_norm_references.json",
+      "sha256": "aae4570b1990136cf4aae5be03d54c47f7f7be338fde1860751ea1ce8b78f74b",
+      "primary_adjudication": null,
+      "limits": "Подтверждена отмена конкретного приказа и локальная неполнота ссылок, не нарушение фактической эксплуатации. ТЗ проекта ссылается на договор15.09.2025, позднее даты отмены; окончательная дата выпуска и договорная нормативная база требуют проверки. В ведомости реквизиты№115 присутствуют, поэтому «во всём проекте нет реквизитов» неверно. Отсутствие реквизитов правилучёта вУУТЭ не установлено. Содержание конкретных конфликтующих требованийСП74/СНиП не выявлено.",
+      "wording": "Согласовать нормативные ссылки: в ведомости указан приказМинэнерго24.03.2003№115, отменённый с01.09.2025 приказом14.05.2025№511; вПЗ правила эксплуатации и учёта названы без реквизитов. Уточнить применимые документы и согласовать перечни. НазваниеСП510 исправить совместно сF-053; совместное упоминаниеСП74 иСНиП3.05.03-85 само по себе не считать техническим противоречием."
+    }
+  ],
+  "external_verification": [
+    {
+      "url": "https://protect.gost.ru/sp/details/e6b363b3-4682-45dc-9258-c165ca7943a3",
+      "accessed": "2026-11-11",
+      "publisher": "Росстандарт",
+      "verified_field": "СП 510.1325800.2022 — Тепловые пункты и системы внутреннего теплоснабжения",
+      "scope": "Title only; not project applicability or clause validation."
+    },
+    {
+      "url": "https://ednc.gov.md/ru/снип-3-05-03-85/",
+      "accessed": "2026-11-11",
+      "publisher": "Государственный портал нормативных документов в строительстве Республики Молдова",
+      "verified_field": "СНиП 3.05.03-85 — Тепловые сети; утверждён Госстроем СССР 31.10.1985 №178",
+      "scope": "Historical document identity only. Foreign jurisdiction status NOT used to infer current Russian applicability."
+    }
+  ],
+  "limits": [
+    "Title correctness does not establish technical harm or normative applicability.",
+    "Metadata for IMAGE blocks independently checked against graphics.",
+    "No engineer decision fabricated; frozen evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
