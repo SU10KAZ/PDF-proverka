@@ -900,6 +900,7 @@ def combine_findings_with_targeted(
                 "link_repairs": link_report,
                 "context_retrieval": payload.get("context_retrieval"),
                 "stage": stage, "candidate_decisions": payload.get("candidate_decisions", []),
+                "format_repair": payload.get("format_repair"),
                 "pending": payload.get("recovery_pending", []), "semantic_verified": False,
             })
         targeted_findings = payload.get("findings") if isinstance(payload, dict) else []

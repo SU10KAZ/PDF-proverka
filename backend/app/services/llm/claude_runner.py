@@ -754,6 +754,11 @@ async def _run_codex_targeted_findings_merge(
                 payload["context_retrieval"] = search_receipt
                 if followup is not None:
                     passes.append(followup)
+                from backend.app.pipeline.stages.prepare.recovery_format import build_recovery_format_followup
+                repair, repair_receipt = build_recovery_format_followup(targeted_pass, payload)
+                payload['format_repair'] = repair_receipt
+                if repair is not None:
+                    passes.append(repair)
             if targeted_pass.stage.startswith("object_operations_"):
                 from backend.app.pipeline.stages.prepare.object_operation_disposition import advance_operation_pass
                 payload, followup = advance_operation_pass(

@@ -165,6 +165,8 @@ def build_context_followup(request, payload):
     if request.stage.endswith('_context'):
         return None, {'status': 'followup_limit'}
     packet = json.loads(request.messages[-1]['content'])
+    if packet.get('recovery_format_repair'):
+        return None, {'status': 'format_repair_no_context_expansion'}
     decisions = payload.get('candidate_decisions', [])
     queries = []
     group = packet.get('candidate_group', [packet.get('candidate', {})])
