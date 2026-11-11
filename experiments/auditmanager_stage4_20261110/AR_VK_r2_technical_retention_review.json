@@ -1,0 +1,380 @@
+{
+  "status": "bounded_retention_of_four_technical_targets_in_second_repeat",
+  "evaluator": {
+    "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/evaluator_release_errata_v2.json",
+    "sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76"
+  },
+  "runs": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "sealed_status": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/status/AR.json",
+        "sha256": "80b365f3dabe6629c9123dc1f58e83a0d6bdca3e10aa3db1db18cc86567fd075"
+      },
+      "final": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "19945dcbf049ddaac4c873aa6699b58b1a2bc9085e4788efc9b9d43cd73eda3e"
+      },
+      "r1_ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AR_r1_completed_coverage_ledger.json",
+        "sha256": "3e3f08c803fdaf9da8e5071ab7ae2e2587a47fcfd95ce38c6b4719722cbe5223"
+      },
+      "targets": [
+        {
+          "target_id": "AR_F014_insulation_identity:20063319c847e004daca",
+          "coverage_r1": "full",
+          "coverage_r2": "full",
+          "finding_ids": [
+            "F-015"
+          ],
+          "finding": {
+            "id": "F-015",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "Теплоизоляция",
+            "sheet": "Лист 7",
+            "page": 9,
+            "problem": "Утеплитель LOGICPIR PROF Ф/Ф ошибочно назван экструзионным пенополистиролом.",
+            "description": "В слое 6 покрытия К-3 указано «Экструзионный пенополистирол Технониколь LOGICPIR PROF Ф/Ф (или аналог) — 130 мм». Марка LOGICPIR относится к пенополиизоциануратным плитам. Родовое наименование материала противоречит торговой марке, поэтому требования к допустимому аналогу неоднозначны.",
+            "norm": null,
+            "norm_quote": null,
+            "candidate_norm_references": [],
+            "solution": "Уточнить принятый тип теплоизоляции, исправить наименование и задать согласованные требования к теплотехническим, прочностным и пожарным характеристикам аналога.",
+            "risk": "Замена утеплителя материалом с иными характеристиками и несоответствие принятой конструкции покрытия.",
+            "source_finding_ids": [
+              "G-005"
+            ],
+            "source_block_ids": [
+              "blk_602b484f088b4a029d3ba6e01df3f645"
+            ],
+            "related_block_ids": [
+              "blk_602b484f088b4a029d3ba6e01df3f645"
+            ],
+            "evidence_text_refs": [],
+            "evidence": [
+              {
+                "type": "image",
+                "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+                "page": 9
+              }
+            ],
+            "highlight_regions": [],
+            "provenance": {
+              "found_by": [
+                "codex"
+              ],
+              "detector_summary": "codex",
+              "detections": [
+                {
+                  "detector": "codex",
+                  "model": "codex/gpt-6-astra",
+                  "prompt_version": "stage01-findings-evidence-v3",
+                  "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+                  "raw_finding_id": "G-005",
+                  "mode": "independent",
+                  "detected_at": "2026-11-11T11:25:21.940033+00:00",
+                  "context_source": "structured_architecture"
+                }
+              ]
+            },
+            "detector_summary": "codex",
+            "detector_comparison": {
+              "schema_version": 1,
+              "primary_relation": "new",
+              "relations": [
+                {
+                  "relation": "new",
+                  "role": "unique_detector_finding",
+                  "counterpart_refs": [],
+                  "confidence": 1.0,
+                  "reason": "Другой независимый детектор не вернул смысловой аналог.",
+                  "reviewer_model": "codex/gpt-6-astra",
+                  "origin": "dual_comparison"
+                }
+              ],
+              "gap_search": false
+            },
+            "norm_references": [],
+            "quality": {
+              "practicality_score": 93,
+              "engineering_relevance": "high",
+              "impact_axes": [
+                "safety",
+                "schedule"
+              ],
+              "formalism_flags": [
+                "editorial_fix"
+              ],
+              "likely_formal_only": false,
+              "severity_mismatch": false,
+              "review_priority": "high"
+            }
+          },
+          "reason": "Сохранены один слой6 покрытияК-3,130мм, конфликт XPS/LOGICPIR и рекомендация согласовать материал без автоматического изменения толщины."
+        },
+        {
+          "target_id": "B-AR-F-006:76e7568bcfeededeb028",
+          "coverage_r1": "partial",
+          "coverage_r2": "partial",
+          "finding_ids": [
+            "F-005"
+          ],
+          "finding": {
+            "id": "F-005",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "Состав кровельного покрытия",
+            "sheet": "Листы 7, 11",
+            "page": [
+              9,
+              13
+            ],
+            "problem": "Для К-4 не согласован защитный слой над гидроизоляцией.",
+            "description": "Текстовая таблица слоёв К-4 на листе 11 предусматривает термообработанный геотекстиль 300 г/м² над гидроизоляцией. В ведомости материалов на листе 7 вместо него указана противопожарная защитная мембрана АЛЬФА ПРОФ НГ площадью 517,72 м²; отдельной позиции геотекстиля для К-4 нет. Эквивалентность этих материалов и нарушение пожарных требований по имеющимся данным не установлены.",
+            "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+            "norm_quote": null,
+            "candidate_norm_references": [
+              {
+                "designation": "СП 17.13330.2017",
+                "cited_designation": "СП 17.13330.2017",
+                "candidate_relevance": 0.9,
+                "reason": "Проверить требования к защитным и разделительным слоям принятой конструкции кровли и их совместимости с гидроизоляцией.",
+                "provenance": {
+                  "producer": "stage03_candidate_contract",
+                  "designation_source": "stage03.candidate_norm_references",
+                  "source_finding_ids": [
+                    "T-005"
+                  ],
+                  "input_provenance": {
+                    "source_finding_ids": [
+                      "T-005"
+                    ],
+                    "designation_source": "Профильный документ из входного перечня нормативных ссылок"
+                  }
+                },
+                "clause_candidate": null,
+                "quote_candidate": null
+              }
+            ],
+            "solution": "Установить функции и необходимость каждого слоя, подтвердить совместимость материалов и привести таблицу слоёв и ведомость к единому решению.",
+            "risk": "Закупка и монтаж неподходящего защитного слоя, повреждение гидроизоляции и переделки покрытия.",
+            "source_finding_ids": [
+              "T-005"
+            ],
+            "source_block_ids": [],
+            "related_block_ids": [
+              "blk_507c287c56f04302a7ca1097e7af79ff",
+              "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+              "blk_ba73c64702884635a06b2882d4e2bf91",
+              "blk_d79ac3d31db644eea9b53e1860e4c51c"
+            ],
+            "evidence_text_refs": [],
+            "evidence": [],
+            "highlight_regions": [],
+            "norm_references": [],
+            "norm_paragraph_state": "resolver_pending",
+            "quality": {
+              "practicality_score": 100,
+              "engineering_relevance": "high",
+              "impact_axes": [
+                "safety",
+                "schedule",
+                "rework",
+                "construction"
+              ],
+              "formalism_flags": [
+                "reference_register",
+                "editorial_fix"
+              ],
+              "likely_formal_only": false,
+              "severity_mismatch": false,
+              "review_priority": "high"
+            }
+          },
+          "reason": "Сохранено сравнение таблицыК-4 листа11 с ведомостью материалов по геотекстилю300г/м² и мембране. Не названы адресный узел молниеотвода и согласованность обеих общих ведомостей по мембране; полного адресного покрытия нет."
+        }
+      ]
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "sealed_status": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/status/VK.json",
+        "sha256": "3040ee51985cb514b5a0ca2c83ee77eaf9b541008f4de4182dffa3fa58a76683"
+      },
+      "final": {
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "6182e5efe3cb42c6924c22aec4caa065ddd49a6e1130d44dc73a157477cbd9cd"
+      },
+      "r1_ledger": {
+        "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/VK_r1_completed_coverage_ledger.json",
+        "sha256": "51d93d5ab1e16b3699a93df72df3c601c426986f1e34be0061e93d766dbf9a7b"
+      },
+      "targets": [
+        {
+          "target_id": "VK_F003_reinforcement_counts:7ad222ee93fc76cab7bc",
+          "coverage_r1": "partial",
+          "coverage_r2": "partial",
+          "finding_ids": [
+            "F-006"
+          ],
+          "finding": {
+            "id": "F-006",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "Внутренние водостоки",
+            "sheet": "Листы 2, 03, 04",
+            "page": [
+              4,
+              32,
+              33
+            ],
+            "problem": "Спецификация не обеспечивает предусмотренное усиление всех чугунных соединений К2.",
+            "description": "Для диаметров 100, 150 и 200 мм предусмотрено соответственно 7, 33 и 26 соединителей, а усиливающих хомутов — 4, 18 и 26. При усилении каждого соединителя недостаёт 3 хомутов диаметром 100 мм и 15 диаметром 150 мм, всего 18 шт. Заявленное для чугунной части К2 давление 10 бар требует проверки по характеристикам конкретных сборок.",
+            "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+            "norm_quote": null,
+            "candidate_norm_references": [
+              {
+                "designation": "ГОСТ 21.110-2013",
+                "cited_designation": "ГОСТ 21.110-2013",
+                "candidate_relevance": 0.95,
+                "reason": "Проверить комплектность соединительных и усиливающих элементов по принятому проектному решению.",
+                "provenance": {
+                  "producer": "stage03_candidate_contract",
+                  "designation_source": "stage03.candidate_norm_references",
+                  "source_finding_ids": [
+                    "T-006"
+                  ],
+                  "input_provenance": {
+                    "source_finding_ids": [
+                      "T-006"
+                    ],
+                    "designation_source": "Исходное текстовое замечание"
+                  }
+                },
+                "clause_candidate": "4.1",
+                "quote_candidate": null
+              }
+            ],
+            "solution": "Согласовать количество хомутов с перечнем соединений и подтвердить допустимое давление сборок для каждого диаметра документацией изготовителя.",
+            "risk": "При отсутствии необходимого усиления соединения могут не выдержать предусмотренные нагрузки при заполнении водостока.",
+            "source_finding_ids": [
+              "T-006"
+            ],
+            "source_block_ids": [],
+            "related_block_ids": [
+              "blk_686c23c287f1430199897dff70be0878",
+              "blk_9b1d774c2f6c4127b2f8618e3792a647",
+              "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+              "blk_d01ac56c817044c4a525d02e3251ba0e"
+            ],
+            "evidence_text_refs": [],
+            "evidence": [],
+            "highlight_regions": [],
+            "norm_references": [],
+            "norm_paragraph_state": "resolver_pending",
+            "quality": {
+              "practicality_score": 64,
+              "engineering_relevance": "medium",
+              "impact_axes": [
+                "construction"
+              ],
+              "formalism_flags": [],
+              "likely_formal_only": false,
+              "severity_mismatch": false,
+              "review_priority": "low"
+            }
+          },
+          "reason": "Сохранены пары7/4,33/18,26/26 и условие усиления каждого соединителя. Заголовок категорично объявляет недостаточность спецификации, отдельная поставка и комплектность не оговорены; риск указан условно. Сохраняется ограниченная оценка, не окончательный заказ18шт."
+        },
+        {
+          "target_id": "VK_F004_insulation_scope:02bb3aef959f1c658194",
+          "coverage_r1": "full",
+          "coverage_r2": "full",
+          "finding_ids": [
+            "F-007"
+          ],
+          "finding": {
+            "id": "F-007",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ",
+            "category": "Изоляция",
+            "sheet": "Листы 2, 01, 02, 03, 04, 05, 06",
+            "page": [
+              4,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35
+            ],
+            "problem": "Предусмотренная антиконденсатная изоляция К2 толщиной 9 мм отсутствует в спецификации.",
+            "description": "Общие указания требуют изоляцию К2 по всей длине вспененным полиэтиленом толщиной 9 мм. В спецификации соответствующий материал не указан. Трубки толщиной 40 мм в разделах К1 и К2.1 не соответствуют этому решению. Сумма длин труб К2 составляет 258,7 м без фасонных частей.",
+            "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+            "norm_quote": null,
+            "candidate_norm_references": [
+              {
+                "designation": "ГОСТ 21.110-2013",
+                "cited_designation": "ГОСТ 21.110-2013",
+                "candidate_relevance": 0.95,
+                "reason": "Проверить включение предусмотренных проектом изоляционных материалов и их объёмов в спецификацию.",
+                "provenance": {
+                  "producer": "stage03_candidate_contract",
+                  "designation_source": "stage03.candidate_norm_references",
+                  "source_finding_ids": [
+                    "T-007"
+                  ],
+                  "input_provenance": {
+                    "source_finding_ids": [
+                      "T-007"
+                    ],
+                    "designation_source": "Исходное текстовое замечание"
+                  }
+                },
+                "clause_candidate": "4.1",
+                "quote_candidate": null
+              }
+            ],
+            "solution": "Добавить изоляцию К2 толщиной 9 мм с разбивкой по диаметрам и уточнить объём с учётом фасонных частей и узлов.",
+            "risk": "Отсутствие изоляции в поставке может привести к образованию конденсата, увлажнению конструкций и дополнительным работам.",
+            "source_finding_ids": [
+              "T-007"
+            ],
+            "source_block_ids": [],
+            "related_block_ids": [
+              "blk_1d17a25462884606ae486c345090fe20",
+              "blk_686c23c287f1430199897dff70be0878",
+              "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+              "blk_d01ac56c817044c4a525d02e3251ba0e"
+            ],
+            "evidence_text_refs": [],
+            "evidence": [],
+            "highlight_regions": [],
+            "norm_references": [],
+            "norm_paragraph_state": "resolver_pending",
+            "quality": {
+              "practicality_score": 54,
+              "engineering_relevance": "medium",
+              "impact_axes": [
+                "coordination"
+              ],
+              "formalism_flags": [
+                "reference_maintenance"
+              ],
+              "likely_formal_only": false,
+              "severity_mismatch": false,
+              "review_priority": "low"
+            }
+          },
+          "reason": "Сохранены отсутствие соответствующей позицииК2 в спецификации, требование9мм, отличие40мм других систем и258,7м без фасонных частей. Добавление объёма предлагается уточнять. Последствия и фактическая поставка не подтверждаются этой оценкой."
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Оценены четыре технических атома, не вся полезность и не все ошибки второго прогона.",
+    "Full относится к узкому эталонному тезису, не ко всем последствиям и нормативным ссылкам строки.",
+    "Повторная выдача классического метода не является доказательством улучшения экспериментальной версии.",
+    "Новые инженерные решения не запрашивались; использованы зафиксированные границы исходного эталона."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
