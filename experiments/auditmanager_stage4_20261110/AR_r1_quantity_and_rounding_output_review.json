@@ -1,0 +1,498 @@
+{
+  "status": "three_AR_quantity_outputs_reviewed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "0ca7f660e47d0f59ddad7abf8ddbdca18e30634f8a81cd6905e6bf851b8e1b0f",
+  "queue_after_sha256": "c14dedec08523a110b75b6bc3c4e33760bfdae661913849ef2082cef1211d616",
+  "reviewer": "coordinator_TEXT_GRAPHIC_arithmetic_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Ведомости материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Количество регулируемых опор задано дробными значениями в штуках.",
+        "description": "В ведомости материалов указаны 75,82 шт. опор для К-3 и 2144,84 шт. для К-4. Эти значения не определяют целое монтажное количество и комплект поставки.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 4.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к однозначности количественных данных рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать опоры по раскладке плит, включая крайние и угловые участки, и указать целые количества. Округление выполнить после проверки схемы опирания.",
+        "risk": "Недокомплект или избыточная закупка опор, корректировка стоимости и задержка монтажа.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "B-AR-F-004:5ba89cb25036827448d4",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В ведомости материалов75,82шт. дляК-3 и2144,84шт. дляК-4.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Не определён целый комплект поставки.",
+          "verdict": "supported_scoped_question",
+          "limits": "Просмотрена ведомость материалов, а не заказ поставщику или монтажная раскладка."
+        },
+        {
+          "claim": "Дробный расход доказывает физическую поставку дробных опор, нехватку или ошибку стоимости.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Уточнить количество по раскладке с учётом крайних и угловых опор.",
+          "verdict": "supported_followup_without_automatic_rounding",
+          "limits": "Не заменять75,82на76 и2144,84на2145 без схемы; текущая рекомендация верно требует проверить схему перед округлением."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_quantity_question_no_duplicate_identified_in_these_three_outputs",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json",
+          "sha256": "537a01df4ce22327d818b38016a5a600bc295ff1a19845640465f4f4af74e6d2",
+          "primary_adjudication": null,
+          "limits": "Это ведомость материалов, а не проверенный заказ поставщику; дробный расчётный расход не доказывает физическую поставку дробных опор или ошибку стоимости. Количество по раскладке не рассчитано; округление не назначать автоматически.",
+          "wording": "Уточнить комплектовочное число опор HILST для К-3/К-4: ведомость материалов содержит75,82 и2144,84шт."
+        }
+      ],
+      "disposition": "assessed_fractional_piece_quantity_question_not_supply_defect"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Ведомости материалов",
+        "sheet": "Лист 8",
+        "page": 10,
+        "problem": "Итог длины ограждений отличается от суммы опубликованных позиций.",
+        "description": "Сумма 153,82 + 27,35 + 35,43 + 12,69 + 30,18 составляет 259,47 м, тогда как в ведомости указан итог 259,48 м. Расхождение равно 0,01 м и может быть связано с использованием неокруглённых исходных длин.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 4.2.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к согласованности количественных данных ведомостей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.2.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить итог или пояснить правило округления и использование исходных длин большей точности.",
+        "risk": "Незначительное расхождение количественных данных при проверке ведомости.",
+        "source_finding_ids": [
+          "T-010"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 38,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Сумма опубликованных пяти значений259,47м; итог259,48м.",
+          "verdict": "confirmed_TEXT_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Эти значения несовместимы с корректным округлением исходных длин.",
+          "verdict": "refuted_by_constructive_counterexample",
+          "limits": "Если каждое исходное значение больше опубликованного на0,002м, все пять округляются к опубликованным, а сумма259,480м округляется к259,48м. Это возможный пример, не восстановленные проектные исходники."
+        },
+        {
+          "claim": "Есть доказанная ошибка расчёта или необходимость изменить итог.",
+          "verdict": "not_established",
+          "limits": "Текущая выдача сама допускает неокруглённые исходники. Не считать разницу0,01м самостоятельным техническим дефектом."
+        },
+        {
+          "claim": "Пояснить методику округления.",
+          "verdict": "editorial_question_usefulness_unestablished",
+          "limits": "Приоритет и фактическая нагрузка инженера не измерены; универсальный допуск0,01м не устанавливается."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_rounding_question_no_new_confirmed_defect",
+      "duplicate_burden": "distinct_quantity_question_no_duplicate_identified_in_these_three_outputs",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_rounding_compatible_difference_not_proven_error",
+      "rounding_counterexample": {
+        "hypothetical_not_project_data": true,
+        "inputs_m": [
+          "153.822",
+          "27.352",
+          "35.432",
+          "12.692",
+          "30.182"
+        ],
+        "sum_m": "259.480"
+      }
+    },
+    {
+      "discipline": "AR",
+      "repeat": 1,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Ведомости материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Площадь отлива Оп-1 не соответствует указанным длине и ширине.",
+        "description": "Для Оп-1 приведены ширина 690 мм, длина 145,44 м и площадь 78,5 м². Произведение длины на указанную ширину составляет 100,35 м²; расхождение — 21,85 м². Загибы и нахлёсты этим расчётом не учтены; окончательный расход следует установить по развёртке профиля.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности размеров изделий и количественных данных ведомостей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-008",
+                "G-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-008",
+                  "G-009"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить смысл указанной ширины, выполнить расчёт расхода стали по развёртке и согласовать длину, ширину и площадь Оп-1.",
+        "risk": "Ошибка закупки листовой стали и стоимости изготовления отливов.",
+        "source_finding_ids": [
+          "G-008",
+          "G-009"
+        ],
+        "source_block_ids": [
+          "blk_82cbe376e70f4cc3833a1203b0d0a0ee"
+        ],
+        "related_block_ids": [
+          "blk_82cbe376e70f4cc3833a1203b0d0a0ee"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_82cbe376e70f4cc3833a1203b0d0a0ee",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T071505Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:15:05.456058+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T071505Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:15:05.456058+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение площади Оп-1: при длине 145,44 м и ширине 690 мм расчётная площадь 100,35 м² вместо 78,5 м², разница 21,85 м². Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение площади Оп-1: при длине 145,44 м и ширине 690 мм расчётная площадь 100,35 м² вместо 78,5 м², разница 21,85 м². Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-AR-F-016:fff2912112e6c79e3b46",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Оп-1:690мм,145,44м,78,5м².",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Размер690 на схеме и690×1мм в описании; строка длины и площади прочитана напрямую."
+        },
+        {
+          "claim": "Произведение горизонтального габарита и длины100,3536м² отличается от78,5м² на21,8536м².",
+          "verdict": "confirmed_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "100,3536м² — окончательная закупочная площадь.",
+          "verdict": "not_established",
+          "limits": "Развёртка, загибы, нахлёсты, раскрой и область суммарной длины не установлены."
+        },
+        {
+          "claim": "Согласовать длину, смысл ширины и площади по развёртке.",
+          "verdict": "supported_scoped_question",
+          "limits": "Текущая выдача сохраняет ограничение про загибы и нахлёсты."
+        },
+        {
+          "claim": "Недопоставка металла доказана.",
+          "verdict": "not_established",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_quantity_question_no_duplicate_identified_in_these_three_outputs",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
+          "sha256": "6de616cbb7c5cca66864facc621709f0f7ac35569d40b16b8fded829cd5b3436",
+          "primary_adjudication": null,
+          "limits": "Не считать100,3536м² окончательной площадью заготовки: загибы, нахлёсты, раскрой и область суммарной длины не установлены. Недостаточная закупка не доказана.",
+          "wording": "Уточнить площадь Оп-1:145,44м×0,690м=100,3536м² уже по горизонтальному габариту против78,5м² в ведомости. Проверить длину, развёртку и смысл столбца площади."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_82cbe376e70f4cc3833a1203b0d0a0ee.png",
+          "sha256": "08c59290764e600b59fb738855634a1711743e41159af4b34340953c23237b57",
+          "block_id": "blk_82cbe376e70f4cc3833a1203b0d0a0ee",
+          "route": "direct_GRAPHIC_review",
+          "observation": "Оп-1: горизонтальный габарит690, описание690×1мм, длина145,44м, площадь78,5м², крепёж727."
+        }
+      ],
+      "disposition": "assessed_Op1_area_question_preserve_development_limits"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+      "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+      "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+      "authoritative_TEXT": "### BLOCK #42 [TEXT]: blk_d79ac3d31db644eea9b53e1860e4c51c\n\n> **Created:** 2026-10-19 11:55:47 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/h-e-bfOSr8k07EIk9u94)\n> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 7 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное назнание ЖК Событие 6.1) | Наименование листа: Ведомость покрытий кровли, балконов и террас, тех.ниш 2, 3 секций | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость материалов кровли, технических ниш. Секция 2, 3\n\n| Тип материала | Обозначение | Кол-во | Ед. изм. |\n| --- | --- | --- | --- |\n| **K-1** |  |  |  |\n| Балластная засыпка гравием | ГОСТ 8267-93 | 39,87 | м³ |\n| Выравнивающая стяжка из ЦПС М100 | ГОСТ 28013-98 | 11,97 | м³ |\n| Гидроизоляция рулонная битумно-полимерная Техноэласт ЭПП в 2 слоя | СТО 72746455-3.1.11-2015 | 398,72 | м² |\n| Пароизоляция рулонная битумно-полимерная Технобарьер | СТО 72746455-3.1.9-2014 | 399,05 | м² |\n| Противопожарная защитная мембрана ТЕХНОНИКОЛЬ АЛЬФА ПРОФ НГ | СТО 72746455-3.4.2-2014 | 398,72 | м² |\n| Стяжка из ЦПС М100 с армированием базальтовыми сетками с ячейкой 50х50 мм | ГОСТ 28013-98 | 19,94 | м³ |\n| Уклонообразующий слой из керамзитобетона фр. 10-20 мм | ГОСТ 25820-2014 | 35,08 | м³ |\n| Утеплитель экструзионный пенополистирол XPS Carbon Prof | СТО 72746455-3.3.1-2012 | 79,81 | м³ |\n| **K-3** |  |  |  |\n| Выравнивающая стяжка из ЦПС М100 | ГОСТ 28013-98 | 0,22 | м³ |\n| Геотекстиль термообработанный 300 г/м.кв | ЛР31/2016 от 28.04.16 | 10,84 | м² |\n| Гидроизоляция рулонная битумно-полимерная Техноэласт ЭПП в 2 слоя | СТО 72746455-3.1.11-2015 | 10,84 | м² |\n| Опора регулируемая HILST, серия LIFT (или аналог) | ТУ 22.23.19-017-42053482-2020 | 75,82 | шт. |\n| Пароизоляция рулонная битумно-полимерная Технобарьер | СТО 72746455-3.1.9-2014 | 10,83 | м² |\n| Плитка тротуарная из натурального камня габ.размерами 600х600х40 мм (по согласованию) | ГОСТ 9480-2012 | 18,96 | м² |\n| Плиты теплоизоляционные Технониколь LOGICPIR² PROF Ф/Ф | СТО 72746455-3.8.1-2017 | 1,24 | м³ |\n| Стяжка из ЦПС М100 с армированием базальтовыми сетками с ячейкой 50х50 мм | ГОСТ 28013-98 | 0,43 | м³ |\n| **K-4** |  |  |  |\n| Выравнивающая стяжка из ЦПС М100 | ГОСТ 28013-98 | 15,53 | м³ |\n| Гидроизоляция рулонная битумно-полимерная Техноэласт ЭПП в 2 слоя | СТО 72746455-3.1.11-2015 | 517,72 | м² |\n| Опора регулируемая HILST, серия LIFT (или аналог) | ТУ 22.23.19-017-42053482-2020 | 2 144,84 | шт. |\n| Парозоляционная пленка Технониколь МАСТЕР БАРЬЕР 3.0 | СТО 72746455-3.9.52-2024 | 517,63 | м² |\n| Пароизоляция рулонная битумно-полимерная Технобарьер | СТО 72746455-3.1.9-2014 | 517,63 | м² |\n| Плитка тротуарная из натурального камня габ.размерами 600х600х40 мм (по согласованию) | ГОСТ 9480-2012 | 536,21 | м² |\n| Противопожарная защитная мембрана ТЕХНОНИКОЛЬ АЛЬФА ПРОФ НГ | СТО 72746455-3.4.2-2014 | 517,72 | м² |\n| Стяжка из ЦПС М100 с армированием базальтовыми сетками с ячейкой 50х50 мм | ГОСТ 28013-98 | 20,71 | м³ |\n| Уклонообразующий слой из керамзитобетона фр. 20-40 мм | ГОСТ 25820-2014 | 69,31 | м³ |\n| Утеплитель экструзионный пенополистирол XPS Carbon Prof | СТО 72746455-3.3.1-2012 | 103,53 | м³ |\n| **K-5** |  |  |  |\n| Панели теплоизоляционные ¼Эндвич ТЕХНОНИКОЛЬ Ц-XPS½ | ТУ 22.21.41-036-72746455-2009 | 1,28 | м³ |\n| Утеплитель экструзионный пенополистирол XPS Carbon Prof | СТО 72746455-3.3.1-2012 | 2,56 | м³ |\n\n## Page 10 — Sheet 8 — Ведомость наружных ограждений, шумозащитных экранов. Схемы ограждений. Узлы\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+      "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+      "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+      "authoritative_TEXT": "### BLOCK #43 [TEXT]: blk_136a04c93a0c42ea92caf6551369e3b4\n\n> **Created:** 2026-10-19 11:55:49 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/YpIjUbqWqYPF4Uw9N9GM)\n> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 8 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Ведомость наружных ограждений, шумозащитных экранов. Схемы ограждений. Узлы | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость наружных ограждений кровли, шумозащитных экранов. Секция 2, 3\n\n| Марка | Тип ограждения | Производитель | Длина, п.м. |\n| --- | --- | --- | --- |\n| ОГН-4 | Ограждение на эксплуатируемой кровле из триплекса, высотой 2100 мм; класс защиты не ниже СМ4 и (или) Р2А, формула 10-1,52-10 (10 мм Planibel Crystalvision (зак.) + 1,52 мм PVВ-плёнка + 10 мм Planibel Crystalvision (зак.)) - уточняется по результатам расчета; крепление к стойкам точечное, нижняя грань - в металлическом профиле | Nayada (или аналог) | 153,82 |\n| ОГН-6 | Ограждение неэкплуатируемой кровли: металлическое, с вертикальными стойками и перилами из ст. прокатных профилей, высотой 1100 мм, в порошковой атмосферостойкой окраске RAL 7021 | По согласованию | 27,35 |\n| ОГШ-1 | Шумозащитный декоративный экран. Конструктивный стальной каркас см. КМ; заполнение акустическими сэндвич-панелями с минераловатным утеплителем толщ. 30 мм, высотой 5900 мм, в порошковой атмосферостойкой окраске RAL 7021 | По согласованию | 35,43 |\n| ОГШ-2 | Шумозащитный декоративный экран. Конструктивный стальной каркас см. КМ; заполнение акустическими сэндвич-панелями с минераловатным утеплителем толщ. 30 мм, высотой 2800 мм, в порошковой атмосферостойкой окраске RAL 7021 | По согласованию | 12,69 |\n| ОГШ-3 | Шумозащитный декоративный экран. Конструктивный стальной каркас см. КМ; заполнение акустическими сэндвич-панелями с минераловатным утеплителем толщ. 30 мм, высотой 1900 мм, в порошковой атмосферостойкой окраске RAL 7021 | По согласованию | 30,18 |\n| Суммарный показатель длины ограждения по типам |  |  | 259,48 |\n\n##### Ведомость наружных ограждений балконов/террас. Секция 2, 3\n\n| Марка | Тип ограждения | Производитель | Длина, п.м. |\n| --- | --- | --- | --- |\n| ОГН-5 | Ограждение террас для квартир из триплекса, высотой 1200 мм от ур.ч.п. Класс защиты не ниже СМ4 и (или) Р2А. Формула: 10-1,52-10 (10 мм Planibel Crystalvision (зак.) + 1,52 мм PVВ-плёнка + 10 мм Planibel Crystalvision (зак.)) - уточняется по результатам расчета; крепление в прижимной напольный профиль | Nayada (или аналог) | 22,92 |\n| Суммарный показатель длины ограждения по типам |  |  | 22,92 |\n\n##### Ведомость металлических лестниц кровли. Секция 2, 3\n\n| Марка | Высота лестницы, мм | Высота ограждения площадки, мм | Общая высота, мм | Длина площадки, мм | Ширина, мм | Кол-во, шт. |\n| --- | --- | --- | --- | --- | --- | --- |\n| ЛП-1 | 3960 | 1000 | 4960 | 1000 | 600 | 1 |\n| ЛП-2 | 3200 | 1000 | 4200 | 1000 | 600 | 1 |\n| ЛП-2.1 | 2800 | 1000 | 3800 | 1000 | 600 | 1 |\n| ЛП-2.2 | 1300 | 1000 | 2300 | 500 | 600 | 1 |\n| ЛП-3 | 1800 | 1000 | 2800 | 950 | 600 | 1 |\n| Суммарный показатель количества |  |  |  |  |  | 5 |\n\n##### Спецификация наружных дверей/калиток\n\n| Марка | Описание | Изготовитель | Кол-во, шт. |\n| --- | --- | --- | --- |\n| ДН-2 | Калитка для доступа на неэксплуатируемую кровлю из триплекса, габ.размерами: 900х2000(h) мм; формула 1010.4 (10 мм Planibel Crystalvision (зак.) + 1,52 мм PVВ-плёнка + 10 мм Planibel Crystalvision (зак.)) - уточняется по результатам расчета | Nayada (или аналог) | 1 |\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json",
+      "sha256": "537a01df4ce22327d818b38016a5a600bc295ff1a19845640465f4f4af74e6d2",
+      "primary_adjudication": null,
+      "limits": "Это ведомость материалов, а не проверенный заказ поставщику; дробный расчётный расход не доказывает физическую поставку дробных опор или ошибку стоимости. Количество по раскладке не рассчитано; округление не назначать автоматически.",
+      "wording": "Уточнить комплектовочное число опор HILST для К-3/К-4: ведомость материалов содержит75,82 и2144,84шт."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
+      "sha256": "6de616cbb7c5cca66864facc621709f0f7ac35569d40b16b8fded829cd5b3436",
+      "primary_adjudication": null,
+      "limits": "Не считать100,3536м² окончательной площадью заготовки: загибы, нахлёсты, раскрой и область суммарной длины не установлены. Недостаточная закупка не доказана.",
+      "wording": "Уточнить площадь Оп-1:145,44м×0,690м=100,3536м² уже по горизонтальному габариту против78,5м² в ведомости. Проверить длину, развёртку и смысл столбца площади."
+    }
+  ],
+  "limits": [
+    "Rounding example is synthetic, not recovered source data.",
+    "No purchase shortage or new engineer acceptance.",
+    "No frozen evaluator or independent model inputs changed."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
