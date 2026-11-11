@@ -1,0 +1,86 @@
+{
+  "status": "read_only_frozen_validator_replay_not_final_output",
+  "validator_path": "/tmp/auditmanager_paired_comparison_sources_20261111/candidate_retrieval_v2_2f3fc7573438/backend/app/pipeline/stages/prepare/candidate_recovery.py",
+  "validator_sha256": "e6f9ac142f19a0f16eec368e972a7fec548e1a3e6a10a3d9e29a9ab2071dd57e",
+  "rows": [
+    {
+      "request_id": "1794422216432117133",
+      "stage": "candidate_recovery_56e40c36532b13ac",
+      "raw_findings": 1,
+      "admitted_findings": 0,
+      "pending": [
+        {
+          "id": "T-001",
+          "reason": "missing_inspected_source_reference"
+        }
+      ],
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422216432117133/request.json": "e246131d88ee5a4ab28c52922416db2f2ab4268b476aef58452fa96052b25990",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422216432117133/response_1.json": "f07291180288774fa1cf93d4b20ee70bcc4f45dddd0c617ce178ecbb847261d9"
+      }
+    },
+    {
+      "request_id": "1794422236515798156",
+      "stage": "candidate_recovery_fdd5d6029b5be09c",
+      "raw_findings": 2,
+      "admitted_findings": 0,
+      "pending": [
+        {
+          "id": "T-002-1",
+          "reason": "missing_inspected_source_reference"
+        },
+        {
+          "id": "T-002-2",
+          "reason": "missing_inspected_source_reference"
+        }
+      ],
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422236515798156/request.json": "97fefba6e24eaf4a2176d8ace76baaca2409ecda602d646e4f3b93af9b9a110a",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422236515798156/response_1.json": "09bcaf375aab24320c2509efe9b0722232403bcf03e3fc24d848d48ce433e2a5"
+      }
+    },
+    {
+      "request_id": "1794422267405678037",
+      "stage": "candidate_recovery_cc6c75d4a04cce08",
+      "raw_findings": 3,
+      "admitted_findings": 0,
+      "pending": [
+        {
+          "id": "T-003-1",
+          "reason": "missing_inspected_source_reference"
+        },
+        {
+          "id": "T-003-2",
+          "reason": "missing_inspected_source_reference"
+        },
+        {
+          "id": "T-003-3",
+          "reason": "missing_inspected_source_reference"
+        }
+      ],
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422267405678037/request.json": "d980376069f42d3cb809af4e2eea88412e18152f0e5c6e7ec7e91185043358d7",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422267405678037/response_1.json": "40bfd0bea29a61ea78239cd2357d049676432b72c5fce36b3ed0a85536814e80"
+      }
+    },
+    {
+      "request_id": "1794422308313421997",
+      "stage": "candidate_recovery_3cdd02e26903f3bc",
+      "raw_findings": 1,
+      "admitted_findings": 1,
+      "pending": [],
+      "source_hashes": {
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422308313421997/request.json": "28e2a6f7fe56a9c01c690ee5fdd4bb7c4ab9bcce709ee268157dc1b7a57191ac",
+        "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/requests/AK/1794422308313421997/response_1.json": "3aa135db161957cd571f0ecc31773ab96c544492bd888382677509417b45f941"
+      }
+    }
+  ],
+  "finding": "First three responses return six findings but omit an evidence list with permitted block references on each finding. Their candidate_decisions contain source_refs, which the validator does not transfer. Fourth response supplies structured finding evidence and passes this structural gate.",
+  "limits": [
+    "Structural admission is not factual validation.",
+    "Raw saved recovery output precedes validation; file presence does not mean admitted findings.",
+    "Pending findings are archived rather than refuted; final output and follow-up still need checking."
+  ],
+  "production_acceptance": false,
+  "model_calls": 0
+}
