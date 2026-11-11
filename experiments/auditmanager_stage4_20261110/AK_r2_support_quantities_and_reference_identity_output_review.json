@@ -1,0 +1,854 @@
+{
+  "status": "four_AK_support_reference_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "2f91dad463b48bd7c8e94d3922adc8c56d07c1b11d104a5efd1f855e2d06da11",
+  "queue_after_sha256": "9b6ddcf4cfa847e30851fbfbdbaff14c9c88ac902c10925132191c440e4b268a",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-029",
+      "finding": {
+        "id": "F-029",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "specification_mismatch",
+        "sheet": "Листы 48, 50, 53",
+        "page": 57,
+        "problem": "Для опоры под лотковые трассы на листе 53 указан подвес ДКС BSD4120, а в спецификации оборудования на листе 10, поз. 22.6 — BSD2120. Марки подвеса в монтажном решении и закупочной спецификации не согласованы.",
+        "description": "Для опоры под лотковые трассы на листе 53 указан подвес ДКС BSD4120, а в спецификации оборудования на листе 10, поз. 22.6 — BSD2120. Марки подвеса в монтажном решении и закупочной спецификации не согласованы.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие марок и количества монтажных изделий принятому узлу.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-106",
+                "G-107"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-028"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить принятую марку подвеса и согласовать таблицу крепления к кровле со спецификацией оборудования.",
+        "risk": "Недокомплект опор и закупка неподходящих подвесов.",
+        "source_finding_ids": [
+          "G-106",
+          "G-107"
+        ],
+        "source_block_ids": [
+          "blk_978fa763ed7e4a39977b35b866485e2e"
+        ],
+        "related_block_ids": [
+          "blk_978fa763ed7e4a39977b35b866485e2e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+            "page": 57
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-028",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-106",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-107",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение марки подвеса: BSD4120 на листе 53 и BSD2120 в позиции 22.6 спецификации на листе 10; детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение марки подвеса: BSD4120 на листе 53 и BSD2120 в позиции 22.6 спецификации на листе 10; детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 77,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F023_support_type:58cbd95ce44a50b86573",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Таблицы лист48/50/53: плита1, подвесBSD4120 1, консольВВН-60 4, анкерМ10×60 4.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "СО22.5–22.8:15плит,15подвесовBSD2120,15консолейBВH6060,60анкеров.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Марки подвесаBSD4120/BSD2120 не согласованы.",
+          "verdict": "supported_document_identity_conflict",
+          "limits": "Пригодность, взаимозаменяемость и окончательная марка не установлены."
+        },
+        {
+          "claim": "Нарушен ГОСТ21.110-2013п.4.1.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; точное требование не проверено."
+        },
+        {
+          "claim": "Текущая строка требует дополнительно 45 консолей.",
+          "verdict": "not_asserted_in_r2_separate_row",
+          "limits": "Здесь только BSD4120/BSD2120. Количественная гипотеза консолей рассматривается отдельно в F-030."
+        }
+      ],
+      "unsupported_additions": "Не превращать неоднозначную ссылку в отсутствие системы, повтор номера — в дубль закупки, условное количество — в доказанную недопоставку. Каталожная взаимозаменяемость и нормативные кандидаты здесь не проверены.",
+      "novel_useful_content": "Сопоставлены границы текущих строк и прежних проверок на идентичных источниках; разделены марка подвеса, условное количество консолей и вопросы идентификаторов.",
+      "duplicate_burden": "Один конфликт марки подвеса. Табличные количества остаются контекстом, не отдельной находкой этой строки.",
+      "profile_and_section": "technical_mark_conflict_plus_questions_quantity_scope",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+          "sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753",
+          "primary_adjudication": null,
+          "limits": [
+            "Сопоставлены полные TEXT-таблицы одного комплекта. Не доказаны взаимозаменяемость, несущая способность или техническая непригодность какой-либо марки.",
+            "Различие количества1 в локальной таблице и15 в СО само по себе не дефект: возможны повторяющиеся узлы.",
+            "Фактический заказ, недопоставка и задержка монтажа не установлены. Решение инженера для этого кандидата отсутствует.",
+            "Сходные обозначения не являются достаточным основанием признать изделия одинаковыми или автоматически выбрать одно из них."
+          ],
+          "wording": "Согласовать марку подвеса для крепления к кровле: таблица листа53 содержит двойной подвес ДКС BSD4120, позиция22.6 СО — двойной вертикальный подвес BSD-21, BSD2120. Уточнить предусмотренное изделие и привести документы в соответствие."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+          "sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9",
+          "primary_adjudication": null,
+          "limits": [
+            "Соотношения1:4 и15:15 подтверждены авторитетным TEXT; число60 является условным расчётом, а не установленным объёмом закупки.",
+            "Не проверены размещение всех опор, другие типы узлов и область применения каждой из15 плит. Не доказано, что все15 относятся именно к узлу листа53.",
+            "В таблице указана Консоль ВВН-60, в СО Усиленная консоль600мм BВH6060; точная эквивалентность изделий не проверена.",
+            "Текстовая таблица не доказывает фактический состав изображённого узла; графика этого крепления здесь не проверена.",
+            "Недостача45 консолей и последствия для монтажа не установлены. Проектный коэффициент4 нельзя превращать в универсальное правило крепления."
+          ],
+          "wording": "Уточнить количество консолей для кровельных опор: таблица листа53 задаёт4 консоли на1 плиту, СО содержит15 плит и15 консолей. Если все15 опор выполняются по этому узлу, расчётное количество составляет60 консолей; требуется подтвердить применимость узла и согласовать ведомости."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_978fa763ed7e4a39977b35b866485e2e.png",
+          "sha256": "dd1639fcbd7fab08dc46cb0b59a93fe616bd296a1abbf52a76491d68383ef783",
+          "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98835baf7fed4bf1934dc55088895af9.png",
+          "sha256": "e70ffed5f0ab39b6c0bec139a21a1758c2d20ce9aeec0e0c30c71e5208bc5f72",
+          "block_id": "blk_98835baf7fed4bf1934dc55088895af9",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6e1b1e0631904e1c8330bf2c4f47744c.png",
+          "sha256": "4584454d0b6f655ff0797a4c7526f42439f19861f5c5607f9b141904d98a4481",
+          "block_id": "blk_6e1b1e0631904e1c8330bf2c4f47744c",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-026",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-029_support_or_reference_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-030",
+      "finding": {
+        "id": "F-030",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "quantity_mismatch",
+        "sheet": "Листы 48, 50, 53",
+        "page": 57,
+        "problem": "Таблица крепления к кровле на листе 53 предусматривает 4 консоли на одну плиту и один подвес. В спецификации на листе 10 при 15 плитах и 15 подвесах указано только 15 консолей вместо 60 по составу узла; расхождение составляет 45 шт.",
+        "description": "Таблица крепления к кровле на листе 53 предусматривает 4 консоли на одну плиту и один подвес. В спецификации на листе 10 при 15 плитах и 15 подвесах указано только 15 консолей вместо 60 по составу узла; расхождение составляет 45 шт.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие марок и количества монтажных изделий принятому узлу.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-108"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-028"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать количество консолей в спецификации с принятым составом и количеством опор.",
+        "risk": "Недокомплект опор и закупка неподходящих подвесов.",
+        "source_finding_ids": [
+          "G-108"
+        ],
+        "source_block_ids": [
+          "blk_978fa763ed7e4a39977b35b866485e2e"
+        ],
+        "related_block_ids": [
+          "blk_978fa763ed7e4a39977b35b866485e2e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+            "page": 57
+          }
+        ],
+        "highlight_regions": [],
+        "source_stage": "stage01_atomicity_guard",
+        "atomicity_guard": {
+          "split_from": "F-028",
+          "reason": "distinct_nonrecommendational_candidates_same_block"
+        },
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-108",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F024_support_console_scope:6afac95bc159f93f2a3a",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Таблицы лист48/50/53: плита1, подвесBSD4120 1, консольВВН-60 4, анкерМ10×60 4.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "СО22.5–22.8:15плит,15подвесовBSD2120,15консолейBВH6060,60анкеров.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Графика каждого типового узла подтверждает четыре консоли на плиту.",
+          "verdict": "not_supported_direct_GRAPHIC",
+          "limits": "На каждом из трёх рисунков показана одна консоль под лотком; четырёх явно изображённых консолей нет. Проекция не устанавливает окончательный состав узла. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "4×15=60, разница60−15=45.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "При условии применения табличного состава ко всем15опорам. Раскладка всех опор и соответствиеВВН-60/BВH6060 здесь не проверены."
+        },
+        {
+          "claim": "Подтверждена недостача45консолей, нужно их дозаказать.",
+          "verdict": "not_established",
+          "limits": "Сначала согласовать графику и локальную ведомость, затем применимость к15плитам. Нельзя считать1 на рисунке автоматическим исправлением авторитетногоTEXT4."
+        },
+        {
+          "claim": "Нарушен ГОСТ21.110-2013п.4.1.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; точное требование не проверено."
+        },
+        {
+          "claim": "Новая рекомендация безусловно требует дозаказа 45 консолей.",
+          "verdict": "not_asserted_in_r2_but_description_remains_conditional",
+          "limits": "Решение просит согласовать количество с принятым составом опор. Сохранить оговорку: 45 получено только при применении табличных четырёх консолей к каждой из 15 плит; графика не подтверждает четыре изображённых консоли."
+        }
+      ],
+      "unsupported_additions": "Не превращать неоднозначную ссылку в отсутствие системы, повтор номера — в дубль закупки, условное количество — в доказанную недопоставку. Каталожная взаимозаменяемость и нормативные кандидаты здесь не проверены.",
+      "novel_useful_content": "Сопоставлены границы текущих строк и прежних проверок на идентичных источниках; разделены марка подвеса, условное количество консолей и вопросы идентификаторов.",
+      "duplicate_burden": "Условная количественная сверка консолей, отдельная от марки подвеса F-029. Не считать 45 самостоятельными дефектами.",
+      "profile_and_section": "technical_mark_conflict_plus_questions_quantity_scope",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+          "sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753",
+          "primary_adjudication": null,
+          "limits": [
+            "Сопоставлены полные TEXT-таблицы одного комплекта. Не доказаны взаимозаменяемость, несущая способность или техническая непригодность какой-либо марки.",
+            "Различие количества1 в локальной таблице и15 в СО само по себе не дефект: возможны повторяющиеся узлы.",
+            "Фактический заказ, недопоставка и задержка монтажа не установлены. Решение инженера для этого кандидата отсутствует.",
+            "Сходные обозначения не являются достаточным основанием признать изделия одинаковыми или автоматически выбрать одно из них."
+          ],
+          "wording": "Согласовать марку подвеса для крепления к кровле: таблица листа53 содержит двойной подвес ДКС BSD4120, позиция22.6 СО — двойной вертикальный подвес BSD-21, BSD2120. Уточнить предусмотренное изделие и привести документы в соответствие."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+          "sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9",
+          "primary_adjudication": null,
+          "limits": [
+            "Соотношения1:4 и15:15 подтверждены авторитетным TEXT; число60 является условным расчётом, а не установленным объёмом закупки.",
+            "Не проверены размещение всех опор, другие типы узлов и область применения каждой из15 плит. Не доказано, что все15 относятся именно к узлу листа53.",
+            "В таблице указана Консоль ВВН-60, в СО Усиленная консоль600мм BВH6060; точная эквивалентность изделий не проверена.",
+            "Текстовая таблица не доказывает фактический состав изображённого узла; графика этого крепления здесь не проверена.",
+            "Недостача45 консолей и последствия для монтажа не установлены. Проектный коэффициент4 нельзя превращать в универсальное правило крепления."
+          ],
+          "wording": "Уточнить количество консолей для кровельных опор: таблица листа53 задаёт4 консоли на1 плиту, СО содержит15 плит и15 консолей. Если все15 опор выполняются по этому узлу, расчётное количество составляет60 консолей; требуется подтвердить применимость узла и согласовать ведомости."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_978fa763ed7e4a39977b35b866485e2e.png",
+          "sha256": "dd1639fcbd7fab08dc46cb0b59a93fe616bd296a1abbf52a76491d68383ef783",
+          "block_id": "blk_978fa763ed7e4a39977b35b866485e2e",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_98835baf7fed4bf1934dc55088895af9.png",
+          "sha256": "e70ffed5f0ab39b6c0bec139a21a1758c2d20ce9aeec0e0c30c71e5208bc5f72",
+          "block_id": "blk_98835baf7fed4bf1934dc55088895af9",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6e1b1e0631904e1c8330bf2c4f47744c.png",
+          "sha256": "4584454d0b6f655ff0797a4c7526f42439f19861f5c5607f9b141904d98a4481",
+          "block_id": "blk_6e1b1e0631904e1c8330bf2c4f47744c",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Support under cable tray: one drawn console with leader, vertical support shortened on site, plate570×460. Four consoles not explicitly depicted; no raster correction of authoritative TEXT quantity4."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-026",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-030_support_or_reference_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-031",
+      "finding": {
+        "id": "F-031",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление спецификации",
+        "sheet": "Листы 10, 11",
+        "page": [
+          103,
+          104
+        ],
+        "problem": "В спецификации повторены номера и каталожные коды разных изделий.",
+        "description": "Номер 21.10 присвоен двум интерфейсным кабелям; код 35341 — лотку и треугольным биркам; BSD2120 — подвесу и водогазопроводной трубе Ду32.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить заполнение обозначений, позиций и кодов изделий в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-029"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-029"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Устранить повтор номера и проверить каталожные коды по документации изготовителей.",
+        "risk": "Ошибки заказа и идентификации изделий.",
+        "source_finding_ids": [
+          "T-029"
+        ],
+        "source_block_ids": [
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_f4bf6dec4072413fa43043bf27d880eb"
+        ],
+        "related_block_ids": [
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "blk_f4bf6dec4072413fa43043bf27d880eb"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+            "page": 103
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f4bf6dec4072413fa43043bf27d880eb",
+            "page": 104
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F031_schedule_identifiers:8951af2cd99fff9b38a5",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F031_schedule_identifiers:f213ff7d834180be58c0",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F031_schedule_identifiers:14910e188651d4b3843b",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "СО содержит две21.10:КИС-Пнг(А)-HF3×2×0,78 длиной30м и2×2×0,78 длиной985м.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "35341 записан для лотка22.4 и треугольной бирки22.9;BSD2120 для подвеса22.6 и трубыДу32 в22.13.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Нужно устранить неоднозначные позиции и сверить марки/коды с каталогом.",
+          "verdict": "supported_procurement_reference_question",
+          "limits": "35341/BSD2120 находятся в колонке типа/марки; отдельная колонка кода оборудования пуста."
+        },
+        {
+          "claim": "Установлено правильное каталожное обозначение для каждой строки.",
+          "verdict": "not_established",
+          "limits": "Каталоги изготовителей здесь не проверены; автоматически подставлять код не следует."
+        },
+        {
+          "claim": "Дублирован номер значит кабель заказан дважды, а изделия фактически неверны.",
+          "verdict": "not_established",
+          "limits": "Две21.10 различаются кабелем и длиной; удалять строку как дубль нельзя. Закупка не исследована."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Кандидат нормы без проверки пункта не считается доказательством."
+        },
+        {
+          "claim": "Повтор номера 21.10 следует устранить удалением одного кабеля.",
+          "verdict": "not_supported_and_not_required_by_r2_solution",
+          "limits": "Две позиции относятся к разным кабелям и длинам. Исправить идентификатор, сохранив обе материальные позиции до проверки комплектности."
+        }
+      ],
+      "unsupported_additions": "Не превращать неоднозначную ссылку в отсутствие системы, повтор номера — в дубль закупки, условное количество — в доказанную недопоставку. Каталожная взаимозаменяемость и нормативные кандидаты здесь не проверены.",
+      "novel_useful_content": "Сопоставлены границы текущих строк и прежних проверок на идентичных источниках; разделены марка подвеса, условное количество консолей и вопросы идентификаторов.",
+      "duplicate_burden": "Three identifier conflicts, not quantities duplicated. BSD2120 identity may overlap F-026 support mark review; retain distinct scope.",
+      "profile_and_section": "questions_clarifications_specification_identifiers",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_f4bf6dec4072413fa43043bf27d880eb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32",
+          "primary_adjudication": null,
+          "limits": [
+            "35341 и BSD2120 находятся в графе типа/марки, отдельная графа кода оборудования пуста. Не переносить неточный термин исходного кандидата в описание структуры таблицы.",
+            "Точное изделие35341 проверено по производителю. Официальная карточка точного BSD2120 при обращении недоступна; найденная BSD2120INOX — другая модификация и не использована как доказательство точного артикула.",
+            "Правильные артикулы бирок и трубы не установлены. Не заменять их значениями соседних строк и не удалять одну из строк21.10 как дубль: кабели различаются.",
+            "Три самостоятельных конфликта сохранены в одной исходной записи; фактическая ошибка заказа или поставки не доказана. Историческое решение инженера по этому кандидату не установлено."
+          ],
+          "wording": "Уточнить идентификаторы в СО: позиция21.10 повторена у разных интерфейсных кабелей3×2×0,78 и2×2×0,78; в строке22.9 треугольных бирок указан35341, соответствующий лотку строки22.4; BSD2120 повторён в строках22.6 подвеса и22.13 трубыДу32. Согласовать позиции и марки, сохранив отдельные изделия."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32",
+          "primary_adjudication": null,
+          "limits": [
+            "35341 и BSD2120 находятся в графе типа/марки, отдельная графа кода оборудования пуста. Не переносить неточный термин исходного кандидата в описание структуры таблицы.",
+            "Точное изделие35341 проверено по производителю. Официальная карточка точного BSD2120 при обращении недоступна; найденная BSD2120INOX — другая модификация и не использована как доказательство точного артикула.",
+            "Правильные артикулы бирок и трубы не установлены. Не заменять их значениями соседних строк и не удалять одну из строк21.10 как дубль: кабели различаются.",
+            "Три самостоятельных конфликта сохранены в одной исходной записи; фактическая ошибка заказа или поставки не доказана. Историческое решение инженера по этому кандидату не установлено."
+          ],
+          "wording": "Уточнить идентификаторы в СО: позиция21.10 повторена у разных интерфейсных кабелей3×2×0,78 и2×2×0,78; в строке22.9 треугольных бирок указан35341, соответствующий лотку строки22.4; BSD2120 повторён в строках22.6 подвеса и22.13 трубыДу32. Согласовать позиции и марки, сохранив отдельные изделия."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32",
+          "primary_adjudication": null,
+          "limits": [
+            "35341 и BSD2120 находятся в графе типа/марки, отдельная графа кода оборудования пуста. Не переносить неточный термин исходного кандидата в описание структуры таблицы.",
+            "Точное изделие35341 проверено по производителю. Официальная карточка точного BSD2120 при обращении недоступна; найденная BSD2120INOX — другая модификация и не использована как доказательство точного артикула.",
+            "Правильные артикулы бирок и трубы не установлены. Не заменять их значениями соседних строк и не удалять одну из строк21.10 как дубль: кабели различаются.",
+            "Три самостоятельных конфликта сохранены в одной исходной записи; фактическая ошибка заказа или поставки не доказана. Историческое решение инженера по этому кандидату не установлено."
+          ],
+          "wording": "Уточнить идентификаторы в СО: позиция21.10 повторена у разных интерфейсных кабелей3×2×0,78 и2×2×0,78; в строке22.9 треугольных бирок указан35341, соответствующий лотку строки22.4; BSD2120 повторён в строках22.6 подвеса и22.13 трубыДу32. Согласовать позиции и марки, сохранив отдельные изделия."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-027",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-031_support_or_reference_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-037",
+      "finding": {
+        "id": "F-037",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление документации",
+        "sheet": "Листы 1, 4",
+        "page": [
+          5,
+          8
+        ],
+        "problem": "В описании противодымной вентиляции оставлены ссылки на шаблон.",
+        "description": "Указаны «см. лист 6 примера РД pdf» и «см. статья ПС». По ведомости необходимые схемы находятся на листах 24 и 47; лист 6 посвящён газоанализу.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Заменить шаблонные записи точными ссылками на рабочие листы и комплект управления противодымной вентиляцией.",
+        "risk": "Невозможность однозначно найти применяемое проектное решение.",
+        "source_finding_ids": [
+          "T-035"
+        ],
+        "source_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331"
+        ],
+        "related_block_ids": [
+          "blk_1865bf51c17e444491a5621d4a33c331",
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_c68be533b2c24e4799dde6fb256694f4",
+          "blk_dc32b584ce9748a5b520a300112b12de",
+          "blk_400a32e7aac048e6a9d6da65c598995f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+            "page": 8
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 61,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F033_power_reference_scope:2ec9d727804fc985242e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Раздел7 содержит «лист6 примераРДpdf» и «см.статьяПС».",
+          "verdict": "confirmed_authoritative_TEXT_template_references",
+          "limits": ""
+        },
+        {
+          "claim": "Ведомость относит лист6 к газоанализу,24 — к функциональной схеме противодымной приточной системы,47 — к внешним подключениям.",
+          "verdict": "confirmed_authoritative_TEXT_register_entries",
+          "limits": ""
+        },
+        {
+          "claim": "В проекте отсутствует схема противодымной вентиляции или её питание.",
+          "verdict": "not_established",
+          "limits": "Шаблонная ссылка не доказывает отсутствие схемы. Ранее просмотренные графические блоки существуют, но сейчас проверены именно ссылки."
+        },
+        {
+          "claim": "Заменить шаблон точной ссылкой после проверки требуемого контекста.",
+          "verdict": "supported_editorial_question",
+          "limits": "Листы24/47 — кандидаты внутри комплекта, не автоматическая замена любой ссылки на отдельную статью или пример."
+        },
+        {
+          "claim": "F-033 восстанавливает всю историческую тему разных шифров питанияБУРР.",
+          "verdict": "not_established",
+          "limits": "Связанный атом эталона касается шаблонной ссылки; замечание не покрывает остальные адресные вопросы питания исторической темы."
+        },
+        {
+          "claim": "Листы 24 и 47 обязательно заменяют обе шаблонные ссылки.",
+          "verdict": "candidate_references_not_automatic_substitution",
+          "limits": "Ведомость подтверждает назначения листов. Для ссылки на статью ПС требуется установить нужный контекст, а не заменять её ближайшим тематическим листом."
+        }
+      ],
+      "unsupported_additions": "Не превращать неоднозначную ссылку в отсутствие системы, повтор номера — в дубль закупки, условное количество — в доказанную недопоставку. Каталожная взаимозаменяемость и нормативные кандидаты здесь не проверены.",
+      "novel_useful_content": "Сопоставлены границы текущих строк и прежних проверок на идентичных источниках; разделены марка подвеса, условное количество консолей и вопросы идентификаторов.",
+      "duplicate_burden": "Two template references grouped; do not duplicate the separate power-source coordination issue.",
+      "profile_and_section": "questions_clarifications_editorial",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1865bf51c17e444491a5621d4a33c331",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c68be533b2c24e4799dde6fb256694f4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F033_power_reference_scope.json",
+          "sha256": "9c240dda69a02709b23452f71dd767d98d4719b50a184253a9911e6ab23eb836",
+          "primary_adjudication": null,
+          "limits": [
+            "Примечание2 описывает в том числе кабели между внутренними и наружными блоками; его охват вводом БУРР не установлен. Разные шифры не доказаны как взаимоисключающие ссылки на одну цепь.",
+            "Шифр ЭМ-КЗ сохранён буквально из TEXT; не исправляется на К3 по предположению.",
+            "Смежные комплекты и задания на электропитание не проверены. Отсутствие цепей, неверное напряжение, ошибка монтажа и фактическая неработоспособность не установлены.",
+            "Шаблонная ссылка относится к противодымным системам и не является доказательством отсутствия питания БУРР. Верный заменяющий документ не установлен.",
+            "Это вопросы координации и оформления, а не доказанные технические дефекты электроснабжения."
+          ],
+          "wording": "Уточнить распределение ссылок на питание: БУРР-1М на лист42 отнесён к21/24-ГК-К5-ЭМ, питающие и межблочные кабели по примечанию2 — к13АВ-РД-ЭМ-К5; общие данные указывают13АВ-РД-ЭМ-КЗ и13АВ-РД-ЭМ2-ПА для шкафов. Определить применимый комплект для каждой группы оборудования. Отдельно заменить шаблонную ссылку «лист6 примера РД pdf» в разделе7 на точный документ и лист."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-033",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-037_support_or_reference_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
