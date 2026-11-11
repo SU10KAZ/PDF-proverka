@@ -1,0 +1,359 @@
+{
+  "status": "three_AR_quantity_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "b01551bbc5e4f726ec73e771106a9862838d508d2143b3ed05591720db65322d",
+  "queue_after_sha256": "0e4dd72bf82ef661c0b0858e4ab7b39e930a0bd868f6830af9e146e81530a454",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Ведомости материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Штучное количество регулируемых опор задано дробными значениями.",
+        "description": "В ведомости материалов для К-3 указано 75,82 опоры, для К-4 — 2144,84 опоры при единице измерения «шт.». Округление вверх даёт 76 и 2145 шт., однако эти числа не подтверждают количество по фактической раскладке плитки, краевым опорам и принятому запасу.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.7,
+            "reason": "Проверить требования к оформлению количеств и единиц измерения изделий в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-007"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить целое количество опор по схеме установки с учётом краевых участков и отдельно обозначенного запаса, затем исправить ведомость.",
+        "risk": "Неоднозначное комплектование поставки и нехватка опор при монтаже.",
+        "source_finding_ids": [
+          "T-007"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 56,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-AR-F-004:5ba89cb25036827448d4",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К-3:75,82 шт.; К-4:2144,84 шт. Округление вверх 76/2145 арифметически верно.",
+          "verdict": "confirmed_TEXT_and_decimal_arithmetic",
+          "limits": "Целая потребность зависит от раскладки и запаса. Новая формулировка явно не считает округление подтверждением потребности."
+        },
+        {
+          "claim": "Определить целое количество опор по схеме установки с учётом краевых участков и отдельно обозначенного запаса, затем исправить ведомость.",
+          "verdict": "supported_scoped_question",
+          "limits": "Уточнить целое комплектовочное количество по раскладке; нехватка поставки не доказана."
+        },
+        {
+          "claim": "Неоднозначное комплектование поставки и нехватка опор при монтаже.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Поставка, стоимость и монтаж не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нарушение конкретной нормы не установлено."
+        }
+      ],
+      "unsupported_additions": "No automatic rounding, area equalization or proven procurement loss.",
+      "novel_useful_content": "known_quantity_question_usefulness_not_newly_engineer_adjudicated",
+      "duplicate_burden": "Different material quantities; do not count decimal discrepancy as equipment failure.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "Prior evidence hashes verified; revised wording and arithmetic assessed without inventing engineer acceptance.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "byte_identical_authoritative_source_reuse",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json",
+          "sha256": "537a01df4ce22327d818b38016a5a600bc295ff1a19845640465f4f4af74e6d2",
+          "primary_adjudication": null,
+          "limits": "Это ведомость материалов, а не проверенный заказ поставщику; дробный расчётный расход не доказывает физическую поставку дробных опор или ошибку стоимости. Количество по раскладке не рассчитано; округление не назначать автоматически.",
+          "wording": "Уточнить комплектовочное число опор HILST для К-3/К-4: ведомость материалов содержит75,82 и2144,84шт.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json",
+          "route": "byte_identical_authoritative_source_reuse"
+        }
+      ],
+      "disposition": "assessed_preserve_quantity_question_no_automatic_correction"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Ведомости материалов",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Расход плитки для К-3 превышает площадь основных слоёв на 74,91% без пояснения.",
+        "description": "Для К-3 ведомость содержит 10,84 м² гидроизоляции и геотекстиля и 18,96 м² плитки. Разница составляет 8,12 м², или 74,91% от площади основных слоёв. Включение иных площадок, особенности раскладки или запас в таблице не раскрыты. Завышение закупки до проверки границ учёта не считается установленным.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.75,
+            "reason": "Проверить требования к согласованности ведомостей материалов с проектными решениями и пояснениям количественных показателей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать расход плитки по раскладке и границам покрытия; отдельно указать запас, подрезку и дополнительные участки либо исправить количество.",
+        "risk": "Необоснованные затраты на закупку или ошибочное распределение материалов между покрытиями.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 64,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR36_B-AR-F-005:d576dd306cbd1e602f34",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "18,96−10,84=8,12 м²; доля 74,90775%, округленно 74,91%.",
+          "verdict": "confirmed_TEXT_and_decimal_arithmetic",
+          "limits": "Границы учета, запас и раскрой в проверенной таблице не раскрыты; глобальное отсутствие обоснования не установлено."
+        },
+        {
+          "claim": "Пересчитать расход плитки по раскладке и границам покрытия; отдельно указать запас, подрезку и дополнительные участки либо исправить количество.",
+          "verdict": "supported_scoped_question",
+          "limits": "Сверить границы и раскладку; не уравнивать площади слоев и не назначать универсальный процент запаса. Завышение закупки не доказано."
+        },
+        {
+          "claim": "Необоснованные затраты на закупку или ошибочное распределение материалов между покрытиями.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Поставка, стоимость и монтаж не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нарушение конкретной нормы не установлено."
+        }
+      ],
+      "unsupported_additions": "No automatic rounding, area equalization or proven procurement loss.",
+      "novel_useful_content": "known_quantity_question_usefulness_not_newly_engineer_adjudicated",
+      "duplicate_burden": "Different material quantities; do not count decimal discrepancy as equipment failure.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "Prior evidence hashes verified; revised wording and arithmetic assessed without inventing engineer acceptance.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "byte_identical_authoritative_source_reuse",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "sha256": "c0e65e558fcbde7f84022893578b1c64f1bf53f716100b3106a804db4280d657",
+          "primary_adjudication": null,
+          "limits": "Не назначать одинаковые площади всех слоёв без проверки геометрии; не считать1,4092м³ окончательной потребностью. Процент запаса К-4 не является универсальным допуском дляК-3. Избыток закупки и нехватка утеплителя не доказаны.",
+          "wording": "Проверить расчёт количеств К-3: покрытие10,8м², гидроизоляция/геотекстиль10,84м², плитка18,96м², утеплитель1,24м³ при указанном слое130мм. Раскрыть границы площадей, вычеты и запас.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "route": "byte_identical_authoritative_source_reuse"
+        }
+      ],
+      "disposition": "assessed_preserve_quantity_question_no_automatic_correction"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Ведомости материалов",
+        "sheet": "Лист 8",
+        "page": 10,
+        "problem": "Итоговая длина ограждений отличается от суммы опубликованных строк на 0,01 м.",
+        "description": "Сумма длин 153,82 + 27,35 + 35,43 + 12,69 + 30,18 составляет 259,47 м, тогда как в ведомости указано 259,48 м. Разница может быть результатом суммирования неокруглённых исходных значений.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.6,
+            "reason": "Проверить правила представления количественных показателей и согласованности итогов ведомостей.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать итог с показанными строками либо пояснить использование неокруглённых значений.",
+        "risk": "Незначительное расхождение количественных данных при проверке ведомости.",
+        "source_finding_ids": [
+          "T-009"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "blk_6ff6b58a285e4ec1b276342a846e08e7"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 38,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Пять опубликованных длин дают 259,47 м против итога 259,48 м.",
+          "verdict": "confirmed_TEXT_and_decimal_arithmetic",
+          "limits": "Если каждая исходная длина больше опубликованной на 0,002 м, строки округлятся прежним образом, сумма даст 259,480. Это контрпример обязательной ошибке, не восстановление исходников."
+        },
+        {
+          "claim": "Согласовать итог с показанными строками либо пояснить использование неокруглённых значений.",
+          "verdict": "supported_scoped_question",
+          "limits": "Только малозначимый вопрос о методике округления; технический дефект и необходимость менять итог не доказаны."
+        },
+        {
+          "claim": "Незначительное расхождение количественных данных при проверке ведомости.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Поставка, стоимость и монтаж не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нарушение конкретной нормы не установлено."
+        }
+      ],
+      "unsupported_additions": "No automatic rounding, area equalization or proven procurement loss.",
+      "novel_useful_content": "known_quantity_question_usefulness_not_newly_engineer_adjudicated",
+      "duplicate_burden": "Different material quantities; do not count decimal discrepancy as equipment failure.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "Prior evidence hashes verified; revised wording and arithmetic assessed without inventing engineer acceptance.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "route": "byte_identical_authoritative_source_reuse",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        }
+      ],
+      "disposition": "assessed_preserve_quantity_question_no_automatic_correction"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
