@@ -1,0 +1,46 @@
+{
+  "status": "invalid_json_and_unresolved_identity_no_control_credit",
+  "candidate": "KM F-014",
+  "same_input_request_sha256": "4d185a5790b64ade969500ac351b24119e6aa3815c68ab00c6392b91434cdb5c",
+  "model": "claude/claude-sonnet-5-5",
+  "transport_exit_code": 0,
+  "cli_terminal_reason": "completed",
+  "raw_result_chars": 17450,
+  "parser_error": "claude_json_not_found",
+  "raw_answer_preserved": true,
+  "diagnosis": "Final CLI result contains a complete prose/JSON-like answer, but an executable-looking .replace expression inside the JSON and fabricated image hashes make it invalid. No expression was executed and no evidence hash was repaired for the model. This diagnoses this repeat only, not the earlier run whose raw event is unavailable.",
+  "semantic_assessment": {
+    "model_verdict_in_raw_text": "refuted",
+    "accepted_verdict": null,
+    "reason": "The answer disputes the landing terminology, but explicitly leaves the precise leader endpoints and plan/section identity unresolved. Correcting terminology does not prove that the underlying cross-view mark discrepancy is false. No verified negative control follows.",
+    "coordinator_graphic_observations": [
+      "Directly viewed lower section: OGM4 +6.070 to +7.270; OGM5 +7.270 to +9.110.",
+      "Directly viewed whole section: first OGM6 +9.110 to +10.630.",
+      "Directly viewed plan: OGM6 label and two OGM5 labels are present; plan-to-section physical identity was not conclusively established."
+    ]
+  },
+  "usage": {
+    "input_tokens": 11416,
+    "output_tokens": 18889,
+    "cached_tokens": 11097,
+    "cache_write_tokens": 317,
+    "reasoning_tokens": 10129,
+    "duration_ms": 138370,
+    "cost_usd": 0.0,
+    "cost_source": "subscription"
+  },
+  "cost_note": "Subscription consumption is not free; monetary incremental cost unknown.",
+  "automatic_retry": false,
+  "next_action": "Keep evaluator truth/filter hold. Do not repeat the same input without a new way to establish leader/instance correspondence or engineering clarification. Generic future requests should use bounded image identifiers rather than ask a model to transcribe hashes.",
+  "evaluator_changed": false,
+  "production_acceptance": false,
+  "artifacts": {
+    "binding.json": "bff24fff6f8b4356ebfc74186a111705aee23132c3b3d63e66e02a6de36e10fc",
+    "completion.json": "5118e7e076cf53c4f5ea932c8b5f83c56b047f88303b5fcaa444f78e5d232c4a",
+    "request.json": "f204a70fc5011a37f8e140a8be10eadaf3b6735e5c9532af7e5e50150971d0b9",
+    "attempt.json": "49043dd371187138af95c74e53bd08c2a8afdfa60ab8361e65b7b7ded8d22c84",
+    "result.json": "96c896f1acf0809313f03ee7ac651e62d010dab4df4ed05df19c658ef768d3f6",
+    "cli_result_event.json": "1b89278b39b15cbc31cefd569f3abcda06390e7e8bc549a79ecae2ab0da8362b",
+    "result_binding.json": "567d6df658c02c48bc6f21a67ac96dbf0c65c3594f44d1ae4f7279accc6f898f"
+  }
+}
