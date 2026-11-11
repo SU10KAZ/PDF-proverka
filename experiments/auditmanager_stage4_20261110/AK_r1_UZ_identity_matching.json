@@ -1,0 +1,101 @@
+{
+  "status": "coordinator_semantic_matching_not_new_engineer_review",
+  "historical_case": "13АВ-РД-АК2-ПА_V1::UNI-065",
+  "historical_engineer_decision": "Принято",
+  "discipline": "AK",
+  "repeat": 1,
+  "mapped_atom": {
+    "target_id": "AK65_F043_UZ_identity:8876a1a15c544ad7ed1a",
+    "availability": "available",
+    "coverage": "full",
+    "finding_ids": [
+      "F-046"
+    ],
+    "evidence": [
+      {
+        "source": "frozen_target_decision",
+        "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+        "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925"
+      },
+      {
+        "source": "same_version_MD",
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+        "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92"
+      },
+      {
+        "source": "sealed_output",
+        "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+        "sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+        "finding_id": "F-046"
+      }
+    ],
+    "reason": "Для тех же Пн5.1/Вн5.1, лист15/PDF19, указаны четыре преобразователя, последовательность UZ2/UZ3/UZ2/UZ3 и расхождение с перечнем UZ1–UZ4. Узкий тезис об идентификации сохранён. Недостаток устройств, конкретные новые номера и нарушение нормы не засчитываются.",
+    "section_assessment": "unchecked"
+  },
+  "review_ledger": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/AK_review.json",
+  "review_ledger_sha256": "02abb037a6fc30ff51a1de003497ee86b16f49fc52c357c64ae1edd96663f02d",
+  "graphic_evidence_hashes_verified": true,
+  "TEXT_excerpts_match_current_input": true,
+  "output_assertion_limits": [
+    "Рекомендация индивидуальных позиций не обсуждает допустимую локальную нумерацию отдельных щитов из СО9.2. Сохранение факта расхождения не означает одобрение любого способа исправления.",
+    "Норма обозначена кандидатом без подтверждённого пункта; нормативное нарушение не зачтено.",
+    "Отрицательный атом об отсутствии расхождения остаётся unchecked до полного просмотра выдачи; успех фильтра не заявлен."
+  ],
+  "quality_summary": {
+    "status": "review_summary_not_trial_acceptance",
+    "discipline": "AK",
+    "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+    "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+    "routes": {
+      "technical": {
+        "counts": {
+          "denominator": 55,
+          "availability_available": 4,
+          "partial": 2,
+          "availability_unchecked": 51,
+          "unchecked": 51,
+          "full": 2
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "question": {
+        "counts": {
+          "denominator": 23,
+          "availability_unchecked": 23,
+          "unchecked": 23
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "fully preserved target rate"
+      },
+      "negative": {
+        "counts": {
+          "denominator": 22,
+          "availability_unchecked": 22,
+          "unchecked": 22
+        },
+        "review_complete": false,
+        "full_match_rate": null,
+        "meaning": "repeated false claim rate"
+      }
+    },
+    "section_accuracy_counts": {
+      "unchecked": 2
+    },
+    "filter_effectiveness": null,
+    "production_acceptance": false,
+    "unmeasured": [
+      "Novel valid findings",
+      "Unsupported additions",
+      "Duplicate burden",
+      "Useful baseline retention",
+      "Engineer time",
+      "Run cost and duration",
+      "Candidate arrival and reasoned filter removal"
+    ]
+  },
+  "model_calls": 0,
+  "production_acceptance": false
+}
