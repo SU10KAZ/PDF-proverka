@@ -33,11 +33,12 @@
     "negative": {
       "counts": {
         "denominator": 22,
-        "availability_unchecked": 22,
-        "unchecked": 22
+        "availability_available": 22,
+        "absent": 20,
+        "partial": 2
       },
-      "review_complete": false,
-      "full_match_rate": null,
+      "review_complete": true,
+      "full_match_rate": 0.0,
       "meaning": "repeated false claim rate"
     }
   },

@@ -98,11 +98,22 @@
     },
     {
       "target_id": "AK57:d6f8484b24bc88adcab5",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK57.json",
+          "sha256": "da97d08135ceb090e7b1dba41f1296056c8c9d6bdf3b46ab6d516f8379cd5b94"
+        }
+      ],
+      "reason": "F-048 прямо сохраняет100Па внутри обоих диапазонов. Непокрытие участка20–50 не является повтором ложного утверждения о принадлежности50/100. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -116,20 +127,42 @@
     },
     {
       "target_id": "AK65_F043_UZ_identity:ab637698bce5025cb6df",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK65_F043_UZ_identity.json",
+          "sha256": "d2dc9fd1339e71aeaf1c6553982379e9e4de68bfeeebc53a7871c7a488723925"
+        }
+      ],
+      "reason": "F-040 выявляет расхождение UZ2/UZ3 против UZ1–UZ4, не утверждает соответствие обозначений. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "AK7:4c7010afca7e2923c94b",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK7.json",
+          "sha256": "244524861dafa21ed85aa490e087c7ea10a654b59f18184b137f99eade018260"
+        }
+      ],
+      "reason": "F-045 говорит о двух учтённых AO и отдельном отсутствии задания скорости. Ложный пересчёт трёх отмеченных AO не повторён; правильность нового вывода оценивается отдельно. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -161,11 +194,22 @@
     },
     {
       "target_id": "AK_F001_F002_CO_package_boundary:f0a1212b87b41e035c75",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F001_F002_CO_package_boundary.json",
+          "sha256": "fe83ab917d72012bc230c20303e2f6ba8b8eb7b8ee364d41f850ac9ca486647e"
+        }
+      ],
+      "reason": "F-015 ограничивает отсутствие цепочки журналом и запрашивает смежный комплект. Глобальное отсутствие подключения группы5 не утверждается; потеря явной ссылки АК1 оценивается в положительном вопросе и качестве. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -494,11 +538,24 @@
     },
     {
       "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-030"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+        }
+      ],
+      "reason": "F-030 ограничивает заголовок журналом, но требует показать подключения Y2/M2/TS2 и связывает это с неработоспособностью, не сохраняя уже показанные межприборные соединения внешней схемы. Частичный повтор ложного основания; отсутствие отдельных строк журнала само по себе не объявляется ложным. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -593,11 +650,22 @@
     },
     {
       "target_id": "AK_F013_cable_repeated_rows:b911bab30a5f2b93c3e1",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F013_cable_repeated_rows.json",
+          "sha256": "37a463281ab51853b005d219c50d5cf7667c7baec128b379d7c05f7a73b74297"
+        }
+      ],
+      "reason": "F-019 прямо сообщает различия способов прокладки. Требование удалить строки чрезмерно, но дословная идентичность первого набора не заявлена. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -629,11 +697,22 @@
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:10548e1eff411e685ffd",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        }
+      ],
+      "reason": "F-020 сохраняет насосную линию Пкр4.1-13 и конфликт её адреса; глобальное отсутствие линии не повторено. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -665,11 +744,22 @@
     },
     {
       "target_id": "AK_F014_motor_endpoint_register:03bfe4c21a069237b772",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F014_motor_endpoint_register.json",
+          "sha256": "e0c3f811da386968b20d56c92fa16baea79520907457f56cf16805c3b6486270"
+        }
+      ],
+      "reason": "F-020 содержит паруM1/M5, но F-054/F-055 отдельно показывают M2 насоса. Поэтому выдача в целом не ограничена только двумя обозначениями. Неполнота объединения и противоречивое имя вентилятора остаются отдельными недостатками. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -856,20 +946,42 @@
     },
     {
       "target_id": "AK_F021_cable_reading_balance:e96e359fd83734e6c3fa",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json",
+          "sha256": "e1221c563cfdf13442cf7197a43f4a81a8ce262ec4f68a3bbd2c69a5afa1d6fc"
+        }
+      ],
+      "reason": "Утверждение5×4 длиной15м к M4 Пкр6.1 среди65 замечаний не найдено. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "AK_F021_cable_reading_balance:c6f3ad54ccd603f4f796",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F021_cable_reading_balance.json",
+          "sha256": "e1221c563cfdf13442cf7197a43f4a81a8ce262ec4f68a3bbd2c69a5afa1d6fc"
+        }
+      ],
+      "reason": "Утверждение об отсутствии кабеля M4 Пкр6.1 в локальном балансе75м среди65 замечаний не найдено. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -946,29 +1058,62 @@
     },
     {
       "target_id": "AK_F025_area_arithmetic:eaa42cc0bf57fa49a886",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F025_area_arithmetic.json",
+          "sha256": "07e3ecfae124a6d164abe6ca32408a492672da6b4e93242bf06e1c5b16464480"
+        }
+      ],
+      "reason": "Ошибочная сумма кладовых453,2 против453,1 не повторена. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "AK_F025_area_arithmetic:5ba1a83908ceb33758ab",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F025_area_arithmetic.json",
+          "sha256": "07e3ecfae124a6d164abe6ca32408a492672da6b4e93242bf06e1c5b16464480"
+        }
+      ],
+      "reason": "Ошибочная сумма МОП583,3 против583,5 не повторена. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
       "target_id": "AK_F025_area_arithmetic:88b00bcefd42161838b4",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F025_area_arithmetic.json",
+          "sha256": "07e3ecfae124a6d164abe6ca32408a492672da6b4e93242bf06e1c5b16464480"
+        }
+      ],
+      "reason": "Ошибочный общий итог19058,7 против19058,8 не повторён. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1000,11 +1145,22 @@
     },
     {
       "target_id": "AK_F026_protection_boolean_condition:b69337bb34f8d41b6d57",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F026_protection_boolean_condition.json",
+          "sha256": "cc1fd6840fb366f09e8f1ccbee1d9fef95dc5cbd40222981dbc35909b749eea3"
+        }
+      ],
+      "reason": "F-003 описывает отключение регулирования и полное открытие клапана; немедленный аварийный останов от наружной температуры не утверждается. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1036,11 +1192,24 @@
     },
     {
       "target_id": "AK_F027_sensor_interface_scope:eb93f9ee7771db58e73f",
-      "availability": "unchecked",
-      "coverage": "unchecked",
-      "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F027_sensor_interface_scope.json",
+          "sha256": "ce13d144b26733768053137e7f68d5b9cc1e428ea30e05cf60a79d73d40a2756"
+        }
+      ],
+      "reason": "F-016 вводит слово «непосредственно» для описания команды пускателю и противопоставляет пассивный NTC, не сохраняя AI/DO. Однако буквальное прямое подключение NTC к катушке не утверждается: наличие регулятора названо неопределённым. Частичный, а не полный повтор прежнего недоказанного основания. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1099,11 +1268,22 @@
     },
     {
       "target_id": "AK_F029_CO_reference_and_parameter_scope:7752ed01f36756fff7f3",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+          "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0"
+        }
+      ],
+      "reason": "F-002 не приписывает ТУ-газ-86 одновременное обоснование высоты и площади; других таких тезисов в выдаче нет. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1117,11 +1297,22 @@
     },
     {
       "target_id": "AK_F029_CO_reference_and_parameter_scope:9a595b6986b86b78f7cb",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F029_CO_reference_and_parameter_scope.json",
+          "sha256": "d8848f3ae13b8501e6da610460f486bff5ee61ad22e3f3002720dd71994d1ff0"
+        }
+      ],
+      "reason": "Противоречие порогов и высоты данным изготовителя не заявлено. F-002 требует уточнить нормативное обоснование, что не равно этому отрицательному тезису. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1377,11 +1568,22 @@
     },
     {
       "target_id": "AK_F038_temperature_graphic_connection:c533a857981c11cd1b9a",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F038_temperature_graphic_connection.json",
+          "sha256": "67c1995d61ab5adda8800a0f465a1c6eb0deb791c8eab1570f2650bc9999e2a1"
+        }
+      ],
+      "reason": "Ложная привязка TE2 Пкр4.1 к воздуховоду и требование перенести его не повторены. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1426,11 +1628,22 @@
     },
     {
       "target_id": "AK_F041_fan_role_labels:8239404083a86b949049",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F041_fan_role_labels.json",
+          "sha256": "5f3b3a7eeda8f2b141af1b28389491efa63115437d20bea24031ae19828ba92f"
+        }
+      ],
+      "reason": "F-044 использует правильные11/14/26/29, а не ошибочные11/15/26/30. Неопределённость ротации учитывается отдельно. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1576,11 +1789,22 @@
     },
     {
       "target_id": "AK_F047_F048_F049_signal_matrix:fc51b8e1100da48a87ec",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08"
+        }
+      ],
+      "reason": "F-049 приводит DI12, не ошибочный полный итог11. Непоказанный состав подсчёта сохраняется отдельным ограничением полноты. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1651,11 +1875,22 @@
     },
     {
       "target_id": "AK_F052_local_cable_balance:61ee4b031d84d67a9995",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F052_local_cable_balance.json",
+          "sha256": "269fbd7df09fb79b766b4bbed801b044d88de0bba6e8555945cb4280f992cf2e"
+        }
+      ],
+      "reason": "Ложное равенство пяти линий по35м и сумма175м не повторены. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1852,11 +2087,22 @@
     },
     {
       "target_id": "AK_F064_reference_register_scope:fc47e77750c166a5d33d",
-      "availability": "unchecked",
-      "coverage": "unchecked",
+      "availability": "available",
+      "coverage": "absent",
       "finding_ids": [],
-      "evidence": [],
-      "reason": null,
+      "evidence": [
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "22ccf62215ad0b6caa46c32226c7d9d0c1f4265e18441111835c65f9de42ca34"
+        },
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F064_reference_register_scope.json",
+          "sha256": "5d142f45af5de6a7c5002d60bedc3b7517fad1dc38ff05f0d8616263c90ca6ee"
+        }
+      ],
+      "reason": "Требование перенести любое упоминание ГОСТ/СП в ведомость не найдено. F-001/F-065 про реквизиты не являются таким требованием. Отсутствие в выдаче не даёт зачёта эффективности фильтра.",
       "section_assessment": "unchecked"
     },
     {
@@ -1870,11 +2116,11 @@
     }
   ],
   "limits": [
-    "Промежуточная оценка58 положительных тезисов; остальные сопоставления не завершены, пропуски пока не назначены.",
+    "Оценены80 из100 тезисов:58 положительных и22 отрицательных.20 положительных сопоставлений ещё не завершены.",
     "Частичные совпадения могут дополниться при чтении остальных строк.",
     "Совпадение узкого тезиса не подтверждает последствия, решение и нормативные основания.",
     "Авторитетный MD идентичен второму повтору; текст PDF заново не извлекался."
   ],
   "repeat": 3,
-  "output_review_scope": "Read problem, description and solution of all F-001 through F-065. Coverage judged against frozen source-bound target contexts; this pass does not independently re-adjudicate every graphic or novel addition. Remaining target comparisons pending."
+  "output_review_scope": "Read problem, description, solution and risk of all F-001 through F-065. All 22 negative targets compared with frozen contexts; absence is only non-repetition in this output, never demonstrated filter effectiveness. Remaining positive target comparisons pending."
 }
