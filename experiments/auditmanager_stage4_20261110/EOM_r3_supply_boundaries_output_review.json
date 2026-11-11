@@ -1,0 +1,709 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/EOM_output_review_queue.json",
+  "queue_before_sha256": "e6e2beb57675a518bb0b248b3caa1cf1bdb0c1093df3d57723471812885f5e1b",
+  "queue_after_sha256": "8c4bbf66490e8900ce5592c74dd4e8064b42b39b9a7b43c0aebd07aefe53e9a8",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-008",
+      "finding": {
+        "id": "F-008",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Кабельные линии",
+        "sheet": "Листы 1, 5",
+        "page": [
+          3,
+          41
+        ],
+        "problem": "Описание материала кабеля ППГнг(А)-HF противоречит его безгалогенному исполнению.",
+        "description": "Общие указания описывают ППГнг(А)-HF как кабель с ПВХ-изоляцией и ПВХ-оболочкой. Спецификация для той же марки предусматривает полимерные композиции, не выделяющие коррозионно-активных газообразных продуктов.",
+        "norm": "ГОСТ 31996-2012 (норматив-кандидат), пункт не подтверждён; ГОСТ 31565-2012 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 31996-2012",
+            "cited_designation": "ГОСТ 31996-2012",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить соответствие марки кабеля материалам изоляции и оболочки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 31565-2012",
+            "cited_designation": "ГОСТ 31565-2012",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить обозначение пожарного исполнения кабеля и показатели газовыделения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-009"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-009"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать описание изоляции и оболочки с принятой маркой и документацией изготовителя.",
+        "risk": "Неоднозначная закупка кабеля и несоответствие поставки проектным характеристикам.",
+        "source_finding_ids": [
+          "T-009"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "page": 41
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 66,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F001_cable_description:e57af65ca85f5ab8075c",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Общие указания: ПВХ; СО: полимерные композиции без выделения коррозионно-активных продуктов для той же ППГнг(A)-HF.",
+          "verdict": "confirmed_TEXT_wording_difference",
+          "limits": "Слово безгалогенный в этой строке СО буквально отсутствует; нельзя переносить цитату соседней марки. Химический состав по каталогу заново не проверялся."
+        },
+        {
+          "claim": "Согласовать описание по принятой марке и изготовителю.",
+          "verdict": "supported_scoped_question",
+          "limits": "Марка совпадает; фактическая неподходящая поставка, монтаж и необходимость замены не установлены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Материал, исполнение оболочки, границы закупки и фактические последствия не выводить автоматически из различий формулировок и количества.",
+      "novel_useful_content": "Сохраняются документальные вопросы материалов, IP и границ поставки; новая инженерная приёмка не установлена.",
+      "duplicate_burden": "Разные объекты и свойства учитываются отдельно; число щитов или детекторов не равно числу независимых дефектов. F011 не дублирует конфликт марки10Н в F029.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957",
+            "blk_67c8cc82d7e24f738797d9b75ce14e97"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-001",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_supply_boundaries"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Щитовое оборудование",
+        "sheet": "Листы 12, 13, 14",
+        "page": [
+          15,
+          16,
+          17,
+          38,
+          39
+        ],
+        "problem": "Степень защиты щитов вентиляции различается в схемах и спецификации.",
+        "description": "Для 3ЩРОВ2, 2ЩРОВ1 и 2ЩРОВ2 текстовый анализ указывает требование не менее IP54 в примечаниях и не менее IP31 в спецификации. Анализ схемы 3ЩРОВ2 отдельно фиксирует это расхождение. Спецификация допускает оболочку с защитой ниже принятой на схемах.",
+        "norm": "ГОСТ Р 50571.5.51-2013 (норматив-кандидат), кандидат п. 512.2; ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 50571.5.51-2013",
+            "cited_designation": "ГОСТ Р 50571.5.51-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить выбор оболочек по внешним воздействиям.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010",
+                "G-027",
+                "G-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "512.2",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить полноту и однозначность технической характеристики щитов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010",
+                "G-027",
+                "G-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить единое требование к каждому щиту с учётом условий установки и привести спецификацию в соответствие с принятым IP54.",
+        "risk": "Поставка щитов с недостаточной защитой от внешних воздействий.",
+        "source_finding_ids": [
+          "T-010",
+          "G-027",
+          "G-028"
+        ],
+        "source_block_ids": [
+          "blk_692503882d074efa83d0d595875347eb"
+        ],
+        "related_block_ids": [
+          "blk_692503882d074efa83d0d595875347eb",
+          "blk_af9f7cd6dba549149cd7152de8b85c41",
+          "blk_aaed5c43e84b4efdaa0186aacc4b8dd2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_692503882d074efa83d0d595875347eb",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "page": 16
+          },
+          {
+            "type": "text",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "page": 38
+          },
+          {
+            "type": "text",
+            "page": 39
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-027",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение для щита ЗЩРОВ2: не менее IP54 в примечании 1 к схеме и не менее IP31 в спецификации; последствия и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение для щита ЗЩРОВ2: не менее IP54 в примечании 1 к схеме и не менее IP31 в спецификации; последствия и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F020_enclosure_minimums:b34c225d7cc1d2d234e8",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Примечания листов12–14 требуютIP54, СО для3ЩРОВ2,2ЩРОВ1,2ЩРОВ2 допускает не нижеIP31.",
+          "verdict": "confirmed_project_requirement_difference",
+          "limits": "Привязка примечаний по заголовкам листов; нового просмотра графики нет."
+        },
+        {
+          "claim": "Согласовать требования с проектнымIP54.",
+          "verdict": "supported_project_specific_question",
+          "limits": "Не нижеIP31 не исключаетIP54. Условия среды и фактическое исполнение не проверены; IP54 не универсальный минимум."
+        },
+        {
+          "claim": "Недостаточная защита поставленных щитов.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Сохранить риск как возможный, не считать установленным дефектом поставки."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Материал, исполнение оболочки, границы закупки и фактические последствия не выводить автоматически из различий формулировок и количества.",
+      "novel_useful_content": "Сохраняются документальные вопросы материалов, IP и границ поставки; новая инженерная приёмка не установлена.",
+      "duplicate_burden": "Разные объекты и свойства учитываются отдельно; число щитов или детекторов не равно числу независимых дефектов. F011 не дублирует конфликт марки10Н в F029.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+            "blk_3e3c5ece56bd4622a52dd2de301562a5",
+            "blk_49e2914a00634fe6869970613f9bc4ca",
+            "blk_7170586af51c43f79c96734a40269d7d",
+            "blk_af87003578d3440a9be734a66a09af90"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-012",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_supply_boundaries"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектность поставки",
+        "sheet": "Листы 1, 9, 10, 11, 2",
+        "page": [
+          3,
+          12,
+          13,
+          14,
+          38
+        ],
+        "problem": "Не согласованы назначение и границы поставки 90 квартирных щитов.",
+        "description": "Общие указания предусматривают установку внутриквартирного щита собственником, примечания — временный щит механизации на период отделки. Спецификация включает 63 и 27 квартирных щитов с автоматикой без пояснения временного исполнения или поставки собственниками.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.98,
+            "reason": "Проверить однозначность назначения, количества и примечаний к оборудованию.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Определить временное или постоянное исполнение щитов, состав поставки и ответственность собственников; согласовать схемы, указания и спецификацию.",
+        "risk": "Двойное приобретение щитов и спор о границах работ.",
+        "source_finding_ids": [
+          "T-011"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "page": 12
+          },
+          {
+            "type": "text",
+            "page": 13
+          },
+          {
+            "type": "text",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "page": 38
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 70,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        },
+        "requires_human_review": true,
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F033_apartment_board_scope:dbb1bab29b165bc0b8ca",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Установку выполняет собственник; временный щит предусмотрен на отделку; СО содержит63+27=90.",
+          "verdict": "confirmed_TEXT_and_arithmetic",
+          "limits": "Временный и постоянный этапы различаются. Текущая строка обоснованно не объявляет все90 постоянными."
+        },
+        {
+          "claim": "Уточнить исполнение и границы поставки.",
+          "verdict": "supported_scoped_question",
+          "limits": "Ответственность за монтаж не равна ответственности за закупку; нет оснований удалять90щитов."
+        },
+        {
+          "claim": "Двойная закупка и спор.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Фактические закупки, монтаж и затраты не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Материал, исполнение оболочки, границы закупки и фактические последствия не выводить автоматически из различий формулировок и количества.",
+      "novel_useful_content": "Сохраняются документальные вопросы материалов, IP и границ поставки; новая инженерная приёмка не установлена.",
+      "duplicate_burden": "Разные объекты и свойства учитываются отдельно; число щитов или детекторов не равно числу независимых дефектов. F011 не дублирует конфликт марки10Н в F029.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957",
+            "blk_16237a8ebd10423194e4a2b0f4b82c26",
+            "blk_73536f4c222b401e8da714ed88d23fce",
+            "blk_17ebeac60c9b497cb8c124a8e3b66068",
+            "blk_7170586af51c43f79c96734a40269d7d"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-013",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_supply_boundaries"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Комплектность поставки",
+        "sheet": "Листы 4, 6, 3",
+        "page": [
+          7,
+          9,
+          39
+        ],
+        "problem": "Не обозначены границы поставки щитов помещений 2Н и 3Н.",
+        "description": "ВРУ-К содержит девять коммерческих потребителей 2Н–10Н. В спецификации указаны семь щитов механизации, соответствующих диапазону 4Н–10Н типовой схемы. Поставка щитов 2Н и 3Н другим комплектом не пояснена; недостача двух щитов пока не доказана.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить комплектность оборудования и указание границ спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Привести ссылку на комплект поставки щитов 2Н и 3Н либо скорректировать количество.",
+        "risk": "Пропуск оборудования при закупке или повторный учёт в разных комплектах.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "page": 9
+          },
+          {
+            "type": "text",
+            "page": 39
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 82,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F009_commercial_identity_supply:2c0ad71382f4e28b3853",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "EOM_F009_commercial_identity_supply:ceddc2904fb7fa5d39e4",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "ВРУ-К:девять потребителей2Н–10Н; типовая схема4–10 и СО семь щитов.",
+          "verdict": "confirmed_counts_with_scope_boundary",
+          "limits": "Совпадение количества7 с диапазоном4–10 не доказывает поимённый состав заказа."
+        },
+        {
+          "claim": "Уточнить поставку2Н/3Н; недостача двух пока не доказана.",
+          "verdict": "supported_scoped_question",
+          "limits": "Другие комплекты и поставки арендаторов не проверены; отсутствие пояснения ограничено исследованными источниками."
+        },
+        {
+          "claim": "Скорректировать количество.",
+          "verdict": "conditional_action_only",
+          "limits": "Дополнительные щиты включать только после установления границы работ. Фактическая недостача или двойной учёт не доказаны."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Материал, исполнение оболочки, границы закупки и фактические последствия не выводить автоматически из различий формулировок и количества.",
+      "novel_useful_content": "Сохраняются документальные вопросы материалов, IP и границ поставки; новая инженерная приёмка не установлена.",
+      "duplicate_burden": "Разные объекты и свойства учитываются отдельно; число щитов или детекторов не равно числу независимых дефектов. F011 не дублирует конфликт марки10Н в F029.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_fb5f780dae7a475ca6c249f62b64771e",
+            "blk_af87003578d3440a9be734a66a09af90"
+          ],
+          "route": "authoritative_TEXT_reviewed_same_session",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "sha256": "3d4b3b990fc15c7e7f29e7ca95021880e4d335c7aad688a67c424da2f4d54b22",
+          "block_id": "blk_aac0d4eb9b294c218e9de35c7a5dda11",
+          "route": "directly_viewed_GRAPHIC_same_session",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_aac0d4eb9b294c218e9de35c7a5dda11.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_afe25191170644b09e517f34b5500150.png",
+          "sha256": "139c850e74626aeaad1a2ed2b9b380a67b06f6bf14d671f866d183edccada867",
+          "block_id": "blk_afe25191170644b09e517f34b5500150",
+          "route": "directly_viewed_GRAPHIC_same_session",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_afe25191170644b09e517f34b5500150.png",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-030",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_supply_boundaries"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current findings independently assessed against identical authoritative source bytes and frozen prior reviews. No new norm validation, raster correction or engineer acceptance."
+}
