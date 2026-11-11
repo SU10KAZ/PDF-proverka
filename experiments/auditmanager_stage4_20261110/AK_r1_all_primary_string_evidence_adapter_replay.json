@@ -1,0 +1,1149 @@
+{
+  "status": "all_primary_saved_responses_replayed_admission_only",
+  "baseline_receipt_path": "experiments/auditmanager_stage4_20261110/AK_r1_all_primary_recovery_admission_replay.json",
+  "baseline_receipt_sha256": "03ecaafb022da613e85ae865b55fe1ccfd9556428637cd1a3dab4705f75576ee",
+  "validator_path": "backend/app/pipeline/stages/prepare/candidate_recovery.py",
+  "validator_sha256": "0f199985f9cd22e851918c04946437773d387cb2661568be76fdff8686e47219",
+  "by_origin": {
+    "graphic": {
+      "raw_findings": 49,
+      "before_admitted": 13,
+      "after_admitted": 24,
+      "requests": 41
+    },
+    "prescan": {
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "requests": 1
+    },
+    "text": {
+      "raw_findings": 36,
+      "before_admitted": 7,
+      "after_admitted": 7,
+      "requests": 28
+    }
+  },
+  "rows": [
+    {
+      "request_id": "1794422216432117133",
+      "stage": "candidate_recovery_56e40c36532b13ac",
+      "origin": "text",
+      "request_sha256": "e246131d88ee5a4ab28c52922416db2f2ab4268b476aef58452fa96052b25990",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_56e40c36532b13ac.json",
+      "raw_sha256": "a1b59b04c584a38fc74fc11f6746337138af3b259c244c8974ed2748776f66e7",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422236515798156",
+      "stage": "candidate_recovery_fdd5d6029b5be09c",
+      "origin": "text",
+      "request_sha256": "97fefba6e24eaf4a2176d8ace76baaca2409ecda602d646e4f3b93af9b9a110a",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_fdd5d6029b5be09c.json",
+      "raw_sha256": "44d4293687642d07bde28bf665cd827767f682b5cf94bd6e34b660f9a29c2005",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422267405678037",
+      "stage": "candidate_recovery_cc6c75d4a04cce08",
+      "origin": "text",
+      "request_sha256": "d980376069f42d3cb809af4e2eea88412e18152f0e5c6e7ec7e91185043358d7",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_cc6c75d4a04cce08.json",
+      "raw_sha256": "7e38e532c46a00df5c83442379553d68547e424ab325735756fb0b98d73ce44b",
+      "raw_findings": 3,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 3
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422308313421997",
+      "stage": "candidate_recovery_3cdd02e26903f3bc",
+      "origin": "text",
+      "request_sha256": "28e2a6f7fe56a9c01c690ee5fdd4bb7c4ab9bcce709ee268157dc1b7a57191ac",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_3cdd02e26903f3bc.json",
+      "raw_sha256": "c3e7196d5e51d5732ce3247e2235746b178a7ef37959ba157566063895ada4d1",
+      "raw_findings": 1,
+      "before_admitted": 1,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422333956348412",
+      "stage": "candidate_recovery_7eba1f2128aaa810",
+      "origin": "text",
+      "request_sha256": "5ed47110f0666b358d35d59e29c88b5416770376b07f0fac5bc92b4427ea8c5a",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_7eba1f2128aaa810.json",
+      "raw_sha256": "eb087b48933d0885077b121b4e5c11a46510fd70ef099dab13dfa38c9c2e2b3e",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422349956942139",
+      "stage": "candidate_recovery_0e00d42053965fce",
+      "origin": "text",
+      "request_sha256": "9b93e82a39d2f17f889cd396df2ef2f055b20c9dcd05310e4e793b29fc364282",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_0e00d42053965fce.json",
+      "raw_sha256": "fc72860c3064f80ba0b620d4738e56c8a1d81e4cc6781b808fdd306ef605305a",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422368313283602",
+      "stage": "candidate_recovery_c1bd9a16093eec2c",
+      "origin": "text",
+      "request_sha256": "784d298efd460dcf2e7d8d44de6ddeb5a6c3c430ad6921fefd3017ed3d1e9b8a",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_c1bd9a16093eec2c.json",
+      "raw_sha256": "ee54c843472822cc1c9c4b1c3c3afe1db69094f37bcd436039d09518ada8c7d2",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422395095582670",
+      "stage": "candidate_recovery_42d2a9ad34f8c7e4",
+      "origin": "text",
+      "request_sha256": "92970b4e03190201de3cf1d612086593aae713744c72a493b3b8ee5f2260e4f4",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_42d2a9ad34f8c7e4.json",
+      "raw_sha256": "468c8656143a4ce2ff2cbfcb126e71e3d5e29e3476cc86ecbd55424d85e031b2",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422424588166530",
+      "stage": "candidate_recovery_c55df6218fb2e088",
+      "origin": "text",
+      "request_sha256": "8e859460ab6aeed514ec54f71349f90800cdd17646c95aea9c6b31a67a9db252",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_c55df6218fb2e088.json",
+      "raw_sha256": "bd1e7210ca064dfe461c3efc584108c2d5f2018f5145b2f66ea8a5744b68a1e6",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422444288103656",
+      "stage": "candidate_recovery_8c254d58cf02390d",
+      "origin": "text",
+      "request_sha256": "db0f3890f859a38bb18ba0b220a3863696dba06c5948659b753aa50bd5591067",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_8c254d58cf02390d.json",
+      "raw_sha256": "939dc9f1610e02de36f47c257e64931ceaff2dc356c5774a713df6533165b5c2",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422466586211974",
+      "stage": "candidate_recovery_ea98d93df19a5366",
+      "origin": "text",
+      "request_sha256": "f2700f12b4d974b4222017534e0cdd36d3a4accfb973c7f58988fb5d0225abec",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_ea98d93df19a5366.json",
+      "raw_sha256": "0ff1abbf0782b22656ce9b679a78f3965dc4848b1c9195f602172ae139fb2c21",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422491020902680",
+      "stage": "candidate_recovery_df3ea701371d5379",
+      "origin": "text",
+      "request_sha256": "bb5717eef2e1d7bded32a22565bce0bb3359909be9ba2c7a6c770337a4da400b",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_df3ea701371d5379.json",
+      "raw_sha256": "81849b9a1cf8c0909840174ebfc91105efb744ca89674e368ab3db822c762370",
+      "raw_findings": 2,
+      "before_admitted": 2,
+      "after_admitted": 2,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422525727615248",
+      "stage": "candidate_recovery_8ca164079388da4e",
+      "origin": "text",
+      "request_sha256": "3a1dbd5597122c304de9320daa36201cd91af61bfdef9ac97b00dd04a2559a80",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_8ca164079388da4e.json",
+      "raw_sha256": "fa458de638de7915ccabbe32f6e67097cf708c232b11a8f2f3f7fcc097a38608",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422558557201143",
+      "stage": "candidate_recovery_0aaac558db9dbd04",
+      "origin": "text",
+      "request_sha256": "a5832c6e3b8d1a6ebe83f2ca415d9e7e83ea440883d2dbf2f1e5fde88abbfeb9",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_0aaac558db9dbd04.json",
+      "raw_sha256": "212ea705d9b72399df4ea27a5052f5b3c5f06345748f03f2561399ccc20fc187",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422581264869311",
+      "stage": "candidate_recovery_fe790f4f6c9ab4a6",
+      "origin": "text",
+      "request_sha256": "66330ec50d7bda5b03e80518b6e2041d6d57039c4de154bae4f9c9152b9da838",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_fe790f4f6c9ab4a6.json",
+      "raw_sha256": "45855239fb400411181c00ff90f178a0607e4c3ae71932e844e3e680f6101375",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422599361305347",
+      "stage": "candidate_recovery_9a9e1fae49e22db9",
+      "origin": "text",
+      "request_sha256": "f1dcc929e16183c079da84243b7ca8a957d3f85ac429d60c8499dbf884cea665",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_9a9e1fae49e22db9.json",
+      "raw_sha256": "12e8d1ad9e5655ba4fb2a9552d5c4cd913201150a0768ccba068dacc1962acb4",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422621205501175",
+      "stage": "candidate_recovery_88374b5fecdcb2d3",
+      "origin": "text",
+      "request_sha256": "da5325a64bb04b63c29a5598c8fbfb0c8284fbed4936e73beb781f0f80966bdd",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_88374b5fecdcb2d3.json",
+      "raw_sha256": "1349c1ebdc4dac5dedeb32c5fd22e9efe964a4b712a95a1752418e7c01c3ef3d",
+      "raw_findings": 1,
+      "before_admitted": 1,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422645120527745",
+      "stage": "candidate_recovery_3c36b3b81f0cc320",
+      "origin": "text",
+      "request_sha256": "483384b85593bfa639e7123a3751d7f3127bd7fe0c75e56ebba1bfd88d9b381d",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_3c36b3b81f0cc320.json",
+      "raw_sha256": "b2751056e1dccfac350404eb03a980539812516ff770e25765c9a68deb50f3a4",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422673253363786",
+      "stage": "candidate_recovery_b44d414e323a4b1a",
+      "origin": "text",
+      "request_sha256": "0d26f384d0091ea435f18d5751e362298d09d378ef87e209a706b1645bf1e92d",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_b44d414e323a4b1a.json",
+      "raw_sha256": "8868eb37bcbe460d3f09e08aadadb015ccde2e56633ea33bfc66945054c0feeb",
+      "raw_findings": 1,
+      "before_admitted": 1,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422706718100476",
+      "stage": "candidate_recovery_710c30a0eb6b242a",
+      "origin": "text",
+      "request_sha256": "5666224e12d77a5884bc474fc307d281f40c7a3980b4c8f1bba06a1aee3a867d",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_710c30a0eb6b242a.json",
+      "raw_sha256": "ec4b1b1ac3b3dd99ce1cf93b7dec0a2e0f973f2fa2a161c1dd9c09631b32b7d7",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422734563244548",
+      "stage": "candidate_recovery_3920b0dedd93a8de",
+      "origin": "text",
+      "request_sha256": "fcd3e8c81f949c391e07cbd7741b453a03019799ce8f8ddade81c99fddcfa6d4",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_3920b0dedd93a8de.json",
+      "raw_sha256": "0616ad388cfb585c2c464b2be38088852f1cf4128dea48ab7030b061fdf958fa",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422753217124936",
+      "stage": "candidate_recovery_cefea27d8d926636",
+      "origin": "text",
+      "request_sha256": "c31bb9fefa9ff0e32adf4d59c10e69248f5eff34b672b341f515924251026252",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_cefea27d8d926636.json",
+      "raw_sha256": "0e9b6510fd0cd25353fdcaec9a972085d5462ef583bb03b6701953366bc479b5",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422775138945214",
+      "stage": "candidate_recovery_342a0881d2479b9e",
+      "origin": "text",
+      "request_sha256": "fd15b2019627de2763ed30f03ac58f00ff6a5fdc8cdcc4bb0147d30dc3fb95ea",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_342a0881d2479b9e.json",
+      "raw_sha256": "de8621a68f1c78f81d6b002899def825c183ffddc05c46de377a857e969e22a0",
+      "raw_findings": 1,
+      "before_admitted": 1,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422800145123230",
+      "stage": "candidate_recovery_69e484f2406b4b2c",
+      "origin": "text",
+      "request_sha256": "1a140d07fbb44a6e21d2373ecc38a37d3ec43d4d8737010c55b69a6d8a49e8d0",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_69e484f2406b4b2c.json",
+      "raw_sha256": "4273e9454591a79627e3293f2293a367d0d7348eff4124767e5ee36a58450fb9",
+      "raw_findings": 1,
+      "before_admitted": 1,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422825919546772",
+      "stage": "candidate_recovery_3852110fa34e9256",
+      "origin": "text",
+      "request_sha256": "279a6828c4240f084bbc9ef485da2d5c952c6d5cb64b378488c2aaa684cf824c",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_3852110fa34e9256.json",
+      "raw_sha256": "b1e7678989e9612fce71418b14beee37f87cf4ebab2445763a5138ac05c5e304",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422852672458588",
+      "stage": "candidate_recovery_658735b3317f8ea8",
+      "origin": "text",
+      "request_sha256": "b15ce9436616b3e8e861866faef3588acbe66aba24299e64c9f83f28ee6e6466",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_658735b3317f8ea8.json",
+      "raw_sha256": "a5d1f769e07784f95bab0749741293d8501eecbdb25ea3621ccfd7cccfbe6027",
+      "raw_findings": 3,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 3
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422879887227438",
+      "stage": "candidate_recovery_2f8cb37d7421ec1d",
+      "origin": "text",
+      "request_sha256": "5ddba860f4dd414f538f55afe3828d2aa83fbfe08f0e89463e0975bf5d881c3f",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_2f8cb37d7421ec1d.json",
+      "raw_sha256": "847d36b1387477b7311c8d3fef95a81f1a795ad76db1c2694f21b355f38b5ab3",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422907044921894",
+      "stage": "candidate_recovery_35c9521c7e27aa73",
+      "origin": "text",
+      "request_sha256": "aaf90c9b3e8963e00b5a0ba5394f190ccb02e87c325bb9ada7d786e99b7c072c",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_35c9521c7e27aa73.json",
+      "raw_sha256": "91a144e9fdbf21d66cf8f81c84d5531f0559f171e737baab26aced3dce7c5c1b",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422921764613659",
+      "stage": "candidate_recovery_e441ee3a3e5edcc7",
+      "origin": "prescan",
+      "request_sha256": "a728b87f6d5bf726d8e423f36b41182ed5e0a664b08b463d4ce205ff0def61aa",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_e441ee3a3e5edcc7.json",
+      "raw_sha256": "696044a9a7d364ccdd7af3ba2caed4c6f934e8de941d2a83f55fb4fae1a337d4",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422955512332928",
+      "stage": "candidate_recovery_d9514d8925b97f17",
+      "origin": "graphic",
+      "request_sha256": "eb0b3fe1a060523faae4d4f654fd21a1c1a0c28113e92a0598344414f45c1cdd",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_d9514d8925b97f17.json",
+      "raw_sha256": "0eca5240e46adb96e16d047bfb8974bc29190a4e7a68e7f03069744b544b3ffb",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794422980918405264",
+      "stage": "candidate_recovery_78b43efa7df28b57",
+      "origin": "graphic",
+      "request_sha256": "8c719baf21a898415ac195ee0e21eb70ce0d66e2e20ff36da792f4e690da599e",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_78b43efa7df28b57.json",
+      "raw_sha256": "2c02be8f5b506243a5d1e45e7a412df89562e0c047fbe683930b53b6b3dae53b",
+      "raw_findings": 3,
+      "before_admitted": 0,
+      "after_admitted": 3,
+      "after_pending": {},
+      "adapted_text_items": [
+        {
+          "source_finding_ids": [
+            "G-004",
+            "D-7f7eafb60591ff43920af614"
+          ],
+          "source_refs": [
+            "blk_aa15c30f0e7e48988cadcac795e1ccff",
+            "blk_0457419703024673bb4328b18d47501e"
+          ],
+          "finding": "На листе 8 в строке шкафа управления ШАУВ-2-К4ПЧ под сигналами 7 и 14 преобразователи частоты систем П4.1.3 и П4.1.4 имеют одинаковое обозначение SC UZ1. В перечне элементов этого листа предусмотрены две отдельные позиции SC UZ1 и SC UZ2. Обозначения на схеме не обеспечивают однозначного соответствия перечню."
+        },
+        {
+          "source_finding_ids": [
+            "G-005",
+            "G-006"
+          ],
+          "source_refs": [
+            "blk_aa15c30f0e7e48988cadcac795e1ccff"
+          ],
+          "finding": "На листе 8 сигнал 6 системы П4.1.3 «Электр. воздухонагреватель пуск/стоп» отмечен в строке DI. Назначение сигнала как команды пуска и останова противоречит указанному входному направлению канала."
+        },
+        {
+          "source_finding_ids": [
+            "G-007",
+            "G-008"
+          ],
+          "source_refs": [
+            "blk_aa15c30f0e7e48988cadcac795e1ccff",
+            "blk_0457419703024673bb4328b18d47501e"
+          ],
+          "finding": "На листе 8 сигналы 11 и 13 системы П4.1.4, подписанные «Состояние заслонки (0..100%)», отмечены в строке AO. Наименование сигналов как обратной связи о положении заслонок противоречит выходному направлению каналов."
+        }
+      ]
+    },
+    {
+      "request_id": "1794423031988765518",
+      "stage": "candidate_recovery_9abbe90f57edee78",
+      "origin": "graphic",
+      "request_sha256": "043087d787fa3aecdae924aca011b0dc87763dd284bd594131d4a1ed50711c78",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_9abbe90f57edee78.json",
+      "raw_sha256": "d1f4e0a68d93df6a5675cab93b5a39f3a7121b6d564c7ae1f42ce97386e85530",
+      "raw_findings": 1,
+      "before_admitted": 1,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423055960796272",
+      "stage": "candidate_recovery_b6955a9ce7a4594e",
+      "origin": "graphic",
+      "request_sha256": "65ac7c3e5c6d5385159764aa95099db3033194fa5fa03d9bc2696de67b6dd8c7",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_b6955a9ce7a4594e.json",
+      "raw_sha256": "ed15af1143b1bbf8e4267f31d8fbb146c05ae4597177be2ed318c66739337d77",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423130101409150",
+      "stage": "candidate_recovery_407d3adbc528e7bc",
+      "origin": "graphic",
+      "request_sha256": "389a575637a54426680fb3d7e50d6ea8ef686c98861d0bbdb723df14c9ba0400",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_407d3adbc528e7bc.json",
+      "raw_sha256": "113d7ff92e056059f745d79e676f81f2c223080ba1562dd81663ea5af13cbb61",
+      "raw_findings": 3,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 3
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423179395803023",
+      "stage": "candidate_recovery_8e1933d07700e1d1",
+      "origin": "graphic",
+      "request_sha256": "fbef52ed2ebb86753e0d83537c19474d40e90a29b717c7a60baa6b6f53b2c43d",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_8e1933d07700e1d1.json",
+      "raw_sha256": "d724f7ad2ca1b215aedc84ba032cba3cf23361945973bbe5790836533b6cf624",
+      "raw_findings": 1,
+      "before_admitted": 1,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423203439840615",
+      "stage": "candidate_recovery_f6100783711eff57",
+      "origin": "graphic",
+      "request_sha256": "7178223bdeaf66a65f3844c58c4b66cf838e8de7573aaa64618899502af7fc5f",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_f6100783711eff57.json",
+      "raw_sha256": "44ab0bda411d25dab7618e16a8724d01fc362a6b6a0db0cf21ed4db20100ff81",
+      "raw_findings": 3,
+      "before_admitted": 0,
+      "after_admitted": 3,
+      "after_pending": {},
+      "adapted_text_items": [
+        {
+          "source_finding_ids": [
+            "G-023",
+            "D-451cf4437752785fcf014651"
+          ],
+          "source_refs": [
+            "blk_07ee87d0cd9b46359b3c2b177440fe89",
+            "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d"
+          ],
+          "finding": "В перечне элементов листа 14 для ТЕ3, ТЕ4 указано количество 1, хотя на функциональной схеме показаны два отдельных датчика температуры приточного воздуха: ТЕ3 системы П5.1.1 и ТЕ4 системы П5.1.3."
+        },
+        {
+          "source_finding_ids": [
+            "G-024",
+            "G-025"
+          ],
+          "source_refs": [
+            "blk_07ee87d0cd9b46359b3c2b177440fe89"
+          ],
+          "finding": "В матрице сигналов листа 14 команда «Электр. воздухонагреватель пуск/стоп» системы П5.1.3, столбец 17, отмечена в строке DI. В строке DO для этой команды отметка отсутствует. Направление сигнала не соответствует указанной функции управления нагревателем."
+        },
+        {
+          "source_finding_ids": [
+            "G-026",
+            "G-027"
+          ],
+          "source_refs": [
+            "blk_07ee87d0cd9b46359b3c2b177440fe89"
+          ],
+          "finding": "Требуется уточнить способ задания скорости ПЧ SC UZ1 вентилятора П5.1.1. В столбце 10 заявлено управление «пуск/стоп, 0–100%», но обозначены только DI и DO, без AO. Два показанных AO относятся к клапану теплоносителя в столбце 7 и ПЧ SC UZ2 в столбце 18. Представленный фрагмент не поясняет, каким каналом передаётся задание скорости SC UZ1."
+        }
+      ]
+    },
+    {
+      "request_id": "1794423253818571135",
+      "stage": "candidate_recovery_8a66131b1f217809",
+      "origin": "graphic",
+      "request_sha256": "302effeedafc6fba47f5ae41f70cc5d2987c2f3458756d2b124f821212172f31",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_8a66131b1f217809.json",
+      "raw_sha256": "6d9509fdbde8c72a919346d24c1b38a0ae756ef4156d2fd30f06840b3db43c8a",
+      "raw_findings": 3,
+      "before_admitted": 3,
+      "after_admitted": 3,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423299968106115",
+      "stage": "candidate_recovery_d6b9d85471e11d80",
+      "origin": "graphic",
+      "request_sha256": "d1d3c26321aff53b41a71918ef64c3cfad6d74cd4162cbe5e3be74d001407e14",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_d6b9d85471e11d80.json",
+      "raw_sha256": "e73aba6584babdd77be1df583a955c74228997f91173b30ade2d2fa8fd0c933e",
+      "raw_findings": 2,
+      "before_admitted": 2,
+      "after_admitted": 2,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423339958590526",
+      "stage": "candidate_recovery_462b47d52cd1cc17",
+      "origin": "graphic",
+      "request_sha256": "c656af3d7f8c00abdaa51e293a0d29122ea0fb241972a058a41ece7be8d4d312",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_462b47d52cd1cc17.json",
+      "raw_sha256": "6c1aaa86299d079ad6c72ef579742b1f7f10c416c019e8629661cf069ce579a1",
+      "raw_findings": 2,
+      "before_admitted": 2,
+      "after_admitted": 2,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423383534223864",
+      "stage": "candidate_recovery_c51a95d91fea1908",
+      "origin": "graphic",
+      "request_sha256": "db8582688e037f40751ad000ef6fde2bc72d837b045ed6ce08a4e96212162a38",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_c51a95d91fea1908.json",
+      "raw_sha256": "7da3af190f27908d2225a30be677490fccfffa1b42f53261b0b215148ecad1b0",
+      "raw_findings": 3,
+      "before_admitted": 1,
+      "after_admitted": 1,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423425156050943",
+      "stage": "candidate_recovery_05881990c30ff302",
+      "origin": "graphic",
+      "request_sha256": "815c008dc2396b328a8a48b0e770f3e3381ceb4587c71f01a4905dde2efe15f2",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_05881990c30ff302.json",
+      "raw_sha256": "35e917464b64844b819dd71b84b75ddeda734d2c646bbcb1c53f6dab7d0d8b6e",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423448522815408",
+      "stage": "candidate_recovery_52a1935a609ff64a",
+      "origin": "graphic",
+      "request_sha256": "7787b272fbac4ce203a134bf3c0eca4f22cf3ebb13c31289ad7bf6cf3a277dd8",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_52a1935a609ff64a.json",
+      "raw_sha256": "e0905276fd400f3c76337da601573709eeb13bd4c193d026d6cff3d250298419",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423480507112475",
+      "stage": "candidate_recovery_88631e2c01433c89",
+      "origin": "graphic",
+      "request_sha256": "aec9649167912ec3d80167d44e9681c958062a073fdc08308b74c8627982c071",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_88631e2c01433c89.json",
+      "raw_sha256": "0e573feedd6723d74f80bc0d568e380db5e4b64239e9ea9b88f200f5e609693b",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423515502383508",
+      "stage": "candidate_recovery_fca4ddc4d2607995",
+      "origin": "graphic",
+      "request_sha256": "fb434314f1c3721d49ef945484832b88983799cdfaab304d636291b005024e1e",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_fca4ddc4d2607995.json",
+      "raw_sha256": "6105854863a5d4bccbd4002ae58cf1de2842ea9e6d42b386ee4901094a501469",
+      "raw_findings": 2,
+      "before_admitted": 2,
+      "after_admitted": 2,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423550251144215",
+      "stage": "candidate_recovery_a2895c43aa1a858a",
+      "origin": "graphic",
+      "request_sha256": "9891746000bb934f1bf295aa25e670d6ea3563c9aa523fb8f3d0a892c6ea4b5a",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_a2895c43aa1a858a.json",
+      "raw_sha256": "d823db333e60e3651ace99ff0b0124d37295d3a56609c1b19c4cca7349792905",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 2,
+      "after_pending": {},
+      "adapted_text_items": [
+        {
+          "source_finding_ids": [
+            "G-057",
+            "D-88572b5b92a44934d1200f63"
+          ],
+          "source_refs": [
+            "blk_523708af1c384b0e8bc6767d93644336",
+            "blk_6e54eb477b59421dbea94ef657f05a46",
+            "blk_1afb9b9bff5242cca6f364f218b96506"
+          ],
+          "finding": "На листе 23 количество электродвигателей вентиляторов M3–M6 в перечне элементов не соответствует функциональной схеме: указано 2, а изображены четыре двигателя — M3, M4, M5 и M6, по одному в завесах У4.3–У4.6. Расхождение составляет 2 двигателя."
+        },
+        {
+          "source_finding_ids": [
+            "G-058",
+            "D-beded76386513df5c54dedef"
+          ],
+          "source_refs": [
+            "blk_523708af1c384b0e8bc6767d93644336",
+            "blk_6e54eb477b59421dbea94ef657f05a46",
+            "blk_1afb9b9bff5242cca6f364f218b96506"
+          ],
+          "finding": "На листе 23 количество регулирующих клапанов с электроприводами Y1, Y2 в перечне элементов не соответствует функциональной схеме: указано 4, а изображены два клапана — Y1 при насосе M1 и Y2 при насосе M2. Расхождение составляет 2 клапана."
+        }
+      ]
+    },
+    {
+      "request_id": "1794423590293311450",
+      "stage": "candidate_recovery_8e01d82f6bc92871",
+      "origin": "graphic",
+      "request_sha256": "7ac30d71a6783f2e2b36e755854fe82690beb51840441fa3f4bd48980a4bc41b",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_8e01d82f6bc92871.json",
+      "raw_sha256": "ecd09273c4b48251251b8fa551180828695577eb1e8d8c354d54d64ad42eeace",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423606764024916",
+      "stage": "candidate_recovery_6e4095cc61e05485",
+      "origin": "graphic",
+      "request_sha256": "9b73c1ed0b98e51b528cd0c9b545debd714ff2db823c56fd2779170fb0b14d6b",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_6e4095cc61e05485.json",
+      "raw_sha256": "f97b0ce4349db6ca6b802a5a894da025e4dc93cb6b8ee443a282ae189530799f",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423627163978813",
+      "stage": "candidate_recovery_a4190b40375a1b93",
+      "origin": "graphic",
+      "request_sha256": "921883715969ef7fe77347dc66b6ff3cb254871c62e9675ffd697e05ef838725",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_a4190b40375a1b93.json",
+      "raw_sha256": "06a7152b69406b1277190f4bdeb99a6886ac9167f0618203ae58e75d41872aa5",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423654855927641",
+      "stage": "candidate_recovery_ac6111f8cef9b172",
+      "origin": "graphic",
+      "request_sha256": "51df9c337b74bb165a44523617982032b7fa272db93b8464db1c5859ed2c6064",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_ac6111f8cef9b172.json",
+      "raw_sha256": "e75d844eecbd2f68028912be13962cdc229963a5e02de40ca977a48242c489f3",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423683422524260",
+      "stage": "candidate_recovery_9bbf094131fa1546",
+      "origin": "graphic",
+      "request_sha256": "fea42f463283d21f7155d1023e40b9114e01f14d38b31c00ccf951158bf4fb6a",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_9bbf094131fa1546.json",
+      "raw_sha256": "da6b659fcf35b7cf17262cbc6bb7f31fb14384a7522af5b33a203a30f11690e5",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": [
+        {
+          "source_finding_ids": [
+            "G-067",
+            "G-068"
+          ],
+          "source_refs": [
+            "blk_96ed7d88fb23414bb14d93191a89365a",
+            "blk_5dea9af6d2bd4d0ea0674db8bd79f38c"
+          ],
+          "finding": "На схеме внешних подключений шкафа ШАУВ-4-К4.ПЧ номера клемм 29 и 30 повторно назначены разным цепям: L/N двигателя М1 (~220 В) и U/V двигателя М2. Раздельные обозначения клеммников для этих подключений не показаны, поэтому обозначения точек подключения неоднозначны. Примечание 2 «Нумерацию клемм уточнить у завода-изготовителя» не задаёт однозначных обозначений на представленном листе.\n\nРекомендация: Согласовать с заводом-изготовителем и указать однозначные обозначения клемм подключения М1 и М2."
+        }
+      ]
+    },
+    {
+      "request_id": "1794423708321014213",
+      "stage": "candidate_recovery_ebfc0f3cea16edd8",
+      "origin": "graphic",
+      "request_sha256": "b1ccdcbe05e1970c58c5e02ce3eb7f48986b4043146fe7f0562bdac46751ef71",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_ebfc0f3cea16edd8.json",
+      "raw_sha256": "30e06835e3713f66dd9a224526219a4602b3ebcbe33f817c7b7e29e2ef797e5c",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423742994054525",
+      "stage": "candidate_recovery_b366fd4aa7c83041",
+      "origin": "graphic",
+      "request_sha256": "81d9fdd47513f16cb002603c9a773a710a7aa16ba159f5a6dd35111079eac453",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_b366fd4aa7c83041.json",
+      "raw_sha256": "794998740602d95bc6accda4f0822339c049bc18959a35ea9131aeff5555ce12",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423759288963269",
+      "stage": "candidate_recovery_8306f1551dea9f94",
+      "origin": "graphic",
+      "request_sha256": "68f40a5bf7272f7806b47dc0db1169bdecbb5fd0093e0719b8e175164d1c9746",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_8306f1551dea9f94.json",
+      "raw_sha256": "ae46be2ff5640c3ac18884624bff61939deb2e6ad790b74f618f805881424604",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": [
+        {
+          "source_finding_ids": [
+            "G-072",
+            "G-073"
+          ],
+          "source_refs": [
+            "blk_f784be4786274e8c84f32d874ed99969",
+            "blk_053f940839a3432681679d67d2fdadda"
+          ],
+          "finding": "На листе 32 схемы внешних подключений шкафа ШАУВ-З-К5ПЧ повторены номера клемм разных цепей: 23–24 у PDS4 и PDS5, 29–31 у двигателей M1 и M2. В нижнем клеммном ряду отдельные обозначения групп, позволяющие различить эти подключения, отсутствуют. Поэтому адреса подключения четырёх цепей на данном листе неоднозначны. Примечание 2 «Нумерацию клемм уточнить у завода-изготовителя» предусматривает уточнение, но не задаёт однозначных адресов подключения.\n\nРекомендация: после уточнения у изготовителя указать уникальные номера клемм либо обозначения отдельных клеммных групп для этих цепей."
+        }
+      ]
+    },
+    {
+      "request_id": "1794423787513881802",
+      "stage": "candidate_recovery_d3619220649274c2",
+      "origin": "graphic",
+      "request_sha256": "c8394be7c2daf71dddef3b33f60d0eced19284ad0dbefb986ebc7d8adc8a2a10",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_d3619220649274c2.json",
+      "raw_sha256": "b7e01967dd6189719ce3a6608778d1505e8babaf9530119ae92b406e223be14f",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423823159805804",
+      "stage": "candidate_recovery_b5f634e6db2b2eac",
+      "origin": "graphic",
+      "request_sha256": "33163a659733e15a4868973ae5525e4ee75e4f9b60fa82beb911defde21f0856",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_b5f634e6db2b2eac.json",
+      "raw_sha256": "a0af84d1a4c53a15b7997e6b2ffaa1166df1818a1545b23a43976b720510540e",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423838697281152",
+      "stage": "candidate_recovery_cde143d1702b1baf",
+      "origin": "graphic",
+      "request_sha256": "5f14b88fb762a1bbfa42ff0d976b076d8ca7fa8f304516c738f6fd8d8b7add89",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_cde143d1702b1baf.json",
+      "raw_sha256": "b73b595a9b228667210be2edab1a4bcd9acb7aedbe07ba75212d840ec335e2a3",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423877473635963",
+      "stage": "candidate_recovery_8b38ddf3cba607c1",
+      "origin": "graphic",
+      "request_sha256": "23d79ba84b20568d6694fe35bd00a7559ed5decddbeab32723dbb237c1e49c7b",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_8b38ddf3cba607c1.json",
+      "raw_sha256": "61651f68ebf135b9b7db7504707710f65afc17d86334d642003d43cf6eb87be0",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": [
+        {
+          "source_finding_ids": [
+            "G-084",
+            "G-085"
+          ],
+          "source_refs": [
+            "blk_397f9663589b40bfbde9b898e99e5117",
+            "blk_96a99d46f82645bebdf992507a3e3ec6"
+          ],
+          "finding": "На листе 36 количество кабеля ППГнг(А)-HF 4×2,5 мм² в ведомости меньше суммарной длины участков на схеме на 30 м. На схеме показаны два участка по 20 м к М1 и М5, два участка по 330 м к шкафу преобразователей частоты и два участка по 15 м от него к М2 и М3: всего 730 м. В ведомости указано 700 м.\n\nРекомендация: Согласовать ведомость со схемой, увеличив количество кабеля до 730 м."
+        }
+      ]
+    },
+    {
+      "request_id": "1794423906425092686",
+      "stage": "candidate_recovery_ccd1181a32f0f8f9",
+      "origin": "graphic",
+      "request_sha256": "7eb2dfd649894e8f9c9ac855471f16f54ef9375464890c0ae7fd27e43484c51d",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_ccd1181a32f0f8f9.json",
+      "raw_sha256": "b15411c185a5b331330723af596abd25f27736730a418530af424a21e46775a5",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423928286315000",
+      "stage": "candidate_recovery_2ff4fe498788740e",
+      "origin": "graphic",
+      "request_sha256": "d478667b1743a6c18a13b4a3690f9c058cbb1437ec300bfb6e93c980e4829a3d",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_2ff4fe498788740e.json",
+      "raw_sha256": "5ff58c9ca20b9cfa0d08071812a25a637332f5fc4e2a650e8810a75222b5a626",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423945724131613",
+      "stage": "candidate_recovery_a325646a9392a166",
+      "origin": "graphic",
+      "request_sha256": "87f19fb1a718b354940aac64f633d424a1840bab02b3595c5481f24be57392a3",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_a325646a9392a166.json",
+      "raw_sha256": "0f5549e7d2cef6f037ecf1b3b9f4cdd32807d49e4dc4489cbd40c3a05b533b3c",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423958531182196",
+      "stage": "candidate_recovery_a3da27e91b027081",
+      "origin": "graphic",
+      "request_sha256": "36dde424390a54a0a4d2406a68765e70c0a20da6272b8c15157813dac5fc03e1",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_a3da27e91b027081.json",
+      "raw_sha256": "81dc00ce08300e171a7795fdd7b4f58281c004071fab410bba29dc6b5afb6590",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794423983789088070",
+      "stage": "candidate_recovery_1a4e6d4c1e4c750b",
+      "origin": "graphic",
+      "request_sha256": "9882c18298b5ebd3ee0ad16ffce7f0f63e1b4b1e2b965929f515f10c57c1a682",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_1a4e6d4c1e4c750b.json",
+      "raw_sha256": "4c78909663e7a106861f19caaeeb4f7e2de2186756d29bcc55fc7d75ed7832b9",
+      "raw_findings": 2,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 2
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794424017768710985",
+      "stage": "candidate_recovery_cdb6ec6bbabef5ec",
+      "origin": "graphic",
+      "request_sha256": "de6e7e7afe3f5be6c3f638f20119fd6d4809bc51a8cfd558bfd7e39b31e295c7",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_cdb6ec6bbabef5ec.json",
+      "raw_sha256": "9fc21462b92d150d09c488b9f6c3f1a4bf72ce544e364baf6ec2d327b4383b69",
+      "raw_findings": 1,
+      "before_admitted": 1,
+      "after_admitted": 1,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794424042699258291",
+      "stage": "candidate_recovery_6a910fe53416406d",
+      "origin": "graphic",
+      "request_sha256": "671c54c58cff30720396026e261aba7b7f5f920419013a1df311d5bc8ffca6c8",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_6a910fe53416406d.json",
+      "raw_sha256": "1d5bf7ed8fd9a0e75f4db3eb60704666f1685c21e9e4e91c9e4419c49e1e9074",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794424057241102564",
+      "stage": "candidate_recovery_3fb5a04bc43d123b",
+      "origin": "graphic",
+      "request_sha256": "eee91d781e0de7c56aa8a651e4e386d81792f012fb443af1b757cea723740d85",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_3fb5a04bc43d123b.json",
+      "raw_sha256": "1b132df14e5303fb1dab3d2e87bce241df6a25f3875c13f438c24827ff798636",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794424081527860522",
+      "stage": "candidate_recovery_fe143346b451ef4c",
+      "origin": "graphic",
+      "request_sha256": "f3de704d2e310a1703ad4ffcaf6bf8b3ffe898759dfb3ce680ce8fc112f10ace",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_fe143346b451ef4c.json",
+      "raw_sha256": "9b2dbf6394dc6b02a36d2a1d48e8516e43900e793d56f0c10769ecbacb622778",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794424104602442976",
+      "stage": "candidate_recovery_561b99e437244618",
+      "origin": "graphic",
+      "request_sha256": "116a13996010b4e475250af3f7e167140f2ff7e8f4b00a6e751f395719eefa34",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_561b99e437244618.json",
+      "raw_sha256": "24d205027b67b989b1caf03d8f9d89b6ca4ace056b6548ca076ed9df820f85e9",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794424123402593714",
+      "stage": "candidate_recovery_d67136d298a28725",
+      "origin": "graphic",
+      "request_sha256": "d8d358a33732ae6629e2e7999f457b5acc02a66b2976e67b632e29b328e5b303",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_d67136d298a28725.json",
+      "raw_sha256": "323d6b8c3e99a06b5e3436ee7446ed66ddccce375dc6fad9f35d44cc5fc30577",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794424141434781922",
+      "stage": "candidate_recovery_5e5e5b6685948eff",
+      "origin": "graphic",
+      "request_sha256": "f8c1c3e94a707fca92bdbfb3ce13ce1c7cf5f0e35a83d24d3e6c4a14fc5f8532",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_5e5e5b6685948eff.json",
+      "raw_sha256": "44e4524e801571520f8f0f7bf1b526e083687f23198fe0815860a3a6cd935598",
+      "raw_findings": 0,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {},
+      "adapted_text_items": []
+    },
+    {
+      "request_id": "1794424161119121046",
+      "stage": "candidate_recovery_0e920a705ba2ab51",
+      "origin": "graphic",
+      "request_sha256": "a54d6ff65af11a8b8efe0cf60f03fd1d4cb67e73226f52ba9ae3ddf5c72f6c64",
+      "raw_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic_current/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_candidate_recovery_0e920a705ba2ab51.json",
+      "raw_sha256": "baa83403574f64bfcf3a07eebcf4761b8b6a6f8aa7083f0b7945100bbdf4266f",
+      "raw_findings": 1,
+      "before_admitted": 0,
+      "after_admitted": 0,
+      "after_pending": {
+        "missing_inspected_source_reference": 1
+      },
+      "adapted_text_items": []
+    }
+  ],
+  "model_calls": 0,
+  "frozen_experiment_unchanged": true,
+  "limits": [
+    "Same saved responses, no new model generation.",
+    "Source-reference admission is not truth, distinct defect count or final output retention.",
+    "Malformed evidence without valid finding-level references remains pending."
+  ],
+  "production_acceptance": false
+}
