@@ -1,0 +1,1209 @@
+{
+  "status": "sixteen_duplicates_one_refutation_one_missing_prescan_reviewed_with_atomic_limits",
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "reviews": [
+    {
+      "source_id": "P-80198eb0a0c3dd9d6bcca394",
+      "origin": "prescan",
+      "pointer": "/prescan_review_requests/0",
+      "original_candidate": {
+        "rule_key": "air_curtain_u_designation",
+        "status": "not_checked",
+        "claim": "В документе встречаются обозначения вида У1 и упоминания тепловых завес. Установить, относятся ли они к одному объекту и есть ли конкретная неоднозначность идентификации. Совпадение слов не доказывает ошибку и не требует переименования в ВТЗ/ЗВТ без применимого основания.",
+        "source_hint": "MD стр. 5, 7, 9, 12, 24, 25, 27, 37, 45, 58, 66, 89, 102 / упоминания систем",
+        "source_block_hints": [
+          "blk_6e394962eb18407fb17b09f063c30a5c",
+          "blk_c68be533b2c24e4799dde6fb256694f4",
+          "blk_52496725d0f247bf913f197b2ed305ac",
+          "blk_3555a6e6bcc443c39eaba461232ceec3",
+          "blk_e7af9d2de9a4471daa970c45845957e5",
+          "blk_0457419703024673bb4328b18d47501e",
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_a4846024d95044a09f7a24d76da41c31",
+          "blk_523708af1c384b0e8bc6767d93644336",
+          "blk_1afb9b9bff5242cca6f364f218b96506",
+          "blk_127bea47b93f4214ac6430c54b21517a",
+          "blk_e7bf605cde374aec808e8a5deb78ce97",
+          "blk_e20c8afbb3bf4f8b92e962ceeab35cae",
+          "blk_3d78558e2eb34cb189b102380b0d3d00",
+          "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "origin": "deterministic/md_prescan",
+        "semantic_verified": false
+      },
+      "model_decision": {
+        "origin": "prescan",
+        "pointer": "/prescan_review_requests/0",
+        "status": "not_checked",
+        "semantic_verified": false,
+        "reason": "missing_decision"
+      },
+      "assessment": "missing_explicit_decision_partial_topic_overlap_not_closure",
+      "reviewer_correspondence": "F-010",
+      "reason": "F-010 сохраняет неоднозначность У1–У4 / У4.3–У4.6 и не требует переименования буквы У. Но prescan просит проверить идентичность объектов по многим листам, включая употребление У1 как привода; одна тематическая близость не закрывает весь запрос. Нужен явный результат операции и связь, исходный missing_decision не исправляется задним числом.",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-012",
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/1",
+      "original_candidate": {
+        "id": "G-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "specification_consistency",
+        "finding": "Диапазоны и количества дифференциальных датчиков шкафа ШАУВ-4-К4ПЧ не согласованы. Таблица сигналов листа 10 задаёт для PDS2 и PDS4 диапазон 20–200 Па, для PDS1 и PDS3 — 50–500 Па; перечень элементов предусматривает соответственно 1 и 3 прибора, а спецификация на листе 2 — 3 и 1 прибор.\n\nРекомендация: Согласовать диапазон каждого PDS1–PDS4 и соответствующие количества в таблице сигналов, перечне элементов и спецификации.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+        "value_found": "PDS2: 20–200 Па — 1; PDS1,PDS3,PDS4: 50–500 Па — 3; позиции 4.4 и 4.5: 20–200 Па — 3, 50–500 Па — 1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:005",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 0.99,
+          "reason": "Описано одно несоответствие диапазонов PDS1–PDS4: для PDS4 схема задаёт 20–200 Па, перечень — 50–500 Па; количества приборов этих диапазонов в перечне составляют 1 и 3, в спецификации — 3 и 1. Детализация эквивалентна.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/5/findings/1",
+        "candidate_id": "G-012",
+        "decision": "duplicate",
+        "reason": "Согласно match объединено с парным кандидатом и текстовым замечанием. Сохранены диапазоны и количества перечня/спецификации; распределение PDS2 и PDS4 по графической таблице не подтверждено.",
+        "source_refs": [
+          "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "blk_3dfcda405820460b84179ebf65d182d1"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-006",
+          "pointer": "/findings/5"
+        }
+      ],
+      "reviewer_correspondence": "F-006",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F004_F006_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Распределение количества 1/3 против 3/1 по диапазонам сохранено.",
+      "remaining_scope": "Графическая привязка диапазона PDS4 не проверена.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-451cf4437752785fcf014651",
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "В перечне элементов листа 14 для ТЕ3, ТЕ4 указано количество 1, хотя на функциональной схеме показаны два отдельных датчика температуры приточного воздуха: ТЕ3 системы П5.1.1 и ТЕ4 системы П5.1.3.",
+        "norm_quote": null,
+        "value_found": "ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1",
+        "recommendation": "Исправить количество канальных датчиков ТЕ3, ТЕ4 в перечне элементов на 2.",
+        "claim_type": "contradiction",
+        "problem_class": "equipment_quantity_mismatch",
+        "affected_entity": "ТЕ3 и ТЕ4, перечень элементов листа 14",
+        "evidence_quote": "На схеме ТЕ3 и ТЕ4 показаны на выходах двух разных систем и подключены к отдельным сигналам 12 и 20; в перечне элементов строка «ТЕ3,ТЕ4» содержит количество «1».",
+        "evidence_kind": "same_page",
+        "context_status": "sufficient",
+        "confidence": 0.99,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:003",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:006"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают количество 1 вместо 2 в строке ТЕ3, ТЕ4 перечня элементов листа 14.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/9/deferred_findings/0",
+        "decision": "duplicate",
+        "reason": "Текстовая часть о количестве 1 для ТЕ3,ТЕ4 независимо подтверждена и сохранена вместе с основным кандидатом. Указанные графические сигналы 12 и 20 остаются непроверенными; отдельное замечание из отложенной записи не создано.",
+        "source_refs": [
+          "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e",
+          "blk_bdfeffa5dba44748bf80fcc48b97c618",
+          "blk_576ad6ac1cff48f79ac223f56ba405ae"
+        ]
+      },
+      "model_final_links": [],
+      "reviewer_correspondence": "F-007",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_first_source_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Количество 1 для ТЕ3/ТЕ4 листа 14 сопоставлено с двумя адресными подключениями и спецификацией.",
+      "remaining_scope": "Сигналы 12 и 20 и их графические связи не проверены.",
+      "raw_traceability_complete": false,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-2a75404be9733cbab96558d1",
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "device_designation",
+        "finding": "Реле перепада давления вентилятора Вос5.1 обозначено на функциональной схеме, лист 17, как PDS5, а конец соответствующего кабеля Вос5.1-1 в кабельном журнале обозначен PDS45.",
+        "norm_quote": null,
+        "value_found": "PDS5; Вос5.1-1 — PDS45",
+        "recommendation": "Согласовать обозначение конца кабеля Вос5.1-1 с маркой реле PDS5 на функциональной схеме и в перечне приборов.",
+        "claim_type": "contradiction",
+        "problem_class": "cable_destination_tag_mismatch",
+        "affected_entity": "Реле PDS5 системы Вос5.1 и кабель Вос5.1-1",
+        "evidence_quote": "На схеме у вентилятора Вос5.1 указано «PDS 5»; перечень приборов содержит «PDS3-PDS5»; кабельный журнал, лист 19: «Вос5.1-1 | ШАУВ-6-К5ПЧ | PDS45».",
+        "evidence_kind": "document_retrieval",
+        "context_status": "sufficient",
+        "confidence": 0.99,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:006",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одинаковое расхождение: реле PDS5 на схеме обозначено PDS45 для конца кабеля Вос5.1-1 в кабельном журнале.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/12/deferred_findings/0",
+        "decision": "duplicate",
+        "reason": "Подтвержденная текстом часть PDS45 против перечня PDS1–PDS5 сохранена в объединенном замечании. Графическая привязка PDS5 не проверена; самостоятельное замечание не создано.",
+        "source_refs": [
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ]
+      },
+      "model_final_links": [],
+      "reviewer_correspondence": "F-031",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "PDS45 в журнале против перечня PDS1–PDS5 сохранено.",
+      "remaining_scope": "Прямое подключение к PDS5 на схеме не проверено.",
+      "raw_traceability_complete": false,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-046",
+      "origin": "graphic",
+      "pointer": "/block_analyses/14/findings/1",
+      "original_candidate": {
+        "id": "G-046",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "equipment_identification",
+        "finding": "В перечне элементов листа 19 указан диапазон «SC UZ1 - SC UZ53» при количестве 3 шт., тогда как на функциональной схеме обозначены SC UZ1, SC UZ2 и SC UZ3. Конечное позиционное обозначение в перечне противоречит схеме.\n\nРекомендация: Исправить диапазон обозначений в перечне элементов на «SC UZ1 – SC UZ3» в соответствии со схемой.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_5999641136b84d1c9a5dd129e06ae055",
+        "value_found": "SC UZ1 - SC UZ53",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-046",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на ошибочный диапазон «SC UZ1 - SC UZ53» при количестве 3 шт. и обозначениях SC UZ1, SC UZ2, SC UZ3 на схеме; исправление одинаковое. Различие в оценке критичности не меняет сути проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/14/findings/1",
+        "candidate_id": "G-046",
+        "decision": "duplicate",
+        "reason": "Пара match объединена с сохранением обоих идентификаторов. Принята рекомендательная оценка подтвержденной неоднозначности перечня, без вывода о 53 устройствах.",
+        "source_refs": [
+          "blk_50601fa20414465ea70cc3f42158d923",
+          "blk_5b5187b5afb740efb6423fa40c399349"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-029",
+          "pointer": "/findings/28"
+        }
+      ],
+      "reviewer_correspondence": "F-029",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Запись UZ53 при количестве 3 сохранена как вопрос.",
+      "remaining_scope": "Графические обозначения UZ1–UZ3 не проверены; оговорку о перепроверке распознавания TEXT убрать.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-049",
+      "origin": "graphic",
+      "pointer": "/block_analyses/15/findings/2",
+      "original_candidate": {
+        "id": "G-049",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "equipment_quantity",
+        "finding": "В перечне элементов на листе 20 для ТЕ3, ТЕ4 указано количество 1, хотя на схеме показаны два отдельных датчика. Спецификация шкафа ШАУВ-2-К6ПЧ, позиция 14.6, также предусматривает 2 канальных датчика.\n\nРекомендация: Исправить количество датчиков ТЕ3, ТЕ4 в перечне элементов на 2 шт., согласовав его со схемой и спецификацией.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_54608a880c2545aa926c442d213988c3",
+        "value_found": "ТЕ3,ТЕ4 — Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt — 1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-049",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:004",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 0.99,
+          "reason": "Оба замечания указывают количество 1 вместо 2 для ТЕ3, ТЕ4 в перечне элементов и подтверждают требуемое количество схемой и спецификацией ШАУВ-2-К6ПЧ. Различается только оценка серьёзности.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/15/findings/2",
+        "candidate_id": "G-049",
+        "decision": "duplicate",
+        "reason": "Текстово подтвержденный конфликт количества объединен с парным кандидатом и замечанием по двум шкафам; оба идентификатора сохранены.",
+        "source_refs": [
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_5b5187b5afb740efb6423fa40c399349",
+          "blk_b30682ddac7544ab95a724bbed5f6e69",
+          "blk_07eb5e614f424f588877ee1d3d5ce41b"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-007",
+          "pointer": "/findings/6"
+        }
+      ],
+      "reviewer_correspondence": "F-007",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_first_source_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Количество 1 для ТЕ3/ТЕ4 листа 20 против количества 2 в спецификации сохранено.",
+      "remaining_scope": "Графическое количество отдельно не проверено.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-88572b5b92a44934d1200f63",
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "На листе 23 в перечне элементов для электродвигателей М3–М6 указано количество 2, тогда как на функциональной схеме показаны четыре двигателя: М3, М4, М5 и М6 — по одному для каждой завесы У4.3–У4.6.",
+        "norm_quote": null,
+        "value_found": "М3-М6 | Электродвигатель вентилятора в комплекте с завесой | 2",
+        "recommendation": "Привести количество электродвигателей М3–М6 в перечне элементов в соответствие со схемой: 4 шт.",
+        "claim_type": "contradiction",
+        "problem_class": "equipment_quantity_mismatch",
+        "affected_entity": "Электродвигатели М3–М6 тепловых завес У4.3–У4.6",
+        "evidence_quote": "В перечне элементов для М3–М6 указано «2»; на схеме отдельно изображены и обозначены М3, М4, М5, М6 в четырёх тепловых завесах.",
+        "evidence_kind": "block_image",
+        "context_status": "sufficient",
+        "confidence": 0.99,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:001",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковое расхождение: для М3–М6 в перечне указано 2 двигателя вместо четырёх на схеме; исправление — 4 шт.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/18/deferred_findings/0",
+        "decision": "duplicate",
+        "reason": "Текстовая неоднозначность М3–М6 сохранена в общем вопросе по комплектности. Графический счет и требование увеличить количество до четырех остаются непроверенными.",
+        "source_refs": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_1afb9b9bff5242cca6f364f218b96506"
+        ]
+      },
+      "model_final_links": [],
+      "reviewer_correspondence": "F-009",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "М3–М6 при количестве 2 сохранено как неоднозначность комплектации.",
+      "remaining_scope": "Четыре двигателя на схеме и требование увеличить поставку не проверены.",
+      "raw_traceability_complete": false,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-beded76386513df5c54dedef",
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/deferred_findings/1",
+      "original_candidate": {
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "На листе 23 в перечне элементов для регулирующих клапанов Y1, Y2 указано количество 4, тогда как на функциональной схеме показаны два клапана с электроприводами — по одному в каждом из двух смесительных узлов. Перечень и схема расходятся на 2 клапана.",
+        "norm_quote": null,
+        "value_found": "Y1, Y2 — Регулирующий клапан с электроприводом в комплекте смесительного узла с насосом — 4",
+        "recommendation": "Согласовать количество регулирующих клапанов в перечне с двумя показанными на схеме клапанами Y1 и Y2.",
+        "claim_type": "contradiction",
+        "problem_class": "equipment_quantity_mismatch",
+        "affected_entity": "Регулирующие клапаны с электроприводами Y1, Y2",
+        "evidence_quote": "В перечне элементов строка «Y1, Y2» содержит количество «4»; на схеме показаны один регулирующий клапан Y1 при насосе М1 и один регулирующий клапан Y2 при насосе М2.",
+        "evidence_kind": "block_image",
+        "context_status": "sufficient",
+        "confidence": 0.98,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:004",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковое расхождение: для Y1, Y2 в перечне указано 4 клапана при двух на схеме, по одному на каждый смесительный узел.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/18/deferred_findings/1",
+        "decision": "duplicate",
+        "reason": "Текстовая неоднозначность Y1,Y2 сохранена. Отложенное утверждение о двух изображенных клапанах не использовано как основание уменьшить поставку.",
+        "source_refs": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_1afb9b9bff5242cca6f364f218b96506"
+        ]
+      },
+      "model_final_links": [],
+      "reviewer_correspondence": "F-009",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F008_F012_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Y1/Y2 при количестве 4 сохранено как неоднозначность комплектации.",
+      "remaining_scope": "Два клапана на схеме и требование уменьшить поставку не проверены.",
+      "raw_traceability_complete": false,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-064",
+      "origin": "graphic",
+      "pointer": "/block_analyses/21/findings/1",
+      "original_candidate": {
+        "id": "G-064",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity",
+        "finding": "На листе 26 количества двух марок кабеля в спецификации противоречат схеме внешних подключений ШАУВ-2-К4ПЧ: КСПВПГнг(А)-HF 1х2х0,75 указан в количестве 50 м при сумме линий 120 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 105 м при сумме линий 50 м.\n\nРекомендация: Согласовать спецификацию со схемой: учесть 120 м КСПВПГнг(А)-HF 1х2х0,75 и 50 м КСПЭВПГнг(А)-HF 1х2х0,75.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_b2b11f12b2c24e10bebb7fb32c3680f5",
+        "value_found": "КСПВПГнг(A)-HF 1x2x0,75 мм² — 50 м; КСПЭВПГнг(A)-HF 1x2x0,75 мм² — 105 м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-064",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковые расхождения на листе 26: КСПВПГнг(А)-HF 1х2х0,75 — 50 м вместо 120 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 105 м вместо 50 м. Указанные слева недостача 70 м и избыток 55 м являются арифметическим следствием этих же данных.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/21/findings/1",
+        "candidate_id": "G-064",
+        "decision": "duplicate",
+        "reason": "Согласно match объединено с парным и текстовым кандидатами; оба исполнения и обе численные разности сохранены на текстовом основании.",
+        "source_refs": [
+          "blk_c5ecdd6fe0d145118c604b663f84bba8",
+          "blk_3efc4048723143beaeb20fa1792f1776",
+          "blk_13738f8bb6f840fcb0cb37491b612396"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-014",
+          "pointer": "/findings/13"
+        }
+      ],
+      "reviewer_correspondence": "F-014",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Оба исполнения и пары 120/50, 50/105 м сохранены на основании журнала.",
+      "remaining_scope": "Графический метраж не проверен.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-066",
+      "origin": "graphic",
+      "pointer": "/block_analyses/22/findings/1",
+      "original_candidate": {
+        "id": "G-066",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_quantity",
+        "finding": "На листе 27 ведомость кабелей не соответствует схеме подключений ШАУВ-3-К4ПЧ: КСПВПГнг(А)-HF 1х2х0,75 требуется 50 м, указано 45 м; КСПЭВПГнг(А)-HF 1х2х0,75 требуется 35 м, указано 40 м.\n\nРекомендация: Привести ведомость в соответствие с длинами линий на схеме: 50 м неэкранированного и 35 м экранированного кабеля 1х2х0,75.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_fcd31b6618d34e0f982af6c418e3bf37",
+        "value_found": "КСПВПГнг(A)-HF 1x2x0,75 мм² — 45 м; КСПЭВПГнг(A)-HF 1x2x0,75 мм² — 40 м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-066",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают одинаковое расхождение ведомости листа 27 со схемой ШАУВ-3-К4ПЧ: КСПВПГнг(А)-HF 1х2х0,75 — 45 м вместо 50 м; КСПЭВПГнг(А)-HF 1х2х0,75 — 40 м вместо 35 м. Указание разницы в 5 м не добавляет существенной детализации.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/22/findings/1",
+        "candidate_id": "G-066",
+        "decision": "duplicate",
+        "reason": "Пара match объединена с сохранением обоих метражей и ограничения НФ/HF. Графическая сумма не использована как доказательство.",
+        "source_refs": [
+          "blk_52d321bfadad4fdca6120d87c3bb2ef4",
+          "blk_13738f8bb6f840fcb0cb37491b612396",
+          "blk_30ab2c5b39b8442baf89f7a9cfe31434"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-030",
+          "pointer": "/findings/29"
+        }
+      ],
+      "reviewer_correspondence": "F-030",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Экранированное исполнение 35/40 м сохранено; различие НФ/HF явно ограничивает второй расчёт.",
+      "remaining_scope": "Графическая сумма 50 м HF и вывод об однозначной недостаче 5 м не проверены.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-071",
+      "origin": "graphic",
+      "pointer": "/block_analyses/26/findings/1",
+      "original_candidate": {
+        "id": "G-071",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable_connection",
+        "finding": "На схеме внешних подключений ШАУВ-2-К5ПЧ, лист 31, кабель Пкр5.1-9 подключён к резервному вентилятору М3, а Пкр5.1-13 — к циркуляционному насосу М2. В кабельном журнале, листы 13–14, конечные устройства указаны наоборот: М2 и М3 соответственно, что создаёт неоднозначность подключения оборудования.\n\nРекомендация: Согласовать обозначения двигателей и конечных устройств кабелей Пкр5.1-9 и Пкр5.1-13 на схеме и в кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_c0ed6bca935843c18344796377677f2f",
+        "value_found": "Пкр5.1-9 → М3; Пкр5.1-13 → М2",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-071",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одинаковое расхождение: на схеме Пкр5.1-9 подключён к М3, Пкр5.1-13 — к М2, а в кабельном журнале указаны М2 и М3 соответственно. Различие категорий не меняет смысла проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/26/findings/1",
+        "candidate_id": "G-071",
+        "decision": "duplicate",
+        "reason": "Пара match объединена с текстовым замечанием, сохранив обе марки кабелей, назначения М2/М3 и лист 31 как связанную непроверенную схему.",
+        "source_refs": [
+          "blk_08e6971dafd541b2a40e0aa270404a4e",
+          "blk_ba2cc771448645a5b9a7203af971680b",
+          "blk_611c64e52f5d4223aaee5cf72c58e34e"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-003",
+          "pointer": "/findings/2"
+        }
+      ],
+      "reviewer_correspondence": "F-003",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Марки Пкр5.1-9/-13 и адреса М2/М3 сохранены в тексте.",
+      "remaining_scope": "Это не подтверждённая перестановка адресов: без графики разные сечения насоса и вентилятора не доказывают дефект. Требуется проверка схемы листа 31.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-078",
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/1",
+      "original_candidate": {
+        "id": "G-078",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable_specification",
+        "finding": "Для кабеля По5.1-9 к электронагревателю схема внешних подключений ШАУВ-6-К5ПЧ, лист 35, задаёт ППГнг(А)-HF 3×2,5, а кабельный журнал, лист 19, — ППГнг(А)-HF 4×4,0. Число жил и сечение одного кабеля заданы противоречиво.\n\nРекомендация: Уточнить кабель по параметрам электронагревателя и согласовать схему, кабельный журнал и ведомость кабелей.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_065a335469904b2db1640b480b321503",
+        "value_found": "По5.1-9; ППГнг(А)-HF 3x2,5; L=10м",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-078",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:005",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания фиксируют для По5.1-9 расхождение: ППГнг(А)-HF 3×2,5 на схеме и 4×4,0 в кабельном журнале.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/30/findings/1",
+        "candidate_id": "G-078",
+        "decision": "duplicate",
+        "reason": "Пара match объединена с текстовым кандидатом, сохранив 10 м, оба исполнения и необходимость расчета по нагревателю; графическая часть явно ограничена.",
+        "source_refs": [
+          "blk_43571d7cab5b47d2b07660a9e43a42c9",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-017",
+          "pointer": "/findings/16"
+        }
+      ],
+      "reviewer_correspondence": "F-017",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Исполнения 3×2,5 и 4×4,0 по локальной ведомости и журналу сохранены.",
+      "remaining_scope": "Прямая принадлежность 3×2,5 линии По5.1-9 на схеме не проверена.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-079",
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/2",
+      "original_candidate": {
+        "id": "G-079",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_identification",
+        "finding": "Кабель Вос5.1-1 на схеме внешних подключений ШАУВ-6-К5ПЧ, лист 35, подключён к PDS5, а в кабельном журнале, лист 19, его конечным устройством указан PDS45. Обозначения конечного устройства одной линии различаются.\n\nРекомендация: Согласовать обозначение датчика перепада давления для кабеля Вос5.1-1 в схеме и кабельном журнале.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_065a335469904b2db1640b480b321503",
+        "value_found": "PDS5; Вос5.1-1",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-079",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:007",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/30/findings/2",
+        "candidate_id": "G-079",
+        "decision": "duplicate",
+        "reason": "Независимо подтвержденное расхождение PDS45 с перечнем PDS1–PDS5 объединено с адресным замечанием. Уникальное происхождение кандидата не превращено в независимое графическое доказательство.",
+        "source_refs": [
+          "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "blk_c63456cda51644db9470fb57f29b27de"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-031",
+          "pointer": "/findings/30"
+        }
+      ],
+      "reviewer_correspondence": "F-031",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F003_F029_F036_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "PDS45 против перечня PDS1–PDS5 сохранено.",
+      "remaining_scope": "Точный конец линии на схеме листа 35 не проверен.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-798aaadc7718df147d4eb053",
+      "origin": "graphic",
+      "pointer": "/block_analyses/32/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "cable_specification",
+        "finding": "Марки кабелей В6.1.1-4, В6.1.2-1, В6.1.2-4 и В6.1.4-1 не согласованы: на схеме внешних подключений ШАУВ-1-К6ПЧ, лист 37, указан КСПВПГнг(А)-HF, а в кабельном журнале, лист 23, — КСВПГнг(A)-HF при одинаковом сечении 1х2х0,75.",
+        "norm_quote": null,
+        "value_found": "КСПВПГнг(А)-HF 1х2х0,75; КСВПГнг(A)-HF 1x2x0,75",
+        "recommendation": "Уточнить проектную марку перечисленных кабелей и согласовать обозначения в схеме, спецификации листа и кабельном журнале.",
+        "claim_type": "contradiction",
+        "problem_class": "cable_type_mismatch",
+        "affected_entity": "Кабели В6.1.1-4, В6.1.2-1, В6.1.2-4, В6.1.4-1 шкафа ШАУВ-1-К6ПЧ",
+        "evidence_quote": "На схеме для перечисленных линий указано «КСПВПГнг(А)-HF 1х2х0,75»; спецификация листа также содержит «Кабель КСПВПГнг(A)-HF 1x2x0,75 мм²». В кабельном журнале на листе 23 для этих же линий указано «КСВПГнг(A)-HF», «1x2x0,75», «30».",
+        "evidence_kind": "document_retrieval",
+        "context_status": "sufficient",
+        "confidence": 0.96,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:2",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:002",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:001"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания описывают одинаковое расхождение марок КСПВПГнг(А)-HF и КСВПГнг(A)-HF для тех же четырёх кабелей между листом 37 схемы и листом 23 кабельного журнала. Упоминание спецификации слева не добавляет существенной детализации проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/32/deferred_findings/0",
+        "decision": "duplicate",
+        "reason": "Текстовая часть совпадает с сохраненным кандидатом: те же четыре линии по 30 м и разные марки. Графическое исполнение не подтверждено, отдельного замечания не создано.",
+        "source_refs": [
+          "blk_aa193b92cd134c37853e3c8ec6ccd32d",
+          "blk_a3ebf964570e4e669569795872f6001b"
+        ]
+      },
+      "model_final_links": [],
+      "reviewer_correspondence": "F-019",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Четыре конкретные линии В6, 30 м и два написания марки сохранены.",
+      "remaining_scope": "Марки на графических линиях не проверены.",
+      "raw_traceability_complete": false,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-088",
+      "origin": "graphic",
+      "pointer": "/block_analyses/33/findings/1",
+      "original_candidate": {
+        "id": "G-088",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "equipment_quantity",
+        "finding": "На схеме внешних подключений ШАУВ-2-К6ПЧ, лист 38, показаны два реле температуры: TS1 системы П6.1.1 и TS2 системы П6.1.4. В спецификации оборудования, лист 7, позиция 14.8, для этого шкафа предусмотрено только одно реле температуры.\n\nРекомендация: Согласовать количество реле температуры в спецификации с двумя устройствами, показанными на схеме подключений.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_40bad73db9d44699955a7a4682f309a8",
+        "value_found": "TS1; TS2; «Реле температуры (капиллярный термостат)» — 1 шт.",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-088",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "new",
+          "role": "unique_detector_finding",
+          "counterpart_refs": [],
+          "confidence": 1.0,
+          "reason": "Другой независимый детектор не вернул смысловой аналог.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/33/findings/1",
+        "candidate_id": "G-088",
+        "decision": "refuted",
+        "reason": "Вывод о необходимости второго отдельного капиллярного реле в позиции 14.8 не учитывает первичную границу поставки: ТС1 указан как капиллярное реле, а ТС2 прямо обозначен комплектным с электронагревателем. Поэтому два разных прибора нельзя сравнивать с одной строкой отдельной поставки как недостачу. Незаполненное количество ТС2 сохранено в адресном вопросе.",
+        "source_refs": [
+          "blk_917406a6b2804ee2abedff901eb85582",
+          "blk_5b5187b5afb740efb6423fa40c399349"
+        ]
+      },
+      "assessment": "narrow_refutation_supported_not_all_thermostat_issues_closed",
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_first_source_review.json",
+      "residual_question": "F-032",
+      "reason": "Требование дополнительного отдельно поставляемого капиллярного реле не учитывает комплектный термостат ТС2. Незаполненное количество и адресация ТС1 остаются вопросом F-032. Графика не опровергнута.",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-091",
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/1",
+      "original_candidate": {
+        "id": "G-091",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "equipment_assignment",
+        "finding": "Схема внешних подключений ШАУВ-1-К6АС на листе 40 относится к системам Па5.1/Ва5.1, а в спецификации этого шкафа преобразователи частоты поз. 16.2 и 16.3 отнесены к Ва4.1 и Па4.1. План на листе 54 подтверждает принадлежность ШАУВ-1-К6АС системам Па5.1/Ва5.1.\n\nРекомендация: Согласовать обозначения обслуживаемых систем в позициях 16.2 и 16.3 спецификации со схемой ШАУВ-1-К6АС и планом оборудования.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_47163e69651c48528b3e054d5a5db095",
+        "value_found": "16.2: «для Ва 4.1»; 16.3: «для Па 4.1»",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-091",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:001",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:003"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковую ошибку привязки поз. 16.2 и 16.3: Ва4.1/Па4.1 в спецификации вместо Ва5.1/Па5.1 по схеме листа 40 и плану листа 54.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/35/findings/1",
+        "candidate_id": "G-091",
+        "decision": "duplicate",
+        "reason": "Пара match объединена с текстовым замечанием, сохранив обе позиции ПЧ, оба набора систем и ограничение графической проверки.",
+        "source_refs": [
+          "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "blk_f9a46b38e8aa4c498ede6fbe4a461052"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-027",
+          "pointer": "/findings/26"
+        }
+      ],
+      "reviewer_correspondence": "F-027",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Поз.16.2/16.3, оба набора систем и шкаф К6АС сохранены.",
+      "remaining_scope": "Привязки по графике листов 40/54 не проверены.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-093",
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/3",
+      "original_candidate": {
+        "id": "G-093",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "cable_specification",
+        "finding": "Для линии входа СКЗ шкафа ШАУВ-1-К6АС длиной 45 м указаны разные марки кабеля: на схеме листа 40 — КСПВПГнг(А)-HF, в кабельном журнале на листе 35 — КСПВПнг(А)-HF.\n\nРекомендация: Установить единую марку кабеля линии СКЗ и согласовать схему, кабельный журнал и ведомость кабелей.",
+        "norm": null,
+        "norm_quote": null,
+        "block_evidence": "blk_47163e69651c48528b3e054d5a5db095",
+        "value_found": "КСПВПГнг(А)-HF 1х2х0,75 мм², L=45м; КСПВПнг(A)-HF 1х2х0,75, 45",
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-093",
+              "mode": "independent",
+              "detected_at": "2026-11-11T17:39:17.830389+00:00",
+              "context_source": "raw_vector"
+            }
+          ],
+          "context_source": "raw_vector"
+        },
+        "comparison_ref": "codex:002",
+        "detector_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:004"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания фиксируют расхождение марки одного кабеля СКЗ длиной 45 м и сечением 1х2х0,75: КСПВПГнг(А)-HF на листе 40 и КСПВПнг(А)-HF в журнале на листе 35. Разная оценка severity не меняет сути проблемы.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/35/findings/3",
+        "candidate_id": "G-093",
+        "decision": "duplicate",
+        "reason": "Пара match объединена без экономического вывода: стоимость и фактическое различие изделий не установлены. Сохранены 45 м, 1×2×0,75 и оба написания марки.",
+        "source_refs": [
+          "blk_a256f98d4e01408d90baba99d8b2cc19",
+          "blk_82df3363fc824144b9390f2cd6635937"
+        ]
+      },
+      "model_final_links": [
+        {
+          "id": "F-019",
+          "pointer": "/findings/18"
+        }
+      ],
+      "reviewer_correspondence": "F-019",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F014_F020_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "preserved_scope": "Линия СКЗ К6АС 45 м и разные написания кабеля сохранены.",
+      "remaining_scope": "Графическая марка линии не проверена; назначение из локального перечня не равнозначно прямой графической привязке.",
+      "raw_traceability_complete": true,
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-792d00bce4b70937c9f38806",
+      "origin": "graphic",
+      "pointer": "/block_analyses/64/deferred_findings/0",
+      "original_candidate": {
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "specification_mismatch",
+        "finding": "Марка подвеса опоры под лотковые трассы не согласована: в таблице крепления к кровле на листе 53 указан ДКС BSD4120, а в спецификации на листе 10, поз. 22.6 — BSD2120. Документы задают разные изделия для монтажа опоры.",
+        "norm_quote": null,
+        "value_found": "Подвес ДКС BSD4120 двойной; Двойной вертикальный подвес BSD-21 — BSD2120",
+        "recommendation": "Уточнить принятое изделие и согласовать марку подвеса в таблице крепления к кровле и спецификации.",
+        "claim_type": "contradiction",
+        "problem_class": "support_model_mismatch",
+        "affected_entity": "Подвес опоры под лотковые трассы на кровле корпуса 6",
+        "evidence_quote": "Лист 53: «Подвес ДКС BSD4120 двойной | шт. | 1»; спецификация, лист 10, поз. 22.6: «Двойной вертикальный подвес BSD-21 | BSD2120 | DKC | шт. | 15».",
+        "evidence_kind": "document_retrieval",
+        "context_status": "sufficient",
+        "confidence": 0.93,
+        "counterevidence_checked": true,
+        "required_context": [],
+        "_detector_model": "codex/gpt-6-astra",
+        "_detector_comparison_id": "codex/gpt-6-astra::leg:1",
+        "_detector_run_id": "stage01-20261111T173917Z-ensemble_codex-only:codex",
+        "_detector_ref": "codex:001",
+        "_comparison": {
+          "schema_version": 1,
+          "relation": "match",
+          "role": "peer",
+          "counterpart_refs": [
+            "codex:002"
+          ],
+          "confidence": 1.0,
+          "reason": "Оба замечания указывают на одинаковое расхождение марки подвеса: BSD4120 в таблице крепления на листе 53 и BSD2120 (BSD-21) в позиции 22.6 спецификации на листе 10. Детализация эквивалентна.",
+          "reviewer_model": "codex/gpt-6-astra",
+          "origin": "dual_comparison"
+        },
+        "_evidence_gate": {
+          "status": "deferred",
+          "reasons": [
+            "block_duplicate"
+          ]
+        }
+      },
+      "model_decision": {
+        "origin": "graphic",
+        "pointer": "/block_analyses/64/deferred_findings/0",
+        "decision": "duplicate",
+        "reason": "Отложенная запись повторяет независимо подтвержденный текстом конфликт марки подвеса. Она не создает отдельного замечания; сохранены позиция 22.6 и лист 53.",
+        "source_refs": [
+          "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "blk_2258a0dfd8c84b6197e4cbb4d229ea27"
+        ]
+      },
+      "model_final_links": [],
+      "reviewer_correspondence": "F-025",
+      "output_review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_F022_F028_review.json",
+      "assessment": "text_claim_preserved",
+      "preserved_scope": "Лист 53, позиция22.6 и разные марки BSD4120/BSD2120 сохранены.",
+      "remaining_scope": "Различие фактических изделий и требуемое количество по узлам не установлены; исходный текстовый конфликт сохранён полностью.",
+      "raw_traceability_complete": false,
+      "all_original_claims_semantically_verified": false
+    }
+  ],
+  "missing_model_final_links_for_duplicates": 6,
+  "production_acceptance": false
+}

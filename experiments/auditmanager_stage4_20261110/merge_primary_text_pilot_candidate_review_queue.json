@@ -1,0 +1,1919 @@
+{
+  "initial_ledger_sha256": "45b6a7d0d2a99f5cf458c6863b47e2a42ad5a36c9055fbabe7814d338c918ebf",
+  "candidate_count": 147,
+  "disposition_reviewed_count": 18,
+  "remaining_disposition_review_count": 129,
+  "model_decision_counts": {
+    "retained": 47,
+    "missing_decision": 1,
+    "needs_data": 82,
+    "duplicate": 16,
+    "refuted": 1
+  },
+  "candidates": [
+    {
+      "source_id": "T-001",
+      "origin": "text",
+      "pointer": "/text_findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-001",
+          "pointer": "/findings/0"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-002",
+      "origin": "text",
+      "pointer": "/text_findings/1",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-002",
+          "pointer": "/findings/1"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-003",
+      "origin": "text",
+      "pointer": "/text_findings/2",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-003",
+          "pointer": "/findings/2"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-004",
+      "origin": "text",
+      "pointer": "/text_findings/3",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-004",
+          "pointer": "/findings/3"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-005",
+      "origin": "text",
+      "pointer": "/text_findings/4",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-005",
+          "pointer": "/findings/4"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-006",
+      "origin": "text",
+      "pointer": "/text_findings/5",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-006",
+          "pointer": "/findings/5"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-007",
+      "origin": "text",
+      "pointer": "/text_findings/6",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-007",
+          "pointer": "/findings/6"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-008",
+      "origin": "text",
+      "pointer": "/text_findings/7",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-008",
+          "pointer": "/findings/7"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-009",
+      "origin": "text",
+      "pointer": "/text_findings/8",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-009",
+          "pointer": "/findings/8"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-010",
+      "origin": "text",
+      "pointer": "/text_findings/9",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-010",
+          "pointer": "/findings/9"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-011",
+      "origin": "text",
+      "pointer": "/text_findings/10",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-011",
+          "pointer": "/findings/10"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-012",
+      "origin": "text",
+      "pointer": "/text_findings/11",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-012",
+          "pointer": "/findings/11"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-013",
+      "origin": "text",
+      "pointer": "/text_findings/12",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-013",
+          "pointer": "/findings/12"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-014",
+      "origin": "text",
+      "pointer": "/text_findings/13",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-014",
+          "pointer": "/findings/13"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-015",
+      "origin": "text",
+      "pointer": "/text_findings/14",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-015",
+          "pointer": "/findings/14"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-016",
+      "origin": "text",
+      "pointer": "/text_findings/15",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-016",
+          "pointer": "/findings/15"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-017",
+      "origin": "text",
+      "pointer": "/text_findings/16",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-017",
+          "pointer": "/findings/16"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-018",
+      "origin": "text",
+      "pointer": "/text_findings/17",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-018",
+          "pointer": "/findings/17"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-019",
+      "origin": "text",
+      "pointer": "/text_findings/18",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-019",
+          "pointer": "/findings/18"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-020",
+      "origin": "text",
+      "pointer": "/text_findings/19",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-020",
+          "pointer": "/findings/19"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-021",
+      "origin": "text",
+      "pointer": "/text_findings/20",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-021",
+          "pointer": "/findings/20"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-022",
+      "origin": "text",
+      "pointer": "/text_findings/21",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-022",
+          "pointer": "/findings/21"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-023",
+      "origin": "text",
+      "pointer": "/text_findings/22",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-023",
+          "pointer": "/findings/22"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-024",
+      "origin": "text",
+      "pointer": "/text_findings/23",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-024",
+          "pointer": "/findings/23"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-025",
+      "origin": "text",
+      "pointer": "/text_findings/24",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-025",
+          "pointer": "/findings/24"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-026",
+      "origin": "text",
+      "pointer": "/text_findings/25",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-026",
+          "pointer": "/findings/25"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-027",
+      "origin": "text",
+      "pointer": "/text_findings/26",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-027",
+          "pointer": "/findings/26"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "T-028",
+      "origin": "text",
+      "pointer": "/text_findings/27",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-028",
+          "pointer": "/findings/27"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "P-80198eb0a0c3dd9d6bcca394",
+      "origin": "prescan",
+      "pointer": "/prescan_review_requests/0",
+      "input_deferred": true,
+      "model_decision": "missing_decision",
+      "model_final_links": [],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "missing_explicit_decision_partial_topic_overlap_not_closure",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-001",
+      "origin": "graphic",
+      "pointer": "/block_analyses/0/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-002",
+      "origin": "graphic",
+      "pointer": "/block_analyses/0/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-003",
+      "origin": "graphic",
+      "pointer": "/block_analyses/0/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-004",
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-005",
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-006",
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-007",
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/3",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-008",
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/findings/4",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-7f7eafb60591ff43920af614",
+      "origin": "graphic",
+      "pointer": "/block_analyses/3/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-009",
+      "origin": "graphic",
+      "pointer": "/block_analyses/4/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-010",
+      "origin": "graphic",
+      "pointer": "/block_analyses/4/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-011",
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-006",
+          "pointer": "/findings/5"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-012",
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/1",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-006",
+          "pointer": "/findings/5"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-013",
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-014",
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/3",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-015",
+      "origin": "graphic",
+      "pointer": "/block_analyses/5/findings/4",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-016",
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-017",
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-018",
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-019",
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/3",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-020",
+      "origin": "graphic",
+      "pointer": "/block_analyses/6/findings/4",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-021",
+      "origin": "graphic",
+      "pointer": "/block_analyses/8/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-022",
+      "origin": "graphic",
+      "pointer": "/block_analyses/8/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-023",
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-007",
+          "pointer": "/findings/6"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-024",
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-025",
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-026",
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/3",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-027",
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/findings/4",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-451cf4437752785fcf014651",
+      "origin": "graphic",
+      "pointer": "/block_analyses/9/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "duplicate",
+      "model_final_links": [],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-028",
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-029",
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-030",
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-031",
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/3",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-032",
+      "origin": "graphic",
+      "pointer": "/block_analyses/10/findings/4",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-033",
+      "origin": "graphic",
+      "pointer": "/block_analyses/11/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-034",
+      "origin": "graphic",
+      "pointer": "/block_analyses/11/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-035",
+      "origin": "graphic",
+      "pointer": "/block_analyses/11/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-fb673cefb3898638861f1299",
+      "origin": "graphic",
+      "pointer": "/block_analyses/11/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-036",
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-037",
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-038",
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/2",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-031",
+          "pointer": "/findings/30"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-039",
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/3",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-040",
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/findings/4",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-2a75404be9733cbab96558d1",
+      "origin": "graphic",
+      "pointer": "/block_analyses/12/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "duplicate",
+      "model_final_links": [],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-041",
+      "origin": "graphic",
+      "pointer": "/block_analyses/13/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-042",
+      "origin": "graphic",
+      "pointer": "/block_analyses/13/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-043",
+      "origin": "graphic",
+      "pointer": "/block_analyses/13/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-044",
+      "origin": "graphic",
+      "pointer": "/block_analyses/13/findings/3",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-045",
+      "origin": "graphic",
+      "pointer": "/block_analyses/14/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-029",
+          "pointer": "/findings/28"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-046",
+      "origin": "graphic",
+      "pointer": "/block_analyses/14/findings/1",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-029",
+          "pointer": "/findings/28"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-047",
+      "origin": "graphic",
+      "pointer": "/block_analyses/15/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-007",
+          "pointer": "/findings/6"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-048",
+      "origin": "graphic",
+      "pointer": "/block_analyses/15/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-049",
+      "origin": "graphic",
+      "pointer": "/block_analyses/15/findings/2",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-007",
+          "pointer": "/findings/6"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-050",
+      "origin": "graphic",
+      "pointer": "/block_analyses/15/findings/3",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-051",
+      "origin": "graphic",
+      "pointer": "/block_analyses/16/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-052",
+      "origin": "graphic",
+      "pointer": "/block_analyses/16/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-053",
+      "origin": "graphic",
+      "pointer": "/block_analyses/16/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-054",
+      "origin": "graphic",
+      "pointer": "/block_analyses/17/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-055",
+      "origin": "graphic",
+      "pointer": "/block_analyses/17/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-056",
+      "origin": "graphic",
+      "pointer": "/block_analyses/17/findings/2",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-057",
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-009",
+          "pointer": "/findings/8"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-058",
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/findings/1",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-009",
+          "pointer": "/findings/8"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-88572b5b92a44934d1200f63",
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "duplicate",
+      "model_final_links": [],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-beded76386513df5c54dedef",
+      "origin": "graphic",
+      "pointer": "/block_analyses/18/deferred_findings/1",
+      "input_deferred": true,
+      "model_decision": "duplicate",
+      "model_final_links": [],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-059",
+      "origin": "graphic",
+      "pointer": "/block_analyses/19/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-060",
+      "origin": "graphic",
+      "pointer": "/block_analyses/19/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-061",
+      "origin": "graphic",
+      "pointer": "/block_analyses/20/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-062",
+      "origin": "graphic",
+      "pointer": "/block_analyses/20/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-063",
+      "origin": "graphic",
+      "pointer": "/block_analyses/21/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-014",
+          "pointer": "/findings/13"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-064",
+      "origin": "graphic",
+      "pointer": "/block_analyses/21/findings/1",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-014",
+          "pointer": "/findings/13"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-065",
+      "origin": "graphic",
+      "pointer": "/block_analyses/22/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-030",
+          "pointer": "/findings/29"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-066",
+      "origin": "graphic",
+      "pointer": "/block_analyses/22/findings/1",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-030",
+          "pointer": "/findings/29"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-067",
+      "origin": "graphic",
+      "pointer": "/block_analyses/23/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-068",
+      "origin": "graphic",
+      "pointer": "/block_analyses/23/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-069",
+      "origin": "graphic",
+      "pointer": "/block_analyses/24/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-016",
+          "pointer": "/findings/15"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-070",
+      "origin": "graphic",
+      "pointer": "/block_analyses/26/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-003",
+          "pointer": "/findings/2"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-071",
+      "origin": "graphic",
+      "pointer": "/block_analyses/26/findings/1",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-003",
+          "pointer": "/findings/2"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-072",
+      "origin": "graphic",
+      "pointer": "/block_analyses/27/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-073",
+      "origin": "graphic",
+      "pointer": "/block_analyses/27/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-074",
+      "origin": "graphic",
+      "pointer": "/block_analyses/28/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-075",
+      "origin": "graphic",
+      "pointer": "/block_analyses/28/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-e2f45dc625cc56af7134aba9",
+      "origin": "graphic",
+      "pointer": "/block_analyses/28/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-076",
+      "origin": "graphic",
+      "pointer": "/block_analyses/29/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-077",
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-017",
+          "pointer": "/findings/16"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-078",
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/1",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-017",
+          "pointer": "/findings/16"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-079",
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/2",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-031",
+          "pointer": "/findings/30"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-080",
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/3",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-031",
+          "pointer": "/findings/30"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-081",
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/4",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-031",
+          "pointer": "/findings/30"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-082",
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/5",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-083",
+      "origin": "graphic",
+      "pointer": "/block_analyses/30/findings/6",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-084",
+      "origin": "graphic",
+      "pointer": "/block_analyses/31/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-085",
+      "origin": "graphic",
+      "pointer": "/block_analyses/31/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-086",
+      "origin": "graphic",
+      "pointer": "/block_analyses/32/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-019",
+          "pointer": "/findings/18"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-798aaadc7718df147d4eb053",
+      "origin": "graphic",
+      "pointer": "/block_analyses/32/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "duplicate",
+      "model_final_links": [],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-087",
+      "origin": "graphic",
+      "pointer": "/block_analyses/33/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-032",
+          "pointer": "/findings/31"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-088",
+      "origin": "graphic",
+      "pointer": "/block_analyses/33/findings/1",
+      "input_deferred": false,
+      "model_decision": "refuted",
+      "model_final_links": [],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "narrow_refutation_supported_not_all_thermostat_issues_closed",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-089",
+      "origin": "graphic",
+      "pointer": "/block_analyses/34/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-090",
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-027",
+          "pointer": "/findings/26"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-091",
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/1",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-027",
+          "pointer": "/findings/26"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-092",
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/2",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-019",
+          "pointer": "/findings/18"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-093",
+      "origin": "graphic",
+      "pointer": "/block_analyses/35/findings/3",
+      "input_deferred": false,
+      "model_decision": "duplicate",
+      "model_final_links": [
+        {
+          "id": "F-019",
+          "pointer": "/findings/18"
+        }
+      ],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_core_preserved_graphic_part_pending",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-094",
+      "origin": "graphic",
+      "pointer": "/block_analyses/36/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-095",
+      "origin": "graphic",
+      "pointer": "/block_analyses/36/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-096",
+      "origin": "graphic",
+      "pointer": "/block_analyses/38/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-097",
+      "origin": "graphic",
+      "pointer": "/block_analyses/38/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-aed74214926fc9d966f9e854",
+      "origin": "graphic",
+      "pointer": "/block_analyses/40/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-098",
+      "origin": "graphic",
+      "pointer": "/block_analyses/55/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-099",
+      "origin": "graphic",
+      "pointer": "/block_analyses/55/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-100",
+      "origin": "graphic",
+      "pointer": "/block_analyses/60/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-101",
+      "origin": "graphic",
+      "pointer": "/block_analyses/60/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-102",
+      "origin": "graphic",
+      "pointer": "/block_analyses/63/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-103",
+      "origin": "graphic",
+      "pointer": "/block_analyses/63/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-104",
+      "origin": "graphic",
+      "pointer": "/block_analyses/64/findings/0",
+      "input_deferred": false,
+      "model_decision": "retained",
+      "model_final_links": [
+        {
+          "id": "F-025",
+          "pointer": "/findings/24"
+        }
+      ],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-792d00bce4b70937c9f38806",
+      "origin": "graphic",
+      "pointer": "/block_analyses/64/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "duplicate",
+      "model_final_links": [],
+      "review_path": "experiments/auditmanager_stage4_20261110/merge_primary_text_pilot_duplicate_refutation_prescan_review.json",
+      "assessment": "text_claim_preserved",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-105",
+      "origin": "graphic",
+      "pointer": "/block_analyses/66/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-106",
+      "origin": "graphic",
+      "pointer": "/block_analyses/66/findings/1",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "G-107",
+      "origin": "graphic",
+      "pointer": "/block_analyses/68/findings/0",
+      "input_deferred": false,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    },
+    {
+      "source_id": "D-bb7d7e1bec45b1e1cc322381",
+      "origin": "graphic",
+      "pointer": "/block_analyses/68/deferred_findings/0",
+      "input_deferred": true,
+      "model_decision": "needs_data",
+      "model_final_links": [],
+      "review_path": null,
+      "assessment": "pending_semantic_candidate_review",
+      "all_original_claims_semantically_verified": false
+    }
+  ],
+  "note": "Output review and candidate semantic preservation are distinct. A reviewed partial disposition is not a verified original graphic claim.",
+  "production_acceptance": false
+}
