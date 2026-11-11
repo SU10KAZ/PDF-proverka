@@ -1,0 +1,1534 @@
+{
+  "status": "verified_evaluation_checkpoint_not_trial_acceptance",
+  "coverage": [
+    {
+      "discipline": "AK",
+      "ledger": "experiments/auditmanager_stage4_20261110/AK_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "4445f88e02bfe4ffe796258af8bd512a1192ab73351cfe1029ea33384cde1477",
+      "summary": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "AK",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 55,
+              "availability_available": 55,
+              "partial": 12,
+              "absent": 3,
+              "full": 40
+            },
+            "review_complete": true,
+            "full_match_rate": 0.7272727272727273,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 23,
+              "availability_available": 23,
+              "partial": 6,
+              "full": 14,
+              "absent": 3
+            },
+            "review_complete": true,
+            "full_match_rate": 0.6086956521739131,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 22,
+              "availability_available": 22,
+              "absent": 21,
+              "partial": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 54
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      }
+    },
+    {
+      "discipline": "ITP",
+      "ledger": "experiments/auditmanager_stage4_20261110/ITP_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "7e1158eee0362f2451b9066ec9163ceb9754c422da48666a46126b21875af6e2",
+      "summary": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "ITP",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 19,
+              "availability_available": 19,
+              "partial": 8,
+              "full": 8,
+              "absent": 3
+            },
+            "review_complete": true,
+            "full_match_rate": 0.42105263157894735,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 56,
+              "availability_available": 56,
+              "partial": 23,
+              "absent": 9,
+              "full": 24
+            },
+            "review_complete": true,
+            "full_match_rate": 0.42857142857142855,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 12,
+              "availability_available": 12,
+              "absent": 10,
+              "partial": 2
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 32
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      }
+    },
+    {
+      "discipline": "AR",
+      "ledger": "experiments/auditmanager_stage4_20261110/AR_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "3e3f08c803fdaf9da8e5071ab7ae2e2587a47fcfd95ce38c6b4719722cbe5223",
+      "summary": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "AR",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 2,
+              "availability_available": 2,
+              "full": 1,
+              "partial": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.5,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 21,
+              "availability_available": 21,
+              "absent": 6,
+              "full": 13,
+              "partial": 2
+            },
+            "review_complete": true,
+            "full_match_rate": 0.6190476190476191,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 10,
+              "availability_available": 10,
+              "absent": 9,
+              "partial": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 14
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      }
+    },
+    {
+      "discipline": "KM",
+      "ledger": "experiments/auditmanager_stage4_20261110/KM_r1_completed_coverage_ledger.json",
+      "ledger_sha256": "f87b1c95f76a84973bd52d831ed4b0df40f56acbdac9a432eca613008fc3b2a3",
+      "summary": {
+        "status": "review_summary_not_trial_acceptance",
+        "discipline": "KM",
+        "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+        "findings_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+        "routes": {
+          "technical": {
+            "counts": {
+              "denominator": 4,
+              "availability_available": 4,
+              "full": 2,
+              "partial": 1,
+              "absent": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.5,
+            "meaning": "fully preserved target rate"
+          },
+          "question": {
+            "counts": {
+              "denominator": 20,
+              "availability_available": 20,
+              "partial": 13,
+              "absent": 5,
+              "full": 2
+            },
+            "review_complete": true,
+            "full_match_rate": 0.1,
+            "meaning": "fully preserved target rate"
+          },
+          "negative": {
+            "counts": {
+              "denominator": 3,
+              "availability_available": 3,
+              "absent": 3,
+              "held": 1
+            },
+            "review_complete": true,
+            "full_match_rate": 0.0,
+            "meaning": "repeated false claim rate"
+          }
+        },
+        "section_accuracy_counts": {
+          "unchecked": 4,
+          "held": 1
+        },
+        "filter_effectiveness": null,
+        "production_acceptance": false,
+        "unmeasured": [
+          "Novel valid findings",
+          "Unsupported additions",
+          "Duplicate burden",
+          "Useful baseline retention",
+          "Engineer time",
+          "Run cost and duration",
+          "Candidate arrival and reasoned filter removal"
+        ]
+      }
+    }
+  ],
+  "output_review_queue": {
+    "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+    "sha256": "324b444ace4a355f40c18e627acf2e9650950b608ac9a5b5e931baae013f6aeb",
+    "total_findings": 171,
+    "source_reviewed_findings": 7,
+    "unchecked_findings": 164
+  },
+  "review_event_chain": [
+    {
+      "path": "experiments/auditmanager_stage4_20261110/KM_r1_end_cap_reference_output_review.json",
+      "sha256": "eb3d2a6f1a1c919a39d0bf713ceaaedaf721adc0a7c3a247d209fb4476fdb2d6",
+      "reviewed_ids": [
+        "F-014",
+        "F-018"
+      ]
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/KM_r1_LK6_levels_output_review.json",
+      "sha256": "db56546435fb3be6a9802fcaf9778f85461fbad11ad223ffc94a6d80de7d0b3d",
+      "reviewed_ids": [
+        "F-020",
+        "F-021"
+      ]
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/KM_r1_filling_dimensions_output_review.json",
+      "sha256": "b3a60ea79ac331a2bf5d7076173e64f65d0276554687cf84cee44029abe99a32",
+      "reviewed_ids": [
+        "F-023"
+      ]
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/KM_r1_upper_flight_identity_output_review.json",
+      "sha256": "7fd64e68753604e6597a2cbce08fa691b6d56ab831291a19248790544a092c31",
+      "reviewed_ids": [
+        "F-016"
+      ]
+    },
+    {
+      "path": "experiments/auditmanager_stage4_20261110/KM_r1_F017_core_preservation_review.json",
+      "sha256": "67e3e727915749c147e317fd5a410645505456566d3edbb8c73057b7b7379536",
+      "reviewed_ids": [
+        "F-017"
+      ]
+    }
+  ],
+  "reviewed_output_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Документация",
+        "sheet": "Лист 4",
+        "page": 6,
+        "problem": "Выноска заглушки в узле Д ссылается на отсутствующий пункт примечаний.",
+        "description": "Выноска «Заглушка (см. п.п.6)» направляет к пункту 6, хотя примечания листа заканчиваются пунктом 5. Требования к установке заглушек приведены в пункте 4.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к оформлению узлов и ссылок на технические указания.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-007"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-007"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить ссылку выноски заглушки на пункт 4 примечаний листа.",
+        "risk": "Неверное толкование требований к установке заглушек.",
+        "source_finding_ids": [
+          "G-007"
+        ],
+        "source_block_ids": [
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d"
+        ],
+        "related_block_ids": [
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "blk_02786cefba4641928c7e149eda44f872"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_02786cefba4641928c7e149eda44f872",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания относятся к ссылке «Заглушка (см. п.п.6)» в узле Д: пункт 6 отсутствует, указания по заглушкам приведены в пункте 4.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Выноска заглушки узла Д ссылается на пункт 6 на листе 4",
+          "verdict": "supported_by_viewed_graphic"
+        },
+        {
+          "claim": "На этом листе примечания заканчиваются пунктом 5; заглушки описаны в пункте 4",
+          "verdict": "supported_by_authoritative_TEXT"
+        },
+        {
+          "claim": "Неверное толкование требований или неправильное выполнение работ",
+          "verdict": "hypothetical_consequence_not_observed",
+          "note": "Полный текст требования и решение заглушки присутствуют. Производственный дефект не доказан."
+        }
+      ],
+      "unsupported_additions": "consequence_not_established_as_fact",
+      "novel_useful_content": "confirmed_editorial_discrepancy_engineer_utility_unreviewed",
+      "duplicate_burden": "same_correction_two_distinct_sheet_addresses_grouping_candidate",
+      "profile_and_section": "editorial_question_recommended_no_explicit_question_section",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_02786cefba4641928c7e149eda44f872",
+          "authoritative_TEXT": "### BLOCK #30 [TEXT]: blk_02786cefba4641928c7e149eda44f872\n\n> **Created:** 2026-10-21 13:32:37 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/HX-ErnWgMKW11FPba0Ng)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 4 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...6, 8 | Organization: GLOBUS ПРОЕКТ | Revisions: Не указано\n\n1. Размеры и отметки высот в метрах, остальные в миллиметрах.\n\n2. Сварные швы выполнять полуавтоматической по ГОСТ 14771-76 или ручной дуговой сваркой по ГОСТ 5264-80* электродами Э42 по ГОСТ 9467-75*.\n\n3. Катеты сварных швов выполнять по наименьшей толщине свариваемых элементов, но не более 1,2Т, где Т - наименьшая толщина свариваемых элементов.\n\n4. Заглушки устанавливать при помощи сварки на торцах поручней, если нет примыкающих ограждений и на концах стоек, листом толщиной 3мм.\n\n5. Схему расположения ограждений см. л.4.\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cfd1c741a6fa4cd99c3eccd1d42afc7d.png",
+          "sha256": "b9a65fa02aecbc35f4fa72c98c2daba4002bbbc9a303ffadda7617686ee52c84",
+          "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "directly_viewed": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-014"
+        }
+      ],
+      "disposition": "source_checked_editorial_question_pending_engineer_utility"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-016",
+      "finding": {
+        "id": "F-016",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка изделий",
+        "sheet": "Лист 5",
+        "page": 7,
+        "problem": "Для марша между +35,990 и +37,510 указаны разные марки ограждения.",
+        "description": "На разрезе 1–1 ограждение марша обозначено ОГМ7. На схеме расположения, включающей отметку +35,990, для этого марша указано ОГМ6.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к согласованности марок конструкций на планах, разрезах и схемах расположения.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-013"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить проектную марку ограждения по геометрии марша и согласовать план, разрез и количество изделий.",
+        "risk": "Изготовление или монтаж ограждения другого типоразмера.",
+        "source_finding_ids": [
+          "G-013"
+        ],
+        "source_block_ids": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+        ],
+        "related_block_ids": [
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "blk_f0a5333974ac4088b7778f525922b014"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Разрез маркирует марш +35,990 → +37,510 как ОГМ7",
+          "verdict": "supported_by_viewed_graphic"
+        },
+        {
+          "claim": "Типовой план содержит выноску ОГМ6 и включает уровень +35,990",
+          "verdict": "supported_by_viewed_graphic"
+        },
+        {
+          "claim": "Эти выноски относятся к одному маршу +35,990 → +37,510",
+          "verdict": "not_established_due_to_conflicting_level_list",
+          "reason": "Типовой план сопоставляет правые уровни +12,470…+35,990 с левыми +10,630…+30,790,+37,510. Первые пары относятся к нижним примыкающим маршам. На разрезе нижний марш к +35,990 начинается +34,150 и имеет ОГМ6; следующий верхний к +37,510 имеет ОГМ7. Ошибка последнего элемента списка уже выделена в F-015. Нельзя одновременно исправлять её на +34,150 и считать тот же план доказательством марки ОГМ6 на верхнем марше."
+        },
+        {
+          "claim": "Неверная комплектация и монтаж другого типоразмера",
+          "verdict": "not_established_consequence"
+        }
+      ],
+      "unsupported_additions": "same_flight_identity_not_established",
+      "novel_useful_content": "related_scope_question_not_confirmed_independent_mark_defect",
+      "duplicate_burden": "depends_on_F015_level_list_conflict_do_not_count_as_independent_confirmed_defect",
+      "profile_and_section": "question_pending_object_identity",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+          "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "directly_viewed": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f0a5333974ac4088b7778f525922b014.png",
+          "sha256": "afe14108cef59c53cc2e0518187d711a9fce8c09552044605c99c59611221a00",
+          "block_id": "blk_f0a5333974ac4088b7778f525922b014",
+          "directly_viewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/KM_F015_typical_level_list.json",
+          "sha256": "86849d4e464c5efa654fd2e5aa1e08127b5859ee7c63a2ec2eddd62ecda17ea5",
+          "role": "frozen_related_level_list_decision"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-016"
+        }
+      ],
+      "disposition": "unresolved_object_identity_related_to_F015"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-017",
+      "finding": {
+        "id": "F-017",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка изделий",
+        "sheet": "Лист 5",
+        "page": 7,
+        "problem": "Марка ограждения площадки +7,270 различается на схеме и разрезе.",
+        "description": "На схеме расположения ограждений лестницы на отметке +9,110 ограждение площадки +7,270 обозначено ОГМ6. На разрезе 1–1 того же листа указано ОГМ4.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к согласованности марок изделий на схемах расположения и разрезах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-014",
+                "G-015"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-014",
+                  "G-015"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить марку ограждения площадки +7,270 и согласовать схему, разрез и ведомости изделий.",
+        "risk": "Неверная комплектация и монтаж ограждения неподходящей геометрии.",
+        "source_finding_ids": [
+          "G-014",
+          "G-015"
+        ],
+        "source_block_ids": [
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e"
+        ],
+        "related_block_ids": [
+          "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "blk_f8b3c96af858494c946ff4f1ceaa1fb5"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+            "page": 7
+          },
+          {
+            "type": "image",
+            "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-014",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-015",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое противоречие: ограждение площадки +7.270 обозначено ОГМ 6 на схеме +9.110 и ОГМ 4 на разрезе 1–1 листа 5. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое противоречие: ограждение площадки +7.270 обозначено ОГМ 6 на схеме +9.110 и ОГМ 4 на разрезе 1–1 листа 5. Детализация эквивалентна.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "ОГМ6 на плане +9,110 против ОГМ4 разреза",
+          "verdict": "supported_core_with_object_correction",
+          "observation": "На плане +9,110 верхняя в изображении ветвь ОГМ6 приходит к левой площадке +7,270; другая часть ветви показана с разрывом и отметкой +6,070. План +6,070 маркирует противоположный конец этой ветви ОГМ4. Разрез также даёт ОГМ4 между +6,070 и +7,270."
+        },
+        {
+          "claim": "Объект расхождения — ограждение площадки +7,270",
+          "verdict": "imprecise_object_name",
+          "correction": "Ограждение примыкающего марша +6,070 → +7,270, а не самостоятельное ограждение площадки."
+        },
+        {
+          "claim": "Неверная комплектация и монтаж",
+          "verdict": "possible_consequence_not_observed"
+        }
+      ],
+      "unsupported_additions": "landing_object_label_requires_correction",
+      "novel_useful_content": "known_classic_core_preserved_requires_precise_flight_identity",
+      "duplicate_burden": "same_historical_F014_theme_not_new_independent_discovery",
+      "profile_and_section": "technical_conflict_after_object_correction",
+      "engineer_reuse": "no_new_engineer_decision_prior_model_review_distinguished",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_262b1bd1d76146e7a8e45b529a38ac2e.png",
+          "sha256": "9a586d007962276114037531b4a81d2583fb0b31926aff3a989afb6e7a3b6117",
+          "block_id": "blk_262b1bd1d76146e7a8e45b529a38ac2e",
+          "directly_viewed": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6d4c4daf192546de9f1dce661aafe577.png",
+          "sha256": "03f98971a897be59c307f7dfc84408102f399994764a0d5a7a20a1e6bc737bfa",
+          "block_id": "blk_6d4c4daf192546de9f1dce661aafe577",
+          "directly_viewed": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_f8b3c96af858494c946ff4f1ceaa1fb5.png",
+          "sha256": "7d8fbb5aa10ad3040ce03531fe356979363b7cb98643605c93081d0eb84714f3",
+          "block_id": "blk_f8b3c96af858494c946ff4f1ceaa1fb5",
+          "directly_viewed": true
+        },
+        {
+          "path": "experiments/auditmanager_stage4_20261110/km_f014_sheet_priority_release_evidence/final_check/receipt.json",
+          "sha256": "23c3873cb1516a4a5b48e26422ef8e8838e8feece9c80879dae1c5df76e027c8",
+          "role": "prior_known_case_review_not_engineer_acceptance"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-017"
+        }
+      ],
+      "disposition": "retain_supported_core_revise_object_not_blanket_reject"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-018",
+      "finding": {
+        "id": "F-018",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Документация",
+        "sheet": "Лист 6",
+        "page": 8,
+        "problem": "Выноска заглушки узла Д ссылается на отсутствующий пункт 6.",
+        "description": "Указания по заглушкам приведены в пункте 4 примечаний листа 6, а выноска содержит «Заглушка (см. п.6)». Переданный перечень примечаний заканчивается пунктом 5.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к оформлению узлов и ссылок на технические указания.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-024"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-024"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить ссылку в выноске заглушки на пункт 4 примечаний листа 6.",
+        "risk": "Неоднозначное выполнение требований к заглушкам при изготовлении.",
+        "source_finding_ids": [
+          "G-024"
+        ],
+        "source_block_ids": [
+          "blk_49d947c318c3478582a39740abda8658"
+        ],
+        "related_block_ids": [
+          "blk_49d947c318c3478582a39740abda8658"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_49d947c318c3478582a39740abda8658",
+            "page": 8
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-024",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 51,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Выноска заглушки узла Д ссылается на пункт 6 на листе 6",
+          "verdict": "supported_by_viewed_graphic"
+        },
+        {
+          "claim": "На этом листе примечания заканчиваются пунктом 5; заглушки описаны в пункте 4",
+          "verdict": "supported_by_authoritative_TEXT"
+        },
+        {
+          "claim": "Неверное толкование требований или неправильное выполнение работ",
+          "verdict": "hypothetical_consequence_not_observed",
+          "note": "Полный текст требования и решение заглушки присутствуют. Производственный дефект не доказан."
+        }
+      ],
+      "unsupported_additions": "consequence_not_established_as_fact",
+      "novel_useful_content": "confirmed_editorial_discrepancy_engineer_utility_unreviewed",
+      "duplicate_burden": "same_correction_two_distinct_sheet_addresses_grouping_candidate",
+      "profile_and_section": "editorial_question_recommended_no_explicit_question_section",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_9d85769870054701b8f16e3f8d203864",
+          "authoritative_TEXT": "### BLOCK #52 [TEXT]: blk_9d85769870054701b8f16e3f8d203864\n\n> **Created:** 2026-10-21 13:32:40 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/ykVCXQppKCHwAYedHIHX)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: П | Sheet: 6 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1(рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ1...ОГМ8 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n1. Размеры и отметки высот в метрах, остальные в миллиметрах.\n\n2. Сварные швы выполнять полуавтоматической по ГОСТ 14771-76 или ручной дуговой сваркой по ГОСТ 5264-80* электродами Э42 по ГОСТ 9467-75*.\n\n3. Катеты сварных швов выполнять по наименьшей толщине свариваемых элементов, но не более 1,2Т, где Т - наименьшая толщина свариваемых элементов.\n\n4. Заглушки устанавливать при помощи сварки на торцах поручней, если нет примыкающих ограждений и на концах стоек, листом толщиной 3мм.\n\n5. Схему расположения ограждений см. л.5.\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_49d947c318c3478582a39740abda8658.png",
+          "sha256": "a787fed35399dd8f5d5e0366b8e16ccf37c1df34157d46ffae8503f1e46a286d",
+          "block_id": "blk_49d947c318c3478582a39740abda8658",
+          "directly_viewed": true
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-018"
+        }
+      ],
+      "disposition": "source_checked_editorial_question_pending_engineer_utility"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Геометрия и привязки",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Отметка верхней площадки правого марша ЛК6 различается на 2,800 м.",
+        "description": "На схеме ЛК6 на отметке +2,100 верхняя площадка правого марша подписана −0,700. На разрезе 8–8 эта площадка имеет отметку +2,100. Расхождение составляет 2800 мм.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности высотных отметок и привязок на схемах и разрезах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-026",
+                "G-030"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-026",
+                  "G-030"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить проектную отметку верхней площадки и согласовать схему ЛК6 с разрезом 8–8.",
+        "risk": "Ошибочная высотная привязка ограждения при подготовке монтажной документации.",
+        "source_finding_ids": [
+          "G-026",
+          "G-030"
+        ],
+        "source_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba"
+        ],
+        "related_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba",
+          "blk_1849759086c445e687f8c0e2b424250b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+            "page": 9
+          },
+          {
+            "type": "image",
+            "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-026",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-030",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадает противоречие отметок верхней площадки правого марша ЛК6: −0.700 на схеме и +2.100 на разрезе 8-8. Величины 2800 мм и 2,800 м эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадает противоречие отметок верхней площадки правого марша ЛК6: −0.700 на схеме и +2.100 на разрезе 8-8. Величины 2800 мм и 2,800 м эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 81,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Отметка верхней площадки правого марша ЛК6 различается на 2,800 м.",
+          "verdict": "supported_document_discrepancy",
+          "observation": "План ЛК6 +2,100: площадка у верхнего конца правого марша содержит −0,700, рядом верхняя левая площадка +2,100, нижний правый конец +1,100. Верхний марш разреза 8–8 с размером 3670 связывает +1,100 и +2,100; план имеет тот же правый марш длиной 3670. Вторая подпись −0,700 на верхнем плане противоречит этой связи.",
+          "arithmetic": "2.100 - (-0.700) = 2.800 m"
+        },
+        {
+          "claim": "Ошибочная высотная привязка ограждения при подготовке монтажной документации.",
+          "verdict": "possible_consequence_not_observed",
+          "note": "АР/КЖ и фактический монтаж не проверены; корректное проектное значение не назначено автоматически."
+        }
+      ],
+      "unsupported_additions": "no_additional_established_failure_claim_risk_remains_hypothetical",
+      "novel_useful_content": "source_supported_technical_discrepancy_novelty_and_engineer_acceptance_unestablished",
+      "duplicate_burden": "distinct_landing_addresses_do_not_drop_as_same_number_issue",
+      "profile_and_section": "technical_document_conflict_legacy_main_route",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_441423dd5fb448c89a33b610c54783ba.png",
+          "sha256": "e483f14964b885d339bef19552b34da013314ab6decdb262dc166ee44048f08e",
+          "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+          "directly_viewed": true,
+          "sheet": 7,
+          "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1849759086c445e687f8c0e2b424250b.png",
+          "sha256": "d7b15440e6f172fcc51f02d234f5fce4cbd94085416ddab99270a719521b115c",
+          "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+          "directly_viewed": true,
+          "sheet": 7,
+          "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-020"
+        }
+      ],
+      "disposition": "source_supported_preservation_candidate"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-021",
+      "finding": {
+        "id": "F-021",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Геометрия и привязки",
+        "sheet": "Лист 7",
+        "page": 9,
+        "problem": "Отметка нижней площадки правого марша ЛК6 различается на 50 мм.",
+        "description": "На схеме ЛК6 на отметке −4,000 нижняя площадка правого марша обозначена −6,050. На разрезах 8–8 и 9–9 того же листа указано −6,100. Разница составляет 50 мм.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности отметок и геометрических привязок ограждений.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-027",
+                "G-031"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-027",
+                  "G-031"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить проектную отметку площадки и согласовать план, разрезы и соответствующие привязки ограждений.",
+        "risk": "Несовпадение высоты и положения креплений ограждения с геометрией лестницы.",
+        "source_finding_ids": [
+          "G-027",
+          "G-031"
+        ],
+        "source_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba"
+        ],
+        "related_block_ids": [
+          "blk_441423dd5fb448c89a33b610c54783ba",
+          "blk_1849759086c445e687f8c0e2b424250b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+            "page": 9
+          },
+          {
+            "type": "image",
+            "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-027",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-031",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают площадка правого марша ЛК6, отметки −6.050 на схеме и −6.100 на разрезах 8-8 и 9-9, а также расхождение 50 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Совпадают площадка правого марша ЛК6, отметки −6.050 на схеме и −6.100 на разрезах 8-8 и 9-9, а также расхождение 50 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Отметка нижней площадки правого марша ЛК6 различается на 50 мм.",
+          "verdict": "supported_document_discrepancy",
+          "observation": "План ЛК6 −4,000: нижняя правая площадка имеет −6,050, соседняя нижняя левая −5,700. На разрезе 8–8 соответствующий марш от −4,000 приходит к −6,100; разрез 9–9 связывает −6,100 и −5,700 через ОГМ22. Это согласует идентичность площадки без выбора правильного значения по большинству.",
+          "arithmetic": "abs(-6.050 - (-6.100)) = 0.050 m"
+        },
+        {
+          "claim": "Несовпадение высоты и положения креплений ограждения с геометрией лестницы.",
+          "verdict": "possible_consequence_not_observed",
+          "note": "АР/КЖ и фактический монтаж не проверены; корректное проектное значение не назначено автоматически."
+        }
+      ],
+      "unsupported_additions": "no_additional_established_failure_claim_risk_remains_hypothetical",
+      "novel_useful_content": "source_supported_technical_discrepancy_novelty_and_engineer_acceptance_unestablished",
+      "duplicate_burden": "distinct_landing_addresses_do_not_drop_as_same_number_issue",
+      "profile_and_section": "technical_document_conflict_legacy_main_route",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_441423dd5fb448c89a33b610c54783ba.png",
+          "sha256": "e483f14964b885d339bef19552b34da013314ab6decdb262dc166ee44048f08e",
+          "block_id": "blk_441423dd5fb448c89a33b610c54783ba",
+          "directly_viewed": true,
+          "sheet": 7,
+          "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_1849759086c445e687f8c0e2b424250b.png",
+          "sha256": "d7b15440e6f172fcc51f02d234f5fce4cbd94085416ddab99270a719521b115c",
+          "block_id": "blk_1849759086c445e687f8c0e2b424250b",
+          "directly_viewed": true,
+          "sheet": 7,
+          "md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-021"
+        }
+      ],
+      "disposition": "source_supported_preservation_candidate"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-023",
+      "finding": {
+        "id": "F-023",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Размеры деталей",
+        "sheet": "Лист 8",
+        "page": 10,
+        "problem": "Длина заполнения ОГМ2 и ОГМ4 различается на видах и в ведомостях.",
+        "description": "Для элементов заполнения позиции 5 на видах указан размер 800 мм, а в ведомостях — 850 мм. Разница 50 мм затрагивает 20 элементов ОГМ2 и 14 элементов ОГМ4 по соответствующим ведомостям.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к согласованности размеров элементов на чертежах и в ведомостях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-032",
+                "G-033"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-032",
+                  "G-033"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить длину деталей позиции 5 по согласованной геометрии и исправить виды и ведомости ОГМ2 и ОГМ4.",
+        "risk": "Изготовление заполнения неверной длины, отходы металла и переделка изделий.",
+        "source_finding_ids": [
+          "G-032",
+          "G-033"
+        ],
+        "source_block_ids": [
+          "blk_ae8f7849e07147388fc213cff1fbb43f"
+        ],
+        "related_block_ids": [
+          "blk_ae8f7849e07147388fc213cff1fbb43f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-032",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-033",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на расхождение 800/850 мм для поз. 5 ОГМ2 и ОГМ4. Правое дополнительно определяет объём затронутых элементов: 20 для ОГМ2 и 14 для ОГМ4, что подтверждается ведомостями.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания указывают на расхождение 800/850 мм для поз. 5 ОГМ2 и ОГМ4. Правое дополнительно определяет объём затронутых элементов: 20 для ОГМ2 и 14 для ОГМ4, что подтверждается ведомостями.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 83,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "На видах ОГМ2/ОГМ4 размер заполнения800, в ведомостях позиция5 имеет L=0,850м",
+          "verdict": "supported_document_discrepancy",
+          "limits": "Границы заготовки, обработка торцов и КМД отдельно не проверены; правильная длина изготовления автоматически не выбрана."
+        },
+        {
+          "claim": "20 элементов ОГМ2 и14 ОГМ4",
+          "verdict": "supported_schedule_quantities",
+          "limits": "Количество в двух ведомостях не доказывает число ошибочно изготовленных деталей или общий объём заказа с повторяемостью."
+        },
+        {
+          "claim": "Неверное изготовление, отходы и переделка",
+          "verdict": "hypothetical_consequence_not_observed"
+        }
+      ],
+      "unsupported_additions": "manufacturing_outcome_not_established",
+      "novel_useful_content": "source_supported_document_discrepancy_novelty_unestablished",
+      "duplicate_burden": "two_marks_already_grouped_with_addresses_preserved",
+      "profile_and_section": "technical_document_coordination_legacy_main_route",
+      "engineer_reuse": "no_same_claim_engineer_decision_established",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5cfdfbf86f25415f8d3b061e8a1a4187",
+          "authoritative_TEXT": "### BLOCK #63 [TEXT]: blk_5cfdfbf86f25415f8d3b061e8a1a4187\n\n> **Created:** 2026-10-21 13:32:44 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/nM3yT8MXzE1jgffKQKjB)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 8 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...8 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ2\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наименование или марка металла | Примечание | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ2 |  | 1 | 40x3 | Конструктивно |  |  | C245 | L=0,950м | 6 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=3,625м | 1 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=0,640м | 5 |\n|  | Лист | 4 | 10х120х120 |  |  |  | C245 |  | 6 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=0,850м | 20 |\n|  |  | 6 | 40x3 |  |  |  | C245 | L=0,800м | 1 |\n|  |  | 7 | 25x3 |  |  |  | C245 | L=1,065м | 1 |\n|  | Анкер |  | HSA-M10х90 |  |  |  |  |  | 24 |\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_4412076f7a7349f587fb211ff8b4af08",
+          "authoritative_TEXT": "### BLOCK #66 [TEXT]: blk_4412076f7a7349f587fb211ff8b4af08\n\n> **Created:** 2026-10-21 13:32:44 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JuHa3sVdFJu6-UXqd0Qk)\n> **Stamp:** Code: ПД-00580716-КМ1.2 | Stage: Р | Sheet: 8 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул.Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, корпус 1 (рекламное название ЖК Событие 6.1) | Наименование листа: Ограждения ОГМ 1...8 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n##### Ведомость элементов ограждения ОГМ4\n\n| Марка элемента | Сечение |  |  | Усилие для прикрепления |  |  | Наимено- вание или марка металла | Примеча- ние | Количество |\n|---|---|---|---|---|---|---|---|---|---|\n|  | Эскиз | Поз. | Состав | Q, кН | N, кН | M, кНм |  |  |  |\n| ОГМ4 |  | 1 | 40x3 | Конструктивно |  |  | C245 | L=0,950м | 7 |\n|  |  | 2 | 40x3 |  |  |  | C245 | L=3,665м | 1 |\n|  |  | 3 | 25x3 |  |  |  | C245 | L=0,640м | 4 |\n|  | Лист | 4 | 10x120x120 |  |  |  | C245 |  | 7 |\n|  |  | 5 | 25x3 |  |  |  | C245 | L=0,850м | 14 |\n|  |  | 6 | 25x3 |  |  |  | C245 | L=0,305м | 2 |\n|  | Заглушка |  | 3x40x40 |  |  |  | C245 |  | 1 |\n|  | Анкер |  | HSA-M10x90 |  |  |  |  |  | 28 |\n\n"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_ae8f7849e07147388fc213cff1fbb43f.png",
+          "sha256": "9664d6b9aeebe4c304c9d74752c73721bbd895159848eb6250dd9c7bade895d3",
+          "block_id": "blk_ae8f7849e07147388fc213cff1fbb43f",
+          "directly_viewed": true,
+          "detail": "original",
+          "observation": "На отдельных видах ОГМ2 и ОГМ4 показаны вертикальные элементы с выносками позиции5 и размером800 между наклонными верхним и нижним элементами; это не габарит стойки950. Лист8 подтверждён метаданными MD."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+          "finding_id": "F-023"
+        }
+      ],
+      "disposition": "source_supported_preservation_candidate_with_manufacturing_limits"
+    }
+  ],
+  "limits": [
+    "Coverage review is complete for four first-repeat outputs, with KM truth hold preserved.",
+    "Seven finding reviews do not complete evaluation of 171 output findings.",
+    "No experimental variant quality comparison or production acceptance exists yet.",
+    "All historical decisions, source-based coordinator checks and model verdicts remain distinct."
+  ],
+  "production_acceptance": false
+}
