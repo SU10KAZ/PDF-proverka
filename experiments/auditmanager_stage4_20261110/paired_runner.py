@@ -107,7 +107,8 @@ if __name__=='__main__':
     if a.command=='preflight':preflight(a.source_root,a.work,a.variant)
     else:
         if not a.discipline:p.error('--discipline is required for run')
-        from experiments.auditmanager_stage4_20261110.paired_protocol import verify_shared_protocol
+        from experiments.auditmanager_stage4_20261110.paired_protocol import verify_shared_protocol, verify_trial_binding
         verify_shared_protocol(REPOSITORY,a.source_root,a.work,a.variant)
+        verify_trial_binding(a.work,a.variant,a.discipline)
         harness=load_harness(a.source_root,a.variant)
         asyncio.run(harness.run(a.work,a.discipline))
