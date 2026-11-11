@@ -1,0 +1,563 @@
+{
+  "status": "three_board_coordination_findings_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "1cbc0aaac4803bceb40b5966afb6422ee623010c750436663bb2f44bb265dd56",
+  "queue_after_sha256": "bbf96036468abd04b1bd68aadd53c8a84a55d96f98a4b5a785bd0bbbdaa9f0dd",
+  "reviewer": "Codex direct authoritative TEXT review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Комплектация щитов",
+        "sheet": "Листы 12, 13, 14",
+        "page": [
+          15,
+          16,
+          17,
+          38,
+          39
+        ],
+        "problem": "Степень защиты щитов вентиляции в спецификации ниже требования схем.",
+        "description": "Для 3ЩРОВ2, 2ЩРОВ1 и 2ЩРОВ2 примечания требуют не ниже IP54, а спецификация допускает не ниже IP31. Анализ схемы 3ЩРОВ2 на листе 12 отдельно фиксирует это расхождение.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту и однозначность характеристик оборудования в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012",
+                "G-034",
+                "G-035"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить для всех трех щитов согласованное требование не ниже IP54 в схемах, спецификации и задании изготовителю.",
+        "risk": "Поставка оболочек, не отвечающих принятым условиям эксплуатации.",
+        "source_finding_ids": [
+          "T-012",
+          "G-034",
+          "G-035"
+        ],
+        "source_block_ids": [
+          "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+          "blk_3e3c5ece56bd4622a52dd2de301562a5",
+          "blk_49e2914a00634fe6869970613f9bc4ca",
+          "blk_7170586af51c43f79c96734a40269d7d",
+          "blk_af87003578d3440a9be734a66a09af90",
+          "blk_692503882d074efa83d0d595875347eb"
+        ],
+        "related_block_ids": [
+          "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+          "blk_3e3c5ece56bd4622a52dd2de301562a5",
+          "blk_49e2914a00634fe6869970613f9bc4ca",
+          "blk_7170586af51c43f79c96734a40269d7d",
+          "blk_af87003578d3440a9be734a66a09af90",
+          "blk_692503882d074efa83d0d595875347eb",
+          "blk_af9f7cd6dba549149cd7152de8b85c41",
+          "blk_aaed5c43e84b4efdaa0186aacc4b8dd2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3e3c5ece56bd4622a52dd2de301562a5",
+            "page": 16
+          },
+          {
+            "type": "text",
+            "block_id": "blk_49e2914a00634fe6869970613f9bc4ca",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+            "page": 38
+          },
+          {
+            "type": "text",
+            "block_id": "blk_af87003578d3440a9be734a66a09af90",
+            "page": 39
+          },
+          {
+            "type": "text",
+            "block_id": "blk_692503882d074efa83d0d595875347eb",
+            "page": 15
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-035",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение требований к щиту ЗЩРОВ2: не менее IP54 на листе 12 и не менее IP31 в спецификации; последствия и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение требований к щиту ЗЩРОВ2: не менее IP54 на листе 12 и не менее IP31 в спецификации; последствия и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "operations",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F020_enclosure_minimums:b34c225d7cc1d2d234e8",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Примечания листов 12–14 требуют IP54; строки соответствующих вентиляционных щитов СО допускают не ниже IP31.",
+          "verdict": "confirmed_TEXT_requirement_difference",
+          "limits": "Принадлежность примечаний установлена по заголовкам листов. Дополнительное подтверждение графикой в этой проверке не выполнялось."
+        },
+        {
+          "claim": "Согласовать СО с явно заданным в примечаниях IP54.",
+          "verdict": "supported_project_specific_question",
+          "limits": "Не ниже IP31 не исключает поставку IP54; фактически установленная оболочка и условия среды не проверены. Не переносить IP54 как универсальный минимум для всех щитов."
+        },
+        {
+          "claim": "Поставка оболочек, не отвечающих принятым условиям эксплуатации.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Фактическая поставка, монтаж и расходы не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "see_atomic_limits_no_automatic_removal_or_physical_failure",
+      "novel_useful_content": "known_document_coordination_questions",
+      "duplicate_burden": "scope_and_IP_questions_distinct_from_missing_sheet_references_F027",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct authoritative TEXT review.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+            "blk_3e3c5ece56bd4622a52dd2de301562a5",
+            "blk_49e2914a00634fe6869970613f9bc4ca",
+            "blk_7170586af51c43f79c96734a40269d7d",
+            "blk_af87003578d3440a9be734a66a09af90"
+          ],
+          "route": "authoritative_TEXT_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_board_coordination_question_with_limits"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Границы поставки",
+        "sheet": "Листы 1, 9, 10, 11, 2",
+        "page": [
+          3,
+          12,
+          13,
+          14,
+          38
+        ],
+        "problem": "Не согласована граница поставки постоянных и временных квартирных щитов.",
+        "description": "Общие указания относят установку внутриквартирных щитов к собственникам, примечания предусматривают временные щиты механизации на период отделки, а спецификация включает 90 постоянных квартирных щитов с автоматикой: 63 для С3 и 27 для С2.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие состава спецификации принятому объему работ и поставки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Указать исполнителя, этап установки и состав поставки постоянных и временных щитов; привести спецификацию в соответствие с принятой границей работ.",
+        "risk": "Двойной учет затрат и закупка оборудования вне согласованного объема работ.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [
+          "blk_d90c772851514a0a9c65cdd019e56957",
+          "blk_16237a8ebd10423194e4a2b0f4b82c26",
+          "blk_73536f4c222b401e8da714ed88d23fce",
+          "blk_17ebeac60c9b497cb8c124a8e3b66068",
+          "blk_7170586af51c43f79c96734a40269d7d"
+        ],
+        "related_block_ids": [
+          "blk_d90c772851514a0a9c65cdd019e56957",
+          "blk_16237a8ebd10423194e4a2b0f4b82c26",
+          "blk_73536f4c222b401e8da714ed88d23fce",
+          "blk_17ebeac60c9b497cb8c124a8e3b66068",
+          "blk_7170586af51c43f79c96734a40269d7d"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_16237a8ebd10423194e4a2b0f4b82c26",
+            "page": 12
+          },
+          {
+            "type": "text",
+            "block_id": "blk_73536f4c222b401e8da714ed88d23fce",
+            "page": 13
+          },
+          {
+            "type": "text",
+            "block_id": "blk_17ebeac60c9b497cb8c124a8e3b66068",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+            "page": 38
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F033_apartment_board_scope:dbb1bab29b165bc0b8ca",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Установку квартирного щита выполняет собственник; на период отделки указан временный щит; СО содержит 63+27=90 квартирных щитов.",
+          "verdict": "confirmed_TEXT_and_arithmetic",
+          "limits": "Временный и постоянный щиты относятся к разным этапам. Слово постоянный — интерпретация назначения строк СО, а не отдельная паспортная характеристика."
+        },
+        {
+          "claim": "Уточнить границы поставки и монтажа и этапы работ.",
+          "verdict": "supported_scoped_question",
+          "limits": "Ответственность за установку не тождественна ответственности за закупку. Наличие 90 щитов в СО не доказывает лишнюю закупку и не дает основания удалить их."
+        },
+        {
+          "claim": "Двойной учет затрат и закупка оборудования вне согласованного объема работ.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Фактическая поставка, монтаж и расходы не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "see_atomic_limits_no_automatic_removal_or_physical_failure",
+      "novel_useful_content": "known_document_coordination_questions",
+      "duplicate_burden": "scope_and_IP_questions_distinct_from_missing_sheet_references_F027",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct authoritative TEXT review.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957",
+            "blk_16237a8ebd10423194e4a2b0f4b82c26",
+            "blk_73536f4c222b401e8da714ed88d23fce",
+            "blk_17ebeac60c9b497cb8c124a8e3b66068",
+            "blk_7170586af51c43f79c96734a40269d7d"
+          ],
+          "route": "authoritative_TEXT_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_board_coordination_question_with_limits"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 2,
+      "finding_id": "F-015",
+      "finding": {
+        "id": "F-015",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление документации",
+        "sheet": "Листы 2.1, 3",
+        "page": [
+          3,
+          4,
+          6
+        ],
+        "problem": "Указания о размещении ВРУ и марки оборудования в примечаниях неоднозначны.",
+        "description": "Общие указания размещают ВРУ секций С2 и С3 на первом подземном этаже, но далее относят ВРУ или распределительные щиты потребителей к первому этажу. Примечания к ВРУ-2 и ВРУ-3 подтверждают минус первый этаж, однако пункт 10 обоих листов содержит обозначение ВРУ-1. На схеме ВРУ-3 приведено указание вывода линий сверху от панелей ВРУ-1.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Разделить указания для вводных устройств и щитов потребителей, уточнить места установки и исправить марки ВРУ в монтажных примечаниях.",
+        "risk": "Неверное применение монтажных указаний и ошибки привязки оборудования.",
+        "source_finding_ids": [
+          "T-015",
+          "G-011"
+        ],
+        "source_block_ids": [
+          "blk_d90c772851514a0a9c65cdd019e56957",
+          "blk_54ee6784647e49ae86ad9fd46e7082e3",
+          "blk_4efb5f71075b46c9a256fdebb447e338",
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "related_block_ids": [
+          "blk_d90c772851514a0a9c65cdd019e56957",
+          "blk_54ee6784647e49ae86ad9fd46e7082e3",
+          "blk_4efb5f71075b46c9a256fdebb447e338",
+          "blk_4e968dd71c7149aca85e4195d5c3de49",
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_54ee6784647e49ae86ad9fd46e7082e3",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_4efb5f71075b46c9a256fdebb447e338",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T125121Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T12:51:21.435881+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В общих данных есть первый подземный этаж для секционных ВРУ и первый этаж для ВРУ или распределительных щитов потребителей.",
+          "verdict": "confirmed_TEXT_ambiguous_scope",
+          "limits": "Не доказано, что обе фразы описывают одни устройства; фактическое неправильное размещение не установлено."
+        },
+        {
+          "claim": "На листах 2.1 и 3 пункт 10 называет вывод линий от ВРУ-1.",
+          "verdict": "confirmed_TEXT_label",
+          "limits": "На листе 3 заголовок относится к ВРУ-3. Для листа 2.1 его фактическая схема в этой проверке не перечитывалась."
+        },
+        {
+          "claim": "Примечания обоих листов подтверждают минус первый этаж, а графика ВРУ-3 содержит ВРУ-1.",
+          "verdict": "not_independently_verified_in_this_review",
+          "limits": "Не подменять графику ее текстовым описанием. Подтвержденная текстовая несогласованность достаточна для ограниченного вопроса, не для принятия всех дополнительных тезисов."
+        },
+        {
+          "claim": "Разделить указания для секционных ВРУ и щитов потребителей, уточнить марки монтажных примечаний.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не менять фактическое размещение или схему без установления объекта и проектного решения."
+        },
+        {
+          "claim": "Неверное применение монтажных указаний и ошибки привязки оборудования.",
+          "verdict": "hypothetical_not_observed",
+          "limits": "Фактическая поставка, монтаж и расходы не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "see_atomic_limits_no_automatic_removal_or_physical_failure",
+      "novel_useful_content": "known_document_coordination_questions",
+      "duplicate_burden": "scope_and_IP_questions_distinct_from_missing_sheet_references_F027",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer verdict inferred; direct authoritative TEXT review.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_d90c772851514a0a9c65cdd019e56957",
+            "blk_54ee6784647e49ae86ad9fd46e7082e3",
+            "blk_4efb5f71075b46c9a256fdebb447e338"
+          ],
+          "route": "authoritative_TEXT_direct_review"
+        }
+      ],
+      "disposition": "assessed_preserve_board_coordination_question_with_limits"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
