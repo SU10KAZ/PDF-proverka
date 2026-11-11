@@ -1,0 +1,729 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "86d7e6f82be1273056cc10c647fe0c19f194235a7d20b124d84a1cf5c09b3d51",
+  "queue_after_sha256": "8dc15705e998afc532385e708bd18f52790f9bd70b383ca5ad36d34aa7f28bd2",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Трубопроводы",
+        "sheet": "Листы 6., 7, 8, 9",
+        "page": [
+          29,
+          45,
+          46,
+          47
+        ],
+        "problem": "Сортамент труб в гидравлическом расчёте отличается от спецификации.",
+        "description": "Для нагреваемой стороны ГВС первой зоны расчёт использует 89×3,0 мм, а спецификация оцинкованной DN80 — стенку 4,0 мм. Размеры 57×3,0 и 76×3,0 также отличаются от закупаемого сортамента. Записи «Д=50×3,5» и аналогичные смешивают условный проход и наружный диаметр.",
+        "norm": "ГОСТ 3262-75 (норматив-кандидат), пункт не подтверждён; ГОСТ 10704-91 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 3262-75",
+            "cited_designation": "ГОСТ 3262-75",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить наружные диаметры и толщины водогазопроводных труб для указанных DN.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-025"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 10704-91",
+            "cited_designation": "ГОСТ 10704-91",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить сортамент электросварных труб и соответствие расчётных размеров.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-025"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Раздельно указать DN, наружный диаметр и стенку; пересчитать гидравлику по согласованному сортаменту.",
+        "risk": "Ошибки расчёта сопротивления и закупки труб.",
+        "source_finding_ids": [
+          "T-025"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_d0ef4dbea56d4b74b97a10119fbee223"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 29
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 45
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP72_wall_and_velocity:42140cc8a623c96428fe",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Расчёт содержит89×3,0, спецификация оцинкованнуюД80×4,0 и электросварную89×3,5.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Блоки83/84 и58. Назначение первой зоны и конкретная связь с заказной строкой требуют отдельной привязки; не доказана именно пара89×3,0↔DN80×4,0."
+        },
+        {
+          "claim": "Расчётные57×3,0 и76×3,0 отличаются от строк заказа.",
+          "verdict": "confirmed_values_binding_unresolved",
+          "limits": "Разные размеры существуют; конкретные участки, материал и принадлежность не установлены."
+        },
+        {
+          "claim": "ЗаписьД50×3,5 смешивает условный и наружный диаметры.",
+          "verdict": "ambiguous_not_proven_invalid_designation",
+          "limits": "Условный проход×стенка допускается самим способом обозначенияВГП. БукваД неоднозначна, но не доказывает невозможный сортамент."
+        },
+        {
+          "claim": "СогласоватьDN, наружный диаметр и стенку; пересчитать затронутые участки.",
+          "verdict": "supported_conditional_followup",
+          "limits": "Пересчёт после установления привязки. Ошибка сопротивления конкретного участка и закупки ещё не доказана."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены конкретные несовместимые стыки, отсутствие всей изоляции325, ошибочная закупка или монтаж. Новые обозначения переходов требуют проверки исполнения.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о привязке сортамента, полноте заказа и назначении изоляции. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fa4cca816905454ab134c787b1d1862a",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_155f820c42d94fe282878a3bd85a0ffe",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "url": "https://ntpz.ru/gosty/upload/ГОСТ%203262-75.%20Трубы%20стальные%20водогазопроводные.%20Технические%20условия.pdf",
+          "route": "web_open_standard_reproduction_on_manufacturer_site",
+          "title": "ГОСТ3262-75,таблицы1/2и примеры обозначений",
+          "checked_facts": {
+            "table1": {
+              "DN32_OD_mm": 42.3,
+              "DN50_OD_mm": 60
+            },
+            "table2_roll_thread_light_series": {
+              "DN32_OD_mm": 41,
+              "DN50_OD_mm": 59
+            }
+          },
+          "limits": "Проверены размеры и смысл обозначения, не современная юридическая применимость и не фактическая поставка."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-022"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Numbers and labels read directly; specific joint or order binding not established."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_fa4cca816905454ab134c787b1d1862a",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Numbers and labels read directly; specific joint or order binding not established."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_155f820c42d94fe282878a3bd85a0ffe",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Numbers and labels read directly; specific joint or order binding not established."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pipe_binding_and_insulation"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Соединительные детали",
+        "sheet": "Листы 6., 7., 8., 9., 10.",
+        "page": [
+          29,
+          30,
+          31,
+          32,
+          33
+        ],
+        "problem": "Присоединительные размеры приварных деталей не согласованы с трубами.",
+        "description": "Для труб 30×2,5 и 48×3,5 предусмотрены детали с концами 32 и 45 мм без описания переходов. Для труб 108 и 159 мм встречаются переходы с концами 114 и 168 мм. У переходов DN40×20 и DN50×20 малый наружный размер указан 20 мм, что не соответствует обычному наружному диаметру трубы DN20.",
+        "norm": "ГОСТ 10704-91 (норматив-кандидат), пункт не подтверждён; ГОСТ 17378-2001 (норматив-кандидат), пункт не подтверждён; ГОСТ 17375-2001 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 10704-91",
+            "cited_designation": "ГОСТ 10704-91",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить наружные диаметры присоединяемых труб.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-026"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 17378-2001",
+            "cited_designation": "ГОСТ 17378-2001",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить исполнения и присоединительные размеры переходов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-026"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 17375-2001",
+            "cited_designation": "ГОСТ 17375-2001",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить исполнения и размеры концов приварных отводов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-026"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать сортамент труб и деталей, указать стенки и материалы, разработать необходимые переходные соединения.",
+        "risk": "Невозможность сборки без переделок и нерасчётные сварные соединения.",
+        "source_finding_ids": [
+          "T-026"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_d0ef4dbea56d4b74b97a10119fbee223"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 29
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 31
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "ITP_F028_reducer_designations:2f16d360921aab6e9949",
+          "route": "question",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F028_reducer_designations:fab751f2686c38838e0b",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В спецификации есть трубы30/48/108/159 и детали32/45/114/168.",
+          "verdict": "confirmed_TEXT_not_joint_binding",
+          "limits": "Текущий повтор вернул пример30/32. Соседство строк не доказывает прямого соединения перечисленных пар."
+        },
+        {
+          "claim": "ПереходыD40x20 иD50x20 обозначеныК-2-45x20 иК-2-57x20.",
+          "verdict": "confirmed_direct_TEXT_block64",
+          "limits": "По4шт каждой позиции; не восемь доказанных дефектных стыков. Расшифровка исполнения и нормативная таблица здесь не проверены."
+        },
+        {
+          "claim": "Малый размер20 не соответствует обычному наружному диаметруDN20.",
+          "verdict": "requires_designation_and_standard_verification",
+          "limits": "Сохранить вопрос о согласованности обозначений; не объявлять фактическую геометрию и несовместимость установленными без исполнения и парного участка."
+        },
+        {
+          "claim": "Согласовать стенки, материалы и конкретные стыки.",
+          "verdict": "supported_scoped_question",
+          "limits": "Невозможность сборки и нерасчётные сварные соединения не доказаны. Грувлок из прежнего составного замечания текущей строкой не покрыт."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены конкретные несовместимые стыки, отсутствие всей изоляции325, ошибочная закупка или монтаж. Новые обозначения переходов требуют проверки исполнения.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о привязке сортамента, полноте заказа и назначении изоляции. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP_F028_reducer_designations.json",
+          "sha256": "948c401ded92dc7baf8da111f58e08619ee6485d56c8a1167192c2fd338a3e81",
+          "primary_adjudication": null,
+          "limits": "Подтверждены проектные обозначения и отличие от просмотренной таблицы исходного издания стандарта. Изменения стандарта и окончательная применимость редакции не проверены, поэтому нормативное нарушение не установлено. Не доказано, что переход114 непосредственно соединяется с трубой108, а168 с159: возможны другие присоединяемые элементы. Не предписывать автоматическую замену20на25 или114/168на108/159 без проверки узла. Грувлочную совместимость иOD75,5 не считать подтверждёнными: ограниченияH-ITP-17 сохраняются.",
+          "wording": "Проверить обозначения сварных переходов вСОл9: дляD40×20 иD50×20 записаныК-2-45×20 иК-2-57×20 (по4шт.). В просмотренной таблице2 ГОСТ17378-2001 для соответствующих больших концов указан малый диаметр25мм. Также проверить привязку переходов114×89 (6шт.) и168×76 (1шт.) к конкретным сопряжениям: в перечне труб присутствуют108×4,0 и159×4,5. Тему грувлочного рядаDN65 объединить сH-ITP-17, сохранив самостоятельную проверку сварных переходов."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-023",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_f23a8028a5d34e3e92bf1c3cfcdecf85",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/ITP17_grooved_connection_identity.json",
+          "sha256": "86d4789b355603010fb36e5634f9f707854e9747a4637168699bba57a468ab33",
+          "primary_adjudication": null,
+          "limits": "Подтверждены конкретные коды и количество, не несовместимость всех289 соединений. Прямую таблицу FC из исторической ссылки получить не удалось; числовая расшифровка073/076 и ВГП75,5 не включены в доказанный тезис. Без привязки к узлам и паспортных допусков нельзя предписать массовую замену или универсальный запрет грувлоков для ВГП. Листы текущего MD: трубыСО6,муфтыСО7; исторические ссылки сохранены отдельно.",
+          "wording": "В группе Ø65 спецификации указаны 289 муфт FC073E*, а заглушки, колена, переходы и равносторонние тройники имеют коды EC076*, EL9000C076*, GCR076R048*/R060* и GT076*. Согласовать выбранные муфты и фитинги по наружному диаметру и пазу с фактическим типом трубы. ВГП65×4,0 и электросварную76×3,5 проверять раздельно."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-023"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "direct_authoritative_TEXT",
+          "limits": "Numbers and labels read directly; specific joint or order binding not established."
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pipe_binding_and_insulation"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-028",
+      "finding": {
+        "id": "F-028",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Изоляция и крепления",
+        "sheet": "Листы 6., 13., 15.",
+        "page": [
+          29,
+          36,
+          38
+        ],
+        "problem": "Для трубопровода 325 мм не завершены ведомости креплений и цилиндров изоляции.",
+        "description": "Для 85,1 м трубы 325 мм количество креплений не заполнено, соответствующая строка цилиндров изоляции отсутствует. Повторно указана изоляция 273×40 длиной 97 м при длине трубы 273 мм всего 1,7 м и отдельной строке изоляции этого размера 2 м. Наличие матов не подтверждает компенсацию ошибочной строки.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту спецификации креплений и теплоизоляционных изделий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-028"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить диаметр и длину изоляции, заполнить количество креплений по принятой схеме опор.",
+        "risk": "Недокомплект поставки, переделка креплений и незавершённая теплоизоляция.",
+        "source_finding_ids": [
+          "T-028"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_d0ef4dbea56d4b74b97a10119fbee223"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 29
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 36
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 38
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 63,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "rework",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-029:268aafac2624c208753e",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-030:a4e56855f9942b943bff",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Труба325×7 —85,1м; строка крепленийДн325 без единицы и количества.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Доказательства прежнегоF025 добавлены. Не считать это фактическим отсутствием всех опор."
+        },
+        {
+          "claim": "В проверенных таблицах нет цилиндра325;273×40 указан2м и97м при1,7мтрубы273.",
+          "verdict": "confirmed_bounded_TEXT_inventory",
+          "limits": "Есть50 и250м²матов; назначение не установлено. Наличие матов не доказывает компенсацию, но и отсутствие всей изоляции325 не доказано."
+        },
+        {
+          "claim": "Строка97м ошибочна.",
+          "verdict": "not_established_assignment",
+          "limits": "Численное несоответствие требует сверки назначения; нельзя автоматически переименовать273в325. Аналогично нельзя переносить32комплекта креплений273в325."
+        },
+        {
+          "claim": "Уточнить изоляцию и заполнить крепления по схеме опор.",
+          "verdict": "supported_scoped_question",
+          "limits": "Фактический недокомплект, переделки и незавершённый монтаж не наблюдались."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены конкретные несовместимые стыки, отсутствие всей изоляции325, ошибочная закупка или монтаж. Новые обозначения переходов требуют проверки исполнения.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить вопросы о привязке сортамента, полноте заказа и назначении изоляции. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_e46d7b061235453f8917708c1387217c",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json",
+          "sha256": "92f98a8b73d3db1a60c32f0d100a2dfd0e5688ea5295792e06a212154edd7ef0",
+          "primary_adjudication": null,
+          "limits": "Проверена ограниченная область отсутствия — две таблицы изоляции, а не весь проект или поставка. На листе14 есть50м² матов, на листе15 —250м²; распределение по трубам и оборудованию не установлено. Нельзя автоматически заменить273 на325, добавить85,1м цилиндров или объявить поставку некомплектной. Нарушение СП61 не подтверждалось.",
+          "wording": "Уточнить соответствие труб и изоляции: предусмотрено85,1м трубы325×7, но в таблицах изоляции листов14–15 нет отдельной строки цилиндра для325мм; цилиндр273×40 записан дважды —2 и97м при1,7м трубы273×7. Подтвердить назначение строки97м и предусмотренных матов."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-025",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20c9372392c34ef08a1e81d99316f0cb",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+          "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1",
+          "primary_adjudication": null,
+          "limits": "Пропуск двух полей подтверждён непосредственно по строке.32комплекта не являются автоматически доказанным избытком: схема опор, участки и границы учёта не сверены. Не переносить32комплекта в строку325 без расчёта. Фактическая непоставка опор, задержка монтажа и невозможность монтажа не установлены.",
+          "wording": "Заполнить единицу измерения и количество креплений Дн325 в спецификации: строка есть, обе ячейки пусты; труба325×7 предусмотрена длиной85,1м. Одновременно сверить распределение: дляДн273 указаны32комплекта при1,7м трубы273×7."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+          "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1",
+          "primary_adjudication": null,
+          "limits": "Пропуск двух полей подтверждён непосредственно по строке.32комплекта не являются автоматически доказанным избытком: схема опор, участки и границы учёта не сверены. Не переносить32комплекта в строку325 без расчёта. Фактическая непоставка опор, задержка монтажа и невозможность монтажа не установлены.",
+          "wording": "Заполнить единицу измерения и количество креплений Дн325 в спецификации: строка есть, обе ячейки пусты; труба325×7 предусмотрена длиной85,1м. Одновременно сверить распределение: дляДн273 указаны32комплекта при1,7м трубы273×7."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-026",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-024"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pipe_binding_and_insulation"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Three current ITP findings scoped against frozen prior reviews with verified source hashes; F028 also uses old F025. Additional current TEXT blocks checked for pipe and transition labels. No new standard-table verification, raster inspection or engineer decision. Missing object binding preserved explicitly."
+}
