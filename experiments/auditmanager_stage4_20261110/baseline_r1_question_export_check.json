@@ -1,0 +1,63 @@
+{
+  "status": "verified_current_exporter_on_sealed_baseline_outputs",
+  "runs": [
+    {
+      "discipline": "AK",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "b21c0b4d15daff09f72b5b040ae964051ed532b87df58dbf6d5d2ef1292e61c3",
+      "xlsx": "/tmp/auditmanager_baseline_r1_export_check_20261111/AK.xlsx",
+      "xlsx_sha256": "cd8102b0562cc9f3685cd1a74508970aa320b569e1fbf0bd9aa02edde2e59530",
+      "rows_preserved": 66,
+      "ids_and_order_preserved": true,
+      "source_unchanged": true,
+      "question_heading_rows": [],
+      "explicit_question_ids": []
+    },
+    {
+      "discipline": "ITP",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "e76d8dbbd5ff0d4cad7ac703d24dfd46da30c78303fd27e680a9b70c654e61e2",
+      "xlsx": "/tmp/auditmanager_baseline_r1_export_check_20261111/ITP.xlsx",
+      "xlsx_sha256": "449b3932e058bdfd73494d1e74fc7fb561e3a2ea20a2763d661b4deac423b326",
+      "rows_preserved": 57,
+      "ids_and_order_preserved": true,
+      "source_unchanged": true,
+      "question_heading_rows": [],
+      "explicit_question_ids": []
+    },
+    {
+      "discipline": "AR",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+      "xlsx": "/tmp/auditmanager_baseline_r1_export_check_20261111/AR.xlsx",
+      "xlsx_sha256": "b2cb754627a26367f426e1f83a1369ab0b591a4df7912c11cfadbb2ae5ba5406",
+      "rows_preserved": 21,
+      "ids_and_order_preserved": true,
+      "source_unchanged": true,
+      "question_heading_rows": [],
+      "explicit_question_ids": []
+    },
+    {
+      "discipline": "KM",
+      "source": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/03_findings.json",
+      "source_sha256": "4b89b20e475a15ddf12db8f072a518d4f7e63dc9730aa9934ad5033d511868ad",
+      "xlsx": "/tmp/auditmanager_baseline_r1_export_check_20261111/KM.xlsx",
+      "xlsx_sha256": "6ed399174434e9c1403e0945d76305eb6c9f597de07c8b28d3289342b5eed542",
+      "rows_preserved": 27,
+      "ids_and_order_preserved": true,
+      "source_unchanged": true,
+      "question_heading_rows": [],
+      "explicit_question_ids": []
+    }
+  ],
+  "exporter": "backend/app/pipeline/stages/report/generate_excel_report.py",
+  "exporter_sha256": "1b8a2b557dad416c649d1c1c1166496055b81f78d7e7f6f09aee53e0e57309b1",
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": [
+    "Current exporter replay, not a historical deployed UI test.",
+    "No findings were reclassified; all four outputs lack explicit section metadata.",
+    "Checks saved workbook cells, IDs and headings; no visual layout acceptance.",
+    "Preserved rows do not prove findings are technically valid."
+  ]
+}
