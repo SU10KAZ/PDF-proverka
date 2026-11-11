@@ -1,0 +1,1061 @@
+{
+  "status": "four_KM_reference_and_mass_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "a47c37fc57a04372ab1cb59a1e786cc773ca4d93b5dea3afa061aa1dcbb7750b",
+  "queue_after_sha256": "620d98043838d138d83404685dc8cc015b95d7b60d1126332970dc2bdee1c07e",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Лист 1",
+        "page": 3,
+        "problem": "В общих указаниях использованы несогласованные редакции нормативных документов.",
+        "description": "Во входном анализе СП 20.13330.2011, СП 28.13330.2012, СП 63.13330.2012, СП 16.13330.2011, СП 2.13130.2012, СП 48.13330.2011, СП 72.13330.2011 и ГОСТ 23118-2012 отмечены как замененные. Одновременно приведены СП 16.13330.2011 и СП 16.13330.2017. Применимость редакций зависит от даты и оснований разработки документации; наличие старой ссылки само по себе не доказывает недостаточную несущую способность.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к обоснованию проектных решений и примененной нормативной базе.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить применимые редакции с учетом оснований проектирования, согласовать перечень документов и ссылки в общих указаниях, проверить решения по принятой нормативной базе.",
+        "risk": "Неоднозначные требования к расчету, изготовлению и приемке конструкций.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_531e843c117243a3b1582cb3399f4681",
+          "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "blk_f63af88de2a840e49ca709d736eaa225"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 72,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F001_norm_editions_scope:cc6d088a37f8ea14e2fe",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "СП16.13330.2011 в перечне и СП16.13330.2017 в требованиях к сварке; перечислены другие редакции.",
+          "verdict": "confirmed_TEXT_reference_mixture",
+          "limits": ""
+        },
+        {
+          "claim": "Редакции неприменимы либо конструкции небезопасны.",
+          "verdict": "not_established_and_not_claimed_as_proven",
+          "limits": "Дата и основания разработки, применимость и содержание норм здесь не проверены. Старый год не автоматическое нарушение."
+        },
+        {
+          "claim": "Согласовать перечень и ссылки с применимой нормативной базой.",
+          "verdict": "supported_reference_question",
+          "limits": "Проверка статуса документов должна предшествовать предписанию заменить редакции."
+        },
+        {
+          "claim": "Неоднозначность требований изготовления.",
+          "verdict": "potential_documentation_consequence_not_observed_failure",
+          "limits": ""
+        },
+        {
+          "claim": "Во входном анализе восемь документов отмечены как заменённые.",
+          "verdict": "upstream_model_attribution_not_primary_verification",
+          "limits": "Пересказ предыдущего анализа не подтверждает статус всех восьми документов. Сохранить установленную несогласованность СП16, не объявлять все старые ссылки неприменимыми без проверки оснований проектирования и первичных сведений."
+        }
+      ],
+      "unsupported_additions": "Не превращать несогласованность реквизитов или условный пересчёт в доказательство непригодности материала, дефицита поставки или неприменимости всех прежних редакций.",
+      "novel_useful_content": "Основные вопросы сохранены из первого повтора; новые выводы отдельно ограничены проверенной арифметикой и метаданными.",
+      "duplicate_burden": "distinct_general_documentation_question",
+      "profile_and_section": "questions_and_clarifications; no automatically proven material or procurement defect",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_531e843c117243a3b1582cb3399f4681",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F001_norm_editions_scope.json",
+          "sha256": "33b3aa3bc7d3e7470afa0640da907a872316eb10bda4279b180e36cca8f558de",
+          "primary_adjudication": null,
+          "limits": [
+            "Наличие всех восьми перечисленных кандидатом ссылок проверено по двум полным блокам TEXT. Внешний статус непосредственно проверен для СП16 и ГОСТ23118; статус остальных шести документов здесь не проверен и не считается опровергнутым.",
+            "Время Created в MD — не дата утверждения проекта. Не установлены дата фиксации нормативной базы, переходные положения и требования договора.",
+            "В п.3.2 сталь назначена по ГОСТ27772-2021; утверждение, будто все материалы назначены по СП16.2017, шире исходного текста. По СП16.2017 назначаются сварочные материалы и швы.",
+            "Не доказаны неверный катет, расчётная недостаточность, запрет изготовления или отказ при приёмке. Обязательное изменение всех проектных решений из статуса стандарта не следует."
+          ],
+          "wording": "На листе1 согласовать нормативные ссылки: в п.1.2 указан СП16.13330.2011, а в пп.3.4–3.5 для сварочных материалов, минимальных швов и пересчёта в КМД — СП16.13330.2017. Уточнить принятую для проекта нормативную базу; отдельно проверить ссылку п.4.1 на заменённый ГОСТ23118-2012."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-001",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-001_reference_or_conditional_mass_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-006",
+      "finding": {
+        "id": "F-006",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Спецификация",
+        "sheet": "Листы 2, 4, 6",
+        "page": [
+          4,
+          6,
+          8
+        ],
+        "problem": "Масса трубы 40×40×3 для секций С2 и С3 занижена относительно ведомостей деталей.",
+        "description": "Для С2 суммарная длина составляет 128,505 м; при теоретической массе 3,36 кг/м получается 0,431777 т вместо 0,422 т. Для С3 длина 128,875 м дает 0,433020 т вместо 0,423 т. Общее занижение составляет около 19,8 кг и не объясняется округлением до 0,001 т.",
+        "norm": "ГОСТ 8639-82 (норматив-кандидат), пункт не подтверждён; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 8639-82",
+            "cited_designation": "ГОСТ 8639-82",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить теоретическую массу погонного метра квадратной трубы 40×40×3.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие сводной потребности в прокате ведомостям элементов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить отнесение деталей к профилям, повторяемость изделий и пересчитать массу трубы 40×40×3 по секциям.",
+        "risk": "Занижение закупочного объема проката и стоимости изготовления.",
+        "source_finding_ids": [
+          "T-006"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "blk_addaa8965de54d218095d13652f30388",
+          "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+          "blk_ec977eb41e834dc8b7b332a66932a777"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 70,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F006_profile_mass_recalculation:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Выбранные позиции дают 128,505 м С2 и 128,875 м С3.",
+          "verdict": "confirmed_arithmetic_with_selected_position_scope",
+          "limits": "Проверены арифметические слагаемые замороженного разбора и совпадение его TEXT с текущим исходником; графическая принадлежность всех позиций заново не проверялась."
+        },
+        {
+          "claim": "При 3,36 кг/м получается 431,7768 и 433,0200 кг против 422/423 кг.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "Разность объясняется финальным округлением до 1 кг.",
+          "verdict": "refuted_under_stated_inputs",
+          "limits": "9,7768 и 10,0200 кг больше ошибки финального округления. Это не проверка исходной методики расчёта."
+        },
+        {
+          "claim": "Все выбранные позиции 40×3 являются квадратной трубой; 3,36 кг/м независимо подтверждено.",
+          "verdict": "not_fully_established",
+          "limits": "Часть эскизов сечения в TEXT пустая. Таблица ГОСТ и исходный расчёт не проверены; заполнение пустых ячеек по догадке недопустимо."
+        },
+        {
+          "claim": "Безусловно доказаны занижение массы и закупочный дефицит.",
+          "verdict": "not_established",
+          "limits": "Заголовок категоричнее условного расчёта в описании. Сохранить вопрос о сечениях и методике до обязательного исправления сводной."
+        },
+        {
+          "claim": "Нарушение ГОСТ 21.502-2016 п.4.1.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Общее занижение около19,8кг доказано.",
+          "verdict": "conditional_arithmetic_not_unconditional_shortage",
+          "limits": "При выбранных длинах и3,36кг/м разность19,7968кг подтверждена арифметически. Подтверждение всех сечений и погонной массы остаётся условием; категоричный заголовок и риск закупочного дефицита выходят за доказательства."
+        }
+      ],
+      "unsupported_additions": "Не превращать несогласованность реквизитов или условный пересчёт в доказательство непригодности материала, дефицита поставки или неприменимости всех прежних редакций.",
+      "novel_useful_content": "Основные вопросы сохранены из первого повтора; новые выводы отдельно ограничены проверенной арифметикой и метаданными.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "questions_and_clarifications; no automatically proven material or procurement defect",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_ec977eb41e834dc8b7b332a66932a777",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_addaa8965de54d218095d13652f30388",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_984efa22a06d4fe7be4733e2ffe26c5c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_e0e6bcff961f41f3ad9620d662bd7b43",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_480b19bcf16e4cd1b5b9299ea8e5dc7c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_ad6205eb490d43edadcdfc3bd8c77e05",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7f0ce580e06f44f78c0b85f92efb82c7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_4b49406098054a4da822e4286031df67",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5f00d7d0be874b0ead4105aad66a03ed",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_2b31bb21c613499ea1bea845105e296f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7d22d8ae35fa45cba05457d5ecb978a4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_30cfd1306b554f0483179e8e36c3ef41",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_6361593a2045407a94dff35af62ca5c3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_0d47c52edf9142a8868e6f7f7d58d3ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_c314777ec1714d25b4d7f16f26513258",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F006_profile_mass_recalculation.json",
+          "sha256": "50baec1746488e3179ac2bd45e64ef3493a81ef06326deb30af36fc3a165e822",
+          "primary_adjudication": null,
+          "limits": [
+            "Полностью сверены семь ведомостейС2 и восемьС3. Разрезы подтверждают повторяемость; нельзя считать подписи на планах дополнительными изделиями.",
+            "В частиTEXT обозначение40×3 имеет пустой эскиз сечения. Позиции без знака диаметра подсчитаны отдельно от явно круглойпоз.1, но принадлежность каждой позиции именно квадратному профилю требует проверки связанных узлов. TEXTне исправлялся.",
+            "3.36кг/м — условие исходного кандидата, а не независимо проверенная здесь нормативная величина. В проектной сводной указанГОСТ8639-82; его таблица и исходный расчёт массы не проверены.",
+            "При указанном условии разницы9.7768/10.0200кг не объясняются только финальным округлением до1кг. Это не доказывает ошибку сводной при иной исходной методике.",
+            "КМД, закупочные ведомости, смета и фактическая поставка не проверены; нехватка металла, перерасход и нарушениеГОСТ21.502 не установлены."
+          ],
+          "wording": "Сверить расчёт массы трубы40×40×3 дляС2/С3: выбранные позиции ведомостей с учётом повторяемости дают128.505/128.875м. При принятой в кандидате массе3.36кг/м получается431.7768/433.0200кг против422/423кг в сводной. Подтвердить тип профиля каждой позиции, погонную массу и методику сводного расчёта до изменения итогов."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F006_profile_mass_recalculation.json",
+          "sha256": "50baec1746488e3179ac2bd45e64ef3493a81ef06326deb30af36fc3a165e822",
+          "route": "same_source_historical_calculation_recomputed"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-006",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-006_reference_or_conditional_mass_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-013",
+      "finding": {
+        "id": "F-013",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Нормативные ссылки",
+        "sheet": "Листы 1, 2, 4, 6",
+        "page": [
+          3,
+          4,
+          6,
+          8
+        ],
+        "problem": "Для трубы Ø40×3 в узлах и спецификации указаны разные редакции стандарта.",
+        "description": "В узлах Б, В, Г, Д, Е и сечениях листа 4, а также в узлах и сечениях листа 6 для трубы Ø40×3 указан ГОСТ 8732-78. В технической спецификации листа 2 и ведомости ссылочных документов листа 1 указан ГОСТ 8732-2025. Повторяющиеся замечания объединены как одно несоответствие обозначения материала. Статус обеих редакций по предоставленным данным требует проверки.",
+        "norm": "ГОСТ 8732-78 (норматив-кандидат), пункт не подтверждён; ГОСТ 8732-2025 (норматив-кандидат), пункт не подтверждён; ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 8732-78",
+            "cited_designation": "ГОСТ 8732-78",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить сортамент трубы и условия применения обозначения, указанного в узлах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-005",
+                "G-006",
+                "G-009",
+                "G-010",
+                "G-011",
+                "G-012",
+                "G-017",
+                "G-018",
+                "G-019",
+                "G-020",
+                "G-021",
+                "G-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-005",
+                  "G-006",
+                  "G-009",
+                  "G-010",
+                  "G-011",
+                  "G-012",
+                  "G-017",
+                  "G-018",
+                  "G-019",
+                  "G-020",
+                  "G-021",
+                  "G-022"
+                ],
+                "designation_source": "Обозначение стандарта в исходных графических замечаниях"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 8732-2025",
+            "cited_designation": "ГОСТ 8732-2025",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить документ и сортамент, на которые ссылаются спецификация и ведомость ссылочных документов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-005",
+                "G-006",
+                "G-009",
+                "G-010",
+                "G-011",
+                "G-012",
+                "G-017",
+                "G-018",
+                "G-019",
+                "G-020",
+                "G-021",
+                "G-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-005",
+                  "G-006",
+                  "G-009",
+                  "G-010",
+                  "G-011",
+                  "G-012",
+                  "G-017",
+                  "G-018",
+                  "G-019",
+                  "G-020",
+                  "G-021",
+                  "G-022"
+                ],
+                "designation_source": "Обозначение стандарта в исходных графических замечаниях"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Найти требования к согласованному заданию материалов в рабочих чертежах металлических конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-005",
+                "G-006",
+                "G-009",
+                "G-010",
+                "G-011",
+                "G-012",
+                "G-017",
+                "G-018",
+                "G-019",
+                "G-020",
+                "G-021",
+                "G-022"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-005",
+                  "G-006",
+                  "G-009",
+                  "G-010",
+                  "G-011",
+                  "G-012",
+                  "G-017",
+                  "G-018",
+                  "G-019",
+                  "G-020",
+                  "G-021",
+                  "G-022"
+                ],
+                "designation_source": "Подобран при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить применяемый стандарт и привести обозначение трубы во всех узлах, сечениях, спецификации и ведомости ссылок к единому обоснованному значению.",
+        "risk": "Неоднозначное задание сортамента при закупке и изготовлении.",
+        "source_finding_ids": [
+          "G-005",
+          "G-006",
+          "G-009",
+          "G-010",
+          "G-011",
+          "G-012",
+          "G-017",
+          "G-018",
+          "G-019",
+          "G-020",
+          "G-021",
+          "G-022"
+        ],
+        "source_block_ids": [
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+          "blk_60fce78600474a06989f2253821f34f2",
+          "blk_00eaf91abb0f48a38267e99e757644a1",
+          "blk_6451cc830d2b45f5bf19bbc352d4a419",
+          "blk_49d947c318c3478582a39740abda8658"
+        ],
+        "related_block_ids": [
+          "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+          "blk_60fce78600474a06989f2253821f34f2",
+          "blk_00eaf91abb0f48a38267e99e757644a1",
+          "blk_6451cc830d2b45f5bf19bbc352d4a419",
+          "blk_49d947c318c3478582a39740abda8658",
+          "blk_7b0802767f0147c197b0a35334b4a7ae"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+            "page": 6
+          },
+          {
+            "type": "image",
+            "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+            "page": 6
+          },
+          {
+            "type": "image",
+            "block_id": "blk_60fce78600474a06989f2253821f34f2",
+            "page": 6
+          },
+          {
+            "type": "image",
+            "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+            "page": 8
+          },
+          {
+            "type": "image",
+            "block_id": "blk_6451cc830d2b45f5bf19bbc352d4a419",
+            "page": 8
+          },
+          {
+            "type": "image",
+            "block_id": "blk_49d947c318c3478582a39740abda8658",
+            "page": 8
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-005",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-006",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-009",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-010",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-017",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-018",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-021",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T115022Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-022",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:50:22.027964+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают несогласованность ГОСТ 8732-78 в узлах Б, В, Г и Д с ГОСТ 8732-2025 в спецификации для трубы Ø40×3. Дополнительная ссылка слева на ведомость листа 1 подтверждает тот же факт и существенно не расширяет замечание.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.99,
+              "reason": "Оба замечания описывают несогласованность ГОСТ 8732-78 в узлах Б, В, Г и Д с ГОСТ 8732-2025 в спецификации для трубы Ø40×3. Дополнительная ссылка слева на ведомость листа 1 подтверждает тот же факт и существенно не расширяет замечание.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно несоответствие: ГОСТ 8732-78 для трубы Ø40×3 в узле Е и сечении 4-4 листа 4 против ГОСТ 8732-2025 в ведомости ссылочных документов листа 1. Детализация и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 39,
+          "engineering_relevance": "low",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F013_pipe_standard_designations:72e396e785f77c8d64b3",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "УзлыБ–Е и сечения2–2,3–3,4–4 листа4 содержат8732-78; узлыБ–Е и2–2,4–4 листа6 также содержат8732-78.",
+          "verdict": "confirmed_by_prior_direct_GRAPHIC_review_identical_r2_bytes",
+          "limits": "Повторно использована поштучная проверка шести изображений первого повтора; SHA256 всех изображений совпали. Нового визуального просмотра в этой записи не заявляется."
+        },
+        {
+          "claim": "В спецификации и ведомости ссылок указан8732-2025 для того же профиля.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Нужно согласовать обозначения.",
+          "verdict": "supported_document_consistency_question",
+          "limits": ""
+        },
+        {
+          "claim": "Требуется изменить материал, закупку или признать старую редакцию неприменимой.",
+          "verdict": "not_established",
+          "limits": "Дата утверждения проекта, нормативная база и различия требований не установлены. Сохранённый исторический разбор содержит первичные метаданные замены стандарта; это не доказательство технической ошибки трубы."
+        },
+        {
+          "claim": "Пункты нормативных требований проверены текущим аудитом.",
+          "verdict": "not_established_resolver_pending",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "Не превращать несогласованность реквизитов или условный пересчёт в доказательство непригодности материала, дефицита поставки или неприменимости всех прежних редакций.",
+      "novel_useful_content": "Основные вопросы сохранены из первого повтора; новые выводы отдельно ограничены проверенной арифметикой и метаданными.",
+      "duplicate_burden": "one_cross_document_reference_conflict_with_multiple_addresses_not_twelve_defects",
+      "profile_and_section": "questions_and_clarifications; no automatically proven material or procurement defect",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F013_pipe_standard_designations.json",
+          "sha256": "a15f78ba84e466ec6c47f29ec3e77b047613bf2a079f141e886a4882d67ab649",
+          "primary_adjudication": null,
+          "limits": [
+            "Графика листа6 для этого тезиса отдельно не просмотрена; вывод не распространён автоматически на все узлы исходного кандидата.",
+            "Дата создания извлечённых блоков21.10.2026 не доказывает дату утверждения проектной документации или её нормативную базу.",
+            "Метаданные замены проверены по первичным источникам; конкретные изменения сортамента,допусков и поправкаИУС6-2026 не изучены.",
+            "Разные обозначения подтверждены; несоответствие закупленной трубы,ошибка входного контроля и эксплуатационный дефект не доказаны.",
+            "Статусзаменён не доказывает сам по себе обязательность переделки всех решений или незаконность использования старой редакции."
+          ],
+          "wording": "Согласовать обозначение стандарта для трубыØ40×3: узлыБ–Е и сечение4-4 листа4 указываютГОСТ8732-78, тогда как спецификация листа2 и перечень ссылок —ГОСТ8732-2025. Учитывать подтверждённую замену стандарта с01.03.2026 и проверить применимую редакцию с поправками по основанию проектирования."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_cfd1c741a6fa4cd99c3eccd1d42afc7d.png",
+          "sha256": "b9a65fa02aecbc35f4fa72c98c2daba4002bbbc9a303ffadda7617686ee52c84",
+          "block_id": "blk_cfd1c741a6fa4cd99c3eccd1d42afc7d",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Лист4: Б,В,Г,Д; Ø40×3, ГОСТ8732-78."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_2a44dd3981b94cc2bc63d79e8d2f2264.png",
+          "sha256": "c8c5cf85a7f8ca54b2c70c785e03337957faa5bfe285b4d8058bdcbc00a1eee3",
+          "block_id": "blk_2a44dd3981b94cc2bc63d79e8d2f2264",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Лист4: Е и4–4; Ø40×3, ГОСТ8732-78."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_60fce78600474a06989f2253821f34f2.png",
+          "sha256": "f27d643c0b65a51507d8947fa1cb4eff7103cda8c15dc82f7da111c0a2052fdf",
+          "block_id": "blk_60fce78600474a06989f2253821f34f2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Лист4: 2–2 и3–3; Ø40×3, ГОСТ8732-78."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_00eaf91abb0f48a38267e99e757644a1.png",
+          "sha256": "7e5756470c33c3c726266bc03e6eb4f94a096a7b24802a75764bf6baa31804ad",
+          "block_id": "blk_00eaf91abb0f48a38267e99e757644a1",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Лист6: Б иВ; Ø40×3, ГОСТ8732-78."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6451cc830d2b45f5bf19bbc352d4a419.png",
+          "sha256": "512bfcd5d76cac315be3c5c785287ca92c713dacc00d11460748bbc5e39f04b0",
+          "block_id": "blk_6451cc830d2b45f5bf19bbc352d4a419",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Лист6: 2–2; Ø40×3, ГОСТ8732-78."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_49d947c318c3478582a39740abda8658.png",
+          "sha256": "a787fed35399dd8f5d5e0366b8e16ccf37c1df34157d46ffae8503f1e46a286d",
+          "block_id": "blk_49d947c318c3478582a39740abda8658",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Лист6: Г,Д,Е,4–4; Ø40×3, ГОСТ8732-78."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-013",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-013_reference_or_conditional_mass_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 2,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "В ведомости неверно обозначен стандарт на испытания механических анкеров.",
+        "description": "Строка MD 128: «| ГОСТ 56731-2023 | Анкеры механические для крепления в бетоне |  |». Правильное обозначение — ГОСТ Р 56731-2023, полное название — «Анкеры механические для крепления в бетоне. Методы испытаний». В обозначении пропущена буква «Р», а сокращенное название не отражает назначение документа как стандарта на методы испытаний. Тематически документ применим к предусмотренным механическим анкерам.",
+        "page": 3,
+        "norm": "ГОСТ Р 56731-2023 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Исправить обозначение на ГОСТ Р 56731-2023 и привести полное название стандарта.",
+        "risk": "Ошибочная идентификация нормативного документа при подборе и проверке анкеров.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+            "page": 3,
+            "md_lines": "строка 128"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 1",
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 56731-2023",
+            "cited_designation": "ГОСТ Р 56731-2023",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 10,
+          "engineering_relevance": "low",
+          "impact_axes": [],
+          "formalism_flags": [
+            "formal_reference_category",
+            "reference_register"
+          ],
+          "likely_formal_only": true,
+          "severity_mismatch": false,
+          "review_priority": "normal"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В ведомости написано ГОСТ56731-2023 безР.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Официальное обозначение ГОСТ Р56731-2023.",
+          "verdict": "confirmed_primary_catalog_metadata",
+          "limits": ""
+        },
+        {
+          "claim": "Исправление обозначения является техническим дефектом анкеров.",
+          "verdict": "not_established",
+          "limits": "Это редакционное несоответствие ссылки. Наличие HSA-M10×90 подтверждает тематическую связь, но не применимость каждого требования или несоответствие изделия."
+        },
+        {
+          "claim": "Исправить реквизит в отдельном разделе вопросов и уточнений.",
+          "verdict": "supported_editorial_correction",
+          "limits": "Инженерная полезность и время обработки отдельно не измерены."
+        },
+        {
+          "claim": "Полное название содержит «Методы испытаний».",
+          "verdict": "confirmed_reused_primary_catalog_metadata",
+          "limits": "Название сохранено в первичном источнике предыдущей проверки. Отсутствие окончания в сокращённой ведомости не доказывает техническую ошибку анкера; без проверки требований к оформлению нельзя приравнивать любое сокращение к нарушению."
+        },
+        {
+          "claim": "Документ тематически относится к предусмотренным механическим анкерам.",
+          "verdict": "supported_topic_link_not_full_applicability",
+          "limits": "Тематическая связь с HSA не заменяет проверку области применения, конкретного исполнения и расчётных требований."
+        }
+      ],
+      "unsupported_additions": "Не превращать несогласованность реквизитов или условный пересчёт в доказательство непригодности материала, дефицита поставки или неприменимости всех прежних редакций.",
+      "novel_useful_content": "Основные вопросы сохранены из первого повтора; новые выводы отдельно ограничены проверенной арифметикой и метаданными.",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "questions_and_clarifications; no automatically proven material or procurement defect",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_5e4c3725456d4cafa74220f8a1fad14c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r2_classic/classic_control/inputs/KM/versions/v001/02_work/document.md",
+          "sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78",
+          "block_id": "blk_7b0802767f0147c197b0a35334b4a7ae",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/6665a3a0-21b0-4f9f-92a3-de270ac02fd3",
+          "source": "Официальный портал Росстандарта",
+          "checked": "2026-11-11",
+          "route": "web_open_primary_metadata",
+          "verified_designation": "ГОСТ Р 56731-2023",
+          "title": "Анкеры механические для крепления в бетоне. Методы испытаний",
+          "limits": "Проверено обозначение; применимость методов испытаний к конкретным анкерам и нарушение технических требований не проверялись."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-027",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_KM_F-025_reference_or_conditional_mass_question"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
