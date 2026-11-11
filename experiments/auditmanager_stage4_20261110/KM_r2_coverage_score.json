@@ -1,0 +1,58 @@
+{
+  "status": "review_summary_not_trial_acceptance",
+  "discipline": "KM",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "findings_sha256": "d93486c6a6510ae841be839873e137a44c3241005e6060361017dce855a3e5d1",
+  "routes": {
+    "technical": {
+      "counts": {
+        "denominator": 4,
+        "availability_available": 4,
+        "full": 1,
+        "partial": 2,
+        "absent": 1
+      },
+      "review_complete": true,
+      "full_match_rate": 0.25,
+      "meaning": "fully preserved target rate"
+    },
+    "question": {
+      "counts": {
+        "denominator": 20,
+        "availability_available": 20,
+        "partial": 11,
+        "absent": 6,
+        "full": 3
+      },
+      "review_complete": true,
+      "full_match_rate": 0.15,
+      "meaning": "fully preserved target rate"
+    },
+    "negative": {
+      "counts": {
+        "denominator": 3,
+        "availability_available": 3,
+        "absent": 3,
+        "held": 1
+      },
+      "review_complete": true,
+      "full_match_rate": 0.0,
+      "meaning": "repeated false claim rate"
+    }
+  },
+  "section_accuracy_counts": {
+    "unchecked": 4,
+    "held": 1
+  },
+  "filter_effectiveness": null,
+  "production_acceptance": false,
+  "unmeasured": [
+    "Novel valid findings",
+    "Unsupported additions",
+    "Duplicate burden",
+    "Useful baseline retention",
+    "Engineer time",
+    "Run cost and duration",
+    "Candidate arrival and reasoned filter removal"
+  ]
+}
