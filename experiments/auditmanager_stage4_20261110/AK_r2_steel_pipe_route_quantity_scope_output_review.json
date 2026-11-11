@@ -1,0 +1,158 @@
+{
+  "status": "AK_pipe_quantity_row_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "4377d56d4aff13aabe1a4763bfbf7f5ad0bfca0267799ab4f57d7df011aaa67c",
+  "queue_after_sha256": "74a9a297444fb7bb19af742d17899bee9d7d20a478a342caa603d15dd4bb73d3",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-032",
+      "finding": {
+        "id": "F-032",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Количество монтажных материалов",
+        "sheet": "Листы 27, 32, 11",
+        "page": [
+          85,
+          90,
+          104
+        ],
+        "problem": "Общий объём стальной трубы меньше отдельного участка трассы.",
+        "description": "В спецификации указано 4 м водогазопроводной трубы. В журнале линии Вм6.1-1 и СУК2-2 содержат участки по 5 м такого способа прокладки. Даже один участок превышает весь закупочный объём.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить полноту количества труб для предусмотренных способов прокладки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-030"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-030"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать физическую длину труб по маршрутам с учётом совместной прокладки; не суммировать автоматически одинаковые участки каждого кабеля.",
+        "risk": "Недостаток труб и дополнительные закупки при монтаже.",
+        "source_finding_ids": [
+          "T-030"
+        ],
+        "source_block_ids": [
+          "blk_1a998befeb274900bd8048e09752beba",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_f4bf6dec4072413fa43043bf27d880eb"
+        ],
+        "related_block_ids": [
+          "blk_1a998befeb274900bd8048e09752beba",
+          "blk_7b41b193ccad4f559ba654a2248576d5",
+          "blk_f4bf6dec4072413fa43043bf27d880eb"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_1a998befeb274900bd8048e09752beba",
+            "page": 85
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+            "page": 90
+          },
+          {
+            "type": "text",
+            "block_id": "blk_f4bf6dec4072413fa43043bf27d880eb",
+            "page": 104
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 69,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "СО22.13 содержит 4 м стальной водогазопроводной трубы Ду32.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Строка также содержит спорную марку BSD2120; правильное каталожное исполнение здесь не устанавливается."
+        },
+        {
+          "claim": "Две строки журнала содержат по 5 м водогазопроводной трубы.",
+          "verdict": "supported_ordered_routing_breakdown_with_limits",
+          "limits": "Вмб.1-1: лоток/гофра/водогазопроводная труба и 35/5/5 при общей длине45. СУК2-2: два лотка/гофра/водогазопроводная труба и 90/110/5/5 при общей длине210. Буквальная Вмб.1 сохранена, не исправлена на Вм6.1. Соответствие частей принято по порядку перечисления; фактическая укладка не проверена."
+        },
+        {
+          "claim": "Один участок 5 м превышает строку СО4 м.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "5>4. Однако журнал не задаёт здесь Ду32: принадлежность участков именно этой закупочной позиции, физическая длина общей трубы и границы смежной поставки не установлены."
+        },
+        {
+          "claim": "Доказана нехватка трубы минимум 1 м либо суммарно 6 м.",
+          "verdict": "not_established_material_identity_and_shared_route",
+          "limits": "Нельзя суммировать длины кабелей как отдельные трубы при совместной прокладке. Даже аргумент одного участка требует связи способа прокладки с физической длиной и закупочной позицией."
+        },
+        {
+          "claim": "Нужно сверить физические маршруты и количество трубы с учётом совместной прокладки.",
+          "verdict": "supported_scoped_material_balance_question",
+          "limits": "Сохранить адресные записи и вопрос баланса, без автоматического увеличения закупки или назначения диаметра."
+        }
+      ],
+      "unsupported_additions": "Не считать кабельные длины измерением физической трубы; не подставлять Ду32 в строки без диаметра. Заголовок о всём объёме сильнее доказанной границы одной позиции СО.",
+      "novel_useful_content": "Две конкретные строки и позиция СО подтверждены; полезен вопрос о соответствии трасс и закупочной позиции, но техническая недопоставка не установлена.",
+      "duplicate_burden": "Один вопрос баланса материала с двумя адресами, не два доказанных дефекта и не суммарные 10 м отдельных труб.",
+      "profile_and_section": "questions_clarifications_material_balance_identity_pending",
+      "engineer_reuse": "No new engineer decision; independently checked authoritative TEXT.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT",
+          "block_id": "blk_1a998befeb274900bd8048e09752beba",
+          "quote": "| Вмб.1-1 | ШАУВ-З-К6ПЧ | PDS3 | КСПВПГнг(А)-HF | 1x2x0,75 | 45 | лоток 100х100, труба гофр., труба водогазопроводная | КСПВПГнг(А)-HF 1x2x0,75 | 35/5/5 |  |"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT",
+          "block_id": "blk_7b41b193ccad4f559ba654a2248576d5",
+          "quote": "| СУК2-2 | СУ-К32 | КК1-СКЗ | КСПВПнг(А)-НФ | 1x2x0,75 | 210 | лоток 100х100, лоток 200х100, труба гофр., труба водогазопроводн ая | КСПВПнг(А)-НФ 1x2x0,75 | 90/110/5 /5 |  |"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT",
+          "block_id": "blk_f4bf6dec4072413fa43043bf27d880eb",
+          "quote": "| 22.13 | Труба стальная водогазопроводная Ду-32 | BSD2120 |  | ГОСТ 3262-75 | м | 4 |  |  |"
+        }
+      ],
+      "disposition": "assessed_r2_pipe_balance_question_identity_unresolved"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
