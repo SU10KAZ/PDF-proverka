@@ -8,10 +8,10 @@ OUT=Path(__file__).parent
 # Explicit evidence mappings only. Unmapped controls are review work, not proof
 # that no evidence exists anywhere in the historical research corpus.
 EVIDENCE={
- ('H05','positive_controls',1):('partial_GVS_conflict_reported_pipe_and_pump_scope_pending',['ITP_T411_output_replay.json','ITP_gvs_graphic_window_assessment.json','ITP_pipe_graphic_window_assessment.json']),
+ ('H05','positive_controls',1):('partial_GVS_conflict_reported_pipe_and_pump_scope_pending',['ITP_GVS_combined_output_replay.json','ITP_GVS_circulation_output_replay.json','ITP_gvs_graphic_window_assessment.json','ITP_pipe_graphic_window_assessment.json']),
  ('H06','negative_controls_and_limits',1):('bounded_inventory_identity_control',['ITP_pipe_distinct_materials_assessment.json','ITP_pipe_inv_008_validated.json']),
  ('H06','positive_controls',1):('partial_control_pending_applicability_question_admission',['EOM_manufacturer_applicability_assessment.json','EOM_manufacturer_applicability_result.json']),
- ('H01','positive_controls',1):('partial_control_pending_F032_profile',['EOM_F001_question_output_replay.json','EOM_F030_question_output_replay.json','EOM_F032_output_replay.json','EOM_classic_profile_remaining.json']),
+ ('H01','positive_controls',1):('bounded_facts_recorded_F032_routing_disputed',['EOM_F001_question_output_replay.json','EOM_F030_question_output_replay.json','EOM_F032_output_replay.json','EOM_F032_profile_disagreement.json','benchmark_errata.json']),
  ('H06','negative_controls_and_limits',0):('bounded_control_recorded',['EOM_shunt_identity_negative_pair.json','EOM_manufacturer_applicability_assessment.json']),
  ('H03','positive_controls',1):('partial_instance_identity_question_preserved',['EOM_instance_question_output_replay.json','EOM_instance_followup2_validated.json']),
  ('H03','negative_controls_and_limits',1):('explicit_evidence_limit',['EOM_instance_question_output_replay.json']),
@@ -35,7 +35,7 @@ EVIDENCE={
  ('H02','negative_controls_and_limits',1):('bounded_control_recorded',['KM_node_navigation_summary.json']),
  ('H03','positive_controls',0):('bounded_control_recorded',['AK_systemic_output_replay.json','AK_terminal_graphic_assessment.json','AK_cabinet_001_operation_v4_validated.json']),
  ('H03','positive_controls',2):('bounded_control_recorded',['AR_unlabelled_inventory_v2_assessment.json','AR_region_operation_status.json','AR_region05_context2_validated.json']),
- ('H04','positive_controls',0):('partial_control_pending_grouping_and_semantic_caveats',['EOM_reviewed_cable_output_replay.json','EOM_line_address_assessment.json','EOM_source_workflow_progress.json','EOM_classic_grouping_replay.json','EOM_model_grouped_output_replay.json']),
+ ('H04','positive_controls',0):('partial_control_pending_grouping_and_semantic_caveats',['EOM_reviewed_cable_output_replay.json','EOM_line_address_assessment.json','EOM_source_workflow_progress.json','EOM_classic_grouping_replay.json','EOM_model_grouped_output_replay.json','EOM_grouping_phase_replay.json']),
  ('H04','positive_controls',2):('partial_control_pending_quantity_question',['KM_quantity_provenance_assessment.json','KM_LK6_repeated_instances_source_review.json']),
  ('H04','negative_controls_and_limits',2):('bounded_control_recorded',['KM_LK6_quantity_assessment.json','KM_quantity_provenance_assessment.json','KM_quantity_provenance_validated.json']),
  ('H04','positive_controls',1):('bounded_control_recorded',['EOM_model_extracted_balance_control.json','EOM_model_extracted_balance_claude_control.json']),

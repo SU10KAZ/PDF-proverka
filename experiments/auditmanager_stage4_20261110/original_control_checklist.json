@@ -26,7 +26,7 @@
       "hypothesis": "H01",
       "kind": "positive_controls",
       "original_control": "ЭОМ F001/F030/F032: сохранить релевантные источники и уточнённый смысл эталонного вопроса.",
-      "evidence_state": "partial_control_pending_F032_profile",
+      "evidence_state": "bounded_facts_recorded_F032_routing_disputed",
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F001_question_output_replay.json",
@@ -41,8 +41,12 @@
           "sha256": "d5063f39edd4db71c21ff006e5f20d3c74bf317be2a06c4a18122e834a52b1a7"
         },
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_classic_profile_remaining.json",
-          "sha256": "3cecfd17b5ef682edf134edc6c328e1353dee207bc795efb987f692f017ad04c"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_F032_profile_disagreement.json",
+          "sha256": "371ed514ef02e39af40324d3cc6037d2db83166cea033155917855088fe50af3"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
+          "sha256": "76320005c258aac4d64eba8fb5cd8e4f8df50843ba98b205586bb8979c73fa33"
         }
       ],
       "full_acceptance_proven": false
@@ -287,6 +291,10 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_model_grouped_output_replay.json",
           "sha256": "58893fd508c35bec348bb4b56b3542de6fc52350359e7a12019c33411fa7d637"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/EOM_grouping_phase_replay.json",
+          "sha256": "feac95abd09872c9e38d447eba0776d7c859367b6b21afd4a60670ac457e554f"
         }
       ],
       "full_acceptance_proven": false
@@ -403,8 +411,12 @@
       "evidence_state": "partial_GVS_conflict_reported_pipe_and_pump_scope_pending",
       "evidence": [
         {
-          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_T411_output_replay.json",
-          "sha256": "11dbf801501c361035f2db1438565deb802ca17a7bc604ee6e2b33a83b03f7cc"
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_GVS_combined_output_replay.json",
+          "sha256": "c5aad32971d83fd8c6f3e6c102f86fb96a2800e55b1048d2f401454be5a023e8"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_GVS_circulation_output_replay.json",
+          "sha256": "97acc69d9d197de0834fc243a0b3caffacd928d830bdfea5669571bb17ae51a4"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/ITP_gvs_graphic_window_assessment.json",
@@ -448,7 +460,7 @@
       "evidence": [
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/benchmark_errata.json",
-          "sha256": "9ea0f95a566037b7c4deb7eea75b109cbfb0c6df7f54a247da35c55a09880df5"
+          "sha256": "76320005c258aac4d64eba8fb5cd8e4f8df50843ba98b205586bb8979c73fa33"
         },
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_adjacent_flights_validated.json",
@@ -660,13 +672,13 @@
   ],
   "counts": {
     "bounded_control_recorded": 22,
+    "bounded_facts_recorded_F032_routing_disputed": 1,
     "bounded_inventory_identity_control": 1,
     "bounded_known_candidate_control": 1,
     "disputed_requires_readjudication": 1,
     "explicit_evidence_limit": 3,
     "local_contract_verified": 2,
     "partial_GVS_conflict_reported_pipe_and_pump_scope_pending": 1,
-    "partial_control_pending_F032_profile": 1,
     "partial_control_pending_applicability_question_admission": 1,
     "partial_control_pending_grouping_and_semantic_caveats": 1,
     "partial_control_pending_quantity_question": 1,
