@@ -1,0 +1,311 @@
+{
+  "status": "VK_repeat2_all28_rows_assessed_not_all_claims_resolved",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "d17308b2864515e7b36cc876ccb4562c368e519e1a812679348a2c75bd92f19e",
+  "queue_after_sha256": "419ecc9ff5f5b839f1a77de9fca86b2792388eac0bd74252d5340848cfdb54d7",
+  "reviewed_rows": [
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Бытовая канализация",
+        "sheet": "Листы 2, 19, 20",
+        "page": [
+          4,
+          21,
+          22
+        ],
+        "problem": "Периодичность установки ревизий в общих указаниях и примечаниях к схемам не согласована.",
+        "description": "Общие указания требуют ревизии на первом и последнем жилых этажах и далее не реже чем через каждые три этажа. Примечания к схемам назначают их на 2, 6 и 10-м этажах. Интервал составляет четыре этажа, или 13,44 м по приведённым отметкам.",
+        "norm": "СП 30.13330.2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 30.13330.2020",
+            "cited_designation": "СП 30.13330.2020",
+            "candidate_relevance": 0.95,
+            "reason": "Найти требования к размещению ревизий на канализационных стояках многоэтажных жилых зданий.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002"
+                ],
+                "designation_source": "Перечень нормативных документов проекта и предмет замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить единый перечень этажей с ревизиями по применимому нормативному требованию и согласовать общие указания, схемы и спецификацию.",
+        "risk": "Увеличение расстояния между ревизиями может затруднить прочистку стояков и увеличить объём вскрытия отделки при засорах.",
+        "source_finding_ids": [
+          "T-002"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_0322283990a44921bed00f2feff715a4",
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 80,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "VK_F001_revision_interval:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Общие указания: первый и последний жилые этажи, далее не реже чем через каждые три этажа; примечания: 2,6,10.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Внутреннее противоречие установлено по разности номеров 4.",
+          "verdict": "not_proven_ambiguous_interval",
+          "limits": "Между 2 и 6 этажами 3,4,5 — три промежуточных; между 6 и 10 — 7,8,9. Арифметика разности номеров не устанавливает смысл слова «через» и нарушение нормы."
+        },
+        {
+          "claim": "Нужно согласовать смысл интервала и крайние жилые этажи.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не предписывать автоматически дополнительные этажи ревизий. Полный подсчёт каждого стояка и крайние жилые этажи не установлены."
+        },
+        {
+          "claim": "Недостаточный доступ для прочистки и задержка устранения засоров.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат в исходной выдаче.",
+          "verdict": "not_verified_applicable_norm",
+          "limits": "Не засчитывать нормативное нарушение без подтверждённого применимого требования."
+        },
+        {
+          "claim": "Высотный интервал13,44м доказывает нарушение периодичности ревизий.",
+          "verdict": "not_established",
+          "limits": "Привязка обеих пар уровней и точный нормативный смысл не проверены;разность отметок сама по себе не определяет смысл «через три этажа». Между2и6 три промежуточных этажа."
+        }
+      ],
+      "unsupported_additions": "Категоричное противоречие периодичности не доказано арифметикой номеров;13,44м не подтверждает нормативный предел.",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "no_equivalent_same_object_claim_identified_in_reviewed_VK_output_text",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_686c23c287f1430199897dff70be0878",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_0322283990a44921bed00f2feff715a4",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_74e342545e414fabb6f8d2edcd21d591",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/VK_F001_revision_interval.json",
+          "sha256": "79bc3fdfe1e64b0c5c7a6f7cb2b6343303ffa8549cb671f94ae6c06e33872e03",
+          "primary_adjudication": null,
+          "limits": "Подтверждены обе текстовые формулировки и арифметика, но выражение «через три этажа» нельзя без проверки применимого требования механически заменить запретом интервала4 по номерам этажей. Конкретный нормативный пункт не проверен, поэтому нарушение нормы не установлено. На просмотренной схеме К1-3.2 подтверждены три группы ревизий; полный подсчёт каждого стояка и классификация последнего жилого этажа здесь не выполнены. Не предписывать автоматически добавление ревизий на3,5,8 или иных этажах. Высотная привязка ревизий рассматривается отдельно вF021.",
+          "wording": "Согласовать правило размещения ревизий: общие указания требуют первый и последний жилые этажи и далее «не реже, чем через каждые три этажа», а примечания листов19 и20 перечисляют2,6,10-й этажи. Разность номеров соседних указанных этажей равна4; между ними по3 промежуточных этажа. Уточнить принятый смысл интервала и соответствие первого/последнего жилого этажа конкретному размещению."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_checked",
+          "finding_id": "F-002"
+        }
+      ],
+      "disposition": "assessed_r2_revision_interval_ambiguity_preserved"
+    },
+    {
+      "discipline": "VK",
+      "repeat": 2,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Материалы",
+        "sheet": "Листы 2, 02, 04",
+        "page": [
+          4,
+          31,
+          33
+        ],
+        "problem": "Требуется проверить основание замечания к нормативному обозначению полипропиленовых труб К1 и К2.1.",
+        "description": "В общих указаниях и спецификации полипропиленовые трубы обозначены по ГОСТ 32414-2013. Исходный текстовый анализ считает этот стандарт относящимся к непластифицированному поливинилхлориду, однако области применения двух названных стандартов в таком утверждении переставлены: ГОСТ 32414-2013 относится к полипропилену, ГОСТ 32412-2013 — к непластифицированному поливинилхлориду. Поэтому несоответствие проектной ссылки материалу не установлено. Требуется проверить соответствие конкретных изделий выбранному стандарту и документации изготовителя.",
+        "norm": "ГОСТ 32414-2013 (норматив-кандидат), кандидат п. 1; ГОСТ 32412-2013 (норматив-кандидат), кандидат п. 1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 32414-2013",
+            "cited_designation": "ГОСТ 32414-2013",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить область применения стандарта к указанным полипропиленовым трубам внутренней канализации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 32412-2013",
+            "cited_designation": "ГОСТ 32412-2013",
+            "candidate_relevance": 0.5,
+            "reason": "Проверить область применения для устранения смешения требований к полипропилену и непластифицированному поливинилхлориду в исходном замечании.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Проверить названия и области применения стандартов, затем сопоставить обозначение труб с паспортом изготовителя. Не заменять ГОСТ 32414-2013 на ГОСТ 32412-2013 только на основании исходного замечания.",
+        "risk": "Необоснованная замена стандарта может внести ошибку в требования к закупаемым полипропиленовым изделиям.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_686c23c287f1430199897dff70be0878",
+          "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "blk_d01ac56c817044c4a525d02e3251ba0e",
+          "blk_e6ea1f0742914463bbf7ce02d97c5afa"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 54,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "ГОСТ32414-2013 относится кПП,32412-2013 кНПВХ.",
+          "verdict": "confirmed_official_catalog_scope",
+          "limits": "Материал и семейство применения;не сертификация конкретного изделия."
+        },
+        {
+          "claim": "Проектная ссылка32414не соответствует полипропилену.",
+          "verdict": "refuted_original_detector_claim",
+          "limits": "Само итоговое описание признаёт ошибку исходного анализа. Основания замены на32412нет."
+        },
+        {
+          "claim": "После опровержения нужен самостоятельный вопрос инженеру о паспортах.",
+          "verdict": "unsupported_residual_review_burden",
+          "limits": "В строке нет независимого несоответствия конкретного изделия. Общая возможность проверки не равна полезной находке."
+        },
+        {
+          "claim": "Строка является эксплуатационным дефектом проекта.",
+          "verdict": "not_established_output_classification_mismatch",
+          "limits": "Содержание — исправление ошибки аудитора. Сохранить в журнале снятия,не выпускать как дефект."
+        }
+      ],
+      "unsupported_additions": "Общий запрос паспортов не обоснован самостоятельным проектным расхождением.",
+      "novel_useful_content": "Полезна внутренняя коррекция ложного тезиса,но новая находка в проекте не установлена.",
+      "duplicate_burden": "Лишняя строка оценки ошибки аудита увеличивает нагрузку без нового проектного тезиса.",
+      "profile_and_section": "internal_rejection_log_not_engineer_issue_without_independent_basis",
+      "engineer_reuse": "Решение инженера не требуется для подтверждения того,что сама строка не устанавливает проектный дефект.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_686c23c287f1430199897dff70be0878",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/vk_r2_classic/classic_control/inputs/VK/versions/v001/02_work/document.md",
+          "sha256": "8f6592f45da50f9cbe1206a14e131e8df001b088efc4c2259576f3ef22ba0b7a",
+          "block_id": "blk_c64786c6b8ed4532a0ff7c797c3f335b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/af5fc85b-5026-47e0-bbb7-55540922f67c",
+          "route": "official_catalog_search_result",
+          "checked": "2026-11-11",
+          "fact": "32414-2013:трубы и фасонные части из полипропилена для внутренней канализации.",
+          "limits": "Область материала;паспорт конкретного изделия не проверен."
+        },
+        {
+          "url": "https://protect.gost.ru/gost/details/65f32f52-1422-4e4e-aad9-95afa561ed5e",
+          "route": "official_catalog_search_result",
+          "checked": "2026-11-11",
+          "fact": "32412-2013:трубы и фасонные части из непластифицированного поливинилхлорида для внутренней канализации.",
+          "limits": "Область материала;паспорт конкретного изделия не проверен."
+        }
+      ],
+      "disposition": "assessed_r2_refuted_detector_claim_should_not_be_reissued_as_generic_question"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
