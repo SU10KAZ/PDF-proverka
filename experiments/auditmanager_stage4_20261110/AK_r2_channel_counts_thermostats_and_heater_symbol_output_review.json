@@ -1,0 +1,1035 @@
+{
+  "status": "five_AK_channel_symbol_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "836003105b217807600ceded2639bf39210216b8e93ea4ff5d82bed09787a3bf",
+  "queue_after_sha256": "453fc365c249fcb4b08a248d6f935af3b6b3b503c27e418293d0fbeaad333988",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-047",
+      "finding": {
+        "id": "F-047",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Матрица сигналов",
+        "sheet": "Лист 14",
+        "page": 18,
+        "problem": "Не показан аналоговый выход задания скорости П5.1.1.",
+        "description": "Для ПЧ заявлено управление 0–100%, но в столбце 10 отсутствует AO. Итог AO=2 включает только клапан теплоносителя и ПЧ системы П5.1.3.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Указать канал задания скорости П5.1.1 и согласовать количество выходов с принятой схемой управления.",
+        "risk": "Отсутствие возможности регулировать скорость вентилятора.",
+        "source_finding_ids": [
+          "G-026"
+        ],
+        "source_block_ids": [
+          "blk_07ee87d0cd9b46359b3c2b177440fe89"
+        ],
+        "related_block_ids": [
+          "blk_07ee87d0cd9b46359b3c2b177440fe89"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+            "page": 18
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-026",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Лист14: AO=2; точки AO в7 (клапан) и18 (ПЧП5.1.3), отсутствуют в10 (ПЧП5.1.1), где имеются DI/DO.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Колонки10 и18 обе содержат управление ПЧ пуск/стоп,0–100%; перечень включает два преобразователя.",
+          "verdict": "confirmed_TEXT_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Итог AO противоречит количеству реально нарисованных точек.",
+          "verdict": "refuted_for_this_matrix",
+          "limits": "Итог2 совпадает с двумя точками; конфликт между заявленной функцией колонки10 и показанными каналами."
+        },
+        {
+          "claim": "Уточнить канал задания скорости П5.1.1 и согласовать матрицу с выбранным способом управления.",
+          "verdict": "supported_function_to_channel_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Невозможно реализовать регулирование скорости или обязательно не хватает одного модуля AO.",
+          "verdict": "not_established",
+          "limits": "CAN к другому шкафу виден, но не доказывает управление этим ПЧ по сети. Полная схема, интерфейсная привязка и модули не проверены; не объявлять ни наличие альтернативы, ни её невозможность."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ21.408-2013.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; конкретный пункт не проверен."
+        },
+        {
+          "claim": "Второй повтор считает сам итог AO=2 арифметически ошибочным.",
+          "verdict": "not_asserted_in_r2",
+          "limits": "Строка правильно локализует вопрос в отсутствии AO столбца 10 при заявленной функции 0–100%, а не в сумме двух нарисованных точек. Альтернативный интерфейс управления этим ПЧ не установлен."
+        }
+      ],
+      "unsupported_additions": "Матрица сигналов не устанавливает фактический состав модулей. Различающиеся символы нельзя считать одинаковыми по общему силуэту; номер термостата не равен числу приборов. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Сопоставлены текущие строки с прежними адресными проверками идентичных источников; для F-058 зафиксирован повтор опровергнутого графического основания.",
+      "duplicate_burden": "One missing depicted command route for P5.1.1; AO total2 is arithmetically correct for drawn dots.",
+      "profile_and_section": "technical_function_channel_mapping_no_proven_hardware_shortage",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8b4eb72d9e84ebe9aa166bbb7ed401d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_07ee87d0cd9b46359b3c2b177440fe89.png",
+          "sha256": "7f546ceee823f8f142d6a9effc8c6184a713faa407d8f2145bf31a66fae73644",
+          "block_id": "blk_07ee87d0cd9b46359b3c2b177440fe89",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "AO points7/18 only; column10 UZ1 DI/DO but no AO, despite0–100% caption; CAN ends at another cabinet."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-045",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-047_signal_counts_and_graphic_identity"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-053",
+      "finding": {
+        "id": "F-053",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Обозначения приборов защиты",
+        "sheet": "Листы 16, 17",
+        "page": [
+          20,
+          21
+        ],
+        "problem": "Термостаты Пу5.1 и По5.1 обозначены по-разному в функциональных схемах и перечнях.",
+        "description": "Для каждой из двух систем термостат защиты электронагревателя показан как TS2, тогда как перечень и кабельный журнал используют ТС1. Расходится позиционный номер, а не только написание букв.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Для каждого термостата установить единое обозначение в функциональной схеме, перечне и кабельном журнале.",
+        "risk": "Ошибки подключения и идентификации приборов защиты.",
+        "source_finding_ids": [
+          "G-033",
+          "G-034",
+          "G-039",
+          "G-040"
+        ],
+        "source_block_ids": [
+          "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "blk_66980560083f4bb483d5ce1f9c8156e2"
+        ],
+        "related_block_ids": [
+          "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "blk_a2c817786b3a459fb5fa2667d9492450",
+          "blk_065a335469904b2db1640b480b321503"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+            "page": 20
+          },
+          {
+            "type": "text",
+            "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+            "page": 21
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-033",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-039",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-040",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение обозначений термостата Пу5.1: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение обозначений термостата Пу5.1: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковое расхождение обозначений термостата: TS2 на функциональной схеме и ТС1 в перечне приборов и кабельном журнале.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F044_heater_thermostat_identity:430b26218a3577dd43b9",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F044_heater_thermostat_identity:0f7b48b5e8c8cea701d6",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Пу5.1 иПо5.1: на функциональных схемахTS2, в перечняхТС1, вКЖ Пу5.1-2/По5.1-2 конечное устройствоТС1.",
+          "verdict": "confirmed_authoritative_TEXT_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "В обоих перечнях термостат количеством1 входит в комплект электронагревателя.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать позиционное обозначение защиты от перегрева между документами.",
+          "verdict": "supported_technical_identity_conflict",
+          "limits": "Разница1/2 не устраняется нормализацией кириллицы/латиницы."
+        },
+        {
+          "claim": "Отсутствует второй термостат, нужно добавить прибор или переподключить защиту.",
+          "verdict": "not_established",
+          "limits": "Фактическое подключение, паспорт и заводская схема не проверены. Номер2 не доказывает два физических прибора."
+        },
+        {
+          "claim": "Замечание полностью покрывает исторический состав дляПо5.1.",
+          "verdict": "partial_scope",
+          "limits": "Текущая выдача не упоминаетTS1 внешней схемы; найденный нами дополнительный контекст не добавляется к полноте исходной выдачи."
+        },
+        {
+          "claim": "Подтверждено конкретное нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Кандидат нормы без проверки пункта не считается доказательством."
+        },
+        {
+          "claim": "Расхождение TS2/ТС1 устраняется нормализацией алфавита.",
+          "verdict": "refuted_number_difference_remains",
+          "limits": "После нормализации букв остаются разные номера 2 и 1. Текущая выдача явно сохраняет эту причину; не добавляет отсутствующий в ней контекст внешней схемы."
+        }
+      ],
+      "unsupported_additions": "Матрица сигналов не устанавливает фактический состав модулей. Различающиеся символы нельзя считать одинаковыми по общему силуэту; номер термостата не равен числу приборов. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Сопоставлены текущие строки с прежними адресными проверками идентичных источников; для F-058 зафиксирован повтор опровергнутого графического основания.",
+      "duplicate_burden": "Two addressed systems under one identity theme; no duplicate missing-device claim. Leaf16 metadata issue remains separate.",
+      "profile_and_section": "technical_identity_no_missing_hardware",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_e8bf19ac20234427aa1d48bfcac87193",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_1bbcbe84761b4011af6e39b8fbbc3f3f",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5d9307558672478196f75e1763b09764",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_c63456cda51644db9470fb57f29b27de",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены два документальных расхождения, а не два отсутствующих термостата. Каждый перечень предусматривает один термостат комплектно с электронагревателем.",
+            "Разница номера1/2 не сводится к кириллице/латинице, но одинаковая функция позволяет предполагать разные обозначения одного прибора; наличие второго физического прибора не доказано.",
+            "Фактическое неправильное подключение или отказ защиты не установлены. Не требовать добавления термостата или перекоммутации только по подписи.",
+            "Внешняя схема Пу5.1 здесь не проверена. Название листа16 в метаданных расходится с графикой; этот самостоятельный вопрос сохранён вF034. Систему определяли по обозначениям графики и заголовкуКЖ.",
+            "Решение инженера и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать позиционные обозначения термостатов защиты от перегрева Пу5.1 и По5.1: функциональные схемы показываютTS2, перечни и строкиКЖ Пу5.1-2/По5.1-2 —ТС1. Для По5.1 внешняя схема также показываетTS1. Установить единое обозначение в связанных документах."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F044_heater_thermostat_identity.json",
+          "sha256": "eb7719461a0a7f54e56e82a4d55015314ff789b4d2b38125f8001d99903773dd",
+          "primary_adjudication": null,
+          "limits": [
+            "Подтверждены два документальных расхождения, а не два отсутствующих термостата. Каждый перечень предусматривает один термостат комплектно с электронагревателем.",
+            "Разница номера1/2 не сводится к кириллице/латинице, но одинаковая функция позволяет предполагать разные обозначения одного прибора; наличие второго физического прибора не доказано.",
+            "Фактическое неправильное подключение или отказ защиты не установлены. Не требовать добавления термостата или перекоммутации только по подписи.",
+            "Внешняя схема Пу5.1 здесь не проверена. Название листа16 в метаданных расходится с графикой; этот самостоятельный вопрос сохранён вF034. Систему определяли по обозначениям графики и заголовкуКЖ.",
+            "Решение инженера и конкретное нормативное нарушение не установлены."
+          ],
+          "wording": "Согласовать позиционные обозначения термостатов защиты от перегрева Пу5.1 и По5.1: функциональные схемы показываютTS2, перечни и строкиКЖ Пу5.1-2/По5.1-2 —ТС1. Для По5.1 внешняя схема также показываетTS1. Установить единое обозначение в связанных документах."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_6995cff7e34a4a41b99ec565101c4e02.png",
+          "sha256": "c974501f21457513014876c61c4c3237bd4005cc02b7bf499d968c5cae3f1609",
+          "block_id": "blk_6995cff7e34a4a41b99ec565101c4e02",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Pu5.1 TS2 at electric heater, overheat signal3, SHAUV-5-K5PCh. System identified from graphic, not conflicting stamp metadata."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_66980560083f4bb483d5ce1f9c8156e2.png",
+          "sha256": "dabee90e19aaa31be7c58c1521a95a878bacbb4d195f4173824eddcca53e435c",
+          "block_id": "blk_66980560083f4bb483d5ce1f9c8156e2",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Po5.1 TS2 at electric heater, overheat signal6, SHAUV-6-K5PCh."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-047",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-053_signal_counts_and_graphic_identity"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-054",
+      "finding": {
+        "id": "F-054",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Количество каналов",
+        "sheet": "Лист 18",
+        "page": 22,
+        "problem": "Итог DO шкафа ШАУВ-1-К5АС не соответствует матрице.",
+        "description": "Указано DO=10, но отмечено 11 дискретных выходов.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать итог DO с подключениями и составом модулей шкафа.",
+        "risk": "Недостаток выходных каналов при изготовлении шкафа.",
+        "source_finding_ids": [
+          "G-042"
+        ],
+        "source_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "related_block_ids": [
+          "blk_560cb89105bd46158749d4d59c9e52f9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+            "page": 22
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-042",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Лист18 DO: колонки2,6,9,12,14,16,17,19,21,23,27 —11 точек против итога10.",
+          "verdict": "confirmed_direct_GRAPHIC_count",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Согласовать итоги с матрицами и проверить состав каналов шкафа.",
+          "verdict": "supported_internal_count_conflict",
+          "limits": "11/12/6 — числа показанных точек, не паспортная вместимость конкретных модулей."
+        },
+        {
+          "claim": "При изготовлении обязательно не хватит каналов.",
+          "verdict": "not_established",
+          "limits": "Состав и резерв модулей, заводские схемы и фактическая комплектация не исследованы."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ21.408-2013.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; конкретный пункт не проверен."
+        },
+        {
+          "claim": "Эта строка покрывает также итоги DI/DO ШАУВ-3-К6ПЧ.",
+          "verdict": "not_asserted_separate_r2_row",
+          "limits": "F-054 относится только к DO шкафа ШАУВ-1-К5АС; другая часть прежней составной строки вынесена в F-057."
+        }
+      ],
+      "unsupported_additions": "Матрица сигналов не устанавливает фактический состав модулей. Различающиеся символы нельзя считать одинаковыми по общему силуэту; номер термостата не равен числу приборов. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Сопоставлены текущие строки с прежними адресными проверками идентичных источников; для F-058 зафиксирован повтор опровергнутого графического основания.",
+      "duplicate_burden": "Один итог DO 10 против 11 точек; не приписывать этой строке DI/DO другого шкафа.",
+      "profile_and_section": "technical_document_counts_no_proven_installed_shortage",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08",
+          "primary_adjudication": null,
+          "limits": [
+            "Подсчитаны точки функциональной матрицы, не аппаратные каналы установленного контроллера. Состав модулей, резервы и внутренние схемы шкафа не проверены.",
+            "F048 правильно обнаружил несогласованность, но неверно ограничил полный подсчёт DI числом11: это только нумерованные колонки без входа АПС. Не следует снимать полезный факт целиком из-за этой ошибки.",
+            "Раздельные точки управления основным и резервным вентиляторами посчитаны отдельно. Попеременная работа сама по себе не доказывает общий аппаратный выход; аппаратная реализация не установлена.",
+            "Три записи относятся к одной матрице и не являются тремя независимыми дефектами. Решение инженера по этим blind-кандидатам не установлено."
+          ],
+          "wording": "Лист21, шкаф ШАУВ-3-К6ПЧ: согласовать итоговые количества дискретных сигналов с матрицей. В строке DI отмечены12 подключений, включая Пожар от АПС, при итоге10; в строке DO —6 при итоге5. Проверить назначение каналов и исправить несогласованность итогов."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08",
+          "primary_adjudication": null,
+          "limits": [
+            "Подсчитаны точки функциональной матрицы, не аппаратные каналы установленного контроллера. Состав модулей, резервы и внутренние схемы шкафа не проверены.",
+            "F048 правильно обнаружил несогласованность, но неверно ограничил полный подсчёт DI числом11: это только нумерованные колонки без входа АПС. Не следует снимать полезный факт целиком из-за этой ошибки.",
+            "Раздельные точки управления основным и резервным вентиляторами посчитаны отдельно. Попеременная работа сама по себе не доказывает общий аппаратный выход; аппаратная реализация не установлена.",
+            "Три записи относятся к одной матрице и не являются тремя независимыми дефектами. Решение инженера по этим blind-кандидатам не установлено."
+          ],
+          "wording": "Лист21, шкаф ШАУВ-3-К6ПЧ: согласовать итоговые количества дискретных сигналов с матрицей. В строке DI отмечены12 подключений, включая Пожар от АПС, при итоге10; в строке DO —6 при итоге5. Проверить назначение каналов и исправить несогласованность итогов."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet18 SHAUV-1-K5AS DO row11 connection dots, printed total10. Six damper controls, pump, four drives."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+          "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+          "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet21 SHAUV-3-K6PCh DI12 dots including fire, printed10; DO6 dots, printed5."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-048",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-054_signal_counts_and_graphic_identity"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-057",
+      "finding": {
+        "id": "F-057",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Количество каналов",
+        "sheet": "Лист 21",
+        "page": 25,
+        "problem": "Итоги DI и DO шкафа ШАУВ-3-К6ПЧ занижены.",
+        "description": "В матрице Пкр6.1/Вм6.1 указаны DI=10 и DO=5; по отмеченным подключениям получаются DI=12 и DO=6.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать итоговые значения с 12 входами и 6 выходами и проверить состав модулей шкафа.",
+        "risk": "Недостаток каналов для предусмотренных функций автоматики.",
+        "source_finding_ids": [
+          "G-051",
+          "G-052"
+        ],
+        "source_block_ids": [
+          "blk_7785cb8293734c16b18fc1aff53c761f"
+        ],
+        "related_block_ids": [
+          "blk_7785cb8293734c16b18fc1aff53c761f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+            "page": 25
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-051",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-052",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одно расхождение: для ШАУВ-3-К6ПЧ указано DI=10 и DO=5, тогда как по подключениям подсчитано DI=12 и DO=6.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают одно расхождение: для ШАУВ-3-К6ПЧ указано DI=10 и DO=5, тогда как по подключениям подсчитано DI=12 и DO=6.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F047_F048_F049_signal_matrix:235a28dfd26b069c253f",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F047_F048_F049_signal_matrix:b99bbab317d80b1a424c",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лист21 DI:3,4,5,6,8,10,11,12,15,16,17 и пожар —12 точек против10.",
+          "verdict": "confirmed_direct_GRAPHIC_count",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Лист21 DO:2,8,10,11,14,16 —6 точек против5.",
+          "verdict": "confirmed_direct_GRAPHIC_count",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Согласовать итоги с матрицами и проверить состав каналов шкафа.",
+          "verdict": "supported_internal_count_conflict",
+          "limits": "11/12/6 — числа показанных точек, не паспортная вместимость конкретных модулей."
+        },
+        {
+          "claim": "При изготовлении обязательно не хватит каналов.",
+          "verdict": "not_established",
+          "limits": "Состав и резерв модулей, заводские схемы и фактическая комплектация не исследованы."
+        },
+        {
+          "claim": "Подтверждено нарушение ГОСТ21.408-2013.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; конкретный пункт не проверен."
+        },
+        {
+          "claim": "Эта строка покрывает итог DO=10/11 ШАУВ-1-К5АС.",
+          "verdict": "not_asserted_separate_r2_row",
+          "limits": "F-057 относится только к ШАУВ-3-К6ПЧ: DI 10/12 и DO 5/6. Иная система учтена в F-054."
+        }
+      ],
+      "unsupported_additions": "Матрица сигналов не устанавливает фактический состав модулей. Различающиеся символы нельзя считать одинаковыми по общему силуэту; номер термостата не равен числу приборов. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Сопоставлены текущие строки с прежними адресными проверками идентичных источников; для F-058 зафиксирован повтор опровергнутого графического основания.",
+      "duplicate_burden": "Два итога одной матрицы допускают одну строку; не считать разделение прежней строки приростом обнаружения.",
+      "profile_and_section": "technical_document_counts_no_proven_installed_shortage",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08",
+          "primary_adjudication": null,
+          "limits": [
+            "Подсчитаны точки функциональной матрицы, не аппаратные каналы установленного контроллера. Состав модулей, резервы и внутренние схемы шкафа не проверены.",
+            "F048 правильно обнаружил несогласованность, но неверно ограничил полный подсчёт DI числом11: это только нумерованные колонки без входа АПС. Не следует снимать полезный факт целиком из-за этой ошибки.",
+            "Раздельные точки управления основным и резервным вентиляторами посчитаны отдельно. Попеременная работа сама по себе не доказывает общий аппаратный выход; аппаратная реализация не установлена.",
+            "Три записи относятся к одной матрице и не являются тремя независимыми дефектами. Решение инженера по этим blind-кандидатам не установлено."
+          ],
+          "wording": "Лист21, шкаф ШАУВ-3-К6ПЧ: согласовать итоговые количества дискретных сигналов с матрицей. В строке DI отмечены12 подключений, включая Пожар от АПС, при итоге10; в строке DO —6 при итоге5. Проверить назначение каналов и исправить несогласованность итогов."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F047_F048_F049_signal_matrix.json",
+          "sha256": "e8d9e1fa3bf83dbc982a8e7ba0e83408c8c33e1b55d30a1e9faa287f1a0cde08",
+          "primary_adjudication": null,
+          "limits": [
+            "Подсчитаны точки функциональной матрицы, не аппаратные каналы установленного контроллера. Состав модулей, резервы и внутренние схемы шкафа не проверены.",
+            "F048 правильно обнаружил несогласованность, но неверно ограничил полный подсчёт DI числом11: это только нумерованные колонки без входа АПС. Не следует снимать полезный факт целиком из-за этой ошибки.",
+            "Раздельные точки управления основным и резервным вентиляторами посчитаны отдельно. Попеременная работа сама по себе не доказывает общий аппаратный выход; аппаратная реализация не установлена.",
+            "Три записи относятся к одной матрице и не являются тремя независимыми дефектами. Решение инженера по этим blind-кандидатам не установлено."
+          ],
+          "wording": "Лист21, шкаф ШАУВ-3-К6ПЧ: согласовать итоговые количества дискретных сигналов с матрицей. В строке DI отмечены12 подключений, включая Пожар от АПС, при итоге10; в строке DO —6 при итоге5. Проверить назначение каналов и исправить несогласованность итогов."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_560cb89105bd46158749d4d59c9e52f9.png",
+          "sha256": "7ad65e7f4f15ef85fff241490e1876fda7fcb4bfd3d1e8e3bb2afa7ceda1abd9",
+          "block_id": "blk_560cb89105bd46158749d4d59c9e52f9",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet18 SHAUV-1-K5AS DO row11 connection dots, printed total10. Six damper controls, pump, four drives."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+          "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+          "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Sheet21 SHAUV-3-K6PCh DI12 dots including fire, printed10; DO6 dots, printed5."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-048",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-057_signal_counts_and_graphic_identity"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-058",
+      "finding": {
+        "id": "F-058",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Условные обозначения",
+        "sheet": "Лист 21",
+        "page": 25,
+        "problem": "Условное обозначение водяного калорифера расшифровано как электрический нагреватель.",
+        "description": "Для Пкр6.1 показано подключение к теплоснабжению с температурами 85 и 60 °С и смесительный узел, но символ в легенде назван секцией электрического нагревателя.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать символ и его расшифровку с водяным нагревом.",
+        "risk": "Неверное прочтение принципа нагрева при согласовании документации.",
+        "source_finding_ids": [
+          "G-053",
+          "G-054"
+        ],
+        "source_block_ids": [
+          "blk_7785cb8293734c16b18fc1aff53c761f"
+        ],
+        "related_block_ids": [
+          "blk_7785cb8293734c16b18fc1aff53c761f"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+            "page": 25
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-053",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T095304Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-054",
+              "mode": "independent",
+              "detected_at": "2026-11-11T09:53:04.445400+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают несоответствие символа водяного воздухонагревателя расшифровке «Нагревательная секция электрического нагревателя» при подключении к теплоснабжению с T=85°С и T=60°С. Разная оценка серьёзности не меняет сути замечания.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают несоответствие символа водяного воздухонагревателя расшифровке «Нагревательная секция электрического нагревателя» при подключении к теплоснабжению с T=85°С и T=60°С. Разная оценка серьёзности не меняет сути замечания.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 75,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F050_heater_legend_identity:8ddd3e97bcaeb4743e96",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Рабочая схемаПкр6.1 содержит контур85/60°C, насосМ4 и клапанY3; перечень относитМ4 кнасосу иУ3 ксмесительному узлу.",
+          "verdict": "confirmed_authoritative_TEXT_direct_GRAPHIC",
+          "limits": "Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "На рабочей схеме применён тот же символ, что легенда называет электрическим нагревателем.",
+          "verdict": "refuted_direct_GRAPHIC_shape_comparison",
+          "limits": "В рабочем ромбе справа плавная волнистая линия; в легенде электрического нагревателя справа знак молнии. При увеличении они различаются. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Водяной нагреватель обозначен электрическим и символ требуется заменить.",
+          "verdict": "refuted_as_stated",
+          "limits": "Вывод основан на ложном тождестве двух символов. Не требовать замены корректного водяного узла по этому замечанию."
+        },
+        {
+          "claim": "Легенда на листе содержит электрический нагреватель.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Сам факт наличия такого условного обозначения не доказывает неверное исполнение нагревателя в рабочей схеме. Использован прежний просмотр графики после проверки идентичности SHA256. Нового просмотра здесь нет."
+        },
+        {
+          "claim": "Ошибочно выбран вид нагрева и требуемые цепи управления.",
+          "verdict": "not_established",
+          "limits": "Водяной контур показан явно. Аппаратное исполнение и монтаж не исследованы."
+        },
+        {
+          "claim": "Нарушен ГОСТ21.408-2013.",
+          "verdict": "unverified_candidate_only",
+          "limits": "norm_quote=null; нормативное нарушение не установлено."
+        },
+        {
+          "claim": "Изменённая формулировка второго повтора доказывает ошибочную расшифровку рабочего символа.",
+          "verdict": "refuted_same_unproven_symbol_identity",
+          "limits": "Рабочий символ с плавной волнистой линией и легенда электрического нагревателя со знаком молнии различаются в прежнем прямом просмотре тех же файлов. Наличие электрического символа в легенде рядом с водяным контуром не делает его расшифровкой рабочего символа. Требование исправления по этому основанию не поддержано."
+        }
+      ],
+      "unsupported_additions": "Матрица сигналов не устанавливает фактический состав модулей. Различающиеся символы нельзя считать одинаковыми по общему силуэту; номер термостата не равен числу приборов. Нормативные кандидаты не проверены.",
+      "novel_useful_content": "Сопоставлены текущие строки с прежними адресными проверками идентичных источников; для F-058 зафиксирован повтор опровергнутого графического основания.",
+      "duplicate_burden": "One false graphical equivalence; do not replace with invented heating design defect.",
+      "profile_and_section": "excluded_refuted_technical_claim",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F050_heater_legend_identity.json",
+          "sha256": "f316e24040e8fd1ffc2a9d7fa9bcf2e56cc64e483684d014745f7f825ce3e5fe",
+          "primary_adjudication": null,
+          "limits": [
+            "Подпись электрического нагревателя в легенде проверена по авторитетному TEXT; сравнение начертания выполнено по GRAPHIC, без исправления TEXT.",
+            "Наличие в легенде дополнительного символа само по себе не доказывает неверное обозначение рабочего оборудования. Требование обязательной полноты или исключения неиспользуемых символов здесь нормативно не проверено.",
+            "НасосM4 и клапанУ3 перечня отнесены к ОВ1.2-ПА; сам смежный комплект, заказ и монтаж не проверены.",
+            "Этот редакционный вопрос не считать техническим дефектом или подтверждённой ошибкой выбора оборудования."
+          ],
+          "wording": "Редакционное уточнение листа21: проверить состав условных обозначений. Легенда содержит электрический нагреватель, тогда как показанная секция Пкр6.1 имеет контур теплоснабжения85/60°C. Символы различаются; ошибочный тип нагревателя или необходимость замены рабочего символа не установлены."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_7785cb8293734c16b18fc1aff53c761f.png",
+          "sha256": "064e2febfcb4997ad7f1b57598143dc6e4a35e6dedd1068c88fd4c1259a8e502",
+          "block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Actual heater right-hand wave differs from lightning glyph in electrical-heater legend; water85/60°C connections shown."
+        },
+        {
+          "path": "/tmp/ak_heater_detail.png",
+          "sha256": "2eb2693578e5512a38c5984f30ff0e195a1727e2b9dfb157a46f4ed9ef161cfc",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "parent_block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "crop_box_pixels": [
+            500,
+            180,
+            600,
+            275
+          ],
+          "scale": 3,
+          "limits": "Source checked at original resolution as well; enlargement not used to alter authoritative TEXT."
+        },
+        {
+          "path": "/tmp/ak_legend_detail.png",
+          "sha256": "d17d4adc5c0997fb573f24278e06d99e51e7da34efe57a2a754ec583a91bcba9",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "parent_block_id": "blk_7785cb8293734c16b18fc1aff53c761f",
+          "crop_box_pixels": [
+            1290,
+            940,
+            1505,
+            1000
+          ],
+          "scale": 3,
+          "limits": "Source checked at original resolution as well; enlargement not used to alter authoritative TEXT."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-051",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        }
+      ],
+      "disposition": "assessed_r2_AK_F-058_signal_counts_and_graphic_identity"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
