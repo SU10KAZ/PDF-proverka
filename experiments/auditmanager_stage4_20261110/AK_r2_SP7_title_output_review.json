@@ -1,0 +1,108 @@
+{
+  "status": "AK_last_reference_row_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "66fbf488900efa0294051c30df077d65ed40388dfcc805c1ccefb133fb50b0cd",
+  "queue_after_sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 2,
+      "finding_id": "F-073",
+      "finding": {
+        "id": "F-073",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "normative_refs",
+        "problem": "Неполно приведено название СП 7.13130.2013.",
+        "description": "Строка MD 268: «- СП 7.13130.2013 \"Отопление, вентиляция и кондиционирование\";». В названии пропущена часть «Требования пожарной безопасности», определяющая предмет этого свода правил.",
+        "page": null,
+        "norm": "СП 7.13130.2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "solution": "Привести полное название СП 7.13130.2013.",
+        "risk": "Неточное представление области требований указанного нормативного документа.",
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_adc4052a68344abf9c8f56861b9294d1",
+            "page": null,
+            "md_lines": "строка 268"
+          }
+        ],
+        "source_stage": "alia_docnorm_audit",
+        "sheet": "Лист 2",
+        "candidate_norm_references": [
+          {
+            "designation": "СП 7.13130.2013",
+            "cited_designation": "СП 7.13130.2013",
+            "candidate_relevance": 0.5,
+            "reason": "legacy_norm_field",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.norm",
+              "source_finding_ids": []
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 50,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "safety"
+          ],
+          "formalism_flags": [
+            "formal_reference_category"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Проектная ссылка содержит сокращённое название без слов Требования пожарной безопасности.",
+          "verdict": "confirmed_authoritative_TEXT_and_official_catalog",
+          "limits": "Обозначение СП7.13130.2013 сохранено и позволяет идентифицировать документ."
+        },
+        {
+          "claim": "Из-за сокращения названия проект не учитывает требования пожарной безопасности.",
+          "verdict": "not_established",
+          "limits": "Библиографическая неполнота не доказывает пропуск требований или техническое нарушение; применимость конкретных пунктов не исследована."
+        },
+        {
+          "claim": "Дополнить название в списке нормативных ссылок.",
+          "verdict": "supported_low_significance_editorial_question",
+          "limits": "Выводить отдельно в вопросах и уточнениях, не считать восстановленным техническим дефектом."
+        }
+      ],
+      "unsupported_additions": "Не повышать значимость редакционного названия до нарушения пожарной безопасности.",
+      "novel_useful_content": "Подтверждён редакционный вопрос полноты названия при правильном номере СП.",
+      "duplicate_burden": "Одна библиографическая правка, не дополнительный технический дефект.",
+      "profile_and_section": "questions_clarifications_low_significance_reference_title",
+      "engineer_reuse": "No new engineer decision; user policy places low-significance editorial issues in separate questions section.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r2_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "route": "authoritative_TEXT",
+          "line_number": 268,
+          "quote": "- СП 7.13130.2013 \"Отопление, вентиляция и кондиционирование\";"
+        },
+        {
+          "url": "https://protect.gost.ru/sp/details/78247e24-7498-426f-991f-83d320a7c0bc",
+          "route": "official_catalog_direct_web_open",
+          "observed_date": "2026-11-11",
+          "quote": "Отопление, вентиляция и кондиционирование. Требования пожарной безопасности",
+          "limits": "Проверены обозначение и полное название, не техническое соблюдение требований проекта."
+        }
+      ],
+      "disposition": "assessed_r2_SP7_title_editorial_question"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
