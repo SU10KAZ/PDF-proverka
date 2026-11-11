@@ -1,0 +1,411 @@
+{
+  "status": "two_AR_material_rows_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "0e4dd72bf82ef661c0b0858e4ab7b39e930a0bd868f6830af9e146e81530a454",
+  "queue_after_sha256": "069c754880a893b4664e9d6635cf67a6ee445fc238c49ded17e0631336633586",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-005",
+      "finding": {
+        "id": "F-005",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Состав кровельного покрытия",
+        "sheet": "Листы 7, 11",
+        "page": [
+          9,
+          13
+        ],
+        "problem": "Для К-4 не согласован защитный слой над гидроизоляцией.",
+        "description": "Текстовая таблица слоёв К-4 на листе 11 предусматривает термообработанный геотекстиль 300 г/м² над гидроизоляцией. В ведомости материалов на листе 7 вместо него указана противопожарная защитная мембрана АЛЬФА ПРОФ НГ площадью 517,72 м²; отдельной позиции геотекстиля для К-4 нет. Эквивалентность этих материалов и нарушение пожарных требований по имеющимся данным не установлены.",
+        "norm": "СП 17.13330.2017 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 17.13330.2017",
+            "cited_designation": "СП 17.13330.2017",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к защитным и разделительным слоям принятой конструкции кровли и их совместимости с гидроизоляцией.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-005"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-005"
+                ],
+                "designation_source": "Профильный документ из входного перечня нормативных ссылок"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить функции и необходимость каждого слоя, подтвердить совместимость материалов и привести таблицу слоёв и ведомость к единому решению.",
+        "risk": "Закупка и монтаж неподходящего защитного слоя, повреждение гидроизоляции и переделки покрытия.",
+        "source_finding_ids": [
+          "T-005"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "blk_ba73c64702884635a06b2882d4e2bf91",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule",
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-AR-F-006:76e7568bcfeededeb028",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Адресный состав К-4 содержит геотекстиль300; ведомость покрытий и материалов — АЛЬФА ПРОФ НГ, в материалах517,72м².",
+          "verdict": "confirmed_document_conflict",
+          "limits": "Конфликт между адресным составом и ведомостями, не между двумя ведомостями. Эквивалентность и пожарное нарушение не установлены; нельзя автоматически удалить или заменить слой."
+        },
+        {
+          "claim": "Установить функции и необходимость каждого слоя, подтвердить совместимость материалов и привести таблицу слоёв и ведомость к единому решению.",
+          "verdict": "supported_scoped_question",
+          "limits": "Согласовать принятое решение до корректировки закупки или расчета."
+        },
+        {
+          "claim": "Закупка и монтаж неподходящего защитного слоя, повреждение гидроизоляции и переделки покрытия.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Поставка, монтаж, повреждения, стоимость и несущая способность не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Конфликт между адресным составом и ведомостями, не между двумя ведомостями. Эквивалентность и пожарное нарушение не установлены; нельзя автоматически удалить или заменить слой.",
+      "novel_useful_content": "known_material_consistency_question",
+      "duplicate_burden": "Tile material and underlying protective layer are distinct decisions.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer acceptance inferred; source hashes verified and revised wording assessed.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json",
+          "sha256": "1147ad2d578ff19db335f86765998d19952dfea3e32ff9ac3da027a390ff84a8",
+          "primary_adjudication": null,
+          "limits": "Установлено различие документов об одном покрытии. Фактическое отсутствие мембраны на объекте, пожарное нарушение и возможность замены материалов не установлены.",
+          "wording": "Согласовать состав К-4: ведомость покрытий и ведомость материалов указывают противопожарную мембрану АЛЬФА ПРОФ НГ; адресный узел размещения молниеотвода с маркойК-4 и его перечень указывают геотекстиль300г/м² без отдельной мембраны.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked",
+          "observation": "К-4 слой3: противопожарная мембрана; слой4: гидроизоляция.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png",
+          "sha256": "7dd38136e060454182817ea43ee1391af5c00ccef3033610e3f9bcd509207f98",
+          "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked",
+          "observation": "МаркаК-4 связывает узел с перечнем, в котором геотекстиль300г/м² без отдельной мембраны.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png"
+        }
+      ],
+      "disposition": "assessed_preserve_roof_material_question_with_approval_scope"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-006",
+      "finding": {
+        "id": "F-006",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Состав кровельного покрытия",
+        "sheet": "Листы 7, 11",
+        "page": [
+          9,
+          13
+        ],
+        "problem": "Для покрытий К-3 и К-4 одновременно указаны бетонная плитка и натуральный камень.",
+        "description": "На листе 7 ведомость покрытий К-3 и К-4 задаёт бетонную тротуарную плитку толщиной 40 мм, а ведомость материалов — плитку из натурального камня размером 600×600×40 мм. Для К-4 бетонная плитка также указана в текстовой таблице слоёв на листе 11. Материалы различаются стоимостью, массой и характеристиками работы на регулируемых опорах.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён; ГОСТ 9480-2012 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности указаний о материалах в чертежах и ведомостях.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006",
+                "G-003",
+                "G-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006",
+                  "G-003",
+                  "G-004"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 9480-2012",
+            "cited_designation": "ГОСТ 9480-2012",
+            "candidate_relevance": 0.7,
+            "reason": "Проверить характеристики указанной в ведомости плитки из природного камня после выбора окончательного материала.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006",
+                "G-003",
+                "G-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать материал плитки для каждой марки покрытия, проверить его пригодность для установки на опорах и согласовать ведомости, составы покрытий и расчёт опор.",
+        "risk": "Ошибочная закупка, изменение стоимости и нагрузки на опоры, необходимость замены покрытия.",
+        "source_finding_ids": [
+          "T-006",
+          "G-003",
+          "G-004"
+        ],
+        "source_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645"
+        ],
+        "related_block_ids": [
+          "blk_602b484f088b4a029d3ba6e01df3f645",
+          "blk_507c287c56f04302a7ca1097e7af79ff",
+          "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "blk_ba73c64702884635a06b2882d4e2bf91",
+          "blk_d79ac3d31db644eea9b53e1860e4c51c"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое противоречие для К-3 и К-4: бетонная плитка 40 мм в ведомости покрытий и натуральный камень 600×600×40 мм в ведомости материалов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое противоречие для К-3 и К-4: бетонная плитка 40 мм в ведомости покрытий и натуральный камень 600×600×40 мм в ведомости материалов.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 79,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "cost",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_K3_K4_material:2c8cea013dfa60768080",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К-3/К-4: бетонная плитка40мм в покрытии, натуральный камень600×600×40 в материалах.",
+          "verdict": "confirmed_document_conflict",
+          "limits": "Сохранить оговорки: камень по согласованию, бетон К-4 по проекту ЛД. Финальный выбор ЛД не проверен. Масса, цена и работа на опорах конкретных изделий не рассчитаны; их различие не доказанная ошибка нагрузки."
+        },
+        {
+          "claim": "Согласовать материал плитки для каждой марки покрытия, проверить его пригодность для установки на опорах и согласовать ведомости, составы покрытий и расчёт опор.",
+          "verdict": "supported_scoped_question",
+          "limits": "Согласовать принятое решение до корректировки закупки или расчета."
+        },
+        {
+          "claim": "Ошибочная закупка, изменение стоимости и нагрузки на опоры, необходимость замены покрытия.",
+          "verdict": "possible_consequence_not_observed",
+          "limits": "Поставка, монтаж, повреждения, стоимость и несущая способность не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "Сохранить оговорки: камень по согласованию, бетон К-4 по проекту ЛД. Финальный выбор ЛД не проверен. Масса, цена и работа на опорах конкретных изделий не рассчитаны; их различие не доказанная ошибка нагрузки.",
+      "novel_useful_content": "known_material_consistency_question",
+      "duplicate_burden": "Tile material and underlying protective layer are distinct decisions.",
+      "profile_and_section": "questions_and_clarifications",
+      "engineer_reuse": "No new engineer acceptance inferred; source hashes verified and revised wording assessed.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d79ac3d31db644eea9b53e1860e4c51c",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_5a677abb29e64cc2bfdf78c166eaf99a",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json",
+          "sha256": "1b5bec9fd487811b2b78e77d12d54eae2ef20a5a9f8770de2a94673ffb5aa51f",
+          "primary_adjudication": null,
+          "limits": "Оговорки «по согласованию» и «по проектуЛД» сохранены. Фактическая ошибочная закупка и окончательный выбор материала не установлены. Узел молниеотвода в этой сверке не использован.",
+          "wording": "Увязать материал финишной плитки К-3/К-4: бетонная40мм в ведомости покрытий против натурального камня600×600×40мм «по согласованию» в ведомости материалов; дляК-4 проверить решениеЛД.",
+          "prior_path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png",
+          "sha256": "011c85f1a531968c52ad750f27ff6a07183cb3852d26b005f3a4fbd21a721fe0",
+          "block_id": "blk_602b484f088b4a029d3ba6e01df3f645",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked",
+          "observation": "К-3: бетонная40мм; К-4: бетонная по проектуЛД40мм.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_602b484f088b4a029d3ba6e01df3f645.png"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png",
+          "sha256": "7dd38136e060454182817ea43ee1391af5c00ccef3033610e3f9bcd509207f98",
+          "block_id": "blk_b9257ef1636a40f9a224955e061eb46e",
+          "route": "byte_identical_source_prior_review; current_TEXT_and_cover_schedule_rechecked",
+          "observation": "МаркаК-4 у схемы и бетонная плитка по проектуЛД в её перечне.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_b9257ef1636a40f9a224955e061eb46e.png"
+        }
+      ],
+      "disposition": "assessed_preserve_roof_material_question_with_approval_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
