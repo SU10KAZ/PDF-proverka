@@ -1,0 +1,917 @@
+{
+  "schema_version": 1,
+  "discipline": "AR",
+  "evaluator_sha256": "c3a67efae0ca464595b1d8b2b308f86e29dce41d0cd59fd7409bf67999217c76",
+  "findings_sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d",
+  "reviewer": "coordinator_semantic_match_reusing_frozen_evidence_not_new_engineer_review",
+  "entire_output_reviewed": true,
+  "targets": [
+    {
+      "target_id": "AR14_K3_support_levels:11d2c61818f07c8b5a71",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR14_K3_support_levels.json",
+          "sha256": "05111c82d10d6fb78c3da1b8772f8fd53762fe7ba14e599d4e65dd4e9c9b0696"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Остаток75мм по отметкамК-3 против диапазона25–50мм не сформулирован. F-004 о дробных количествах опор, аF-016 об объёме утеплителя; они не заменяют высотную привязку.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR17:b3834745b8377f227bbc",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-018"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR17.json",
+          "sha256": "2c7bce2f3456b9bebdf7059d5b3ee79a40c72b29a994684d937747fdce46a7fd"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        },
+        {
+          "source": "primary_adjudication",
+          "path": "experiments/auditmanager_stage1_20261109/followup/AR17_primary_adjudication.json",
+          "sha256": "df73701f0cbb7275908c4ab51a94c3a5987c248b5e16d2dd3fc34968997bb98a"
+        }
+      ],
+      "reason": "ОГШ-1/2/3, ведомость5900/2800/1900 ивиды5700/2600/1690–1700 сопоставлены. Сохранено требование уточнить заполнение/полную конструкцию и границы измерения;200мм не объявлены универсальным допуском.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR35_unlabelled_areas:8b080f37f0ffc62859e0",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR35_unlabelled_areas.json",
+          "sha256": "7274cc7e622df36e93d23f17add55aa23bfc3c85446d0eda662dae68c24a265e"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "В21строке нет шести неподписанных заштрихованных участков листа6 с эталонными координатами. Не утверждается их доказанная неполнота покрытия; отсутствует именно вопрос назначения.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR36_B-AR-F-005:d576dd306cbd1e602f34",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-005",
+        "F-016"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR36_B-AR-F-005.json",
+          "sha256": "c0e65e558fcbde7f84022893578b1c64f1bf53f716100b3106a804db4280d657"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Всовокупности сохранены10,8м²К-3,10,84/10,83м² слоёв,18,96м²плитки и1,24м³при130мм. Запрошены расчёт, границы/запас ифактическая площадь. Распределение одной темы по двум строкам отдельно учитывается как нагрузка, не два эталонных дефекта.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR39_lower_profile_and_rope:82b33aee103e9ee382ee",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json",
+          "sha256": "fab3cfc34776601f09f252dd037bc85315ede337f0fe1ffc5158c73957e3ae90"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Требование ведомости о металлическом профиле нижней граниОГН-4 и его согласование с узлами/канатом не сформулированы. ВысотаОГН-4F-021 — другой вопрос.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR39_lower_profile_and_rope:fef549df72bcc7f43cc2",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR39_lower_profile_and_rope.json",
+          "sha256": "fab3cfc34776601f09f252dd037bc85315ede337f0fe1ffc5158c73957e3ae90"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Ложное противопоставление спайдеров точечному креплению не повторено.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR3_exit_elevation_identity:35d17b08445c321782dd",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR3_exit_elevation_identity.json",
+          "sha256": "65c2e351bb163c7c021872d4a4d92d6cc76da5a8084e72ab755f2e1a692dc2a3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Отсутствие узла выхода или разделения его слоёв не утверждается. Иные вопросы гидроизоляции не заменяют этот отрицательный контроль.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR59_rope_load_path:63ef9a4878fe506c4a1f",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json",
+          "sha256": "4b6aa9839c0eacf44e35943d5a025230990997de3f5f0ff9cafab922635db986"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Связь каната альпинистов со стойкамиОГН-4 и вопрос расчётного пути усилий не представлены.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR59_rope_load_path:e562ad115416cc435f9c",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR59_rope_load_path.json",
+          "sha256": "4b6aa9839c0eacf44e35943d5a025230990997de3f5f0ff9cafab922635db986"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Общее отсутствие ссылки на конструктивный расчётКМ8 не утверждается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F001_sp_editions:0fa6c5d50247757e829d",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-002"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+          "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "СП48.13330.2011 и2019 сопоставлены в общих указаниях/ведомости, применимость редакций оставлена на уточнение.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F001_sp_editions:8f90690c3dc52ad03760",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-002"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F001_sp_editions.json",
+          "sha256": "15e2544c955b8c785b3076df689bb1349ae110b9db6f1b076feb7fd59b9744a3"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "СП45.13330.2012 прямо связан с зимними работами. Применимость замены не объявлена проверенной.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F002_partial_and_territorial_norm_status:a1b917235764b9e63b56",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+          "sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "ГОСТ28013-98 назван, но адресные стяжкиК-1/К-3/К-4 и территориальная связь сГОСТР58766-2019 не сохранены. Указана другая непроверенная замена28013-2023, поэтому полный эталонный вопрос не зачтён.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F002_partial_and_territorial_norm_status:06e66d3f9cf1ce259b54",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-003"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F002_partial_and_territorial_norm_status.json",
+          "sha256": "2c85ef621182df1b1f713ce2ba903963ecdce531f31872f7962518c83a440338"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Точная ошибочная редакция30547-2020 не повторена, однако вместо неё передано сообщение о полной замене30547-2023 без разграничения частичного статуса. Выдача оговаривает непроверенность оснований. Засчитывается лишь частичное повторение широкой ошибки, не полное тождество редакций.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F007_KM_references:b89d5f235921cd9de65b",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
+          "sha256": "ce707aee07ee4cfe839a3ab5f6c83717d449ac8da6a8d1e7fbab4b49feb44bde"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Ограждения лист8→КМ5.2 илист10→КМ4.2 сопоставлены; правильный шифр без проверки не выбран.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F007_KM_references:b06b284a61699380958a",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-009"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
+          "sha256": "ce707aee07ee4cfe839a3ab5f6c83717d449ac8da6a8d1e7fbab4b49feb44bde"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Лестницы лист8→КМ6.2 илист10→КМ5.2 сопоставлены, дополнительная ссылкаКМ6.2 сохранена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F008_sheet_register:3b6bd4f3bacbcd4e30ae",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-001"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F008_sheet_register.json",
+          "sha256": "b35cb86bcd0ba6f11196bc1af9696e6dc5296f7cbe34ae124a24876558cdb29f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Две строки12, отсутствие13 и ссылка листа10 на13 названы; метаданные штампов отличены от независимого просмотра оригинала.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F009_club_classification_scope:4e28ba265a83e035660e",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-011"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F009_club_classification_scope.json",
+          "sha256": "61976229e7eab9c4d96c6917b2954409fdafba9d960a76a0583702a0b3396796"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Детский клубФ3.6 сохранён как вопрос функций/режима и согласованияСПБ/СТУ, иной класс автоматически не назначен.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F010_glass_formula:7e2ea3f3157c5ca6b52e",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F010_glass_formula.json",
+          "sha256": "af4c9d286eda3a59c8c19a99796fe1a7f7f8d4332f8b28ee7d225e1e2e004690"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Отсутствие раскрытого состава стекла не утверждается ни в одной из21строки.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F011_access_register:16a9d1d9252402ce3968",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-013"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F011_access_register.json",
+          "sha256": "16b8030466ed9894b7dab677ae14f1e4a922012725ffc0c400ef12def3a6f0bc"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Строка4: заголовок эксплуатируемая против описания доступа на неэксплуатируемую кровлю назван. Нет утверждения об отсутствии доступа.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F011_access_register:54cfcd7a1f3122411bfa",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F011_access_register.json",
+          "sha256": "16b8030466ed9894b7dab677ae14f1e4a922012725ffc0c400ef12def3a6f0bc"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Невозможность понять пункт назначения из полной строки не утверждается: F-013 явно определяет неэксплуатируемую кровлю в описании.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F011_access_register:ba638ed1239e051c8690",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F011_access_register.json",
+          "sha256": "16b8030466ed9894b7dab677ae14f1e4a922012725ffc0c400ef12def3a6f0bc"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Отсутствие доступа на техническую кровлю не утверждается.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F012_parapet_drain_slope:84894dbc1889e54a106a",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F012_parapet_drain_slope.json",
+          "sha256": "f7d7c74d3ac3763d7cc2f1ecedbfd36dba37ca7e17a0a61866fc104e4107a628"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Вопрос2%узлаГ против примечания5%врадиусе500мм не представлен. F-014 о1,2/1,3%К-1уОГШ-1 относится к иному участку и требованию.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F012_parapet_drain_slope:c4281865a83886e086b0",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F012_parapet_drain_slope.json",
+          "sha256": "f7d7c74d3ac3763d7cc2f1ecedbfd36dba37ca7e17a0a61866fc104e4107a628"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Уклон5,2%колпака не принят за уклон кровли.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F014_insulation_identity:20063319c847e004daca",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-015"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F014_insulation_identity.json",
+          "sha256": "c99e19d272729607a77cc1d3873ca5be57009c2c5bd329ffa7cca5d64fc4b181"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Тот же слойК-3,130мм:XPS в общем наименовании иLOGICPIR PROFФ/Ф марки сопоставлены. Толщина или изделие не заменяются автоматически.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F018_screen_identity:2fc8c1d03f237cb052ba",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-019"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F018_screen_identity.json",
+          "sha256": "4697afa158d947df5c5673d1292bbf9c16d10cff73cc1d5ea894d98a7d4d9580"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Ламели аксонометрии и панелиОГШ-1/2/3 названы, принадлежность вида и совместимость слоёв оставлены неизвестными; запрошена связьКМ10.2.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F018_screen_identity:bdab0ef4a9f418abece7",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F018_screen_identity.json",
+          "sha256": "4697afa158d947df5c5673d1292bbf9c16d10cff73cc1d5ea894d98a7d4d9580"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Сталь не отнесена только к каркасу; F-019 явно говорит о заполнении стальными ламелями.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F020_OGN4_height:45b7c32dafd201c30a67",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-021"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F020_OGN4_height.json",
+          "sha256": "7801c49ea3c7172f8c0487ab722a493b90e3c08973e31e151dc0d953d1fcfd19"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "ОГН-4:2110 вида против2100 ведомости и2,1м узла сохранены; правильное значение не выбирается большинством.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_F022_stone_standard_replacement:7774ac535ffb20fdcbdb",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_F022_stone_standard_replacement.json",
+          "sha256": "1dd7e7ba2bce83c8f4f7697c001d4116d7cd5d9c00d611f8014b2ffacd2d67b2"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "ВопросГОСТ9480-2012 для двух строк каменной плиткиК-3/К-4 не сформулирован; общий конфликт бетон/каменьF-006 не заменяет редакцию стандарта.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "AR_K3_K4_material:2c8cea013dfa60768080",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-006"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AR_K3_K4_material.json",
+          "sha256": "1b5bec9fd487811b2b78e77d12d54eae2ef20a5a9f8770de2a94673ffb5aa51f"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Материалы бетон40мм/камень600×600×40 и по согласованию сохранены, но связьК-4 с решениемЛД не указана. Полная граница согласования не сохранена.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-AR-F-004:5ba89cb25036827448d4",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-004"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-004.json",
+          "sha256": "537a01df4ce22327d818b38016a5a600bc295ff1a19845640465f4f4af74e6d2"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Оба дробных количества75,82/2144,84шт дляК-3/К-4 названы; предложен расчёт по раскладке перед округлением, готовое закупочное количество не выдумано.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-AR-F-006:1a35362f3dabf4e35f77",
+      "availability": "available",
+      "coverage": "absent",
+      "finding_ids": [],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json",
+          "sha256": "1147ad2d578ff19db335f86765998d19952dfea3e32ff9ac3da027a390ff84a8"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Геотекстиль не приписан ведомости покрытийК-4 листа7: F-007 сравнивает ведомость материалов с таблицей слоёв листа11. Это не исходное ложное место.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-AR-F-006:76e7568bcfeededeb028",
+      "availability": "available",
+      "coverage": "partial",
+      "finding_ids": [
+        "F-007"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-006.json",
+          "sha256": "1147ad2d578ff19db335f86765998d19952dfea3e32ff9ac3da027a390ff84a8"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "К-4, мембранаАЛЬФАПРОФНГ игеотекстиль300г/м² листа11 сопоставлены, но адресный узел молниеотвода и то, что обе общие ведомости согласованы по мембране, не раскрыты. Поддержана часть междокументного конфликта.",
+      "section_assessment": "unchecked"
+    },
+    {
+      "target_id": "B-AR-F-016:fff2912112e6c79e3b46",
+      "availability": "available",
+      "coverage": "full",
+      "finding_ids": [
+        "F-017"
+      ],
+      "evidence": [
+        {
+          "source": "frozen_target_decision",
+          "path": "experiments/auditmanager_stage1_20261109/decisions/B-AR-F-016.json",
+          "sha256": "6de616cbb7c5cca66864facc621709f0f7ac35569d40b16b8fded829cd5b3436"
+        },
+        {
+          "source": "same_version_MD",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98"
+        },
+        {
+          "source": "sealed_output",
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r1_classic/classic_control/inputs/AR/versions/v001/03_analysis/runs/comparison/03_findings.json",
+          "sha256": "1ed48b7ce4e51ab6ac9e75a0a6e92f17dc145fb5a7cc5e6209da3e07a5ee856d"
+        }
+      ],
+      "reason": "Оп-1:145,44м,690мм,78,5м² иусловное произведение100,35м² сохранены. Площадь заготовки оставлена до проверки смысла ширины/развёртки.",
+      "section_assessment": "unchecked"
+    }
+  ],
+  "limits": [
+    "Full match requires all mandatory object, relationship and location context.",
+    "Score unsupported additions and novel findings separately.",
+    "Engineer confirmation is required; model suggestions alone are not final matches."
+  ],
+  "output_review_scope": {
+    "finding_ids": [
+      "F-001",
+      "F-002",
+      "F-003",
+      "F-004",
+      "F-005",
+      "F-006",
+      "F-007",
+      "F-008",
+      "F-009",
+      "F-010",
+      "F-011",
+      "F-012",
+      "F-013",
+      "F-014",
+      "F-015",
+      "F-016",
+      "F-017",
+      "F-018",
+      "F-019",
+      "F-020",
+      "F-021"
+    ],
+    "semantic_fields": [
+      "problem",
+      "description",
+      "solution",
+      "risk",
+      "norm",
+      "norm_quote"
+    ],
+    "method": "All21findings read in contiguous slices F001–011 and F012–021; no keyword-only absence inference.",
+    "limitation": "Reading does not establish truth of every assertion."
+  }
+}
