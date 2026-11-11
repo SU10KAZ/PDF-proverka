@@ -68,8 +68,15 @@
       "finding_id": "F-008",
       "problem": "Требуется назначить дополнительные температурные датчики спецификации.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_wrong_section",
+      "engineer_decision": null,
+      "review_reason": "Все три сравнения количеств подтверждены по одноимённым шкафам, назначению и типу датчика:2.5+2.7 против TE1,4.8 против TE2,15.7 против TE3. Условная рекомендация указать резерв либо согласовать количество допустима; фактическая избыточная поставка не утверждается. По замороженному эталону документальные конфликты относятся к technical, фактический раздел questions — потеря маршрутизации.",
+      "proposed_section": "technical_findings",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+        "sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-009",
@@ -82,8 +89,15 @@
       "finding_id": "F-010",
       "problem": "В описании четырёх завес использованы разные наборы марок.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "correct_question_scope",
+      "engineer_decision": null,
+      "review_reason": "Пункт5 содержит четыре завесы У1–У4 и далее ведущую У4.3/ведомые У4.4–У4.6. Строка23 ведомости подтверждает второй набор. Вопрос соответствия марок обоснован; дополнительные физические завесы и неправильность буквы У не утверждаются.",
+      "proposed_section": "questions",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+        "sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-011",
@@ -199,15 +213,29 @@
       "finding_id": "F-025",
       "problem": "Марка подвеса кровельной опоры расходится со спецификацией.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "Проверены все три таблицы кровли, корпуса4/5/6, листы48/50/53:BSD4120. СО22.6 содержит BSD2120/BSD-21,15шт. Выдача ограничена различием марок, не назначает правильное изделие без проверки и не утверждает взаимозаменяемость.",
+      "proposed_section": "technical_findings",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+        "sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-026",
       "problem": "Повторены закупочные обозначения разных изделий и номер кабельной позиции.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict_wrong_section",
+      "engineer_decision": null,
+      "review_reason": "В графе типа/марки повторены35341 для лотка и треугольной бирки,BSD2120 для подвеса и трубы Ду32;21.10 используется для двух разных интерфейсных кабелей. Все три текстовых факта верны. Выдача требует сверить каталоги и номера, не выдумывает заменяющие артикулы. Согласно эталону это технические документальные конфликты, выданные в questions.",
+      "proposed_section": "technical_findings",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+        "sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-027",
@@ -233,8 +261,15 @@
       "finding_id": "F-029",
       "problem": "Требуется связать комплекты кровельных опор с количеством поставки.",
       "model_report_section": "questions",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "correct_question_scope",
+      "engineer_decision": null,
+      "review_reason": "Три таблицы действительно содержат1плиту,1подвес,4консоли; СО15плит/15консолей. Выдача правильно сохраняет условность применения узла и не объявляет нехватку45консолей. Не приведены дополнительные количества подвесов/анкеров — неполнота покрытия отдельно, не ложность опубликованных фактов.",
+      "proposed_section": "questions",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+        "sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-030",
@@ -275,8 +310,15 @@
       "finding_id": "F-035",
       "problem": "Для двухпарного кабеля Па3.1-8 не согласовано экранирование.",
       "model_report_section": "technical_findings",
-      "status": "unchecked",
-      "engineer_decision": null
+      "status": "confirmed_document_conflict",
+      "engineer_decision": null,
+      "review_reason": "КЖ9:Па3.1-8,ШАУВ-1-К4АС→XТ1,КСПВПГнг(А)-HF2×2×0,75,20м. Полная локальная ведомость лист29 содержит20мКСПЭВПГнг(A)-HF2×2×0,75 и не содержит двухпарного неэкранированного исполнения. Различие сохранено без выбора правильного кабеля по одному совпадению длины; рекомендация сверить назначение и документы обоснована.",
+      "proposed_section": "technical_findings",
+      "evidence": {
+        "path": "experiments/auditmanager_stage4_20261110/runtime_AK_equipment_text_source_review_20261112.json",
+        "sha256": "6bc1af7361e754a3980d1a45b3983a8496ebb9a1c78db47148d73abfb02e74ea"
+      },
+      "source_review_complete_for_published_claims": true
     },
     {
       "finding_id": "F-036",
@@ -688,6 +730,6 @@
     "Existing source reviews are separate from engineer decisions.",
     "Novel findings without gold correspondence require separate source review; they are not automatically false."
   ],
-  "reviewed_findings": 12,
-  "unchecked_findings": 73
+  "reviewed_findings": 18,
+  "unchecked_findings": 67
 }

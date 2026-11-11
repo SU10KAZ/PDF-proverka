@@ -1,0 +1,263 @@
+{
+  "source_md": "/tmp/auditmanager_corrected_source_inputs_20261111/AK/02_work/document.md",
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "sealed_output_sha256": "cfbc32fa4184cfd8355f57dd4bae2e316d09b18d4944d2df364ccdcf48e99387",
+  "records": [
+    {
+      "finding_id": "F-008",
+      "status": "confirmed_document_conflict_wrong_section",
+      "review_reason": "Все три сравнения количеств подтверждены по одноимённым шкафам, назначению и типу датчика:2.5+2.7 против TE1,4.8 против TE2,15.7 против TE3. Условная рекомендация указать резерв либо согласовать количество допустима; фактическая избыточная поставка не утверждается. По замороженному эталону документальные конфликты относятся к technical, фактический раздел questions — потеря маршрутизации.",
+      "proposed_section": "technical_findings",
+      "decision_sources": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F005_surface_sensor_quantity.json",
+          "sha256": "48b97c42cfa0b0277fb9cf701da41869de070db06fd4ec75fb99b0a388d1e722"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F006_outdoor_sensor_quantity.json",
+          "sha256": "7dfe111f83f7d778b22f32158e23e25225b08f4f4ec3226926ddce63dfb1ef6a"
+        },
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F008_channel_sensor_quantity.json",
+          "sha256": "c9bf31b3153a37963b0821177ba1398e145ddd70d03bda5a6432545628397940"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+          "start": 72899,
+          "end": 74573,
+          "sha256": "4f1102981d630b9a62c7fabeccb64a93be4e4f0592a2558372e445eb6c410a4f"
+        },
+        {
+          "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+          "start": 435382,
+          "end": 438050,
+          "sha256": "c66021f4cf61284884d87b91334734c00a1960705f8e1ae7929ee562c1b86dd4"
+        },
+        {
+          "block_id": "blk_0457419703024673bb4328b18d47501e",
+          "start": 62907,
+          "end": 64260,
+          "sha256": "6e591883daa81cb2e2db9f220b00bab89cd07314875c88e14d9596fbebf48aa3"
+        },
+        {
+          "block_id": "blk_192d323532434ee1aba250ffaac80b47",
+          "start": 432749,
+          "end": 435358,
+          "sha256": "d50c64abca78d2ae2d19d1e495d8cae0cacd287a2160fc4210000d8a1c1a4aa9"
+        },
+        {
+          "block_id": "blk_3efc4048723143beaeb20fa1792f1776",
+          "start": 359757,
+          "end": 362358,
+          "sha256": "3225894405fa74373307cfac1b1d701ea36f450f76f807070fe0e13da49cbee8"
+        },
+        {
+          "block_id": "blk_13738f8bb6f840fcb0cb37491b612396",
+          "start": 362382,
+          "end": 364935,
+          "sha256": "d81ea40b055a8a030919e577815742040df129c41db090cfdaa477ff18a61226"
+        },
+        {
+          "block_id": "blk_a4846024d95044a09f7a24d76da41c31",
+          "start": 134040,
+          "end": 135751,
+          "sha256": "c62bc239b41aeca834d0700ee18a492e40754bd3e762993aaf51e9b49e9d0c23"
+        },
+        {
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "start": 447851,
+          "end": 450471,
+          "sha256": "71647d5a708a13ca3c56090775349146fff2ccf3140d616f7ea95445881b4cdb"
+        },
+        {
+          "block_id": "blk_5bb120b4d9cd4ceebfc4c15a896ddd48",
+          "start": 450496,
+          "end": 453052,
+          "sha256": "97f0fb6644fce06d493be202b9348b3a76a294326fde4babc8e5abfb9b740fda"
+        },
+        {
+          "block_id": "blk_1a998befeb274900bd8048e09752beba",
+          "start": 412482,
+          "end": 415065,
+          "sha256": "b52c6120b9ee6fab0e871f5112c7ebcfa3ddcef76c8475aa58960bd6919071d5"
+        }
+      ],
+      "review_scope": "Published textual claims and conditional recommendations; no new graphic interpretation, manufacturer equivalence, installation or procurement verification.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-010",
+      "status": "correct_question_scope",
+      "review_reason": "Пункт5 содержит четыре завесы У1–У4 и далее ведущую У4.3/ведомые У4.4–У4.6. Строка23 ведомости подтверждает второй набор. Вопрос соответствия марок обоснован; дополнительные физические завесы и неправильность буквы У не утверждаются.",
+      "proposed_section": "questions",
+      "decision_sources": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F011_curtain_connection_scope.json",
+          "sha256": "2211b79ca0e11e14d8f0f482d457b1fc8ea94d00eb5a350f18233f17a5a0d0bc"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_6e394962eb18407fb17b09f063c30a5c",
+          "start": 4284,
+          "end": 7370,
+          "sha256": "18fb69021487eb2855cfcd59ec77f11a198dad7577869231d24e1b2939c6016d"
+        },
+        {
+          "block_id": "blk_3555a6e6bcc443c39eaba461232ceec3",
+          "start": 27811,
+          "end": 29936,
+          "sha256": "ddd84277b4aa328d067bad36b4a2a75275c027559389ae325f295a85ff55922a"
+        },
+        {
+          "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+          "start": 148290,
+          "end": 149704,
+          "sha256": "5a8905e7f8ed1ead3c312b835a2b523081306fe4653328f2363146bb4c00a6fd"
+        },
+        {
+          "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+          "start": 421429,
+          "end": 423773,
+          "sha256": "b2dc9d86b1647b45391edbd4ebd4ca19fa4e025bb509851a31fa41ee3ac6754c"
+        }
+      ],
+      "review_scope": "Published textual claims and conditional recommendations; no new graphic interpretation, manufacturer equivalence, installation or procurement verification.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-025",
+      "status": "confirmed_document_conflict",
+      "review_reason": "Проверены все три таблицы кровли, корпуса4/5/6, листы48/50/53:BSD4120. СО22.6 содержит BSD2120/BSD-21,15шт. Выдача ограничена различием марок, не назначает правильное изделие без проверки и не утверждает взаимозаменяемость.",
+      "proposed_section": "technical_findings",
+      "decision_sources": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F023_support_type.json",
+          "sha256": "b33ca81b4392fa59b48a45050d3def13fa4f6e75038357b77ec7daf6aa63d753"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+          "start": 270129,
+          "end": 270923,
+          "sha256": "43ad99d25b5ab1607b80bfb5834171cb9582c9624b8d0a82bd51b807b6c08272"
+        },
+        {
+          "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "start": 295252,
+          "end": 296046,
+          "sha256": "51f0a5b366410661255c351a8bce3697851cd61a84413b50b25e1c59e22c5329"
+        },
+        {
+          "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "start": 325603,
+          "end": 326397,
+          "sha256": "662402d0141987ee33ab22d7bad52b34bed49d8f9f35fcb4fdf0ef7e8ebfc259"
+        },
+        {
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "start": 455518,
+          "end": 458015,
+          "sha256": "6094bbd9fb4118151d1dbb54a6a4442d96bcee57318af6430836dc44e380f80c"
+        }
+      ],
+      "review_scope": "Published textual claims and conditional recommendations; no new graphic interpretation, manufacturer equivalence, installation or procurement verification.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-026",
+      "status": "confirmed_document_conflict_wrong_section",
+      "review_reason": "В графе типа/марки повторены35341 для лотка и треугольной бирки,BSD2120 для подвеса и трубы Ду32;21.10 используется для двух разных интерфейсных кабелей. Все три текстовых факта верны. Выдача требует сверить каталоги и номера, не выдумывает заменяющие артикулы. Согласно эталону это технические документальные конфликты, выданные в questions.",
+      "proposed_section": "technical_findings",
+      "decision_sources": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F031_schedule_identifiers.json",
+          "sha256": "0ba974eea77807f5c8c3f8875d643ad457d952d2cda3aab0d7ad5a20963b2c32"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "start": 455518,
+          "end": 458015,
+          "sha256": "6094bbd9fb4118151d1dbb54a6a4442d96bcee57318af6430836dc44e380f80c"
+        },
+        {
+          "block_id": "blk_f4bf6dec4072413fa43043bf27d880eb",
+          "start": 458041,
+          "end": 459289,
+          "sha256": "d5685344f65c7454342ea09635176b4994278e049a0f2474ec032684b951db4c"
+        }
+      ],
+      "review_scope": "Published textual claims and conditional recommendations; no new graphic interpretation, manufacturer equivalence, installation or procurement verification.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-029",
+      "status": "correct_question_scope",
+      "review_reason": "Три таблицы действительно содержат1плиту,1подвес,4консоли; СО15плит/15консолей. Выдача правильно сохраняет условность применения узла и не объявляет нехватку45консолей. Не приведены дополнительные количества подвесов/анкеров — неполнота покрытия отдельно, не ложность опубликованных фактов.",
+      "proposed_section": "questions",
+      "decision_sources": [
+        {
+          "path": "experiments/auditmanager_stage1_20261109/decisions/AK_F024_support_console_scope.json",
+          "sha256": "44adf7ab3a2842d4508f92cfecd4e56fdbb8cc303ab691a43f4e8ff0d0024ec9"
+        }
+      ],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_56331ec5845f4d73be99b93df1faec9c",
+          "start": 270129,
+          "end": 270923,
+          "sha256": "43ad99d25b5ab1607b80bfb5834171cb9582c9624b8d0a82bd51b807b6c08272"
+        },
+        {
+          "block_id": "blk_39fda1bca4154e719671c8db8fa6eeed",
+          "start": 295252,
+          "end": 296046,
+          "sha256": "51f0a5b366410661255c351a8bce3697851cd61a84413b50b25e1c59e22c5329"
+        },
+        {
+          "block_id": "blk_6136fac6ecc947f49aa62c1e5803f276",
+          "start": 325603,
+          "end": 326397,
+          "sha256": "662402d0141987ee33ab22d7bad52b34bed49d8f9f35fcb4fdf0ef7e8ebfc259"
+        },
+        {
+          "block_id": "blk_2258a0dfd8c84b6197e4cbb4d229ea27",
+          "start": 455518,
+          "end": 458015,
+          "sha256": "6094bbd9fb4118151d1dbb54a6a4442d96bcee57318af6430836dc44e380f80c"
+        }
+      ],
+      "review_scope": "Published textual claims and conditional recommendations; no new graphic interpretation, manufacturer equivalence, installation or procurement verification.",
+      "engineer_decision": null
+    },
+    {
+      "finding_id": "F-035",
+      "status": "confirmed_document_conflict",
+      "review_reason": "КЖ9:Па3.1-8,ШАУВ-1-К4АС→XТ1,КСПВПГнг(А)-HF2×2×0,75,20м. Полная локальная ведомость лист29 содержит20мКСПЭВПГнг(A)-HF2×2×0,75 и не содержит двухпарного неэкранированного исполнения. Различие сохранено без выбора правильного кабеля по одному совпадению длины; рекомендация сверить назначение и документы обоснована.",
+      "proposed_section": "technical_findings",
+      "decision_sources": [],
+      "authoritative_md_spans": [
+        {
+          "block_id": "blk_2ad1534d9efb41548a02a2b2a6020ba6",
+          "start": 370196,
+          "end": 372800,
+          "sha256": "cfff6e2a322a2949afa4b6d4bc8d3d7819ca91bc5d02da8159496669979ebe90"
+        },
+        {
+          "block_id": "blk_94e2f96d2883406394e0ebcbbf3cbbd7",
+          "start": 176574,
+          "end": 177528,
+          "sha256": "7e050eb98058e7117a7890378402f97d62e3b326d6358687977f5207eb8e5e2e"
+        }
+      ],
+      "review_scope": "Published textual claims and conditional recommendations; no new graphic interpretation, manufacturer equivalence, installation or procurement verification.",
+      "engineer_decision": null
+    }
+  ],
+  "production_acceptance": false
+}
