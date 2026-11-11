@@ -343,6 +343,10 @@
         {
           "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/KM_complete_literal_quantity_trace.json",
           "sha256": "aafdc71602181f6735d6f9d724f3c421eac55bb202a706449236c67fb3286ea7"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/km_f005_output_evidence/assessment.json",
+          "sha256": "e109f3e299c3423af0d8b8346bf2e50e33b824b2f4308f876656627e9ca93a71"
         }
       ],
       "full_acceptance_proven": false
