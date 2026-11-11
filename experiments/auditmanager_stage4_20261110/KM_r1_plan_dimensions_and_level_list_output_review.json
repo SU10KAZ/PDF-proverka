@@ -1,0 +1,443 @@
+{
+  "status": "two_plan_outputs_assessed_with_dimension_boundary_limits",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "32c0e9c9b4bf34bba2b4a43c701aabbbc7e95789665c48546813de300e5e2728",
+  "queue_after_sha256": "5d18158406bf2316d5762e5adc2e511faeaee0357af033eae13b335045f936e2",
+  "reviewer": "coordinator_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-011",
+      "finding": {
+        "id": "F-011",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Геометрия и привязки",
+        "sheet": "Лист 3",
+        "page": 5,
+        "problem": "Размер площадки на отметке +4,630 различается на плане и разрезе.",
+        "description": "На разрезе 1–1 размер правой лестничной площадки на отметке +4,630 составляет 2070 мм, а на плане этой площадки — 2030 мм. Расхождение составляет 40 мм.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к согласованности размеров и привязок на схемах металлических конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-001",
+                "G-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-001",
+                  "G-002"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить размер площадки по согласованной геометрии лестницы и исправить план либо разрез с проверкой привязок ограждения.",
+        "risk": "Несовпадение изготовленного ограждения с фактическими габаритами площадки.",
+        "source_finding_ids": [
+          "G-001",
+          "G-002"
+        ],
+        "source_block_ids": [
+          "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+        ],
+        "related_block_ids": [
+          "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение размера площадки на отметке +4,630 листа 3: 2070 мм на разрезе 1-1 и 2030 мм на плане, разница 40 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение размера площадки на отметке +4,630 листа 3: 2070 мм на разрезе 1-1 и 2030 мм на плане, разница 40 мм.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F011_dimension_reference_points:composite:1",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На плане площадки+4,630 размер2030мм, на разрезе1–1 у этой площадки2070мм.",
+          "verdict": "confirmed_numeric_labels",
+          "limits": "2070−2030=40мм."
+        },
+        {
+          "claim": "Это один размер с одинаковыми конечными точками.",
+          "verdict": "not_established",
+          "limits": "Плановая цепь идёт от линии нижнего разворота ограждения к стене; разрез связывает конец ограждения и стену. Тождество осей/граней и выносных линий в двух проекциях не установлено. Это не доказанная разница поперечной ширины прохода."
+        },
+        {
+          "claim": "Площадка или изготовленное ограждение ошибочны.",
+          "verdict": "not_established",
+          "limits": "Совпадение40мм с размером трубы не доказывает объяснение различием оси и грани. Не принимать40мм как универсальный допуск и не выбирать2030либо2070 автоматически."
+        },
+        {
+          "claim": "Уточнить базы размеров и согласовать привязку.",
+          "verdict": "supported_question_requires_qualified_heading",
+          "limits": "Категоричный заголовок текущего замечания следует ограничить вопросом о базах измерения."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_geometric_or_list_address_not_an_additional_field_defect",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F011_dimension_reference_points.json",
+          "sha256": "b47d5331d28fc2d1a12dc1c4f52e732d33cedfa68ff068827a9e9481165cc324",
+          "primary_adjudication": null,
+          "limits": [
+            "Численная разница40мм подтверждена; тождество исходных точек двух размерных линий пока не установлено.",
+            "40мм совпадает с размером трубы в проекте, но это не доказательство объяснения разницы осью/гранью и не универсальный допуск.",
+            "Не установлены неверное изготовление, монтажный дефект или нарушение нормативной ширины прохода."
+          ],
+          "wording": "Уточнить базы привязкиОГМ2 у площадки+4.630 секцииС2: на плане указан2030мм, на разрезе1-1 —2070мм. Сопоставить выносные линии, ось/грань трубы и грань стены до выбора исправляемого значения."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_767432a366864283851be4a9092d0909.png",
+          "sha256": "006a8146299cae52dd585a79c91467e218657d4891da3d2b850d1e13b8b141c9",
+          "block_id": "blk_767432a366864283851be4a9092d0909",
+          "route": "direct_GRAPHIC_review",
+          "observation": "План+4,630: цепь1770/2300/2030, нижний размер2030 до стены; ОГМ2 у правой ветви."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8e8d4c0218c6473ab7885f5aed70bafd.png",
+          "sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+          "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+          "route": "direct_GRAPHIC_review",
+          "observation": "Разрез1–1: у правой площадки+4,630 размер2070."
+        }
+      ],
+      "disposition": "assessed_dimension_bases_unresolved_preserve_question"
+    },
+    {
+      "discipline": "KM",
+      "repeat": 1,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Геометрия и привязки",
+        "sheet": "Лист 3",
+        "page": 5,
+        "problem": "Перечень отметок типовой схемы секции С2 не согласован с разрезом и верхним участком лестницы.",
+        "description": "В перечне отметок верхней на плане железобетонной площадки пропущены +22,550 и +32,630, показанные на разрезе с ОГМ5 и соответствующие уровням +24,070 и +34,150 в заголовке. Включена отметка +39,350, для которой отдельная схема задаёт размеры 3460 и 1470 мм вместо 3160 и 1770 мм.",
+        "norm": "ГОСТ 21.502-2016 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.502-2016",
+            "cited_designation": "ГОСТ 21.502-2016",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к обозначению области применения типовых схем, отметок и привязок конструкций.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-003",
+                "G-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-003",
+                  "G-004"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать перечень отметок типовой схемы с разрезом 1–1, отдельно обозначив применение схемы верхнего участка лестницы.",
+        "risk": "Применение ограждения неподходящей геометрии и пропуск ограждений на отдельных уровнях.",
+        "source_finding_ids": [
+          "G-003",
+          "G-004"
+        ],
+        "source_block_ids": [
+          "blk_9dbddaba8e334be3ab857afe48df76ec"
+        ],
+        "related_block_ids": [
+          "blk_9dbddaba8e334be3ab857afe48df76ec",
+          "blk_8e8d4c0218c6473ab7885f5aed70bafd"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+            "page": 5
+          },
+          {
+            "type": "image",
+            "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+            "page": 5
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T074051Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-004",
+              "mode": "independent",
+              "detected_at": "2026-11-11T07:40:51.719874+00:00",
+              "context_source": "structured_structure"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания указывают на пропуск +22.550 и +32.630 и ошибочное включение +39.350 в типовую схему при отдельной геометрии 3460 вместо 3160 мм. Дополнительный размер 1470 вместо 1770 мм слева и связь с уровнями +24.070 и +34.150 справа уточняют обоснование той же проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания указывают на пропуск +22.550 и +32.630 и ошибочное включение +39.350 в типовую схему при отдельной геометрии 3460 вместо 3160 мм. Дополнительный размер 1470 вместо 1770 мм слева и связь с уровнями +24.070 и +34.150 справа уточняют обоснование той же проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "KM_F012_level_list_scope:caf42e6feef6a3355c54",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "На типовом плане С2 пропущены+22,550 и+32,630 в верхнем списке отметок.",
+          "verdict": "confirmed_cross_view_list_omission",
+          "limits": "Разрез показывает эти промежуточные площадки и ОГМ5; нижний список и заголовок содержат+24,070 и+34,150. Это пропуск в перечне, не доказанное физическое отсутствие ограждения."
+        },
+        {
+          "claim": "Типовой список включает+39,350, для верхнего участка есть отдельная схема3460/1470 вместо3160/1770.",
+          "verdict": "confirmed_distinct_scheme_geometry",
+          "limits": "Верхний план подписывает+39,350,+37,510,+41,190; следует уточнить границы применимости схем, не автоматически исключать+39,350 без привязки ветвей."
+        },
+        {
+          "claim": "Согласовать перечень и явно обозначить верхний участок.",
+          "verdict": "supported_document_coordination_question",
+          "limits": ""
+        },
+        {
+          "claim": "Изготовлено неподходящее ограждение либо ограждения пропущены.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_geometric_or_list_address_not_an_additional_field_defect",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F012_level_list_scope.json",
+          "sha256": "f2c0052c8e3217c2fc0115deb2f4d7a426e4127d17ce0a4ca37e36645858abcd",
+          "primary_adjudication": null,
+          "limits": [
+            "Пропуск установлен только в конкретном списке; не утверждается отсутствие уровней или ограждений во всём проекте.",
+            "ВедомостьОГМ5 листа4 содержит10 изделий, и разрез показывает10ОГМ5; пропуск двух отметок не доказывает дефицит двух ограждений.",
+            "Непосредственная эксплуатационная опасность, недокомплект и отсутствие монтажа не доказаны. Автоматически увеличивать количествоОГМ5 нельзя."
+          ],
+          "wording": "Уточнить перечень отметок верхней на плане площадки типовой схемыС2: в нём отсутствуют+22.550 и+32.630, тогда как разрез1-1 показывает эти площадки с примыкающими маршамиОГМ5. Проверить область применения схемы и согласовать перечень с разрезом."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_9dbddaba8e334be3ab857afe48df76ec.png",
+          "sha256": "6a6d688d0e178b45dbbf5df09bea06aa6d02ec439fb8696f853e61a8d58d3a6b",
+          "block_id": "blk_9dbddaba8e334be3ab857afe48df76ec",
+          "route": "direct_GRAPHIC_review",
+          "observation": "В верхнем перечне нет22,550/32,630, есть39,350; цепь1170/3160/1770."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8e8d4c0218c6473ab7885f5aed70bafd.png",
+          "sha256": "a4d991c8d2f616de0d519e62793fffc3f930c57b722156ecc9ac35e4aedbbb58",
+          "block_id": "blk_8e8d4c0218c6473ab7885f5aed70bafd",
+          "route": "direct_GRAPHIC_review",
+          "observation": "Разрез показывает22,550/32,630 и верхнюю область37,510/39,350/41,190."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/km_r1_classic/classic_control/inputs/KM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_d2963ae2ab2841cd95de9c28e8cac089.png",
+          "sha256": "bdde370f0136f7c09aeafb31e13fc8ea807667ad4c245956ce2f8627036ee842",
+          "block_id": "blk_d2963ae2ab2841cd95de9c28e8cac089",
+          "route": "direct_GRAPHIC_review",
+          "observation": "Отдельный верхний план: цепь1170/3460/1470, ОГМ5 иОГМ8."
+        }
+      ],
+      "disposition": "assessed_level_list_omission_and_upper_scheme_scope"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F011_dimension_reference_points.json",
+      "sha256": "b47d5331d28fc2d1a12dc1c4f52e732d33cedfa68ff068827a9e9481165cc324",
+      "primary_adjudication": null,
+      "limits": [
+        "Численная разница40мм подтверждена; тождество исходных точек двух размерных линий пока не установлено.",
+        "40мм совпадает с размером трубы в проекте, но это не доказательство объяснения разницы осью/гранью и не универсальный допуск.",
+        "Не установлены неверное изготовление, монтажный дефект или нарушение нормативной ширины прохода."
+      ],
+      "wording": "Уточнить базы привязкиОГМ2 у площадки+4.630 секцииС2: на плане указан2030мм, на разрезе1-1 —2070мм. Сопоставить выносные линии, ось/грань трубы и грань стены до выбора исправляемого значения."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/KM_F012_level_list_scope.json",
+      "sha256": "f2c0052c8e3217c2fc0115deb2f4d7a426e4127d17ce0a4ca37e36645858abcd",
+      "primary_adjudication": null,
+      "limits": [
+        "Пропуск установлен только в конкретном списке; не утверждается отсутствие уровней или ограждений во всём проекте.",
+        "ВедомостьОГМ5 листа4 содержит10 изделий, и разрез показывает10ОГМ5; пропуск двух отметок не доказывает дефицит двух ограждений.",
+        "Непосредственная эксплуатационная опасность, недокомплект и отсутствие монтажа не доказаны. Автоматически увеличивать количествоОГМ5 нельзя."
+      ],
+      "wording": "Уточнить перечень отметок верхней на плане площадки типовой схемыС2: в нём отсутствуют+22.550 и+32.630, тогда как разрез1-1 показывает эти площадки с примыкающими маршамиОГМ5. Проверить область применения схемы и согласовать перечень с разрезом."
+    }
+  ],
+  "control_pair_limit": "F011 имеет неустановленные базы, а F024/F025 проверены по конкретнымД/Е. Это не подтверждённая пара технически ложного и полезного дефектов: F011 не опровергнут. Автоматический фильтр числовых разностей не принимать.",
+  "model_calls": 0,
+  "production_acceptance": false
+}
