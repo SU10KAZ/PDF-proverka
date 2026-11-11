@@ -1,0 +1,198 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "998bf50e721210c380c17ea4b289c9e5d8bcb80d6ff9485a05a819e29c569afa",
+  "queue_after_sha256": "837f0f93f5c1101b25bb358706383366b81e0621a935c54e1934ae39a5dbf2e5",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "КРИТИЧЕСКОЕ",
+        "category": "Арматура",
+        "sheet": "Листы 2.1, 3., 4., 5., 11., 3",
+        "page": [
+          9,
+          26,
+          27,
+          28,
+          34,
+          41
+        ],
+        "problem": "Арматура PN16 не согласована с давлением первичного контура выше 17 бар.",
+        "description": "В первичных регулирующих узлах отопления и вентиляции предусмотрены клапаны PN16. Для клапанов ГВС экспликация требует PN25, а спецификация указывает PN16. Для фильтров, гибких вставок и обратных затворов DN300, а также фланцев PN16 соответствие давлению греющего контура не обосновано.",
+        "norm": "ГОСТ 33259-2015 (норматив-кандидат), кандидат п. 1; ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 33259-2015",
+            "cited_designation": "ГОСТ 33259-2015",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить применимость выбранных фланцев по номинальному давлению и исполнению.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить обоснование безопасности арматуры при проектных параметрах.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Составить ведомость допустимых давлений по участкам, проверить паспортные ограничения при рабочей температуре и устранить противоречия до закупки.",
+        "risk": "Поставка арматуры недостаточной прочности, утечки и аварийное отключение первичного контура.",
+        "source_finding_ids": [
+          "T-004"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_11981549aceb463ba84c7c0de619d2fc",
+          "blk_30789714316b48908c5addc9bfb135d2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 9
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 26
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 41
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 97,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-015:ebc5f59f87e18c7525b5",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "ITP_F003_main_circuit_components:52cbecb1ef185b3847ce",
+          "route": "technical",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "СО27/28/31:регулирующиеVFM-2R отопления1/2зон ивентиляцииPN16.",
+          "verdict": "confirmed_direct_authoritative_TEXT",
+          "limits": "Назначение систем указано; конкретное первичное размещение каждого клапана в этой текстовой проверке независимо по схеме не прослежено."
+        },
+        {
+          "claim": "ГВС32/33/34:экспликацияPN25,СОPN16.",
+          "verdict": "confirmed_direct_TEXT_same_positions",
+          "limits": "Прочитаны строки продолжения каждой позиции. Это самостоятельный конфликт характеристик, не устранён совпадением марки."
+        },
+        {
+          "claim": "DN300:фильтр63,вставка96,обратныйзатвор103 PN16.",
+          "verdict": "confirmed_direct_TEXT_inventory",
+          "limits": "УфильтраTmax200°C,затвора100°C. Текущие рабочие пределы при температуре по паспортам не проверены. Количество изделий не количество дефектов."
+        },
+        {
+          "claim": "ФланцыPN16 ивсяарматура не согласованы сдавлением первичного контура.",
+          "verdict": "bounded_question_binding_required",
+          "limits": "Не установлены местные максимумы и принадлежность всех изделий первичным участкам. НаличиеPN25крана71не доказывает достаточность остальной арматуры."
+        },
+        {
+          "claim": "Составить ведомость допустимых давлений по участкам и согласовать исполнения.",
+          "verdict": "supported_scoped_followup",
+          "limits": "Технический конфликтГВСPN25/16 сохранить. Безусловная непригодность всехPN16, фактические утечки и аварии не доказаны."
+        }
+      ],
+      "unsupported_additions": "Не установлены местные максимумы, принадлежность всех изделий первичному контуру, паспортные пределы при температуре и фактический отказ.",
+      "novel_useful_content": "Прямые документальные основания вопроса подтверждены; новое инженерное принятие не установлено.",
+      "duplicate_burden": "PN25/PN16 дляГВС — отдельный атом отKvs/серииF016. Число изделий не число доказанных нарушений.",
+      "profile_and_section": "Сохранить документальный конфликтPN дляГВС и вопросы адресной проверки остальной арматуры; фактические разделы отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; вывод опирается на прямойTEXT.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_30789714316b48908c5addc9bfb135d2",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_acc3bf59f8f447f988de16849e40e9f1",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+          "route": "direct_authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_a84dc3455457476dadbc35029e2e7ae8",
+          "route": "direct_authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_r3_direct_armature_pressure"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Direct authoritative TEXT evaluation of F004, including continuation rows32–34 and DN300 component references. Primary-side placement and temperature-dependent passport limits remain unverified. No new model call, graphic inspection or engineer acceptance."
+}
