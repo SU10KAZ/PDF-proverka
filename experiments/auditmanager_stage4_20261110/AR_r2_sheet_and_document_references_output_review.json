@@ -1,0 +1,553 @@
+{
+  "status": "three_AR_document_reference_findings_assessed",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+  "queue_before_sha256": "0a5d3ebd80fc90c2712e9b424ba5bf7e9cafa5d09d217884861c3ef33ebcd095",
+  "queue_after_sha256": "8786886fa75d3e490790135a92acd25373e7eb4f7c5546f577b9610cd141e10f",
+  "reviewed_rows": [
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-001",
+      "finding": {
+        "id": "F-001",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление документации",
+        "sheet": "Листы 1, 10, 12",
+        "page": [
+          3,
+          12,
+          14,
+          15
+        ],
+        "problem": "Дублируется номер листа 12 и не согласована ссылка на лист 13.",
+        "description": "В ведомости рабочих чертежей и заголовках два разных листа — «Узлы» и «Светопрозрачное ограждение кровли» — обозначены номером 12. Данные анализа страниц 14 и 15 также содержат обозначение «Лист 12». Лист 13 отсутствует в ведомости, хотя на него ссылается примечание 2 листа 10.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), кандидат п. 4.2.5",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить требования к нумерации листов, ведомости рабочих чертежей и ссылкам внутри комплекта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-001"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-001"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.2.5",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Назначить каждому листу уникальный номер, согласовать ведомость, основные надписи и все ссылки после проверки фактического состава комплекта.",
+        "risk": "Ошибочный выбор узла или листа при согласовании и выполнении работ.",
+        "source_finding_ids": [
+          "T-001"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "blk_747f574e1fa54f62aa0ad09874faa314",
+          "blk_9229dc363c184ae3abca81013e330dfa",
+          "blk_ae58e44ff89a43deb9ed9088e9778125",
+          "blk_da80f01d01214295afe19fe6063fe5e1",
+          "blk_fa94f8e6d5184c38a68292a0f7afdba7",
+          "blk_d9481af62d6447f6b591d328f7d0d3a9",
+          "blk_c725ce887579494f86b4968fc113b951"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 42,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule",
+            "coordination"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F008_sheet_register:3b6bd4f3bacbcd4e30ae",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "В ведомости два листа12:Узлы иСветопрозрачное ограждение;13 отсутствует; примечание2 листа10 ссылается на13.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Метаданные двух страниц также называют12.",
+          "verdict": "confirmed_MD_metadata_only",
+          "limits": "Физические штампы заново не прочитаны. Метаданные не являются независимым подтверждением изображения штампа."
+        },
+        {
+          "claim": "Увязать ведомость, номера и ссылки.",
+          "verdict": "supported_navigation_question",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Указанные последствия для изготовления и монтажа уже произошли либо неизбежны.",
+          "verdict": "not_established",
+          "limits": "Риск возможен; фактические переделки, отсутствие конструкций и неправильное изготовление не доказаны."
+        },
+        {
+          "claim": "Решение второго повтора требует сначала проверить фактический состав, затем согласовать номера и ссылки.",
+          "verdict": "supported_scoped_action",
+          "limits": "Автоматически назначать номер 13 конкретному чертежу оснований нет."
+        }
+      ],
+      "unsupported_additions": "Не принимать условный риск за установленное техническое нарушение; нормативные кандидаты не проверены. Метаданные штампа не являются независимым осмотром изображения.",
+      "novel_useful_content": "Основной тезис уже проверен в первом повторе; новый независимый технический дефект не установлен.",
+      "duplicate_burden": "Одна строка на самостоятельный вопрос: нумерация, адреса КМ или область примечания. Повторные ссылки внутри одного вопроса не считать отдельными дефектами.",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "Исторические решения применимы лишь к совпадающему тезису; инженерное принятие всей новой формулировки и фактическое время проверки не установлены.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_da80f01d01214295afe19fe6063fe5e1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F008_sheet_register.json",
+          "sha256": "b35cb86bcd0ba6f11196bc1af9696e6dc5296f7cbe34ae124a24876558cdb29f",
+          "primary_adjudication": null,
+          "limits": "Подтверждено дублирование номера в ведомости; подготовленная карта страниц MD также обозначает страницы 14/15 номером 12. Это не независимая визуальная проверка оригинальных штампов. Отсутствие самого чертежа, неправильное изготовление и правильный номер для перенумерации не установлены. Ссылка на лист 13 не называет конкретный узел или чертёж ограждения.",
+          "wording": "Уточнить нумерацию в ведомости рабочих чертежей АР6.2: номер 12 указан для «Узлы» и «Светопрозрачное ограждение кровли», строки 13 нет. При этом примечание листа 10 требует совместного рассмотрения с листом 13. Согласовать ведомость и адрес ссылки."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_d9481af62d6447f6b591d328f7d0d3a9",
+          "route": "MD_stamp_metadata_not_direct_graphic_stamp",
+          "observed_metadata": "> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 12 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Узлы | Organization: GLOBUS PROJECT | Revisions: Не указано"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_c725ce887579494f86b4968fc113b951",
+          "route": "MD_stamp_metadata_not_direct_graphic_stamp",
+          "observed_metadata": "> **Stamp:** Code: ПД-00580716-АР6.2 | Stage: Р | Sheet: 12 | Наименование проекта: “Многофункциональная комплексная жилая застройка” по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой “Матвеевское”, квартал 3, 2-я очередь, этап 2 (рекламное название ЖК Событие 6.1) | Наименование листа: Светопрозрачное ограждение кровли | Organization: GLOBUS PROJECT | Revisions: Не указано"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_after_identical_source_hash_check_and_current_wording_review",
+          "finding_id": "F-001",
+          "limits": "Historical decisions reused only within their stated scope. Current authoritative TEXT read directly; physical stamps and plan graphics not newly inspected."
+        }
+      ],
+      "disposition": "assessed_r2_sheet_register_question_preserved"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-002",
+      "finding": {
+        "id": "F-002",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Согласованность документации",
+        "sheet": "Листы 2, 3, 8, 10",
+        "page": [
+          4,
+          5,
+          10,
+          12
+        ],
+        "problem": "Для ограждений и кровельных лестниц приведены противоречащие друг другу ссылки на комплекты КМ.",
+        "description": "Ограждения кровли отнесены к КМ5.2 на листе 8 и к КМ4.2 на листе 10. Для лестниц на листе 8 и в примечании 2 листов 2 и 3 указан КМ6.2, а в примечании 6 листа 10 — КМ5.2. Неоднозначен адрес документации, по которой следует изготавливать и монтировать конструкции.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к обозначениям комплектов рабочей документации и однозначности ссылок на смежные чертежи.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-002",
+                "G-019",
+                "G-020"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-002",
+                  "G-019",
+                  "G-020"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить действительные обозначения комплектов ограждений и лестниц по реестру рабочей документации и исправить ссылки на всех затронутых листах.",
+        "risk": "Применение несоответствующих конструктивных решений, задержки изготовления и переделки.",
+        "source_finding_ids": [
+          "T-002",
+          "G-019",
+          "G-020"
+        ],
+        "source_block_ids": [
+          "blk_ec74ee6311844434b2aab7ca7f844085"
+        ],
+        "related_block_ids": [
+          "blk_ec74ee6311844434b2aab7ca7f844085",
+          "blk_136a04c93a0c42ea92caf6551369e3b4",
+          "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "blk_6ff6b58a285e4ec1b276342a846e08e7",
+          "blk_747f574e1fa54f62aa0ad09874faa314"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_ec74ee6311844434b2aab7ca7f844085",
+            "page": 12
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-019",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T112521Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-020",
+              "mode": "independent",
+              "detected_at": "2026-11-11T11:25:21.940033+00:00",
+              "context_source": "structured_architecture"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение ссылок для кровельных лестниц: КМ5.2 в примечании 6 листа 10 и КМ6.2 в примечании 2 листов 2 и 3. Различие оценок серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение ссылок для кровельных лестниц: КМ5.2 в примечании 6 листа 10 и КМ6.2 в примечании 2 листов 2 и 3. Различие оценок серьёзности не меняет сути проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 85,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "rework",
+            "construction"
+          ],
+          "formalism_flags": [
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AR_F007_KM_references:b89d5f235921cd9de65b",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AR_F007_KM_references:b06b284a61699380958a",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лист8:огражденияКМ5.2,лестницыКМ6.2;лист10:огражденияКМ4.2,лестницыКМ5.2.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Примечание2 листов2/3 также указываетКМ6.2 для лестниц.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Согласовать ссылки по реально выпущенным комплектам.",
+          "verdict": "supported_cross_document_question",
+          "limits": ""
+        },
+        {
+          "claim": "Ошибка ссылок доказывает отсутствие конструкций или неверное изготовление.",
+          "verdict": "not_established",
+          "limits": "Комплекты назначения в данной проверке не просмотрены; правильный адрес не назначается по большинству ссылок."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Указанные последствия для изготовления и монтажа уже произошли либо неизбежны.",
+          "verdict": "not_established",
+          "limits": "Риск возможен; фактические переделки, отсутствие конструкций и неправильное изготовление не доказаны."
+        }
+      ],
+      "unsupported_additions": "Не принимать условный риск за установленное техническое нарушение; нормативные кандидаты не проверены. Метаданные штампа не являются независимым осмотром изображения.",
+      "novel_useful_content": "Основной тезис уже проверен в первом повторе; новый независимый технический дефект не установлен.",
+      "duplicate_burden": "Одна строка на самостоятельный вопрос: нумерация, адреса КМ или область примечания. Повторные ссылки внутри одного вопроса не считать отдельными дефектами.",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "Исторические решения применимы лишь к совпадающему тезису; инженерное принятие всей новой формулировки и фактическое время проверки не установлены.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_6ff6b58a285e4ec1b276342a846e08e7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_2f3068ab00334ed49a43fbc0d168a15b",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_856c9c095c754ef5a3e0444e6c1aacd7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_b29aa98eb0994f5c8f5901f9aa255c41",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
+          "sha256": "ce707aee07ee4cfe839a3ab5f6c83717d449ac8da6a8d1e7fbab4b49feb44bde",
+          "primary_adjudication": null,
+          "limits": "Подтверждено различие адресов для одинаково названных конструкций и секций. Правильный шифр не установлен: повтор КМ6.2 не заменяет проверки самого комплекта. Неверное изготовление, отсутствие узлов и конструктивная непригодность не доказаны. Исторический проект дисциплины КМ нельзя автоматически считать смежным комплектом этого АР без проверки объекта, шифра и версии.",
+          "wording": "Согласовать ссылки на комплекты КМ: ограждения парапетов секций С2/С3 на листе 8 отнесены к КМ5.2, на листе 10 — к КМ4.2. Лестницы и стремянки этих секций отнесены соответственно к КМ6.2 и КМ5.2; примечание листа 2 также ссылается для лестниц на КМ6.2."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AR_F007_KM_references.json",
+          "sha256": "ce707aee07ee4cfe839a3ab5f6c83717d449ac8da6a8d1e7fbab4b49feb44bde",
+          "primary_adjudication": null,
+          "limits": "Подтверждено различие адресов для одинаково названных конструкций и секций. Правильный шифр не установлен: повтор КМ6.2 не заменяет проверки самого комплекта. Неверное изготовление, отсутствие узлов и конструктивная непригодность не доказаны. Исторический проект дисциплины КМ нельзя автоматически считать смежным комплектом этого АР без проверки объекта, шифра и версии.",
+          "wording": "Согласовать ссылки на комплекты КМ: ограждения парапетов секций С2/С3 на листе 8 отнесены к КМ5.2, на листе 10 — к КМ4.2. Лестницы и стремянки этих секций отнесены соответственно к КМ6.2 и КМ5.2; примечание листа 2 также ссылается для лестниц на КМ6.2."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_after_identical_source_hash_check_and_current_wording_review",
+          "finding_id": "F-009",
+          "limits": "Historical decisions reused only within their stated scope. Current authoritative TEXT read directly; physical stamps and plan graphics not newly inspected."
+        }
+      ],
+      "disposition": "assessed_r2_KM_reference_conflict_preserved"
+    },
+    {
+      "discipline": "AR",
+      "repeat": 2,
+      "finding_id": "F-012",
+      "finding": {
+        "id": "F-012",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление документации",
+        "sheet": "Лист 3",
+        "page": 5,
+        "problem": "Примечание плана финишного покрытия содержит неоднозначную самоссылку.",
+        "description": "Примечание 1 листа 3 «План финишного покрытия кровли» сообщает, что финишное покрытие К-4 условно не показано, и направляет за его раскладкой на этот же лист 3. По формулировке нельзя однозначно определить, какой слой скрыт и где находится требуемая раскладка.",
+        "norm": "ГОСТ Р 21.101-2020 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 21.101-2020",
+            "cited_designation": "ГОСТ Р 21.101-2020",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить требования к однозначности примечаний и ссылок на изображения в рабочей документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-012"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-012"
+                ],
+                "designation_source": "Подобран при консолидации по предмету замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить скрытый слой и указать конкретный план или фрагмент с раскладкой, исправив номер листа либо текст примечания.",
+        "risk": "Неоднозначное прочтение плана и ошибки при подготовке раскладки покрытия.",
+        "source_finding_ids": [
+          "T-012"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_43ba3b4bee434762829a4599c645e859",
+          "blk_b29aa98eb0994f5c8f5901f9aa255c41"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Лист3 называетсяПлан финишного покрытия; примечание1 говоритК-4условнонепоказано и отсылает клисту3.",
+          "verdict": "confirmed_TEXT_and_metadata",
+          "limits": ""
+        },
+        {
+          "claim": "На рисунке нет раскладки или невозможно найти покрытие.",
+          "verdict": "not_established",
+          "limits": "Сам план в этой проверке не осмотрен; название и текст примечания не доказывают отсутствия графики. Ссылка на свой лист сама по себе не всегда ошибка."
+        },
+        {
+          "claim": "Уточнить область примечания и адрес раскладки.",
+          "verdict": "supported_editorial_question",
+          "limits": "Замечание следует сохранять с точной цитатой проК-4, не расширяя её на всё финишное покрытие."
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        },
+        {
+          "claim": "Указанные последствия для изготовления и монтажа уже произошли либо неизбежны.",
+          "verdict": "not_established",
+          "limits": "Риск возможен; фактические переделки, отсутствие конструкций и неправильное изготовление не доказаны."
+        },
+        {
+          "claim": "Нельзя однозначно определить слой и адрес исключительно по процитированному примечанию.",
+          "verdict": "supported_text_clarification_only",
+          "limits": "Цитата содержит «верхний слой/нижний слой» и К-4. Это повод уточнить область примечания, не доказательство отсутствия графики или невозможности прочитать весь план."
+        }
+      ],
+      "unsupported_additions": "Не принимать условный риск за установленное техническое нарушение; нормативные кандидаты не проверены. Метаданные штампа не являются независимым осмотром изображения.",
+      "novel_useful_content": "Основной тезис уже проверен в первом повторе; новый независимый технический дефект не установлен.",
+      "duplicate_burden": "Одна строка на самостоятельный вопрос: нумерация, адреса КМ или область примечания. Повторные ссылки внутри одного вопроса не считать отдельными дефектами.",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "Исторические решения применимы лишь к совпадающему тезису; инженерное принятие всей новой формулировки и фактическое время проверки не установлены.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_da80f01d01214295afe19fe6063fe5e1",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ar_r2_classic/classic_control/inputs/AR/versions/v001/02_work/document.md",
+          "sha256": "bf31409ffcf1d26540684a69a102e2635916b8d8398ab29d13baf57197aa9f98",
+          "block_id": "blk_b29aa98eb0994f5c8f5901f9aa255c41",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_after_identical_source_hash_check_and_current_wording_review",
+          "finding_id": "F-012",
+          "limits": "Historical decisions reused only within their stated scope. Current authoritative TEXT read directly; physical stamps and plan graphics not newly inspected."
+        }
+      ],
+      "disposition": "assessed_r2_self_reference_question_no_graphic_absence_claim"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "limits": "Evaluation-only: source agreement and scoped questions, no proof of physical defects or current candidate quality improvement."
+}
