@@ -716,6 +716,8 @@ async def _run_codex_targeted_findings_merge(
     total_input_tokens = base_result.input_tokens
 
     for targeted_pass in passes:
+        from backend.app.pipeline.stages.prepare.recovery_snapshot import refresh_recovery_snapshot
+        targeted_pass = refresh_recovery_snapshot(targeted_pass, base_data, targeted_payloads)
         from backend.app.pipeline.stages.prepare.object_operation_followup import verify_operation_source_binding
         source_error = verify_operation_source_binding(targeted_pass)
         if source_error:
