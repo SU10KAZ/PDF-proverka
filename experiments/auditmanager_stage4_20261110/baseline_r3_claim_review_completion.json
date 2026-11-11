@@ -1,0 +1,66 @@
+{
+  "status": "claim_review_complete_not_trial_acceptance",
+  "runs": [
+    {
+      "discipline": "AK",
+      "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+      "queue_sha256": "98c0e61e5cb0de0ad1260022783ef7cacf18f8a16d113e2d4812e482eac2d478",
+      "rows": 65,
+      "history_verified": true,
+      "receipt": "experiments/auditmanager_stage4_20261110/AK_r3_output_review_queue_receipt.json",
+      "receipt_sha256": "39cec91b0116a7e3f6f0b8accff66ecb8b4220f44e7f17e9833a4acd66c04e81"
+    },
+    {
+      "discipline": "AR",
+      "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AR_output_review_queue.json",
+      "queue_sha256": "ea8c315d4c36faf78a9c6d7571de1a6a5c0657d0c00c693c6e18e5ef1dd74160",
+      "rows": 20,
+      "history_verified": true,
+      "receipt": "experiments/auditmanager_stage4_20261110/AR_r3_output_review_queue_receipt.json",
+      "receipt_sha256": "403c5b6548011ca47104a70d9d11f44b05f3bc11b0e4a8b1ae6d8f31e57b6e0f"
+    },
+    {
+      "discipline": "ITP",
+      "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+      "queue_sha256": "eb6b5536c404627579665ff7bd2ae0c76b41b4a36929938b11db9bdcdd101990",
+      "rows": 54,
+      "history_verified": true,
+      "receipt": "experiments/auditmanager_stage4_20261110/ITP_r3_output_review_queue_receipt.json",
+      "receipt_sha256": "f84f5c1b645bc433c03d304df731425e6f214a0e077345ab4b6a19a5f39a2a20"
+    },
+    {
+      "discipline": "KM",
+      "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/KM_output_review_queue.json",
+      "queue_sha256": "a921412aab0910c84d0caeddbfa2abc3e6bafcabac76cca5d754b6ba9da5a75b",
+      "rows": 25,
+      "history_verified": true,
+      "receipt": "experiments/auditmanager_stage4_20261110/KM_r3_output_review_queue_receipt.json",
+      "receipt_sha256": "f91a082176b4d84433b54fd62266dd530ac5f142591a0899131272c2e240e072"
+    },
+    {
+      "discipline": "VK",
+      "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/VK_output_review_queue.json",
+      "queue_sha256": "9f3fb8ac053521ed8eadf23b5d583c399d4dc84f08b841edec17384118d269ad",
+      "rows": 22,
+      "history_verified": true,
+      "receipt": "experiments/auditmanager_stage4_20261110/VK_r3_output_review_queue_receipt.json",
+      "receipt_sha256": "7c2002bf5abd95af352b1261d6487629d3e733452178e5c35db1f06400b6b610"
+    },
+    {
+      "discipline": "EOM",
+      "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/EOM_output_review_queue.json",
+      "queue_sha256": "f953b110cdb2e7f88c6f1d7314a88f7a5886e299c6464fec89de0beb57d7018a",
+      "rows": 46,
+      "history_verified": true,
+      "receipt": "experiments/auditmanager_stage4_20261110/EOM_r3_output_review_queue_receipt.json",
+      "receipt_sha256": "e6d544801785a5557c0feb1bc319a1c717b8e40cc59e6cc56853d54f5235266f"
+    }
+  ],
+  "total_rows": 232,
+  "limits": [
+    "Assessed includes refuted, unresolved and scoped questions; not all rows are true defects.",
+    "Coverage, report sections, paired quality metrics, engineer workload, transferability and production acceptance remain separate gates.",
+    "Evaluator-added context is not credited as model discovery."
+  ],
+  "production_acceptance": false
+}
