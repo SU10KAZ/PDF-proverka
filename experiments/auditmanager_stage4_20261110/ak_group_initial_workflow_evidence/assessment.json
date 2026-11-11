@@ -1,0 +1,32 @@
+{
+  "status": "initial_grouping_held_on_inherited_identity_uncertainty",
+  "original_candidates": 5,
+  "final_candidates": 5,
+  "all_candidates_unchanged": true,
+  "actual_model_proposed_group_size": 5,
+  "independent_review_action": "needs_context",
+  "model_calls": 2,
+  "reason_for_scope_refinement": "The reviewer accepted shared issue, corrective action and separate scopes, but held grouping on an inherited 3/Z identifier ambiguity which the common heading did not resolve or depend on. New group assertions must be distinguished from unchanged member issues; the latter remain unverified, not silently certified.",
+  "refinement_validation": "run_grouping_scope_pair.py tests AK and EOM with the same revised rule, preserving the EOM stronger-heading control. Results pending; no acceptance inferred here.",
+  "known_development_control": true,
+  "full_acceptance": false,
+  "files": {
+    "input.json": "6eedf2c036c5a5f3431c02054517873b9c44f39ffb6aa8f9fe463b0e13a259be",
+    "output_preview.json": "6eedf2c036c5a5f3431c02054517873b9c44f39ffb6aa8f9fe463b0e13a259be",
+    "preparation.json": "b46f7d72240a830ae795be3bdb0167b2fbb4a6260892f3031169920e9914b4a5",
+    "proposal_request.json": "d3c75970e7b78e390d8f05174b1438160783509976e4be5673c7633379ccb338",
+    "receipt.json": "b5816f722779b1ec7a4ff6225c103f61826f9d9238aea10bd21fc3029bd56fa8",
+    "workflow/group_proposal/attempt.json": "2cf5233fcc6924614f45b27d15a057d855073099c8cf20e061560c0f1725b9db",
+    "workflow/group_proposal/binding.json": "2ddfbf820e18f92d7809b142ac29f79cc6f39a4f518dd413972cdbd4950c9208",
+    "workflow/group_proposal/request.json": "b818496aff739ddcd408aac29bdc8da591e87cbc65c0369efe9b28d8a2aecc8e",
+    "workflow/group_proposal/result.json": "2333874d0f2b67a3f6e773f6e0c93178f58e62b7abe9a387439efe50729a8221",
+    "workflow/group_proposal/result_binding.json": "4a054eb8cc62f7fe91bc349ffd1bfd1bbf42d683396cf340c6fe480146b6e600",
+    "workflow/group_review_000/attempt.json": "603cbc8a21cb2d8e6161875c3991842a2c439a86d813d4421e59f5a99a629865",
+    "workflow/group_review_000/binding.json": "cad8bbabaae621c59ac328cd6b5205fded9ee0e5fd1652e0c79b979ed9b8ec61",
+    "workflow/group_review_000/request.json": "a17549497f58d7310907a13ff0c7afd4db862a59e3634f05218a33bad8523c31",
+    "workflow/group_review_000/result.json": "9220ff2ecc040eddaff6cc9b2c6ba2dd6d1149abb765a79bc9411530580d91a8",
+    "workflow/group_review_000/result_binding.json": "95cf7edf14b94246fbc2c5a562e126f3a4b3cc0b736522c231dc4cc58ca98df8",
+    "workflow/progress.json": "76f3653be7f7eef4b051395be0985ec8a18b8687079a1aa9f8fa65213cc062d4",
+    "workflow/report.json": "e8b97b330dcd13ee4bdf9162a177977b27ef41b17820bd02c21cd1b98d1d366d"
+  }
+}

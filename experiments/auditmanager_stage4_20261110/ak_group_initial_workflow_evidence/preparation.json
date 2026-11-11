@@ -1,0 +1,45 @@
+{
+  "scope": "Known five-cabinet local control, not whole-project blind grouping or independent positive labels.",
+  "source_candidates": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_000_operation_v2_validated.json",
+      "sha256": "04ae1dad833e7ae79b68e2fe99df2482acbfde6044b3238381460eb04d535dc6",
+      "finding_index": 0,
+      "assigned_id": "C-001"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_001_operation_v4_validated.json",
+      "sha256": "391331006e63bd1ae9d01a629044961ed1e91446866e5785d997fbce9d0ec28a",
+      "finding_index": 0,
+      "assigned_id": "C-002"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_002_operation_v2_validated.json",
+      "sha256": "5d2c130786b2f878412d6b6f24be7fa72227b2a7e5ca324f29aad71d7c2a58a6",
+      "finding_index": 0,
+      "assigned_id": "C-003"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_003_operation_v3_validated.json",
+      "sha256": "759ffe4cf077431869c3d696128aa60893b30b2f6e0ade6fd4c6cb533126ec8a",
+      "finding_index": 2,
+      "assigned_id": "C-004"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage4_20261110/AK_cabinet_004_operation_v3_validated.json",
+      "sha256": "73bce6f3cb77904178b2e23d415df27fb95f982d7770f99d13f85ccfe3ea0a15",
+      "finding_index": 0,
+      "assigned_id": "C-005"
+    }
+  ],
+  "source_md_sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+  "original_propositions_and_categories_preserved": true,
+  "message_chars": 11917,
+  "model": "codex/gpt-6-astra",
+  "effort": "high",
+  "maximum_model_calls": 3,
+  "maximum_images_per_group_review": 12,
+  "expected_groups_supplied": false,
+  "engineer_answers_supplied": false,
+  "automatic_retries": 0
+}

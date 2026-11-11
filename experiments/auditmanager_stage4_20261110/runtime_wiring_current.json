@@ -45,11 +45,18 @@
       ],
       "verified": "KM_automatic_citation_release_replay.json: three exact real request payloads replayed through common phase; 26 rows and 25 untouched classic findings; rerun makes no calls.",
       "boundary": "Known development control, disputed evaluator routing remains; no full-project acceptance."
+    },
+    {
+      "method": "Presentation grouping discovery and independent source review",
+      "entry": "backend/app/pipeline/stages/findings_merge/group_workflow_phase.py:run_grouping_phase",
+      "activation": "PipelineStageContext.grouping_invoke with explicit budgets; default off and not yet enabled in paired candidate.",
+      "verified": "tests/test_group_workflow_phase.py: real verifier hook, preservation on hold, atomic commit recovery, source-change rejection.",
+      "boundary": "AK/EOM real scope pair pending. No whole-project grouping or workload improvement established."
     }
   ],
   "remaining_integration": [
     "Freeze individual method variants and budgets before contribution comparisons; combined candidate alone does not isolate seven hypotheses.",
-    "Automatic grouping proposal and source-bound semantic review remain separate from the explicit grouping inbox.",
+    "Grouping proposal/review and atomic runtime hook implemented; validate AK/EOM pair before enabling it in the shared candidate.",
     "Resolve remaining original control cases and profile disagreements without suppressing useful cores.",
     "Freeze evaluator and actual execution plan; run matched comparisons and preserve full source/usage provenance."
   ],
