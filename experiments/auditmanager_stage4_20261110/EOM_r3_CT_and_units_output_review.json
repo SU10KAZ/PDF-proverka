@@ -1,0 +1,622 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/EOM_output_review_queue.json",
+  "queue_before_sha256": "7c4e1ab3b911cdf9e38b781c487cdcc216af42c56a5b82a818fb62902bcbc822",
+  "queue_after_sha256": "e6e2beb57675a518bb0b248b3caa1cf1bdb0c1093df3d57723471812885f5e1b",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-004",
+      "finding": {
+        "id": "F-004",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок и учёт электроэнергии",
+        "sheet": "Листы 2.1, 3",
+        "page": [
+          4,
+          6
+        ],
+        "problem": "Расчёты нагрузок и проверки трансформаторов тока ВРУ-2 и ВРУ-3 используют несогласованные параметры.",
+        "description": "Для ввода 2 ВРУ-3 после компенсации при Рр=121,6 кВт и cosφ=0,97 получается S≈125,36 кВА. В таблице нагрузок указано 123,2 кВА, а в проверке ТТ — 125,4 кВА; ток 190,7 А также не соответствует 123,2 кВА. Для выбора ТТ ВРУ-3 принят максимум 465,1 А вместо 471,4 А режима «Авар. Пожар». По текстовому анализу аналогичное расхождение ВРУ-2 составляет 384,1 против 390,3 А. Допустимость принятой перегрузки ТТ на 20% паспортными данными не подтверждена.",
+        "norm": "СП 256.1325800.2016 (норматив-кандидат), пункт не подтверждён; ПУЭ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 256.1325800.2016",
+            "cited_designation": "СП 256.1325800.2016",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить расчёт нагрузок и согласование режимов после компенсации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004",
+                "T-007",
+                "G-007",
+                "G-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          },
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить выбор проводников и трансформаторов тока по расчётным режимам.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-004",
+                "T-007",
+                "G-007",
+                "G-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-004",
+                  "T-007"
+                ],
+                "designation_source": "Текстовые замечания"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Согласовать активную, реактивную и полную мощности, определить максимальные токи всех режимов и повторить проверки ТТ с паспортными пределами выбранных изделий.",
+        "risk": "Неподтверждённая допустимость нагрузки цепей учёта и ошибки выбора оборудования.",
+        "source_finding_ids": [
+          "T-004",
+          "T-007",
+          "G-007",
+          "G-008"
+        ],
+        "source_block_ids": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "related_block_ids": [
+          "blk_4e968dd71c7149aca85e4195d5c3de49",
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-007",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-008",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:005"
+              ],
+              "confidence": 1.0,
+              "reason": "Правое замечание повторяет расхождение максимального тока 465,1 и 471,4 А и дополнительно выявляет расхождение полной мощности ввода 2: 125,4 и 123,2 кВА.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "extension",
+              "role": "extends",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Правое замечание повторяет расхождение максимального тока 465,1 и 471,4 А и дополнительно выявляет расхождение полной мощности ввода 2: 125,4 и 123,2 кВА.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 100,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "safety",
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-EOM-F-005:a26fcc71b65fb1e5cfa1",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "EOM_F031_CT_emergency_assumptions:d8fbf0545ffcdbb28172",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "121,6/0,97=125,3608 кВА против123,2; Wh2 использует125,4.",
+          "verdict": "confirmed_document_conflict",
+          "limits": "При380В условный ток190,466А. Число190,7 в TEXT имеет единицу кВтм: молчаливое исправление на А не разрешено."
+        },
+        {
+          "claim": "384,1/465,1 в расчётах ТТ против390,3/471,4 в сводных таблицах.",
+          "verdict": "confirmed_numeric_difference_with_unit_boundary",
+          "limits": "Единицы и выбор учитываемого режима требуют согласования. Непригодность ТТ не доказана."
+        },
+        {
+          "claim": "Допустимость20% перегрузки не подтверждена.",
+          "verdict": "bounded_missing_evidence",
+          "limits": "В прочитанных таблицах паспортного подтверждения нет; отсутствие во всём комплекте не проверено.20% не универсальный допуск."
+        },
+        {
+          "claim": "Согласовать мощности, режимы и паспортные пределы.",
+          "verdict": "supported_scoped_question",
+          "limits": "Реальная перегрузка, ошибка оборудования и нормативное нарушение не установлены."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "См. ограничения отдельных тезисов: единицы, применимость порогов, паспортные пределы и происхождение ошибки не подменять предположениями.",
+      "novel_useful_content": "Сохраняются вопросы расчётной согласованности и единиц; новая инженерная приёмка не установлена.",
+      "duplicate_burden": "Мощность, минимальный ток, максимальный режим и единицы — разные операции; число детекторов не увеличивает число дефектов.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_5b30188592764230a7cd894838a60430",
+            "blk_7ca68a936c85428dbd4b60b2893398a2"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-006",
+          "source": "frozen_r2_atomic_review"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_c5f0556f94c14503bfe178ef5941c077",
+            "blk_7d22e811017e4e969b2d732e9e30c50d",
+            "blk_5b30188592764230a7cd894838a60430",
+            "blk_7ca68a936c85428dbd4b60b2893398a2"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-011",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_CT_and_units"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-006",
+      "finding": {
+        "id": "F-006",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Учёт электроэнергии",
+        "sheet": "Листы 2.1, 3",
+        "page": [
+          4,
+          6
+        ],
+        "problem": "В проверках минимального вторичного тока ТТ использованы неверные подстановки и порог сравнения.",
+        "description": "Вместо минимальных первичных токов 23,9 и 30,6 А для ВРУ-2, 39,4 и 28,6 А для ВРУ-3 подставлены 77 и 74 А. Правильные вторичные токи составляют соответственно 0,341; 0,383; 0,394 и 0,358 А. В таблицах сравнение выполнено с 0,1 А; приведённое в текстовом анализе условие 5% от номинальных 5 А соответствует 0,25 А. Исправленные значения превышают оба порога; сама ошибка не доказывает необходимость замены ТТ.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.5.17",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.99,
+            "reason": "Проверить условия применения коэффициентов трансформации и минимального вторичного тока расчётного учёта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-006",
+                "G-001",
+                "G-003",
+                "G-006"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-006"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.5.17",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить подстановки и результаты, проверить применимый критерий по нормативу и документации учёта.",
+        "risk": "Недостоверное обоснование принятых коэффициентов трансформации.",
+        "source_finding_ids": [
+          "T-006",
+          "G-001",
+          "G-003",
+          "G-006"
+        ],
+        "source_block_ids": [
+          "blk_4e968dd71c7149aca85e4195d5c3de49",
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "related_block_ids": [
+          "blk_4e968dd71c7149aca85e4195d5c3de49",
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_4e968dd71c7149aca85e4195d5c3de49",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T164633Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-006",
+              "mode": "independent",
+              "detected_at": "2026-11-11T16:46:33.456140+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковую ошибку расчёта Wh1 и Wh2: подстановку 77 и 74 А вместо 23,9 и 30,6 А, с исправлением вторичных токов на 0,34 и 0,38 А. Различие категорий и серьёзности не меняет сути и детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания описывают одинаковую ошибку расчёта Wh1 и Wh2: подстановку 77 и 74 А вместо 23,9 и 30,6 А, с исправлением вторичных токов на 0,34 и 0,38 А. Различие категорий и серьёзности не меняет сути и детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "rework",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F030_CT_minimum_substitutions:e48399b0ddd41647bc4a",
+          "route": "question",
+          "coverage": "full"
+        },
+        {
+          "target_id": "EOM_F030_CT_minimum_substitutions:82bb92f6ba02b2b7c780",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Строки4 используют77/74 вместо минимумов23,9/30,6 и39,4/28,6 строк2.",
+          "verdict": "confirmed_TEXT_cross_row_conflict",
+          "limits": "Происхождение77/74 неизвестно; исходные нагрузки и режим15% не валидированы."
+        },
+        {
+          "claim": "23,9/70;30,6/80;39,4/100;28,6/80.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "Результаты0,34142857;0,3825;0,394;0,3575А. Округления выдачи согласуются."
+        },
+        {
+          "claim": "5% от5А=0,25А; исправленные числа превышают0,25 и0,1.",
+          "verdict": "confirmed_arithmetic_only",
+          "limits": "Применимость нормативного5% и паспортного0,1 не проверена. Слово неверный о пороге категоричнее доказательств."
+        },
+        {
+          "claim": "Исправить подстановки; замена ТТ не доказана.",
+          "verdict": "supported_scoped_question",
+          "limits": "Сохранить полезную проверку расчётной согласованности; не засчитывать как доказанную непригодность."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "См. ограничения отдельных тезисов: единицы, применимость порогов, паспортные пределы и происхождение ошибки не подменять предположениями.",
+      "novel_useful_content": "Сохраняются вопросы расчётной согласованности и единиц; новая инженерная приёмка не установлена.",
+      "duplicate_burden": "Мощность, минимальный ток, максимальный режим и единицы — разные операции; число детекторов не увеличивает число дефектов.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_ids": [
+            "blk_7d22e811017e4e969b2d732e9e30c50d",
+            "blk_7ca68a936c85428dbd4b60b2893398a2"
+          ],
+          "route": "authoritative_TEXT_direct_review",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-010",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_CT_and_units"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 3,
+      "finding_id": "F-007",
+      "finding": {
+        "id": "F-007",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Оформление документации",
+        "sheet": "Листы 2.1, 3, 4",
+        "page": [
+          4,
+          6,
+          7
+        ],
+        "problem": "В извлечённых заголовках таблиц некорректно обозначены единицы тока и мощности.",
+        "description": "Расчётный ток обозначен единицами «кВт» либо «кВтм», активная мощность ВРУ-3 — «кВтм». Числовые значения токов соответствуют амперам. Возможна ошибка извлечения текста; оригинальные заголовки не проверены.",
+        "norm": "ГОСТ 8.417-2002 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 8.417-2002",
+            "cited_designation": "ГОСТ 8.417-2002",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить обозначения единиц электрического тока и мощности.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-008"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-008"
+                ],
+                "designation_source": "Текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить заголовки с оригиналом и при подтверждении исправить на Iр, А и Ру/Рр, кВт.",
+        "risk": "Ошибочное прочтение расчётных параметров.",
+        "source_finding_ids": [
+          "T-008"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "page": 6
+          },
+          {
+            "type": "text",
+            "page": 7
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 52,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        },
+        "corrector_note": "[no_evidence] Нет evidence[] / related_block_ids / ссылки на block_id в тексте.",
+        "corrected_by": "deterministic"
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "TEXT содержитIp в кВт/кВтм иPy/Pp ВРУ3 в кВтм.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Это оформительский вопрос. Единицы S уже кВА; отдельная ошибка S не установлена."
+        },
+        {
+          "claim": "Возможна ошибка извлечения; числа соответствуют амперам.",
+          "verdict": "unproven_origin_and_conditional_interpretation",
+          "limits": "Авторитетный TEXT не исправляется повторным OCR или растром. Числовая совместимость не доказывает происхождение обозначений."
+        },
+        {
+          "claim": "Уточнить размерности столбцов.",
+          "verdict": "supported_editorial_question",
+          "limits": "Реальная ошибка подбора не доказана. Запрос повторной проверки оригинального TEXT не требуется по правилам корпуса."
+        },
+        {
+          "claim": "Нормативные кандидаты",
+          "verdict": "not_checked",
+          "limits": "Нормативное нарушение не засчитывается."
+        }
+      ],
+      "unsupported_additions": "См. ограничения отдельных тезисов: единицы, применимость порогов, паспортные пределы и происхождение ошибки не подменять предположениями.",
+      "novel_useful_content": "Сохраняются вопросы расчётной согласованности и единиц; новая инженерная приёмка не установлена.",
+      "duplicate_burden": "Мощность, минимальный ток, максимальный режим и единицы — разные операции; число детекторов не увеличивает число дефектов.",
+      "profile_and_section": "Вопросы и уточнения; фактическое размещение по разделам итогового отчёта ещё не проверено.",
+      "engineer_reuse": "Нового решения инженера не приписывается; источники той же версии сверены по SHA.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_c5f0556f94c14503bfe178ef5941c077",
+          "route": "byte_verified_same_version_source_and_prior_adjudication",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r3_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_5b30188592764230a7cd894838a60430",
+          "route": "byte_verified_same_version_source_and_prior_adjudication",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r2_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "reuse_scope": "Identical source bytes; current claims assessed independently. No new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-009",
+          "source": "frozen_r2_atomic_review"
+        }
+      ],
+      "disposition": "assessed_r3_EOM_CT_and_units"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Three current findings independently assessed against identical authoritative source bytes and frozen prior reviews. No new norm validation, raster correction or engineer acceptance."
+}
