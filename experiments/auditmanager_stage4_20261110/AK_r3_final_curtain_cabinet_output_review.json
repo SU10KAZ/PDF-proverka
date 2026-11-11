@@ -1,0 +1,344 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/AK_output_review_queue.json",
+  "queue_before_sha256": "5de490159899b2772edf4ca0b8961f74e3f0e6300417eb06aad32344fd797f56",
+  "queue_after_sha256": "98c0e61e5cb0de0ad1260022783ef7cacf18f8a16d113e2d4812e482eac2d478",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-030",
+      "finding": {
+        "id": "F-030",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Подключение тепловых завес",
+        "sheet": "Листы 23, 31",
+        "page": [
+          27,
+          89
+        ],
+        "problem": "В журнале не определены подключения второго смесительного узла завес.",
+        "description": "Перечень предусматривает Y1/Y2, насосы М1/М2 и термостаты TS1/TS2. Журнал содержит подключения только первого клапана, М1 и ТС1. Принадлежность остальных цепей к комплектной проводке не указана.",
+        "norm": "ГОСТ Р 2.105-2019 (норматив-кандидат), кандидат п. 5.2.1; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ Р 2.105-2019",
+            "cited_designation": "ГОСТ Р 2.105-2019",
+            "candidate_relevance": 0.85,
+            "reason": "Однозначность описания подключений и границ комплектной проводки.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-029"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-029"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "5.2.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Полнота учёта линий и комплектующих.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-029"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-029"
+                ],
+                "designation_source": "Исходное замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Показать подключения Y2, М2 и TS2 и учесть кабели либо явно определить комплектную поставку.",
+        "risk": "Неработоспособность второго смесительного узла и его защиты.",
+        "source_finding_ids": [
+          "T-029"
+        ],
+        "source_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_abed08ccd9a347bb9fa290fd8696b197"
+        ],
+        "related_block_ids": [
+          "blk_6e54eb477b59421dbea94ef657f05a46",
+          "blk_abed08ccd9a347bb9fa290fd8696b197"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_6e54eb477b59421dbea94ef657f05a46",
+            "page": 27
+          },
+          {
+            "type": "text",
+            "block_id": "blk_abed08ccd9a347bb9fa290fd8696b197",
+            "page": 89
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F011_curtain_connection_scope:d373990f04c6f3880335",
+          "route": "negative",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F011_curtain_connection_scope:e86ce5509b0bfea4981d",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "КЖ31 содержит У4-1 кУ1,У4-2 кМ1,У4-5 кТС1; локальный перечень включает Y1/Y2,M1/M2,TS1/TS2.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Буквальное У1 в КЖ сохранено; связь с клапаномY1 основана на графике, не исправлении TEXT."
+        },
+        {
+          "claim": "Подключения второго узла не показаны.",
+          "verdict": "refuted_global_absence_by_direct_GRAPHIC",
+          "limits": "Лист41 показывает ответвлениеY1–Y2,соединениеM1–M2,цепочкуTS1–TS2. Основные линииУ4-1/-2/-5 уже ведут к этим группам."
+        },
+        {
+          "claim": "Межсоединения вторых устройств не выделены отдельными строками журнала.",
+          "verdict": "supported_bounded_accounting_question",
+          "limits": "На схеме ответвления показаны, но их длины и отдельные марки не обозначены. Указание «согласно чертежей завода-изготовителя» есть; само по себе оно не доказывает комплектную поставку всех перемычек."
+        },
+        {
+          "claim": "Показать подключения и добавить кабели.",
+          "verdict": "remedy_requires_scope_correction",
+          "limits": "Не требовать повторного изображения существующих связей. Уточнить границы поставки и учёт перемычек; автоматический дозаказ, отсутствие монтажа и неработоспособность не доказаны."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "F030: оставить лишь узкий вопрос учёта перемычек, отделив от других количественных замечаний завес. F039: снять опровергнутое тождество3/4, не переименовывать устройства.",
+      "profile_and_section": "F030: вопрос комплектности и учёта соединений. F039: проверено и опровергнуто. Фактическая маршрутизация разделов итогового отчёта не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_e7bf605cde374aec808e8a5deb78ce97.png",
+          "sha256": "afcf8641c69d75b8ffaee20e6b9be36a0adf205a4fa43955ffa4e42ad7f5f34e",
+          "block_id": "blk_e7bf605cde374aec808e8a5deb78ce97",
+          "route": "directly_viewed_GRAPHIC"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_ids": [
+            "blk_6e54eb477b59421dbea94ef657f05a46",
+            "blk_abed08ccd9a347bb9fa290fd8696b197"
+          ],
+          "route": "authoritative_TEXT_local_list_and_cable_journal"
+        }
+      ],
+      "disposition": "assessed_direct_r3_curtain_and_cabinet_scope"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 3,
+      "finding_id": "F-039",
+      "finding": {
+        "id": "F-039",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Маркировка шкафов",
+        "sheet": "Лист 5",
+        "page": 9,
+        "problem": "Два отдельных щита корпуса 2 обозначены одинаково.",
+        "description": "На общей схеме два щита подземной части корпуса 2 имеют марку ШАУВ-3-К2ПЧ. Их подключения нельзя однозначно различить по обозначению.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Однозначная идентификация шкафов автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-003"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-003"
+                ],
+                "designation_source": "Подбор при объединении"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить индивидуальные обозначения и согласовать их со схемами и спецификацией.",
+        "risk": "Ошибочная адресация подключений и шкафов.",
+        "source_finding_ids": [
+          "G-003"
+        ],
+        "source_block_ids": [
+          "blk_0792816c162c469289b461843d2c307b"
+        ],
+        "related_block_ids": [
+          "blk_0792816c162c469289b461843d2c307b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_0792816c162c469289b461843d2c307b",
+            "page": 9
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T134955Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T13:49:55.647278+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 57,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Два отдельных шкафа корпуса2 имеют одинаковую маркуШАУВ-3-К2ПЧ.",
+          "verdict": "refuted_direct_GRAPHIC_crop",
+          "limits": "В подземной части видны последовательные шкафы1,2,3,4. ШАУВ-3-К2ПЧ связан сП2.1.1/П2.1.4; нижний шкаф уП2.1.2 имеетШАУВ-4-К2ПЧ и ветвь кВ2.1.2."
+        },
+        {
+          "claim": "Подключения нельзя различить по обозначению; нужно переименовать шкафы.",
+          "verdict": "refuted_for_claimed_pair",
+          "limits": "Индексы3и4 различаются на исходной графике и увеличенном фрагменте. У этой строки нет подтверждённого основания для переименования."
+        },
+        {
+          "claim": "Ошибка монтажа или идентификации физических шкафов.",
+          "verdict": "not_established",
+          "limits": "Проверено только заявленное графическое тождество. Не обобщать отсутствие этого дубля на все марки проекта."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактическая несовместимость, отказ оборудования, нарушение проверенного нормативного пункта или неправильный монтаж.",
+      "novel_useful_content": "Сохранена адресная основа уточнения; новое инженерное принятие и прирост качества относительно классического метода не доказаны.",
+      "duplicate_burden": "F030: оставить лишь узкий вопрос учёта перемычек, отделив от других количественных замечаний завес. F039: снять опровергнутое тождество3/4, не переименовывать устройства.",
+      "profile_and_section": "F030: вопрос комплектности и учёта соединений. F039: проверено и опровергнуто. Фактическая маршрутизация разделов итогового отчёта не проверена.",
+      "engineer_reuse": "Нового решения инженера нет; оценка основана на текущих источниках.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r3_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_0792816c162c469289b461843d2c307b.png",
+          "sha256": "7cc18f2b25f7f7ba5728daf368eee0eefb4e43aa9549e2c6ab2497ca080e7769",
+          "block_id": "blk_0792816c162c469289b461843d2c307b",
+          "route": "directly_viewed_GRAPHIC"
+        },
+        {
+          "path": "/tmp/ak_r3_k2_cabinets_crop.png",
+          "sha256": "e806cc8896b62cac2cdcfdc69a88c8c62e92e8a1b627a1acd0748feaf9764422",
+          "route": "directly_viewed_source_graphic_crop",
+          "source_image_size": [
+            8247,
+            3265
+          ],
+          "crop_fraction_xyxy": [
+            0.17,
+            0.38,
+            0.345,
+            0.87
+          ],
+          "transform": "Pillow crop with integer pixel boundaries; no OCR or text correction"
+        },
+        {
+          "path": "/tmp/ak_r3_k2_lower_crop.png",
+          "sha256": "1f6144ee57a0776163365e5627fbf5e3c35e4755d9b8770a70cd40f504964e84",
+          "route": "directly_viewed_source_graphic_crop",
+          "source_image_size": [
+            8247,
+            3265
+          ],
+          "crop_fraction_xyxy": [
+            0.17,
+            0.73,
+            0.3,
+            0.995
+          ],
+          "transform": "Pillow crop with integer pixel boundaries; no OCR or text correction"
+        }
+      ],
+      "disposition": "assessed_direct_r3_curtain_and_cabinet_scope"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Last two AK r3 findings: direct cable journal TEXT and external-connection GRAPHIC, plus full overview and two source-image crops for cabinet identity. No new source PDF rendering, OCR, manufacturer or installation verification."
+}
