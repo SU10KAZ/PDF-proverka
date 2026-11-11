@@ -1,71 +1,7 @@
-"""Local GRAPHIC-only recovery; never extracts or replaces authoritative TEXT."""
+"""Compatibility CLI for the shared GRAPHIC-only renderer."""
 import argparse
-import hashlib
 import json
-from pathlib import Path
-
-import fitz
-
-
-def render(pdf_path, blocks_path, block_id, expected_pdf_sha256, output_dir,
-           columns=4, scale=2.0, overlap=0.025, padding=0.0, rows=1):
-    pdf_path, blocks_path, output_dir = map(Path, (pdf_path, blocks_path, output_dir))
-    digest = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
-    if digest != expected_pdf_sha256:
-        raise ValueError('Source PDF version changed')
-    data = json.loads(blocks_path.read_text())
-    if data.get('coordinate_space') != 'normalized_page_top_left':
-        raise ValueError('Unsupported coordinate space')
-    matches = [b for b in data['blocks'] if b['block_id'] == block_id]
-    if len(matches) != 1 or matches[0]['block_type'] != 'image':
-        raise ValueError('Exactly one GRAPHIC block required')
-    block = matches[0]
-    n = block['coords_norm']
-    if (len(n) != 4 or not all(0 <= x <= 1 for x in n)
-            or n[0] >= n[2] or n[1] >= n[3]):
-        raise ValueError('Invalid block geometry')
-    if not 1 <= columns <= 16 or not 1 <= rows <= 16 or not 0 < scale <= 4 or not 0 <= overlap <= 0.1 or not 0 <= padding <= 0.05:
-        raise ValueError('Invalid rendering budget')
-    output_dir.mkdir(parents=True, exist_ok=False)
-    receipts = []
-    with fitz.open(pdf_path) as doc:
-        page = doc[block['page_index']]
-        rect = fitz.Rect(n[0]*page.rect.width, n[1]*page.rect.height,
-                         n[2]*page.rect.width, n[3]*page.rect.height)
-        original_rect = list(rect)
-        # Optional same-PDF graphical context, distinct from the original crop.
-        if padding:
-            rect = fitz.Rect(max(page.rect.x0, rect.x0-page.rect.width*padding),
-                max(page.rect.y0, rect.y0-page.rect.height*padding),
-                min(page.rect.x1, rect.x1+page.rect.width*padding),
-                min(page.rect.y1, rect.y1+page.rect.height*padding))
-        for row in range(rows):
-            for column in range(columns):
-                clip = fitz.Rect(max(rect.x0, rect.x0+rect.width*(column/columns-overlap)),
-                                 max(rect.y0, rect.y0+rect.height*(row/rows-overlap)),
-                                 min(rect.x1, rect.x0+rect.width*((column+1)/columns+overlap)),
-                                 min(rect.y1, rect.y0+rect.height*((row+1)/rows+overlap)))
-                if clip.width*clip.height*scale**2 > 20_000_000:
-                    raise ValueError('Tile exceeds pixel budget')
-                pix = page.get_pixmap(matrix=fitz.Matrix(scale, scale), clip=clip, alpha=False)
-                path = output_dir / f'detail_tile_{row*columns+column}.png'
-                pix.save(path)
-                receipts.append({'block_id': block_id, 'page_index': block['page_index'],
-                    'pdf_rotation': page.rotation, 'clip_rotated_page_points': list(clip),
-                    'grid_row': row, 'grid_column': column,
-                    'path': str(path), 'width': pix.width, 'height': pix.height,
-                    'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
-    manifest = {'pdf_path': str(pdf_path), 'pdf_sha256': digest,
-        'blocks_path': str(blocks_path),
-        'blocks_sha256': hashlib.sha256(blocks_path.read_bytes()).hexdigest(),
-        'purpose': 'GRAPHIC-only higher resolution tiles; no TEXT re-extraction',
-        'columns': columns, 'rows': rows, 'scale': scale, 'overlap': overlap, 'tiles': receipts,
-        'padding_page_fraction':padding,'original_crop_points':original_rect,
-        'expanded_crop_points':list(rect),'outside_original_crop':bool(padding),
-        'model_call_performed': False, 'semantic_verified': False}
-    (output_dir/'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
-    return manifest
-
+from backend.app.pipeline.stages.prepare.graphic_detail_render import render
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
