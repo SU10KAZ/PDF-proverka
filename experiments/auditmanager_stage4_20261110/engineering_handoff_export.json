@@ -1,0 +1,12 @@
+{
+  "source_sha256": "bcb6834dff1a73d3b47746a135eaeb3d2a30f3b2652dacf93098741465128b26",
+  "questions": 6,
+  "evidence_refs_checked": 41,
+  "blank_engineer_answers_verified": true,
+  "files": {
+    "Незакрытые_вопросы_инженеру.xlsx": "6708ae1357ad254a259d6070788b8d397e34455cae154690d9bfcea489c3ce76",
+    "Незакрытые_вопросы_инженеру.html": "35cc7935be387dd81b0357f445c7118750a33ecf513405857c40d69d49565b48"
+  },
+  "model_calls": 0,
+  "stage4_complete": false
+}
