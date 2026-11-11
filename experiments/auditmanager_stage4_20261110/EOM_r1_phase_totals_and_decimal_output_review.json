@@ -1,0 +1,574 @@
+{
+  "status": "three_graphic_reviews_one_decimal_claim_refuted",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "7f4a8dbe36cbb5e2a93a2b9a9e26001ca447381cd0a682f27b8468293aaf5509",
+  "queue_after_sha256": "9d0a0a47f964106975c705dc1c8c92469b95aa472f6edb10e23a0c1da2be33ec",
+  "reviewer": "coordinator_direct_graphic_review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-036",
+      "finding": {
+        "id": "F-036",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт фазных нагрузок",
+        "sheet": "Лист 7",
+        "page": 10,
+        "problem": "Расчётный ток 1.ЩС не учитывает наиболее нагруженную фазу.",
+        "description": "Для щита указан ток 10,3 А при расчётной мощности 6,1 кВт и коэффициенте спроса 0,9. На фазе А группа 1.ЩС-4 имеет мощность 5,19 кВт и ток 26,2 А при 0,22 кВ. Даже после применения коэффициента 0,9 эта группа даёт около 23,6 А, что превышает сводный ток щита.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Выбор проводников по фактической расчётной нагрузке фаз.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-024",
+                "G-025"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-024",
+                  "G-025"
+                ],
+                "designation_source": "Подбор кандидата при консолидации"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Рассчитать нагрузки каждой фазы с обоснованными коэффициентами спроса, указать максимальный фазный ток и проверить ввод и защиту.",
+        "risk": "Занижение тока наиболее нагруженной фазы при выборе питающей линии.",
+        "source_finding_ids": [
+          "G-024",
+          "G-025"
+        ],
+        "source_block_ids": [
+          "blk_fbd847573ddd408aae3067c0c1bb9dde"
+        ],
+        "related_block_ids": [
+          "blk_fbd847573ddd408aae3067c0c1bb9dde"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_fbd847573ddd408aae3067c0c1bb9dde",
+            "page": 10
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-024",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-025",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания сопоставляют ток щита 10,3 А с током группы 1.ЩС-4 на фазе A 26,2 А и требуют расчёта по наиболее нагруженной фазе. Расчёт 23,6 А при Кс=0,9 слева дополнительно подтверждает тот же вывод без существенного расширения проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:004"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания сопоставляют ток щита 10,3 А с током группы 1.ЩС-4 на фазе A 26,2 А и требуют расчёта по наиболее нагруженной фазе. Расчёт 23,6 А при Кс=0,9 слева дополнительно подтверждает тот же вывод без существенного расширения проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F014_phase_A_current:d972a6b9f556089a8923",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "1.ЩС:сводный10,3А,Рр6,1кВт,Кс0,9;группа4наA,5,19кВт,26,2А,0,22кВ.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "26,2×0,9=23,58А.",
+          "verdict": "confirmed_conditional_arithmetic",
+          "limits": "Кс задан щиту,его применение к одной группе не обосновано. Это не установленный фактический ток фазы."
+        },
+        {
+          "claim": "Нужен расчёт максимальных фазных нагрузок и режимов.",
+          "verdict": "supported_scoped_question",
+          "limits": "10,3меньше подписанного26,2;воспроизводимость общего тока по симметричной формуле не подтверждает проектную методику."
+        },
+        {
+          "claim": "Питающая линия выбрана по заниженному току.",
+          "verdict": "insufficient_selection_and_mode_evidence",
+          "limits": "Условия прокладки,паспорт нагрузки и параметры питающегоQF3.21 не проверены. Рубильник63А на схеме не является доказательством правильности или ошибки защиты."
+        },
+        {
+          "claim": "На схеме доказано соединениеN–PE.",
+          "verdict": "not_assessed_by_this_arithmetic_review",
+          "limits": "ОтдельныйF-037 требует прослеживания концов проводников;разница токов не доказательство перемычки."
+        },
+        {
+          "claim": "Нормативные кандидаты.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативное нарушение не доказано этой проверкой."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "phase_current_and_power_label_are_distinct_claims_not_blanket_deduplicated",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F014_phase_A_current.json",
+          "sha256": "658e2faf7e777cc659e49710a787ab6dfbae0ae51a050597f960008447f3eaa9",
+          "primary_adjudication": null,
+          "limits": "Условное умножение26,2×0,9=23,58А не является доказанной методикой группы: Кс задан щиту. Рубильник63А не является защитой от перегрузки. Кабель5×16 и номинал рубильника не доказывают ни перегрузку, ни достаточность всей питающей линии. Параметры QF3.21, условия прокладки и паспорт нагрузки не проверены.",
+          "wording": "В 1.ЩС сводный Iр=10,3 А соответствует симметричному трёхфазному расчёту по Рр=6,1 кВт, но группа 1.ЩС-4 на фазе A имеет Iр=26,2 А. Уточните расчёт фазных токов, режимы работы и значение сводного Iр для проверки питающей линии."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fbd847573ddd408aae3067c0c1bb9dde.png",
+          "sha256": "6c610cf7b193518b3cf25efbc313a316d21adfdc4eba7fab5b7bdf664946c475",
+          "block_id": "blk_fbd847573ddd408aae3067c0c1bb9dde",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "ИтогРр6,1,Кс0,9,Ip10,3;группа4A,5,19кВт,26,2А."
+        }
+      ],
+      "disposition": "assessed_preserve_phase_A_calculation_question"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-038",
+      "finding": {
+        "id": "F-038",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт фазных нагрузок",
+        "sheet": "Лист 8",
+        "page": 11,
+        "problem": "Расчётный ток 1.ЩС-УК не отражает нагрузку фазы А.",
+        "description": "Для щита указан ток 3,2 А. На фазе А подключены наружный блок с током 8,5 А и розеточная группа 1,0 А — суммарно 9,5 А до применения коэффициента спроса. При указанном коэффициенте 0,9 получается около 8,55 А, что также превышает сводное значение.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.95,
+            "reason": "Учёт фактической нагрузки наиболее нагруженной фазы при выборе проводников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-028"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-028"
+                ],
+                "designation_source": "Подбор кандидата при консолидации"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Пересчитать фазные нагрузки и ток ввода с обоснованием коэффициентов спроса, исправить параметры щита.",
+        "risk": "Выбор питающей линии по заниженному фазному току.",
+        "source_finding_ids": [
+          "G-028"
+        ],
+        "source_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "related_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+            "page": 11
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-028",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 45,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F016_management_phase_current:fdef783b69877a39920c",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "1.ЩС-УК:сводный3,2А;группы1и4подписаныA,токи1,0и8,5А.",
+          "verdict": "confirmed_direct_graphic",
+          "limits": ""
+        },
+        {
+          "claim": "1+8,5=9,5;при0,9получается8,55А.",
+          "verdict": "confirmed_scalar_arithmetic_not_exact_phase_current",
+          "limits": "cosφгрупп0,95/0,80различаются;сумма модулей не точный фазорный расчёт. Ксщита не доказан для фазы."
+        },
+        {
+          "claim": "Группа4фактически подключена однофазно.",
+          "verdict": "insufficient_interface_evidence",
+          "limits": "Одновременно указаныA,0,22кВ,кабель3×2,5 иQF4 3P. Требуется установить фазность оборудования и назначение жил,а не выбрать одну подпись."
+        },
+        {
+          "claim": "Согласовать подключение и фазный расчёт.",
+          "verdict": "supported_scoped_question",
+          "limits": "Выдача не отразила противоречивую подпись3P,сужая необходимую проверку."
+        },
+        {
+          "claim": "Питающая линия выбрана по заниженному току.",
+          "verdict": "insufficient_upstream_protection_and_mode_evidence",
+          "limits": "Рубильник40А/кабель5×4 не доказывают ни перегрузку,ни достаточность. QF3.22 и условия прокладки не проверены."
+        },
+        {
+          "claim": "Нормативные кандидаты.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативное нарушение не доказано этой проверкой."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "phase_current_and_power_label_are_distinct_claims_not_blanket_deduplicated",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+          "sha256": "fd397c9b88821ec58404f09b5ee75556f169bd87b1258e15617e5ee42ff06997",
+          "primary_adjudication": null,
+          "limits": "(1+8,5)×0,90=8,55А — условная арифметическая оценка. Кс щита не доказан для отдельной фазы; cos φ групп0,95 и0,80 различны, сумма модулей не является точным фазорным расчётом. Ввод обозначен230/400В, а таблица групп220В.3,2А численно воспроизводятся при380В; это не установленная проектная методика. Рубильник40А и кабель5×4 сами по себе не показывают перегрузку. QF3.22 и условия прокладки не проверены.",
+          "wording": "В 1.ЩС-УК указан сводный Iр=3,2 А, а группы1 и4 подписаны фазой A и имеют токи1,0 и8,5А. Уточните фактическое подключение группы4 (рядом также указан автомат3P), распределение нагрузки и расчёт максимального фазного тока."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+          "sha256": "4dae62b85d910dd66905114bbc9d7a86c0919e16b1a5348c663cdbce947d7ea8",
+          "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Группы1/4A,1/8,5А;QF4 3P,кабель3×2,5,0,22кВ. ИтогIp3,2."
+        }
+      ],
+      "disposition": "assessed_preserve_management_phase_question_require_pole_context"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-039",
+      "finding": {
+        "id": "F-039",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расчёт нагрузок",
+        "sheet": "Лист 8",
+        "page": 11,
+        "problem": "В таблице 1.ЩС-УК указана расчётная мощность 19 кВт вместо примерно 1,9 кВт.",
+        "description": "При установленной мощности 2,1 кВт и коэффициенте спроса 0,90 расчётная мощность равна 1,89 кВт. Запись 19 кВт не соответствует исходным данным и указанному току 3,2 А.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.3.2",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.85,
+            "reason": "Согласованность расчётной нагрузки, используемой для выбора проводников.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-029"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-029"
+                ],
+                "designation_source": "Подбор кандидата при консолидации"
+              }
+            },
+            "clause_candidate": "1.3.2",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить расчётную мощность по согласованным исходным нагрузкам и проверить перенос значения в связанные таблицы.",
+        "risk": "Использование десятикратно завышенной мощности в последующих расчётах.",
+        "source_finding_ids": [
+          "G-029"
+        ],
+        "source_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "related_block_ids": [
+          "blk_8a00c129168b4f21a94ae8b1c3581a4b"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+            "page": 11
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-029",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 73,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "В графической итоговой таблицеРр=19кВт.",
+          "verdict": "refuted_direct_graphic_decimal_reading",
+          "limits": "В блоке изображения читается1.9кВт,Ру2.1,Кс0,90,Ip3.2А. Не исправлялсяTEXT:проверяется исходныйIMAGE-блок."
+        },
+        {
+          "claim": "2,1×0,90=1,89≈1,9кВт.",
+          "verdict": "confirmed_arithmetic_consistent_with_graphic",
+          "limits": "Это согласование данной строки,не проверка всего фазного расчёта."
+        },
+        {
+          "claim": "Необходимо исправить десятикратно завышенную мощность.",
+          "verdict": "unsupported_action_based_on_misread_label",
+          "limits": "Различие19/1,9не подтверждено первичным графическим источником."
+        },
+        {
+          "claim": "Завышенное значение используется в связанных расчётах.",
+          "verdict": "not_established",
+          "limits": "Фактический перенос19кВт не прослежен."
+        },
+        {
+          "claim": "ВопросF-038о фазных токах также снят.",
+          "verdict": "not_supported",
+          "limits": "Правильное чтениеРр не разрешает отдельный вопрос максимального фазного тока."
+        },
+        {
+          "claim": "Нормативные кандидаты.",
+          "verdict": "unverified_candidate_only",
+          "limits": "Нормативное нарушение не доказано этой проверкой."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "no_new_useful_content_established",
+      "duplicate_burden": "phase_current_and_power_label_are_distinct_claims_not_blanket_deduplicated",
+      "profile_and_section": "exclude_refuted_finding",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+          "sha256": "4dae62b85d910dd66905114bbc9d7a86c0919e16b1a5348c663cdbce947d7ea8",
+          "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "В правой верхней итоговой таблицеРу2.1,Кс0,90,Рр1.9,cos0,90,Ip3.2. Десятичный разделитель вРр читается."
+        }
+      ],
+      "disposition": "assessed_refute_decimal_power_misreading"
+    }
+  ],
+  "source_evidence": [],
+  "graphic_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_fbd847573ddd408aae3067c0c1bb9dde.png",
+      "sha256": "6c610cf7b193518b3cf25efbc313a316d21adfdc4eba7fab5b7bdf664946c475",
+      "block_id": "blk_fbd847573ddd408aae3067c0c1bb9dde",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "ИтогРр6,1,Кс0,9,Ip10,3;группа4A,5,19кВт,26,2А."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+      "sha256": "4dae62b85d910dd66905114bbc9d7a86c0919e16b1a5348c663cdbce947d7ea8",
+      "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Группы1/4A,1/8,5А;QF4 3P,кабель3×2,5,0,22кВ. ИтогIp3,2."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8a00c129168b4f21a94ae8b1c3581a4b.png",
+      "sha256": "4dae62b85d910dd66905114bbc9d7a86c0919e16b1a5348c663cdbce947d7ea8",
+      "block_id": "blk_8a00c129168b4f21a94ae8b1c3581a4b",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "В правой верхней итоговой таблицеРу2.1,Кс0,90,Рр1.9,cos0,90,Ip3.2. Десятичный разделитель вРр читается."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F014_phase_A_current.json",
+      "sha256": "658e2faf7e777cc659e49710a787ab6dfbae0ae51a050597f960008447f3eaa9",
+      "primary_adjudication": null,
+      "limits": "Условное умножение26,2×0,9=23,58А не является доказанной методикой группы: Кс задан щиту. Рубильник63А не является защитой от перегрузки. Кабель5×16 и номинал рубильника не доказывают ни перегрузку, ни достаточность всей питающей линии. Параметры QF3.21, условия прокладки и паспорт нагрузки не проверены.",
+      "wording": "В 1.ЩС сводный Iр=10,3 А соответствует симметричному трёхфазному расчёту по Рр=6,1 кВт, но группа 1.ЩС-4 на фазе A имеет Iр=26,2 А. Уточните расчёт фазных токов, режимы работы и значение сводного Iр для проверки питающей линии."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F016_management_phase_current.json",
+      "sha256": "fd397c9b88821ec58404f09b5ee75556f169bd87b1258e15617e5ee42ff06997",
+      "primary_adjudication": null,
+      "limits": "(1+8,5)×0,90=8,55А — условная арифметическая оценка. Кс щита не доказан для отдельной фазы; cos φ групп0,95 и0,80 различны, сумма модулей не является точным фазорным расчётом. Ввод обозначен230/400В, а таблица групп220В.3,2А численно воспроизводятся при380В; это не установленная проектная методика. Рубильник40А и кабель5×4 сами по себе не показывают перегрузку. QF3.22 и условия прокладки не проверены.",
+      "wording": "В 1.ЩС-УК указан сводный Iр=3,2 А, а группы1 и4 подписаны фазой A и имеют токи1,0 и8,5А. Уточните фактическое подключение группы4 (рядом также указан автомат3P), распределение нагрузки и расчёт максимального фазного тока."
+    }
+  ],
+  "limits": [
+    "N/PE topology not adjudicated by this batch.",
+    "Upstream protection and actual operating modes unknown.",
+    "No new engineer acceptance.",
+    "Only IMAGE blocks reread;authoritativeTEXT not corrected.",
+    "Frozen outputs,evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
