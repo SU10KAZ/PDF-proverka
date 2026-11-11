@@ -150,3 +150,28 @@ async def test_image_budget_is_bound_across_followup_and_resume(tmp_path, monkey
     with pytest.raises(ValueError, match='invalid_image_budget'):
         await run_source_review_workflow(queue, finding, md, tmp_path, tmp_path/'bad',
             invoke=provider(calls), executor_id='test', max_images=17)
+
+
+@pytest.mark.asyncio
+async def test_quote_spacing_resume_preserves_raw_response_and_reuses_review(tmp_path):
+    md='### BLOCK #1 [TEXT]: t\n| A |  | 28 |\n'
+    _,f,_=setup_case();q=build_source_review_queue([f],md);calls=[]
+    async def invoke(request,phase):
+        if phase!='review':return await provider(calls)(request,phase)
+        calls.append(phase);data=json.loads(request['messages'][-1]['content'])
+        response={k:data[k] for k in ('finding_id','finding_sha256','source_md_sha256','context_sha256')}
+        response['claims']=[{'claim_id':'C1','claim':'X value differs','status':'supported','reason':'Source row',
+                            'evidence':[{'type':'text','block_id':'t','quote':'| A | | 28 |'}]}]
+        return {'json_data':response,'is_error':False}
+    root=tmp_path/'workflow'
+    with pytest.raises(ValueError,match='invalid_source_review'):
+        await run_source_review_workflow(q,f,md,tmp_path,root,invoke=invoke,executor_id='test')
+    raw_before=(root/'00_review/result.json').read_bytes()
+    result=await run_source_review_workflow(q,f,md,tmp_path,root,invoke=invoke,executor_id='test',repair_quote_spacing=True)
+    assert calls==['review','adjudication']
+    assert result['status']=='candidate_ready' and result['calls'][0]['reused']
+    assert (root/'00_review/result.json').read_bytes()==raw_before
+    assert json.loads((root/'00_validation.json').read_text())['errors']==['claim_0:quote_not_in_source']
+    assert not json.loads((root/'00_repaired_validation.json').read_text())['errors']
+    assert result['entry']['response']['claims'][0]['evidence'][0]['quote']=='| A |  | 28 |'
+    assert len(json.loads((root/'00_quote_spacing.json').read_text())['repairs'])==1

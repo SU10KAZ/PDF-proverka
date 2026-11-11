@@ -1,0 +1,12 @@
+{
+  "tests_passed": 42,
+  "report": "experiments/auditmanager_stage4_20261110/graphic_source_handoff_validation.xml",
+  "report_sha256": "2b3d02bb4e75b7a414eda7c570990650a0ddd4c501e3745a49d327f23ee58dd6",
+  "verified": [
+    "Automatic graphic details become attachments in independent source review with source-MD and image hash validation.",
+    "Table-row spacing repair preserves ordered cells, raw provider response and strict validation.",
+    "Resuming quote repair reuses the already completed source-review call and only proceeds to adjudication."
+  ],
+  "semantic_acceptance": false,
+  "full_project_acceptance": false
+}
