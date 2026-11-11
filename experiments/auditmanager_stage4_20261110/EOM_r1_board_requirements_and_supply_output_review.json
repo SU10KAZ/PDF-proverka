@@ -1,0 +1,806 @@
+{
+  "status": "four_board_output_reviews_scope_qualified",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "08380312cf32a1c65af6765d334b07ce74fe2c08cabb73862441162bdc0df14d",
+  "queue_after_sha256": "b160868986efa08d61ed9fbb5807bd42db8e5963882c44c499e309b323189a98",
+  "reviewer": "coordinator_authoritative_TEXT_review",
+  "reviewed_rows": [
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-009",
+      "finding": {
+        "id": "F-009",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Исполнение электрооборудования",
+        "sheet": "Листы 12, 13, 14",
+        "page": [
+          15,
+          16,
+          17,
+          38,
+          39
+        ],
+        "problem": "Минимальная степень защиты вентиляционных щитов различается в схемах и спецификации.",
+        "description": "Примечания к схемам 3ЩРОВ2, 2ЩРОВ1 и 2ЩРОВ2 требуют не менее IP54, а спецификация допускает не менее IP31. Для 3ЩРОВ2 расхождение также установлено анализом схемы на листе 12. Исполнение IP31 удовлетворяет тексту спецификации, но не требованию схемы.",
+        "norm": "ПУЭ (норматив-кандидат), кандидат п. 1.1.27; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ПУЭ",
+            "cited_designation": "ПУЭ",
+            "candidate_relevance": 0.9,
+            "reason": "Соответствие исполнения оборудования условиям среды.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010",
+                "G-033"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "1.1.27",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Однозначное задание характеристик оборудования в спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-010",
+                "G-033"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-010"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Установить единое минимальное исполнение IP54 либо обосновать и согласовать другое значение во всех документах.",
+        "risk": "Поставка и установка щитов с защитой ниже предусмотренной проектом.",
+        "source_finding_ids": [
+          "T-010",
+          "G-033"
+        ],
+        "source_block_ids": [
+          "blk_692503882d074efa83d0d595875347eb"
+        ],
+        "related_block_ids": [
+          "blk_692503882d074efa83d0d595875347eb",
+          "blk_af9f7cd6dba549149cd7152de8b85c41",
+          "blk_aaed5c43e84b4efdaa0186aacc4b8dd2"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_692503882d074efa83d0d595875347eb",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "block_id": "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+            "page": 15
+          },
+          {
+            "type": "text",
+            "block_id": "blk_3e3c5ece56bd4622a52dd2de301562a5",
+            "page": 16
+          },
+          {
+            "type": "text",
+            "block_id": "blk_49e2914a00634fe6869970613f9bc4ca",
+            "page": 17
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+            "page": 38
+          },
+          {
+            "type": "text",
+            "block_id": "blk_af87003578d3440a9be734a66a09af90",
+            "page": 39
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-033",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одинаковое расхождение требований к щиту ЗЩРОВ2: минимум IP54 в примечании 1 листа 12 и IP31 в спецификации; последствия и рекомендации эквивалентны.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F020_enclosure_minimums:b34c225d7cc1d2d234e8",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Три примечания вентиляционных щитов требуют не менееIP54;СО для тех же обозначений задаёт не менееIP31.",
+          "verdict": "confirmed_authoritative_TEXT_same_entities",
+          "limits": "Соответствие установлено по маркам и штампамTEXT; отдельная графическая проверка в этом пакете не выполнялась."
+        },
+        {
+          "claim": "Требования взаимоисключающие.",
+          "verdict": "not_established",
+          "limits": "МинимумIP31 не предписывает ровноIP31 и не запрещаетIP54. Это различие нижних требований, а не доказательство физически несовместимой поставки."
+        },
+        {
+          "claim": "По одной строкеСО возможно выбратьIP31, не удовлетворяющий более строгому примечанию.",
+          "verdict": "supported_conditional_documentation_risk",
+          "limits": "Рассматривается сценарий чтения одного документа, не фактический выбор."
+        },
+        {
+          "claim": "Согласовать требование к заказу оболочек.",
+          "verdict": "supported_scoped_question",
+          "limits": "IP54 не универсальное требование для всех щитов. Изменение проектного минимума требует подтверждения условий установки."
+        },
+        {
+          "claim": "Поставлен или установлен щит с недостаточной защитой.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "В этой проверке подтверждены проектные тексты,не нормативное нарушение."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_board_requirement_supply_location_or_note_claim",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_3e3c5ece56bd4622a52dd2de301562a5",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_49e2914a00634fe6869970613f9bc4ca",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_af87003578d3440a9be734a66a09af90",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F020_enclosure_minimums.json",
+          "sha256": "bf585abffce6c388509728cf559c7128600172b2a0e177b5b859c20235fb3d07",
+          "primary_adjudication": null,
+          "limits": "IP54 может удовлетворять обоим минимумам. Не доказаны поставка именно IP31, недостаточность защиты по условиям среды или нарушение нормы. Обозначение ЗЩРОВ2 сохранено буквально из TEXT, без замены буквы З цифрой 3. Нельзя автоматически снижать IP54 до IP31. Графика не требовалась для сравнения этих явно записанных требований; фактическое оборудование не проверялось.",
+          "wording": "В примечаниях к схемам щитов ЗЩРОВ2, 2ЩРОВ1 и 2ЩРОВ2 на листах 12–14 указан минимум IP54, а в спецификации на листах 2–3 — минимум IP31. Уточните единое требование к оболочкам в документах заказа с учётом более строгого требования примечаний."
+        }
+      ],
+      "disposition": "assessed_preserve_enclosure_order_question_not_incompatible_minima"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-010",
+      "finding": {
+        "id": "F-010",
+        "severity": "ЭКОНОМИЧЕСКОЕ",
+        "category": "Комплектность и границы поставки",
+        "sheet": "Листы 1, 9, 10, 11, 2",
+        "page": [
+          3,
+          12,
+          13,
+          14,
+          38
+        ],
+        "problem": "Не разграничены постоянные и временные квартирные щиты и ответственность за их поставку.",
+        "description": "Общие указания относят установку внутриквартирного щита к собственнику; примечания предусматривают временный щит механизации на период отделки. Спецификация включает 90 квартирных щитов с автоматикой без пояснения назначения и поставщика.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Однозначность состава оборудования, включаемого в спецификацию.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-011"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-011"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Для 90 щитов определить постоянное или временное назначение, состав, поставщика и границы монтажа; согласовать спецификацию и примечания.",
+        "risk": "Двойной учёт постоянных щитов либо отсутствие временных щитов для отделочных работ.",
+        "source_finding_ids": [
+          "T-011"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_16237a8ebd10423194e4a2b0f4b82c26",
+            "page": 12
+          },
+          {
+            "type": "text",
+            "block_id": "blk_73536f4c222b401e8da714ed88d23fce",
+            "page": 13
+          },
+          {
+            "type": "text",
+            "block_id": "blk_17ebeac60c9b497cb8c124a8e3b66068",
+            "page": 14
+          },
+          {
+            "type": "text",
+            "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+            "page": 38
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 66,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "EOM_F033_apartment_board_scope:dbb1bab29b165bc0b8ca",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Собственник устанавливает внутриквартирный щит;на период отделки предусмотрен временный щит механизации.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "СО содержит63шт3ЩКВ и27шт2ЩКВ с автоматикой,итого90.",
+          "verdict": "confirmed_authoritative_TEXT_and_arithmetic",
+          "limits": ""
+        },
+        {
+          "claim": "В спецификации нет поставщика.",
+          "verdict": "refuted_literal_table_absence",
+          "limits": "В колонкеПоставщик стоитDEKraft. Это не устанавливает договорную сторону, ответственную за закупку; отсутствие её подтверждения нужно формулировать отдельно."
+        },
+        {
+          "claim": "Установка собственником исключает поставку90щитов данным проектом.",
+          "verdict": "unsupported_supply_scope_inference",
+          "limits": "Монтаж и поставка — разные обязательства. Тождество90позиций временным щитам не установлено."
+        },
+        {
+          "claim": "Уточнить постоянное/временное назначение,состав и договорные границы поставки/монтажа.",
+          "verdict": "supported_scoped_question",
+          "limits": "Не вычёркивать90щитов и не добавлять90временных автоматически."
+        },
+        {
+          "claim": "Двойной учёт либо отсутствие временных щитов.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативный кандидат выдачи.",
+          "verdict": "unverified_candidate_only",
+          "limits": "В этой проверке подтверждены проектные тексты,не нормативное нарушение."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_board_requirement_supply_location_or_note_claim",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_16237a8ebd10423194e4a2b0f4b82c26",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_73536f4c222b401e8da714ed88d23fce",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_17ebeac60c9b497cb8c124a8e3b66068",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F033_apartment_board_scope.json",
+          "sha256": "733ea2ad8e0939b80ecb45e225de97885ae4879d5e2d56470b01ce7441c11a83",
+          "primary_adjudication": null,
+          "limits": "Подтверждены три самостоятельных факта: 90 изделий в СО, монтаж внутриквартирного щита собственником, временная замена на период отделки. Общие указания говорят об установке, а не однозначно о закупке; поставщик DEKraft не обозначает ответственную сторону договора. Поэтому наличие щита в СО не доказывает лишнюю поставку или противоречие монтажной границе. Назначение 3ЩКВ/2ЩКВ как временных либо постоянных прямо в проверенных строках не указано. Не проверены договор, комплектные ведомости и соответствие каждого щита квартире. Исключение 90 щитов, двойная закупка и отсутствие временных щитов не доказаны.",
+          "wording": "Уточнить назначение и границу поставки 90 квартирных щитов в СО (63 шт. 3ЩКВ и 27 шт. 2ЩКВ с автоматикой): общие указания относят установку внутриквартирного щита к собственнику, а примечания листов 10–11 предусматривают временный щит механизации вместо квартирного на период отделки. Отразить, к какому этапу и чьему объёму относятся позиции СО."
+        }
+      ],
+      "disposition": "assessed_preserve_board_supply_question_correct_supplier_absence"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление документации",
+        "sheet": "Листы 1, 2.1, 3",
+        "page": [
+          3,
+          4,
+          6
+        ],
+        "problem": "Описание местоположения ВРУ и местных щитов допускает смешение этажей.",
+        "description": "В общих указаниях ВРУ секций С2 и С3 сначала размещены на первом подземном этаже, затем собственные ВРУ или распределительные щиты потребителей описаны как расположенные на первом этаже. Примечания к ВРУ-2 и ВРУ-3 указывают минус первый этаж.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Разделить описание основных ВРУ и местных щитов первого этажа, указав однозначное местоположение каждого устройства.",
+        "risk": "Ошибочное толкование расположения оборудования при координации и монтаже.",
+        "source_finding_ids": [
+          "T-027"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+            "page": 3
+          },
+          {
+            "type": "text",
+            "block_id": "blk_54ee6784647e49ae86ad9fd46e7082e3",
+            "page": 4
+          },
+          {
+            "type": "text",
+            "block_id": "blk_4efb5f71075b46c9a256fdebb447e338",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 66,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Общие данные сначала размещаютВРУ-С2/ВРУ-З на первом подземном этаже,позже собственныеВРУ или щиты потребителей на1этаже.",
+          "verdict": "confirmed_authoritative_TEXT_wording",
+          "limits": ""
+        },
+        {
+          "claim": "ПримечанияВРУ2/ВРУ3 указывают помещение электрощитовой−1этажа.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Одно и то же устройство назначено на два этажа.",
+          "verdict": "insufficient_object_identity",
+          "limits": "Вторая фраза включает распределительные щиты обособленных потребителей; поимённое тождество основнымВРУ не доказано."
+        },
+        {
+          "claim": "Разделить описание основныхВРУ и местных щитов,уточнив принадлежность и расположение.",
+          "verdict": "supported_scoped_editorial_question",
+          "limits": "Фактическая плановая привязка оборудования в этом пакете не проверялась."
+        },
+        {
+          "claim": "Ошибка монтажа из-за описания.",
+          "verdict": "hypothetical_not_observed",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_source_supported_question_usefulness_unestablished",
+      "duplicate_burden": "distinct_board_requirement_supply_location_or_note_claim",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_54ee6784647e49ae86ad9fd46e7082e3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_unmapped_VRU_location_wording_question"
+    },
+    {
+      "discipline": "EOM",
+      "repeat": 1,
+      "finding_id": "F-030",
+      "finding": {
+        "id": "F-030",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "Оформление документации",
+        "sheet": "Лист 3",
+        "page": 6,
+        "problem": "В монтажном примечании схемы ВРУ-3 ошибочно указано ВРУ-1.",
+        "description": "Примечание 10 требует выполнять вывод распределительных линий сверху от панелей ВРУ-1, хотя изображена сборка ВРУ-3.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Исправить обозначение сборки в примечании 10 на ВРУ-3.",
+        "risk": "Неоднозначность монтажного указания.",
+        "source_finding_ids": [
+          "G-011",
+          "G-012"
+        ],
+        "source_block_ids": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "related_block_ids": [
+          "blk_513e35c4f8a7432986e9a498d4573996"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_513e35c4f8a7432986e9a498d4573996",
+            "page": 6
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-011",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T085256Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T08:52:56.859907+00:00",
+              "context_source": "structured_electrical"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочное обозначение ВРУ-1 вместо ВРУ-3 в примечании 10.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:006"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на ошибочное обозначение ВРУ-1 вместо ВРУ-3 в примечании 10.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 59,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Примечание10 листа3ВРУ3 говорит о выводе отВРУ1.",
+          "verdict": "confirmed_authoritative_TEXT_context_mismatch",
+          "limits": ""
+        },
+        {
+          "claim": "Уточнить обозначение сборки в примечании.",
+          "verdict": "supported_scoped_editorial_question",
+          "limits": "Замена наВРУ3 следует из области листа; окончательное согласование проектировщиком не выполнено."
+        },
+        {
+          "claim": "АналогичнаяВРУ1 присутствует в примечании10 листа2.1ВРУ2.",
+          "verdict": "confirmed_additional_same_pattern_not_found_in_F030",
+          "limits": "Новое наблюдение оценщика не засчитывается как дополнительное обнаружение модели; итоговыйF030 ограниченВРУ3."
+        },
+        {
+          "claim": "Монтаж выполнен от другой сборки.",
+          "verdict": "not_established",
+          "limits": "Подпись примечания не доказывает фактическое подключение."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "unmapped_source_supported_editorial_question_usefulness_unestablished",
+      "duplicate_burden": "distinct_board_requirement_supply_location_or_note_claim",
+      "profile_and_section": "question_only_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_54ee6784647e49ae86ad9fd46e7082e3",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+          "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+          "block_id": "blk_4efb5f71075b46c9a256fdebb447e338",
+          "route": "authoritative_TEXT"
+        }
+      ],
+      "disposition": "assessed_unmapped_VRU_note_identifier_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_9d136cd00b634d6ebfb2c450f4afad8c",
+      "authoritative_TEXT": "### BLOCK #51 [TEXT]: blk_9d136cd00b634d6ebfb2c450f4afad8c\n\n> **Created:** 2026-10-20 12:14:11 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/v2qWYLrT3wlvDIuV3xh_)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: П | Sheet: 12 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Схема однолинейная принципиальная штита ЗЩРОВ2 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nПримечание:\n\n1. Щит индивидуального изготовления, корпус (оболочка) щита металлический, навесного (поверхностного) исполнения, со степенью защиты не менее IP54, аппаратной вместимостью не менее 36 модуля(ей) (один модуль равен 18мм), производителя DEKraft, размеры 520x300x120мм, при необходимости размеры уточнить при сборке.\n\n2. Внутрешитовые коммутационные аппараты комплектуется оборудованием производителя DEKraft.\n\n3. Распределение энергии внутри щита осуществить при помощи специальных фирменных аксессуаров (фазные блоки, распред. гребенки, кросс-модули, распред. блоки, шины и суппорты и прочее). Внутри щита организовать клеммные колодки для подключения групповых кабелей (оговаривается при заказе).\n\n4. Выполнить всю необходимую маркировку дверцу корпуса щита. Промаркировать компоненты щита, в том числе проводники и шины.\n\n5. Все материалы могут быть заменены на аналогичные, удовлетворяющие техническим характеристикам, указанным в документации. Пересогласование с проектировщиком не требуется.\n\n## Page 16 — Sheet 13 — Схема однолинейная принципиальная штита 2ЩРОВ1\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_3e3c5ece56bd4622a52dd2de301562a5",
+      "authoritative_TEXT": "### BLOCK #54 [TEXT]: blk_3e3c5ece56bd4622a52dd2de301562a5\n\n> **Created:** 2026-10-20 12:14:12 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/xmi7iIDDWdspr3psbl_8)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: Р | Sheet: 13 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Схема однолинейная принципиальная штита 2ЩРОВ1 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nПримечание:\n\n1. Щит индивидуального изготовления, корпус (оболочка) щита металлический, навесного (поверхностного) исполнения, со степенью защиты не менее IP54, аппаратной вместимостью не менее 36 модуля(ей) (один модуль равен 18мм), производителя DEKraft, размеры 520x300x120мм, при необходимости размеры уточнить при сборке.\n\n2. Внутрешитовые коммутационные аппараты комплектуется оборудованием производителя DEKraft.\n\n3. Распределение энергии внутри щита осуществить при помощи специальных фирменных аксессуаров (фазные блоки, распред. гребенки, кросс-модули, распред. блоки, шины и суппорты и прочее). Внутри щита организовать клеммные колодки для подключения групповых кабелей (оговаривается при заказе).\n\n4. Выполнить всю необходимую маркировку дверцу корпуса щита. Промаркировать компоненты щита, в том числе проводники и шины.\n\n5. Все материалы могут быть заменены на аналогичные, удовлетворяющие техническим характеристикам, указанным в документации. Пересогласование с проектировщиком не требуется.\n\n## Page 17 — Sheet 14 — Схема однолинейная принципиальная штита 2ЩРОВ2\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_49e2914a00634fe6869970613f9bc4ca",
+      "authoritative_TEXT": "### BLOCK #57 [TEXT]: blk_49e2914a00634fe6869970613f9bc4ca\n\n> **Created:** 2026-10-20 12:14:13 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Oo4vx6Epi-4JaOshp7b5)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: П | Sheet: 14 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Схема однолинейная принципиальная штита 2ЩРОВ2 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nПримечание:\n\n1. Щит индивидуального изготовления, корпус (оболочка) щита металлический, навесного (поверхностного) исполнения, со степенью защиты не менее IP54, аппаратной вместимостью не менее 36 модуля(ей) (один модуль равен 18мм), производителя DEKraft, размеры 520x300x120мм, при необходимости размеры уточнить при сборке.\n\n2. Внутрешние коммутационные аппараты комплектуются оборудованием производителя DEKraft.\n\n3. Распределение энергии внутри щита осуществить при помощи специальных фирменных аксессуаров (фазные блоки, распред. гребенки, кросс-модули, распред. блоки, шины и суппорты и прочее). Внутри щита организовать клеммные колодки для подключения групповых кабелей (оговаривается при заказе).\n\n4. Выполнить всю необходимую маркировку дверцу корпуса щита. Промаркировать компоненты щита, в том числе проводники и шины.\n\n5. Все материалы могут быть заменены на аналогичные, удовлетворяющие техническим характеристикам, указанным в документации. Пересогласование с проектировщиком не требуется.\n\n## Page 18 — Sheet 15 — Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_7170586af51c43f79c96734a40269d7d",
+      "authoritative_TEXT": "### BLOCK #190 [TEXT]: blk_7170586af51c43f79c96734a40269d7d\n\n> **Created:** 2026-10-20 12:14:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/b16VggCLHwJULG_jArTx)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1.СО | Stage: Не указано | Sheet: 2 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  |  |  |  |  |  |  |  |  |\n|  | Щит квартирный учета электроэнергии навесной 3ЩКВ | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 63 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит квартирный учета электроэнергии навесной 2ЩКВ | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 27 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит вентиляции навесной 2ЩРОВ1 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит вентиляции навесной 2ЩРОВ2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит силовой навесной 1.ЩС | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит силовой управляющей компании навесной 1.ЩС-УК | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит рабочего освещения навесной 1.ЩО-1 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит рабочего освещения управляющей компании навесной 1.ЩО-1-УК | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит слаботочных систем навесной 2ЩСС1 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со тепенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 39 — Sheet 3\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_af87003578d3440a9be734a66a09af90",
+      "authoritative_TEXT": "### BLOCK #191 [TEXT]: blk_af87003578d3440a9be734a66a09af90\n\n> **Created:** 2026-10-20 12:14:51 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/OsLt-43At3tZvMsZ4Ti1)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1.СО | Stage: Не указано | Sheet: 3 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код продукции | Поставщик | Ед. измерения | Кол. | Масса 1 ед. кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n|  | Щит вентиляции навесной ЗЩРОВ2 | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со степенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит аварийного освещения навесной 1ЩАО | ПД-00580716-ЭОМ 2-1, листы |  | DEKraft | шт. | 1 |  |  |\n|  | с автоматикой, со степенью защиты не менее IP31 |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Щит механизации ЩМ со степенью защиты не менее IP31 | ПД-00580716-ЭОМ 2-1, листы |  | IЕК | шт. | 7 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n## Page 40 — Sheet 4\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_d90c772851514a0a9c65cdd019e56957",
+      "authoritative_TEXT": "### BLOCK #7 [TEXT]: blk_d90c772851514a0a9c65cdd019e56957\n\n> **Created:** 2026-10-20 12:13:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Kr35r5m33WciOWc7BEKx)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1 | Stage: П | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Общие данные. | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nпредусматриваются две ВРУ; ВРУ-С2 и ВРУ-З, расположенные на первом подземном этаже паркинга. Кабельные линии от ГРЩ до ВРУ прокладываются в лотках до точек подъема вертикальной трассы и изолируются строительными конструкциями из плит «2Ф» (либо аналог с соблюдением технических характеристик) с пределом огнестойкости EI 180. Проекты трансформаторных подстанций, ГРЩ, а так же питающие кабельные сети до ВРУ других пожарных отсеков разрабатываются отдельно, в других томах.\n\nВертикальные трассы прокладываются в лотках и коробах в шахтах-нишах с дверями с необходимым пределом огнестойкости. Перекидка трасс по горизонту предусмотрена на первом техническом этаже и на десятом техническом этаже.\n\nСекция С2 и С3 в своем составе имеют потребителей, обособленных в административно-хозяйственном отношении: жилая часть и нежилые помещения (коммерческие помещения). Для каждого потребителя предусматриваются собственные вводно-распределительные устройства (ВРУ) или распределительные щиты, расположенные на 1-ом этаже жилого комплекса в электрощитовых помещениях.\n\nЭлектроснабжение каждого ВРУ предусматривается по двум взаиморезервируемым кабельным линиям от разных секций ГРЩ (РУ-0,4кВ).\n\nНа период механизации в коммерческих помещениях устанавливаются щиты механизации для проведения строительных работ.\n\nДля электроснабжения квартир предусматриваются щитовые устройства этажные распределительные навесные на каждом жилом этаже питающиеся от ВРУ своей секции. Внутриквартирный щит устанавливается силами собственника. Все распределительные щиты применены настенного исполнения. Степень защиты IP соответствует месту установки.\n\n###### 3. Описание электроприемников\n\nОсновные электрические потребители секций С2 и С3 являются:\n\n- электроосвещение рабочее и аварийное,\n\n- розеточные сети и силовые сети,\n\n- автоматическая пожарная система,\n\n- система оповещения и управления эвакуацией,\n\n- слаботоковые системы,\n\n- системы автоматизации и диспетчеризации здания,\n\n- лифтовое хозяйство, в том числе лифты передвижения пожарных бригад,\n\n- кондиционирование МОП,\n\n- вентиляция общеобменная,\n\n- вентиляция противодымная, в том числе огнезадерживающие клапана и противодымные\n\n- фасадное освещение.\n\nЭлектроприемники, относящиеся к I категории надежности электроснабжения, запитываются непосредственно от распределительных панелей АВР I категории, по двум независимым вводам. Питание потребителей ПЭСПЗ запитывается через распределительные панели с АВР ПЭСПЗ, по двум независимым вводам.\n\n###### 4. Кабели электрооборудования\n\nПроектируемые распределительные и групповые сети З80/220В выполнены по системе TN-C-S, т.е. по трех- или пятипроводной схеме (1 или 3 фазы + нейтраль + защитный заземляющий проводник (РЕ)).\n\nВсе сети выполнены кабелями с медными жилами с ПВХ изоляцией и не поддерживающие горение ПВХ оболочкой, с низким дымовыделением типа ППГнг(A)-HF.\n\nЭлектрические потребители систем противопожарной защиты (ПЭСПЗ) осуществляется огнестойким кабелем ППГнг(A)-FRHF.\n\nНе допускается совместная прокладка кабельных линий СПЗ с другими кабелями и проводами в одном коробе, трубе, жгуте, замкнутом канале строительной конструкции или на одном лотке.\n\nЭлектрические сети II категории zaproектированы кабелем марки ППГнг(A)-HF.\n\nДля цветового и цифрового обозначения отдельных изолированных или неизолированных проводников должны быть использованы цвета и цифры в соответствии с ГОСТ Р 50462-2009 \"Базовые принципы и принципы безопасности для интерфейса «человек-машина», выполнение и идентификация. Идентификация проводников посредством цветов и буквенно-цифровых обозначений\" (ПУЭ п.1.1.29).\n\nСети потребителей ПЭСПЗ выполнить огнестойкой кабельной линией (ОКЛ), имеющей сертификат на системное решение, включающее набор маркоразмеров кабеля и соответствующий тип кабеленесущей системы, металлического крепежа, включенных в состав сертификата.\n\nМеста прохода проводов и кабелей через стены, междуэтажные перекрытия необходимо выполнять в металлических трубах. С целью предотвращения проникновения и скопления воды и распространения пожара в местах прохода кабелей через стены, перекрытия следует выполнять заделку проходок легкоудаляемой массой из негорящего материала. Заделка должна допускать замену, дополнительную прокладку новых проводов и кабелей и обеспечивать\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_16237a8ebd10423194e4a2b0f4b82c26",
+      "authoritative_TEXT": "### BLOCK #42 [TEXT]: blk_16237a8ebd10423194e4a2b0f4b82c26\n\n> **Created:** 2026-10-20 12:14:10 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/i5pVlBwXQ3KxXPBiBVJ2)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: П | Sheet: 9 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nПримечание:\n\nНа период отделки вместо квартирного щита установить временный щит механизации.\n\nЩитами механизации предусматривается питание однофазного оборудования на время ремонта. Оставшиеся две фазы на время ремонта необходимо заизолировать с возможностью использования их в дальнейшем владельцем помещения.\n\n## Page 13 — Sheet 10 — Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_73536f4c222b401e8da714ed88d23fce",
+      "authoritative_TEXT": "### BLOCK #45 [TEXT]: blk_73536f4c222b401e8da714ed88d23fce\n\n> **Created:** 2026-10-20 12:14:10 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/6iYxsdKAirRW62hOgFeF)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: П | Sheet: 10 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nПримечание:\n\nНа период отделки вместо квартирного щита установить временный щит механизации.\n\nЩитами механизации предусматривается питание однофазного оборудования на время ремонта. Оставшиеся две фазы на время ремонта необходимо заизолировать с возможностью использования их в дальнейшем владельцем помещения.\n\n## Page 14 — Sheet 11 — Схема однолинейная принципиальная этажного шита учёта 2ЩУЭРН2, типовой для 2-10 этажа, шит ЩМ-к\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_17ebeac60c9b497cb8c124a8e3b66068",
+      "authoritative_TEXT": "### BLOCK #48 [TEXT]: blk_17ebeac60c9b497cb8c124a8e3b66068\n\n> **Created:** 2026-10-20 12:14:11 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/RDrH726ZecOSn9psCn0C)\n> **Stamp:** Code: ПД-00580716-ЗОМ 2-1 | Stage: П | Sheet: 11 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Схема однолинейная принципиальная этажного шита учёта 2ЩУЭРН2, типовой для 2-10 этажа, шит ЩМ-к | Organization: GLOBUS PROJECT | Revisions: Не указано\n\nПримечание:\n\nНа период отделки вместо квартирного щита установить временный щит механизации.\n\nЩитами механизации предусматривается питание однофазного оборудования на время ремонта. Оставшиеся две фазы на время ремонта необходимо заизолировать с возможностью использования их в дальнейшем владельцем помещения.\n\n## Page 15 — Sheet 12 — Схема однолинейная принципиальная штита ЗЩРОВ2\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_54ee6784647e49ae86ad9fd46e7082e3",
+      "authoritative_TEXT": "### BLOCK #14 [TEXT]: blk_54ee6784647e49ae86ad9fd46e7082e3\n\n> **Created:** 2026-10-20 12:14:00 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/ismasvMXPd7abYf_D2o6)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1 | Stage: Р | Sheet: 2.1 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n1. * - Установка или щит поставляет комплектно или схема разрабатывается в другом разделе.\n\n2. Все панели ВРУ - напольные одностороннего обслуживания со степенью защиты не менее IP31.\n\n3. Внутрищитовое оборудование применить DEKraft или EKF.\n\n4. В соответствии с СП 256.1325800.2016, во ВРУ обеспечить изоляционное разгораживание вида не менее 2b.\n\n5. Ошибки и аппараты предусмотреть с учетом токов короткого замыкания;\n\n6. На вводных аппаратах предусмотреть (при необходимости) шинные удлинители чтобы можно было подключить четыре жилы кабелей на одну фазу.\n\n7. Все жгуты (проводники), в том числе жгуты учета и перемычки промаркировать, фазные перемычки должны быть разноцветными ЖЭК по ПУЭ или белый/кор/черный\n\n8. Для ввода и подключения питающих кабелей электроснабжения предусмотрены вводные панели ВП1 и ВП2 во ВРУ в помещении электрощитовой -1-го этажа.\n\n9. Ввод питающих КЛ от ГРЩ в панели осуществить снизу.\n\n10. Вывод распределительных линий от панелей ВРУ-1 осуществить сверху\n\n11. В качестве шины ГЗШ использовать РЕ шину на вводе.\n\n12. Применить шины N и РЕ медные на всю длину сборки ВРУ.\n\n13. В распределительных панелях предусмотреть свободное место для опусков распределительных кабелей сверху вниз\n\n14. Обрамить острые края металлических деталей резиновым кантом в тех местах где кабель близко расположен или может быть расположен от острого края панели, либо пластрона, либо профиля или рейки\n\n15. Для подставки ВРУ предусмотреть заводской металлический цоколь высотой 100мм.\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/eom_r1_classic/classic_control/inputs/EOM/versions/v001/02_work/document.md",
+      "sha256": "49c43a1a385ee29b465f1ac451b214fcf04b12cf9ea80771f497c200bac1a4ac",
+      "block_id": "blk_4efb5f71075b46c9a256fdebb447e338",
+      "authoritative_TEXT": "### BLOCK #21 [TEXT]: blk_4efb5f71075b46c9a256fdebb447e338\n\n> **Created:** 2026-10-20 12:14:04 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/67VrAE8KvzPJturq21g_)\n> **Stamp:** Code: ПД-00580716-ЭОМ 2-1 | Stage: Р | Sheet: 3 | Наименование проекта: Многофункциональная комплексная жилая застройка с подземной автостоянкой (квартал 3, 2-я очередь, корпус 1) по адресу: Москва, вн.тер.г. муниципальный округ Раменки, улица Лобачевского, земельный участок 120/2 | Наименование листа: Схема однолинейная принципиальная ВРУ-3 | Organization: GLOBUS PROJECT | Revisions: Не указано\n\n1. * - Установка или щит поставляет комплектно или схема разрабатывается в другом разделе.\n\n2. Все панели ВРУ - напольные одностороннего обслуживания со степенью защиты не менее IP31.\n\n3. Внутрищитовое оборудование применить DEKraft или EKF.\n\n4. В соответствии с СП 256.1325800.2016, во ВРУ обеспечить изоляционное разгромаживание вида не менее 2в.\n\n5. Ошибку и аппараты предусмотреть с учетом токов короткого замыкания;\n\n6. На вводных аппаратах предусмотреть (при необходимости) шинные удлинители чтобы можно было подключить четыре жилы кабелей на одну фазу.\n\n7. Все жгуты (проводники), в том числе жгуты учета и перемычки промаркировать, фазные перемычки должны быть разноцветными ЖЗК по ПУЭ или белый/кор./черный\n\n8. Для ввода и подключения питающих кабелей электроснабжения предусмотрены вводные панели ВП1 и ВП2 во ВРУ в помещении электрощитовой -1-го этажа.\n\n9. Ввод питающих КЛ от ГРЩ в панели осуществить снизу.\n\n10. Вывод распределительных линий от панелей ВРУ-1 осуществить сверху\n\n11. В качестве шины ГЗШ использовать РЕ шину на вводе.\n\n12. Применить шины N и РЕ медные на всю длину сборки ВРУ.\n\n13. В распределительных панелях предусмотреть свободное место для опусков распределительных кабелей сверху вниз\n\n14. Обрамить острые края металлических деталей резиновым кантом в тех местах где кабель близко расположен или может быть расположен от острого края панели, либо пластрона, либо профиля или рейки\n\n15. Для подставки ВРУ предусмотреть заводской металлический цоколь высотой 100мм.\n\n## Page 7 — Sheet 4 — Силовое электрооборудование. Надземная часть. (в том числе сети для подключения оборудования). Секции С2, С3\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F020_enclosure_minimums.json",
+      "sha256": "bf585abffce6c388509728cf559c7128600172b2a0e177b5b859c20235fb3d07",
+      "primary_adjudication": null,
+      "limits": "IP54 может удовлетворять обоим минимумам. Не доказаны поставка именно IP31, недостаточность защиты по условиям среды или нарушение нормы. Обозначение ЗЩРОВ2 сохранено буквально из TEXT, без замены буквы З цифрой 3. Нельзя автоматически снижать IP54 до IP31. Графика не требовалась для сравнения этих явно записанных требований; фактическое оборудование не проверялось.",
+      "wording": "В примечаниях к схемам щитов ЗЩРОВ2, 2ЩРОВ1 и 2ЩРОВ2 на листах 12–14 указан минимум IP54, а в спецификации на листах 2–3 — минимум IP31. Уточните единое требование к оболочкам в документах заказа с учётом более строгого требования примечаний."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/EOM_F033_apartment_board_scope.json",
+      "sha256": "733ea2ad8e0939b80ecb45e225de97885ae4879d5e2d56470b01ce7441c11a83",
+      "primary_adjudication": null,
+      "limits": "Подтверждены три самостоятельных факта: 90 изделий в СО, монтаж внутриквартирного щита собственником, временная замена на период отделки. Общие указания говорят об установке, а не однозначно о закупке; поставщик DEKraft не обозначает ответственную сторону договора. Поэтому наличие щита в СО не доказывает лишнюю поставку или противоречие монтажной границе. Назначение 3ЩКВ/2ЩКВ как временных либо постоянных прямо в проверенных строках не указано. Не проверены договор, комплектные ведомости и соответствие каждого щита квартире. Исключение 90 щитов, двойная закупка и отсутствие временных щитов не доказаны.",
+      "wording": "Уточнить назначение и границу поставки 90 квартирных щитов в СО (63 шт. 3ЩКВ и 27 шт. 2ЩКВ с автоматикой): общие указания относят установку внутриквартирного щита к собственнику, а примечания листов 10–11 предусматривают временный щит механизации вместо квартирного на период отделки. Отразить, к какому этапу и чьему объёму относятся позиции СО."
+    }
+  ],
+  "limits": [
+    "No new engineer acceptance.",
+    "Contractual supply responsibility and installed equipment not verified.",
+    "No new graphic inspection claimed.",
+    "Reviewer discovery onVRU2 is not credited to model findingF030.",
+    "Frozen evaluator, model inputs and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
