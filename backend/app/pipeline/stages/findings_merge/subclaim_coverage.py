@@ -75,6 +75,10 @@ def pending_subclaims(final, known_blocks=(), coverage=None):
                 elif action in {'retained', 'duplicate'} and (not isinstance(targets, list)
                         or not targets or any(not isinstance(t, str) or t not in final_ids for t in targets)):
                     reason = 'missing_subclaim_final_link'
+                if reason is None and cid in state and action in {'retained', 'duplicate'}:
+                    from .recovery_addenda import subclaim_is_emitted
+                    if not subclaim_is_emitted(final, key, claim):
+                        reason = 'subclaim_not_emitted'
                 if reason:
                     state[cid] = {'reason': reason, 'claim': claim}
                 else:

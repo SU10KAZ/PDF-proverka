@@ -213,5 +213,7 @@ def validate_recovery_payload(targeted_pass, payload):
             accepted.append({**item, 'recovery_semantic_verified': False})
     from backend.app.pipeline.stages.findings_merge.recovery_links import prepare_duplicate_links
     links, unresolved_links = prepare_duplicate_links(packet, payload.get('candidate_decisions'))
-    return {**payload, 'findings': accepted, 'recovery_pending': pending + unresolved_links,
-            'recovery_link_updates': links}
+    from backend.app.pipeline.stages.findings_merge.recovery_addenda import prepare_addenda
+    addenda, unresolved_addenda = prepare_addenda(packet, payload.get('candidate_decisions'))
+    return {**payload, 'findings': accepted, 'recovery_pending': pending + unresolved_links + unresolved_addenda,
+            'recovery_link_updates': links, 'recovery_addenda_updates': addenda}

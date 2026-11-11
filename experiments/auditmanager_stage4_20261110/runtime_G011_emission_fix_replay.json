@@ -1,0 +1,160 @@
+{
+  "status": "recovered_claim_emission_verified_on_sealed_response",
+  "source_response_sha256": "5354dfb0d254cbba4ba79019fd328e80ab10d9ed226be806244c200527da936e",
+  "replay_path": "/tmp/auditmanager_runtime_G011_emission_replay_20261112.json",
+  "replay_sha256": "f5f74b9d5926ce21ccde497d83e055d9c94e015f8c8c7ee093dc0d210cab3119",
+  "target_finding_before": {
+    "id": "F-006",
+    "severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "category": "Комплектация датчиков",
+    "report_section": "technical_findings",
+    "sheet": "Листы 10, 2",
+    "page": [
+      14,
+      95
+    ],
+    "problem": "Для ШАУВ-4-К4ПЧ переставлены количества датчиков разных диапазонов.",
+    "description": "Перечень листа 10 содержит PDS2 20–200 Па — 1 шт. и PDS1, PDS3, PDS4 50–500 Па — 3 шт. Спецификация, позиции 4.4 и 4.5, содержит соответственно 3 и 1 шт. Общее количество четыре совпадает, состав по исполнениям различается. Утверждение о диапазоне PDS4 в графической таблице без изображения не подтверждено.",
+    "norm": null,
+    "norm_quote": null,
+    "candidate_norm_references": [],
+    "solution": "Согласовать назначение, диапазон и уставку каждого PDS и исправить количества соответствующих исполнений.",
+    "risk": "Поставка приборов с неподходящим диапазоном настройки.",
+    "source_finding_ids": [
+      "T-006",
+      "G-011",
+      "G-012"
+    ],
+    "source_block_ids": [
+      "blk_47212e9079d1485c9c43fc3d1e9cd108",
+      "blk_3dfcda405820460b84179ebf65d182d1"
+    ],
+    "related_block_ids": [
+      "blk_e3e39f8820d7474caa10ab626d2a2c91"
+    ],
+    "evidence_text_refs": [],
+    "evidence": [
+      {
+        "type": "text",
+        "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "page": 14
+      },
+      {
+        "type": "text",
+        "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+        "page": 95
+      }
+    ],
+    "highlight_regions": []
+  },
+  "target_finding_after": {
+    "id": "F-006",
+    "severity": "ЭКСПЛУАТАЦИОННОЕ",
+    "category": "Комплектация датчиков",
+    "report_section": "technical_findings",
+    "sheet": "Листы 10, 2",
+    "page": [
+      14,
+      95
+    ],
+    "problem": "Для ШАУВ-4-К4ПЧ переставлены количества датчиков разных диапазонов.",
+    "description": "Первоначальное описание:\nПеречень листа 10 содержит PDS2 20–200 Па — 1 шт. и PDS1, PDS3, PDS4 50–500 Па — 3 шт. Спецификация, позиции 4.4 и 4.5, содержит соответственно 3 и 1 шт. Общее количество четыре совпадает, состав по исполнениям различается. Утверждение о диапазоне PDS4 в графической таблице без изображения не подтверждено.\n\nДополнительная проверка:\nPDS4 на схеме имеет 20–200 Па вместо 50–500 Па.\nЛиния PDS4 обозначена №18; соответствующий столбец таблицы подписан «Перепад давления на вентиляторе системы (20...200 Па)». Авторитетный TEXT содержит строку «| PDS1,PDS3, PDS4 | Датчик давления дифференциальный 50-500 Па | 3 |  |». Надпись ΔP=100 Па у PDS4 является отдельным значением и не заменяет диапазон таблицы. Подтверждено расхождение документов; правильный диапазон из него не определяется.\n\nТаблица сигналов задаёт PDS2/PDS4 20–200 Па, PDS1/PDS3 50–500 Па.\nНа изображении линии PDS2 и PDS4 имеют номера 8 и 18; оба соответствующих столбца таблицы содержат диапазон 20–200 Па для перепада давления на вентиляторе. Линии PDS1 и PDS3 имеют номера 4 и 12; соответствующие столбцы содержат диапазон 50–500 Па для перепада давления на фильтре. Таким образом, графическая таблица распределяет приборы по диапазонам как два и два. В перечне PDS4 включён в группу 50–500 Па, что дополняет существующее замечание F-006.",
+    "norm": null,
+    "norm_quote": null,
+    "candidate_norm_references": [],
+    "solution": "Согласовать назначение, диапазон и уставку каждого PDS и исправить количества соответствующих исполнений.",
+    "risk": "Поставка приборов с неподходящим диапазоном настройки.",
+    "source_finding_ids": [
+      "T-006",
+      "G-011",
+      "G-012"
+    ],
+    "source_block_ids": [
+      "blk_47212e9079d1485c9c43fc3d1e9cd108",
+      "blk_3dfcda405820460b84179ebf65d182d1",
+      "blk_e3e39f8820d7474caa10ab626d2a2c91"
+    ],
+    "related_block_ids": [
+      "blk_e3e39f8820d7474caa10ab626d2a2c91"
+    ],
+    "evidence_text_refs": [],
+    "evidence": [
+      {
+        "type": "text",
+        "block_id": "blk_47212e9079d1485c9c43fc3d1e9cd108",
+        "page": 14
+      },
+      {
+        "type": "text",
+        "block_id": "blk_3dfcda405820460b84179ebf65d182d1",
+        "page": 95
+      },
+      {
+        "block_id": "blk_e3e39f8820d7474caa10ab626d2a2c91",
+        "type": "graphic",
+        "origin": "recovery_addendum",
+        "addendum_id": "0a94144da2a4c2b44d1d493ecd02f6bf9caa62d4b6c8c398f82719fdba228e6d",
+        "semantic_verified": false
+      }
+    ],
+    "highlight_regions": [],
+    "recovery_addendum_base_signature": "87457d7f6bddf0ffbc196fb3569832703ce6201551b2c8447fb78b58ab70a9e2",
+    "recovery_addendum_snapshot_signatures": [
+      "87457d7f6bddf0ffbc196fb3569832703ce6201551b2c8447fb78b58ab70a9e2",
+      "5462e9dae73876215eb544456016b1311d76831b854c9bd9c074b0af3458056c"
+    ],
+    "recovery_original_description": "Перечень листа 10 содержит PDS2 20–200 Па — 1 шт. и PDS1, PDS3, PDS4 50–500 Па — 3 шт. Спецификация, позиции 4.4 и 4.5, содержит соответственно 3 и 1 шт. Общее количество четыре совпадает, состав по исполнениям различается. Утверждение о диапазоне PDS4 в графической таблице без изображения не подтверждено.",
+    "recovery_addenda": [
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/5/findings/0",
+        "source_id": "G-011",
+        "claim_id": "2",
+        "claim": "PDS4 на схеме имеет 20–200 Па вместо 50–500 Па.",
+        "reason": "Линия PDS4 обозначена №18; соответствующий столбец таблицы подписан «Перепад давления на вентиляторе системы (20...200 Па)». Авторитетный TEXT содержит строку «| PDS1,PDS3, PDS4 | Датчик давления дифференциальный 50-500 Па | 3 |  |». Надпись ΔP=100 Па у PDS4 является отдельным значением и не заменяет диапазон таблицы. Подтверждено расхождение документов; правильный диапазон из него не определяется.",
+        "source_refs": [
+          "blk_e3e39f8820d7474caa10ab626d2a2c91",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108"
+        ],
+        "source_types": {
+          "blk_e3e39f8820d7474caa10ab626d2a2c91": "graphic",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108": "text"
+        },
+        "target_id": "F-006",
+        "target_signature": "87457d7f6bddf0ffbc196fb3569832703ce6201551b2c8447fb78b58ab70a9e2",
+        "semantic_verified": false,
+        "id": "0a94144da2a4c2b44d1d493ecd02f6bf9caa62d4b6c8c398f82719fdba228e6d"
+      },
+      {
+        "origin": "graphic",
+        "pointer": "/block_analyses/5/findings/1",
+        "source_id": "G-012",
+        "claim_id": "2",
+        "claim": "Таблица сигналов задаёт PDS2/PDS4 20–200 Па, PDS1/PDS3 50–500 Па.",
+        "reason": "На изображении линии PDS2 и PDS4 имеют номера 8 и 18; оба соответствующих столбца таблицы содержат диапазон 20–200 Па для перепада давления на вентиляторе. Линии PDS1 и PDS3 имеют номера 4 и 12; соответствующие столбцы содержат диапазон 50–500 Па для перепада давления на фильтре. Таким образом, графическая таблица распределяет приборы по диапазонам как два и два. В перечне PDS4 включён в группу 50–500 Па, что дополняет существующее замечание F-006.",
+        "source_refs": [
+          "blk_e3e39f8820d7474caa10ab626d2a2c91",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108"
+        ],
+        "source_types": {
+          "blk_e3e39f8820d7474caa10ab626d2a2c91": "graphic",
+          "blk_47212e9079d1485c9c43fc3d1e9cd108": "text"
+        },
+        "target_id": "F-006",
+        "target_signature": "87457d7f6bddf0ffbc196fb3569832703ce6201551b2c8447fb78b58ab70a9e2",
+        "semantic_verified": false,
+        "id": "3fb00153c695b83b3c9a66fe828fad7d878566a4a527e67f73d74563f35238b4"
+      }
+    ]
+  },
+  "addenda_applied": 2,
+  "original_confirmed_quantities_preserved": true,
+  "graphic_reference_carried_into_finding": true,
+  "pending_closed_only_after_emission": true,
+  "limitations": [
+    "This proves publication mechanics, not factual correctness of every recovery finding.",
+    "The same response also contains the unsupported G-013 heater-symbol claim; it remains rejected by offline source review.",
+    "New requests already running retain their sealed prompts. No deployment."
+  ],
+  "production_acceptance": false
+}

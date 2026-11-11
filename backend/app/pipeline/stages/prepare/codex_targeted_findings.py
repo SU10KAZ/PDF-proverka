@@ -912,8 +912,10 @@ def combine_findings_with_targeted(
         if stage.startswith("candidate_recovery_") and isinstance(payload, dict):
             from backend.app.pipeline.stages.findings_merge.recovery_links import apply_duplicate_links
             link_report = apply_duplicate_links(findings, payload.get("recovery_link_updates", []))
+            from backend.app.pipeline.stages.findings_merge.recovery_addenda import apply_addenda
+            addenda_report = apply_addenda(findings, payload.get("recovery_addenda_updates", []))
             combined.setdefault("candidate_recovery_reports", []).append({
-                "link_repairs": link_report,
+                "link_repairs": link_report, "addenda_publication": addenda_report,
                 "context_retrieval": payload.get("context_retrieval"),
                 "stage": stage, "candidate_decisions": payload.get("candidate_decisions", []),
                 "format_repair": payload.get("format_repair"),

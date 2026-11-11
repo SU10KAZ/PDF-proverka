@@ -24,7 +24,7 @@ def test_parent_retention_or_later_omission_does_not_clear_obligation():
     assert pending_subclaims(data, {'g'})
     assert data == before
     data['candidate_recovery_reports'].append({'candidate_decisions': [receipt('duplicate')]})
-    assert pending_subclaims(data, {'g'}) == {}
+    assert pending_subclaims(data, {'g'})[('graphic', '/block_analyses/0/findings/0')][0]['reason'] == 'subclaim_not_emitted'
 
 
 def test_conflicting_unknown_and_unlinked_resolutions_remain_pending():
@@ -72,4 +72,4 @@ def test_linked_graphic_pending_claim_gets_image_without_mutating_existing_findi
     assert passes[0].image_paths == (crops / 'g.png',)
     data['candidate_recovery_reports'] = [{'candidate_decisions': [receipt('retained')]}]
     (tmp_path / '03_findings.json').write_text(json.dumps(data))
-    assert recovery.build_recovery_passes(tmp_path, md) == []
+    assert len(recovery.build_recovery_passes(tmp_path, md)) == 1  # Retention receipt alone has not published the recovered claim.
