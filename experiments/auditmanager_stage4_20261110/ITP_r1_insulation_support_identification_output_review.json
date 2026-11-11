@@ -1,0 +1,575 @@
+{
+  "status": "three_specification_outputs_assessed_field_by_field",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "5c70c071c74f97b5b01f5c2039ebc5fe334193c19ef02f680ae2b9272ffe804f",
+  "queue_after_sha256": "39875f20cb6791897f23243035a0421b920cc54793677bd8e049f15279577cb5",
+  "reviewer": "coordinator_authoritative_TEXT_scope_and_requirement_review",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-025",
+      "finding": {
+        "id": "F-025",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Теплоизоляция",
+        "sheet": "Листы 6., 15., 19",
+        "page": [
+          29,
+          38,
+          57
+        ],
+        "problem": "Ведомость изоляции не соответствует трубопроводам наружным диаметром 325 мм.",
+        "description": "Для 85,1 м труб 325×7 мм отсутствует соответствующий размер цилиндров. Размер 273×40 записан дважды, суммарно 99 м, при длине трубы 273×7 всего 1,7 м. Наличие матов не раскрывает конструкцию изоляции труб 325 мм.",
+        "norm": "СП 61.13330.2012 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "СП 61.13330.2012",
+            "cited_designation": "СП 61.13330.2012",
+            "candidate_relevance": 0.85,
+            "reason": "Проверить требования к конструкции и расчёту тепловой изоляции трубопроводов.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-026"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-026"
+                ],
+                "designation_source": "Перечень нормативных документов текстового этапа"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Исправить размеры цилиндров либо явно задать изоляцию труб 325 мм матами с расчётом количества и креплений.",
+        "risk": "Недокомплект изоляции, дополнительные закупки и повышенные теплопотери.",
+        "source_finding_ids": [
+          "T-026"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_3103f97afa7b43bb91b4360de787e6a2",
+          "blk_8a446a40473d48d18d60edba74661d9e",
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_d0ef4dbea56d4b74b97a10119fbee223",
+          "blk_ec07216893c540b88b7560c80b87ecd9"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 29
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 38
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 57
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 49,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "construction"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "reference_maintenance"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-029:268aafac2624c208753e",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Труба325×7:85,1м;273×7:1,7м;цилиндры273×40две строки2и97м.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "В двух проверенных таблицах цилиндр325 не указан.",
+          "verdict": "confirmed_bounded_absence",
+          "limits": ""
+        },
+        {
+          "claim": "Изоляция325 нигде не предусмотрена.",
+          "verdict": "not_established",
+          "limits": "Втаблицах есть50и250м²матов; их распределение по оборудованию итрубам не установлено. Общие указания называют цилиндры,но это не инвентаризация всех изоляционных решений."
+        },
+        {
+          "claim": "Строку97м нужно автоматически переименовать в325.",
+          "verdict": "not_established",
+          "limits": "Нужны назначение строки иконструкция изоляции; численное сходство не доказывает опечатку."
+        },
+        {
+          "claim": "Согласовать диаметр,количество иназначение матов.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Нормативные кандидаты подтверждают нарушение.",
+          "verdict": "unverified_candidate_only",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_insulation_support_or_identification_issue_group_specification_questions",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_e46d7b061235453f8917708c1387217c",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json",
+          "sha256": "92f98a8b73d3db1a60c32f0d100a2dfd0e5688ea5295792e06a212154edd7ef0",
+          "primary_adjudication": null,
+          "limits": "Проверена ограниченная область отсутствия — две таблицы изоляции, а не весь проект или поставка. На листе14 есть50м² матов, на листе15 —250м²; распределение по трубам и оборудованию не установлено. Нельзя автоматически заменить273 на325, добавить85,1м цилиндров или объявить поставку некомплектной. Нарушение СП61 не подтверждалось.",
+          "wording": "Уточнить соответствие труб и изоляции: предусмотрено85,1м трубы325×7, но в таблицах изоляции листов14–15 нет отдельной строки цилиндра для325мм; цилиндр273×40 записан дважды —2 и97м при1,7м трубы273×7. Подтвердить назначение строки97м и предусмотренных матов."
+        }
+      ],
+      "disposition": "assessed_insulation_mapping_question_not_proven_missing_insulation"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-026",
+      "finding": {
+        "id": "F-026",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Крепления трубопроводов",
+        "sheet": "Листы 6., 13.",
+        "page": [
+          29,
+          36
+        ],
+        "problem": "Количество креплений труб 325 мм не определено.",
+        "description": "Для труб наружным диаметром 325 мм длиной 85,1 м строка креплений оставлена без количества и единицы измерения. Одновременно для 1,7 м труб 273 мм указаны 32 комплекта, что требует проверки переноса строки или диаметра. Пункт 5.18.3.2 технического задания требует определённости спецификации.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Согласовать ведомость с расчётом и планом опор; заполнить количество креплений труб 325 мм и проверить комплекты для 273 мм.",
+        "risk": "Недокомплект опор и ошибочное выполнение креплений.",
+        "source_finding_ids": [
+          "T-027"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "blk_d0ef4dbea56d4b74b97a10119fbee223"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 29
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 36
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 53,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "schedule"
+          ],
+          "formalism_flags": [
+            "reference_register",
+            "editorial_fix"
+          ],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-030:a4e56855f9942b943bff",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-030:15e7e0c93d727b6902f9",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Строка крепленияДн325 существует,единица иколичество пусты;труба325×7имеет85,1м.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "ДляДн273указаны32комплекта при1,7мтрубы.",
+          "verdict": "confirmed_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "32комплекта избыточны или должны быть перенесены в325.",
+          "verdict": "not_established",
+          "limits": "Планопор,участки иучёт креплений не сверены; не определять количество только из длины."
+        },
+        {
+          "claim": "Пункт5.18.3.2требует объём работ иосновных материалов с нормативным расходом.",
+          "verdict": "confirmed_project_requirement",
+          "limits": "Он не устанавливает число опор илиправильный диаметр этой строки."
+        },
+        {
+          "claim": "Заполнить поля после сверки плана ирасчёта опор.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Фактически опоры не поставлены илимонтажневозможен.",
+          "verdict": "not_established",
+          "limits": ""
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_insulation_support_or_identification_issue_group_specification_questions",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_20c9372392c34ef08a1e81d99316f0cb",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+          "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1",
+          "primary_adjudication": null,
+          "limits": "Пропуск двух полей подтверждён непосредственно по строке.32комплекта не являются автоматически доказанным избытком: схема опор, участки и границы учёта не сверены. Не переносить32комплекта в строку325 без расчёта. Фактическая непоставка опор, задержка монтажа и невозможность монтажа не установлены.",
+          "wording": "Заполнить единицу измерения и количество креплений Дн325 в спецификации: строка есть, обе ячейки пусты; труба325×7 предусмотрена длиной85,1м. Одновременно сверить распределение: дляДн273 указаны32комплекта при1,7м трубы273×7."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+          "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1",
+          "primary_adjudication": null,
+          "limits": "Пропуск двух полей подтверждён непосредственно по строке.32комплекта не являются автоматически доказанным избытком: схема опор, участки и границы учёта не сверены. Не переносить32комплекта в строку325 без расчёта. Фактическая непоставка опор, задержка монтажа и невозможность монтажа не установлены.",
+          "wording": "Заполнить единицу измерения и количество креплений Дн325 в спецификации: строка есть, обе ячейки пусты; труба325×7 предусмотрена длиной85,1м. Одновременно сверить распределение: дляДн273 указаны32комплекта при1,7м трубы273×7."
+        }
+      ],
+      "disposition": "assessed_blank_support_quantity_question_no_automatic_reassignment"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 1,
+      "finding_id": "F-027",
+      "finding": {
+        "id": "F-027",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Спецификация",
+        "sheet": "Листы 4., 5., 6., 7., 8., 9., 10., 11.",
+        "page": [
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34
+        ],
+        "problem": "Служебные записи в спецификации не позволяют однозначно определить изделия.",
+        "description": "Сохранены значения «Решение не найдено», «Нет в каталоге» и «<варианты>» в характеристиках и кодах изделий, включая дренажную трубу длиной 0,4 м, заглушку и переходы. Требования к полноте сведений предусмотрены пунктами 5.18.2.1 и 5.18.3.2 технического задания.",
+        "norm": null,
+        "norm_quote": null,
+        "candidate_norm_references": [],
+        "solution": "Заменить служебные значения характеристиками для заказа: размерами, толщинами стенок, материалами и допустимыми рабочими параметрами.",
+        "risk": "Ошибочная закупка и задержки монтажа.",
+        "source_finding_ids": [
+          "T-028"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_7471e2839fbf42aca0c1f9f94a59bda2",
+          "blk_f249587fe98945f7a1c5d30e102aaa68"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 29
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 31
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 34
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "quality": {
+          "practicality_score": 99,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-027:4828a324071dacb9ae3d",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-027:fe51c088072cbcf15ec9",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "B-ITP-F-027:0bd4729bc0b05b923141",
+          "route": "question",
+          "coverage": "partial"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Строка дренажнойтрубы0,4м содержитРешение не найдено;строка1шт.ГОСТ17379-2001 —Нет в каталоге внаименовании икоде.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Эти две строки однозначно определяют изделие длязаказа.",
+          "verdict": "refuted_missing_identification",
+          "limits": "Впервой нет размера иконкретного наименования; вовторой нераскрыта конкретная заглушка. Не восстанавливать их издогадки."
+        },
+        {
+          "claim": "Все строки с варианты также неидентифицируемы.",
+          "verdict": "unsupported_blanket_generalization",
+          "limits": "Утрубы57×3,5естьразмер идлина85,6м; уотводов25/32/50/65естькоды иколичества. Некоторые переходы имеютразмер,нонеполныйкод; оценивать отдельные поля каждойстроки."
+        },
+        {
+          "claim": "Пункты5.18.2.1и5.18.3.2явно перечисляют требуемые диаметры,толщины ирабочие давления.",
+          "verdict": "not_supported_by_cited_clause",
+          "limits": "Пункты говорят обобъёмах работ,нормативном расходе изапасе; не подменять их требованием ко всем характеристикам заказа."
+        },
+        {
+          "claim": "Заменить служебные значения достаточными характеристиками конкретных неопределённых изделий.",
+          "verdict": "supported_scoped_question",
+          "limits": ""
+        },
+        {
+          "claim": "Происхождение надписей —ошибкаBIMиликаталога; поставка невозможна.",
+          "verdict": "not_established",
+          "limits": "АвторитетныйTEXT принят без повторного распознавания; причина возникновения ифактическая закупка не исследованы."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "distinct_insulation_support_or_identification_issue_group_specification_questions",
+      "profile_and_section": "questions_and_clarifications_report_section_missing",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+          "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+          "primary_adjudication": null,
+          "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+          "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+        }
+      ],
+      "disposition": "assessed_placeholder_fields_individually_no_blanket_invalid_specification"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_b55acef48d8d452d92a5e3a8fcc2fd88",
+      "authoritative_TEXT": "### BLOCK #58 [TEXT]: blk_b55acef48d8d452d92a5e3a8fcc2fd88\n\n> **Created:** 2026-10-20 11:49:17 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/W5TBPIbO34v0Awtgo4fA)\n> **Stamp:** Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 6. | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n\nТрубопровод ИТП\n\n| | | | | | | | | |\n|---|---|---|---|---|---|---|---|---|\n|  | Труба стальная водогазопроводная оцинкованная, Д=15х2,8 мм | ГОСТ 3262-75 |  |  | м | 30.6 |  |  |\n|  | Труба стальная водогазопроводная оцинкованная, Д=20х2,8 мм | ГОСТ 3262-75 |  |  | м | 0.5 |  |  |\n|  | Труба стальная водогазопроводная оцинкованная, Д=25х3,2 мм | ГОСТ 3262-75 |  |  | м | 32.5 |  |  |\n|  | Труба стальная водогазопроводная оцинкованная, Д=32х3,2 мм | ГОСТ 3262-75 |  |  | м | 42.8 |  |  |\n|  | Труба стальная водогазопроводная оцинкованная, Д=40х3,5 мм | ГОСТ 3262-75 |  |  | м | 46.7 |  |  |\n|  | Труба стальная водогазопроводная оцинкованная, Д=50х3,5 мм | ГОСТ 3262-75 |  |  | м | 91.8 |  |  |\n|  | Труба стальная водогазопроводная оцинкованная, Д=65х4,0 мм | ГОСТ 3262-75 |  |  | м | 78.4 |  |  |\n|  | Труба стальная водогазопроводная оцинкованная, Д=80х4,0 мм | ГОСТ 3262-75 |  |  | м | 14.7 |  |  |\n|  | Трубы стальные электросварные, Д=19х2,0 мм | ГОСТ 10704-91 |  |  | м | 6.9 |  |  |\n|  | Трубы стальные электросварные, Д=25х2,5 мм | ГОСТ 10704-91 |  |  | м | 0.4 |  |  |\n|  | Трубы стальные электросварные, Д=30х2,5 мм | ГОСТ 10704-91 |  |  | м | 27.8 |  |  |\n|  | Трубы стальные электросварные, Д=38х2,5 мм | ГОСТ 10704-91 |  |  | м | 9.6 |  |  |\n|  | Трубы стальные электросварные, Д=48х3,5 мм | ГОСТ 10704-91 |  |  | м | 92.5 |  |  |\n| \\<варианты> | Трубы стальные электросварные, Д=57х3,5 мм | ГОСТ 10704-91 |  |  | м | 85.6 |  |  |\n|  | Трубы стальные электросварные, Д=76х3,5 мм | ГОСТ 10704-91 |  |  | м | 91.2 |  |  |\n|  | Трубы стальные электросварные, Д=89х3,5 мм | ГОСТ 10704-91 |  |  | м | 52.4 |  |  |\n|  | Трубы стальные электросварные, Д=108х4,0 мм | ГОСТ 10704-91 |  |  | м | 19.7 |  |  |\n|  | Трубы стальные электросварные, Д=133х4,0 мм | ГОСТ 10704-91 |  |  | м | 69.9 |  |  |\n|  | Трубы стальные электросварные, Д=159х4,5 мм | ГОСТ 10704-91 |  |  | м | 12.0 |  |  |\n|  | Трубы стальные электросварные, Д=219х6,0 мм | ГОСТ 10704-91 |  |  | м | 84.1 |  |  |\n|  | Трубы стальные электросварные, Д=273х7,0 мм | ГОСТ 10704-91 |  |  | м | 1.7 |  |  |\n|  | Трубы стальные электросварные, Д=325х7,0 мм | ГОСТ 10704-91 |  |  | м | 85.1 |  |  |\n\nОбщий итог: 2546\n\n977.0\n\nТрубопровод дренажный\n\n| | | | | | | | | |\n|---|---|---|---|---|---|---|---|---|\n|  | Труба стальная оцинкованная водогазопроводная 25х4,0 | ГОСТ 3262-75 |  |  | м | 34.2 |  |  |\n|  | Труба стальная оцинкованная водогазопроводная 32х4,0 | ГОСТ 3262-75 |  |  | м | 38.0 |  |  |\n|  | Труба стальная оцинкованная водогазопроводная 40х4,0 | ГОСТ 3262-75 |  |  | м | 7.9 |  |  |\n|  | Труба стальная оцинкованная водогазопроводная 50х4,5 | ГОСТ 3262-75 |  |  | м | 52.8 |  |  |\n|  | Труба стальная оцинкованная водогазопроводная 65х4,5 | ГОСТ 3262-75 |  |  | м | 25.7 |  |  |\n|  | Решение не найдено | ГОСТ 10704-91 |  |  | м | 0.4 |  |  |\n\nОбщий итог: 199\n\n158.8\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_ec07216893c540b88b7560c80b87ecd9",
+      "authoritative_TEXT": "### BLOCK #76 [TEXT]: blk_ec07216893c540b88b7560c80b87ecd9\n\n> **Created:** 2026-10-20 11:49:22 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/PWWNObCbEr4K_-i420jm)\n> **Stamp:** Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 15. | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n\n***Э_ОВ_Изоляция труб теплоснабжения ИТП электросварных труб***\n\n| | | | | | | | | |\n|---|---|---|---|---|---|---|---|---|\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 22 , 22х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 6 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 22 , 30х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 2 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 22 35х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 23 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 40 42х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 8 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 48 48х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 104 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 57 57х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 97 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 76 76х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 100 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 89 89х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 60 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 108 108х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 23 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 133 133х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 80 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 159 159х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 14 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 219 219х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 95 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 273 273х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 2 |  | НГ-негорючие |\n|  | Цилиндр навивной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 273 273х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 97 |  |  |\n|  |  |  |  |  |  |  |  |  |\n|  | Маты теплоизоляционные негорючие из минеральной ваты, толщина 50мм | WIRED MAT |  | Rockwool (Россия) | м2 | 250 |  | НГ-негорючие |\n|  |  |  |  |  |  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_e46d7b061235453f8917708c1387217c",
+      "authoritative_TEXT": "### BLOCK #74 [TEXT]: blk_e46d7b061235453f8917708c1387217c\n\n> **Created:** 2026-10-20 11:49:21 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/RDxzV2KNFiYambRSA9-8)\n> **Stamp:** Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 14. | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| ***Э_ОВ_Изоляция труб теплоснабжения ИТП оцинкovaných труб*** |  |  |  |  |  |  |  |  |\n|  | Цилиндр наливной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 22 , 22х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 35 |  | НГ-негорючие |\n|  | Цилиндр наливной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 35 35х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 23 |  | НГ-негорючие |\n|  | Цилиндр наливной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 40 42х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 48 |  | НГ-негорючие |\n|  | Цилиндр наливной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 48 48х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 52 |  | НГ-негорючие |\n|  | Цилиндр наливной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 60 60х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 104 |  | НГ-негорючие |\n|  | Цилиндр наливной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 76 76х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 89 |  | НГ-негорючие |\n|  | Цилиндр наливной минеральная вата ROCKWOOL 100 без покрытия ROCKWOOL, толщиной 40мм, для труб Днар 89 89х40 | ROCKWOOL 100 |  | Rockwool (Россия) | м | 17 |  | НГ-негорючие |\n|  |  |  |  |  |  |  |  |  |\n|  | Маты теплоизоляционные негорючие из минеральной ваты, толщина 50мм | WIRED MAT |  | Rockwool (Россия) | м2 | 50 |  | НГ-негорючие |\n|  |  |  |  |  |  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_96ab0b973faf4cbaa6f1241aa4df16e9",
+      "authoritative_TEXT": "### BLOCK #9 [TEXT]: blk_96ab0b973faf4cbaa6f1241aa4df16e9\n\n> **Created:** 2026-10-20 11:48:50 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JqGQn_WboPXzfoGEC4BH)\n> **Stamp:** Code: ПД-00542664-ИТП.ТМ | Stage: Р | Sheet: 1 | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой \"Матвеевское\", Квартал 3, 2-я очередь, корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Общие данные | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n##### Указания по монтажу\n\nМонтаж и пуск в эксплуатацию провести в соответствии со СП 74.13330.2023 \"Тепловые сети\", СНиП 3.05.03-85 \"Правила производства и приемки работ\", СНиП 12-03-2001 Часть 1. \"Безопасность труда в строительстве. Общие требования,\" СНиП 12-04-2002 Часть 2. \"Безопасность труда в строительстве. Строительное производство\". По окончании монтажных работ трубопроводы промываются водой и испытываются пробным давлением 12,5 кг/см. Длительность испытаний определяется временем, необходимым для осмотра трубопровода, но не менее 10 мин.\n\nПеред проведением изоляционных работ, трубопровод необходимо зачистить и покрасить кремний-органической краской (2 слоя) типа КО 8101. Изоляция из негорючих минераловатных цилиндров «ROCKWOOL» (от -180 до +600°С). После монтажа, провести и предъявить технодзору следующие работы:\n\n- гидронефматическую промывку трубопроводов;\n\n- опрессовку трубопроводов;\n\n- скрытые работы по изоляции трубопроводов.\n\nОформить исполнительную документацию, акт готовности к пуску тепла и акт допуска энергонадзора.\n\nИсточником теплоснабжения является собственная котельная (АИТ) с параметрами:\n\n• в подающем трубопроводе: 17,5 атм.\n\n• в обратном трубопроводе: 17,9 атм.\n\nРасчетный температурный график от источника теплоснабжения:\n\n• в подающем трубопроводе теплосети (зима/лето) – 90\n\n• в обратном трубопроводе теплосети (зима/лето) – 70\n\nПроект выполнен на основании Технического задания Заказчика. Приложение 2 к договору подряда № 15-09/25-РД от 15.09.2025\nНастройки предохранительных клапанов выполнить в соответствии с указаниями на принципиальной схеме ИТП\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_20c9372392c34ef08a1e81d99316f0cb",
+      "authoritative_TEXT": "### BLOCK #72 [TEXT]: blk_20c9372392c34ef08a1e81d99316f0cb\n\n> **Created:** 2026-10-20 11:49:20 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/7arA4pAgK27elJT2vzLG)\n> **Stamp:** Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 13. | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n\n*Э_ОВ_Крепления трубопроводов теплоснабжения ИТП оцинковка*\n\n| | | | | | | | | |\n|---|---|---|---|---|---|---|---|---|\n|  | для оцинкованных труб: |  |  |  |  |  |  |  |\n|  | крепление трубопровода Дн22 (хомут, анкер, шпилька) |  |  |  | компл. | 24 |  |  |\n|  | крепление трубопровода Дн35 (хомут, анкер, шпилька) |  |  |  | компл. | 12 |  |  |\n|  | крепление трубопровода Дн40 (хомут, анкер, шпилька) |  |  |  | компл. | 20 |  |  |\n|  | крепление трубопровода Дн48 (хомут, анкер, шпилька) |  |  |  | компл. | 18 |  |  |\n|  | крепление трубопровода Дн60 (хомут, анкер, шпилька) |  |  |  | компл. | 35 |  |  |\n|  | крепление трубопровода Дн76 (хомут, анкер, шпилька) |  |  |  | компл. | 30 |  |  |\n|  | крепление трубопровода Дн89 (хомут, анкер, шпилька) |  |  |  | компл. | 6 |  |  |\n\n*Э_ОВ_Крепления трубопроводов теплоснабжения ИТП электросварная*\n\n| | | | | | | | | |\n|---|---|---|---|---|---|---|---|---|\n|  | для стальных труб: |  |  |  |  |  |  |  |\n|  | крепление трубопровода Дн22 (хомут, анкер, шпилька) |  |  |  | компл. | 4 |  |  |\n|  | крепление трубопровода Дн35 (хомут, анкер, шпилька) |  |  |  | компл. | 12 |  |  |\n|  | крепление трубопровода Дн40 (хомут, анкер, шпилька) |  |  |  | компл. | 4 |  |  |\n|  | крепление трубопровода Дн48 (хомут, анкер, шпилька) |  |  |  | компл. | 35 |  |  |\n|  | крепление трубопровода Дн60 (хомут, анкер, шпилька) |  |  |  | компл. | 33 |  |  |\n|  | крепление трубопровода Дн76 (хомут, анкер, шпилька) |  |  |  | компл. | 100 |  |  |\n|  | крепление трубопровода Дн89 (хомут, анкер, шпилька) |  |  |  | компл. | 60 |  |  |\n|  | крепление трубопровода Дн110 (хомут, анкер, шпилька) |  |  |  | компл. | 23 |  |  |\n|  | крепление трубопровода Дн133 (хомут, анкер, шпилька) |  |  |  | компл. | 80 |  |  |\n|  | крепление трубопровода Дн159 (хомут, анкер, шпилька) |  |  |  | компл. | 5 |  |  |\n|  | крепление трубопровода Дн219 (хомут, анкер, шпилька) |  |  |  | компл. | 32 |  |  |\n|  | крепление трубопровода Дн273 (хомут, анкер, шпилька) |  |  |  | компл. | 32 |  |  |\n|  | крепление трубопровода Дн325 (хомут, анкер, шпилька) |  |  |  |  |  |  |  |\n|  |  |  |  |  |  |  |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_ea746747ceeb432db81d3380109e5608",
+      "authoritative_TEXT": "### BLOCK #209 [TEXT]: blk_ea746747ceeb432db81d3380109e5608\n\n> **Created:** 2026-10-20 11:50:29 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/VftvUHXcsYpFxtDInOTX)\n\n| *требование к их содержанию (разбивку на разделы и подразделы)» в соответствии с ГОСТ Р 21.101-2020* |  |\n|---|---|\n| **5.18. ТРЕБОВАНИЯ К СОСТАВЛЕНИЮ СПЕЦИФИКАЦИЙ ПО РАЗДЕЛАМ РД** |  |\n| **5.18.1 Перечень разделов РД для сводных спецификаций** | 5.18.1.1 В составе проекта разработать и согласовать с Заказчиком сводные спецификации по разделам РД. Перечень приведен в Приложении №5. |\n| **5.18.2 Перечень основных материалов и оборудования с нормами расхода 5.18.3 Спецификации в томах РД.** | 5.18.2.1 В спецификациях должен быть указан: - объем работ (без учета запаса на расход материалов); - объем основных материалов с учетом нормативного расхода. 5.18.2.2 Данные по величине запаса к расходу основных материалов и оборудования приведены в Приложении №8. ; 5.18.3.1. В спецификации РД должна быть включена колонка «Код работ» по РСР/локальной смете. 5.18.3.2. В спецификациях должен быть указан - объем работ (без учета запаса на расход материалов); - объем основных материалов с учетом нормативного расхода. Данные по величине запаса к расходу основных материалов и оборудования приведены в Приложении №9. Величина запаса по неосновным материалам указывается примерно. 5.18.3.3. Спецификации, включенные в тома РД, должны быть переданы в составе комплекта РД в т.ч. в формате Excel. |\n\n## Page 167\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_ac52bb88a0f64138a5b5ee4256cba2e7",
+      "authoritative_TEXT": "### BLOCK #62 [TEXT]: blk_ac52bb88a0f64138a5b5ee4256cba2e7\n\n> **Created:** 2026-10-20 11:49:18 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/NPedf1gN5mZGvDqjorJP)\n> **Stamp:** Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 8. | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. измерения | Кол-во | Масса 1 ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n\nСоединительные детали трубопроводов\n\n| | | | | | | | | |\n|---|---|---|---|---|---|---|---|---|\n|  | Муфта гибкая для соединений грубллок Ø80 | Dinarm FC | FC089E* | ООО \"Огнеборец\" | шт. | 115 |  |  |\n|  | Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=32х25мм | ГОСТ 8957-75* | Муфта 32x25 |  | шт. | 18 |  |  |\n|  | Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=40х20мм | ГОСТ 8957-75* | Муфта 40x20 |  | шт. | 2 |  |  |\n|  | Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=40х25мм | ГОСТ 8957-75* | Муфта 40x25 |  | шт. | 3 |  |  |\n|  | Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=40х32мм | ГОСТ 8957-75* | Муфта 40x32 |  | шт. | 3 |  |  |\n|  | Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=50х15мм | ГОСТ 8957-75* | Муфта 50x15 |  | шт. | 1 |  |  |\n|  | Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=50х25мм | ГОСТ 8957-75* | Муфта 50x25 |  | шт. | 2 |  |  |\n|  | Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=50х32мм | ГОСТ 8957-75* | Муфта 50x32 |  | шт. | 10 |  |  |\n|  | Муфта переходная из ковкого чугуна с цилиндрической резьбой без покрытия, Д=50х40мм | ГОСТ 8957-75* | Муфта 50x40 |  | шт. | 3 |  |  |\n|  | Нет в каталоге | ГОСТ 17379-2001 | Нет в каталоге |  | шт. | 1 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Д=25 мм | ГОСТ 17375-2001* | Отвод 45-2-32 |  | шт. | 2 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 45-2-57 |  | шт. | 2 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Д=65 мм | ГОСТ 17375-2001* | Отвод 45-2-76 |  | шт. | 4 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Д=80 мм | ГОСТ 17375-2001* | Отвод 45-2-89 |  | шт. | 2 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Д=100 мм | ГОСТ 17375-2001* | Отвод 45-2-108 |  | шт. | 4 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Д=125 мм | ГОСТ 17375-2001* | Отвод 45-2-133 |  | шт. | 6 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Ду 65 | ГОСТ 17375-2001* | Отвод 45-2-76 |  | шт. | 2 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Ду 125 | ГОСТ 17375-2001* | Отвод 45-2-133 |  | шт. | 8 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Ду 200 | ГОСТ 17375-2001* | Отвод 45-2-219 |  | шт. | 6 |  |  |\n|  | Отвод 45° стальной крутоизогнутый бесшовный, Ду 300 | ГОСТ 17375-2001* | Отвод 45-2-325 |  | шт. | 1 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Д=15 мм | ГОСТ 17375-2001* | Отвод 90-2-21 |  | шт. | 15 |  |  |\n| \\<варианты> | Отвод 90° стальной крутоизогнутый бесшовный, Д=25 мм | ГОСТ 17375-2001* | Отвод 90-2-32 |  | шт. | 46 |  |  |\n| \\<варианты> | Отвод 90° стальной крутоизогнутый бесшовный, Д=32 мм | ГОСТ 17375-2001* | Отвод 90-2-38 |  | шт. | 16 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Д=40 мм | ГОСТ 17375-2001* | Отвод 90-2-45 |  | шт. | 84 |  |  |\n| \\<варианты> | Отвод 90° стальной крутоизогнутый бесшовный, Д=50 мм | ГОСТ 17375-2001* | Отвод 90-2-57 |  | шт. | 79 |  |  |\n| \\<варианты> | Отвод 90° стальной крутоизогнутый бесшовный, Д=65 мм | ГОСТ 17375-2001* | Отвод 90-2-76 |  | шт. | 52 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Д=80 мм | ГОСТ 17375-2001* | Отвод 90-2-89 |  | шт. | 27 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Д=100 мм | ГОСТ 17375-2001* | Отвод 90-2-108 |  | шт. | 9 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Д=125 мм | ГОСТ 17375-2001* | Отвод 90-2-133 |  | шт. | 26 |  |  |\n| \\<варианты> | Отвод 90° стальной крутоизогнутый бесшовный, Д=150 мм | ГОСТ 17375-2001* | Отвод 90-2-159 |  | шт. | 14 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Д=200 мм | ГОСТ 17375-2001* | Отвод 90-2-219 |  | шт. | 26 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Д=250 мм | ГОСТ 17375-2001* | Отвод 90-2-273 |  | шт. | 1 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Д=300 мм | ГОСТ 17375-2001* | Отвод 90-2-325 |  | шт. | 28 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Ду 50 | ГОСТ 17375-2001* | Отвод 90-2-57 |  | шт. | 16 |  |  |\n| \\<варианты> | Отвод 90° стальной крутоизогнутый бесшовный, Ду 65 | ГОСТ 17375-2001* | \\<варианты> |  | шт. | 29 |  |  |\n| \\<варианты> | Отвод 90° стальной крутоизогнутый бесшовный, Ду 80 | ГОСТ 17375-2001* | Отвод 90-2-89 |  | шт. | 26 |  |  |\n| \\<варианты> | Отвод 90° стальной крутоизогнутый бесшовный, Ду 100 | ГОСТ 17375-2001* | Отвод 90-2-108 |  | шт. | 5 |  |  |\n| \\<варианты> | Отвод 90° стальной крутоизогнутый бесшовный, Ду 125 | ГОСТ 17375-2001* | Отвод 90-2-133 |  | шт. | 20 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Ду 150 | ГОСТ 17375-2001* | Отвод 90-2-159 |  | шт. | 2 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Ду 200 | ГОСТ 17375-2001* | Отвод 90-2-219 |  | шт. | 23 |  |  |\n|  | Отвод 90° стальной крутоизогнутый бесшовный, Ду 300 | ГОСТ 17375-2001* | Отвод 90-2-325 |  | шт. | 6 |  |  |\n|  | Переход концентрический под муфту грубллок Ø50х32 | Dinarm GCR | GCR060R042* | ООО \"Огнеборец\" | шт. | 15 |  |  |\n|  | Переход концентрический под муфту грубллок Ø50х40 | Dinarm GCR | GCR060R048* | ООО \"Огнеборец\" | шт. | 17 |  |  |\n|  | Переход концентрический под муфту грубллок Ø65х32 | Dinarm GCR | GCR076R042* | ООО \"Огнеборец\" | шт. | 5 |  |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r1_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+      "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+      "block_id": "blk_17628e5e5b414088b5c392e63f6f4456",
+      "authoritative_TEXT": "### BLOCK #64 [TEXT]: blk_17628e5e5b414088b5c392e63f6f4456\n\n> **Created:** 2026-10-20 11:49:18 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/CSyKkCobc_czQeVWiYK4)\n> **Stamp:** Code: ПД-00542664 - ИТП.ТМ.СО | Stage: Не указано | Sheet: 9. | Наименование проекта: Многофункциональная комплексная жилая застройка по адресу: г. Москва, ЗАО, район Раменки, между ул. Лобачевского и платформой «Матвеевское», квартал 3, 2-я очередь, Корпус 2 (рекламное название ЖК Событие 6.2) | Наименование листа: Не указано | Organization: ООО «ПИ ВНИС» | Revisions: Не указано\n\n| Поз. | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код изделия | Завод изготовитель | Ед. изме-ре-ния | Кол-во | Масса 1ед., кг. | Примечание |\n|---|---|---|---|---|---|---|---|---|\n\n**Соединительные детали трубопроводов**\n\n| | | | | | | | | |\n|---|---|---|---|---|---|---|---|---|\n|  | Переход концентрический под муфту грублок φ65x40 | Dinarm GCR | GCR076R048* | 000 \"Огнеборец\" | шт. | 19 |  |  |\n|  | Переход концентрический под муфту грублок φ65x50 | Dinarm GCR | GCR076R060* | 000 \"Огнеборец\" | шт. | 20 |  |  |\n|  | Переход концентрический под муфту грублок φ80x40 | Dinarm GCR | GCR089R048* | 000 \"Огнеборец\" | шт. | 2 |  |  |\n|  | Переход концентрический под муфту грублок φ80x50 | Dinarm GCR | GCR089R060* | 000 \"Огнеборец\" | шт. | 18 |  |  |\n|  | Переход концентрический под муфту грублок φ80x65 | Dinarm GCR | GCR089R076* | 000 \"Огнеборец\" | шт. | 1 |  |  |\n|  | Переход оцинкованный стальной концентрический, D=25x15 мм | ГОСТ 17378-2001* | Переход Ц-К-1-33,7x21,3 |  | шт. | 8 |  |  |\n|  | Переход оцинкованный стальной концентрический, D=32x25 мм | ГОСТ 17378-2001* | Переход Ц-К-1-42,4x33,7 |  | шт. | 11 |  |  |\n|  | Переход оцинкованный стальной концентрический, D=40x25 мм | ГОСТ 17378-2001* | Переход Ц-К-1-48,3x33,7 |  | шт. | 1 |  |  |\n|  | Переход оцинкованный стальной концентрический, D=40x32 мм | ГОСТ 17378-2001* | Переход Ц-К-1-48,3x42,4 |  | шт. | 4 |  |  |\n|  | Переход оцинкованный стальной концентрический, D=50x25 мм | ГОСТ 17378-2001* | Переход Ц-К-1-60,3x33,7 |  | шт. | 1 |  |  |\n|  | Переход оцинкованный стальной концентрический, D=50x40 мм | ГОСТ 17378-2001* | Переход Ц-К-1-60,3x48,3 |  | шт. | 1 |  |  |\n|  | Переход стальной концентрический, D=32x25 мм | ГОСТ 17378-2001* | Переход К-2-38x32 |  | шт. | 3 |  |  |\n|  | Переход стальной концентрический, D=40x20 мм | ГОСТ 17378-2001* | Переход К-2-45x20 |  | шт. | 4 |  |  |\n|  | Переход стальной концентрический, D=40x25 мм | ГОСТ 17378-2001* | Переход К-2-45x32 |  | шт. | 4 |  |  |\n|  | Переход стальной концентрический, D=50x20 мм | ГОСТ 17378-2001* | Переход К-2-57x20 |  | шт. | 4 |  |  |\n|  | Переход стальной концентрический, D=50x32 мм | ГОСТ 17378-2001* | Переход К-2-57x38 |  | шт. | 6 |  |  |\n|  | Переход стальной концентрический, D=50x40 мм | ГОСТ 17378-2001* | Переход К-2-57x45 |  | шт. | 6 |  |  |\n|  | Переход стальной концентрический, D=65x32 мм | ГОСТ 17378-2001* | Переход К-2-76x38 |  | шт. | 4 |  |  |\n|  | Переход стальной концентрический, D=65x40 мм | ГОСТ 17378-2001* | Переход К-2-76x45 |  | шт. | 17 |  |  |\n|  | Переход стальной концентрический, D=65x50 мм | ГОСТ 17378-2001* | \\<варианты> |  | шт. | 43 |  |  |\n|  | Переход стальной концентрический, D=80x40 мм | ГОСТ 17378-2001* | Переход К-2-89x45 |  | шт. | 8 |  |  |\n|  | Переход стальной концентрический, D=80x50 мм | ГОСТ 17378-2001* | Переход К-2-89x57 |  | шт. | 8 |  |  |\n|  | Переход стальной концентрический, D=80x65 мм | ГОСТ 17378-2001* | Переход К-2-89x76 |  | шт. | 7 |  |  |\n|  | Переход стальной концентрический, D=100x50 мм | ГОСТ 17378-2001* | Переход К-2-108x57 |  | шт. | 1 |  |  |\n|  | Переход стальной концентрический, D=100x65 мм | ГОСТ 17378-2001* | \\<варианты> |  | шт. | 14 |  |  |\n|  | Переход стальной концентрический, D=100x80 мм | ГОСТ 17378-2001* | Переход К-2-114x89 |  | шт. | 6 |  |  |\n|  | Переход стальной концентрический, D=125x65 мм | ГОСТ 17378-2001* | Переход К-2-133x76 |  | шт. | 6 |  |  |\n|  | Переход стальной концентрический, D=125x80 мм | ГОСТ 17378-2001* | Переход К-2-133x89 |  | шт. | 11 |  |  |\n|  | Переход стальной концентрический, D=125x100 мм | ГОСТ 17378-2001* | \\<варианты> |  | шт. | 18 |  |  |\n|  | Переход стальной концентрический, D=150x65 мм | ГОСТ 17378-2001* | Переход К-2-168x76 |  | шт. | 1 |  |  |\n|  | Переход стальной концентрический, D=150x80 мм | ГОСТ 17378-2001* | Переход К-2-159x89 |  | шт. | 2 |  |  |\n|  | Переход стальной концентрический, D=150x100 мм | ГОСТ 17378-2001* | \\<варианты> |  | шт. | 24 |  |  |\n|  | Переход стальной концентрический, D=150x125 мм | ГОСТ 17378-2001* | Переход К-2-159x133 |  | шт. | 2 |  |  |\n|  | Переход стальной концентрический, D=200x100 мм | ГОСТ 17378-2001* | \\<варианты> |  | шт. | 8 |  |  |\n|  | Переход стальной концентрический, D=200x125 мм | ГОСТ 17378-2001* | Переход К-2-219x133 |  | шт. | 5 |  |  |\n|  | Переход стальной концентрический, D=200x150 мм | ГОСТ 17378-2001* | \\<варианты> |  | шт. | 13 |  |  |\n|  | Переход стальной концентрический, D=250x125 мм | ГОСТ 17378-2001* | Переход К-2-273x133 |  | шт. | 4 |  |  |\n|  | Переход стальной концентрический, D=250x200 мм | ГОСТ 17378-2001* | Переход К-2-273x219 |  | шт. | 2 |  |  |\n|  | Переход стальной концентрический, D=300x100 мм | ГОСТ 17378-2001* | \\<варианты> |  | шт. | 5 |  |  |\n\n"
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-029.json",
+      "sha256": "92f98a8b73d3db1a60c32f0d100a2dfd0e5688ea5295792e06a212154edd7ef0",
+      "primary_adjudication": null,
+      "limits": "Проверена ограниченная область отсутствия — две таблицы изоляции, а не весь проект или поставка. На листе14 есть50м² матов, на листе15 —250м²; распределение по трубам и оборудованию не установлено. Нельзя автоматически заменить273 на325, добавить85,1м цилиндров или объявить поставку некомплектной. Нарушение СП61 не подтверждалось.",
+      "wording": "Уточнить соответствие труб и изоляции: предусмотрено85,1м трубы325×7, но в таблицах изоляции листов14–15 нет отдельной строки цилиндра для325мм; цилиндр273×40 записан дважды —2 и97м при1,7м трубы273×7. Подтвердить назначение строки97м и предусмотренных матов."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-030.json",
+      "sha256": "6a3f4bab850caa396773c70b0e217b678d08394393d0622ecde796f7547c74e1",
+      "primary_adjudication": null,
+      "limits": "Пропуск двух полей подтверждён непосредственно по строке.32комплекта не являются автоматически доказанным избытком: схема опор, участки и границы учёта не сверены. Не переносить32комплекта в строку325 без расчёта. Фактическая непоставка опор, задержка монтажа и невозможность монтажа не установлены.",
+      "wording": "Заполнить единицу измерения и количество креплений Дн325 в спецификации: строка есть, обе ячейки пусты; труба325×7 предусмотрена длиной85,1м. Одновременно сверить распределение: дляДн273 указаны32комплекта при1,7м трубы273×7."
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-027.json",
+      "sha256": "588a49e57b6c85946e87846a560dcd92394a7061283b26699022b1a1ee537a5f",
+      "primary_adjudication": null,
+      "limits": "Авторитетный TEXT подтверждает надписи; их происхождение из модели, каталога или выгрузки не установлено. Повторное распознавание TEXT по растру не проводилось. Не переносить вывод на все строки с «варианты»: в части строк наименование, размер и количество сохранены, а служебная надпись находится лишь в позиции или примечании. Фактическая непоставка, невозможность монтажа и необходимость запретить использование всей ведомости не доказаны.",
+      "wording": "Уточнить неопределённые изделия в спецификации: в дренажном трубопроводе строка0,4м поГОСТ10704-91 содержит «Решение не найдено» вместо наименования и размера; строка1шт. поГОСТ17379-2001 содержит «Нет в каталоге» в наименовании и коде. Указать конкретные характеристики, достаточные для идентификации изделий."
+    }
+  ],
+  "limits": [
+    "No full insulation or support inventory completed.",
+    "No invented quantities or new engineer acceptance.",
+    "Frozen evaluator and independent model inputs unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
