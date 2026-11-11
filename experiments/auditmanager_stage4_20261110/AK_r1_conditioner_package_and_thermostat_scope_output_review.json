@@ -1,0 +1,530 @@
+{
+  "status": "two_package_scope_reviews",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+  "queue_before_sha256": "8b9abc4b4d8d1b4bd4f3fe583d39abc4ddb38046fc3d9876a9b2859bc8445b10",
+  "queue_after_sha256": "60e38203528d1499a0153ca8c800178d8d88c2f7db8bf059e64fd0f21edfcdd8",
+  "reviewer": "coordinator_authoritative_TEXT_direct_GRAPHIC_review",
+  "reviewed_rows": [
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-014",
+      "finding": {
+        "id": "F-014",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Резервирование кондиционеров",
+        "sheet": "Листы 3, 42, 9",
+        "page": [
+          7,
+          46,
+          102
+        ],
+        "problem": "Заданы несовместимые варианты комплектации системы резервирования кондиционеров.",
+        "description": "Перечень схемы содержит БУРР-1М, два БИС-1М, автомат и корпус. Спецификация предусматривает три Haier TD0027170RU и шесть неназванных адаптеров. Общие указания заявляют отсутствие дополнительных устройств сопряжения и внешнего питания. Примечание «для 1 сплит системы» не согласовано с управлением двумя кондиционерами.",
+        "norm": "ГОСТ 21.408-2013 (норматив-кандидат), кандидат п. 4.1; ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.408-2013",
+            "cited_designation": "ГОСТ 21.408-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность схем, питания и описания автоматизации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          },
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить соответствие состава поставки выбранной системе.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-013"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-013"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Выбрать одну систему и согласовать оборудование, адаптеры, питание, интерфейсы и количество управляемых кондиционеров.",
+        "risk": "Поставка несовместимого оборудования и невозможность резервирования кондиционеров.",
+        "source_finding_ids": [
+          "T-013"
+        ],
+        "source_block_ids": [
+          "blk_52496725d0f247bf913f197b2ed305ac",
+          "blk_ed9c75d3fd26408c88f163f107138612",
+          "blk_400b84df0f63420ab16fb5c330de54b7",
+          "blk_b8f98350127c4603bb6811846ec13309"
+        ],
+        "related_block_ids": [
+          "blk_52496725d0f247bf913f197b2ed305ac",
+          "blk_ed9c75d3fd26408c88f163f107138612",
+          "blk_400b84df0f63420ab16fb5c330de54b7",
+          "blk_b8f98350127c4603bb6811846ec13309",
+          "blk_66ba3cf1e99c46a292deb3fecd22f58a",
+          "blk_8de25b2b318647aeac8b3298fe03a98c",
+          "blk_045c688307e949da8a39ce4c49b8db7e"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_52496725d0f247bf913f197b2ed305ac",
+            "page": 7
+          },
+          {
+            "type": "text",
+            "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+            "page": 102
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 99,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "AK_F003_conditioner_package:a7d7d784bbf2e66f7cef",
+          "route": "technical",
+          "coverage": "partial"
+        },
+        {
+          "target_id": "AK_F003_conditioner_package:1581ead5bb25a2f6e85d",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "AK_F003_conditioner_package:9443a5e3cfd1ecce7bfe",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Лист42 задаёт БУРР-1М, дваБИС-1М Алекс электроникс, автомат и корпус; СО18.1–18.2 задаёт триHaier TD0027170RU и шесть адаптеров без типа.",
+          "verdict": "confirmed_authoritative_TEXT_package_identity_conflict",
+          "limits": ""
+        },
+        {
+          "claim": "Общие указания заявляют отсутствие внешнего источника питания и дополнительных устройств сопряжения; схема БУРР-1М показывает220В черезQF1.",
+          "verdict": "confirmed_TEXT_GRAPHIC_conflict",
+          "limits": "Передача питания смежному разделу не устраняет изображённого внешнего питания."
+        },
+        {
+          "claim": "Примечание для1сплит-системы неоднозначно при показанных Косн/Крез и двухБИС-1М.",
+          "verdict": "confirmed_document_scope_question",
+          "limits": "Два кондиционера на согласователь согласуются с общими данными. Отношение3:6 само по себе не количественная ошибка."
+        },
+        {
+          "claim": "Эти устройства технически несовместимы.",
+          "verdict": "not_established",
+          "limits": "Доказано различие проектных исполнений, не физическая несовместимость. Не проверены паспорта, интерфейсы, заводские комплекты и монтаж."
+        },
+        {
+          "claim": "Согласовать исполнение и единицу комплекта без автоматического умножения перечня.",
+          "verdict": "supported_technical_core_and_separate_scope_question",
+          "limits": "Не выбирать Haier или Алекс электроникс только по частоте упоминания; не добавлять питание повторно без проверкиЭМ."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "known_scoped_question_no_new_defect_proven",
+      "duplicate_burden": "One system execution conflict with scope question;3controllers/6adapters are not automatically nine defects.",
+      "profile_and_section": "technical_identity_core_plus_questions_for_package_unit",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_52496725d0f247bf913f197b2ed305ac",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_ed9c75d3fd26408c88f163f107138612",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3",
+          "primary_adjudication": null,
+          "limits": [
+            "Два кондиционера на согласователь согласуются с общими данными и наименованием СО18.1. Соотношение3:6 само по себе не доказывает количественную ошибку.",
+            "Нельзя автоматически умножать локальный перечень на6 или на3 до уточнения единицы комплекта и привязки к помещениям.",
+            "Тип адаптера отсутствует в строке18.2, но отсутствие идентификации во всех смежных документах не проверено.",
+            "Совместимость Haier и Алекс электроникс, заводская комплектность, параметры интерфейсов, фактические заказ и монтаж не проверены. Конфликт обозначений не равнозначен доказанной несовместимости.",
+            "Ссылка на ЭМ определяет границу исполнения питания, а не отсутствие внешнего питания. Связанный вопрос шифров рассмотрен отдельно в F033; не дублировать его как отказ питания."
+          ],
+          "wording": "Согласовать исполнение автоматики кондиционеров. Общие данные описывают БУРР без внешнего источника питания и без дополнительных устройств сопряжения; лист42 задаёт БУРР-1М с питанием220В/QF1 и два БИС-1М «Алекс электроникс». СО18.1–18.2 задаёт три Haier TD0027170RU и шесть адаптеров без типа. Уточнить соответствие этих исполнений и состав комплекта; отдельно уточнить примечание3 «для1 сплит системы» при показанной паре К осн/К рез."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3",
+          "primary_adjudication": null,
+          "limits": [
+            "Два кондиционера на согласователь согласуются с общими данными и наименованием СО18.1. Соотношение3:6 само по себе не доказывает количественную ошибку.",
+            "Нельзя автоматически умножать локальный перечень на6 или на3 до уточнения единицы комплекта и привязки к помещениям.",
+            "Тип адаптера отсутствует в строке18.2, но отсутствие идентификации во всех смежных документах не проверено.",
+            "Совместимость Haier и Алекс электроникс, заводская комплектность, параметры интерфейсов, фактические заказ и монтаж не проверены. Конфликт обозначений не равнозначен доказанной несовместимости.",
+            "Ссылка на ЭМ определяет границу исполнения питания, а не отсутствие внешнего питания. Связанный вопрос шифров рассмотрен отдельно в F033; не дублировать его как отказ питания."
+          ],
+          "wording": "Согласовать исполнение автоматики кондиционеров. Общие данные описывают БУРР без внешнего источника питания и без дополнительных устройств сопряжения; лист42 задаёт БУРР-1М с питанием220В/QF1 и два БИС-1М «Алекс электроникс». СО18.1–18.2 задаёт три Haier TD0027170RU и шесть адаптеров без типа. Уточнить соответствие этих исполнений и состав комплекта; отдельно уточнить примечание3 «для1 сплит системы» при показанной паре К осн/К рез."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+          "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3",
+          "primary_adjudication": null,
+          "limits": [
+            "Два кондиционера на согласователь согласуются с общими данными и наименованием СО18.1. Соотношение3:6 само по себе не доказывает количественную ошибку.",
+            "Нельзя автоматически умножать локальный перечень на6 или на3 до уточнения единицы комплекта и привязки к помещениям.",
+            "Тип адаптера отсутствует в строке18.2, но отсутствие идентификации во всех смежных документах не проверено.",
+            "Совместимость Haier и Алекс электроникс, заводская комплектность, параметры интерфейсов, фактические заказ и монтаж не проверены. Конфликт обозначений не равнозначен доказанной несовместимости.",
+            "Ссылка на ЭМ определяет границу исполнения питания, а не отсутствие внешнего питания. Связанный вопрос шифров рассмотрен отдельно в F033; не дублировать его как отказ питания."
+          ],
+          "wording": "Согласовать исполнение автоматики кондиционеров. Общие данные описывают БУРР без внешнего источника питания и без дополнительных устройств сопряжения; лист42 задаёт БУРР-1М с питанием220В/QF1 и два БИС-1М «Алекс электроникс». СО18.1–18.2 задаёт три Haier TD0027170RU и шесть адаптеров без типа. Уточнить соответствие этих исполнений и состав комплекта; отдельно уточнить примечание3 «для1 сплит системы» при показанной паре К осн/К рез."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_66ba3cf1e99c46a292deb3fecd22f58a.png",
+          "sha256": "bb1ad5076255d43b3f37bacc2855e9f860699cbf8d9ba175c84c5e1f03864d0d",
+          "block_id": "blk_66ba3cf1e99c46a292deb3fecd22f58a",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Directly viewed: Kmain/Kreserve with BIS-1M; BURR-1M220V viaQF1; enclosure layout. No manufacturer compatibility verified."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+          "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+          "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Directly viewed: Kmain/Kreserve with BIS-1M; BURR-1M220V viaQF1; enclosure layout. No manufacturer compatibility verified."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_045c688307e949da8a39ce4c49b8db7e.png",
+          "sha256": "e3efad4b1ac5e82d1fdfa5c601f3176d693d28ffdcd6ed11d3d8f7af34e9f417",
+          "block_id": "blk_045c688307e949da8a39ce4c49b8db7e",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Directly viewed: Kmain/Kreserve with BIS-1M; BURR-1M220V viaQF1; enclosure layout. No manufacturer compatibility verified."
+        }
+      ],
+      "disposition": "assessed_preserve_package_conflict_remove_proven_incompatibility_claim"
+    },
+    {
+      "discipline": "AK",
+      "repeat": 1,
+      "finding_id": "F-060",
+      "finding": {
+        "id": "F-060",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Комплектность термостатов",
+        "sheet": "Лист 38",
+        "page": [
+          42,
+          100
+        ],
+        "problem": "Не установлено, где учтена поставка обоих термостатов ШАУВ-2-К6ПЧ.",
+        "description": "Схема содержит TS1 системы П6.1.1 и TS2 системы П6.1.4. Позиция 14.8 спецификации предусматривает одно капиллярное реле температуры. Прибор защиты водяного калорифера и термостат электрического нагревателя могут иметь разную комплектность; наличие двух обозначений само по себе не доказывает необходимость двух одинаковых приборов по позиции 14.8.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить отражение комплектной поставки и отдельного учёта приборов защиты.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-086"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-086"
+                ],
+                "designation_source": "Подбор при консолидации"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Сверить комплектность нагревателей и указать тип, количество и документ поставки для TS1 и TS2.",
+        "risk": "Пропуск одного устройства защиты либо избыточная закупка комплектного прибора.",
+        "source_finding_ids": [
+          "G-086"
+        ],
+        "source_block_ids": [
+          "blk_40bad73db9d44699955a7a4682f309a8"
+        ],
+        "related_block_ids": [
+          "blk_40bad73db9d44699955a7a4682f309a8",
+          "blk_54608a880c2545aa926c442d213988c3",
+          "blk_5b5187b5afb740efb6423fa40c399349"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+            "page": 42
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T054119Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-086",
+              "mode": "independent",
+              "detected_at": "2026-11-11T05:41:19.017534+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "new",
+          "relations": [
+            {
+              "relation": "new",
+              "role": "unique_detector_finding",
+              "counterpart_refs": [],
+              "confidence": 1.0,
+              "reason": "Другой независимый детектор не вернул смысловой аналог.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 71,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [],
+      "triage": "unmapped_not_yet_classified",
+      "claim_reviews": [
+        {
+          "claim": "Функциональная и внешняя схемы содержат TS1 дляП6.1.1 и TS2 дляП6.1.4.",
+          "verdict": "confirmed_direct_GRAPHIC",
+          "limits": "Легенда различает защиту от замораживания и перегрева; это разные назначения."
+        },
+        {
+          "claim": "СО14.8 содержит одно капиллярное реле; переченьлист20 содержит ТС1 количеством1 и ТС2 с пустым количеством.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": ""
+        },
+        {
+          "claim": "Поставка обоих термостатов нигде не установлена.",
+          "verdict": "overbroad_refuted_by_available_context",
+          "limits": "В перечнелист20 прямо написано дляТС2 «комплектно с электронагревателем»; ТС1 согласуется по типу и количеству сСО14.8. Фактическая поставка не проверена, но проектное указание комплектности существует."
+        },
+        {
+          "claim": "Требуются два одинаковых прибора поСО14.8.",
+          "verdict": "not_established",
+          "limits": "Два обозначения разных защит не означают две одинаковые закупочные позиции. Исходное описаниеF-060 само оговаривает эту границу."
+        },
+        {
+          "claim": "Остаётся уточнить пустое количествоТС2 и при необходимости заводской состав.",
+          "verdict": "supported_narrow_question_overlaps_F011",
+          "limits": "Пустое количество уже прямо включено вF-011; не засчитывать как новую самостоятельную техническую находку. Проверка всегоF-011 ещё не выполнена."
+        }
+      ],
+      "unsupported_additions": "see_atomic_claim_verdicts_no_blanket_acceptance",
+      "novel_useful_content": "No independent new technical defect established; remaining blank-quantity question already present in F-011.",
+      "duplicate_burden": "Remaining TS2 quantity question duplicates one atom of F-011; merge without deleting distinct F-011 channel-sensor quantities.",
+      "profile_and_section": "questions_clarifications_merge_with_F011",
+      "engineer_reuse": "primary_adjudication_not_established_no_new_engineer_acceptance",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+          "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+          "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+          "route": "authoritative_TEXT"
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+          "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+          "block_id": "blk_54608a880c2545aa926c442d213988c3",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "TS1 water-heater freeze protection and TS2 electric-heater overheat protection are distinct functions; external connections shown. Not actual delivery evidence."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+          "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+          "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "TS1 water-heater freeze protection and TS2 electric-heater overheat protection are distinct functions; external connections shown. Not actual delivery evidence."
+        }
+      ],
+      "disposition": "assessed_supply_absence_overstated_retain_only_narrow_duplicate_question"
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_52496725d0f247bf913f197b2ed305ac",
+      "authoritative_TEXT": "### BLOCK #12 [TEXT]: blk_52496725d0f247bf913f197b2ed305ac\n\n> **Created:** 2026-09-28 07:28:36 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Uihhqyg9SpA0OKBDR4ap)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 3 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Общие данные (продолжение) | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n- аварийный режим, когда система неисправна;\n\nЗапуск системы осуществляется обслуживающим персоналом эксплуатирующей компании.\n\n###### Для 1. Рабочий режим.\n\n- воздухоприёмный клапан открыт;\n\n- вытяжной вентилятор включен.\n\n###### 2. Аварийный режим.\n\nПри аварии и перегреве вентилятора происходит останов вытяжной установки, закрытие клапана и выдается световая сигнализация \"Авария\" на лицевой панели блока управления.\n\nВ случае любой аварийной ситуации в системе, контроллер щита автоматики и управления общеобменной вентиляционной установки выдаёт общий сигнал \"Авария\" в систему диспетчеризации (см. проект марки \"1ЗАВ-РД-АК-ПА Книга 2\").\n\nДля управления 3-фазного двигателя вентилятора, используются преобразователи частоты. Преобразователи частоты Веспер, серии MINI, устанавливаются внутри щита автоматики. Регулирование скорости электродвигателей осуществляется с помощью аналогового сигнала (0-10 В).\n\nДля управления 1-фазного двигателя вентилятора, используются регулятор скорости. Регулятор скорости САВЭЛ, СИ-РСУ10, устанавливаются внутри щита автоматики. Регулирование скорости электродвигателей осуществляется с помощью аналогового сигнала (0-10 В).\n\nПри поступлении сигнала «Пожар» все установки общеобменной вентиляции отключаются. Для каждого щита автоматизации и управления предусмотрен отдельный сигнал «Пожар» от СПС (см. проект 1ЗАВ-РД-АПЭ.АПС-ПА). При поступлении сигнала «Пожар»: повторный запуск системы должен осуществляться инженером, в ручном режиме со щита управления вентиляцией после визуального осмотра путем нажатия на кнопку «Сброс аварии».\n\n###### 3. Автоматизация воздушно-тепловых завес\n\nЗавеса управляется с помощью проводного блока диспетчеризации МК с электронным термостатом и пультом дистанционного управления КАТ1-П. Завесы учтены в разделе 1ЗАВ-РД-ОВ1.1-ПА.\n\nБлок диспетчеризации МК позволяет отслеживать техническое состояние и режимы работы завес, а также изменять параметры и настройки, находясь в удаленном доступе в режиме реального времени. Обработка и сбор информации осуществляется при помощи программируемого микроконтроллера КАТ1-Р, поддерживающий интерфейс передачи данных RS-485.\n\nАвтоматизация воздушных тепловых завес с водяным подогревом обеспечивает:\n\n- включение воздушной тепловой завесы при открывании ворот;\n\n- автоматическое отключение воздушной завесы после закрытия ворот и восстановления температуры воздуха в зоне ворот до установленного значения;\n\n- блокировку работы при поступлении сигнала «Пожар» без отключения работы узла регулирования.\n\nНа АРМ оператора системы диспетчеризации инженерных систем передается сигнал об аварии воздушной тепловой завесы.\n\n###### 4. Кондиционеры в помещении СС\n\nДля управления совместной работой двух кондиционеров Haier используется согласователь БУРР.\n\nОсновные функции согласователя БУРР:\n\n- Обеспечивает равномерную выработку ресурса рабочих и резервных кондиционеров;\n\n- Обеспечивает автоматический перезапуск кондиционеров при случайном прекращении и восстановлении электроснабжения;\n\n- Выполняет автоматическое управление технологической системой кондиционирования, включающей 2 кондиционера;\n\n- Включает в работу все кондиционеры, если температура выше установленной и нет предпосылок к снижению;\n\n- Исключает несанкционированное (случайное) отключение кондиционеров с индивидуального пульта управления;\n\n- Обеспечивает индикацию состояния кондиционеров;\n\n- Измеряет температуру воздуха в кондиционируемом помещении;\n\n- Возможность использовать любой из кондиционеров в качестве базового;\n\n- Возможность работы с кондиционерами Haier без дополнительных устройств сопряжения;\n\n- Отсутствие необходимости во внешнем источнике питания;\n\n- Управление воздушным потоком кондиционера;\n\n- Наличие гальванической развязки между подключаемыми кондиционерами.\n\n- Сплит-системы отключаются во время \"пожара\", путем снятия питания, по сигналу от АПС.\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_ed9c75d3fd26408c88f163f107138612",
+      "authoritative_TEXT": "### BLOCK #143 [TEXT]: blk_ed9c75d3fd26408c88f163f107138612\n\n> **Created:** 2026-09-28 07:29:16 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/w4h_GKTG6UA0pyTxIhju)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 42 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Схема внешних подключений согласователя работы кондиционеров | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Поз. | Наименование | Тип, марка | Кол., шт. | Прим. |\n|---|---|---|---|---|\n|  | Щитовое оборудование |  |  |  |\n| QF1 | Автоматический выключатель 1П, 6А, С | mcb4729-1-6C | 1 | EKF |\n| БУРР-1М | Блок ротации и резервирования БУРР-1М | БУРР-1М | 1 | Алекс электроникс |\n|  | Щит распределительный навесной ЩРН-П-12 IP65 пластиковый 199x255x109 | pB65-n-pg-12 | 1 | EKF |\n|  | Периферийное оборудование |  |  |  |\n| БИС-1М | Исполнительный блок БИС-1М | БИС-1М | 2 | Алекс электроникс |\n| ТЕ | Термодатчик |  | 1 | В комплекте с БУРР-1М |\n|  | ИК датчик |  | 2 | В комплекте с БИС-1М |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_400b84df0f63420ab16fb5c330de54b7",
+      "authoritative_TEXT": "### BLOCK #147 [TEXT]: blk_400b84df0f63420ab16fb5c330de54b7\n\n> **Created:** 2026-09-28 07:29:16 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/C3y02A2vyyOYCteVFftf)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 42 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Схема внешних подключений согласователя работы кондиционеров | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПримечание:\n\n1. Исполнительные блоки БИС-1М связаны с базовым блоком БУРР-1М по радиоканалу;\n\n2. Питающие и межблочные (между внутренними и наружными блоками) кабели прокладываются по разделу 13АВ-РД-ЭМ-К5;\n\n3. Оборудование в перечне элементов представлена для 1 сплит системы.\n\n## Page 47 — Sheet 43 — Схема внешних подключений системы управления и контроля загазованности СУ-К32\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_b8f98350127c4603bb6811846ec13309",
+      "authoritative_TEXT": "### BLOCK #251 [TEXT]: blk_b8f98350127c4603bb6811846ec13309\n\n> **Created:** 2026-09-28 07:29:57 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/JD825dNrJgioLdV32EKM)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 9 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 17 | Тепловые завесы |  |  |  |  |  |  |  |\n| 17.1 | Концевой выключатель | ВП15К21 |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 17.2 | Блок диспетчеризации МК | КЭВ-Б/ЛОК-МК |  | АО «НПО «Тепломаш» | шт. | 1 |  |  |\n| 18 | Основное оборудование сплин систем |  |  |  |  |  |  |  |\n| 18.1 | Согласователь работы 2-х кондиционеров | TD0027170RU | БУРР | Haier | шт. | 3 |  |  |\n| 18.2 | Адаптер |  |  | Haier | шт. | 6 |  |  |\n| 19 | Система контроля загазованности |  |  |  |  |  |  |  |\n| 19.1 | Блок питания и сигнализации БПС-3-И | ИБЯЛ.426479.046-01 |  | Аналитприбор | шт. | 3 |  |  |\n| 19.2 | Сигнализатор загазованности СТГ-3-И-СО | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.3 | Коробка соединительная КСИ | ИБЯЛ 413411051-20 |  | Аналитприбор | шт. | 43 |  |  |\n| 19.4 | Светозвуковой оповещатель \"Внимание! Загазованность!\" | \"ЛЮКС-24-К МС\" |  | Электротехника и Автоматика | шт. | 1 |  |  |\n| 20 | Система противодымной вентиляции |  |  |  |  |  |  |  |\n| 20.1 | Термопреобразователь сопротивления канальный, чувствительный элемент NTC10К, длина погружной части датчика 200 мм | МВТ 3280 | 097У0112 | Ридан | шт. | 6 |  |  |\n| 21 | Кабели и провода |  |  |  |  |  |  |  |\n| 21.1 | Кабель силовой с медными жилами | ППГнг(А)-HF 3x1,5 |  | Ивановский кабельный завод | м | 3945 |  |  |\n| 21.2 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x2,5 |  | Ивановский кабельный завод | м | 2060 |  |  |\n| 21.3 | Кабель силовой с медными жилами | ППГнг(А)-HF 4x4,0 |  | Ивановский кабельный завод | м | 60 |  |  |\n| 21.4 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 1x2x0,75 |  | Паритет | м | 7040 |  |  |\n| 21.5 | Кабель контрольный с медными жилами | КСПВППГнг(А)-HF 4x2x0,75 |  | Паритет | м | 20 |  |  |\n\n## Page 103 — Sheet 10\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_5b5187b5afb740efb6423fa40c399349",
+      "authoritative_TEXT": "### BLOCK #249 [TEXT]: blk_5b5187b5afb740efb6423fa40c399349\n\n> **Created:** 2026-09-28 07:29:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/Ai4m95GeXlUED68CKooh)\n> **Stamp:** Code: 13AB-РД-АК2-ПА.СО | Stage: Не указано | Sheet: 7 | Наименование проекта: Не указано | Наименование листа: Не указано | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\n| Позиция | Наименование и техническая характеристика | Тип, марка, обозначение документа, опросного листа | Код оборудования, изделия, материала | Завод-изготовитель | Единица измерения | Количество | Масса единицы, кг | Примечание |\n|---|---|---|---|---|---|---|---|---|\n| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| 13 | Шкаф ШАУВ-1-К6ПЧ |  |  |  |  |  |  |  |\n| 13.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 13.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 3 |  | Установлен внутри щита (для В6.1.1,В6.1.2,В6.1.4) |\n| 13.3 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 13.4 | Электропривод воздушной заслонки с встроенной возвратной пружиной 220 В |  | DA5FU230-DS | Ноосоп | шт. | 3 |  |  |\n| 14 | Шкаф ШАУВ-2-К6ПЧ |  |  |  |  |  |  |  |\n| 14.1 | Шкаф управления с контроллером Феникс с протоколом CAN / RS485, шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 14.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пб.1.1, Пб.1.4) |\n| 14.3 | Датчик давления дифференциальный 20-200 Па | 20-200 Па |  | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 14.4 | Датчик давления дифференциальный 50-500 Па | 50-500 Па |  | Савэл-Инжиниринг | шт. | 3 |  |  |\n| 14.5 | Датчик температуры наружного воздуха |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 14.6 | Датчик температуры канальный Pt1000 (длина зонда 260мм) |  | DT-K2/Pt | Савэл-Инжиниринг | шт. | 2 |  |  |\n| 14.7 | Датчик температуры накладной термо- и влагостойкий |  | DT-H2/Pt | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 14.8 | Реле температуры (капиллярный термостат) |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 15 | Шкаф ШАУВ-3-К6ПЧ |  |  |  |  |  |  |  |\n| 15.1 | Шкаф управления с контроллером Феникс шлюз ШС-Квантум |  |  | Савэл-Инжиниринг | шт. | 1 |  |  |\n| 15.2 | Преобразователь частоты 0,75кВт 380В | Веспер | E5-MINI-001H | Савэл-Инжиниринг | шт. | 1 |  | Установлен внутри щита (для Вм6.1) |\n| 15.3 | Преобразователь частоты 5,5 кВт 380В | Веспер | E5-MINI-007H | Савэл-Инжиниринг | шт. | 2 |  | Установлен внутри щита (для Пкрб.1) |\n\n## Page 101 — Sheet 8\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/02_work/document.md",
+      "sha256": "2efe94fab36eeee0e182e35fce46783b258bfccade2b564b0bf449628cc51f92",
+      "block_id": "blk_917406a6b2804ee2abedff901eb85582",
+      "authoritative_TEXT": "### BLOCK #74 [TEXT]: blk_917406a6b2804ee2abedff901eb85582\n\n> **Created:** 2026-09-28 07:28:56 UTC\n> **Crop:** [Crop](https://vibe.cloud-ip.cc/api/crops/s258V2OxTtRaakC5NXxx)\n> **Stamp:** Code: 13АВ-РД-АК2-ПА | Stage: Р | Sheet: 20 | Наименование проекта: Многоквартирные жилые дома со встроенными нежилыми помещениями подземной автостоянкой, Блоки 13А и 13В. Адрес объекта: Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево, ул. Лётная | Наименование листа: Приточные системы П6.1.1, П6.1.4 Функциональная схема автоматизации | Organization: ОЛИМПРОЕКТ | Revisions: Не указано\n\nПеречень элементов\n\n| Поз. обоззн. | Наименование | Кол-во | Примечание |\n|---|---|---|---|\n| ТЕ1 | Датчик температуры наружного воздуха | 1 |  |\n| ТЕ2 | Датчик температуры накладной термо- и влагостойкий Pt1000 ДТ-Н2/Pt | 1 |  |\n| ТЕ3,ТЕ4 | Датчик температуры канальный Pt1000 (длина зонда 260мм) ДТ-К2/Pt | 1 |  |\n| ТС1 | Реле температуры (капиллярный термостат) | 1 |  |\n| ТС2 | Термостат |  | (комплектно с электронагревателем) |\n| PDS1, PDS3, PDS5 | Датчик давления дифференциальный 50-500 Па | 3 |  |\n| PDS2,PDS4 | Датчик давления дифференциальный 20-200 Па | 2 |  |\n| У1-У2 | Электропривод воздушной заслонки | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| УЗ | Регулирующий клапан с электроприводом в комплекте смесительного узла | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| M1-M2 | Электродвигатель вентилятора | 2 | Учтено в разделе 13АВ-РД-ОВ2.2-ПА |\n| MЗ | Электродвигатель насоса | 1 | Учтено в разделе 13АВ-РД-ОВ1.2-ПА |\n| SC UZ1, SC UZ2 | Преобразователь частоты 0,75кВт 380В, E5-MINI-001H | 2 |  |\n\n"
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_66ba3cf1e99c46a292deb3fecd22f58a.png",
+      "sha256": "bb1ad5076255d43b3f37bacc2855e9f860699cbf8d9ba175c84c5e1f03864d0d",
+      "block_id": "blk_66ba3cf1e99c46a292deb3fecd22f58a",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Directly viewed: Kmain/Kreserve with BIS-1M; BURR-1M220V viaQF1; enclosure layout. No manufacturer compatibility verified."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_8de25b2b318647aeac8b3298fe03a98c.png",
+      "sha256": "fe428252cd7c543780aa2a5e19fa5462f43418dcfe80b5ca17a60330a30d9008",
+      "block_id": "blk_8de25b2b318647aeac8b3298fe03a98c",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Directly viewed: Kmain/Kreserve with BIS-1M; BURR-1M220V viaQF1; enclosure layout. No manufacturer compatibility verified."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_045c688307e949da8a39ce4c49b8db7e.png",
+      "sha256": "e3efad4b1ac5e82d1fdfa5c601f3176d693d28ffdcd6ed11d3d8f7af34e9f417",
+      "block_id": "blk_045c688307e949da8a39ce4c49b8db7e",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "Directly viewed: Kmain/Kreserve with BIS-1M; BURR-1M220V viaQF1; enclosure layout. No manufacturer compatibility verified."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_54608a880c2545aa926c442d213988c3.png",
+      "sha256": "9f502257593ec575133be6287dcaf6baaa48cf87c1aa6f5956a41554efcd3c9b",
+      "block_id": "blk_54608a880c2545aa926c442d213988c3",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "TS1 water-heater freeze protection and TS2 electric-heater overheat protection are distinct functions; external connections shown. Not actual delivery evidence."
+    },
+    {
+      "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/ak_r1_classic/classic_control/inputs/AK/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_40bad73db9d44699955a7a4682f309a8.png",
+      "sha256": "bb9d324f209587ec19d637414bfb2a5b83b575af9fdafc37c65d0963b8123cf3",
+      "block_id": "blk_40bad73db9d44699955a7a4682f309a8",
+      "route": "directly_viewed_GRAPHIC",
+      "observation": "TS1 water-heater freeze protection and TS2 electric-heater overheat protection are distinct functions; external connections shown. Not actual delivery evidence."
+    }
+  ],
+  "historical_scope_sources": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/AK_F003_conditioner_package.json",
+      "sha256": "8404b6a3850cb113259798ac32044af0b5543eb503329eb12744daf5bc1eb2e3",
+      "primary_adjudication": null,
+      "limits": [
+        "Два кондиционера на согласователь согласуются с общими данными и наименованием СО18.1. Соотношение3:6 само по себе не доказывает количественную ошибку.",
+        "Нельзя автоматически умножать локальный перечень на6 или на3 до уточнения единицы комплекта и привязки к помещениям.",
+        "Тип адаптера отсутствует в строке18.2, но отсутствие идентификации во всех смежных документах не проверено.",
+        "Совместимость Haier и Алекс электроникс, заводская комплектность, параметры интерфейсов, фактические заказ и монтаж не проверены. Конфликт обозначений не равнозначен доказанной несовместимости.",
+        "Ссылка на ЭМ определяет границу исполнения питания, а не отсутствие внешнего питания. Связанный вопрос шифров рассмотрен отдельно в F033; не дублировать его как отказ питания."
+      ],
+      "wording": "Согласовать исполнение автоматики кондиционеров. Общие данные описывают БУРР без внешнего источника питания и без дополнительных устройств сопряжения; лист42 задаёт БУРР-1М с питанием220В/QF1 и два БИС-1М «Алекс электроникс». СО18.1–18.2 задаёт три Haier TD0027170RU и шесть адаптеров без типа. Уточнить соответствие этих исполнений и состав комплекта; отдельно уточнить примечание3 «для1 сплит системы» при показанной паре К осн/К рез."
+    }
+  ],
+  "limits": [
+    "Manufacturer compatibility and actual delivery not verified.",
+    "Existing TS2 bundled-supply note defeats blanket absence claim.",
+    "Frozen evaluator and production unchanged."
+  ],
+  "model_calls": 0,
+  "production_acceptance": false
+}
