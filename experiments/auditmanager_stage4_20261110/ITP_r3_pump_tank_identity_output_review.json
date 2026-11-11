@@ -1,0 +1,1091 @@
+{
+  "status": "source_bound_review_not_trial_acceptance",
+  "queue_path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r3/ITP_output_review_queue.json",
+  "queue_before_sha256": "e05322e23346a9e6d68f094a3d299058306c0fc83c258559a109a786844bc600",
+  "queue_after_sha256": "e3a256a06b6220ab9dc68d9c73e435736bfd78618710a748ba042556087e2173",
+  "reviewed_rows": [
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-019",
+      "finding": {
+        "id": "F-019",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Насосы",
+        "sheet": "Лист 2",
+        "page": [
+          8,
+          24,
+          52,
+          76
+        ],
+        "problem": "Мощность насоса отопления ДОО указана противоречиво.",
+        "description": "Для насоса К12 IL 40/220-1,5/4-R экспликация содержит N=0,55 кВт, тогда как обозначение модели, спецификация, записка и технические данные задают 1,5 кВт. В техническом листе дополнительно расходятся рабочий напор 16,98 м и заявленный максимальный напор 16,64 м; значение последнего требует пояснения изготовителя.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность марки оборудования и его характеристик в документации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-019",
+                "G-001",
+                "G-002"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-019"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить исполнение насоса по паспорту, исправить мощность и передать согласованные данные в электроснабжение и автоматику; уточнить характеристику напора.",
+        "risk": "Ошибки выбора электропитания, защиты и управления насосом.",
+        "source_finding_ids": [
+          "T-019",
+          "G-001",
+          "G-002"
+        ],
+        "source_block_ids": [
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "related_block_ids": [
+          "blk_1601889b50624245a5c590ad23d87175",
+          "blk_0103a941fa5a4b0d9141a4149e927bff",
+          "blk_128a43447f394e0687d841e25e436e75"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_0103a941fa5a4b0d9141a4149e927bff",
+            "page": 8
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 76
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-001",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-002",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "image_only"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие в позиции К12: 1,5 кВт в обозначении IL 40/220-1,5/4-R и N=0,55 кВт в характеристиках. Уточнение последствий для комплектации и электроснабжения не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно противоречие в позиции К12: 1,5 кВт в обозначении IL 40/220-1,5/4-R и N=0,55 кВт в характеристиках. Уточнение последствий для комплектации и электроснабжения не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 87,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-016:6f0370becae84fed440d",
+          "route": "technical",
+          "coverage": "full"
+        },
+        {
+          "target_id": "B-ITP-F-017:05e18fdb07cf5bb1bc8b",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К12IL40/220-1,5/4-R:экспликация0,55кВт,ПЗ/СО/технические данные1,5кВт.",
+          "verdict": "confirmed_same_source_TEXT_and_identity",
+          "limits": "СовпадаютДОО,артикул2786053 и точка4,42м³/ч,16,98м. РабочаяP2=0,74кВт не заменяет номинальную1,5кВт."
+        },
+        {
+          "claim": "Рабочий напор16,98м против поля максимального16,64м.",
+          "verdict": "confirmed_internal_TEXT_difference",
+          "limits": "Это поля подбора,не натурные измерения. Недостижимость точки без согласования определений/исполнения не доказана."
+        },
+        {
+          "claim": "Подтвердить исполнение,согласовать мощность и данныеЭМ/АК.",
+          "verdict": "supported_document_conflict_and_followup",
+          "limits": "Выбор защиты,частотного преобразователя,кабеля и фактическая поставка не проверены;не объявлять их ошибочными автоматически."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ,неправильная защита,недостаточный напор у потребителя или пригодность1500л. Дополнительная локализацияRM1500на плане отдельно не перепроверена.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить документальные конфликты мощности,напоров иобъёмов;не объявлять фактические последствия. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_296b8547a33a47dbb7a9b8e546d964e0",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-016.json",
+          "sha256": "08e2ee802e6a8be9e9f5a16dc884d01f4b962cc6bc6dbbf87a6d41f850988661",
+          "primary_adjudication": null,
+          "limits": "Насос сопоставлен по назначению, модели, артикулу и рабочей точке 4,42 м³/ч / 16,98 м. Мощность P2 в рабочей точке 0,74 кВт не смешивать с номинальной. Неверный выбор аппаратов защиты, фактическая комплектация и отказ насоса не установлены.",
+          "wording": "Согласовать мощность насоса К12 отопления ДОО IL 40/220-1,5/4-R: в экспликации N=0,55 кВт, в ПЗ и спецификации N=1,5 кВт, а технический лист артикула 2786053 подтверждает номинальную мощность двигателя 1,5 кВт. Исправить экспликацию и сверить переданное задание электрикам."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-016",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-017.json",
+          "sha256": "74771a0b6daae9eabd6757acee99d68e3f5ee7bb36d07325f9e22017d22bfc27",
+          "primary_adjudication": null,
+          "limits": "Первичное основание — TEXT страницы 76, а не ошибочная ссылка исходного замечания на страницу 78. «Фактическая» — название поля подбора, не натурное испытание. Режимы, частота и кривая не сверены; непригодность насоса и неверная электрическая защита не доказаны.",
+          "wording": "Уточнить технический лист насоса К12: в разделе «Фактическая рабочая точка» напор 16,98 м, в «Данных продукта» максимальный напор 16,64 м. Получить согласованную характеристику и объяснение этих двух значений."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json",
+          "sha256": "ec886ea171d16f2c81f3c31963104eeae8dd14400b7a53af1c76b644ff88c610",
+          "primary_adjudication": null,
+          "limits": null,
+          "wording": "Уточнить напор выбранного насоса отопления2-й зоны IL50/140-4/2-R, артикул2786092: при расходе47,08м³/ч ПЗ указывает21,29м, технический лист21,91м."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_64d234df62024a40b06b044dcb8f4bc9.png",
+          "sha256": "34e4d8eea4b9128f856f6793d5b330b666d8954956dd96c27b98c5678f1a7351",
+          "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Dimensional views and delta connection diagram; no compared head values.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_64d234df62024a40b06b044dcb8f4bc9.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-017",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-016"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pump_tank_identity"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-020",
+      "finding": {
+        "id": "F-020",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Насосы",
+        "sheet": "Листы 2, 1., 13",
+        "page": [
+          8,
+          24,
+          51,
+          70,
+          72
+        ],
+        "problem": "Напор рабочей точки насоса отопления второй зоны указан неодинаково.",
+        "description": "Для К10 IL 50/140-4/2-R при расходе 47,08 м³/ч экспликация, спецификация и записка задают 21,29 м, а технические данные на странице 70 — 21,91 м. Разница составляет 0,62 м. В анализе блоков расхождение выявлено при рассмотрении каталожного фрагмента на странице 72.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), кандидат п. 4.1",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.9,
+            "reason": "Проверить требования к однозначным характеристикам выбранного оборудования.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-020",
+                "G-035",
+                "G-036"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-020"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": "4.1",
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить принятую рабочую точку и согласовать напор в документации и данных для частотного регулирования.",
+        "risk": "Ошибочная настройка насосной группы и затруднения при наладке.",
+        "source_finding_ids": [
+          "T-020",
+          "G-035",
+          "G-036"
+        ],
+        "source_block_ids": [
+          "blk_64d234df62024a40b06b044dcb8f4bc9"
+        ],
+        "related_block_ids": [
+          "blk_1601889b50624245a5c590ad23d87175",
+          "blk_64d234df62024a40b06b044dcb8f4bc9",
+          "blk_0103a941fa5a4b0d9141a4149e927bff"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+            "page": 72
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 70
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 51
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-035",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-036",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "match",
+          "relations": [
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение напора насоса К10 IL 50/140-4/2-R: 21,91 м против 21,29 м при расходе 47,08 м³/ч в одних и тех же источниках. Указание разницы 0,62 м не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение напора насоса К10 IL 50/140-4/2-R: 21,91 м против 21,29 м при расходе 47,08 м³/ч в одних и тех же источниках. Указание разницы 0,62 м не является существенным дополнением.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 55,
+          "engineering_relevance": "medium",
+          "impact_axes": [],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "H-ITP-63:7ba4e763f9b6758d0f09",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К10IL50/140-4/2-R:47,08м³/ч,21,29мвПЗ/СО/экспликации против21,91мтехданных.",
+          "verdict": "confirmed_authoritative_TEXT",
+          "limits": "Разность0,62м;одноисполнение поартикулу2786092. Это не универсальный допуск."
+        },
+        {
+          "claim": "Расхождение связано с каталожным фрагментомстраницы72.",
+          "verdict": "evidence_route_requires_correction",
+          "limits": "Ранее просмотренныйblk_64d234df62024a40b06b044dcb8f4bc9содержит габариты/схемуΔ,не эти напоры. Текущая строка дополнительно называет техданныестр70;числовое основание следует связывать сTEXT,а не габаритной графикой."
+        },
+        {
+          "claim": "Согласовать рабочую точку и частотное регулирование.",
+          "verdict": "supported_scoped_question",
+          "limits": "Правильный напор не выбирать большинством документов;ошибочная наладка и отказ не наблюдались."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ,неправильная защита,недостаточный напор у потребителя или пригодность1500л. Дополнительная локализацияRM1500на плане отдельно не перепроверена.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить документальные конфликты мощности,напоров иобъёмов;не объявлять фактические последствия. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_23cb2d65bcc84e238cb8c9d2049596dd",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_b5a8bd535c584d08a9854e4257e4833d",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_1601889b50624245a5c590ad23d87175",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_ae35014464b5493f84ca38481c3ffa60",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_45df5405b31b4f9fb7e5b0f701325e3a",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-017.json",
+          "sha256": "74771a0b6daae9eabd6757acee99d68e3f5ee7bb36d07325f9e22017d22bfc27",
+          "primary_adjudication": null,
+          "limits": "Первичное основание — TEXT страницы 76, а не ошибочная ссылка исходного замечания на страницу 78. «Фактическая» — название поля подбора, не натурное испытание. Режимы, частота и кривая не сверены; непригодность насоса и неверная электрическая защита не доказаны.",
+          "wording": "Уточнить технический лист насоса К12: в разделе «Фактическая рабочая точка» напор 16,98 м, в «Данных продукта» максимальный напор 16,64 м. Получить согласованную характеристику и объяснение этих двух значений."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/H-ITP-63.json",
+          "sha256": "ec886ea171d16f2c81f3c31963104eeae8dd14400b7a53af1c76b644ff88c610",
+          "primary_adjudication": null,
+          "limits": null,
+          "wording": "Уточнить напор выбранного насоса отопления2-й зоны IL50/140-4/2-R, артикул2786092: при расходе47,08м³/ч ПЗ указывает21,29м, технический лист21,91м."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_64d234df62024a40b06b044dcb8f4bc9.png",
+          "sha256": "34e4d8eea4b9128f856f6793d5b330b666d8954956dd96c27b98c5678f1a7351",
+          "block_id": "blk_64d234df62024a40b06b044dcb8f4bc9",
+          "route": "directly_viewed_GRAPHIC",
+          "observation": "Dimensional views and delta connection diagram; no compared head values.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_64d234df62024a40b06b044dcb8f4bc9.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-017",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-017"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pump_tank_identity"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-032",
+      "finding": {
+        "id": "F-032",
+        "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "category": "Водоснабжение",
+        "sheet": "Лист 4",
+        "page": [
+          42,
+          108
+        ],
+        "problem": "Располагаемый напор ХВС первой зоны указан с расхождением 4 м.",
+        "description": "В пояснительной записке напор ХВС первой зоны равен 95,59 м вод. ст., в анкете — 91,59 м. Расхождение влияет на допустимые потери в узле приготовления ГВС и напор у потребителей.",
+        "norm": "ФЗ 384-ФЗ (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ФЗ 384-ФЗ",
+            "cited_designation": "ФЗ 384-ФЗ",
+            "candidate_relevance": 0.8,
+            "reason": "Проверить согласованность исходных параметров гидравлического расчёта.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "T-032"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "T-032"
+                ],
+                "designation_source": "Исходное текстовое замечание"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Уточнить с разделом ВК расчётный напор и точку его задания, обновить баланс давления ГВС.",
+        "risk": "Недостаточный напор у потребителей и неверный выбор оборудования.",
+        "source_finding_ids": [
+          "T-032"
+        ],
+        "source_block_ids": [],
+        "related_block_ids": [
+          "blk_3050f16afc994b889498a2535ea14a52"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 42
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 108
+          }
+        ],
+        "highlight_regions": [],
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 67,
+          "engineering_relevance": "medium",
+          "impact_axes": [
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "low"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-037:8139bf7df3bbe04da245",
+          "route": "technical",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "Первая зонаХВС:95,59мПЗ против91,59манкеты;разность4м.",
+          "verdict": "confirmed_authoritative_TEXT_same_context",
+          "limits": "Привязка подтверждена нагрузкой0,728Гкал/ч и отметкойверхнего крана51,97м."
+        },
+        {
+          "claim": "Расхождение влияет на допустимые потери и напор потребителей.",
+          "verdict": "conditional_hydraulic_consequence",
+          "limits": "Для фактического влияния нужна общая высотная база и режим;дефицит у потребителя не доказан."
+        },
+        {
+          "claim": "Согласовать сВКточку задания и балансГВС.",
+          "verdict": "supported_scoped_followup",
+          "limits": "СмежныйВКи полный баланс не проверены;не назначать оборудование по одной разности."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ,неправильная защита,недостаточный напор у потребителя или пригодность1500л. Дополнительная локализацияRM1500на плане отдельно не перепроверена.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить документальные конфликты мощности,напоров иобъёмов;не объявлять фактические последствия. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_3050f16afc994b889498a2535ea14a52",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_4de04f93b8b745ceb034696663bfcc58",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-037.json",
+          "sha256": "77e4dc763659487421731725cbfec2d7e8f78380090db6e5edb06498a7707ac7",
+          "primary_adjudication": null,
+          "limits": "Подтверждено расхождение документов одного корпуса и первой зоны; совпадают нагрузка0,728 и отметка верхнего крана51,97. Условные разности9м и5м не являются проверенным располагаемым перепадом. Напор86,59 — требуемый, не измеренный. Дефицит напора, неверная арматура и нормативное нарушение не доказаны; актуальная редакция смежного ВК и полный гидравлический баланс не проверены.",
+          "wording": "Согласовать исходный напор ХВС на вводе в ИТП для первой зоны: ПЗ задаёт95,59м, анкета абонента —91,59м. В анкете требуемый выходной напор ГВС86,59м. После согласования режима и высотной базы проверить баланс потерь."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-033",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-010"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pump_tank_identity"
+    },
+    {
+      "discipline": "ITP",
+      "repeat": 3,
+      "finding_id": "F-041",
+      "finding": {
+        "id": "F-041",
+        "severity": "ЭКСПЛУАТАЦИОННОЕ",
+        "category": "Расширительные баки",
+        "sheet": "Листы 4, 9, 14",
+        "page": [
+          9,
+          11,
+          16,
+          23,
+          25,
+          107
+        ],
+        "problem": "Объём баков К22 на чертежах отличается от экспликации и спецификации.",
+        "description": "На плане ИТП, разрезе 18-18 и плане дренажа баки К22 подписаны как 1000 л. Экспликация и спецификация предусматривают два бака RM 1500 PN10 по 1500 л. На самом плане также имеется обозначение RM 1500 PN10, противоречащее выноске 1000 л. Расчётная пригодность выбранных баков требует отдельной проверки настроек давления.",
+        "norm": "ГОСТ 21.110-2013 (норматив-кандидат), пункт не подтверждён",
+        "norm_quote": null,
+        "candidate_norm_references": [
+          {
+            "designation": "ГОСТ 21.110-2013",
+            "cited_designation": "ГОСТ 21.110-2013",
+            "candidate_relevance": 0.95,
+            "reason": "Проверить согласованность технических характеристик одной позиции в чертежах и спецификации.",
+            "provenance": {
+              "producer": "stage03_candidate_contract",
+              "designation_source": "stage03.candidate_norm_references",
+              "source_finding_ids": [
+                "G-003",
+                "G-012",
+                "G-013",
+                "G-032",
+                "G-034"
+              ],
+              "input_provenance": {
+                "source_finding_ids": [
+                  "G-003",
+                  "G-012",
+                  "G-013",
+                  "G-032",
+                  "G-034"
+                ],
+                "designation_source": "Подобран при объединении замечаний"
+              }
+            },
+            "clause_candidate": null,
+            "quote_candidate": null
+          }
+        ],
+        "solution": "Подтвердить объём по согласованному расчёту и исправить все выноски, марки и спецификацию баков К22.",
+        "risk": "Поставка или монтаж баков другого объёма и недостаточная компенсация расширения.",
+        "source_finding_ids": [
+          "G-003",
+          "G-012",
+          "G-013",
+          "G-032",
+          "G-034"
+        ],
+        "source_block_ids": [
+          "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "blk_06029d59a01b4b779037ffcee1ae5260"
+        ],
+        "related_block_ids": [
+          "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "blk_06029d59a01b4b779037ffcee1ae5260"
+        ],
+        "evidence_text_refs": [],
+        "evidence": [
+          {
+            "type": "image",
+            "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+            "page": 11
+          },
+          {
+            "type": "text",
+            "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+            "page": 16
+          },
+          {
+            "type": "text",
+            "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+            "page": 23
+          },
+          {
+            "type": "text",
+            "block_id": null,
+            "page": 25
+          }
+        ],
+        "highlight_regions": [],
+        "provenance": {
+          "found_by": [
+            "codex"
+          ],
+          "detector_summary": "codex",
+          "detections": [
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-003",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "image_only"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-012",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-013",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-032",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            },
+            {
+              "detector": "codex",
+              "model": "codex/gpt-6-astra",
+              "prompt_version": "stage01-findings-evidence-v3",
+              "run_id": "stage01-20261111T144907Z-ensemble_codex-only:codex",
+              "raw_finding_id": "G-034",
+              "mode": "independent",
+              "detected_at": "2026-11-11T14:49:07.313442+00:00",
+              "context_source": "raw_vector"
+            }
+          ]
+        },
+        "detector_summary": "codex",
+        "detector_comparison": {
+          "schema_version": 1,
+          "primary_relation": "extension",
+          "relations": [
+            {
+              "relation": "extension",
+              "role": "base",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 0.98,
+              "reason": "Оба замечания указывают на расхождение объёма К22: 1000 л на плане и 1500 л в экспликации. Правое дополнительно указывает обозначение RM 1500 на самом плане, расширяя перечень противоречащих выноске данных.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:001"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение объёма бака К22 (поз. 22): 1000 л на разрезе 18-18 и 1500 л в спецификации. Указание марки RM 1500 PN10 слева не добавляет существенной детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:002"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания указывают на одно расхождение объёма бака К22 (поз. 22): 1000 л на разрезе 18-18 и 1500 л в спецификации. Указание марки RM 1500 PN10 слева не добавляет существенной детализации проблемы.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            },
+            {
+              "relation": "match",
+              "role": "peer",
+              "counterpart_refs": [
+                "codex:003"
+              ],
+              "confidence": 1.0,
+              "reason": "Оба замечания фиксируют одинаковое расхождение объёма К22: 1000 л на листе 14 и 1500 л в экспликации на листе 2.1.",
+              "reviewer_model": "codex/gpt-6-astra",
+              "origin": "dual_comparison"
+            }
+          ],
+          "gap_search": false
+        },
+        "norm_references": [],
+        "norm_paragraph_state": "resolver_pending",
+        "quality": {
+          "practicality_score": 89,
+          "engineering_relevance": "high",
+          "impact_axes": [
+            "schedule",
+            "construction",
+            "coordination"
+          ],
+          "formalism_flags": [],
+          "likely_formal_only": false,
+          "severity_mismatch": false,
+          "review_priority": "high"
+        }
+      },
+      "target_links": [
+        {
+          "target_id": "B-ITP-F-042:0b0c4ddfe0f28f7f6f1e",
+          "route": "question",
+          "coverage": "full"
+        }
+      ],
+      "triage": "mapped_requires_addition_review",
+      "claim_reviews": [
+        {
+          "claim": "К22:1000лна плане/разрезе18–18/дренажепротив двухбакового комплекта по1500лвэкспликации/СО/подборе.",
+          "verdict": "confirmed_prior_GRAPHIC_and_TEXT",
+          "limits": "Повторные проекции не дополнительные аппараты;однорасхождение объёма единицы500л."
+        },
+        {
+          "claim": "На самомплане дополнительно естьRM1500PN10.",
+          "verdict": "not_independently_rechecked_added_location",
+          "limits": "Прежняя оценка подтверждает1000лпроекций и1500лтаблиц;точное дополнительное положение модели на плане этим повторным использованием не подтверждается."
+        },
+        {
+          "claim": "Подтвердить объём порасчёту и согласовать подписи.",
+          "verdict": "supported_scoped_remedy",
+          "limits": "1500лне автоматически достаточно;температуры,объёмы системы,давления и настройки оцениваются отдельно."
+        },
+        {
+          "claim": "Поставка другого объёма или недостаточная компенсация.",
+          "verdict": "risk_not_observed",
+          "limits": "Фактические поставка,монтаж и работа не проверены."
+        },
+        {
+          "claim": "Фактический отказ системы и подтверждённое нормативное нарушение.",
+          "verdict": "not_established",
+          "limits": "Заводская схема, монтаж и испытания не проверены; нормативные кандидаты не подтверждены."
+        }
+      ],
+      "unsupported_additions": "Не установлены фактический отказ,неправильная защита,недостаточный напор у потребителя или пригодность1500л. Дополнительная локализацияRM1500на плане отдельно не перепроверена.",
+      "novel_useful_content": "Документальные конфликты подтверждены; новое инженерное принятие и прирост относительно всего корпуса не установлены.",
+      "duplicate_burden": "Different system/object endpoints retained separately; no additional whole-row duplicate established in this pass.",
+      "profile_and_section": "Сохранить документальные конфликты мощности,напоров иобъёмов;не объявлять фактические последствия. Разделы итогового отчёта не проверены.",
+      "engineer_reuse": "Нового решения инженера нет; первичные факты используются в узкой ранее проверенной области.",
+      "evidence": [
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_11981549aceb463ba84c7c0de619d2fc",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_5c7cb0c7b68c4f78ac019a2e7535195f",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "sha256": "e788ede36ab49e8129950f8967018d477b29e13e3cea9b122fbf6d4986212a35",
+          "block_id": "blk_72bd74f01146432880a289b071f70238",
+          "route": "authoritative_TEXT",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/02_work/document.md",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/home/coder/projects/PDF-proverka/experiments/auditmanager_stage1_20261109/decisions/B-ITP-F-042.json",
+          "sha256": "0f1d4fb84c176ca0d580db069121b9d8112ce52047f0ac636243d2114f75159e",
+          "primary_adjudication": null,
+          "limits": "Подтверждено расхождение объёма единицы, не нехватка числа баков. Количества в таблицах определены; повторные проекции не являются дополнительными баками. Полная инвентаризация всех ёмкостей не выполнена. Совпадение подбора и спецификации не доказывает достаточность объёма: вопросы давления и температуры сохранены отдельно вB-ITP-F-023/024. Фактическая неверная поставка и ошибка строительного задания не установлены.",
+          "wording": "Согласовать объёмы баков в графике и таблицах: К22 подписан1000л на плане и разрезе18-18, а спецификация, экспликация и подбор задают2бака по1500л. К23 на плане подписан100л, тогда как таблицы и подбор задают1бак200л. Обновить подписи после согласования расчётных условий."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_61cbeb249f9e4bba8d0a30f6b4b3b79c.png",
+          "sha256": "9a098a71fc26249d70777e78f9bfe35539f7b32844d48bfdd8221ca2e51012c1",
+          "block_id": "blk_61cbeb249f9e4bba8d0a30f6b4b3b79c",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Планлист4:К22бак теплоснабжения1000л.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_61cbeb249f9e4bba8d0a30f6b4b3b79c.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+          "sha256": "9ae3ec6ff303ff8f3b6317bd8cfa1b49ab22653581184818e10d9f0393bf4c7a",
+          "block_id": "blk_27af51f0cd26488ea08ffa55589b0c3e",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Разрез18–18:К22бак теплоснабжения1000л.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_27af51f0cd26488ea08ffa55589b0c3e.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r3_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+          "sha256": "99f0948dd8e59ee31f68b9f79a58131e5fa3a0fc63e5fdfcb0a541f00871bb8c",
+          "block_id": "blk_06029d59a01b4b779037ffcee1ae5260",
+          "route": "prior_direct_GRAPHIC_review_reused_identical_r2_bytes",
+          "observation": "Пландренажа:К22бак теплоснабжения1000л.",
+          "prior_path": "/tmp/auditmanager_comparative_trial_context_v3_20261111/itp_r2_classic/classic_control/inputs/ITP/versions/v001/03_analysis/runs/comparison/blocks_stage02_100/block_blk_06029d59a01b4b779037ffcee1ae5260.png",
+          "reuse_scope": "Previously inspected identical r3 source bytes; no new raster inspection."
+        },
+        {
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r1/output_review_queue.json",
+          "sha256": "71662c80401cae97f4e29d34052c5d820cda17e14f4c40119a660435c65d5979",
+          "route": "prior_atomic_review_reused_current_wording_and_identical_sources",
+          "finding_id": "F-042",
+          "limits": "No new graphic inspection or engineer decision claimed."
+        },
+        {
+          "source": "frozen_r2_atomic_review",
+          "path": "/tmp/auditmanager_comparison_evaluation_20261111/baseline_r2/output_review_queue_linked.json",
+          "sha256": "f009baee6f83df58f9b38b73fd826d798802243dad4eecd7682fa35853336ac2",
+          "finding_id": "F-041"
+        }
+      ],
+      "disposition": "assessed_r3_ITP_pump_tank_identity"
+    }
+  ],
+  "model_calls": 0,
+  "production_acceptance": false,
+  "scope": "Four current ITP findings assessed against four frozen r2 atomic reviews; F019 also uses prior F017 head-field evidence. All local evidence hashes and r3 MD/PNG identity checked. Current wording assessed separately. No new graphic view, norm applicability check or engineer decision."
+}
