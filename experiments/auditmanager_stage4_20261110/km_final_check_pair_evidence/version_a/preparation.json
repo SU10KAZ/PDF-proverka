@@ -1,0 +1,18 @@
+{
+  "candidate_sha256": "2aaa54d769cb5bd7405787acf3d890f6e7db72d9c3cbab07ebbc35d50fbd0599",
+  "binding": {
+    "entry_sha256": "cb1407e1e81ba046d221be1509f75ab73510129743afa8a4d4ff9e9eb8345afa",
+    "document_sha256": "991fd1188600459c569ad00f2d9542000a5ac00db31a8162ca817c8ef5a83a5a",
+    "source_md_sha256": "bc3325665b5c97fb958215a7ffa6597a2dc0b8493e84f9672fedef4229124b78"
+  },
+  "message_chars": 105729,
+  "image_count": 16,
+  "image_bytes": 4295047,
+  "model": "codex/gpt-6-astra",
+  "effort": "high",
+  "engineer_answers_supplied": false,
+  "expected_verdict_supplied": false,
+  "prior_reviewer_verdict_supplied": false,
+  "automatic_retries": 0,
+  "known_development_control": true
+}
