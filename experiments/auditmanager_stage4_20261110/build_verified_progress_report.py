@@ -14,6 +14,10 @@ def table(headers,rows):
 
 def build():
     sources=['baseline_three_repeat_coverage_summary.json','baseline_target_stability.json','baseline_runtime_summary.json','baseline_question_section_score.json','baseline_r3_claim_review_completion.json','AK_profile_fallback_investigation.json','EOM11_r3_text_handoff_trace.json','user_KM_214_readiness_revalidation.json']
+    sources += ['AK_r1_experimental_zero_merge_observation.json',
+                'AK_r1_merge_source_handoff_trace.json',
+                'AK_r1_all_text_recovery_admission_replay.json',
+                'recovery_format_pilot_preparation.json']
     docs={name:read(HERE/name) for name in sources}
     coverage=docs[sources[0]];stability=docs[sources[1]];runtime=docs[sources[2]];sections=docs[sources[3]]
     plan=read(HERE.parent/'auditmanager_stage1_20261109/sequential_plan.json')
@@ -27,6 +31,16 @@ def build():
     body+='<h2>Общий план</h2>'+table(['Этап','Работа','Статус'],[(x['id'],x['name'],statuses.get(x['status'],x['status'])) for x in plan['stages']])
     body+='<h2>Экспериментальная серия</h2><p>Зафиксированных успешных завершений: '+str(len(complete))+' из '+str(len(trial['runs']))+'. Записей со статусом running: '+str(len(running))+'. Статус-файл сам по себе не доказывает живой процесс.</p>'
     body+='<p>Основная модель: gpt-6-astra, high; два графических детектора и судья. Текущая серия не использует Claude или OpenRouter. Критерии приёмки сохраняются из исходного протокола.</p>'
+    recovery=docs['AK_r1_all_text_recovery_admission_replay.json']['summary']
+    body+='<h2>Обнаруженные потери в первом экспериментальном АК</h2>'
+    body+='<p>Промежуточное объединение отложило все 146 кандидатов с решением «нужны данные» и выпустило ноль замечаний. Промпт требует проверки первичных источников, но запрос содержит два результата предыдущих анализов, без изображений и инструментов чтения исходников. Затем выполняется восстановление по отдельным пакетам с контекстом. Это промежуточное наблюдение, а не итоговый результат прогона.</p>'
+    body+=table(['Проверка текстового восстановления','Количество'],[
+        ('Завершённые первичные запросы',recovery['requests']),
+        ('Предложенные моделью замечания',recovery['raw_findings']),
+        ('Проходят структурный контроль доказательств',recovery['admitted_findings']),
+        ('Отложены: нет допустимой ссылки внутри evidence замечания',recovery['pending_reasons']['missing_inspected_source_reference'])])
+    body+='<p>Прохождение структурного контроля не подтверждает техническую верность. Ссылки в решении по кандидату не доказывают каждый тезис разделённого замечания. Поздние проходы ещё могут изменить итоговую полноту.</p>'
+    body+='<p>В следующей версии уточнён формат доказательств и добавлен один запрос исправления формата с повторным контролем. 21 локальный тест прошёл; улучшение на реальном модельном ответе ещё не доказано. Подготовлен отдельный пилот АК T-002, пока без отправки. Зафиксированная версия текущей серии не изменена.</p>'
     body+='<h2>Покрытие эталона базовым методом</h2>'
     rows=[]
     for r in coverage['repeats']:
