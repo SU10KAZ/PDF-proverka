@@ -32,7 +32,7 @@ def materialize(layout_path,variant):
         actual={str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()}
         if actual!=set(source['files']):raise ValueError('Input inventory changed')
         for name,digest in source['files'].items():
-            allowed=name in ('01_input/project_info.json','02_work/document.md','02_work/document.pdf','02_work/blocks.json',prefix+'document_graph.json') or (name.startswith(prefix+'blocks_stage02_100/') and (name.endswith('.png') or name==prefix+'blocks_stage02_100/index.json'))
+            allowed=name in ('01_input/project_info.json','02_work/document.md','02_work/document.pdf','02_work/blocks.json',prefix+'document_graph.json',prefix+'block_context_summary.json') or (name.startswith(prefix+'block_vector_graphs/') and name.endswith('.json')) or (name.startswith(prefix+'blocks_stage02_100/') and (name.endswith('.png') or name==prefix+'blocks_stage02_100/index.json'))
             if not allowed or sha(root/name)!=digest:raise ValueError('Unapproved or changed input: '+name)
     for run in slots:
         work=Path(run['work']).resolve()

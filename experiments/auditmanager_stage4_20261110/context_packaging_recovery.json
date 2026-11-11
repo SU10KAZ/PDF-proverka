@@ -1,0 +1,17 @@
+{
+  "status": "local_source_context_build_in_progress",
+  "live_exec_session": 69165,
+  "inputs": "/tmp/auditmanager_six_candidate_inputs_context_v3_20261111",
+  "log": "/tmp/auditmanager_context_v3_build.log",
+  "builder": "build_comparison_block_context.py",
+  "previous_collection": "/tmp/auditmanager_comparative_trial_policy_v2_20261111",
+  "previous_failure": "Missing block_context_summary.json; zero model requests",
+  "catalog_missing_resource_fix": "context_catalog_packaging_provenance.json",
+  "remaining": [
+    "Finish all six source context builds and inspect coverage",
+    "Bind catalog resources in full source snapshot and protocol hashes for both comparison arms",
+    "Validate actual pre-model prerequisites and freeze new input revision",
+    "Launch and monitor 18 baseline runs; no method quality acceptance implied"
+  ],
+  "stage4_complete": false
+}

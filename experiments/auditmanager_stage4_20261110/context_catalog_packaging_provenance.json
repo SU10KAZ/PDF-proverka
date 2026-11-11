@@ -1,0 +1,27 @@
+{
+  "base_commit": "9076439437baf19aa5bb3c1e2ba55ff2642a7c78",
+  "source_root": "/tmp/auditmanager_paired_comparison_sources_20261111/classic_astra_with_catalog",
+  "added_resources": {
+    "backend/app/pipeline/stages/block_context/reference_catalog/README.md": "cc486ee8b628dfb07511d69dab51fa0984ec2ae913a856dfb88931f682f17486",
+    "backend/app/pipeline/stages/block_context/reference_catalog/disciplines/AR.json": "221f30918bcaded66cfbd6f564f8286ba6332b3353cf83d0b850f3c0c2892ada",
+    "backend/app/pipeline/stages/block_context/reference_catalog/disciplines/EOM.json": "a4b2c4899f17b8385e1841222cdc260ae2f69189e8b81e52bc6c3af187a6d776",
+    "backend/app/pipeline/stages/block_context/reference_catalog/disciplines/GP.json": "5ea44c012dcf5f70c75ac324d6d2b6482d4bbf2d01216733d7c8223e960cd7bd",
+    "backend/app/pipeline/stages/block_context/reference_catalog/disciplines/HVAC.json": "9b5944050eacd852265029b86dc31d13be22285cc215295149ba0ee3396ae54d",
+    "backend/app/pipeline/stages/block_context/reference_catalog/disciplines/KJ.json": "d71495beb8edc83a42b81167bc3b212c1cdbaaf9cb485130d462a325c4449dd1",
+    "backend/app/pipeline/stages/block_context/reference_catalog/disciplines/KM.json": "b2c7f235f35cc5043d2bc838730e102e2d51372a0245e8ba2b9826af1cee477c",
+    "backend/app/pipeline/stages/block_context/reference_catalog/disciplines/SS.json": "cdbe181cc0d62c6d4a7fe281d3bb1b897c22367bfe9e4c2e837607cad710a115",
+    "backend/app/pipeline/stages/block_context/reference_catalog/disciplines/TX.json": "3e1e54ff51ed910962d5c1a3652d02e87ea92e123d0caaa959bcecd1fce4c3fd",
+    "backend/app/pipeline/stages/block_context/reference_catalog/disciplines/VK.json": "7623cdb7b8d8793f13072f90b5aa6d7d351e030fa95ee5e649fc6863534aa4f7",
+    "backend/app/pipeline/stages/block_context/reference_catalog/manifest.json": "94fff9d8db1867eca331ee494a52a3424340fb60da4978c872b3b155f43ac537",
+    "backend/app/pipeline/stages/block_context/reference_catalog/profiles/AR.md": "dabde9f3385d113cf86ba026d892e27d72da161f7ecffe144b29a00ba7085287",
+    "backend/app/pipeline/stages/block_context/reference_catalog/profiles/EOM.md": "aa7825bba01974c78f531104231d3152d0334ccb5b23cf856e7d155c6332ced5",
+    "backend/app/pipeline/stages/block_context/reference_catalog/profiles/GP.md": "6852367f00e5e41408da9dc296a6d9bc1e73958656050b46153ca0e1a417abf8",
+    "backend/app/pipeline/stages/block_context/reference_catalog/profiles/HVAC.md": "5a27f433b7f26c9d38e6b336504bc2da31bd91edbbd7f1b6b886c1b372372bdc",
+    "backend/app/pipeline/stages/block_context/reference_catalog/profiles/KJ.md": "e0a27fd0be16a38e2855ddc1084f94dc478e7034ce25a301f88589aac845fd26",
+    "backend/app/pipeline/stages/block_context/reference_catalog/profiles/KM.md": "74f9368c9bf696280cec913460f1e5240beee3b35db85deb01bca457b6f2550e",
+    "backend/app/pipeline/stages/block_context/reference_catalog/profiles/SS.md": "444d4b4f57f3705e46defc3edbaf05dd3fc660d12882531a20a6370db1aff50a",
+    "backend/app/pipeline/stages/block_context/reference_catalog/profiles/TX.md": "50276594f7cd5d44f75645edf5d3c86260cb39862b51bb92aa21f7325841756b",
+    "backend/app/pipeline/stages/block_context/reference_catalog/profiles/VK.md": "60acc2cca36403fcb951170a11be214a4e384852355d78033781a129ce58fc3b",
+    "backend/app/pipeline/stages/block_context/reference_catalog/rules.json": "8a82def0065e14919c953597664b0f59e6f4ecddcc040c56f66a18ac06d0def3"
+  }
+}
